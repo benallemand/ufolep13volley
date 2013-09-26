@@ -3,6 +3,8 @@
 require_once "../includes/fonctions_inc.php";
 
 conn_db();
+/** Format UTF8 pour afficher correctement les accents */
+mysql_query("SET NAMES UTF8");
 $sql = "select 
 c.libelle AS competition, 
 m.division, 
