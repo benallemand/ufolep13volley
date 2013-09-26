@@ -1,11 +1,11 @@
 Ext.onReady(function() {
     Ext.create('Ext.Button', {
-        text: 'Derniers rÃ©sultats...',
+        text: 'Derniers résultats...',
         margin: 10,
         renderTo: Ext.get('resultats'),
         handler: function() {
             Ext.create('Ext.window.Window', {
-                title: 'Derniers rÃ©sultats',
+                title: 'Derniers résultats',
                 height: 400,
                 width: 900,
                 layout: 'fit',
