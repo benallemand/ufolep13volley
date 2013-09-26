@@ -53,11 +53,11 @@ function affich_classement($compet, $div)
     if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
         echo'<form id="liste_equipe" action="includes/traitement.php?a=ie" method="post">';
         echo'<ul><li>';
-        echo'<a href="?a=ie&c=' . $compet . '&d=' . $div . '" target="_self" class="lien">Inscrire une ï¿½quipe</a></li>';
+        echo'<a href="?a=ie&c=' . $compet . '&d=' . $div . '" target="_self" class="lien">Inscrire une équipe</a></li>';
         if (isset($_GET['a']) && $_GET['a'] == 'ie') {
             echo'<li>';
             echo'<SELECT name="id_equipe" onchange="submit();">';
-            echo'<OPTION value="">Choisir une ï¿½quipe</OPTION>';
+            echo'<OPTION value="">Choisir une équipe</OPTION>';
 
             $sql = 'SELECT * FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' AND id_equipe NOT IN (SELECT id_equipe FROM classements where code_competition = \'' . $compet . '\') ORDER BY nom_equipe';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
@@ -129,8 +129,8 @@ function affich_classement($compet, $div)
 // ***** SPECIFIQUE ADMINISTRATION ***********************************************
         if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
             echo'<td>';
-            echo'<span class="pen_equipe"><a href="includes/traitement.php?a=gpa&&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous ajouter un point de pï¿½nalitï¿½ ï¿½ cette ï¿½quipe ?\');"><img src="images/moins.png" title="Ajouter un point de pï¿½nalitï¿½" /></a>';
-            echo'<a href="includes/traitement.php?a=gpe&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous annuler un point de pï¿½nalitï¿½ pour cette ï¿½quipe ?\');"><img src="images/plus.png" title="Enlever un point de pï¿½nalitï¿½" /></a><a href="includes/traitement.php?a=sec&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Cette opï¿½ration entrainera la suppression de cette ï¿½quipe de cette compï¿½tition ! ï¿½tes-vous sur ?\');"><img src="images/delete.gif" title="Supprimer cette ï¿½quipe de la compï¿½tition" /></a></span>';
+            echo'<span class="pen_equipe"><a href="includes/traitement.php?a=gpa&&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous ajouter un point de pénalité à cette équipe ?\');"><img src="images/moins.png" title="Ajouter un point de pénalité" /></a>';
+            echo'<a href="includes/traitement.php?a=gpe&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous annuler un point de pénalité pour cette àquipe ?\');"><img src="images/plus.png" title="Enlever un point de pénalité" /></a><a href="includes/traitement.php?a=sec&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Cette opération entrainera la suppression de cette équipe de cette compétition ! êtes-vous sur ?\');"><img src="images/delete.gif" title="Supprimer cette équipe de la compétition" /></a></span>';
         }
         echo'</td>';
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
@@ -168,7 +168,7 @@ function affich_journee($compet, $div)
         echo '<ul><li><a href="?a=am&c=' . $compet . '&d=' . $div . '" target="_self" class="lien">Ajouter un match</a></li></ul>';
         if (isset($_GET['a']) && $_GET['a'] == "am") {
             echo'<form name="ajout_match" action="includes/traitement.php?a=am" method="post">';
-            echo'<table class="admin"><tr class="admin"><td class="w80">Code Match</td><td class="w80">Journï¿½e</td><td class="w80">Heure</td><td class="w80">Date</td><td class="w150">Equipe 1</td><td class="w150">Equipe 2</td></tr>';
+            echo'<table class="admin"><tr class="admin"><td class="w80">Code Match</td><td class="w80">Journée</td><td class="w80">Heure</td><td class="w80">Date</td><td class="w150">Equipe 1</td><td class="w150">Equipe 2</td></tr>';
             echo'<tr><td class="w80"><input value="" name="code_match" type="text" size="4" maxlength="5" /></td>';
 
 //----------------------------------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ function affich_journee($compet, $div)
 //----------------------------------------------------------------------------------------------------------
 // on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition 
 //----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une ï¿½quipe</option>';
+            echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
             while ($data = mysql_fetch_assoc($req)) {
@@ -206,7 +206,7 @@ function affich_journee($compet, $div)
 //----------------------------------------------------------------------------------------------------------
 // on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition
 //----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une ï¿½quipe</option>';
+            echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
             while ($data = mysql_fetch_assoc($req)) {
@@ -295,7 +295,7 @@ function affich_journee($compet, $div)
                     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
                 }
             } elseif ($diff_jour < -15 && $score1 == 0 && $score2 == 0) {
-                $retard = '<img src="images/warn2.gif" title="! ATTENTION ! Match en retard ou non renseignï¿½ de plus de 15 jours !" />';
+                $retard = '<img src="images/warn2.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 15 jours !" />';
                 // On regarde si le message a dï¿½jï¿½ ï¿½tï¿½ envoyï¿½
                 if ($nb_retard == 1) {
                     envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $compet, $date, 2);
@@ -440,10 +440,10 @@ function affich_journee($compet, $div)
                     if ($certif == 1) {
                         $certif = "";
                     } else {
-                        $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reï¿½u la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
+                        $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reçu la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
                     }
 
-                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opï¿½ration entrainera irrï¿½mï¿½diablement la suppression de ce match ! ï¿½tes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
+                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
                 }
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
 
@@ -693,12 +693,12 @@ function affiche_news()
 
         if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {  // PARTIE ADMINISTRATION            // BOUCLE SPECIFIQUE ADMINISTRATION
 // On regarde si la news est ï¿½ modifier
-            echo'  <span><a href="includes/traitement.php?a=sn&i=' . $id_news . '" onclick="return confirm(\'ï¿½tes-vous sur de vouloir supprimer cette news ?\');"><img src="images/delete.gif" title="Supprimer cette news ?" /></a><a href="?a=mn&i=' . $id_news . '"><img src="images/modif.gif" title="Modifier cette news" /></a></span>';
+            echo'  <span><a href="includes/traitement.php?a=sn&i=' . $id_news . '" onclick="return confirm(\'êtes-vous sur de vouloir supprimer cette news ?\');"><img src="images/delete.gif" title="Supprimer cette news ?" /></a><a href="?a=mn&i=' . $id_news . '"><img src="images/modif.gif" title="Modifier cette news" /></a></span>';
 
             if (isset($id_news_modif) && $id_news_modif == $id_news) {            // BOUCLE ADMINISTRATION MODIFICATION NEWS
                 echo'		<form name="modif_news" action="includes/traitement.php?a=mn" method="post">';
                 echo'	<p>';
-                echo'		<a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir ï¿½ la page" /></a>';
+                echo'		<a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir à la page" /></a>';
                 echo'		<label>Titre </label><input type="text" value="' . $titre_news . '" size="50" maxlength="50" name="titre_news" />';
                 echo'		<label>Date </label><input type="text" value="' . $date_news . '" size="10" maxlength="10" name="date_news" />';
                 echo'		<BR /><label>Texte</label><BR />';
@@ -712,7 +712,7 @@ function affiche_news()
 // On regarde si le paramï¿½tre lecture de la news, si oui on affiche le texte
         if (isset($id_news_lect) && $id_news_lect == $id_news) {            // BOUCLE AFFICHAGE TEXTE NEWS
             echo'	<p>';
-            echo'		<a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir ï¿½ la page" /></a>';
+            echo'		<a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir à la page" /></a>';
             echo'		<BR>' . $texte_news;
             echo'	</p>';
         }            // BOUCLE AFFICHAGE TEXTE NEWS FIN
@@ -725,7 +725,7 @@ function affiche_news()
         if (isset($_GET['a']) && ($_GET['a'] == "an")) {
             echo'<form name="ajout_news" action="includes/traitement.php?a=an" method="post">';
             echo'  <p>';
-            echo'	   <a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir ï¿½ la page" /></a>';
+            echo'	   <a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir à la page" /></a>';
             echo'	   <label>Titre </label><input type="text" value="Titre de la news (50 ch. max)" size="50" maxlength="50" name="titre_news" />';
             echo'    <label>Date </label><input type="text" value="JJ/MM/AAAA" size="10" maxlength="10" name="date_news" />';
             echo'    <BR /><label>Texte</label><BR />';
@@ -782,7 +782,7 @@ function affich_pf_coupe($compet)
 //----------------------------------------------------------------------------------------------------------
 // on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition 
 //----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une ï¿½quipe</option>';
+            echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' ORDER BY nom_equipe';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
             while ($data = mysql_fetch_assoc($req)) {
@@ -793,7 +793,7 @@ function affich_pf_coupe($compet)
 //----------------------------------------------------------------------------------------------------------
 // on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition
 //----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une ï¿½quipe</option>';
+            echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' ORDER BY nom_equipe';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
             while ($data = mysql_fetch_assoc($req)) {
@@ -988,9 +988,9 @@ function affich_pf_coupe($compet)
                     if ($certif == 1) {
                         $certif = "";
                     } else {
-                        $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reï¿½u la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
+                        $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reçu la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
                     }
-                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&c=' . $compet . '&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opï¿½ration entrainera irrï¿½mï¿½diablement la suppression de ce match ! ï¿½tes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
+                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&c=' . $compet . '&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
                 }              //BOUCLE ADMINISTRATEUR GESTION MATCHES FIN
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
 
@@ -1263,18 +1263,18 @@ function affich_details_equipe($id_equipe, $compet)
 //on affiche les donnï¿½es
         echo'  <div class="photo_equipe"><img src="' . $photo . '" width="300" height="200"></div>';
         echo'  <div class="infos_equipe">';
-        echo'    <h1>' . $nom_equipe . ' - Vos dï¿½tails</h1>';
+        echo'    <h1>' . $nom_equipe . ' - Vos détails</h1>';
         echo'    <table>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Responsable :</td>';
         echo'		<td class="datas_details">' . $responsable . '<td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Tï¿½lï¿½phone 1 :</td>';
+        echo'		<td class="titre_details">Téléphone 1 :</td>';
         echo'		<td class="datas_details">' . $telephone_1 . '<td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Tï¿½lï¿½phone 2 :</td>';
+        echo'		<td class="titre_details">Téléphone 2 :</td>';
         echo'		<td class="datas_details">' . $telephone_2 . '<td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
@@ -1282,7 +1282,7 @@ function affich_details_equipe($id_equipe, $compet)
         echo'		<td class="datas_details">' . $email . '<td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Rï¿½ception le :</td>';
+        echo'		<td class="titre_details">Réception le :</td>';
         echo'		<td class="datas_details">' . $jour_reception . '<td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
@@ -1342,7 +1342,7 @@ function affich_connecte()
  * * Fonction    : affich_connecte
  * * Input       : aucun
  * * Output      : aucun 
- * * Description : Affiche le nom de l'ï¿½quipe connectï¿½
+ * * Description : Affiche le nom de l'équipe connecté
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 07/05/2010 
  */ {
@@ -1357,9 +1357,9 @@ function affich_connecte()
     if (isset($_SESSION['id_equipe'])) {
         echo'<div id="deconn">';
         echo'<ul>';
-        echo'<li class="admin">Connectï¿½ : <span class="grouge">' . $nom_equipe . '</span>';
+        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
         echo' | ';
-        echo'<span><a href="includes/traitement.php?a=deconn">Se dï¿½connecter</a></span></li>';
+        echo'<span><a href="includes/traitement.php?a=deconn">Se déconnecter</a></span></li>';
         echo'</ul>';
         echo'</div>';
     }
@@ -1377,15 +1377,15 @@ function affich_admin_site()
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 10/05/2010 
  */ {
-// On affiche le div si on est connectï¿½ en admin
+// On affiche le div si on est connecté en admin
     if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
         echo'<div id="bottom">';
         echo'  <ul>';
         echo'    <li>';
-        echo'      <span><img src="images/logo_equipe.png" title="Nouvelle ï¿½quipe" alt="Nouvelle ï¿½quipe"/></span>';
-        echo'      <span><img src="images/logo_equipe_s.png" title="Supprimer une ï¿½quipe" alt="Supprimer une ï¿½quipe" /></span>';
-        echo'      <span><img src="images/n_compet.png" title="Nouvelle compï¿½tition" alt="Nouvelle compï¿½tition"/></span>';
-        echo'      <span><img src="images/s_compet.png" title="Supprimer une compï¿½tition" alt="Supprimer une compï¿½tition"/></span>';
+        echo'      <span><img src="images/logo_equipe.png" title="Nouvelle équipe" alt="Nouvelle équipe"/></span>';
+        echo'      <span><img src="images/logo_equipe_s.png" title="Supprimer une équipe" alt="Supprimer une équipe" /></span>';
+        echo'      <span><img src="images/n_compet.png" title="Nouvelle compétition" alt="Nouvelle compétition"/></span>';
+        echo'      <span><img src="images/s_compet.png" title="Supprimer une compétition" alt="Supprimer une compétition"/></span>';
         echo'    </li>';
         echo'  </ul>';
         echo'</div>';
@@ -1408,7 +1408,7 @@ function affich_admin_page($compet)
     if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
         echo'<div id="admin_page">';
         echo'  <ul>';
-        echo'    <li><span><a href="includes/traitement.php?a=ie&c=' . $compet . '" target="_self"><img src="images/ajout.gif" title="Inscrire une ï¿½quipe" alt="Inscrire ï¿½quipe"/></span><span>Inscrire une ï¿½quipe</span></li>';
+        echo'    <li><span><a href="includes/traitement.php?a=ie&c=' . $compet . '" target="_self"><img src="images/ajout.gif" title="Inscrire une équipe" alt="Inscrire équipe"/></span><span>Inscrire une équipe</span></li>';
         echo'  </ul>';
         echo'</div>';
     }
@@ -1436,14 +1436,14 @@ function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
     $headers .='Content-Transfer-Encoding: 8bit';
 
 // Crï¿½ation du message
-    $message = '<html><head><title>Saisie Internet des rï¿½sultats</title></head><body>';
-    $message = $message . 'Aux ï¿½quipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
-    $message = $message . 'Comme vous avez dï¿½ le lire sur le rï¿½glement, la saisie des informations sur le site internet doit ï¿½tre rigoureuse (pour le suivi de la commission Volley et pour l\'intï¿½rï¿½t qu\'y portent les joueurs)<BR><BR>';
-    $message = $message . 'Pour rï¿½sumer, sur le site, 10 jours aprï¿½s la date indiquï¿½e pour le match (qui peut ï¿½tre en rouge si le match a ï¿½tï¿½ reportï¿½e), il doit y avoir un rï¿½sultat affichï¿½.<BR><BR>';
-    $message = $message . 'Pour votre match du <b>' . $date . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un dï¿½lai supplï¿½mentaire de 5 jours pour que :<BR>';
-    $message = $message . '- soit le rï¿½sultat soit indiquï¿½<BR>';
-    $message = $message . '- soit une autre date de match soit affichï¿½e (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
-    $message = $message . 'Je vous rappelle que les deux ï¿½quipes doivent veiller ï¿½ ce que cette rï¿½gle soit suivie ; les deux pourraient donc ï¿½tre pï¿½nalisï¿½es.<BR><BR>';
+    $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
+    $message = $message . 'Aux équipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
+    $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
+    $message = $message . 'Pour résumer, sur le site, 10 jours après la date indiquée pour le match (qui peut être en rouge si le match a été reportée), il doit y avoir un résultat affiché.<BR><BR>';
+    $message = $message . 'Pour votre match du <b>' . $date . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
+    $message = $message . '- soit le résultat soit indiqué<BR>';
+    $message = $message . '- soit une autre date de match soit affichée (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
+    $message = $message . 'Je vous rappelle que les deux équipes doivent veiller à ce que cette règle soit suivie ; les deux pourraient donc être pénalisées.<BR><BR>';
     $message = $message . 'Cordialement<BR><BR>Laurent Gorlier<BR>Responsable des classements<BR>';
     $message = $message . '</body></html>';
 
@@ -1451,7 +1451,7 @@ function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
     $dest = recup_mail_equipe($id1) . "," . recup_mail_equipe($id2);
 
 // Envoi du mail
-    mail($dest, "[Ufolep 13 Volley] Saisie Internet des rï¿½sultats", $message, $headers);
+    mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
 }
 
 //************************************************************************************************
@@ -1548,7 +1548,7 @@ function affich_matches_equipe($id_equipe, $compet)
     echo '		<th>Heure</td>';
     echo '		<th>Date</td>';
     echo '		<th colspan="5">Rencontres</td>';
-    echo '		<th colspan="5">Dï¿½tails de sets</td>';
+    echo '		<th colspan="5">Détails de sets</td>';
     echo '		<th>&nbsp;</td>';
     echo '	</tr>';
 
@@ -1613,26 +1613,26 @@ function affich_matches_equipe($id_equipe, $compet)
             echo'		</tr>';
             echo'		<tr>';
             echo'		  <td>&nbsp;</td><td class="modif_score_gras">Date</td><td class="data_modif_score">' . $date_reception . '</td><td>&nbsp;</td>';
-            echo'		  <td class="champ_modif_score">2iï¿½me Set</td><td>' . $set_2_dom . '</td><td>-</td><td>' . $set_2_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
+            echo'		  <td class="champ_modif_score">2ième Set</td><td>' . $set_2_dom . '</td><td>-</td><td>' . $set_2_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
             echo'		</tr>';
             echo'		<tr>';
             echo'		  <td>&nbsp;</td><td colspan="3"></td>';
-            echo'		  <td class="champ_modif_score">3iï¿½me Set</td><td>' . $set_3_dom . '</td><td>-</td><td>' . $set_3_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
+            echo'		  <td class="champ_modif_score">3ième Set</td><td>' . $set_3_dom . '</td><td>-</td><td>' . $set_3_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
             echo'		</tr>';
             echo'		<tr>';
-            echo'		  <td>&nbsp;</td><td class="modif_score_gras">Reportï¿½</td><td class="data_modif_score">' . $report . '</td><td>&nbsp;</td>';
-            echo'		  <td class="champ_modif_score">4iï¿½me Set</td><td>' . $set_4_dom . '</td><td>-</td><td>' . $set_4_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
+            echo'		  <td>&nbsp;</td><td class="modif_score_gras">Reporté</td><td class="data_modif_score">' . $report . '</td><td>&nbsp;</td>';
+            echo'		  <td class="champ_modif_score">4ième Set</td><td>' . $set_4_dom . '</td><td>-</td><td>' . $set_4_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
             echo'		</tr>';
             echo'		<tr>';
-            echo'		  <td>&nbsp;</td><td class="modif_score_gras">Certifiï¿½</td><td class="data_modif_score">' . $certif . '</td><td>&nbsp;</td>';
-            echo'		  <td class="champ_modif_score">5iï¿½me Set</td><td>' . $set_5_dom . '</td><td>-</td><td>' . $set_5_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
+            echo'		  <td>&nbsp;</td><td class="modif_score_gras">Certifié</td><td class="data_modif_score">' . $certif . '</td><td>&nbsp;</td>';
+            echo'		  <td class="champ_modif_score">5ième Set</td><td>' . $set_5_dom . '</td><td>-</td><td>' . $set_5_ext . '</td><td>&nbsp;</td><td>&nbsp;</td>';
             echo'		</tr>';
             echo'		<tr><td colspan="15">&nbsp;</td></tr>';
             echo'		<tr>';
-            echo'		  <td>&nbsp;</td><td colspan="2">&nbsp;</td><td colspan="2" class="champ_modif_score">Match gagnï¿½ ï¿½ 5</td><td class="champ_modif_score">' . $gagnea5_dom . '</td>';
+            echo'		  <td>&nbsp;</td><td colspan="2">&nbsp;</td><td colspan="2" class="champ_modif_score">Match gagné à 5</td><td class="champ_modif_score">' . $gagnea5_dom . '</td>';
             echo'		  <td>&nbsp;</td><td>' . $gagnea5_ext . '</td><td>&nbsp;</td><td><input value="Valider" name="valider" class="submit" id="valider" type="submit" /></td>';
             echo'		</tr>';
-            echo'		<tr><td colspan="3">(*) Rï¿½servï¿½ aux administrateurs</td><td colspan="12">&nbsp;</td></tr>';
+            echo'		<tr><td colspan="3">(*) Réservé aux administrateurs</td><td colspan="12">&nbsp;</td></tr>';
             echo'<input value="' . $data['id_equipe_dom'] . '" name="id_equipe_dom" type="hidden" />';
             echo'<input value="' . $data['id_equipe_ext'] . '" name="id_equipe_ext" type="hidden" />';
             echo'<input value="' . $compet . '" name="compet" type="hidden" />';
@@ -1728,7 +1728,7 @@ function affich_matches_equipe($id_equipe, $compet)
 // Traitement des feuilles de matches certifiï¿½es
 //====================================================================
             if ($certif == '1') {
-                $certif = '<img src="images/certif.gif" title="Feuille de match reï¿½ue et certifiï¿½e" />';
+                $certif = '<img src="images/certif.gif" title="Feuille de match reçue et certifiée" />';
             } else {
                 $certif = '<a href="portail.php?a=ms&i=' . $code_match . '" target="_self"><img src="images/modif.gif" width="17" height="19" title="Modifier le score" /></a>';
             }
@@ -1787,7 +1787,7 @@ function modif_equipe($id_equipe, $compet)
 
 // On crï¿½e le dï¿½but du formulaire
     echo'  <form id="modif_equipe" action="includes/traitement.php?a=me" method="post">';
-    echo'    <h1>Modification de l\'ï¿½quipe ' . $nom_equipe . '</h1>';
+    echo'    <h1>Modification de l\'équipe ' . $nom_equipe . '</h1>';
     echo'    <table>';
 
 // on exï¿½cute la requï¿½te
@@ -1800,11 +1800,11 @@ function modif_equipe($id_equipe, $compet)
         echo'		<td><input value="' . $data['responsable'] . '" name="responsable" type="text" size="50" maxlength="50" /></td>';
         echo'	  </tr>';
         echo'      <tr>';
-        echo'		<td>Tï¿½lï¿½phone 1 :</td>';
+        echo'		<td>Téléphone 1 :</td>';
         echo'		<td><input value="' . $data['telephone_1'] . '" name="telephone_1" type="text" size="50" maxlength="14" /><td>';
         echo'	  </tr>';
         echo'      <tr>';
-        echo'		<td>Tï¿½lï¿½phone 2 :</td>';
+        echo'		<td>Téléphone 2 :</td>';
         echo'		<td><input value="' . $data['telephone_2'] . '" name="telephone_2" type="text" size="50" maxlength="14" /><td>';
         echo'	  </tr>';
         echo'      <tr>';
@@ -1812,7 +1812,7 @@ function modif_equipe($id_equipe, $compet)
         echo'		<td><input value="' . $data['email'] . '" name="email" type="text" size="50" maxlength="50" /><td>';
         echo'	  </tr>';
         echo'      <tr>';
-        echo'		<td>Rï¿½ception le :</td>';
+        echo'		<td>Réception le :</td>';
         echo'		<td><input value="' . $data['jour_reception'] . '" name="jour_reception" type="text" size="50" maxlength="10" /><td>';
         echo'	  </tr>';
         echo'      <tr>';
