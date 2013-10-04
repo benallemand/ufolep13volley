@@ -25,7 +25,6 @@ function conn_db()
         $password = "vietvod@o";
     }
     $base = "ufolep_13volley";
-    $cle = "jejoueauvolleyetcestsuper";
 
 // on se connecte à MySQL 
     $db = mysql_connect($server, $user, $password);
