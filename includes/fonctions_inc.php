@@ -14,7 +14,7 @@ function conn_db()
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 18/04/2010
  */ {
-//Dï¿½claration des constantes
+//Déclaration des constantes
     if ($_SERVER['SERVER_NAME'] === 'localhost') {
         $server = "localhost";
         $user = "root";
@@ -27,7 +27,7 @@ function conn_db()
     $base = "ufolep_13volley";
     $cle = "jejoueauvolleyetcestsuper";
 
-// on se connecte ï¿½ MySQL 
+// on se connecte à MySQL 
     $db = mysql_connect($server, $user, $password);
     mysql_select_db($base, $db);
 }
@@ -46,7 +46,7 @@ function affich_classement($compet, $div)
  */ {
     $n = 1;
 
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
 // ***** SPECIFIQUE ADMINISTRATION ***********************************************
@@ -73,11 +73,11 @@ function affich_classement($compet, $div)
         echo '</form>';
     }
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-//Requï¿½te SQL
+//Requête SQL
     $sql = 'SELECT * FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' ORDER BY points DESC, difference DESC, coeff_points DESC';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 
-//Affichage des rï¿½sultats
+//Affichage des résultats
     echo '<table>';
     echo'<tr>';
     echo'<th>Rang</th>';
@@ -104,7 +104,7 @@ function affich_classement($compet, $div)
     echo'</tr>';
     while ($data = mysql_fetch_assoc($req)) {
 
-// On affiche le rï¿½sultat dans le tableau
+// On affiche le résultat dans le tableau
         echo'<tr>';
         echo'<td>' . $n . '.</td>';
         echo'<td class="equipes">' . recup_nom_equipe($compet, $data['id_equipe']) . '</td>';
@@ -130,7 +130,7 @@ function affich_classement($compet, $div)
         if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
             echo'<td>';
             echo'<span class="pen_equipe"><a href="includes/traitement.php?a=gpa&&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous ajouter un point de pénalité à cette équipe ?\');"><img src="images/moins.png" title="Ajouter un point de pénalité" /></a>';
-            echo'<a href="includes/traitement.php?a=gpe&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous annuler un point de pénalité pour cette àquipe ?\');"><img src="images/plus.png" title="Enlever un point de pénalité" /></a><a href="includes/traitement.php?a=sec&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Cette opération entrainera la suppression de cette équipe de cette compétition ! êtes-vous sur ?\');"><img src="images/delete.gif" title="Supprimer cette équipe de la compétition" /></a></span>';
+            echo'<a href="includes/traitement.php?a=gpe&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous annuler un point de pénalité pour cette équipe ?\');"><img src="images/plus.png" title="Enlever un point de pénalité" /></a><a href="includes/traitement.php?a=sec&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Cette opération entrainera la suppression de cette équipe de cette compétition ! Êtes-vous sur ?\');"><img src="images/delete.gif" title="Supprimer cette équipe de la compétition" /></a></span>';
         }
         echo'</td>';
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
@@ -141,7 +141,7 @@ function affich_classement($compet, $div)
     }
     echo'</table>';
 
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -151,13 +151,13 @@ function affich_journee($compet, $div)
 //************************************************************************************************
 /*
  * * Fonction    : affich_journee 
- * * Input       : STRING $div = division concernï¿½e, $compet = journï¿½e concernï¿½e 
+ * * Input       : STRING $div = division concernée, $compet = journée concernée 
  * * Output      : aucun 
  * * Description : affichage de la division et de la journee passee en variable
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 07/05/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
 
@@ -172,7 +172,7 @@ function affich_journee($compet, $div)
             echo'<tr><td class="w80"><input value="" name="code_match" type="text" size="4" maxlength="5" /></td>';
 
 //----------------------------------------------------------------------------------------------------------
-// on rï¿½cupï¿½re le nombre de journï¿½e crï¿½ï¿½es pour cette compï¿½tition 
+// on récupère le nombre de journée créées pour cette compétition 
 //----------------------------------------------------------------------------------------------------------
             echo'<td class="w80"><select name="journee"><option></option>';
             $sql = 'SELECT DISTINCT COUNT(numero) FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
@@ -185,7 +185,7 @@ function affich_journee($compet, $div)
                 $data = mysql_fetch_assoc($req);
                 $nb_journee = $data['COUNT(numero)'];
             }
-            for ($i = 1; $i < $nb_journee + 1; $i++) {    //tant que i est infï¿½rieur au nombre de journï¿½e on affiche les matches
+            for ($i = 1; $i < $nb_journee + 1; $i++) {    //tant que i est inférieur au nombre de journée on affiche les matches
                 echo'<option value="' . $i . '">' . $i . '</option>';
             }
             echo'</select></td>';
@@ -193,7 +193,7 @@ function affich_journee($compet, $div)
             echo'<td class="w80"><input value="jj/mm/aaaa" name="date_reception" type="text" size="8" maxlength="10" /></td>';
 
 //----------------------------------------------------------------------------------------------------------
-// on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition 
+// on récupère la liste des équipes inscrites à la compétition 
 //----------------------------------------------------------------------------------------------------------
             echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
@@ -204,7 +204,7 @@ function affich_journee($compet, $div)
             echo'</select></td>';
 
 //----------------------------------------------------------------------------------------------------------
-// on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition
+// on récupère la liste des équipes inscrites à la compétition
 //----------------------------------------------------------------------------------------------------------
             echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
@@ -225,20 +225,21 @@ function affich_journee($compet, $div)
 //********************************************************************************
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
 //********************************************************************************
-// On regarde le nombre de journï¿½e prï¿½sente pour cette compï¿½tition 
+// On regarde le nombre de journée présente pour cette compétition 
     $sql = 'SELECT COUNT( DISTINCT journee ) FROM `matches` WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $data = mysql_fetch_assoc($req);
     $nbr_journee = $data['COUNT( DISTINCT journee )'];
-    for ($i = 1; $i < $nbr_journee + 1; $i++) {    //tant que i est infï¿½rieur au nombre de journï¿½e on affiche les matches
-// on rï¿½cupï¿½re le nommage et la valeur de la journï¿½e
+    for ($i = 1; $i < $nbr_journee + 1; $i++) {    //tant que i est inférieur au nombre de journée on affiche les matches
+
+// on récupère le nommage et la valeur de la journée
         $sql = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' AND numero = \'' . $i . '\'';
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         $data = mysql_fetch_assoc($req);
         $nommage_journee = $data['nommage'];
         $libelle_journee = $data['libelle'];
 
-// si aucune donnï¿½e est rï¿½cupï¿½rï¿½e on affiche les valeurs de la division 1
+// si aucune donnée est récupérée on affiche les valeurs de la division 1
         if ($nommage_journee == "" && $libelle_journee == "") {
             $sql = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND division = 1 AND numero = \'' . $i . '\'';
             $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
@@ -247,18 +248,18 @@ function affich_journee($compet, $div)
             $libelle_journee = $data['libelle'];
         }
 
-// on affiche l'intitulï¿½ de la journï¿½e
+// on affiche l'intitulé de la journée
         echo '<H1>' . $nommage_journee . ' - ' . $libelle_journee . '</H1>';
 
-// On crï¿½ï¿½ la table de la journï¿½e sï¿½lectionnï¿½e
+// On créé la table de la journée sélectionnée
         echo '<table>';
 
-// on rï¿½cupï¿½re les matches de la journï¿½e
+// on récupère les matches de la journée
         $sql = 'SELECT * FROM matches WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' AND journee = \'' . $i . '\' ORDER BY code_match';
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         while ($data = mysql_fetch_assoc($req)) {
 
-// Mise en variable des datas rï¿½coltï¿½es
+// Mise en variable des datas récoltées
             $match = $data['code_match'];
             $horaire = $data['heure_reception'];
             $date = date_fr($data['date_reception']);
@@ -280,26 +281,26 @@ function affich_journee($compet, $div)
             $nb_retard = $data['retard'];
 
 //Traitement des matches en retard
-            $oridate = explode("-", $data['date_reception']);  //on enlï¿½ve les caractï¿½res '-' de la date
-            $nowdate = time();         //on rï¿½cupï¿½re la date d'aujourd'hui
-            $diff_sec = mktime(0, 0, 0, $oridate[1], $oridate[2], $oridate[0]) - $nowdate; //le calcul est effectuï¿½ en secondes
-            $diff_jour = floor($diff_sec / (60 * 60 * 24)) + 1;   // on transforme le rï¿½sultat en nombre de jour 
-// On vï¿½rifie la diffï¿½rence de date
+            $oridate = explode("-", $data['date_reception']);  //on enlève les caractères '-' de la date
+            $nowdate = time();         //on récupère la date d'aujourd'hui
+            $diff_sec = mktime(0, 0, 0, $oridate[1], $oridate[2], $oridate[0]) - $nowdate; //le calcul est effectué en secondes
+            $diff_jour = floor($diff_sec / (60 * 60 * 24)) + 1;   // on transforme le résultat en nombre de jour 
+// On vérifie la différence de date
             if ($diff_jour > -16 && $diff_jour < -10 && $score1 == 0 && $score2 == 0) {
-                $retard = '<img src="images/warn1.gif" title="! ATTENTION ! Match en retard ou non renseignï¿½ de plus de 10 jours !" />';
-                // On regarde si le message a dï¿½jï¿½ ï¿½tï¿½ envoyï¿½
+                $retard = '<img src="images/warn1.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 10 jours !" />';
+                // On regarde si le message a déjà été envoyé
                 if ($nb_retard == 0) {
                     envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $compet, $date, 1);
-                    // Mise ï¿½ jour de la base
+                    // Mise à jour de la base
                     $sqlmaj = 'UPDATE matches SET retard = 1 WHERE code_match = \'' . $match . '\'';
                     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
                 }
             } elseif ($diff_jour < -15 && $score1 == 0 && $score2 == 0) {
                 $retard = '<img src="images/warn2.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 15 jours !" />';
-                // On regarde si le message a dï¿½jï¿½ ï¿½tï¿½ envoyï¿½
+                // On regarde si le message a déjà été envoyé
                 if ($nb_retard == 1) {
                     envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $compet, $date, 2);
-                    // Mise ï¿½ jour de la base
+                    // Mise à jour de la base
                     $sqlmaj = 'UPDATE matches SET retard = 2 WHERE code_match = \'' . $match . '\'';
                     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
                 }
@@ -340,7 +341,7 @@ function affich_journee($compet, $div)
                 $set5 = $set_5_dom . '/' . $set_5_ext;
             }
 
-//Traitement de l'affichage des matches gagnï¿½s
+//Traitement de l'affichage des matches gagnés
             $class_dom = "equipes_dom";
             $class_ext = "equipes_ext";
             if ($score1 > $score2) {
@@ -350,13 +351,13 @@ function affich_journee($compet, $div)
                 $class_ext = "equipes_ext_gagne";
             }
 
-//Traitement de l'affichage des matches reportï¿½s
+//Traitement de l'affichage des matches reportés
             $class_report = "date";
             if ($report == 1) {
                 $class_report = "date_report";
             }
 
-// On regarde si on est en administrateur et si un match est sï¿½lectionnï¿½ en modification
+// On regarde si on est en administrateur et si un match est sélectionné en modification
             if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin" && isset($_GET['m']) && $_GET['m'] == $match) {
                 echo'<tr><td colspan="14">';
                 echo'<table class="admin">';
@@ -435,7 +436,7 @@ function affich_journee($compet, $div)
 // ***** SPECIFIQUE ADMINISTRATION ***********************************************
                 if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
 
-//Traitement de l'affichage des matches certifiï¿½s
+//Traitement de l'affichage des matches certifiés
                     $certif = $data['certif'];
                     if ($certif == 1) {
                         $certif = "";
@@ -443,18 +444,18 @@ function affich_journee($compet, $div)
                         $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reçu la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
                     }
 
-                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
+                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! Êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
                 }
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
 
                 echo '	</tr>';
             }
         }
-// on ferme la table de la journï¿½e sï¿½lectionnï¿½e
+// on ferme la table de la journée sélectionnée
         echo '</table>';
     }
 
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -466,7 +467,7 @@ function recup_nom_equipe($compet, $id)
  * * Fonction    : recup_nom_equipe 
  * * Input       : STRING $id
  * * Output      : aucun 
- * * Description : Rï¿½cupï¿½re le nom d'une ï¿½quipe
+ * * Description : Récupère le nom d'une équipe
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 15/04/2010
  */ {
@@ -485,7 +486,7 @@ function recup_mail_equipe($id)
  * * Fonction    : recup_mail_equipe 
  * * Input       : STRING $id
  * * Output      : aucun 
- * * Description : Rï¿½cupï¿½re le mail d'une ï¿½quipe
+ * * Description : Récupère le mail d'une équipe
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 16/11/2010
  */ {
@@ -523,7 +524,7 @@ function recup_compet_maitre($compet)
  * * Fonction    : recup_compet_maitre 
  * * Input       : STRING $compet
  * * Output      : aucun 
- * * Description : Rï¿½cupï¿½re la compï¿½tition maitre m ou f d'une ï¿½quipe
+ * * Description : Récupère la compétition maitre m ou f d'une équipe
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 11/05/2010
  */ {
@@ -542,11 +543,11 @@ function recup_nom_compet($compet)
  * * Fonction    : recup_nom_compet 
  * * Input       : STRING $compet
  * * Output      : aucun 
- * * Description : Rï¿½cupï¿½re le nom de la compï¿½tition
+ * * Description : Récupère le nom de la compétition
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 07/04/2011
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
     $sql = 'SELECT libelle FROM competitions WHERE code_competition = \'' . $compet . '\'';
@@ -564,11 +565,11 @@ function affiche_image($var)
  * * Fonction    : affiche_image
  * * Input       : STRING $var
  * * Output      : aucun 
- * * Description : Affiche une catï¿½gorie d'image 
+ * * Description : Affiche une catégorie d'image 
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 18/04/2010 
  */ {//1
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
     $sql = "SELECT chemin_image from images order by rand() limit 1";
@@ -577,7 +578,7 @@ function affiche_image($var)
         echo '<img name="image" src="' . $data[0] . '" width="314" height="235" alt="">';
     }
 
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -632,12 +633,12 @@ function affiche_news_save()
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 15/09/2008 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
     echo '<ul>';
 
-//On rï¿½cupï¿½re la liste des news dans la base
+//On récupère la liste des news dans la base
     $sql = "SELECT * from news ORDER BY id_news DESC LIMIT 8";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
@@ -646,7 +647,7 @@ function affiche_news_save()
     }
     echo '</ul>';
 
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -662,22 +663,22 @@ function affiche_news()
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 03/06/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-//Si un paramï¿½tre mn est passï¿½ dans la barre d'adresse on fixe la variable de modification
+//Si un paramètre mn est passé dans la barre d'adresse on fixe la variable de modification
     if (isset($_GET['a']) && $_GET['a'] == 'mn') {
         $id_news_modif = $_GET['i'];
     }
-//Si un paramï¿½tre rn est passï¿½ dans la barre d'adresse on fixe la variable de lecture de la news
+//Si un paramètre rn est passé dans la barre d'adresse on fixe la variable de lecture de la news
     if (isset($_GET['a']) && $_GET['a'] == 'rn') {
         $id_news_lect = $_GET['i'];
     }
 
-//Dï¿½but d'affichage des news
+//Début d'affichage des news
     echo '<ul>';
 
-//On rï¿½cupï¿½re la liste des news dans la base
+//On récupère la liste des news dans la base
     $sql = "SELECT * from news ORDER BY id_news DESC LIMIT 8";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {           // BOUCLE WHILE DATA SUR SELECT * FROM NEWS
@@ -692,8 +693,8 @@ function affiche_news()
         echo'  <span><a href="?a=rn&i=' . $id_news . '" target="_self" class="titre_news">' . $titre_news . '</a></span>';
 
         if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {  // PARTIE ADMINISTRATION            // BOUCLE SPECIFIQUE ADMINISTRATION
-// On regarde si la news est ï¿½ modifier
-            echo'  <span><a href="includes/traitement.php?a=sn&i=' . $id_news . '" onclick="return confirm(\'êtes-vous sur de vouloir supprimer cette news ?\');"><img src="images/delete.gif" title="Supprimer cette news ?" /></a><a href="?a=mn&i=' . $id_news . '"><img src="images/modif.gif" title="Modifier cette news" /></a></span>';
+// On regarde si la news est à modifier
+            echo'  <span><a href="includes/traitement.php?a=sn&i=' . $id_news . '" onclick="return confirm(\'Êtes-vous sur de vouloir supprimer cette news ?\');"><img src="images/delete.gif" title="Supprimer cette news ?" /></a><a href="?a=mn&i=' . $id_news . '"><img src="images/modif.gif" title="Modifier cette news" /></a></span>';
 
             if (isset($id_news_modif) && $id_news_modif == $id_news) {            // BOUCLE ADMINISTRATION MODIFICATION NEWS
                 echo'		<form name="modif_news" action="includes/traitement.php?a=mn" method="post">';
@@ -709,7 +710,7 @@ function affiche_news()
             }            // BOUCLE ADMINISTRATION MODIFICATION NEWS FIN
             echo'		</form>';
         }            // BOUCLE SPECIFIQUE ADMINISTRATION FIN
-// On regarde si le paramï¿½tre lecture de la news, si oui on affiche le texte
+// On regarde si le paramètre lecture de la news, si oui on affiche le texte
         if (isset($id_news_lect) && $id_news_lect == $id_news) {            // BOUCLE AFFICHAGE TEXTE NEWS
             echo'	<p>';
             echo'		<a href="?" target="_self"><img src="images/fermer.png" name="fermer" border="0" title="Revenir à la page" /></a>';
@@ -740,7 +741,7 @@ function affiche_news()
     }            // BOUCLE SPECIFIQUE ADMINISTRATION
 
     echo '</ul>';
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -756,7 +757,7 @@ function affich_pf_coupe($compet)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 20/04/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
 // ***** SPECIFIQUE ADMINISTRATION ***********************************************
@@ -767,7 +768,7 @@ function affich_pf_coupe($compet)
             echo'<table class="admin"><tr class="admin"><td class="w80">Code Match</td><td class="w80">Niveau</td><td class="w80">Heure</td><td class="w80">Date</td><td class="w150">Equipe 1</td><td class="w150">Equipe 2</td></tr>';
             echo'<tr><td class="w80"><input value="" name="code_match" type="text" size="4" maxlength="5" /></td>';
 
-// on rï¿½cupï¿½re le nombre de journï¿½e crï¿½ï¿½es pour cette compï¿½tition 
+// on récupère le nombre de journée créées pour cette compétition 
             echo'<td class="w80"><select name="journee"><option></option>';
 //----------------------------------------------------------------------------------------------------------
             $sql = 'SELECT numero,nommage FROM journees WHERE code_competition = \'' . $compet . '\'';
@@ -780,7 +781,7 @@ function affich_pf_coupe($compet)
             echo'<td class="w80"><input value="jj/mm/aaaa" name="date_reception" type="text" size="8" maxlength="10" /></td>';
 
 //----------------------------------------------------------------------------------------------------------
-// on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition 
+// on récupère la liste des équipes inscrites à la compétition 
 //----------------------------------------------------------------------------------------------------------
             echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' ORDER BY nom_equipe';
@@ -791,7 +792,7 @@ function affich_pf_coupe($compet)
             echo'</select></td>';
 
 //----------------------------------------------------------------------------------------------------------
-// on rï¿½cupï¿½re la liste des ï¿½quipes inscrites ï¿½ la compï¿½tition
+// on récupère la liste des équipes inscrites à la compétition
 //----------------------------------------------------------------------------------------------------------
             echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une équipe</option>';
             $sql = 'SELECT id_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' ORDER BY nom_equipe';
@@ -810,31 +811,31 @@ function affich_pf_coupe($compet)
         }
     }
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-// On regarde le nombre de journï¿½e prï¿½sente pour cette compï¿½tition 
+// On regarde le nombre de journée présente pour cette compétition 
     $sql = 'SELECT DISTINCT journee FROM `matches` WHERE code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 
-// pour tous les enregistrements trouvï¿½s on rï¿½cupï¿½re le libellï¿½ et on affiche les matches
+// pour tous les enregistrements trouvés on récupère le libellé et on affiche les matches
     while ($data = mysql_fetch_assoc($req)) {            //BOUCLE NOMBRE JOURNEE
         $journee = $data['journee'];
-// on rï¿½cupï¿½re le nommage et la valeur de la journï¿½e
+// on récupère le nommage et la valeur de la journée
         $sql2 = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND numero = \'' . $journee . '\'';
         $req2 = mysql_query($sql2) or die('Erreur SQL !<br>' . $sql2 . '<br>' . mysql_error());
         $data2 = mysql_fetch_assoc($req2);
         $nommage_journee = $data2['nommage'];
         $libelle_journee = $data2['libelle'];
 
-// on affiche l'intitulï¿½ de la journï¿½e
+// on affiche l'intitulé de la journée
         echo '<H1>' . $nommage_journee . ' - ' . $libelle_journee . '</H1>';
 
-// On crï¿½ï¿½ la table de la journï¿½e sï¿½lectionnï¿½e
+// On créé la table de la journée sélectionnée
         echo '<table>';
 
-// on rï¿½cupï¿½re les matches de la journï¿½e
+// on récupère les matches de la journée
         $sql2 = 'SELECT * FROM matches WHERE code_competition = \'' . $compet . '\' AND journee = \'' . $journee . '\'';
         $req2 = mysql_query($sql2) or die('Erreur SQL !<br>' . $sql2 . '<br>' . mysql_error());
         while ($data2 = mysql_fetch_assoc($req2)) {            //BOUCLE AFFICHAGE MATCHES
-// Mise en variable des datas rï¿½coltï¿½es
+// Mise en variable des datas récoltées
             $match = $data2['code_match'];
             $horaire = $data2['heure_reception'];
             $date = date_fr($data2['date_reception']);
@@ -888,7 +889,7 @@ function affich_pf_coupe($compet)
                 $set5 = $set_5_dom . '/' . $set_5_ext;
             }
 
-//Traitement de l'affichage des matches gagnï¿½s
+//Traitement de l'affichage des matches gagnés
             $class_dom = "equipes_dom";
             $class_ext = "equipes_ext";
             if ($score1 > $score2) {
@@ -898,13 +899,13 @@ function affich_pf_coupe($compet)
                 $class_ext = "equipes_ext_gagne";
             }
 
-//Traitement de l'affichage des matches reportï¿½s
+//Traitement de l'affichage des matches reportés
             $class_report = "date";
             if ($report == 1) {
                 $class_report = "date_report";
             }
 
-// On regarde si on est en administrateur et si un match est sï¿½lectionnï¿½ en modification
+// On regarde si on est en administrateur et si un match est sélectionné en modification
             if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin" && isset($_GET['m']) && $_GET['m'] == $match) {              //BOUCLE ADMINISTRATEUR MODIFICATION
                 echo'<tr><td colspan="14">';
                 echo'<table class="admin">';
@@ -983,24 +984,24 @@ function affich_pf_coupe($compet)
 
 // ***** SPECIFIQUE ADMINISTRATION ***********************************************
                 if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {              //BOUCLE ADMINISTRATEUR GESTION MATCHES
-//Traitement de l'affichage des matches certifiï¿½s
+//Traitement de l'affichage des matches certifiés
                     $certif = $data2['certif'];
                     if ($certif == 1) {
                         $certif = "";
                     } else {
                         $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reçu la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
                     }
-                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&c=' . $compet . '&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
+                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&c=' . $compet . '&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! Êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
                 }              //BOUCLE ADMINISTRATEUR GESTION MATCHES FIN
 // ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
 
                 echo '	</tr>';
             }              //BOUCLE AFFICHAGE MATCH NON ADMINISTRATEUR FIN
         }            //BOUCLE AFFICHAGE MATCHES FIN
-// on ferme la table de la journï¿½e sï¿½lectionnï¿½e
+// on ferme la table de la journée sélectionnée
         echo '</table>';
     }            //BOUCLE NOMBRE JOURNEE FIN
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -1011,7 +1012,7 @@ function cryptage($Texte, $Cle)
 /*
  * * Fonction    : cryptage 
  * * Input       : $text
- * * Output      : expression cryptï¿½e 
+ * * Output      : expression cryptée 
  * * Description : Crypte une expression
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 14/09/2011 
@@ -1037,8 +1038,8 @@ function decryptage($Texte, $Cle)
 /*
  * * Fonction    : decryptage 
  * * Input       : $text
- * * Output      : expression decryptï¿½e 
- * * Description : Dï¿½Crypte une expression
+ * * Output      : expression decryptée 
+ * * Description : DéCrypte une expression
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 14/09/2011 
  */ {
@@ -1060,8 +1061,8 @@ function GenerationCle($Texte, $CleDEncryptage)
 /*
  * * Fonction    : decryptage 
  * * Input       : $text
- * * Output      : expression decryptï¿½e 
- * * Description : Dï¿½Crypte une expression
+ * * Output      : expression decryptée 
+ * * Description : DéCrypte une expression
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 14/09/2011 
  */ {
@@ -1090,14 +1091,14 @@ function affich_commission()
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 21/04/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// on rï¿½cupï¿½re les infos de la table SQL
+// on récupère les infos de la table SQL
     $sql = 'SELECT * FROM commission';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
-// si aucune photo n'est prï¿½sente on affiche l'image inconnue
+// si aucune photo n'est présente on affiche l'image inconnue
         if ($data['photo'] == "") {
             $photo = "images/port.inconnu.jpg";
         } else {
@@ -1118,7 +1119,7 @@ function affich_commission()
         echo'  </div>';
         echo'</div>';
     }
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -1132,19 +1133,19 @@ function affich_annuaire()
  * * Fonction    : affich_annuaire 
  * * Input       : aucun 
  * * Output      : aucun 
- * * Description : affichage de l'annuaire des ï¿½quipes
+ * * Description : affichage de l'annuaire des équipes
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 22/04/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// on rï¿½cupï¿½re les competitions dans la table equipes
+// on récupère les competitions dans la table equipes
     $sql = 'SELECT DISTINCT(code_competition) FROM equipes';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
         $code_competition = $data['code_competition'];
-        // pour chaque enregistrement trouvï¿½ on rï¿½cupï¿½re le libellï¿½
+        // pour chaque enregistrement trouvé on récupère le libellé
         $sql_libelle = 'SELECT libelle FROM competitions WHERE code_competition = \'' . $code_competition . '\'';
         $req_libelle = mysql_query($sql_libelle) or die('Erreur SQL !<br>' . $sql_libelle . '<br>' . mysql_error());
         $data_libelle = mysql_fetch_assoc($req_libelle);
@@ -1153,7 +1154,7 @@ function affich_annuaire()
         echo'<div class="competition">';
         echo'	<h1>' . $libelle_compet . '</h1>';
 
-        // pour chaque compï¿½tition on rï¿½cupï¿½re les divisions
+        // pour chaque compétition on récupère les divisions
         $sql_division = 'SELECT DISTINCT(division) FROM classements WHERE code_competition = \'' . $code_competition . '\'';
         $req_division = mysql_query($sql_division) or die('Erreur SQL !<br>' . $sql_division . '<br>' . mysql_error());
         while ($data_division = mysql_fetch_assoc($req_division)) {
@@ -1169,7 +1170,7 @@ function affich_annuaire()
             echo'  		<h2>Division ' . $nom_division . '</h2>';
             echo'  		<ul>';
 
-            // pour chaque division on cherche les ï¿½quipes et on les affiche
+            // pour chaque division on cherche les équipes et on les affiche
             $sql_equipe = 'SELECT equipes.nom_equipe, equipes.id_equipe FROM classements, equipes WHERE classements.code_competition = \'' . $code_competition . '\' AND classements.division = \'' . $division . '\' AND classements.id_equipe = equipes.id_equipe';
             $req_equipe = mysql_query($sql_equipe) or die('Erreur SQL !<br>' . $sql_equipe . '<br>' . mysql_error());
             while ($data_equipe = mysql_fetch_assoc($req_equipe)) {
@@ -1184,7 +1185,7 @@ function affich_annuaire()
         echo'</div>';
         echo'<div id="flux">';
     }
-// Fermeture de la connexion ï¿½ mysql 
+// Fermeture de la connexion à mysql 
 //mysql_close(); 
 }
 
@@ -1196,18 +1197,18 @@ function affich_details_equipe($id_equipe, $compet)
  * * Fonction    : affich_details_equipe
  * * Input       : STRING $var_id_equipe,$var_id_table
  * * Output      : aucun 
- * * Description : Affiche les dï¿½tails d'une ï¿½quipe 
+ * * Description : Affiche les détails d'une équipe 
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 23/04/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// on exï¿½cute la requï¿½te
+// on exécute la requête
     $sql = 'SELECT * FROM `details_equipes`  WHERE `id_equipe` = \'' . $id_equipe . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
-//on rï¿½cupï¿½re les donnï¿½es et on les affecte
+//on récupère les données et on les affecte
         $nom_equipe = recup_nom_equipe($compet, $id_equipe);
         if (empty($data['responsable'])) {
             $responsable = "-";
@@ -1260,7 +1261,7 @@ function affich_details_equipe($id_equipe, $compet)
             $site_web = $data['site_web'];
         }
 
-//on affiche les donnï¿½es
+//on affiche les données
         echo'  <div class="photo_equipe"><img src="' . $photo . '" width="300" height="200"></div>';
         echo'  <div class="infos_equipe">';
         echo'    <h1>' . $nom_equipe . ' - Vos détails</h1>';
@@ -1404,7 +1405,7 @@ function affich_admin_page($compet)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 10/05/2010 
  */ {
-// On affiche le div si on est connectï¿½ en admin
+// On affiche le div si on est connecté en admin
     if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
         echo'<div id="admin_page">';
         echo'  <ul>';
@@ -1427,7 +1428,7 @@ function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
  * * Date        : 16/11/2010
  */ {
 
-// Crï¿½ation du mail
+// Création du mail
     $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
     $headers .='Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .='Cc: laurent.gorlier@ufolep13volley.org' . "\n";
@@ -1435,7 +1436,7 @@ function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
     $headers .='Content-Type: text/html; charset="iso-8859-1"' . "\n";
     $headers .='Content-Transfer-Encoding: 8bit';
 
-// Crï¿½ation du message
+// Création du message
     $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
     $message = $message . 'Aux équipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
     $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
@@ -1460,32 +1461,32 @@ function affich_portail_equipe($id)
 //************************************************************************************************
 /*
  * * Fonction    : affich_portail_equipe
- * * Input       : STRING $id, id de l'ï¿½quipe
+ * * Input       : STRING $id, id de l'équipe
  * * Output      : aucun 
- * * Description : Affiche le portail de l'ï¿½quipe qui vient de se connecter.
+ * * Description : Affiche le portail de l'équipe qui vient de se connecter.
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 27/04/2010 
  */ {//1
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// Affectation ï¿½ une variable de l'ID de l'ï¿½quipe
+// Affectation à une variable de l'ID de l'équipe
     $id_equipe = $_SESSION['id_equipe'];
     if ($_SESSION['id_equipe'] == "admin") {
         die('<META HTTP-equiv="refresh" content=0;URL=adm.php>');
     }
 
-// Rï¿½cupï¿½ration du nom de l'ï¿½quipe
+// Récupération du nom de l'équipe
     $sql = 'SELECT * from equipes WHERE id_equipe = \'' . $id_equipe . '\' LIMIT 1';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 
-    if (mysql_num_rows($req) > 0) {    // si la requï¿½te comporte un rï¿½sultat
+    if (mysql_num_rows($req) > 0) {    // si la requête comporte un résultat
         $data = mysql_fetch_assoc($req);
-        $nom_equipe = $data['nom_equipe'];  // et on rï¿½cupï¿½re la valeur nom_equipe que l'on affecte ï¿½ une variable
-        $compet = $data['code_competition'];    // on rï¿½cupï¿½re aussi la valeur du code de competition
+        $nom_equipe = $data['nom_equipe'];  // et on récupère la valeur nom_equipe que l'on affecte à une variable
+        $compet = $data['code_competition'];    // on récupère aussi la valeur du code de competition
     }
 //====================================================================
-// on affiche le lien "se dï¿½connecter" 
+// on affiche le lien "se déconnecter" 
 //====================================================================
     affich_connecte();
 
@@ -1495,19 +1496,19 @@ function affich_portail_equipe($id)
     echo'<h1>' . $nom_equipe . ' - Vos matches </h1>';
 
 //====================================================================
-// On regarde ï¿½ quelles compï¿½titions l'ï¿½quipe est inscrite
+// On regarde à quelles compétitions l'équipe est inscrite
 //====================================================================
     $sql = 'SELECT DISTINCT code_competition from matches WHERE id_equipe_dom = \'' . $id_equipe . '\' OR id_equipe_ext = \'' . $id_equipe . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
 //====================================================================
-// On affiche les matches de la compï¿½tition en question
+// On affiche les matches de la compétition en question
 //====================================================================
         affich_matches_equipe($id_equipe, $data['code_competition']);
     }
 
 //====================================================================
-// On affiche les dï¿½tails de l'ï¿½quipe
+// On affiche les détails de l'équipe
 //====================================================================
     echo'<div id="details_equipe">';
     echo'<a name="me"></a>';
@@ -1523,16 +1524,16 @@ function affich_matches_equipe($id_equipe, $compet)
 //************************************************************************************************
 /*
  * * Fonction    : affich_matches_champ
- * * Input       : $id_equipe id de l'ï¿½quipe ï¿½ modifier
+ * * Input       : $id_equipe id de l'équipe à modifier
  * * Output      : aucun 
- * * Description : Affiche les matches de championnat  d'une ï¿½quipe
+ * * Description : Affiche les matches de championnat  d'une équipe
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 06/05/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// On rï¿½cupï¿½re le libellï¿½ de la compï¿½tition
+// On récupère le libellé de la compétition
     $sql = 'SELECT libelle FROM competitions WHERE code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
@@ -1553,18 +1554,18 @@ function affich_matches_equipe($id_equipe, $compet)
     echo '	</tr>';
 
 //====================================================================
-// Rï¿½cupï¿½ration de la liste des matchs de l'ï¿½quipe
+// Récupération de la liste des matchs de l'équipe
 //====================================================================
     $sql = 'SELECT * FROM matches WHERE (id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\') OR (id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\') ORDER BY journee ASC';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
 //====================================================================
-// Si on est en mode modification on affiche le dï¿½tail du match
+// Si on est en mode modification on affiche le détail du match
 //====================================================================
         if (isset($_GET['i']) && !empty($_GET['i']) && $_GET['i'] == $data['code_match']) {
 
 //====================================================================
-// Si on n'est pas en mode Admin on dï¿½sactive certains contrï¿½les 
+// Si on n'est pas en mode Admin on désactive certains contrôles 
 //====================================================================
             if ($_SESSION['id_equipe'] == "admin") {
                 $disabled = '';
@@ -1704,7 +1705,7 @@ function affich_matches_equipe($id_equipe, $compet)
             }
 
 //====================================================================
-//Traitement de l'affichage des matches gagnï¿½s
+//Traitement de l'affichage des matches gagnés
 //====================================================================
             $class_dom = "equipes_dom";
             $class_ext = "equipes_ext";
@@ -1716,7 +1717,7 @@ function affich_matches_equipe($id_equipe, $compet)
             }
 
 //====================================================================
-//Traitement de l'affichage des matches reportï¿½s
+//Traitement de l'affichage des matches reportés
 //====================================================================
 
             $class_report = "date";
@@ -1725,7 +1726,7 @@ function affich_matches_equipe($id_equipe, $compet)
             }
 
 //====================================================================
-// Traitement des feuilles de matches certifiï¿½es
+// Traitement des feuilles de matches certifiées
 //====================================================================
             if ($certif == '1') {
                 $certif = '<img src="images/certif.gif" title="Feuille de match reçue et certifiée" />';
@@ -1734,7 +1735,7 @@ function affich_matches_equipe($id_equipe, $compet)
             }
 
 //====================================================================
-// Traitement des liens http vers feuille de match des ï¿½quipes
+// Traitement des liens http vers feuille de match des équipes
 //====================================================================
             $lien_equipe_dom = '<a href="get.php?id=' . $data['id_equipe_dom'] . '" target="_blank">' . recup_nom_equipe($compet, $data['id_equipe_dom']) . '</a>';
             $lien_equipe_ext = '<a href="get.php?id=' . $data['id_equipe_ext'] . '" target="_blank">' . recup_nom_equipe($compet, $data['id_equipe_ext']) . '</a>';
@@ -1772,29 +1773,29 @@ function modif_equipe($id_equipe, $compet)
 //************************************************************************************************
 /*
  * * Fonction    : modif_equipe
- * * Input       : $id_equipe id de l'ï¿½quipe ï¿½ modifier
+ * * Input       : $id_equipe id de l'équipe à modifier
  * * Output      : aucun 
- * * Description : Modifie les informations d'une ï¿½quipe
+ * * Description : Modifie les informations d'une équipe
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 04/05/2010 
  */ {
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
-// Affectation ï¿½ une variable de l'ID de l'ï¿½quipe
+// Affectation à une variable de l'ID de l'équipe
     $id_equipe = $_SESSION['id_equipe'];
     $nom_equipe = recup_nom_equipe($id_equipe, $compet);
 
-// On crï¿½e le dï¿½but du formulaire
+// On crée le début du formulaire
     echo'  <form id="modif_equipe" action="includes/traitement.php?a=me" method="post">';
     echo'    <h1>Modification de l\'équipe ' . $nom_equipe . '</h1>';
     echo'    <table>';
 
-// on exï¿½cute la requï¿½te
+// on exécute la requête
     $sql = 'SELECT * FROM `details_equipes`  WHERE `id_equipe` = \'' . $id_equipe . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
-//on affiche les donnï¿½es
+//on affiche les données
         echo'      <tr>';
         echo'		<td>Responsable :</td>';
         echo'		<td><input value="' . $data['responsable'] . '" name="responsable" type="text" size="50" maxlength="50" /></td>';
@@ -1847,11 +1848,11 @@ function calcul_classement($id_equipe, $compet, $division)
  * * Fonction    : calcul_classement 
  * * Input       : STRING $id_equipe,$compet, $div
  * * Output      : aucun 
- * * Description : calcule les points de l'ï¿½quipe qui dont le score vient d'ï¿½tre modifiï¿½
+ * * Description : calcule les points de l'équipe qui dont le score vient d'être modifié
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 06/05/2010 
  */ {//1
-//Connexion ï¿½ la base
+//Connexion à la base
     conn_db();
 
 //Initialisation des variables
@@ -1974,13 +1975,13 @@ function calcul_classement($id_equipe, $compet, $division)
     }
 
 // REGROUPEMENT DES RESULTATS
-    $match_gagnes = $match_gag_dom + $match_gag_ext;   // Matches gagnï¿½s 
+    $match_gagnes = $match_gag_dom + $match_gag_ext;   // Matches gagnés 
     $match_perdus = $match_per_dom + $match_per_ext;  // Matches perdus
-    $match_joues = $match_gagnes + $match_perdus;   // Matches jouï¿½s
-    $sets_marques = $sets_mar_dom + $sets_mar_ext;   // Sets marquï¿½s
-    $sets_encaisses = $sets_enc_dom + $sets_enc_ext;  // Sets encaissï¿½s
-    $difference = $sets_marques - $sets_encaisses;   // Diffï¿½rence de sets			
-    $gagnea5 = $gagnea5_dom + $gagnea5_ext;     // Matches gagnï¿½s ï¿½ 5 joueurs
+    $match_joues = $match_gagnes + $match_perdus;   // Matches joués
+    $sets_marques = $sets_mar_dom + $sets_mar_ext;   // Sets marqués
+    $sets_encaisses = $sets_enc_dom + $sets_enc_ext;  // Sets encaissés
+    $difference = $sets_marques - $sets_encaisses;   // Différence de sets			
+    $gagnea5 = $gagnea5_dom + $gagnea5_ext;     // Matches gagnés à 5 joueurs
     $forfait = $forfait_dom + $forfait_ext;     // Matches perdus par forfait
 
     $points = 3 * $match_gagnes + $match_perdus - $forfait - $gagnea5 - $penalite;
@@ -1993,13 +1994,13 @@ function calcul_classement($id_equipe, $compet, $division)
 
 
 
-// On ï¿½vite la division par 0 pour le calcul des points
+// On évite la division par 0 pour le calcul des points
     if ($pts_encaisses != 0) {
         $coeff_points = ($pts_marques / $pts_encaisses);
     } else {
         $coeff_points = $pts_marques;
     }
-// On ï¿½vite la division par 0 pour le calcul des sets
+// On évite la division par 0 pour le calcul des sets
     if ($sets_encaisses != 0) {
         $coeff_sets = ($sets_marques / $sets_encaisses);
     } else {
