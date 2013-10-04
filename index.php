@@ -10,13 +10,14 @@
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="http://cdn.sencha.com/ext/gpl/4.2.0/resources/css/ext-all.css" rel="stylesheet" />
         <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
+        <script type="text/javascript" src="js/mainMenu.js"></script>
         <script type="text/javascript" src="js/results.js"></script>
     </HEAD>
 
     <BODY>
         <div id="general">
             <div id="banniere"></div>
-            <div id="menu"><SCRIPT src="Menu.js"></SCRIPT></div>
+            <div id="menu"></div>
             <div id="contenu">
                 <?php affich_connecte(); ?>
                 <div id="titre"><H1>Accueil - UFOLEP 13 Volley</H1></div>

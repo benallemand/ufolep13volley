@@ -75,7 +75,7 @@ a:active {
           </p></TD>
        </TR>
        <TR>
-         <TD borderColor=#cccccc height=30><SCRIPT src="Menu.js"></SCRIPT></TD>
+         <TD borderColor=#cccccc height=30></TD>
        </TR>
      </TBODY>
    </TABLE>
