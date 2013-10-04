@@ -26,7 +26,7 @@
 			<div id="portail">
 			
 <?php 
-// on traite si la variable log=err est d?tect?e
+// on traite si la variable log=err est détectée
 $err = "";
 if (isset($_GET['log'])) 
   {
@@ -34,7 +34,7 @@ if (isset($_GET['log']))
   elseif ($_GET=="noauth") {$err = "Echec d'authentification - Login ou mot de passe incorrect !";}
   else {$err = "Echec d'authentification - Veuillez réessayer";}
   }
-// on traite si les sessions $_SESSION sont cr??es
+// on traite si les sessions $_SESSION sont créées
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) 
 	{
 	affich_portail_equipe($_SESSION['login']);
