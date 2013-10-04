@@ -231,7 +231,6 @@ function affich_journee($compet, $div)
     $data = mysql_fetch_assoc($req);
     $nbr_journee = $data['COUNT( DISTINCT journee )'];
     for ($i = 1; $i < $nbr_journee + 1; $i++) {    //tant que i est inférieur au nombre de journée on affiche les matches
-
 // on récupère le nommage et la valeur de la journée
         $sql = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' AND numero = \'' . $i . '\'';
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
