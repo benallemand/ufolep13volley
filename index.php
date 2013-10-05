@@ -13,6 +13,7 @@
         <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
         <script type="text/javascript" src="js/results.js"></script>
+        <script type="text/javascript" src="js/photos.js"></script>
     </HEAD>
 
     <BODY>
@@ -22,7 +23,7 @@
             <div id="contenu">
                 <?php affich_connecte(); ?>
                 <div id="titre"><H1>Accueil - UFOLEP 13 Volley</H1></div>
-                <div id="photos"><?php affiche_image(1); ?></div>
+                <div id="photos"></div>
                 <div id="news"><h1>Quelques news...</h1><?php affiche_news(); ?></div>
                 <div id="resultats"></div>
             </div>
