@@ -16,8 +16,8 @@ if ($div == "") {
         <TITLE>Championnat Féminin - UFOLEP 13 VOLLEY</TITLE>
         <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
-        <link href="http://cdn.sencha.com/ext/gpl/4.2.0/resources/css/ext-all.css" rel="stylesheet" />
-        <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
+        <link href="http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all-neptune.css" rel="stylesheet" />
+        <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
         <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
     </HEAD>
