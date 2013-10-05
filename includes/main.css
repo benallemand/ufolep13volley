@@ -1,120 +1,111 @@
 body {
-	background-color: #C9D7E5;
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	text-align: center;
-	margin:0px 0px 0px 0px;
+    background-color: #C9D7E5;
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    text-align: center;
+    margin:0px 0px 0px 0px;
 }
 
 /* ----- CALQUES STRUCTURE / COMMUNS --------------------------------------------------------------------------- */
 
 #general {
-	width: 1000px;
-	color: #3d3d3f;
-	text-align: center;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #686665;
-	border-right-color: #686665;
-	border-bottom-color: #686665;
-	border-left-color: #686665;
-	border-top-style: solid;
-	border-left-style: solid;
-	background-color: #FFFFFF;
-	margin-top: 10px;
-	margin-right: auto;
-	margin-bottom: 10px;
-	margin-left: auto;
-	
-}
-#banniere {
-	width: 1000px;
-	height: 146px;
-	margin-top: 0px;
-	margin-right: auto;
-	margin-bottom: 5px;
-	margin-left: auto;
-	background-image: url(../images/bandeau_1000x146.png);
+    width: 1000px;
+    color: #3d3d3f;
+    text-align: center;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #686665;
+    border-right-color: #686665;
+    border-bottom-color: #686665;
+    border-left-color: #686665;
+    border-top-style: solid;
+    border-left-style: solid;
+    background-color: #FFFFFF;
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 10px;
+    margin-left: auto;
+
 }
 #contenu {
-	font-size: 12px;
-	width: 1000px;
-	background-color: #FFFFFF;
-	margin:0 auto;
+    font-size: 12px;
+    width: 1000px;
+    background-color: #FFFFFF;
+    margin:0 auto;
 }
 #contenu .H1 {
-	font-size: 14px;
-	border-top-width: 1px;
-	border-bottom-width: 1px;
-	border-top-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #CCCCCC;
-	border-bottom-color: #999999;
-	text-align: left;
-	text-indent: 50px;
-	color: #0099CC;
-	font-family: Arial, Helvetica, sans-serif;
-	font-variant: small-caps;
-	font-weight: bold;
+    font-size: 14px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #CCCCCC;
+    border-bottom-color: #999999;
+    text-align: left;
+    text-indent: 50px;
+    color: #0099CC;
+    font-family: Arial, Helvetica, sans-serif;
+    font-variant: small-caps;
+    font-weight: bold;
 }
 
 #menu {
-	width: 1000px;
-	height: 60px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	text-align: left;
+    width: 1000px;
+    height: 60px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: left;
 }
 #bottom {
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #CCCCCC;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	border-bottom-width: 1px;
-	border-bottom-color: #CCCCCC;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #CCCCCC;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: #CCCCCC;
 }
 #bottom li{
-	display: inline;
+    display: inline;
 }
 #bottom span{
-	padding-left: 10px;
+    padding-left: 10px;
 }
 #deconn {
-	padding-right: 30px;
-	margin-bottom: 10px;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #FF0000;
-	padding-bottom: 10px;
+    padding-right: 30px;
+    margin-bottom: 10px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #FF0000;
+    padding-bottom: 10px;
 }
 #deconn ul {
-	text-align: left;
+    text-align: left;
 }
 #deconn li.admin{
-	list-style-image: none;
-	margin-right: 10px;
-	margin-left: 10px;
-	display: block;
-	text-align: right;
-	float: right;
+    list-style-image: none;
+    margin-right: 10px;
+    margin-left: 10px;
+    display: block;
+    text-align: right;
+    float: right;
 }
 #deconn li {
-	list-style-image: none;
-	margin-right: 10px;
-	margin-left: 10px;
-	text-align: left;
-	display: block;
-	font-size: 10px;
+    list-style-image: none;
+    margin-right: 10px;
+    margin-left: 10px;
+    text-align: left;
+    display: block;
+    font-size: 10px;
 }
 #deconn li .grouge{
-	font-weight: bold;
-	color: #FF0000;
+    font-weight: bold;
+    color: #FF0000;
 }
 #flux {clear: both;}
 
@@ -122,71 +113,71 @@ img {border-style: none}
 /* ----- CALQUE CHANGE --------------------------------------------------------------------------- */
 
 #change_g {
-	color: #3d3d3f;
-	text-align: center;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #686665;
-	border-right-color: #686665;
-	border-bottom-color: #686665;
-	border-left-color: #686665;
-	border-top-style: solid;
-	border-left-style: solid;
-	background-color: #FFFFFF;
-	margin-top: 10px;
-	margin-right: auto;
-	margin-bottom: 10px;
-	margin-left: auto;
+    color: #3d3d3f;
+    text-align: center;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #686665;
+    border-right-color: #686665;
+    border-bottom-color: #686665;
+    border-left-color: #686665;
+    border-top-style: solid;
+    border-left-style: solid;
+    background-color: #FFFFFF;
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 10px;
+    margin-left: auto;
 }
 #change_c {
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	margin-bottom: 20px;
-	border-top-width: thin;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #CCCCCC;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    margin-bottom: 20px;
+    border-top-width: thin;
+    border-right-width: thin;
+    border-bottom-width: thin;
+    border-left-width: thin;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
+    border-left-color: #CCCCCC;
 }
 
 #change_c h1 {
-	padding: 0;
-	background-color: #f7f7f7;
-	font-size: 14px;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
-	margin-top: 0;
-	margin-right: 0;
-	margin-bottom: 0;
-	margin-left: 0;
-	border-top-style: solid;
+    padding: 0;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    border-top-style: solid;
 }
 #change_c p {
-	text-align: center;
-	font-size: 12px;
+    text-align: center;
+    font-size: 12px;
 }
 #change_c span .submit {
-	background-color: #F0F0F0;
-	font-size: 12px;
+    background-color: #F0F0F0;
+    font-size: 12px;
 }
 
 /* ----- CALQUE DETAILS_EQUIPE---------------------------------------------------------------------------- */
@@ -194,751 +185,751 @@ img {border-style: none}
 #details_equipe {
 }
 #details_equipe .photo_equipe {
-	float: right;
-	padding: 5px;
-	background-color: #f7f7f7;
-	border: 1px solid #CCCCCC;
-	margin-right: 10px;	
-	margin-top: 30px;
+    float: right;
+    padding: 5px;
+    background-color: #f7f7f7;
+    border: 1px solid #CCCCCC;
+    margin-right: 10px;	
+    margin-top: 30px;
 }
 #details_equipe .details_equipe {
-	text-align: left;
-	font-size: 12px;
-	padding-left: 10px;
-	height: 250px;
+    text-align: left;
+    font-size: 12px;
+    padding-left: 10px;
+    height: 250px;
 }
 #details_equipe .titre_details {
-	font-size: 12px;
-	font-weight: bold;
-	font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #details_equipe .datas_details {
-	font-size: 12px;
-	font-family: Arial, Helvetica, sans-serif;
-	padding-left: 30px;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-left: 30px;
 }
 #details_equipe p {
-	text-align: center;
-	font-size: 12px;
+    text-align: center;
+    font-size: 12px;
 }
 #details_equipe span {
-	background-color: #F0F0F0;
-	font-family: Arial, Helvetica, sans-serif;
-	padding-right: 10px;
-	padding-left: 10px;
+    background-color: #F0F0F0;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-right: 10px;
+    padding-left: 10px;
 }
 #details_equipe A:link, A:visited, A:active {
-	text-decoration: none;
+    text-decoration: none;
 }
 #details_equipe A:hover {
-	text-decoration: overline underline;
-	color:#FF0000;
+    text-decoration: overline underline;
+    color:#FF0000;
 }
 
 /* ----- CALQUE TITRE---------------------------------------------------------------------------- */
 #titre {
-	background-image: url(../images/bandeau_titre_1000x30.png);
-	width: 1000px;
-	text-align: left;
-	background-repeat: no-repeat;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	height: 30px;
+    background-image: url(../images/bandeau_titre_1000x30.png);
+    width: 1000px;
+    text-align: left;
+    background-repeat: no-repeat;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 30px;
 }
 #titre h1 {
-	font-size: 16px;
-	text-indent: 60px;
-	font-family: Arial, Helvetica, sans-serif;
-	color: #0099CC;
+    font-size: 16px;
+    text-indent: 60px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #0099CC;
 }
 
 /* ----- CALQUE NEWS ---------------------------------------------------------------------------- */
 
 #news {
-	width: 600px;
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	border: thin solid #CCCCCC;
-	margin-bottom: 20px;
-	margin-left: 10px;
+    width: 600px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: thin solid #CCCCCC;
+    margin-bottom: 20px;
+    margin-left: 10px;
 }
 #news h1 {
-	background-color: #f7f7f7;
-	font-size: 15px;
-	padding: 0;
-	margin: 0;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
+    background-color: #f7f7f7;
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
 }
 #news .date {
-	margin-right: 20px;
+    margin-right: 20px;
 }
 #news li {
-	list-style-image: url(../images/puce.gif);
-	margin-left: 50px;
-	line-height: 150%;
-	border: 1px solid #FFFFFF;
+    list-style-image: url(../images/puce.gif);
+    margin-left: 50px;
+    line-height: 150%;
+    border: 1px solid #FFFFFF;
 }
 #news input,textarea {
-	font-size: 12px;
-	font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 #news label {
-	font-size: 12px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-weight: bold;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
 }
 
 #news a {
-	float: right;
+    float: right;
 }
 #news .titre_news {
-	float: none;
+    float: none;
 }
 
 #news p {
-	border: 1px solid #999999;
-	background-color: #F0F0F0;
-	padding-top: 5px;
-	padding-right: 5px;
-	padding-bottom: 5px;
-	padding-left: 5px;
-	margin-right: 10px;
+    border: 1px solid #999999;
+    background-color: #F0F0F0;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    margin-right: 10px;
 }
 #news .submit {
-	background-color: #F0F0F0;
-	font-size: 12px;
-	margin-top: 5px;
-	margin-left: 400px;
+    background-color: #F0F0F0;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-left: 400px;
 }
 
 
 /* ----- CALQUE DERNIERS RESULTATS ---------------------------------------------------------------------------- */
 
 #resultats {
-	width: 600px;
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	border: thin solid #CCCCCC;
-	margin-bottom: 20px;
-	margin-left: 10px;
+    width: 600px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: thin solid #CCCCCC;
+    margin-bottom: 20px;
+    margin-left: 10px;
 }
 #resultats h1 {
-	background-color: #f7f7f7;
-	font-size: 15px;
-	padding: 0;
-	margin: 0;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 20px;
+    background-color: #f7f7f7;
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 20px;
 }
 #resultats ul {
-	margin-left: 20px;
+    margin-left: 20px;
 }
 #resultats li {
-	list-style-image: url(../images/puce.gif);
-	text-indent: 20px;
+    list-style-image: url(../images/puce.gif);
+    text-indent: 20px;
 }
 
 
 /* ----- CALQUE PHOTOS ---------------------------------------------------------------------------- */
 
 #photos {
-	float:right;
-	text-align: left;
-	margin-right: 30px;
-	border: thin solid #CCCCCC;
-	padding: 10px;
+    float:right;
+    text-align: left;
+    margin-right: 30px;
+    border: thin solid #CCCCCC;
+    padding: 10px;
 }
 /* ----- CALQUE RESULTATS---------------------------------------------------------------------------- */
 #resultats {
-	height: 50px;
+    height: 50px;
 }
 
 /* ----- CALQUE CLASSEMENT---------------------------------------------------------------------------- */
 #classement {
-	width: 1000px;
-	font-family: Arial, Helvetica, sans-serif;
-	margin-bottom: 20px;
+    width: 1000px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 20px;
 }
 
 #classement table{
-	border-collapse: collapse;
-	width: 100%;
+    border-collapse: collapse;
+    width: 100%;
 }
 #classement th {
-	border: thin solid #FFFFFF;
-	font-size: 12px;
-	color: #FFFFFF;
-	background-color: #0099CC;
+    border: thin solid #FFFFFF;
+    font-size: 12px;
+    color: #FFFFFF;
+    background-color: #0099CC;
 }
 #classement td {
-	border: thin solid #0099CC;
-	font-size: 12px;
-	text-align: center;
+    border: thin solid #0099CC;
+    font-size: 12px;
+    text-align: center;
 }
 #classement .equipes {
-	width: 200px;
+    width: 200px;
 }
 #classement .points {
-	font-weight: bold;
-	color: #FF0000;
+    font-weight: bold;
+    color: #FF0000;
 }
 #classement span.del_equipe, span.pen_equipe {
-	padding-left: 10px;
+    padding-left: 10px;
 }
 #classement td.admin_page {
-	font-weight: bold;
-	background-color: #F0F0F0;
+    font-weight: bold;
+    background-color: #F0F0F0;
 }
 #classement ul {
-	text-align: left;
-	padding-left: 80px;
+    text-align: left;
+    padding-left: 80px;
 }
 #classement li {
-	display: inline;
-	margin-right: 20px;
+    display: inline;
+    margin-right: 20px;
 }
 #classement .lien:hover {
-	text-decoration: overline underline;
-	color:#FF0000;
+    text-decoration: overline underline;
+    color:#FF0000;
 }
 #classement .lien:link, .lien:visited, .lien:active {
-	text-decoration: none;
-	background-color: #F0F0F0;
-	padding: 5px;
-	border: 1px solid #CCCCCC;
+    text-decoration: none;
+    background-color: #F0F0F0;
+    padding: 5px;
+    border: 1px solid #CCCCCC;
 }
 
 
 /* ----- CALQUE MATCHES ---------------------------------------------------------------------------- */
 
 #matches {
-	text-align: center;
-	width: 1000px;
-	font-family: Arial, Helvetica, sans-serif;
-	margin-bottom: 20px;
+    text-align: center;
+    width: 1000px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 20px;
 }
 #matches table{
-	border-collapse: collapse;
-	margin-top: 0px;
-	margin-right: auto;
-	margin-bottom: 0px;
-	margin-left: auto;
+    border-collapse: collapse;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
 }
 #matches td {
-	text-align: left;
-	color: #000000;
-	font-size: 12px;
+    text-align: left;
+    color: #000000;
+    font-size: 12px;
 }
 #matches H1 {
-	text-align: left;
-	color: #FFFFFF;
-	background-color: #0099CC;
-	text-indent: 50px;
-	font-size: 12px;
+    text-align: left;
+    color: #FFFFFF;
+    background-color: #0099CC;
+    text-indent: 50px;
+    font-size: 12px;
 }
 #matches .score {
-	text-align: center;
-	width: 20px;
+    text-align: center;
+    width: 20px;
 }
 #matches .equipes_dom {
-	text-align: right;
-	width: 120px;
-	padding-right: 20px;
+    text-align: right;
+    width: 120px;
+    padding-right: 20px;
 }
 #matches .equipes_dom_gagne {
-	text-align: right;
-	width: 120px;
-	padding-right: 20px;
-	font-weight: bold;
-	color: #990000;
+    text-align: right;
+    width: 120px;
+    padding-right: 20px;
+    font-weight: bold;
+    color: #990000;
 }
 #matches .equipes_ext {
-	text-align: left;
-	width: 120px;
-	padding-left: 20px;
+    text-align: left;
+    width: 120px;
+    padding-left: 20px;
 }
 #matches .equipes_ext_gagne {
-	text-align: left;
-	width: 120px;
-	padding-left: 20px;
-	font-weight: bold;
-	color: #990000;
+    text-align: left;
+    width: 120px;
+    padding-left: 20px;
+    font-weight: bold;
+    color: #990000;
 }
 #matches .sets {
-	text-align: center;
-	width: 40px;
+    text-align: center;
+    width: 40px;
 }
 #matches .date {
-	text-align: center;
-	width: 80px;
+    text-align: center;
+    width: 80px;
 }
 #matches .date_report {
-	text-align: center;
-	width: 80px;
-	color: #FF6600;
-	font-weight: bold;
+    text-align: center;
+    width: 80px;
+    color: #FF6600;
+    font-weight: bold;
 }
 #matches .heure {
-	text-align: center;
-	width: 80px;
+    text-align: center;
+    width: 80px;
 }
 #matches .code_match {
-	text-align: center;
-	width: 80px;
+    text-align: center;
+    width: 80px;
 }
 #matches ul {
-	text-align: left;
-	padding-left: 80px;
+    text-align: left;
+    padding-left: 80px;
 }
 #matches li {
-	display: inline;
+    display: inline;
 }
 #matches .lien:hover {
-	text-decoration: overline underline;
-	color:#FF0000;
-	font-weight: bold;
+    text-decoration: overline underline;
+    color:#FF0000;
+    font-weight: bold;
 }
 #matches .lien:link, .lien:visited, .lien:active {
-	text-decoration: none;
-	background-color: #F0F0F0;
-	padding: 5px;
-	border: 1px solid #CCCCCC;
-	font-weight: bold;
+    text-decoration: none;
+    background-color: #F0F0F0;
+    padding: 5px;
+    border: 1px solid #CCCCCC;
+    font-weight: bold;
 }
 #matches table.admin {
-	background-color: #F0F0F0;
-	border: 1px solid #CCCCCC;
+    background-color: #F0F0F0;
+    border: 1px solid #CCCCCC;
 }
 #matches td.w80 {
-	display:table-cell;
-	width: 80px;
-	text-align: center;
-	font-weight: bold;
+    display:table-cell;
+    width: 80px;
+    text-align: center;
+    font-weight: bold;
 }
 #matches tr.admin {
-	line-height:150%;
+    line-height:150%;
 }
 #matches td.w150 {
-	display:table-cell;
-	width: 150px;
-	text-align: center;
-	font-weight: bold;
+    display:table-cell;
+    width: 150px;
+    text-align: center;
+    font-weight: bold;
 }
 #matches .submit {
-	background-color: #F0F0F0;
-	font-size: 12px;
-	margin-top: 10px;
+    background-color: #F0F0F0;
+    font-size: 12px;
+    margin-top: 10px;
 }
 
 
 /* ----- CALQUE DOCUMENTS ---------------------------------------------------------------------------- */
 
 #documents {
-	font-family: Arial, Helvetica, sans-serif;
-	float:right;
-	width: 480px;
-	text-align: left;
-	margin-right: 10px;
-	border: thin solid #CCCCCC;
+    font-family: Arial, Helvetica, sans-serif;
+    float:right;
+    width: 480px;
+    text-align: left;
+    margin-right: 10px;
+    border: thin solid #CCCCCC;
 }
 #documents h1 {
-	background-color: #f7f7f7;
-	font-size: 14px;
-	padding: 0;
-	margin: 0;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
 }
 #documents .date {
-	margin-right: 20px;
+    margin-right: 20px;
 }
 #documents li {
-	list-style-image: url(../images/puce.gif);
-	margin-left: 50px;
-	line-height: 150%;
+    list-style-image: url(../images/puce.gif);
+    margin-left: 50px;
+    line-height: 150%;
 }
 
 /* ----- CALQUE ARCHIVES ---------------------------------------------------------------------------- */
 
 #archives {
-	width: 480px;
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	border: thin solid #CCCCCC;
-	margin-bottom: 20px;
-	margin-left: 10px;
+    width: 480px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: thin solid #CCCCCC;
+    margin-bottom: 20px;
+    margin-left: 10px;
 }
 #archives h1 {
-	background-color: #f7f7f7;
-	font-size: 14px;
-	padding: 0;
-	margin: 0;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
 }
 #archives li {
-	list-style-image: url(../images/puce.gif);
-	margin-left: 50px;
-	line-height: 150%;
+    list-style-image: url(../images/puce.gif);
+    margin-left: 50px;
+    line-height: 150%;
 }
 /* ----- CALQUE COMMISSION ---------------------------------------------------------------------------- */
 
 #commission {
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	border: thin solid #CCCCCC;
-	margin-bottom: 20px;
-	margin-left: 10px;
-	margin-right: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: thin solid #CCCCCC;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 #commission h1 {
-	background-color: #f7f7f7;
-	font-size: 14px;
-	padding: 0;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
-	margin-top: 0;
-	margin-right: 0;
-	margin-bottom: 0;
-	margin-left: 0;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    padding: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
 }
 #commission li {
-	list-style-image: url(../images/puce.gif);
-	margin-left: 50px;
-	line-height: 150%;
+    list-style-image: url(../images/puce.gif);
+    margin-left: 50px;
+    line-height: 150%;
 }
 #commission .details {
-	width: 470px;
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	border: thin solid #CCCCCC;
-	margin-bottom: 20px;
-	margin-left: 10px;
-	margin-top: 20px;
+    width: 470px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: thin solid #CCCCCC;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-top: 20px;
 }
 #commission .photo {
-	float: right;
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	padding: 5px;
-	background-color: #f7f7f7;
-	border: 1px solid #CCCCCC;
-	margin-right: 350px;
-	margin-top: 20px;
+    float: right;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    padding: 5px;
+    background-color: #f7f7f7;
+    border: 1px solid #CCCCCC;
+    margin-right: 350px;
+    margin-top: 20px;
 }
 #commission .fonction {
-	font-weight: bold;
+    font-weight: bold;
 }
 #commission .membre {
-	border: 1px solid #FFFFFF;
+    border: 1px solid #FFFFFF;
 }
 
 
 /* ----- CALQUE ANNUAIRE ---------------------------------------------------------------------------- */
 
 #annuaire {
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	margin-bottom: 20px;
-	margin-left: 10px;
-	margin-right: 10px;
-	border-top-width: thin;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #CCCCCC;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-width: thin;
+    border-right-width: thin;
+    border-bottom-width: thin;
+    border-left-width: thin;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
+    border-left-color: #CCCCCC;
 }
 #annuaire h1 {
-	padding: 0;
-	background-color: #f7f7f7;
-	font-size: 14px;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 30px;
-	margin-top: 0;
-	margin-right: 0;
-	margin-bottom: 0;
-	margin-left: 0;
-	border-top-style: solid;
+    padding: 0;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 30px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    border-top-style: solid;
 }
 #annuaire h2 {
-	font-size: 14px;
-	text-align: center;
-	background-color: #f7f7f7;
-	margin-left: 10px;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #CCCCCC;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
-	line-height: 20px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f7f7f7;
+    margin-left: 10px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
+    border-left-color: #CCCCCC;
+    line-height: 20px;
 }
 #annuaire li {
-	line-height: 150%;
-	list-style-type: none;
+    line-height: 150%;
+    list-style-type: none;
 }
 #annuaire .float {
-	float: left;
-	width: 15%;
-	margin: 10px 0;
+    float: left;
+    width: 15%;
+    margin: 10px 0;
 }
 #annuaire .competition {
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
 }
 #annuaire table {
-	margin-left: 50px;
-	height: 250px;
-	margin-top: 10px;
+    margin-left: 50px;
+    height: 250px;
+    margin-top: 10px;
 }
 #annuaire tr {
-	line-height: 130%;
+    line-height: 130%;
 }
 
 /* ----- CALQUE PORTAIL ---------------------------------------------------------------------------- */
 
 #portail {
-	font-family: Arial, Helvetica, sans-serif;
-	text-align: left;
-	margin-bottom: 20px;
-	margin-left: 10px;
-	margin-right: 10px;
-	border-top-width: thin;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #CCCCCC;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-width: thin;
+    border-right-width: thin;
+    border-bottom-width: thin;
+    border-left-width: thin;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
+    border-left-color: #CCCCCC;
 }
 #portail h1 {
-	padding: 0;
-	background-color: #f7f7f7;
-	font-size: 14px;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-bottom-style: solid;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	line-height: 130%;
-	text-indent: 10px;
-	margin-top: 0;
-	margin-right: 0;
-	margin-bottom: 0;
-	margin-left: 0;
-	border-top-style: solid;
+    padding: 0;
+    background-color: #f7f7f7;
+    font-size: 14px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    line-height: 130%;
+    text-indent: 10px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    border-top-style: solid;
 }
 
 #portail #login {
-	width: 250px;
-	margin-top: 20px;
-	margin-left: 300px;
+    width: 250px;
+    margin-top: 20px;
+    margin-left: 300px;
 }
 
 #portail #login-first span{
-	text-align: left;
+    text-align: left;
 }	
 #portail #login-first .input-mini {
-	float: right;
+    float: right;
 }
 #portail #login-second {
-	text-align: center;
-	margin-top: 30px;
+    text-align: center;
+    margin-top: 30px;
 }
 
 #portail #login-second input {
-	background-color: #0099CC;
-	color: #FFFFFF;
+    background-color: #0099CC;
+    color: #FFFFFF;
 }
 #portail .liste_matches {
-	text-align: center;
-	margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 #portail table {
-	border-collapse: collapse;
-	font-size: 12px;
-	margin-top: 10px;
-	margin-right: auto;
-	margin-left: auto;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 10px;
+    margin-right: auto;
+    margin-left: auto;
 }
 #portail table th{
-	text-align: center;
-	font-size: 12px;
-	font-weight: bold;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-left-color: #0099CC;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-left-color: #0099CC;
 }
 #portail tr.tr_130{
-	line-height: 25px;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #CCCCCC;
+    line-height: 25px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #CCCCCC;
 }
 #portail h2 {
-	text-align: left;
-	text-indent: 30px;
-	font-size: 12px;
-	border-top-width: 1px;
-	border-bottom-width: 1px;
-	border-top-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	margin-top: 20px;
-	color: #000000;
-	background-color: #F0F0F0;
+    text-align: left;
+    text-indent: 30px;
+    font-size: 12px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-top-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
+    margin-top: 20px;
+    color: #000000;
+    background-color: #F0F0F0;
 }
 #portail td.date_report {
-	text-align: center;
-	width: 80px;
-	color: #FF6600;
-	font-weight: bold;
-	border: 1px solid #000000;
+    text-align: center;
+    width: 80px;
+    color: #FF6600;
+    font-weight: bold;
+    border: 1px solid #000000;
 }
 #portail td.date, td.heure, td.code_match{
-	text-align: center;
-	width: 80px;
+    text-align: center;
+    width: 80px;
 }
 #portail td.equipes_dom {
-	text-align: right;
-	width: 120px;
-	padding-right: 20px;
+    text-align: right;
+    width: 120px;
+    padding-right: 20px;
 }
 #portail td.equipes_dom_gagne {
-	text-align: right;
-	width: 120px;
-	padding-right: 20px;
-	font-weight: bold;
-	color: #990000;
+    text-align: right;
+    width: 120px;
+    padding-right: 20px;
+    font-weight: bold;
+    color: #990000;
 }
 #portail td.score {
-	text-align: center;
-	width: 20px;
+    text-align: center;
+    width: 20px;
 }
 #portail td.equipes_ext {
-	text-align: left;
-	width: 120px;
-	padding-left: 20px;
+    text-align: left;
+    width: 120px;
+    padding-left: 20px;
 }
 #portail td.equipes_ext_gagne {
-	text-align: left;
-	width: 120px;
-	padding-left: 20px;
-	font-weight: bold;
-	color: #990000;
+    text-align: left;
+    width: 120px;
+    padding-left: 20px;
+    font-weight: bold;
+    color: #990000;
 }
 #portail td.sets {
-	text-align: center;
-	width: 40px
+    text-align: center;
+    width: 40px
 }
 #portail td.certif {
-	text-align: center;
-	width: 40px
+    text-align: center;
+    width: 40px
 }
 #portail #modif_equipe {
-	text-align: center;
-	margin-bottom: 10px;
+    text-align: center;
+    margin-bottom: 10px;
 }
 #portail img {
-	border-style: none;
+    border-style: none;
 }
 #portail input {
-	text-align:center;
+    text-align:center;
 }
 #portail .table_modif_score {
-	width: 80%;
-	background-color: #CCCCCC;
-	border: 1px solid #000000;
-	margin-top: 20px;
-	margin-bottom: 20px;
+    width: 80%;
+    background-color: #CCCCCC;
+    border: 1px solid #000000;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 #portail .table_modif_score tr{
-	text-align: center;
+    text-align: center;
 }
 
 #portail .modif_score_gras {
-	font-weight: bold;
-	text-align: center;
+    font-weight: bold;
+    text-align: center;
 }
 #portail .champ_modif_score {
-	text-align: center;
+    text-align: center;
 }
 #portail .table_modif_score .submit {
-	background-color: #F0F0F0;
-	font-size: 12px;
+    background-color: #F0F0F0;
+    font-size: 12px;
 }

@@ -10,6 +10,7 @@
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="http://cdn.sencha.com/ext/gpl/4.2.0/resources/css/ext-all.css" rel="stylesheet" />
         <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
+        <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
 
         <SCRIPT language="javascript">

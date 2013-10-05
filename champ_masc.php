@@ -18,6 +18,7 @@ if ($div == "") {
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="http://cdn.sencha.com/ext/gpl/4.2.0/resources/css/ext-all.css" rel="stylesheet" />
         <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
+        <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
     </HEAD>
 
@@ -27,11 +28,12 @@ if ($div == "") {
             <div id="menu"></div>
             <div id="contenu">
                 <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Masculin</H1></div>
-                    <?php affich_connecte(); ?>
+                <?php affich_connecte(); ?>
                 <div id="classement"><?php affich_classement("m", $div); ?></div>
                 <div id="infos">
-                <?php echo "Date limite des matches : ";
-                affich_infos("m", $div); ?>
+                    <?php echo "Date limite des matches : ";
+                    affich_infos("m", $div);
+                    ?>
                 </div> 
                 <div id="matches"><?php affich_journee("m", $div); ?></div>
 <?php affich_admin_site(); ?> 
