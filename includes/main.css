@@ -53,13 +53,6 @@ body {
     font-weight: bold;
 }
 
-#menu {
-    width: 1000px;
-    height: 60px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    text-align: left;
-}
 #bottom {
     border-top-width: 1px;
     border-top-style: solid;
@@ -313,43 +306,6 @@ img {border-style: none}
     margin-left: 400px;
 }
 
-
-/* ----- CALQUE DERNIERS RESULTATS ---------------------------------------------------------------------------- */
-
-#resultats {
-    width: 600px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: left;
-    border: thin solid #CCCCCC;
-    margin-bottom: 20px;
-    margin-left: 10px;
-}
-#resultats h1 {
-    background-color: #f7f7f7;
-    font-size: 15px;
-    padding: 0;
-    margin: 0;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-bottom-style: solid;
-    border-top-color: #999999;
-    border-right-color: #999999;
-    border-bottom-color: #999999;
-    border-left-color: #999999;
-    line-height: 130%;
-    text-indent: 20px;
-}
-#resultats ul {
-    margin-left: 20px;
-}
-#resultats li {
-    list-style-image: url(../images/puce.gif);
-    text-indent: 20px;
-}
-
-
 /* ----- CALQUE PHOTOS ---------------------------------------------------------------------------- */
 
 #photos {
@@ -358,10 +314,6 @@ img {border-style: none}
     margin-right: 30px;
     border: thin solid #CCCCCC;
     padding: 10px;
-}
-/* ----- CALQUE RESULTATS---------------------------------------------------------------------------- */
-#resultats {
-    height: 50px;
 }
 
 /* ----- CALQUE CLASSEMENT---------------------------------------------------------------------------- */
