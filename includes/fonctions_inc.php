@@ -15,7 +15,9 @@ function conn_db()
  * * Date        : 18/04/2010
  */ {
 //Déclaration des constantes
-    if ($_SERVER['SERVER_NAME'] === 'localhost') {
+    if (($_SERVER['SERVER_NAME'] === 'localhost') ||
+            ($_SERVER['SERVER_NAME'] === '192.168.0.4') ||
+            ($_SERVER['SERVER_NAME'] === '82.228.19.67')) {
         $server = "localhost";
         $user = "root";
         $password = "admin";
