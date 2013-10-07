@@ -14,7 +14,7 @@ Ext.onReady(function() {
                 layout: 'fit',
                 items: {
                     xtype: 'grid',
-                    forceFit: true,
+                    autoScroll: true,
                     plugins: [
                         Ext.create('Ext.ux.ColumnAutoWidthPlugin', {})
                     ],
