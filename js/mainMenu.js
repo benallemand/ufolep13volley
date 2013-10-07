@@ -132,13 +132,10 @@ Ext.onReady(function() {
             {
                 text: 'Documents',
                 menu: [
+                    {text: 'Infos Utiles', handler: function() {
+                            window.open('infos_utiles/index.html', '_blank');
+                        }},
                     {text: 'A Télécharger', handler: function() {
-                            window.open('docs.php', '_self', false);
-                        }},
-                    {text: 'Informations Essentielles', handler: function() {
-                            window.open('docs.php', '_self', false);
-                        }},
-                    {text: 'Archives', handler: function() {
                             window.open('docs.php', '_self', false);
                         }}
                 ]
