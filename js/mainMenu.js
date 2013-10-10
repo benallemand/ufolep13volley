@@ -137,7 +137,26 @@ Ext.onReady(function() {
                         }},
                     {text: 'A Télécharger', handler: function() {
                             window.open('docs.php', '_self', false);
-                        }}
+                        }},
+                    {
+                        text: 'Agenda',
+                        handler: function() {
+                            Ext.create('Ext.window.Window', {
+                                title: 'Agenda',
+                                maximizable: true,
+                                height: 650,
+                                width: 900,
+                                layout: 'fit',
+                                items: [
+                                    {
+                                        xtype: 'panel',
+                                        autoScroll: true,
+                                        html: '<iframe src="https://www.google.com/calendar/embed?title=Calendrier%20des%20comp%C3%A9titions%20UFOLEP%2013%20Volley-Ball&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;height=600&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=05otpt1qjnn3s2f0m5ejmkmkgk%40group.calendar.google.com&amp;color=%23875509&amp;src=2bm73rmo3317odnv2t1a6j1g6k%40group.calendar.google.com&amp;color=%235229A3&amp;ctz=Europe%2FParis" style=" border-width:0 " width="800" height="600" frameborder="0" scrolling="no"></iframe>'
+                                    }
+                                ]
+                            }).show();
+                        }
+                    }
                 ]
             },
             {
