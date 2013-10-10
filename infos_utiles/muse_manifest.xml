@@ -1,7 +1,7 @@
 <manifest alg="2" build="751" opt="true" iceEnabled="true">
   <folder name="css">
     <file name="site_global.css" crc="4248115021"/>
-    <file name="index.css" crc="4198631284" ref="index"/>
+    <file name="index.css" crc="3860347691" ref="index"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="3828297711" ref="index"/>
@@ -14,5 +14,5 @@
     <file name="ufolep13volley2.jpg" crc="68825046" ref="index"/>
     <file name="jeuavantenjeu.jpg" crc="246764389" ref="index"/>
   </folder>
-  <file name="index.html" crc="3973083052" mt="1378298570596"/>
+  <file name="index.html" crc="450612693" mt="1381411686160"/>
 </manifest>
