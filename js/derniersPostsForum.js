@@ -29,20 +29,6 @@ Ext.onReady(function() {
                 dataIndex: 'pubdate',
                 xtype: 'datecolumn',
                 format: 'd/m/Y h:i'
-            },
-            {
-                xtype: 'actioncolumn',
-                flex: 1,
-                items: [
-                    {
-                        icon: 'images/file.gif',
-                        tooltip: 'Voir',
-                        handler: function(grid, rowIndex, colIndex) {
-                            var rec = grid.getStore().getAt(rowIndex);
-                            Ext.Msg.alert(rec.get('title'), rec.get('description'));
-                        }
-                    }
-                ]
             }
         ],
         store: Ext.create('Ext.data.Store', {
