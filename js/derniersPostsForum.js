@@ -26,7 +26,9 @@ Ext.onReady(function() {
             {
                 header: 'Date',
                 flex: 3,
-                dataIndex: 'pubdate'
+                dataIndex: 'pubdate',
+                xtype: 'datecolumn',
+                format: 'd/m/Y h:i'
             },
             {
                 xtype: 'actioncolumn',
@@ -48,7 +50,10 @@ Ext.onReady(function() {
                 'title',
                 'creator',
                 'category',
-                'pubdate',
+                {
+                    name: 'pubdate',
+                    type: 'date'
+                },
                 'description',
                 'guid'
             ],
@@ -60,6 +65,11 @@ Ext.onReady(function() {
                     root: 'results'
                 }
             },
+            filters: [
+                function(item) {
+                    return item.get('pubdate') > Date.parse('01/01/2013');
+                }
+            ],
             autoLoad: true
         })
     });
