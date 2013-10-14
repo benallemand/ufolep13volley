@@ -38,7 +38,7 @@ function deleteNews() {
     $message = '';
     $dataJson = file_get_contents('php://input');
     $dataArray = json_decode($dataJson);
-    $sql = "DELETE news
+    $sql = "DELETE FROM news
             WHERE id_news = $dataArray->id_news";
     $success = mysql_query($sql);
     if ($success) {
