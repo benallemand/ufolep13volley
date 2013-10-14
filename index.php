@@ -12,15 +12,10 @@
         <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
         <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
-
-        <script type="text/javascript" src="js/results.js"></script>
+        <script type="text/javascript" src="js/news.js"></script>
         <script type="text/javascript" src="js/photos.js"></script>
+        <script type="text/javascript" src="js/results.js"></script>
         <script type="text/javascript" src="js/derniersPostsForum.js"></script>
-
-        <!--
-        <script type="text/javascript" src="js/accueil.js"></script>
-        -->
-
     </HEAD>
 
     <BODY>
@@ -36,7 +31,7 @@
                 -->
 
                 <div id="photos"></div>
-                <div id="news"><h1>Quelques news...</h1><?php affiche_news(); ?></div>
+                <div id="news"></div>
                 <div id="resultats"></div>
                 <div id="lastposts"></div>
             </div>
