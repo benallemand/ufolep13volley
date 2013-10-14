@@ -71,6 +71,7 @@ Ext.onReady(function() {
         dockedItems: [
             {
                 xtype: 'toolbar',
+                hidden: true,
                 dock: 'top',
                 defaults: {
                     scale: 'medium'
@@ -79,7 +80,6 @@ Ext.onReady(function() {
                     {
                         icon: 'images/ajout.gif',
                         text: 'Ajouter',
-                        hidden: true,
                         tooltip: 'Ajouter',
                         handler: function(button) {
                             //button.up('grid').getStore().insert(0, record);
@@ -88,7 +88,6 @@ Ext.onReady(function() {
                     {
                         icon: 'images/modif.gif',
                         text: 'Modifier',
-                        hidden: true,
                         tooltip: 'Modifier',
                         handler: function(button) {
                             var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
@@ -113,7 +112,6 @@ Ext.onReady(function() {
                     },
                     {
                         icon: 'images/delete.gif',
-                        hidden: true,
                         tooltip: 'Supprimer',
                         text: 'Supprimer',
                         handler: function(button) {
@@ -134,5 +132,16 @@ Ext.onReady(function() {
                 ]
             }
         ]
+    });
+
+    Ext.Ajax.request({
+        url: 'ajax/getSessionRights.php',
+        success: function(response) {
+            var responseJson = Ext.decode(response.responseText);
+            if (responseJson.message === 'admin') {
+                var toolbars = Ext.ComponentQuery.query('grid[title=Quelques news...] > toolbar');
+                toolbars[0].show();
+            }
+        }
     });
 });
