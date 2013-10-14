@@ -1,180 +1,137 @@
 Ext.onReady(function() {
-    Ext.Loader.setPath('Ext.ux', 'js/libs');
-    Ext.require('Ext.ux.ColumnAutoWidthPlugin');
-    var panelPhotos = Ext.create('Ext.panel.Panel', {
-        region: 'east',
-        flex: 1,
-        layout: 'fit',
-        tpl: '<br/><br/><img name="image" width="314" height="235" alt="" src="{url}" />'
-    });
-    function pad(n, width, z) {
-        z = z || '0';
-        n = n + '';
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-    }
-    ;
-    var task = {
-        run: function() {
-            panelPhotos.update({
-                url: 'images/photos/imagevolley' + pad(Ext.Number.randomInt(1, 20), 3) + '.jpg'
-            });
-        },
-        interval: 5000
-    };
-    Ext.TaskManager.start(task);
-
-    Ext.create('Ext.panel.Panel', {
-        renderTo: Ext.get('accueil'),
-        layout: 'border',
-        height: 700,
-        items: [
+    Ext.tip.QuickTipManager.init();
+    Ext.create('Ext.grid.Panel', {
+        renderTo: Ext.get('news'),
+        autoScroll: true,
+        title: 'Quelques news...',
+        columns: [
             {
-                region: 'north',
-                flex: 2,
-                layout: 'border',
-                items: [
-                    {
-                        region: 'center',
-                        flex: 1,
-                        xtype: 'grid',
-                        autoScroll: true,
-                        title: 'Quelques news...',
-                        columns: [
-                            {
-                                xtype: 'datecolumn',
-                                header: 'Date',
-                                dataIndex: 'date_news',
-                                format: 'd/m/Y',
-                                flex: 3
-                            },
-                            {
-                                header: 'Sujet',
-                                dataIndex: 'titre_news',
-                                flex: 10
-                            },
-                            {
-                                xtype: 'actioncolumn',
-                                items: [
-                                    {
-                                        icon: 'images/file.gif',
-                                        tooltip: 'Voir',
-                                        handler: function(grid, rowIndex, colIndex) {
-                                            var rec = grid.getStore().getAt(rowIndex);
-                                            Ext.Msg.alert(rec.get('titre_news'), rec.get('texte_news'));
-                                        }
-                                    }
-                                ],
-                                flex: 1
-                            }
-                        ],
-                        store: Ext.create('Ext.data.Store', {
-                            fields: [
-                                {
-                                    name: 'date_news',
-                                    type: 'date',
-                                    dateFormat: 'Y-m-d'
-                                },
-                                'titre_news',
-                                'texte_news'
-                            ],
-                            proxy: {
-                                type: 'ajax',
-                                url: 'ajax/getLastNews.php',
-                                reader: {
-                                    type: 'json',
-                                    root: 'results'
-                                }
-                            },
-                            autoLoad: true
-                        })
-                    },
-                    panelPhotos
-                ]
+                xtype: 'datecolumn',
+                header: 'Date',
+                dataIndex: 'date_news',
+                format: 'd/m/Y',
+                flex: 3
             },
             {
-                region: 'center',
-                flex: 3,
-                xtype: 'grid',
-                autoScroll: true,
-                title: 'Derniers résultats',
-                plugins: [
-                    Ext.create('Ext.ux.ColumnAutoWidthPlugin', {})
-                ],
-                columns: [
+                header: 'Sujet',
+                dataIndex: 'titre_news',
+                flex: 10
+            },
+            {
+                xtype: 'actioncolumn',
+                items: [
                     {
-                        header: 'competition',
-                        dataIndex: 'competition',
-                        width: 220
-                    },
-                    {
-                        header: 'division',
-                        dataIndex: 'division',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'equipe_domicile',
-                        dataIndex: 'equipe_domicile',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'equipe_exterieur',
-                        dataIndex: 'equipe_exterieur',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'set1',
-                        dataIndex: 'set1',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'set2',
-                        dataIndex: 'set2',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'set3',
-                        dataIndex: 'set3',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'set4',
-                        dataIndex: 'set4',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'set5',
-                        dataIndex: 'set5',
-                        autoWidth: true
-                    },
-                    {
-                        header: 'date_reception',
-                        dataIndex: 'date_reception',
-                        autoWidth: true
+                        icon: 'images/file.gif',
+                        tooltip: 'Voir',
+                        handler: function(grid, rowIndex, colIndex) {
+                            var rec = grid.getStore().getAt(rowIndex);
+                            Ext.Msg.alert(rec.get('titre_news'), rec.get('texte_news'));
+                        }
                     }
                 ],
-                store: Ext.create('Ext.data.Store', {
-                    fields: [
-                        'competition',
-                        'division',
-                        'equipe_domicile',
-                        'equipe_exterieur',
-                        'set1',
-                        'set2',
-                        'set3',
-                        'set4',
-                        'set5',
-                        'date_reception'
-                    ],
-                    proxy: {
-                        type: 'ajax',
-                        url: 'ajax/getLastResults.php',
-                        reader: {
-                            type: 'json',
-                            root: 'results'
+                flex: 1
+            }
+        ],
+        store: Ext.create('Ext.data.Store', {
+            fields: [
+                'id_news',
+                {
+                    name: 'date_news',
+                    type: 'date',
+                    dateFormat: 'Y-m-d'
+                },
+                'titre_news',
+                'texte_news'
+            ],
+            proxy: {
+                type: 'rest',
+                url: 'ajax/news.php',
+                reader: {
+                    type: 'json',
+                    root: 'results'
+                },
+                writer: {
+                    type: 'json'
+                },
+                listeners: {
+                    exception: function(proxy, response, operation) {
+                        var responseJson = Ext.decode(response.responseText);
+                        Ext.MessageBox.show({
+                            title: 'Erreur',
+                            msg: responseJson.message,
+                            icon: Ext.MessageBox.ERROR,
+                            buttons: Ext.Msg.OK
+                        });
+                    }
+                }
+            },
+            autoLoad: true,
+            autoSync: true
+        }),
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                defaults: {
+                    scale: 'medium'
+                },
+                items: [
+                    {
+                        icon: 'images/ajout.gif',
+                        text: 'Ajouter',
+                        hidden: true,
+                        tooltip: 'Ajouter',
+                        handler: function(button) {
+                            //button.up('grid').getStore().insert(0, record);
                         }
                     },
-                    autoLoad: true
-                })
+                    {
+                        icon: 'images/modif.gif',
+                        text: 'Modifier',
+                        hidden: true,
+                        tooltip: 'Modifier',
+                        handler: function(button) {
+                            var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
+                            Ext.Msg.show({
+                                title: 'Modifier la news',
+                                msg: 'Entrer le nouveau texte:',
+                                prompt: true,
+                                multiline: true,
+                                width: 500,
+                                height: 300,
+                                buttons: Ext.Msg.OKCANCEL,
+                                icon: Ext.Msg.QUESTION,
+                                defaultTextHeight: 170,
+                                value: rec.get('texte_news'),
+                                fn: function(btn, text) {
+                                    if (btn === 'ok') {
+                                        rec.set('texte_news', text);
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        icon: 'images/delete.gif',
+                        hidden: true,
+                        tooltip: 'Supprimer',
+                        text: 'Supprimer',
+                        handler: function(button) {
+                            var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
+                            Ext.Msg.show({
+                                title: 'Effacer la news ?',
+                                msg: 'Vous allez effacer une news, confirmez vous cette action ?',
+                                buttons: Ext.Msg.OKCANCEL,
+                                icon: Ext.Msg.QUESTION,
+                                fn: function(btn) {
+                                    if (btn === 'ok') {
+                                        button.up('grid').getStore().remove(rec);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                ]
             }
         ]
     });
