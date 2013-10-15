@@ -3,7 +3,12 @@
 require_once "../includes/fonctions_inc.php";
 
 function getNews() {
-    $sql = "SELECT * from news ORDER BY id_news DESC LIMIT 8";
+    $sql = "SELECT 
+        id_news,
+        DATE_FORMAT(date_news, '%d/%m/%Y') AS date_news,
+        texte_news,
+        titre_news
+        from news ORDER BY id_news DESC LIMIT 8";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
@@ -17,7 +22,7 @@ function saveNews() {
     $dataJson = file_get_contents('php://input');
     $dataArray = json_decode($dataJson);
     $sql = "UPDATE news
-        SET date_news=DATE(STR_TO_DATE('$dataArray->date_news', '%Y-%m-%d')),
+        SET date_news=DATE(STR_TO_DATE('$dataArray->date_news', '%d/%m/%Y')),
             texte_news = \"$dataArray->texte_news\",
             titre_news = \"$dataArray->titre_news\"
             WHERE id_news = $dataArray->id_news";
@@ -59,9 +64,9 @@ function addNews() {
     $dataArray = json_decode($dataJson);
     $sql = "INSERT INTO news (date_news, texte_news, titre_news)
         VALUES (
-        DATE(STR_TO_DATE('$dataArray->date_news', '%Y-%m-%d')),
+        DATE(STR_TO_DATE('$dataArray->date_news', '%d/%m/%Y')),
             \"$dataArray->texte_news\",
-            \"$dataArray->titre_news\"";
+            \"$dataArray->titre_news\")";
     $success = mysql_query($sql);
     if ($success) {
         $message = 'Sauvegarde OK';

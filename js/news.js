@@ -1,4 +1,88 @@
 Ext.onReady(function() {
+    Ext.define('News', {
+        extend: 'Ext.data.Model',
+        fields: [
+            'id_news',
+            {
+                name: 'date_news',
+                type: 'date',
+                dateFormat: 'd/m/Y'
+            },
+            'titre_news',
+            'texte_news'
+        ]
+    });
+    afficheFormulaireNews = function(isUpdate) {
+        Ext.create('Ext.window.Window', {
+            title: 'News',
+            height: 400,
+            width: 700,
+            modal: true,
+            layout: 'fit',
+            items: {
+                xtype: 'form',
+                layout: 'anchor',
+                defaults: {
+                    anchor: '100%',
+                    margins: 10
+                },
+                items: [
+                    {
+                        xtype: 'datefield',
+                        fieldLabel: 'Date',
+                        name: 'date_news',
+                        format: 'd/m/Y',
+                        value: new Date()
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: 'Titre',
+                        name: 'titre_news'
+                    },
+                    {
+                        xtype: 'textarea',
+                        fieldLabel: 'Texte',
+                        name: 'texte_news'
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        handler: function() {
+                            this.up('window').close();
+                        }
+                    },
+                    {
+                        text: 'Sauver',
+                        formBind: true,
+                        disabled: true,
+                        handler: function() {
+                            var form = this.up('form').getForm();
+                            if (form.isValid()) {
+                                if (isUpdate) {
+                                    form.updateRecord();
+                                }
+                                else {
+                                    var newNews = Ext.create('News', form.getValues());
+                                    Ext.ComponentQuery.query('grid[title=Quelques news...]')[0].getStore().insert(0, newNews);
+                                }
+                                this.up('window').close();
+                            }
+                        }
+                    }
+                ]
+            }
+        }).show();
+        if (isUpdate) {
+            var rec = Ext.ComponentQuery.query('grid[title=Quelques news...]')[0].getView().getSelectionModel().getSelection()[0];
+            if (rec) {
+                Ext.ComponentQuery.query('window[title=News] > form')[0].getForm().loadRecord(rec);
+            }
+            else {
+                Ext.ComponentQuery.query('window[title=News]')[0].close();
+            }
+        }
+    };
     Ext.tip.QuickTipManager.init();
     Ext.create('Ext.grid.Panel', {
         renderTo: Ext.get('news'),
@@ -33,16 +117,7 @@ Ext.onReady(function() {
             }
         ],
         store: Ext.create('Ext.data.Store', {
-            fields: [
-                'id_news',
-                {
-                    name: 'date_news',
-                    type: 'date',
-                    dateFormat: 'Y-m-d'
-                },
-                'titre_news',
-                'texte_news'
-            ],
+            model: 'News',
             proxy: {
                 type: 'rest',
                 url: 'ajax/news.php',
@@ -82,7 +157,7 @@ Ext.onReady(function() {
                         text: 'Ajouter',
                         tooltip: 'Ajouter',
                         handler: function(button) {
-                            //button.up('grid').getStore().insert(0, record);
+                            afficheFormulaireNews(false);
                         }
                     },
                     {
@@ -90,24 +165,7 @@ Ext.onReady(function() {
                         text: 'Modifier',
                         tooltip: 'Modifier',
                         handler: function(button) {
-                            var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
-                            Ext.Msg.show({
-                                title: 'Modifier la news',
-                                msg: 'Entrer le nouveau texte:',
-                                prompt: true,
-                                multiline: true,
-                                width: 500,
-                                height: 300,
-                                buttons: Ext.Msg.OKCANCEL,
-                                icon: Ext.Msg.QUESTION,
-                                defaultTextHeight: 170,
-                                value: rec.get('texte_news'),
-                                fn: function(btn, text) {
-                                    if (btn === 'ok') {
-                                        rec.set('texte_news', text);
-                                    }
-                                }
-                            });
+                            afficheFormulaireNews(true);
                         }
                     },
                     {
