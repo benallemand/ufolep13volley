@@ -1,6 +1,7 @@
 Ext.onReady(function() {
     Ext.create('Ext.toolbar.Toolbar', {
         renderTo: Ext.get('menu'),
+        defaultButtonUI: 'default',
         defaults: {
             flex: 1
         },
@@ -134,9 +135,6 @@ Ext.onReady(function() {
                 menu: [
                     {text: 'Infos Utiles', handler: function() {
                             window.open('infos_utiles/index.html', '_blank');
-                        }},
-                    {text: 'A Télécharger', handler: function() {
-                            window.open('docs.php', '_self', false);
                         }},
                     {
                         text: 'Agenda',
