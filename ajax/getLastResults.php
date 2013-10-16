@@ -7,7 +7,7 @@ conn_db();
 mysql_query("SET NAMES UTF8");
 $sql = "select 
 c.libelle AS competition, 
-m.division, 
+IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), j.nommage) AS division_journee, 
 e1.nom_equipe AS equipe_domicile, 
 e2.nom_equipe AS equipe_exterieur, 
 CONCAT(m.set_1_dom, '-', set_1_ext) AS set1, 
@@ -17,6 +17,7 @@ CONCAT(m.set_4_dom, '-', set_4_ext) AS set4,
 CONCAT(m.set_5_dom, '-', set_5_ext) AS set5, 
 m.date_reception
 from matches m
+left join journees j on j.numero=m.journee and j.code_competition=m.code_competition
 left join competitions c on c.code_competition =  m.code_competition
 left join equipes e1 on e1.id_equipe =  m.id_equipe_dom
 left join equipes e2 on e2.id_equipe =  m.id_equipe_ext

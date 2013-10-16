@@ -22,12 +22,12 @@ Ext.onReady(function() {
                         {
                             header: 'competition',
                             dataIndex: 'competition',
-                            width: 220
+                            width: 180
                         },
                         {
-                            header: 'division',
-                            dataIndex: 'division',
-                            autoWidth: true
+                            header: 'division_journee',
+                            dataIndex: 'division_journee',
+                            width: 150
                         },
                         {
                             header: 'equipe_domicile',
@@ -41,28 +41,23 @@ Ext.onReady(function() {
                         },
                         {
                             header: 'set1',
-                            dataIndex: 'set1',
-                            autoWidth: true
+                            dataIndex: 'set1'
                         },
                         {
                             header: 'set2',
-                            dataIndex: 'set2',
-                            autoWidth: true
+                            dataIndex: 'set2'
                         },
                         {
                             header: 'set3',
-                            dataIndex: 'set3',
-                            autoWidth: true
+                            dataIndex: 'set3'
                         },
                         {
                             header: 'set4',
-                            dataIndex: 'set4',
-                            autoWidth: true
+                            dataIndex: 'set4'
                         },
                         {
                             header: 'set5',
-                            dataIndex: 'set5',
-                            autoWidth: true
+                            dataIndex: 'set5'
                         },
                         {
                             header: 'date_reception',
@@ -73,7 +68,7 @@ Ext.onReady(function() {
                     store: Ext.create('Ext.data.Store', {
                         fields: [
                             'competition',
-                            'division',
+                            'division_journee',
                             'equipe_domicile',
                             'equipe_exterieur',
                             'set1',
