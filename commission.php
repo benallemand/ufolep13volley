@@ -20,6 +20,7 @@
             <div id="menu"></div>
             <div id="contenu">
                 <div id="titre"><H1>Commission Départementale</H1></div>
+                <H2>Les personnes membres de la CTSD 13 Volley-Ball ainsi que les personnes qui aident le font à titre de bénévolat.</H2>
                 <div id="commission"><?php affich_commission() ?></div>
             </div>
         </div>
