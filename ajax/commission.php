@@ -3,7 +3,7 @@
 require_once "../includes/fonctions_inc.php";
 
 function getData() {
-    $sql = "SELECT * from commission";
+    $sql = "SELECT * from commission order by id_commission";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
