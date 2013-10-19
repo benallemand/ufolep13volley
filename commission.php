@@ -12,6 +12,7 @@
         <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
         <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
+        <script type="text/javascript" src="js/commission.js"></script>
     </HEAD>
 
     <BODY>
@@ -21,7 +22,7 @@
             <div id="contenu">
                 <div id="titre"><H1>Commission Départementale</H1></div>
                 <H2>Les personnes membres de la CTSD 13 Volley-Ball ainsi que les personnes qui aident le font à titre de bénévolat.</H2>
-                <div id="commission"><?php affich_commission() ?></div>
+                <div id="commission"></div>
             </div>
         </div>
     </BODY>
