@@ -563,32 +563,6 @@ function recup_nom_compet($compet)
 
 //************************************************************************************************
 //************************************************************************************************
-function affiche_image($var)
-//************************************************************************************************
-/*
- * * Fonction    : affiche_image
- * * Input       : STRING $var
- * * Output      : aucun 
- * * Description : Affiche une catégorie d'image 
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 18/04/2010 
- */ {//1
-//Connexion à la base
-    conn_db();
-
-    $sql = "SELECT chemin_image from images order by rand() limit 1";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
-        echo '<img name="image" src="' . $data[0] . '" width="314" height="235" alt="">';
-    }
-
-// Fermeture de la connexion à mysql 
-//mysql_close(); 
-}
-
-//1
-//************************************************************************************************
-//************************************************************************************************
 function date_fr($date)
 //************************************************************************************************
 /*
