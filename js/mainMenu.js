@@ -206,6 +206,51 @@ Ext.onReady(function() {
             }
         };
     };
+    getGenericColumnStore = function(tableName) {
+        return Ext.create('Ext.data.Store', {
+            fields: [
+                'Field',
+                'Type',
+                'Null',
+                'Key',
+                'Default',
+                'Extra'
+            ],
+            proxy: {
+                type: 'rest',
+                url: 'ajax/' + tableName + '.php',
+                reader: {
+                    type: 'json',
+                    root: 'results'
+                }
+            }
+        });
+    };
+    var initMenuAdmin = function() {
+        var menuAdmin = Ext.ComponentQuery.query('menuitem[text=Admin] > menu')[0];
+        var tableNames = [
+            'classements',
+            'competitions',
+            'comptes_acces',
+            'dates_limite',
+            'details_equipes',
+            'equipes',
+            'images',
+            'journees',
+            'matches'
+        ];
+        Ext.each(tableNames, function(tableName) {
+            var store = getGenericColumnStore(tableName);
+            store.load({
+                params: {
+                    GET_COLUMNS: true
+                },
+                callback: function(records, operation, success) {
+                    menuAdmin.add(getAdminButton(tableName, store.collect('Field')));
+                }
+            });
+        });
+    };
     Ext.Ajax.request({
         url: 'ajax/getSessionRights.php',
         success: function(response) {
@@ -214,18 +259,9 @@ Ext.onReady(function() {
                 var menuPortailEquipes = Ext.ComponentQuery.query('button[text=Portail Equipes] > menu')[0];
                 menuPortailEquipes.add({
                     text: 'Admin',
-                    menu: [
-                        getAdminButton('classements', ['code_competition', 'division', 'id_equipe', 'points', 'joues', 'gagnes', 'perdus', 'sets_pour', 'sets_contre', 'difference', 'coeff_sets', 'points_pour', 'points_contre', 'coeff_points', 'penalite']),
-                        getAdminButton('competitions', ['id', 'code_competition', 'libelle', 'id_compet_maitre']),
-                        getAdminButton('comptes_acces', ['id_equipe', 'login', 'password']),
-                        getAdminButton('dates_limite', ['id_date', 'code_competition', 'division', 'date_limite']),
-                        getAdminButton('details_equipes', ['id_equipe', 'responsable', 'telephone_1', 'telephone_2', 'email', 'gymnase', 'localisation', 'jour_reception', 'heure_reception', 'site_web', 'photo', 'fdm']),
-                        getAdminButton('equipes', ['id_equipe', 'code_competition', 'nom_equipe']),
-                        getAdminButton('images', ['id_image', 'categorie_image', 'chemin_image']),
-                        getAdminButton('journees', ['id', 'code_competition', 'division', 'numero', 'nommage', 'libelle']),
-                        getAdminButton('matches', ['id_match', 'code_match', 'code_competition', 'division', 'journee', 'id_equipe_dom', 'id_equipe_ext', 'score_equipe_dom', 'score_equipe_ext', 'set_1_dom', 'set_1_ext', 'set_2_dom', 'set_2_ext', 'set_3_dom', 'set_3_ext', 'set_4_dom', 'set_4_ext', 'set_5_dom', 'set_5_ext', 'heure_reception', 'date_reception', 'gagnea5_dom', 'gagnea5_ext', 'forfait_dom', 'forfait_ext', 'certif', 'report', 'retard'])
-                    ]
+                    menu: []
                 });
+                initMenuAdmin();
             }
         }
     });
