@@ -183,9 +183,10 @@ Ext.onReady(function() {
                             );
                             columns.push({
                                 xtype: 'numbercolumn',
-                                format : '0',
+                                format: '0',
                                 header: record.get('Field'),
-                                dataIndex: record.get('Field')
+                                dataIndex: record.get('Field'),
+                                editor: 'numberfield'
                             });
                             break;
                         case 'tinyint(1)' :
@@ -213,14 +214,16 @@ Ext.onReady(function() {
                                 xtype: 'datecolumn',
                                 format: 'd/m/Y',
                                 header: record.get('Field'),
-                                dataIndex: record.get('Field')
+                                dataIndex: record.get('Field'),
+                                editor: 'datefield'
                             });
                             break;
                         default :
                             fields.push(record.get('Field'));
                             columns.push({
                                 header: record.get('Field'),
-                                dataIndex: record.get('Field')
+                                dataIndex: record.get('Field'),
+                                editor: 'textfield'
                             });
                             break;
                     }
@@ -235,8 +238,12 @@ Ext.onReady(function() {
                     items: {
                         xtype: 'grid',
                         autoScroll: true,
+                        selType: 'rowmodel',
                         plugins: [
-                            Ext.create('Ext.ux.ColumnAutoWidthPlugin', {})
+                            Ext.create('Ext.ux.ColumnAutoWidthPlugin', {}),
+                            Ext.create('Ext.grid.plugin.RowEditing', {
+                                clicksToEdit: 1
+                            })
                         ],
                         store: Ext.create('Ext.data.Store', {
                             fields: fields,
@@ -248,7 +255,8 @@ Ext.onReady(function() {
                                     root: 'results'
                                 }
                             },
-                            autoLoad: true
+                            autoLoad: true,
+                            autoSync : true
                         }),
                         columns: columns
                     }
