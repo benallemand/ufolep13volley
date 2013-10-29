@@ -165,16 +165,66 @@ Ext.onReady(function() {
             }
         ]
     });
-    var getAdminButton = function(tableName, fields) {
+    var getAdminButton = function(tableName, records) {
         return {
             text: tableName,
             handler: function() {
                 var columns = [];
-                Ext.each(fields, function(field) {
-                    columns.push({
-                        header: field,
-                        dataIndex: field
-                    });
+                var fields = [];
+                Ext.each(records, function(record) {
+                    switch (record.get('Type')) {
+                        case 'smallint(3)' :
+                        case 'tinyint(2)' :
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'int'
+                                    }
+                            );
+                            columns.push({
+                                xtype: 'numbercolumn',
+                                format : '0',
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field')
+                            });
+                            break;
+                        case 'tinyint(1)' :
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'boolean'
+                                    }
+                            );
+                            columns.push({
+                                xtype: 'checkcolumn',
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field')
+                            });
+                            break;
+                        case 'date' :
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'date',
+                                        dateFormat: 'd/m/Y'
+                                    }
+                            );
+                            columns.push({
+                                xtype: 'datecolumn',
+                                format: 'd/m/Y',
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field')
+                            });
+                            break;
+                        default :
+                            fields.push(record.get('Field'));
+                            columns.push({
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field')
+                            });
+                            break;
+                    }
+
                 });
                 Ext.create('Ext.window.Window', {
                     title: tableName,
@@ -237,7 +287,8 @@ Ext.onReady(function() {
             'equipes',
             'images',
             'journees',
-            'matches'
+            'matches',
+            'news'
         ];
         Ext.each(tableNames, function(tableName) {
             var store = getGenericColumnStore(tableName);
@@ -246,7 +297,7 @@ Ext.onReady(function() {
                     GET_COLUMNS: true
                 },
                 callback: function(records, operation, success) {
-                    menuAdmin.add(getAdminButton(tableName, store.collect('Field')));
+                    menuAdmin.add(getAdminButton(tableName, records));
                 }
             });
         });

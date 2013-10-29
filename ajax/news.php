@@ -2,6 +2,16 @@
 
 require_once "../includes/fonctions_inc.php";
 
+function getColumns() {
+    $sql = "show columns from news";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    echo json_encode($results);
+}
+
 function getNews() {
     $sql = "SELECT 
         id_news,
@@ -95,7 +105,11 @@ if (!estAdmin()) {
 }
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        getNews();
+        if ($_REQUEST['GET_COLUMNS'] === 'true') {
+            getColumns();
+        } else {
+            getNews();
+        }
         break;
     case 'PUT':
         saveNews();
