@@ -193,13 +193,15 @@ Ext.onReady(function() {
                             fields.push(
                                     {
                                         name: record.get('Field'),
-                                        type: 'boolean'
+                                        type: 'int'
                                     }
                             );
                             columns.push({
-                                xtype: 'checkcolumn',
+                                xtype: 'numbercolumn',
+                                format: '0',
                                 header: record.get('Field'),
-                                dataIndex: record.get('Field')
+                                dataIndex: record.get('Field'),
+                                editor: 'numberfield'
                             });
                             break;
                         case 'date' :
@@ -252,6 +254,20 @@ Ext.onReady(function() {
                                 reader: {
                                     type: 'json',
                                     root: 'results'
+                                },
+                                writer: {
+                                    type: 'json'
+                                },
+                                listeners: {
+                                    exception: function(proxy, response, operation) {
+                                        var responseJson = Ext.decode(response.responseText);
+                                        Ext.MessageBox.show({
+                                            title: 'Erreur',
+                                            msg: responseJson.message,
+                                            icon: Ext.MessageBox.ERROR,
+                                            buttons: Ext.Msg.OK
+                                        });
+                                    }
                                 }
                             },
                             autoLoad: true,
