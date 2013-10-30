@@ -118,6 +118,19 @@ Ext.onReady(function() {
         ],
         store: Ext.create('Ext.data.Store', {
             model: 'News',
+            sorters: [
+                {
+                    property: 'date_news',
+                    direction: 'DESC'
+                }
+            ],
+            filters : [
+                {
+                    filterFn : function(item) {
+                        return item.get('date_news') > Ext.Date.subtract(new Date(), Ext.Date.MONTH, 6);
+                    }
+                }
+            ],
             proxy: {
                 type: 'rest',
                 url: 'ajax/news.php',
