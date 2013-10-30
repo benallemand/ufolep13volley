@@ -31,7 +31,23 @@ class Rest {
     }
 
     function getData() {
-        $sql = "SELECT * from " . $this->fileName;
+        $sql = "SELECT ";
+        $columns = json_decode($this->getColumns(), true);
+        foreach ($columns as $column) {
+            switch ($column['Type']) {
+                case 'tinyint(1)' :
+                    $sql .= " BIN(" . $column['Field'] . ") AS " . $column['Field'] . ",";
+                    break;
+                case 'date' :
+                    $sql .= " DATE_FORMAT(" . $column['Field'] . ", '%d/%m/%Y') AS " . $column['Field'] . ",";
+                    break;
+                default :
+                    $sql .= " " . $column['Field'] . ",";
+                    break;
+            }
+        }
+        $sql = rtrim($sql, ",");
+        $sql .= " from " . $this->fileName;
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         $results = array();
         while ($data = mysql_fetch_assoc($req)) {
@@ -53,14 +69,31 @@ class Rest {
             ));
         }
         $sql = "UPDATE " . $this->fileName . " SET ";
+        $columns = json_decode($this->getColumns(), true);
         foreach ($dataArray as $key => $value) {
             if ($key === $primaryKey) {
                 continue;
             }
-            $sql .= "$key = '$value',";
+            foreach ($columns as $column) {
+                if ($column['Field'] !== $key) {
+                    continue;
+                }
+                switch ($column['Type']) {
+                    case 'tinyint(1)' :
+                        $sql .= "$key=BIT(\"$value\"),";
+                        break;
+                    case 'date' :
+                        $sql .= "$key=DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
+                        break;
+                    default :
+                        $sql .= "$key = \"$value\",";
+                        break;
+                }
+                break;
+            }
         }
         $sql = rtrim($sql, ",");
-        $sql .= " WHERE $primaryKey='" . $dataArray[$primaryKey] . "';";
+        $sql .= " WHERE $primaryKey=\"" . $dataArray[$primaryKey] . "\";";
         $success = mysql_query($sql);
         if ($success) {
             $message = 'Sauvegarde OK';
@@ -77,7 +110,7 @@ class Rest {
     function deleteData() {
         $message = '';
         $dataJson = file_get_contents('php://input');
-        $dataArray = json_decode($dataJson);
+        $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
             return json_encode(array(
@@ -86,8 +119,8 @@ class Rest {
                 'data' => $dataJson
             ));
         }
-        $sql = "DELETE FROM " . $this->fileName . "
-        WHERE $primaryKey='" . $dataArray[$primaryKey] . "';";
+        $sql = "DELETE FROM " . $this->fileName;
+        $sql .= " WHERE $primaryKey=\"" . $dataArray[$primaryKey] . "\";";
         $success = mysql_query($sql);
         if ($success) {
             $message = 'Suppression OK';
@@ -104,7 +137,7 @@ class Rest {
     function addData() {
         $message = '';
         $dataJson = file_get_contents('php://input');
-        $dataArray = json_decode($dataJson);
+        $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
             return json_encode(array(
@@ -114,6 +147,7 @@ class Rest {
             ));
         }
         $sql = "INSERT INTO " . $this->fileName . " (";
+        $columns = json_decode($this->getColumns(), true);
         foreach ($dataArray as $key => $value) {
             if ($key === $primaryKey) {
                 continue;
@@ -122,11 +156,28 @@ class Rest {
         }
         $sql = rtrim($sql, ",");
         $sql.= ") VALUES (";
+        $columns = json_decode($this->getColumns(), true);
         foreach ($dataArray as $key => $value) {
             if ($key === $primaryKey) {
                 continue;
             }
-            $sql .= "'$value',";
+            foreach ($columns as $column) {
+                if ($column['Field'] !== $key) {
+                    continue;
+                }
+                switch ($column['Type']) {
+                    case 'tinyint(1)' :
+                        $sql .= "BIT(\"$value\"),";
+                        break;
+                    case 'date' :
+                        $sql .= "DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
+                        break;
+                    default :
+                        $sql .= "\"$value\",";
+                        break;
+                }
+                break;
+            }
         }
         $sql = rtrim($sql, ",");
         $sql.= ");";
