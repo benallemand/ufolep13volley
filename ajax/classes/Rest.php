@@ -147,12 +147,22 @@ class Rest {
         conn_db();
         mysql_query("SET NAMES UTF8");
         if (!estAdmin()) {
-            $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
-            echo json_encode(array(
-                'success' => false,
-                'message' => $message
-            ));
-            exit;
+            if ($this->fileName === 'comptes_acces') {
+                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
+                echo json_encode(array(
+                    'success' => false,
+                    'message' => $message
+                ));
+                exit;
+            }
+            if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
+                echo json_encode(array(
+                    'success' => false,
+                    'message' => $message
+                ));
+                exit;
+            }
         }
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
