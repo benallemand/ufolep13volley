@@ -240,9 +240,8 @@ Ext.onReady(function() {
                         autoScroll: true,
                         selType: 'rowmodel',
                         plugins: [
-                            Ext.create('Ext.ux.ColumnAutoWidthPlugin', {}),
                             Ext.create('Ext.grid.plugin.RowEditing', {
-                                clicksToEdit: 1
+                                clicksToEdit: 2
                             })
                         ],
                         store: Ext.create('Ext.data.Store', {
@@ -256,9 +255,10 @@ Ext.onReady(function() {
                                 }
                             },
                             autoLoad: true,
-                            autoSync : true
+                            autoSync: true
                         }),
-                        columns: columns
+                        columns: columns,
+                        forceFit: true
                     }
                 }).show();
             }
