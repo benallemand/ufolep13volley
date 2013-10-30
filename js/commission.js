@@ -40,6 +40,7 @@ Ext.onReady(function() {
                 '</tr>',
                 '</tpl>',
                 '</tpl>',
+                '</table>',
                 '<h1>Supports</h1>',
                 '<table>',
                 '<tpl for=".">',
