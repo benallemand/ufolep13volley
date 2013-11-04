@@ -1163,7 +1163,12 @@ function affich_details_equipe($id_equipe, $compet)
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Fiche Equipe :</td>';
-        echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
+        if (file_exists("fdm/$fdm")) {
+            echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
+        } else {
+            echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
+        }
+
         echo'	  </tr>';
         echo'    </table>';
         echo'  </div>';
