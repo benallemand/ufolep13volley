@@ -165,6 +165,11 @@ Ext.onReady(function() {
             }
         ]
     });
+    Ext.define('Ext.form.PasswordField', {
+        extend: 'Ext.form.field.Text',
+        alias: 'widget.passwordfield',
+        inputType: 'password'
+    });
     var getAdminButton = function(tableName, records) {
         return {
             text: tableName,
@@ -222,11 +227,23 @@ Ext.onReady(function() {
                             break;
                         default :
                             fields.push(record.get('Field'));
-                            columns.push({
-                                header: record.get('Field'),
-                                dataIndex: record.get('Field'),
-                                editor: 'textfield'
-                            });
+                            if (record.get('Field') === 'password') {
+                                columns.push({
+                                    header: record.get('Field'),
+                                    dataIndex: record.get('Field'),
+                                    editor: 'passwordfield',
+                                    renderer: function() {
+                                        return 'Edit...';
+                                    }
+                                });
+                            }
+                            else {
+                                columns.push({
+                                    header: record.get('Field'),
+                                    dataIndex: record.get('Field'),
+                                    editor: 'textfield'
+                                });
+                            }
                             break;
                     }
 
