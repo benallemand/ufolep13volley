@@ -285,10 +285,10 @@ function affich_journee($compet, $div)
             $nb_retard = $data['retard'];
 
 //Traitement des matches en retard
-            $oridate = explode("-", $data['date_reception']);  //on enlève les caractères '-' de la date
-            $nowdate = time();         //on récupère la date d'aujourd'hui
-            $diff_sec = mktime(0, 0, 0, $oridate[1], $oridate[2], $oridate[0]) - $nowdate; //le calcul est effectué en secondes
-            $diff_jour = floor($diff_sec / (60 * 60 * 24)) + 1;   // on transforme le résultat en nombre de jour 
+            $oriDateTime = DateTime::createFromFormat('Y-m-d', $data['date_reception']);
+            $nowDateTime = new DateTime();
+            $interval = $nowDateTime->diff($oriDateTime);
+            $diff_jour = intval($interval->format('%r%a'));
 // On vérifie la différence de date
             if ($diff_jour > -16 && $diff_jour < -10 && $score1 == 0 && $score2 == 0) {
                 $retard = '<img src="images/warn1.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 10 jours !" />';
