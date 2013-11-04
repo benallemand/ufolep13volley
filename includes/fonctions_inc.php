@@ -1114,6 +1114,11 @@ function affich_details_equipe($id_equipe, $compet)
         } else {
             $site_web = $data['site_web'];
         }
+        if (empty($data['fdm'])) {
+            $fdm = "-";
+        } else {
+            $fdm = $data['fdm'];
+        }
 
 //on affiche les données
         echo'  <div class="photo_equipe"><img src="' . $photo . '" width="300" height="200"></div>';
@@ -1155,6 +1160,10 @@ function affich_details_equipe($id_equipe, $compet)
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Site Web :</td>';
         echo'		<td class="datas_details">' . $site_web . '<td>';
+        echo'	  </tr>';
+        echo'      <tr class="tr_130">';
+        echo'		<td class="titre_details">Fiche Equipe :</td>';
+        echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
         echo'	  </tr>';
         echo'    </table>';
         echo'  </div>';
