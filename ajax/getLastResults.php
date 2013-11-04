@@ -21,6 +21,7 @@ left join journees j on j.numero=m.journee and j.code_competition=m.code_competi
 left join competitions c on c.code_competition =  m.code_competition
 left join equipes e1 on e1.id_equipe =  m.id_equipe_dom
 left join equipes e2 on e2.id_equipe =  m.id_equipe_ext
+where BIN(m.certif)=1
 order by date_reception DESC LIMIT 20";
 $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 $results = array();
