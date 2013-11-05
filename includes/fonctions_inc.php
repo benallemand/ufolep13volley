@@ -6,6 +6,34 @@ function estAdmin() {
     return (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin");
 }
 
+function estMemeClassement($id_equipe) {
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return true;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    conn_db();
+    mysql_query("SET NAMES UTF8");
+    $sql = "select * from classements 
+        where division in 
+        (select division from classements where id_equipe=$sessionIdEquipe)
+        and code_competition in 
+        (select code_competition from classements where id_equipe=$sessionIdEquipe);";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    foreach ($results as $result) {
+        if ($result['id_equipe'] === $id_equipe) {
+            return true;
+        }
+    }
+    return false;
+}
+
 //************************************************************************************************
 //************************************************************************************************
 function conn_db()
@@ -1164,7 +1192,11 @@ function affich_details_equipe($id_equipe, $compet)
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Fiche Equipe :</td>';
         if (file_exists("fdm/$fdm")) {
-            echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
+            if (estMemeClassement($id_equipe)) {
+                echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
+            } else {
+                echo'		<td class="datas_details">Téléchargement Non Autorisé<td>';
+            }
         } else {
             echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
         }
