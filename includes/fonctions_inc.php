@@ -1149,7 +1149,12 @@ function affich_details_equipe($id_equipe, $compet)
         }
 
 //on affiche les données
-        echo'  <div class="photo_equipe"><img src="' . $photo . '" width="300" height="200"></div>';
+        echo '  <div class="photo_equipe">';
+        echo '<img src="' . $photo . '" width="300" height="200">';
+        if ($_SESSION['id_equipe'] === $id_equipe) {
+            echo '<br/><a href="mailto:photos@ufolep13volley.org" target="_blank">Envoyer une photo d\'équipe</a>';
+        }
+        echo '</div>';
         echo'  <div class="infos_equipe">';
         echo'    <h1>' . $nom_equipe . ' - Vos détails</h1>';
         echo'    <table>';
