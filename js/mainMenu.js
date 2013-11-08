@@ -40,12 +40,6 @@ Ext.onReady(function() {
                         }},
                     {text: 'Division 2', handler: function() {
                             window.open('champ_fem.php?d=2', '_self', false);
-                        }},
-                    {text: 'Championnats Phase 2', handler: function() {
-                            window.open('phase2_fem.php', '_self', false);
-                        }},
-                    {text: 'Tournois Féminins', handler: function() {
-                            window.open('tournois_fem.php', '_self', false);
                         }}
                 ]
             },
