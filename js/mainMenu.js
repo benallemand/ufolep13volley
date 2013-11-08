@@ -120,7 +120,7 @@ Ext.onReady(function() {
                             window.open('commission.php', '_self', false);
                         }},
                     {text: 'Ecrire au Webmaster', handler: function() {
-                            window.open('mailto:laurent.gorlier@ufolep13volley.org');
+                            window.open('mailto:benallemand@gmail.com');
                         }}
                 ]
             },
