@@ -171,6 +171,69 @@ Ext.onReady(function() {
                 var columns = [];
                 var fields = [];
                 Ext.each(records, function(record) {
+                    switch (record.get('Field')) {
+                        case 'id_equipe':
+                        case 'id_equipe_dom':
+                        case 'id_equipe_ext':
+                            if (record.get('Key') === 'PRI') {
+                                fields.push(
+                                        {
+                                            name: record.get('Field'),
+                                            type: 'int'
+                                        }
+                                );
+                                columns.push({
+                                    xtype: 'numbercolumn',
+                                    format: '0',
+                                    header: record.get('Field'),
+                                    dataIndex: record.get('Field'),
+                                    editor: 'numberfield'
+                                });
+                                return;
+                            }
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'int'
+                                    }
+                            );
+                            var storeEquipes = Ext.create('Ext.data.Store', {
+                                fields: [
+                                    {
+                                        name: 'id_equipe',
+                                        type: 'int'
+                                    },
+                                    'nom_equipe'
+                                ],
+                                proxy: {
+                                    type: 'rest',
+                                    url: 'ajax/equipes.php',
+                                    reader: {
+                                        type: 'json',
+                                        root: 'results'
+                                    }
+                                },
+                                autoLoad: true
+                            });
+                            columns.push({
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field'),
+                                editor: {
+                                    xtype: 'combo',
+                                    displayField: 'nom_equipe',
+                                    valueField: 'id_equipe',
+                                    store: storeEquipes
+                                },
+                                renderer: function(val) {
+                                    var index = storeEquipes.findExact('id_equipe', val);
+                                    if (index !== -1) {
+                                        var rs = storeEquipes.getAt(index).data;
+                                        return rs.nom_equipe;
+                                    }
+                                }
+                            });
+                            return;
+                    }
                     switch (record.get('Type')) {
                         case 'smallint(3)' :
                         case 'tinyint(2)' :
@@ -240,7 +303,6 @@ Ext.onReady(function() {
                             }
                             break;
                     }
-
                 });
                 Ext.create('Ext.window.Window', {
                     title: tableName,
@@ -284,8 +346,7 @@ Ext.onReady(function() {
                             autoLoad: true,
                             autoSync: true
                         }),
-                        columns: columns,
-                        forceFit: true
+                        columns: columns
                     }
                 }).show();
             }
