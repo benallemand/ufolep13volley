@@ -196,7 +196,9 @@ class Rest {
 
     function parseRequest() {
         conn_db();
-        mysql_query("SET NAMES UTF8");
+        if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+            mysql_query("SET NAMES UTF8");
+        }
         if (!estAdmin()) {
             if ($this->fileName === 'comptes_acces') {
                 $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
