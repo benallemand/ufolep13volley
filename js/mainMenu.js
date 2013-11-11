@@ -346,7 +346,45 @@ Ext.onReady(function() {
                             autoLoad: true,
                             autoSync: true
                         }),
-                        columns: columns
+                        columns: columns,
+                        dockedItems: [
+                            {
+                                xtype: 'toolbar',
+                                dock: 'top',
+                                defaults: {
+                                    scale: 'medium'
+                                },
+                                items: [
+                                    {
+                                        icon: 'images/ajout.gif',
+                                        text: 'Ajouter',
+                                        tooltip: 'Ajouter',
+                                        handler: function(button) {
+                                            button.up('grid').getStore().insert(0, button.up('grid').getStore().getProxy().getModel());
+                                        }
+                                    },
+                                    {
+                                        icon: 'images/delete.gif',
+                                        tooltip: 'Supprimer',
+                                        text: 'Supprimer',
+                                        handler: function(button) {
+                                            var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
+                                            Ext.Msg.show({
+                                                title: 'Effacer ?',
+                                                msg: 'Confirmez vous la suppression ?',
+                                                buttons: Ext.Msg.OKCANCEL,
+                                                icon: Ext.Msg.QUESTION,
+                                                fn: function(btn) {
+                                                    if (btn === 'ok') {
+                                                        button.up('grid').getStore().remove(rec);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 }).show();
             }
