@@ -422,7 +422,8 @@ Ext.onReady(function() {
             'images',
             'journees',
             'matches',
-            'news'
+            'news',
+            'joueurs'
         ];
         Ext.each(tableNames, function(tableName) {
             var store = getGenericColumnStore(tableName);
