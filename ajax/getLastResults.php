@@ -8,7 +8,9 @@ mysql_query("SET NAMES UTF8");
 $sql = "select 
 c.libelle AS competition, 
 IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), j.nommage) AS division_journee, 
-e1.nom_equipe AS equipe_domicile, 
+e1.nom_equipe AS equipe_domicile,
+m.score_equipe_dom+0 AS score_equipe_dom, 
+m.score_equipe_ext+0 AS score_equipe_ext, 
 e2.nom_equipe AS equipe_exterieur, 
 CONCAT(m.set_1_dom, '-', set_1_ext) AS set1, 
 CONCAT(m.set_2_dom, '-', set_2_ext) AS set2, 

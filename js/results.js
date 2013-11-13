@@ -32,12 +32,34 @@ Ext.onReady(function() {
                         {
                             header: 'equipe_domicile',
                             dataIndex: 'equipe_domicile',
+                            autoWidth: true,
+                            renderer: function(val, meta, record) {
+                                if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
+                                    return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                                }
+                                return val;
+                            }
+                        },
+                        {
+                            header: '',
+                            dataIndex: 'score_equipe_dom',
+                            autoWidth: true
+                        },
+                        {
+                            header: '',
+                            dataIndex: 'score_equipe_ext',
                             autoWidth: true
                         },
                         {
                             header: 'equipe_exterieur',
                             dataIndex: 'equipe_exterieur',
-                            autoWidth: true
+                            autoWidth: true,
+                            renderer: function(val, meta, record) {
+                                if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
+                                    return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                                }
+                                return val;
+                            }
                         },
                         {
                             header: 'set1',
@@ -71,6 +93,8 @@ Ext.onReady(function() {
                             'division_journee',
                             'equipe_domicile',
                             'equipe_exterieur',
+                            'score_equipe_dom',
+                            'score_equipe_ext',
                             'set1',
                             'set2',
                             'set3',
