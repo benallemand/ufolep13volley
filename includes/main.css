@@ -102,7 +102,6 @@ body {
 }
 #flux {clear: both;}
 
-img {border-style: none}
 /* ----- CALQUE CHANGE --------------------------------------------------------------------------- */
 
 #change_g {
@@ -235,85 +234,6 @@ img {border-style: none}
     text-indent: 60px;
     font-family: Arial, Helvetica, sans-serif;
     color: #0099CC;
-}
-
-/* ----- CALQUE NEWS ---------------------------------------------------------------------------- */
-
-#news {
-    width: 600px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: left;
-    border: thin solid #CCCCCC;
-    margin-bottom: 20px;
-    margin-left: 10px;
-}
-#news h1 {
-    background-color: #f7f7f7;
-    font-size: 15px;
-    padding: 0;
-    margin: 0;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-bottom-style: solid;
-    border-top-color: #999999;
-    border-right-color: #999999;
-    border-bottom-color: #999999;
-    border-left-color: #999999;
-    line-height: 130%;
-    text-indent: 10px;
-}
-#news .date {
-    margin-right: 20px;
-}
-#news li {
-    list-style-image: url(../images/puce.gif);
-    margin-left: 50px;
-    line-height: 150%;
-    border: 1px solid #FFFFFF;
-}
-#news input,textarea {
-    font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
-}
-#news label {
-    font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
-
-#news a {
-    float: right;
-}
-#news .titre_news {
-    float: none;
-}
-
-#news p {
-    border: 1px solid #999999;
-    background-color: #F0F0F0;
-    padding-top: 5px;
-    padding-right: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    margin-right: 10px;
-}
-#news .submit {
-    background-color: #F0F0F0;
-    font-size: 12px;
-    margin-top: 5px;
-    margin-left: 400px;
-}
-
-/* ----- CALQUE PHOTOS ---------------------------------------------------------------------------- */
-
-#photos {
-    float:right;
-    text-align: left;
-    margin-right: 30px;
-    border: thin solid #CCCCCC;
-    padding: 10px;
 }
 
 /* ----- CALQUE CLASSEMENT---------------------------------------------------------------------------- */

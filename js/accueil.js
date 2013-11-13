@@ -1,4 +1,6 @@
 Ext.onReady(function() {
+    Ext.Loader.setPath('Ext.ux', 'js/libs');
+    Ext.require('Ext.ux.ColumnAutoWidthPlugin');
     Ext.define('News', {
         extend: 'Ext.data.Model',
         fields: [
@@ -84,8 +86,8 @@ Ext.onReady(function() {
         }
     };
     Ext.tip.QuickTipManager.init();
-    Ext.create('Ext.grid.Panel', {
-        renderTo: Ext.get('news'),
+    var newsPanel = Ext.create('Ext.grid.Panel', {
+        flex: 1,
         autoScroll: true,
         title: 'Quelques news...',
         columns: [
@@ -124,9 +126,9 @@ Ext.onReady(function() {
                     direction: 'DESC'
                 }
             ],
-            filters : [
+            filters: [
                 {
-                    filterFn : function(item) {
+                    filterFn: function(item) {
                         return item.get('date_news') > Ext.Date.subtract(new Date(), Ext.Date.MONTH, 6);
                     }
                 }
@@ -204,7 +206,6 @@ Ext.onReady(function() {
             }
         ]
     });
-
     Ext.Ajax.request({
         url: 'ajax/getSessionRights.php',
         success: function(response) {
@@ -214,5 +215,233 @@ Ext.onReady(function() {
                 toolbars[0].show();
             }
         }
+    });
+    var pad = function(n, width, z) {
+        z = z || '0';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    };
+    var changingImage = Ext.create('Ext.Img', {
+        src: 'images/photos/imagevolley' + pad(Ext.Number.randomInt(1, 20), 3) + '.jpg'
+    });
+    var photosPanel = Ext.create('Ext.panel.Panel', {
+        flex: 1,
+        layout: 'fit',
+        items: [
+            changingImage
+        ]
+    });
+    var task = {
+        run: function() {
+            changingImage.setSrc('images/photos/imagevolley' + pad(Ext.Number.randomInt(1, 20), 3) + '.jpg');
+        },
+        interval: 5000
+    };
+    Ext.TaskManager.start(task);
+    var lastResultsPanel = Ext.create('Ext.grid.Panel', {
+        title: 'Derniers résultats',
+        flex: 1,
+        autoScroll: true,
+        plugins: [
+            Ext.create('Ext.ux.ColumnAutoWidthPlugin', {})
+        ],
+        columns: [
+            {
+                header: 'competition',
+                dataIndex: 'competition',
+                width: 180
+            },
+            {
+                header: 'division_journee',
+                dataIndex: 'division_journee',
+                width: 150
+            },
+            {
+                header: 'equipe_domicile',
+                dataIndex: 'equipe_domicile',
+                autoWidth: true,
+                renderer: function(val, meta, record) {
+                    if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
+                        return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                    }
+                    return val;
+                }
+            },
+            {
+                header: '',
+                dataIndex: 'score_equipe_dom',
+                autoWidth: true
+            },
+            {
+                header: '',
+                dataIndex: 'score_equipe_ext',
+                autoWidth: true
+            },
+            {
+                header: 'equipe_exterieur',
+                dataIndex: 'equipe_exterieur',
+                autoWidth: true,
+                renderer: function(val, meta, record) {
+                    if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
+                        return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                    }
+                    return val;
+                }
+            },
+            {
+                header: 'set1',
+                dataIndex: 'set1',
+                width: 50
+            },
+            {
+                header: 'set2',
+                dataIndex: 'set2',
+                width: 50
+            },
+            {
+                header: 'set3',
+                dataIndex: 'set3',
+                width: 50
+            },
+            {
+                header: 'set4',
+                dataIndex: 'set4',
+                width: 50
+            },
+            {
+                header: 'set5',
+                dataIndex: 'set5',
+                width: 50
+            },
+            {
+                header: 'date_reception',
+                dataIndex: 'date_reception',
+                autoWidth: true
+            }
+        ],
+        store: Ext.create('Ext.data.Store', {
+            fields: [
+                'competition',
+                'division_journee',
+                'equipe_domicile',
+                'equipe_exterieur',
+                'score_equipe_dom',
+                'score_equipe_ext',
+                'set1',
+                'set2',
+                'set3',
+                'set4',
+                'set5',
+                'date_reception'
+            ],
+            proxy: {
+                type: 'ajax',
+                url: 'ajax/getLastResults.php',
+                reader: {
+                    type: 'json',
+                    root: 'results'
+                }
+            },
+            autoLoad: true
+        })
+    });
+    var lastPostsPanel = Ext.create('Ext.grid.Panel', {
+        text: 'Derniers posts du forum...',
+        title: 'Derniers posts',
+        flex: 1,
+        autoScroll: true,
+        columns: [
+            {
+                header: 'Titre',
+                flex: 7,
+                dataIndex: 'title',
+                renderer: function(value, meta, record) {
+                    return Ext.String.format('<a href="{0}" target="_blank">{1}</a>', record.get('guid'), value);
+                }
+            },
+            {
+                header: 'Auteur',
+                flex: 4,
+                dataIndex: 'creator'
+            },
+            {
+                header: 'Catégorie',
+                flex: 3,
+                dataIndex: 'category'
+            },
+            {
+                header: 'Date',
+                flex: 3,
+                dataIndex: 'pubdate',
+                xtype: 'datecolumn',
+                format: 'd/m/Y h:i'
+            }
+        ],
+        store: Ext.create('Ext.data.Store', {
+            fields: [
+                'title',
+                'creator',
+                'category',
+                {
+                    name: 'pubdate',
+                    type: 'date'
+                },
+                'description',
+                'guid'
+            ],
+            proxy: {
+                type: 'ajax',
+                url: 'ajax/getLastPosts.php',
+                reader: {
+                    type: 'json',
+                    root: 'results'
+                }
+            },
+            filters: [
+                function(item) {
+                    return item.get('pubdate') > Date.parse('01/01/2013');
+                }
+            ],
+            autoLoad: true
+        })
+    });
+    Ext.create('Ext.panel.Panel', {
+        layout: 'border',
+        width: '100%',
+        height: '100%',
+        frame : true,
+        renderTo: Ext.get('accueil'),
+        items: [
+            {
+                region: 'north',
+                flex: 1,
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
+                },
+                defaults: {
+                    margin: 10
+                },
+                items: [
+                    newsPanel,
+                    photosPanel
+                ]
+            },
+            {
+                region: 'center',
+                flex: 2,
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                defaults: {
+                    margin: 10
+                },
+                items: [
+                    lastResultsPanel,
+                    lastPostsPanel
+                ]
+            }
+        ]
     });
 });
