@@ -148,6 +148,41 @@ Ext.onReady(function() {
                                 ]
                             }).show();
                         }
+                    },
+                    {
+                        text: 'Règlements',
+                        menu: [
+                            {
+                                text: 'Général',
+                                handler: function() {
+                                    window.open('reglements/ReglementGeneral.pdf', '_blank');
+                                }
+                            },
+                            {
+                                text: 'Féminin',
+                                handler: function() {
+                                    window.open('reglements/ReglementFeminin.pdf', '_blank');
+                                }
+                            },
+                            {
+                                text: 'Masculin',
+                                handler: function() {
+                                    window.open('reglements/ReglementMasculin.pdf', '_blank');
+                                }
+                            },
+                            {
+                                text: 'Koury Hanna',
+                                handler: function() {
+                                    window.open('reglements/ReglementKouryHanna.pdf', '_blank');
+                                }
+                            },
+                            {
+                                text: 'Isoardi',
+                                handler: function() {
+                                    window.open('reglements/ReglementIsoardi.pdf', '_blank');
+                                }
+                            }
+                        ]
                     }
                 ]
             },
