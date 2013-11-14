@@ -1,6 +1,4 @@
 Ext.onReady(function() {
-    Ext.Loader.setPath('Ext.ux', 'js/libs');
-    Ext.require('Ext.ux.ColumnAutoWidthPlugin');
     Ext.define('News', {
         extend: 'Ext.data.Model',
         fields: [
@@ -242,9 +240,6 @@ Ext.onReady(function() {
         title: 'Derniers résultats',
         flex: 1,
         autoScroll: true,
-        plugins: [
-            Ext.create('Ext.ux.ColumnAutoWidthPlugin', {})
-        ],
         columns: [
             {
                 header: 'competition',
@@ -259,7 +254,7 @@ Ext.onReady(function() {
             {
                 header: 'equipe_domicile',
                 dataIndex: 'equipe_domicile',
-                autoWidth: true,
+                width: 120,
                 renderer: function(val, meta, record) {
                     if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
                         return '<span style="color:green;font-weight:bold">' + val + '</span>';
@@ -270,17 +265,17 @@ Ext.onReady(function() {
             {
                 header: '',
                 dataIndex: 'score_equipe_dom',
-                autoWidth: true
+                width: 15
             },
             {
                 header: '',
                 dataIndex: 'score_equipe_ext',
-                autoWidth: true
+                width: 15
             },
             {
                 header: 'equipe_exterieur',
                 dataIndex: 'equipe_exterieur',
-                autoWidth: true,
+                width: 120,
                 renderer: function(val, meta, record) {
                     if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
                         return '<span style="color:green;font-weight:bold">' + val + '</span>';
@@ -316,7 +311,7 @@ Ext.onReady(function() {
             {
                 header: 'date_reception',
                 dataIndex: 'date_reception',
-                autoWidth: true
+                width: 80
             }
         ],
         store: Ext.create('Ext.data.Store', {
@@ -407,9 +402,9 @@ Ext.onReady(function() {
     });
     Ext.create('Ext.panel.Panel', {
         layout: 'border',
-        width: '100%',
-        height: '100%',
-        frame : true,
+        width: 1000,
+        height: 960,
+        frame: true,
         renderTo: Ext.get('accueil'),
         items: [
             {
