@@ -128,7 +128,7 @@ Ext.onReady(function() {
                 text: 'Documents',
                 menu: [
                     {text: 'Infos Utiles', handler: function() {
-                            window.open('infos_utiles/index.html', '_blank');
+                            window.open('index_infos_utiles.php', '_self', false);
                         }},
                     {
                         text: 'Agenda',

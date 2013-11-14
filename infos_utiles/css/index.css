@@ -1,17 +1,9 @@
-.html
-{
-	background-color: #7F7F7F;
-}
-
 #page
 {
 	z-index: 1;
 	width: 939px;
 	min-height: 417.5281690140839px;
 	background-image: none;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #000000;
 	background-color: #FFFFFF;
 	margin-left: auto;
 	margin-right: auto;
@@ -583,12 +575,6 @@
 	min-height: 206px;
 	margin-top: 8px;
 	position: relative;
-}
-
-body
-{
-	padding-top: 35px;
-	padding-bottom: 36px;
 }
 
 #page .verticalspacer
