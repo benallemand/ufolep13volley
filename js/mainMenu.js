@@ -268,6 +268,18 @@ Ext.onReady(function() {
                                 }
                             });
                             return;
+                        case 'chemin_image' :
+                            fields.push(record.get('Field'));
+                            columns.push({
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field'),
+                                renderer: function(val) {
+                                    return '<img src="' + val + '">';
+                                }
+                            });
+                            return;
+                        default :
+                            break;
                     }
                     switch (record.get('Type')) {
                         case 'smallint(3)' :
