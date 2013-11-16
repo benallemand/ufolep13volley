@@ -36,7 +36,7 @@ class Rest {
         foreach ($columns as $column) {
             switch ($column['Type']) {
                 case 'tinyint(1)' :
-                    $sql .= " BIN(" . $column['Field'] . ") AS " . $column['Field'] . ",";
+                    $sql .= $column['Field'] . "+0 AS " . $column['Field'] . ",";
                     break;
                 case 'date' :
                     $sql .= " DATE_FORMAT(" . $column['Field'] . ", '%d/%m/%Y') AS " . $column['Field'] . ",";
