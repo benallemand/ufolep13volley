@@ -1071,6 +1071,17 @@ function affich_annuaire()
 //mysql_close(); 
 }
 
+function getPlayersFromTeam($id_equipe) {
+    $players = array();
+    conn_db();
+    $sql = "SELECT CONCAT(prenom, ' ', nom) AS player FROM joueurs WHERE id_equipe = $id_equipe";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $players[] = $data['player'];
+    }
+    return $players;
+}
+
 //************************************************************************************************
 //************************************************************************************************
 function affich_details_equipe($id_equipe, $compet)
@@ -1147,6 +1158,7 @@ function affich_details_equipe($id_equipe, $compet)
         } else {
             $fdm = $data['fdm'];
         }
+        $joueurs = implode(',', getPlayersFromTeam($id_equipe));
 
 //on affiche les données
         echo '  <div class="photo_equipe">';
@@ -1221,8 +1233,15 @@ function affich_details_equipe($id_equipe, $compet)
         } else {
             echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
         }
-
         echo'	  </tr>';
+        if (estMemeClassement($id_equipe)) {
+            if (strlen($joueurs) !== 0) {
+                echo'      <tr class="tr_130">';
+                echo'		<td class="titre_details">Joueurs :</td>';
+                echo'		<td class="datas_details">' . $joueurs . '<td>';
+                echo'	  </tr>';
+            }
+        }
         echo'    </table>';
         echo'  </div>';
     }
