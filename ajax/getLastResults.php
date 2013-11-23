@@ -24,7 +24,7 @@ left join competitions c on c.code_competition =  m.code_competition
 left join equipes e1 on e1.id_equipe =  m.id_equipe_dom
 left join equipes e2 on e2.id_equipe =  m.id_equipe_ext
 where m.score_equipe_dom!=0 OR m.score_equipe_ext!=0
-order by date_reception DESC LIMIT 20";
+order by date_reception DESC";
 $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 $results = array();
 while ($data = mysql_fetch_assoc($req)) {
