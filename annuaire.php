@@ -21,14 +21,23 @@
             <div id="contenu">
                 <div id="titre"><H1>Annuaire Equipes</H1></div>
 
-                <div id="annuaire"><div id="details_equipe"><?php
-                        if (isset($_GET['id']) && isset($_GET['c'])) {
+                <?php
+                if (isset($_GET['id']) && isset($_GET['c'])) {
+                    ?>
+                    <div id="annuaire"><div id="details_equipe">
+                            <?php
                             affich_details_equipe($_GET['id'], $_GET['c']);
-                        } else {
-                            affich_annuaire();
-                        }
-                        ?>
-                    </div></div>
+                            ?>
+                        </div></div>
+                    <?php
+                } else {
+                    ?>
+                    <div id="annuaire_complet"></div>
+                    <script type="text/javascript" src="js/annuaire.js"></script>
+                    <?php
+                }
+                ?>
+
             </div>
         </div>
     </BODY>
