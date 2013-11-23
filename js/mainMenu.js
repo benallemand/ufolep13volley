@@ -257,6 +257,7 @@ Ext.onReady(function() {
                                     xtype: 'combo',
                                     displayField: 'nom_equipe',
                                     valueField: 'id_equipe',
+                                    queryMode: 'local',
                                     store: storeEquipes
                                 },
                                 renderer: function(val) {
@@ -408,6 +409,84 @@ Ext.onReady(function() {
                                         tooltip: 'Ajouter',
                                         handler: function(button) {
                                             button.up('grid').getStore().insert(0, button.up('grid').getStore().getProxy().getModel());
+                                            var formFields = [];
+                                            Ext.each(button.up('grid').getStore().getProxy().getModel().getFields(), function(field) {
+                                                var formField = {
+                                                    xtype: 'textfield',
+                                                    fieldLabel: field.name,
+                                                    name: field.name
+                                                };
+                                                switch (field.name) {
+                                                    case 'id_equipe' :
+                                                        formField = {
+                                                            xtype: 'combo',
+                                                            queryMode: 'local',
+                                                            fieldLabel: field.name,
+                                                            name: field.name,
+                                                            displayField: 'nom_equipe',
+                                                            valueField: 'id_equipe',
+                                                            store: Ext.create('Ext.data.Store', {
+                                                                fields: [
+                                                                    {
+                                                                        name: 'id_equipe',
+                                                                        type: 'int'
+                                                                    },
+                                                                    'nom_equipe'
+                                                                ],
+                                                                proxy: {
+                                                                    type: 'rest',
+                                                                    url: 'ajax/equipes.php',
+                                                                    reader: {
+                                                                        type: 'json',
+                                                                        root: 'results'
+                                                                    }
+                                                                },
+                                                                autoLoad: true
+                                                            })
+
+                                                        };
+                                                        formFields.push(formField);
+                                                        return;
+                                                }
+                                                switch (field.type.type) {
+                                                    case 'int' :
+                                                        formField = {
+                                                            xtype: 'numberfield',
+                                                            fieldLabel: field.name,
+                                                            name: field.name
+                                                        };
+                                                        break;
+                                                    case 'date' :
+                                                        formField = {
+                                                            xtype: 'datefield',
+                                                            fieldLabel: field.name,
+                                                            dateFormat: field.dateFormat,
+                                                            name: field.name
+                                                        };
+                                                        break;
+                                                }
+                                                formFields.push(formField);
+                                            });
+                                            var windowCreate = Ext.create('Ext.window.Window', {
+                                                title: 'Ajout',
+                                                height: 500,
+                                                width: 700,
+                                                layout: 'fit',
+                                                items: [
+                                                    {
+                                                        xtype: 'form',
+                                                        layout: 'anchor',
+                                                        autoScroll: true,
+                                                        defaults: {
+                                                            anchor: '90%',
+                                                            margin: 10
+                                                        },
+                                                        items: formFields
+                                                    }
+                                                ]
+                                            });
+                                            windowCreate.down('form').getForm().loadRecord(button.up('grid').getStore().getAt(0));
+                                            windowCreate.show();
                                         }
                                     },
                                     {
