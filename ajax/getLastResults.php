@@ -4,7 +4,9 @@ require_once "../includes/fonctions_inc.php";
 
 conn_db();
 /** Format UTF8 pour afficher correctement les accents */
-mysql_query("SET NAMES UTF8");
+if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+    mysql_query("SET NAMES UTF8");
+}
 $sql = "select 
 c.libelle AS competition, 
 IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), j.nommage) AS division_journee, 

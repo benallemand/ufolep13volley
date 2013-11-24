@@ -15,7 +15,6 @@ function estMemeClassement($id_equipe) {
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     conn_db();
-    mysql_query("SET NAMES UTF8");
     $sql = "select * from classements 
         where division in 
         (select division from classements where id_equipe=$sessionIdEquipe)
