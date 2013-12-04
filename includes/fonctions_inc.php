@@ -1081,6 +1081,20 @@ function getPlayersFromTeam($id_equipe) {
     return $players;
 }
 
+function isLatLong($localisation) {
+    $latLongStrings = explode(',', $localisation);
+    if(count($latLongStrings) !== 2) {
+        return false;
+    }
+    if(floatval($latLongStrings[0]) === 0) {
+        return false;
+    }
+    if(floatval($latLongStrings[1]) === 0) {
+        return false;
+    }
+    return true;
+}
+
 //************************************************************************************************
 //************************************************************************************************
 function affich_details_equipe($id_equipe, $compet)
@@ -1217,6 +1231,13 @@ function affich_details_equipe($id_equipe, $compet)
         echo'		<td class="titre_details">Localisation GPS :</td>';
         echo'		<td class="datas_details">' . $localisation . '<td>';
         echo'	  </tr>';
+        $localisation = str_replace(' ', '', $localisation);
+        if (isLatLong($localisation)) {
+            echo'      <tr class="tr_130">';
+            echo'		<td class="titre_details">Plan :</td>';
+            echo'		<td class="datas_details"><iframe width="450" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/?ie=UTF8&t=m&q='.$localisation.'&z=12&output=embed"></iframe><td>';
+            echo'	  </tr>';
+        }
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Site Web :</td>';
         echo'		<td class="datas_details">' . $site_web . '<td>';

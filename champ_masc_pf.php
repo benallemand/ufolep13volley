@@ -32,6 +32,8 @@ if ($div == "") {
         <link href="http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all-neptune.css" rel="stylesheet" />
         <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
         <script type="text/javascript" src="js/banniere.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
+        <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
     </HEAD>
 

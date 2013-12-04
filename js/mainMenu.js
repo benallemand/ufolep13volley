@@ -116,6 +116,67 @@ Ext.onReady(function() {
                     {text: 'Annuaire Equipes', handler: function() {
                             window.open('annuaire.php', '_self', false);
                         }},
+                    {text: 'Localisation des Gymnases', handler: function() {
+                            Ext.define('Equipes', {
+                                extend: 'Ext.data.Model',
+                                fields: [
+                                    'gymnase',
+                                    'localisation'
+                                ]
+                            });
+                            Ext.create('Ext.data.Store', {
+                                model: 'Equipes',
+                                proxy: {
+                                    type: 'ajax',
+                                    url: 'ajax/details_equipes.php',
+                                    reader: {
+                                        type: 'json',
+                                        root: 'results'
+                                    }
+                                },
+                                autoLoad: true,
+                                listeners: {
+                                    load: function(store, records) {
+                                        var markers = [];
+                                        Ext.each(records, function(record) {
+                                            var latLongStrings = record.get('localisation').split(',');
+                                            if (latLongStrings.length === 2) {
+                                                var lat = parseFloat(latLongStrings[0]);
+                                                var long = parseFloat(latLongStrings[1]);
+                                                markers.push({
+                                                    lat: lat,
+                                                    lng: long,
+                                                    title: record.get('gymnase')
+                                                });
+                                            }
+                                        });
+                                        Ext.create('Ext.window.Window', {
+                                            title: 'Localisation des Gymnases',
+                                            maximizable: true,
+                                            modal: true,
+                                            width: 800,
+                                            height: 500,
+                                            layout: 'fit',
+                                            items: [
+                                                {
+                                                    xtype: 'gmappanel',
+                                                    width: '100%',
+                                                    height: 500,
+                                                    mapOptions: {
+                                                        zoom: 10,
+                                                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                                                    },
+                                                    center: {
+                                                        geoCodeAddr: 'Aix en provence'
+                                                    },
+                                                    markers: markers
+                                                }
+                                            ]
+                                        }).show();
+                                    }
+                                }
+                            });
+                        }},
                     {text: 'La Commission', handler: function() {
                             window.open('commission.php', '_self', false);
                         }},
