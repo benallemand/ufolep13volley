@@ -30,7 +30,7 @@ if (($file != "") && (file_exists("./fdm/" . basename($file)))) {
         <HEAD>
             <TITLE>UFOLEP 13 VOLLEY</TITLE>
             <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-            <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
+            <link rel="shortcut icon" href="favicon.ico" /><LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         </HEAD>
         <body onload="window.opener = self; window.setTimeout(\'self.close()\',3000)">
             <H1>Aucun document ne correspond à votre demande.</H1><BR/><BR/>

@@ -7,6 +7,7 @@
     <HEAD>
         <TITLE>Accueil - UFOLEP 13 VOLLEY</TITLE>
         <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <link rel="shortcut icon" href="favicon.ico" />
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all-neptune.css" rel="stylesheet" />
         <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
