@@ -120,6 +120,7 @@ Ext.onReady(function() {
                             Ext.define('Equipes', {
                                 extend: 'Ext.data.Model',
                                 fields: [
+                                    'id_equipe',
                                     'gymnase',
                                     'localisation'
                                 ]
@@ -146,7 +147,37 @@ Ext.onReady(function() {
                                                 markers.push({
                                                     lat: lat,
                                                     lng: long,
-                                                    title: record.get('gymnase')
+                                                    title: record.get('gymnase'),
+                                                    listeners: {
+                                                        click: function(e) {
+                                                            var markerInsance = this;
+                                                            var storeEquipes = Ext.create('Ext.data.Store', {
+                                                                fields: [
+                                                                    'id_equipe',
+                                                                    'nom_equipe'
+                                                                ],
+                                                                proxy: {
+                                                                    type: 'ajax',
+                                                                    url: 'ajax/equipes.php',
+                                                                    reader: {
+                                                                        type: 'json',
+                                                                        root: 'results'
+                                                                    }
+                                                                },
+                                                                autoLoad: false
+                                                            });
+                                                            storeEquipes.load(function() {
+                                                                var rec = storeEquipes.findRecord('id_equipe', record.get('id_equipe'));
+                                                                var infowindow = new google.maps.InfoWindow({
+                                                                    content: '<h3>Equipe : </h3>' + rec.get('nom_equipe') + '<br>' +
+                                                                            '<h3>Gymnase : </h3>' + record.get('gymnase') + '<br>' +
+                                                                            '<h3>Lien Google Maps : </h3><a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + record.get('localisation') + '\" target=\"_blank\">Cliquez ici</a>'
+                                                                });
+                                                                infowindow.open(markerInsance.map, markerInsance);
+                                                            }
+                                                            );
+                                                        }
+                                                    }
                                                 });
                                             }
                                         });
