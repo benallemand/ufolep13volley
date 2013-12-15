@@ -80,7 +80,7 @@ class Rest {
                 }
                 switch ($column['Type']) {
                     case 'tinyint(1)' :
-                        $sql .= "$key=BIT(\"$value\"),";
+                        $sql .= "$key=$value,";
                         break;
                     case 'date' :
                         $sql .= "$key=DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
@@ -167,7 +167,7 @@ class Rest {
                 }
                 switch ($column['Type']) {
                     case 'tinyint(1)' :
-                        $sql .= "BIT(\"$value\"),";
+                        $sql .= "$value,";
                         break;
                     case 'date' :
                         $sql .= "DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
