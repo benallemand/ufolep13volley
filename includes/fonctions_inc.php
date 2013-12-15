@@ -1187,19 +1187,19 @@ function affich_details_equipe($id_equipe, $compet)
         echo'    <table>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Responsable :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $responsable . '"/><td>';
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($responsable) . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Téléphone 1 :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $telephone_1 . '"/><td>';
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($telephone_1) . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Téléphone 2 :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $telephone_2 . '"/><td>';
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($telephone_2) . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Email :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $email . '"/><td>';
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($email) . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Réception le :</td>';
@@ -1243,7 +1243,7 @@ function affich_details_equipe($id_equipe, $compet)
         if (strlen($joueurs) !== 0) {
             echo'      <tr class="tr_130">';
             echo'		<td class="titre_details">Joueurs :</td>';
-            echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $joueurs . '"/><td>';
+            echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($joueurs) . '"/><td>';
             echo'	  </tr>';
         }
         echo'    </table>';

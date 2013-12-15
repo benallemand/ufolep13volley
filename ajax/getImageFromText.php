@@ -2,18 +2,18 @@
 
 header("Content-type: image/png");
 
-$string = $_REQUEST['text'];
+$string = base64_decode($_REQUEST['text']);
 
-$font  = 2;
-$width  = imagefontwidth($font) * strlen($string);
+$font = 2;
+$width = imagefontwidth($font) * strlen($string);
 $height = imagefontheight($font);
 
-$image = imagecreatetruecolor ($width,$height);
-$white = imagecolorallocate ($image,255,255,255);
-$black = imagecolorallocate ($image,0,0,0);
-imagefill($image,0,0,$white);
+$image = imagecreatetruecolor($width, $height);
+$white = imagecolorallocate($image, 255, 255, 255);
+$black = imagecolorallocate($image, 0, 0, 0);
+imagefill($image, 0, 0, $white);
 
-imagestring ($image,$font,0,0,$string,$black);
+imagestring($image, $font, 0, 0, $string, $black);
 
-imagepng ($image);
+imagepng($image);
 imagedestroy($image);
