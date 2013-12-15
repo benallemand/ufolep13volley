@@ -2,7 +2,7 @@
 
 header("Content-type: image/png");
 
-$string = base64_decode($_REQUEST['text']);
+$string = utf8_decode(base64_decode($_REQUEST['text']));
 
 $font = 2;
 $width = imagefontwidth($font) * strlen($string);
