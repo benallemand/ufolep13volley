@@ -10,6 +10,8 @@ if ($_SERVER['SERVER_NAME'] !== 'localhost') {
 $sql = "select 
 c.libelle AS competition, 
 IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), j.nommage) AS division_journee, 
+c.code_competition AS code_competition,
+m.division AS division,
 e1.nom_equipe AS equipe_domicile,
 m.score_equipe_dom+0 AS score_equipe_dom, 
 m.score_equipe_ext+0 AS score_equipe_ext, 
@@ -30,6 +32,11 @@ order by date_reception DESC";
 $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 $results = array();
 while ($data = mysql_fetch_assoc($req)) {
+    if ($data['code_competition'] === 'm') {
+        $data['url'] = 'champ_masc.php?d=' . $data['division'];
+    } else if ($data['code_competition'] === 'f') {
+        $data['url'] = 'champ_fem.php?d=' . $data['division'];
+    }
     $results[] = $data;
 }
 echo json_encode($results);

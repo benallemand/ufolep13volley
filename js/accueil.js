@@ -249,7 +249,11 @@ Ext.onReady(function() {
             {
                 header: 'division_journee',
                 dataIndex: 'division_journee',
-                width: 150
+                width: 150,
+                renderer: function(val, meta, record) {
+                    var url = record.get('url');
+                    return '<a href="' + url + '" target="blank">' + val + '</a>';
+                }
             },
             {
                 header: 'equipe_domicile',
@@ -327,7 +331,8 @@ Ext.onReady(function() {
                 'set3',
                 'set4',
                 'set5',
-                'date_reception'
+                'date_reception',
+                'url'
             ],
             proxy: {
                 type: 'ajax',
