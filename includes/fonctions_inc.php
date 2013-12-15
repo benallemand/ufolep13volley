@@ -396,7 +396,7 @@ function affich_journee($compet, $div)
                 echo'   <tr>';
                 echo'		<td>' . $retard . '</td>';
                 echo'		<td class="code_match">' . $match . '</td>';
-                echo'		<td class="' . $class_report . '"><input value="' . $horaire . '" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
+                echo'		<td class="heure"><input value="' . $horaire . '" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
                 echo'		<td class="' . $class_report . '"><input value="' . $date . '" name="date_reception" type="text" size="8" maxlength="10" /></td>';
                 echo'		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $data['id_equipe_dom']) . '</td>';
                 echo'		<td class="score"><input value="' . $score1 . '" name="score_equipe_dom" type="text" size="1" maxlength="1" /></td>';
@@ -443,7 +443,6 @@ function affich_journee($compet, $div)
                 echo'	<input value="' . $data['id_equipe_dom'] . '" name="id_equipe_dom" type="hidden" />';
                 echo'	<input value="' . $data['id_equipe_ext'] . '" name="id_equipe_ext" type="hidden" />';
                 echo'	<input value="' . $date . '" name="date_originale" type="hidden" />';
-                echo'	<input value="' . $horaire . '" name="heure_originale" type="hidden" />';
                 echo'  </form>';
                 echo'</table>';
                 echo'</td></tr>';
@@ -452,7 +451,7 @@ function affich_journee($compet, $div)
                 echo '   <tr>';
                 echo '		<td>' . $retard . '</td>';
                 echo '		<td class="code_match">' . $match . '</td>';
-                echo '		<td class="' . $class_report . '">' . $horaire . '</td>';
+                echo '		<td class="heure">' . $horaire . '</td>';
                 echo '		<td class="' . $class_report . '">' . $date . '</td>';
                 echo '		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $data['id_equipe_dom']) . '</td>';
                 echo '		<td class="score">' . $score1 . '</td>';
@@ -795,7 +794,7 @@ function affich_pf_coupe($compet)
                 echo'   <tr>';
                 echo'		<td>&nbsp;</td>';
                 echo'		<td class="code_match">' . $match . '</td>';
-                echo'		<td class="' . $class_report . '"><input value="' . $horaire . '" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
+                echo'		<td class="heure"><input value="' . $horaire . '" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
                 echo'		<td class="' . $class_report . '"><input value="' . $date . '" name="date_reception" type="text" size="8" maxlength="10" /></td>';
                 echo'		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $id_equipe_dom) . '</td>';
                 echo'		<td class="score"><input value="' . $score1 . '" name="score_equipe_dom" type="text" size="1" maxlength="1" /></td>';
@@ -842,7 +841,6 @@ function affich_pf_coupe($compet)
                 echo'	<input value="' . $id_equipe_dom . '" name="id_equipe_dom" type="hidden" />';
                 echo'	<input value="' . $id_equipe_ext . '" name="id_equipe_ext" type="hidden" />';
                 echo'	<input value="' . $date . '" name="date_originale" type="hidden" />';
-                echo'	<input value="' . $horaire . '" name="heure_originale" type="hidden" />';
                 echo'  </form>';
                 echo'</table>';
                 echo'</td></tr>';
@@ -852,7 +850,7 @@ function affich_pf_coupe($compet)
                 echo '   <tr>';
                 echo '		<td>&nbsp;</td>';
                 echo '		<td class="code_match">' . $match . '</td>';
-                echo '		<td class="' . $class_report . '">' . $horaire . '</td>';
+                echo '		<td class="heure">' . $horaire . '</td>';
                 echo '		<td class="' . $class_report . '">' . $date . '</td>';
                 echo '		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $id_equipe_dom) . '</td>';
                 echo '		<td class="score">' . $score1 . '</td>';
@@ -1085,13 +1083,13 @@ function getPlayersFromTeam($id_equipe) {
 
 function isLatLong($localisation) {
     $latLongStrings = explode(',', $localisation);
-    if (count($latLongStrings) !== 2) {
+    if(count($latLongStrings) !== 2) {
         return false;
     }
-    if (floatval($latLongStrings[0]) === 0) {
+    if(floatval($latLongStrings[0]) === 0) {
         return false;
     }
-    if (floatval($latLongStrings[1]) === 0) {
+    if(floatval($latLongStrings[1]) === 0) {
         return false;
     }
     return true;
@@ -1237,7 +1235,7 @@ function affich_details_equipe($id_equipe, $compet)
         if (isLatLong($localisation)) {
             echo'      <tr class="tr_130">';
             echo'		<td class="titre_details">Plan :</td>';
-            echo'		<td class="datas_details"><iframe width="450" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/?ie=UTF8&t=m&q=' . $localisation . '&z=12&output=embed"></iframe><td>';
+            echo'		<td class="datas_details"><iframe width="450" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/?ie=UTF8&t=m&q='.$localisation.'&z=12&output=embed"></iframe><td>';
             echo'	  </tr>';
         }
         echo'      <tr class="tr_130">';
