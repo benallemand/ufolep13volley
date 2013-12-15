@@ -1187,35 +1187,19 @@ function affich_details_equipe($id_equipe, $compet)
         echo'    <table>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Responsable :</td>';
-        if (estMemeClassement($id_equipe)) {
-            echo'		<td class="datas_details">' . $responsable . '<td>';
-        } else {
-            echo'		<td class="datas_details">Accessible aux utilisateurs connectés et évoluant dans le même championat<td>';
-        }
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $responsable . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Téléphone 1 :</td>';
-        if (estMemeClassement($id_equipe)) {
-            echo'		<td class="datas_details">' . $telephone_1 . '<td>';
-        } else {
-            echo'		<td class="datas_details">Accessible aux utilisateurs connectés et évoluant dans le même championat<td>';
-        }
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $telephone_1 . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Téléphone 2 :</td>';
-        if (estMemeClassement($id_equipe)) {
-            echo'		<td class="datas_details">' . $telephone_2 . '<td>';
-        } else {
-            echo'		<td class="datas_details">Accessible aux utilisateurs connectés et évoluant dans le même championat<td>';
-        }
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $telephone_2 . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Email :</td>';
-        if (estMemeClassement($id_equipe)) {
-            echo'		<td class="datas_details">' . $email . '<td>';
-        } else {
-            echo'		<td class="datas_details">Accessible aux utilisateurs connectés et évoluant dans le même championat<td>';
-        }
+        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $email . '"/><td>';
         echo'	  </tr>';
         echo'      <tr class="tr_130">';
         echo'		<td class="titre_details">Réception le :</td>';
@@ -1256,13 +1240,11 @@ function affich_details_equipe($id_equipe, $compet)
             echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
         }
         echo'	  </tr>';
-        if (estMemeClassement($id_equipe)) {
-            if (strlen($joueurs) !== 0) {
-                echo'      <tr class="tr_130">';
-                echo'		<td class="titre_details">Joueurs :</td>';
-                echo'		<td class="datas_details">' . $joueurs . '<td>';
-                echo'	  </tr>';
-            }
+        if (strlen($joueurs) !== 0) {
+            echo'      <tr class="tr_130">';
+            echo'		<td class="titre_details">Joueurs :</td>';
+            echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . $joueurs . '"/><td>';
+            echo'	  </tr>';
         }
         echo'    </table>';
         echo'  </div>';
