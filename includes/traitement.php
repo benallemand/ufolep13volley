@@ -398,14 +398,6 @@ function maj_result()
             $report = 0;
         }
     }
-    if (isset($_POST['heure_originale']) && !empty($_POST['heure_originale'])) {
-        if ($_POST['heure_originale'] != $_POST['heure_reception']) {
-            $report = 1;
-        } else {
-            $report = 0;
-        }
-    }
-
 // Mise à jour de la table ========================================================================================
     $sql = 'UPDATE matches SET score_equipe_dom = \'' . $score_equipe_dom . '\', score_equipe_ext = \'' . $score_equipe_ext . '\', set_1_dom = \'' . $set_1_dom . '\', set_1_ext = \'' . $set_1_ext . '\', set_2_dom = \'' . $set_2_dom . '\', set_2_ext = \'' . $set_2_ext . '\', set_3_dom = \'' . $set_3_dom . '\', set_3_ext = \'' . $set_3_ext . '\', set_4_dom = \'' . $set_4_dom . '\', set_4_ext = \'' . $set_4_ext . '\', set_5_dom = \'' . $set_5_dom . '\', set_5_ext = \'' . $set_5_ext . '\', gagnea5_dom = \'' . $gagnea5_dom . '\', gagnea5_ext = \'' . $gagnea5_ext . '\', forfait_dom = \'' . $forfait_dom . '\', forfait_ext = \'' . $forfait_ext . '\', date_reception = \'' . $date_reception . '\', heure_reception = \'' . $heure_reception . '\', report = \'' . $report . '\' WHERE code_match = \'' . $code_match . '\'';
 
