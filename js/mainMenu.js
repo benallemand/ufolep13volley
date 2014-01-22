@@ -72,15 +72,6 @@ Ext.onReady(function() {
                         }},
                     {text: 'Poule 9', handler: function() {
                             window.open('coupe.php?d=9', '_self', false);
-                        }},
-                    {text: 'Poule 10', handler: function() {
-                            window.open('coupe.php?d=10', '_self', false);
-                        }},
-                    {text: 'Poule 11', handler: function() {
-                            window.open('coupe.php?d=11', '_self', false);
-                        }},
-                    {text: 'Phases Finales', handler: function() {
-                            window.open('coupe_pf.php?c=cf', '_self', false);
                         }}
                 ]
             },
@@ -102,8 +93,8 @@ Ext.onReady(function() {
                     {text: 'Poule 5', handler: function() {
                             window.open('coupe_kh.php?d=5', '_self', false);
                         }},
-                    {text: 'Phase Finale', handler: function() {
-                            window.open('coupe_pf.php?c=kf', '_self', false);
+                    {text: 'Poule 6', handler: function() {
+                            window.open('coupe_kh.php?d=6', '_self', false);
                         }}
                 ]
             },
