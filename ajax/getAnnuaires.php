@@ -6,7 +6,7 @@ conn_db();
         if ($_SERVER['SERVER_NAME'] !== 'localhost') {
             mysql_query("SET NAMES UTF8");
         }
-$sql = 'SELECT DISTINCT(code_competition) FROM equipes';
+$sql = 'SELECT DISTINCT(code_competition) FROM classements';
 $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 while ($data = mysql_fetch_assoc($req)) {
     $code_competition = $data['code_competition'];
