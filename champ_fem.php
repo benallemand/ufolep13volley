@@ -29,12 +29,14 @@ if ($div == "") {
             <div id="banniere"></div>
             <div id="menu"></div>
             <div id="contenu">
-                <div id="titre"><H1>Championnat Féminin</H1></div>
+                <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Féminin</H1></div>
                 <?php affich_connecte(); ?>
                 <div id="classement"><?php affich_classement("f", $div); ?></div>
-                <div id="infos"><?php echo "Date limite des matches : ";
-                affich_infos("f", $div);
-                ?></div> 
+                <div id="infos">
+                    <?php echo "Date limite des matches : ";
+                    affich_infos("f", $div);
+                    ?>
+                </div> 
                 <div id="matches"><?php affich_journee("f", $div); ?></div>
 <?php affich_admin_site(); ?>
             </div>
