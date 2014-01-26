@@ -345,7 +345,7 @@ function maj_result()
     $set_3_dom = $_POST['set_3_dom'];
     $set_4_dom = $_POST['set_4_dom'];
     $set_5_dom = $_POST['set_5_dom'];
-    if (empty($gagnea5_dom)) {
+    if (empty($_POST['gagnea5_dom'])) {
         $gagnea5_dom = 0;
     } else {
         $gagnea5_dom = $_POST['gagnea5_dom'];
@@ -355,7 +355,7 @@ function maj_result()
     $set_3_ext = $_POST['set_3_ext'];
     $set_4_ext = $_POST['set_4_ext'];
     $set_5_ext = $_POST['set_5_ext'];
-    if (empty($gagnea5_ext)) {
+    if (empty($_POST['gagnea5_ext'])) {
         $gagnea5_ext = 0;
     } else {
         $gagnea5_ext = $_POST['gagnea5_ext'];
