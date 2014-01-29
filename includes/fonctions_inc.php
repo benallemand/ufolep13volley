@@ -37,6 +37,10 @@ function getLastResults() {
             $data['url'] = 'champ_masc.php?d=' . $data['division'];
         } else if ($data['code_competition'] === 'f') {
             $data['url'] = 'champ_fem.php?d=' . $data['division'];
+        } else if ($data['code_competition'] === 'kh') {
+            $data['url'] = 'coupe_kh.php?d=' . $data['division'];
+        } else if ($data['code_competition'] === 'c') {
+            $data['url'] = 'coupe.php?d=' . $data['division'];
         }
         $results[] = $data;
     }
