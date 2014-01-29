@@ -10,7 +10,7 @@ function getLastResults() {
     }
     $sql = "select 
     c.libelle AS competition, 
-    IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), j.nommage) AS division_journee, 
+    IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
     c.code_competition AS code_competition,
     m.division AS division,
     e1.nom_equipe AS equipe_domicile,
