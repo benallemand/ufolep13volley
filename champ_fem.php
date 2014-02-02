@@ -22,6 +22,11 @@ if ($div == "") {
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
+        <script type="text/javascript">
+            var competition = 'f';
+            var division = '<?php echo $div; ?>';
+        </script>
+        <script type="text/javascript" src="js/classement.js"></script>
     </HEAD>
 
     <BODY>
@@ -31,7 +36,7 @@ if ($div == "") {
             <div id="contenu">
                 <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Féminin</H1></div>
                 <?php affich_connecte(); ?>
-                <div id="classement"><?php affich_classement("f", $div); ?></div>
+                <div id="classement"></div>
                 <div id="infos">
                     <?php echo "Date limite des matches : ";
                     affich_infos("f", $div);

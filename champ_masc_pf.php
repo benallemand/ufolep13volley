@@ -35,6 +35,11 @@ if ($div == "") {
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
         <script type="text/javascript" src="js/mainMenu.js"></script>
+        <script type="text/javascript">
+            var competition = 'pf';
+            var division = '<?php echo $div; ?>';
+        </script>
+        <script type="text/javascript" src="js/classement.js"></script>
     </HEAD>
 
     <BODY>
@@ -44,7 +49,7 @@ if ($div == "") {
             <div id="contenu">
                 <div id="titre"><H1><?php echo $div_nom; ?></H1></div>
                 <?php affich_connecte(); ?>
-                <div id="classement"><?php affich_classement("pf", $div); ?></div>
+                <div id="classement"></div>
                 <div id="matches"><?php affich_journee("pf", $div); ?></div>
                 <?php affich_admin_site(); ?>
             </div>

@@ -586,6 +586,7 @@ function affich_infos($compet, $div)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 03/05/2012
  */ {
+    conn_db();
     $sql = 'SELECT date_limite FROM dates_limite WHERE code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
@@ -2004,6 +2005,106 @@ function calcul_classement($id_equipe, $compet, $division)
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
 
     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+}
+
+function getClassement($compet, $div) {
+    conn_db();
+    if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+        mysql_query("SET NAMES UTF8");
+    }
+    $sql = 'SELECT '
+            . 'c.id_equipe AS id_equipe,  '
+            . 'c.code_competition AS code_competition,  '
+            . 'e.nom_equipe AS equipe,  '
+            . 'c.points AS points,  '
+            . 'c.joues AS joues,  '
+            . 'c.gagnes AS gagnes,  '
+            . 'c.perdus AS perdus,  '
+            . 'c.sets_pour AS sets_pour,  '
+            . 'c.sets_contre AS sets_contre,  '
+            . 'c.difference AS diff,  '
+            . 'c.coeff_sets AS coeff_s,  '
+            . 'c.points_pour AS points_pour,  '
+            . 'c.points_contre AS points_contre,  '
+            . 'c.coeff_points AS coeff_p,  '
+            . 'c.penalite AS penalites  '
+            . 'FROM classements c '
+            . 'JOIN equipes e ON e.id_equipe = c.id_equipe '
+            . 'WHERE c.code_competition = \'' . $compet . '\' AND c.division = \'' . $div . '\' ORDER BY points DESC, difference DESC, coeff_points DESC';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    $rang = 1;
+    while ($data = mysql_fetch_assoc($req)) {
+        $data['rang'] = $rang;
+        $results[] = $data;
+        $rang++;
+    }
+    return json_encode($results);
+}
+
+function ajouterPenalite($compet, $id_equipe) {
+    conn_db();
+    $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    if (mysql_num_rows($req) == 1) {
+        $data = mysql_fetch_assoc($req);
+        $penalite = $data['penalite'];
+        $division = $data['division'];
+    }
+    $penalite++;
+    $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $req2 = mysql_query($sqlmaj);
+    if ($req2 === FALSE) {
+        return false;
+    }
+    calcul_classement($id_equipe, $compet, $division);
+    mysql_close();
+    return true;
+}
+
+function enleverPenalite($compet, $id_equipe) {
+    conn_db();
+    $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    if (mysql_num_rows($req) == 1) {
+        $data = mysql_fetch_assoc($req);
+        $penalite = $data['penalite'];
+        $division = $data['division'];
+    }
+    $penalite--;
+    if ($penalite < 0) {
+        $penalite = 0;
+    }
+    $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $req2 = mysql_query($sqlmaj);
+    if ($req2 === FALSE) {
+        return false;
+    }
+    calcul_classement($id_equipe, $compet, $division);
+    mysql_close();
+    return true;
+}
+
+function supprimerEquipeCompetition($compet, $id_equipe) {
+    conn_db();
+    $sql = 'DELETE FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $sql = 'DELETE FROM matches WHERE (id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\') OR (id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\')';
+    $req2 = mysql_query($sql);
+    if ($req2 === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
 }
 
 //1
