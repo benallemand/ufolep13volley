@@ -93,7 +93,8 @@ Ext.onReady(function() {
             },
             {
                 name: 'date_reception',
-                type: 'string'
+                type: 'date',
+                dateFormat: 'Y-m-d'
             },
             {
                 name: 'gagnea5_dom',
@@ -141,7 +142,7 @@ Ext.onReady(function() {
     });
     Ext.create('Ext.grid.Panel', {
         renderTo: Ext.get('matches'),
-        title : 'Matches',
+        title: 'Matches',
         store: storeMatches,
         width: 1000,
         features: [
@@ -167,7 +168,7 @@ Ext.onReady(function() {
                         if (record.get('report') === true) {
                             metaData.tdAttr = 'style="background-color:Gold;color:black;"';
                         }
-                        return value;
+                        return Ext.Date.format(value, 'd/m/Y');
                     }
                 },
                 {
