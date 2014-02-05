@@ -93,7 +93,7 @@ Ext.onReady(function() {
                     dataIndex: 'rang',
                     flex: null,
                     width: 20,
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Equipe',
@@ -103,62 +103,62 @@ Ext.onReady(function() {
                 {
                     header: 'Points',
                     dataIndex: 'points',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Joués',
                     dataIndex: 'joues',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Gagnés',
                     dataIndex: 'gagnes',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Perdus',
                     dataIndex: 'perdus',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Sets Pour',
                     dataIndex: 'sets_pour',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Sets Contre',
                     dataIndex: 'sets_contre',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Difference',
                     dataIndex: 'diff',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Coeff Sets',
                     dataIndex: 'coeff_s',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Pts Pour',
                     dataIndex: 'points_pour',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Pts Contre',
                     dataIndex: 'points_contre',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Coeff Points',
                     dataIndex: 'coeff_p',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Pénalités',
                     dataIndex: 'penalites',
-                    align : 'center'
+                    align: 'center'
                 },
                 {
                     header: 'Administration',
@@ -261,7 +261,49 @@ Ext.onReady(function() {
             defaults: {
                 flex: 1
             }
-        }
+        },
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                layout: 'hbox',
+                items: [
+                    {
+                        xtype: 'combo',
+                        width : 400,
+                        fieldLabel: 'Filtre sur équipe',
+                        store: storeClassement,
+                        displayField: 'equipe',
+                        valueField: 'equipe',
+                        listeners : {
+                            change : function(combo, newVal, oldVal) {
+                                var gridMatches = Ext.ComponentQuery.query('grid[title=Matches]')[0];
+                                if(newVal === null) {
+                                    gridMatches.getStore().clearFilter();
+                                    return;
+                                }
+                                gridMatches.getStore().filter([
+                                    {
+                                        filterFn: function(item) { 
+                                            return ((item.get("equipe_dom") === newVal)||(item.get("equipe_ext") === newVal)); 
+                                        }
+                                    }
+                                ]);
+                            }
+                        }
+                    },
+                    {
+                        xtype : 'button',
+                        width : 120,
+                        text : 'Voir tout',
+                        handler : function() {
+                            var comboFiltre = Ext.ComponentQuery.query('combo[fieldLabel=Filtre sur équipe]')[0];
+                            comboFiltre.clearValue();
+                        }
+                    }
+                ]
+            }
+        ]
     });
     Ext.Ajax.request({
         url: 'ajax/getSessionRights.php',
