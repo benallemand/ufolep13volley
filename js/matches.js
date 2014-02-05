@@ -208,19 +208,19 @@ Ext.onReady(function() {
                     flex: 2,
                     renderer: function(val, meta, rec) {
                         var detailsMatch = '';
-                        if (rec.get('set_1_dom') !== 0) {
+                        if ((rec.get('set_1_dom') !== 0)||(rec.get('set_1_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_1_dom') + '/' + rec.get('set_1_ext') + ' ';
                         }
-                        if (rec.get('set_2_dom') !== 0) {
+                        if ((rec.get('set_2_dom') !== 0)||(rec.get('set_2_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_2_dom') + '/' + rec.get('set_2_ext') + ' ';
                         }
-                        if (rec.get('set_3_dom') !== 0) {
+                        if ((rec.get('set_3_dom') !== 0)||(rec.get('set_3_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_3_dom') + '/' + rec.get('set_3_ext') + ' ';
                         }
-                        if (rec.get('set_4_dom') !== 0) {
+                        if ((rec.get('set_4_dom') !== 0)||(rec.get('set_4_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_4_dom') + '/' + rec.get('set_4_ext') + ' ';
                         }
-                        if (rec.get('set_5_dom') !== 0) {
+                        if ((rec.get('set_5_dom') !== 0)||(rec.get('set_5_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_5_dom') + '/' + rec.get('set_5_ext') + ' ';
                         }
                         return detailsMatch;
