@@ -83,6 +83,7 @@ Ext.onReady(function() {
     });
     Ext.create('Ext.grid.Panel', {
         renderTo: Ext.get('classement'),
+        title : 'Classement',
         store: storeClassement,
         width: 1000,
         columns: {

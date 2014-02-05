@@ -40,6 +40,7 @@ if ($div == "") {
             var division = '<?php echo $div; ?>';
         </script>
         <script type="text/javascript" src="js/classement.js"></script>
+        <script type="text/javascript" src="js/matches.js"></script>
     </HEAD>
 
     <BODY>
@@ -50,7 +51,7 @@ if ($div == "") {
                 <div id="titre"><H1><?php echo $div_nom; ?></H1></div>
                 <?php affich_connecte(); ?>
                 <div id="classement"></div>
-                <div id="matches"><?php affich_journee("pf", $div); ?></div>
+                <div id="matches"></div>
                 <?php affich_admin_site(); ?>
             </div>
         </div>

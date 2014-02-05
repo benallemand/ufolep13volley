@@ -111,433 +111,6 @@ function conn_db()
 
 //************************************************************************************************
 //************************************************************************************************
-function affich_classement($compet, $div)
-//************************************************************************************************
-/*
- * * Fonction    : affich_classement 
- * * Input       : STRING $div, STRING $compet
- * * Output      : aucun 
- * * Description : affichage du classement de la division $div, de la competition $compet
- * * Creator     : Jean-Marc BERNARD 
- * * Date        : 07/04/2010 
- */ {
-    $n = 1;
-
-//Connexion à la base
-    conn_db();
-
-// ***** SPECIFIQUE ADMINISTRATION ***********************************************
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-        echo'<form id="liste_equipe" action="includes/traitement.php?a=ie" method="post">';
-        echo'<ul><li>';
-        echo'<a href="?a=ie&c=' . $compet . '&d=' . $div . '" target="_self" class="lien">Inscrire une équipe</a></li>';
-        if (isset($_GET['a']) && $_GET['a'] == 'ie') {
-            echo'<li>';
-            echo'<SELECT name="id_equipe" onchange="submit();">';
-            echo'<OPTION value="">Choisir une équipe</OPTION>';
-
-            $sql = 'SELECT * FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' AND id_equipe NOT IN (SELECT id_equipe FROM classements where code_competition = \'' . $compet . '\') ORDER BY nom_equipe';
-            $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-            while ($data = mysql_fetch_assoc($req)) {
-                echo'<OPTION value="' . $data['id_equipe'] . '">' . $data['nom_equipe'] . '</OPTION>';
-            }
-            echo'</SELECT>';
-            echo'<input name="compet" value="' . $compet . '" type="hidden">';
-            echo'<input name="div" value="' . $div . '" type="hidden">';
-            echo'</li>';
-        }
-        echo'</ul>';
-        echo '</form>';
-    }
-// ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-//Requête SQL
-    $sql = 'SELECT * FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' ORDER BY points DESC, difference DESC, coeff_points DESC';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-
-//Affichage des résultats
-    echo '<table>';
-    echo'<tr>';
-    echo'<th>Rang</th>';
-    echo'<th class="equipes">Equipes</th>';
-    echo'<th>Pts</th>';
-    echo'<th>Jou.</th>';
-    echo'<th>Gag.</th>';
-    echo'<th>Per.</th>';
-    echo'<th>Sets P.</th>';
-    echo'<th>Sets C.</th>';
-    echo'<th>Diff.</th>';
-    echo'<th>Coeff S.</th>';
-    echo'<th>Pts P.</th>';
-    echo'<th>Pts C.</th>';
-    echo'<th>Coeff P.</th>';
-    echo'<th>Pnlts</th>';
-
-// ***** SPECIFIQUE ADMINISTRATION ***********************************************
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-        echo'<th>Administration</th>';
-    }
-// ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-
-    echo'</tr>';
-    while ($data = mysql_fetch_assoc($req)) {
-
-// On affiche le résultat dans le tableau
-        echo'<tr>';
-        echo'<td>' . $n . '.</td>';
-        echo'<td class="equipes">' . recup_nom_equipe($compet, $data['id_equipe']) . '</td>';
-        echo'<td class="points">' . $data['points'] . '</td>';
-        echo'<td>' . $data['joues'] . '</td>';
-        echo'<td>' . $data['gagnes'] . '</td>';
-        echo'<td>' . $data['perdus'] . '</td>';
-        echo'<td>' . $data['sets_pour'] . '</td>';
-        echo'<td>' . $data['sets_contre'] . '</td>';
-        if ($data['difference'] > 0) {
-            $diff = '+' . $data['difference'];
-        } else {
-            $diff = $data['difference'];
-        }
-        echo'<td>' . $diff . '</td>';
-        echo'<td>' . $data['coeff_sets'] . '</td>';
-        echo'<td>' . $data['points_pour'] . '</td>';
-        echo'<td>' . $data['points_contre'] . '</td>';
-        echo'<td>' . $data['coeff_points'] . '</td>';
-        echo'<td>' . $data['penalite'] . '</td>';
-
-// ***** SPECIFIQUE ADMINISTRATION ***********************************************
-        if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-            echo'<td>';
-            echo'<span class="pen_equipe"><a href="includes/traitement.php?a=gpa&&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous ajouter un point de pénalité à cette équipe ?\');"><img src="images/moins.png" title="Ajouter un point de pénalité" /></a>';
-            echo'<a href="includes/traitement.php?a=gpe&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Voulez-vous annuler un point de pénalité pour cette équipe ?\');"><img src="images/plus.png" title="Enlever un point de pénalité" /></a><a href="includes/traitement.php?a=sec&i=' . $data['id_equipe'] . '&c=' . $compet . '" onclick="return confirm(\'Cette opération entrainera la suppression de cette équipe de cette compétition ! Êtes-vous sur ?\');"><img src="images/delete.gif" title="Supprimer cette équipe de la compétition" /></a></span>';
-        }
-        echo'</td>';
-// ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-
-
-        echo'</tr>';
-        $n = $n + 1;
-    }
-    echo'</table>';
-
-// Fermeture de la connexion à mysql 
-//mysql_close(); 
-}
-
-//************************************************************************************************
-//************************************************************************************************
-function affich_journee($compet, $div)
-//************************************************************************************************
-/*
- * * Fonction    : affich_journee 
- * * Input       : STRING $div = division concernée, $compet = journée concernée 
- * * Output      : aucun 
- * * Description : affichage de la division et de la journee passee en variable
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 07/05/2010 
- */ {
-//Connexion à la base
-    conn_db();
-
-
-//********************************************************************************
-// ***** SPECIFIQUE ADMINISTRATION ***********************************************
-//********************************************************************************
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-        echo '<ul><li><a href="?a=am&c=' . $compet . '&d=' . $div . '" target="_self" class="lien">Ajouter un match</a></li></ul>';
-        if (isset($_GET['a']) && $_GET['a'] == "am") {
-            echo'<form name="ajout_match" action="includes/traitement.php?a=am" method="post">';
-            echo'<table class="admin"><tr class="admin"><td class="w80">Code Match</td><td class="w80">Journée</td><td class="w80">Heure</td><td class="w80">Date</td><td class="w150">Equipe 1</td><td class="w150">Equipe 2</td></tr>';
-            echo'<tr><td class="w80"><input value="" name="code_match" type="text" size="4" maxlength="5" /></td>';
-
-//----------------------------------------------------------------------------------------------------------
-// on récupère le nombre de journée créées pour cette compétition 
-//----------------------------------------------------------------------------------------------------------
-            echo'<td class="w80"><select name="journee"><option></option>';
-            $sql = 'SELECT DISTINCT COUNT(numero) FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
-            $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-            $data = mysql_fetch_assoc($req);
-            $nb_journee = $data['COUNT(numero)'];
-            if ($nb_journee == 0) {
-                $sql = 'SELECT DISTINCT COUNT(numero) FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'1\'';
-                $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-                $data = mysql_fetch_assoc($req);
-                $nb_journee = $data['COUNT(numero)'];
-            }
-            for ($i = 1; $i < $nb_journee + 1; $i++) {    //tant que i est inférieur au nombre de journée on affiche les matches
-                echo'<option value="' . $i . '">' . $i . '</option>';
-            }
-            echo'</select></td>';
-            echo'<td class="w80"><input value="hhHmm" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
-            echo'<td class="w80"><input value="jj/mm/aaaa" name="date_reception" type="text" size="8" maxlength="10" /></td>';
-
-//----------------------------------------------------------------------------------------------------------
-// on récupère la liste des équipes inscrites à la compétition 
-//----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_dom"><option>Choisir une équipe</option>';
-            $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
-            $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-            while ($data = mysql_fetch_assoc($req)) {
-                echo'<option value="' . $data['id_equipe'] . '">' . recup_nom_equipe($compet, $data['id_equipe']) . '</option>';
-            }
-            echo'</select></td>';
-
-//----------------------------------------------------------------------------------------------------------
-// on récupère la liste des équipes inscrites à la compétition
-//----------------------------------------------------------------------------------------------------------
-            echo'<td class="w150"><select name="id_equipe_ext"><option>Choisir une équipe</option>';
-            $sql = 'SELECT id_equipe FROM classements WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
-            $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-            while ($data = mysql_fetch_assoc($req)) {
-                echo'<option value="' . $data['id_equipe'] . '">' . recup_nom_equipe($compet, $data['id_equipe']) . '</option>';
-            }
-            echo'</select></td>';
-//----------------------------------------------------------------------------------------------------------
-
-            echo'</tr></table>';
-            echo'<input type="hidden" name="code_competition" value="' . $compet . '" />';
-            echo'<input type="hidden" name="division" value="' . $div . '" />';
-            echo'<input type="submit" value="Valider" name="submit" class="submit" />';
-            echo'</form>';
-        }
-    }
-//********************************************************************************
-// ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-//********************************************************************************
-// On regarde le nombre de journée présente pour cette compétition 
-    $sql = 'SELECT COUNT( DISTINCT journee ) FROM `matches` WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    $data = mysql_fetch_assoc($req);
-    $nbr_journee = $data['COUNT( DISTINCT journee )'];
-    for ($i = 1; $i < $nbr_journee + 1; $i++) {    //tant que i est inférieur au nombre de journée on affiche les matches
-// on récupère le nommage et la valeur de la journée
-        $sql = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' AND numero = \'' . $i . '\'';
-        $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-        $data = mysql_fetch_assoc($req);
-        $nommage_journee = $data['nommage'];
-        $libelle_journee = $data['libelle'];
-
-// si aucune donnée est récupérée on affiche les valeurs de la division 1
-        if ($nommage_journee == "" && $libelle_journee == "") {
-            $sql = 'SELECT nommage, libelle FROM journees WHERE code_competition = \'' . $compet . '\' AND division = 1 AND numero = \'' . $i . '\'';
-            $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-            $data = mysql_fetch_assoc($req);
-            $nommage_journee = $data['nommage'];
-            $libelle_journee = $data['libelle'];
-        }
-
-// on affiche l'intitulé de la journée
-        echo '<H1>' . $nommage_journee . ' - ' . $libelle_journee . '</H1>';
-
-// On créé la table de la journée sélectionnée
-        echo '<table>';
-
-// on récupère les matches de la journée
-        $sql = 'SELECT * FROM matches WHERE code_competition = \'' . $compet . '\' AND division = \'' . $div . '\' AND journee = \'' . $i . '\' ORDER BY code_match';
-        $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-        while ($data = mysql_fetch_assoc($req)) {
-
-// Mise en variable des datas récoltées
-            $match = $data['code_match'];
-            $horaire = $data['heure_reception'];
-            $date = date_fr($data['date_reception']);
-            $score1 = $data['score_equipe_dom'];
-            $score2 = $data['score_equipe_ext'];
-            $set_1_dom = $data['set_1_dom'];
-            $set_2_dom = $data['set_2_dom'];
-            $set_3_dom = $data['set_3_dom'];
-            $set_4_dom = $data['set_4_dom'];
-            $set_5_dom = $data['set_5_dom'];
-            $set_1_ext = $data['set_1_ext'];
-            $set_2_ext = $data['set_2_ext'];
-            $set_3_ext = $data['set_3_ext'];
-            $set_4_ext = $data['set_4_ext'];
-            $set_5_ext = $data['set_5_ext'];
-            $gagnea5_dom = $data['gagnea5_dom'];
-            $gagnea5_ext = $data['gagnea5_ext'];
-            $report = $data['report'];
-            $nb_retard = $data['retard'];
-
-//Traitement des matches en retard
-            $oriDateTime = DateTime::createFromFormat('Y-m-d', $data['date_reception']);
-            $nowDateTime = new DateTime();
-            $interval = $nowDateTime->diff($oriDateTime);
-            $diff_jour = intval($interval->format('%r%a'));
-// On vérifie la différence de date
-            if ($diff_jour > -16 && $diff_jour < -10 && $score1 == 0 && $score2 == 0) {
-                $retard = '<img src="images/warn1.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 10 jours !" />';
-                // On regarde si le message a déjà été envoyé
-                if ($nb_retard == 0) {
-                    envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $compet, $date, 1);
-                    // Mise à jour de la base
-                    $sqlmaj = 'UPDATE matches SET retard = 1 WHERE code_match = \'' . $match . '\'';
-                    $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
-                }
-            } elseif ($diff_jour < -15 && $score1 == 0 && $score2 == 0) {
-                $retard = '<img src="images/warn2.gif" title="! ATTENTION ! Match en retard ou non renseigné de plus de 15 jours !" />';
-                // On regarde si le message a déjà été envoyé
-                if ($nb_retard == 1) {
-                    envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $compet, $date, 2);
-                    // Mise à jour de la base
-                    $sqlmaj = 'UPDATE matches SET retard = 2 WHERE code_match = \'' . $match . '\'';
-                    $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
-                }
-            } else {
-                $retard = "&nbsp;";
-            }
-
-
-
-// Traitement des cellules vides si nulles
-            if ($score1 == 0 && $score2 == 0) {
-                $score1 = "&nbsp;";
-                $score2 = "&nbsp;";
-            }
-            if ($set_1_dom == 0 && $set_1_ext == 0) {
-                $set1 = "&nbsp;";
-            } else {
-                $set1 = $set_1_dom . '/' . $set_1_ext;
-            }
-            if ($set_2_dom == 0 && $set_2_ext == 0) {
-                $set2 = "&nbsp;";
-            } else {
-                $set2 = $set_2_dom . '/' . $set_2_ext;
-            }
-            if ($set_3_dom == 0 && $set_3_ext == 0) {
-                $set3 = "&nbsp;";
-            } else {
-                $set3 = $set_3_dom . '/' . $set_3_ext;
-            }
-            if ($set_4_dom == 0 && $set_4_ext == 0) {
-                $set4 = "&nbsp;";
-            } else {
-                $set4 = $set_4_dom . '/' . $set_4_ext;
-            }
-            if ($set_5_dom == 0 && $set_5_ext == 0) {
-                $set5 = "&nbsp;";
-            } else {
-                $set5 = $set_5_dom . '/' . $set_5_ext;
-            }
-
-//Traitement de l'affichage des matches gagnés
-            $class_dom = "equipes_dom";
-            $class_ext = "equipes_ext";
-            if ($score1 > $score2) {
-                $class_dom = "equipes_dom_gagne";
-            }
-            if ($score1 < $score2) {
-                $class_ext = "equipes_ext_gagne";
-            }
-
-//Traitement de l'affichage des matches reportés
-            $class_report = "date";
-            if ($report == 1) {
-                $class_report = "date_report";
-            }
-
-// On regarde si on est en administrateur et si un match est sélectionné en modification
-            if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin" && isset($_GET['m']) && $_GET['m'] == $match) {
-                echo'<tr><td colspan="14">';
-                echo'<table class="admin">';
-                echo'  <form name="modif_match" action="includes/traitement.php?a=mr" method="post">';
-                echo'   <tr>';
-                echo'		<td>' . $retard . '</td>';
-                echo'		<td class="code_match">' . $match . '</td>';
-                echo'		<td class="' . $class_report . '"><input value="' . $horaire . '" name="heure_reception" type="text" size="5" maxlength="5" /></td>';
-                echo'		<td class="' . $class_report . '"><input value="' . $date . '" name="date_reception" type="text" size="8" maxlength="10" /></td>';
-                echo'		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $data['id_equipe_dom']) . '</td>';
-                echo'		<td class="score"><input value="' . $score1 . '" name="score_equipe_dom" type="text" size="1" maxlength="1" /></td>';
-                echo'		<td class="score">/</td>';
-                echo'		<td class="score"><input value="' . $score2 . '" name="score_equipe_ext" type="text" size="1" maxlength="1" /></td>';
-                echo'		<td class="' . $class_ext . '">' . recup_nom_equipe($compet, $data['id_equipe_ext']) . '</td>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'	  </tr>';
-                echo'	  <tr>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'		<td><input value="' . $set_1_dom . '" name="set_1_dom" type="text" size="1" maxlength="2" /></td><td class="score">-</td>';
-                echo'		<td><input value="' . $set_1_ext . '" name="set_1_ext" type="text" size="1" maxlength="2" /></td>';
-                echo'		<td colspan="6">&nbsp;</td>';
-                echo'	  </tr>';
-                echo'	  <tr>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'		<td><input value="' . $set_2_dom . '" name="set_2_dom" type="text" size="1" maxlength="2" /></td><td class="score">-</td>';
-                echo'		<td><input value="' . $set_2_ext . '" name="set_2_ext" type="text" size="1" maxlength="2" /></td>';
-                echo'		<td colspan="6">&nbsp;</td>';
-                echo'	  </tr>';
-                echo'	  <tr>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'		<td><input value="' . $set_3_dom . '" name="set_3_dom" type="text" size="1" maxlength="2" /></td><td class="score">-</td>';
-                echo'		<td><input value="' . $set_3_ext . '" name="set_3_ext" type="text" size="1" maxlength="2" /></td>';
-                echo'		<td colspan="6">&nbsp;</td>';
-                echo'	  </tr>';
-                echo'	  <tr>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'		<td><input value="' . $set_4_dom . '" name="set_4_dom" type="text" size="1" maxlength="2" /></td><td class="score">-</td>';
-                echo'		<td><input value="' . $set_4_ext . '" name="set_4_ext" type="text" size="1" maxlength="2" /></td>';
-                echo'		<td colspan="6">&nbsp;</td>';
-                echo'	  </tr>';
-                echo'	  <tr>';
-                echo'		<td colspan="5">&nbsp;</td>';
-                echo'		<td><input value="' . $set_5_dom . '" name="set_5_dom" type="text" size="1" maxlength="2" /></td><td class="score">-</td>';
-                echo'		<td><input value="' . $set_5_ext . '" name="set_5_ext" type="text" size="1" maxlength="2" /></td>';
-                echo'		<td>&nbsp;</td>';
-                echo'		<td colspan="5"><input value="Modifier" name="submit" class="submit" type="submit" /></td>';
-                echo'	  </tr>';
-                echo'	<input value="' . $data['certif'] . '" name="certif" type="hidden" />';
-                echo'	<input value="' . $match . '" name="code_match" type="hidden" />';
-                echo'	<input value="' . $compet . '" name="compet" type="hidden" />';
-                echo'	<input value="' . $div . '" name="division" type="hidden" />';
-                echo'	<input value="' . $data['id_equipe_dom'] . '" name="id_equipe_dom" type="hidden" />';
-                echo'	<input value="' . $data['id_equipe_ext'] . '" name="id_equipe_ext" type="hidden" />';
-                echo'	<input value="' . $date . '" name="date_originale" type="hidden" />';
-                echo'	<input value="' . $horaire . '" name="heure_originale" type="hidden" />';
-                echo'  </form>';
-                echo'</table>';
-                echo'</td></tr>';
-            } else {
-// Affichage des valeurs
-                echo '   <tr>';
-                echo '		<td>' . $retard . '</td>';
-                echo '		<td class="code_match">' . $match . '</td>';
-                echo '		<td class="' . $class_report . '">' . $horaire . '</td>';
-                echo '		<td class="' . $class_report . '">' . $date . '</td>';
-                echo '		<td class="' . $class_dom . '">' . recup_nom_equipe($compet, $data['id_equipe_dom']) . '</td>';
-                echo '		<td class="score">' . $score1 . '</td>';
-                echo '		<td class="score">/</td>';
-                echo '		<td class="score">' . $score2 . '</td>';
-                echo '		<td class="' . $class_ext . '">' . recup_nom_equipe($compet, $data['id_equipe_ext']) . '</td>';
-                echo '		<td class="sets">' . $set1 . '</td>';
-                echo '		<td class="sets">' . $set2 . '</td>';
-                echo '		<td class="sets">' . $set3 . '</td>';
-                echo '		<td class="sets">' . $set4 . '</td>';
-                echo '		<td class="sets">' . $set5 . '</td>';
-
-// ***** SPECIFIQUE ADMINISTRATION ***********************************************
-                if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-
-//Traitement de l'affichage des matches certifiés
-                    $certif = $data['certif'];
-                    if ($certif == 1) {
-                        $certif = "";
-                    } else {
-                        $certif = '<a href="includes/traitement.php?a=cm&m=' . $match . '"><img src="images/certified.png" title="Certifier avoir reçu la feuille de ce match"  onclick="return confirm(\'Certifier le match ' . $match . ' ?\');" /></a>';
-                    }
-
-                    echo '	<td class="admin">' . $certif . '<a href="?a=mr&d=' . $div . '&m=' . $match . '"><img src="images/modif.gif" title="Modifier le score du match" /></a><a href="includes/traitement.php?a=sm&m=' . $match . '" onclick="return confirm(\'Cette opération entrainera irrémédiablement la suppression de ce match ! Êtes-vous sur de vouloir continuer ?\');"><img src="images/delete.gif" title="Supprimer ce match" /></a></td>';
-                }
-// ***** FIN SPECIFIQUE ADMINISTRATION *******************************************
-
-                echo '	</tr>';
-            }
-        }
-// on ferme la table de la journée sélectionnée
-        echo '</table>';
-    }
-
-// Fermeture de la connexion à mysql 
-//mysql_close(); 
-}
-
-//************************************************************************************************
-//************************************************************************************************
 function recup_nom_equipe($compet, $id)
 //************************************************************************************************
 /*
@@ -2105,6 +1678,163 @@ function supprimerEquipeCompetition($compet, $id_equipe) {
     }
     mysql_close();
     return true;
+}
+
+function certifierMatch($code_match) {
+    conn_db();
+    $sql = 'UPDATE matches SET certif = 1 WHERE code_match = \'' . $code_match . '\'';
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
+}
+
+function modifierMatch($code_match) {
+    conn_db();
+    $score_equipe_dom = filter_input(INPUT_POST, 'score_equipe_dom');
+    $score_equipe_ext = filter_input(INPUT_POST, 'score_equipe_ext');
+    $set_1_dom = filter_input(INPUT_POST, 'set_1_dom');
+    $set_2_dom = filter_input(INPUT_POST, 'set_2_dom');
+    $set_3_dom = filter_input(INPUT_POST, 'set_3_dom');
+    $set_4_dom = filter_input(INPUT_POST, 'set_4_dom');
+    $set_5_dom = filter_input(INPUT_POST, 'set_5_dom');
+    $gagnea5_dom = filter_input(INPUT_POST, 'gagnea5_dom');
+    $set_1_ext = filter_input(INPUT_POST, 'set_1_ext');
+    $set_2_ext = filter_input(INPUT_POST, 'set_2_ext');
+    $set_3_ext = filter_input(INPUT_POST, 'set_3_ext');
+    $set_4_ext = filter_input(INPUT_POST, 'set_4_ext');
+    $set_5_ext = filter_input(INPUT_POST, 'set_5_ext');
+    $gagnea5_ext = filter_input(INPUT_POST, 'gagnea5_ext');
+    $code_match = filter_input(INPUT_POST, 'code_match');
+    $compet = filter_input(INPUT_POST, 'code_competition');
+    $division = filter_input(INPUT_POST, 'division');
+    $heure_reception = filter_input(INPUT_POST, 'heure_reception');
+    $date_reception = filter_input(INPUT_POST, 'date_reception');
+    $date_originale = filter_input(INPUT_POST, 'date_originale');
+    $id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
+    $id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
+    if ($gagnea5_dom === null) {
+        $gagnea5_dom = 0;
+    }
+    if ($gagnea5_dom === 'on') {
+        $gagnea5_dom = 1;
+    }
+    if ($gagnea5_ext === null) {
+        $gagnea5_ext = 0;
+    }
+    if ($gagnea5_ext === 'on') {
+        $gagnea5_ext = 1;
+    }
+    if ($date_originale !== null) {
+        if ($date_originale !== $date_reception) {
+            $report = 1;
+        } else {
+            $report = 0;
+        }
+    }
+    $total_sets_dom = $set_1_dom + $set_2_dom + $set_3_dom;
+    $total_sets_ext = $set_1_ext + $set_2_ext + $set_3_ext;
+    if ($total_sets_dom == 0 && $total_sets_ext == 75) {
+        $forfait_dom = 1;
+    } else {
+        $forfait_dom = 0;
+    }
+    if ($total_sets_dom == 75 && $total_sets_ext == 0) {
+        $forfait_ext = 1;
+    } else {
+        $forfait_ext = 0;
+    }
+    $sql = "UPDATE matches SET "
+            . "score_equipe_dom = '$score_equipe_dom', "
+            . "score_equipe_ext = '$score_equipe_ext', "
+            . "set_1_dom = '$set_1_dom', "
+            . "set_1_ext = '$set_1_ext', "
+            . "set_2_dom = '$set_2_dom', "
+            . "set_2_ext = '$set_2_ext', "
+            . "set_3_dom = '$set_3_dom', "
+            . "set_3_ext = '$set_3_ext', "
+            . "set_4_dom = '$set_4_dom', "
+            . "set_4_ext = '$set_4_ext', "
+            . "set_5_dom = '$set_5_dom', "
+            . "set_5_ext = '$set_5_ext', "
+            . "gagnea5_dom = '$gagnea5_dom', "
+            . "gagnea5_ext = '$gagnea5_ext', "
+            . "forfait_dom = '$forfait_dom', "
+            . "forfait_ext = '$forfait_ext', "
+            . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
+            . "heure_reception = '$heure_reception', "
+            . "report = '$report' "
+            . "WHERE code_match = '$code_match'";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    calcul_classement($id_equipe_dom, $compet, $division);
+    calcul_classement($id_equipe_ext, $compet, $division);
+    mysql_close();
+    return true;
+}
+
+function supprimerMatch($code_match) {
+    conn_db();
+    $sql = 'DELETE FROM matches WHERE code_match = \'' . $code_match . '\'';
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
+}
+
+function getMatches($compet, $div) {
+    conn_db();
+    if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+        mysql_query("SET NAMES UTF8");
+    }
+    $sql = "SELECT 
+        m.id_match,
+        m.code_match,
+        m.code_competition,
+        m.division,
+        CONCAT(j.nommage, ' : ', j.libelle) AS journee,
+        m.id_equipe_dom,
+        e1.nom_equipe AS equipe_dom,
+        m.id_equipe_ext,
+        e2.nom_equipe AS equipe_ext,
+        m.score_equipe_dom+0 AS score_equipe_dom,
+        m.score_equipe_ext+0 AS score_equipe_ext,
+        m.set_1_dom,
+        m.set_1_ext,
+        m.set_2_dom,
+        m.set_2_ext,
+        m.set_3_dom,
+        m.set_3_ext,
+        m.set_4_dom,
+        m.set_4_ext,
+        m.set_5_dom,
+        m.set_5_ext,
+        m.heure_reception,
+        m.date_reception,
+        m.gagnea5_dom+0 AS gagnea5_dom,
+        m.gagnea5_ext+0 AS gagnea5_ext,
+        m.forfait_dom+0 AS forfait_dom,
+        m.forfait_ext+0 AS forfait_ext,
+        m.certif+0 AS certif,
+        m.report+0 AS report,
+        m.retard+0 AS retard
+        FROM matches m 
+        JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
+        JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
+        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
+        WHERE m.code_competition = '$compet' AND m.division = '$div' ORDER BY code_match";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
 }
 
 //1
