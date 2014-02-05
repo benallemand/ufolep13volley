@@ -83,7 +83,7 @@ Ext.onReady(function() {
     });
     Ext.create('Ext.grid.Panel', {
         renderTo: Ext.get('classement'),
-        title : 'Classement',
+        title: 'Classement',
         store: storeClassement,
         width: 1000,
         columns: {
@@ -92,7 +92,8 @@ Ext.onReady(function() {
                     header: '',
                     dataIndex: 'rang',
                     flex: null,
-                    width: 20
+                    width: 20,
+                    align : 'center'
                 },
                 {
                     header: 'Equipe',
@@ -100,55 +101,67 @@ Ext.onReady(function() {
                     flex: 2
                 },
                 {
-                    header: 'Pts',
-                    dataIndex: 'points'
+                    header: 'Points',
+                    dataIndex: 'points',
+                    align : 'center'
                 },
                 {
-                    header: 'Jou.',
-                    dataIndex: 'joues'
+                    header: 'Joués',
+                    dataIndex: 'joues',
+                    align : 'center'
                 },
                 {
-                    header: 'Gag.',
-                    dataIndex: 'gagnes'
+                    header: 'Gagnés',
+                    dataIndex: 'gagnes',
+                    align : 'center'
                 },
                 {
-                    header: 'Per.',
-                    dataIndex: 'perdus'
+                    header: 'Perdus',
+                    dataIndex: 'perdus',
+                    align : 'center'
                 },
                 {
-                    header: 'Sets P.',
-                    dataIndex: 'sets_pour'
+                    header: 'Sets Pour',
+                    dataIndex: 'sets_pour',
+                    align : 'center'
                 },
                 {
-                    header: 'Sets C.',
-                    dataIndex: 'sets_contre'
+                    header: 'Sets Contre',
+                    dataIndex: 'sets_contre',
+                    align : 'center'
                 },
                 {
-                    header: 'Diff.',
-                    dataIndex: 'diff'
+                    header: 'Difference',
+                    dataIndex: 'diff',
+                    align : 'center'
                 },
                 {
-                    header: 'Coeff S.',
-                    dataIndex: 'coeff_s'
+                    header: 'Coeff Sets',
+                    dataIndex: 'coeff_s',
+                    align : 'center'
                 },
                 {
-                    header: 'Pts P.',
-                    dataIndex: 'points_pour'
+                    header: 'Pts Pour',
+                    dataIndex: 'points_pour',
+                    align : 'center'
                 },
                 {
-                    header: 'Pts C.',
-                    dataIndex: 'points_contre'
+                    header: 'Pts Contre',
+                    dataIndex: 'points_contre',
+                    align : 'center'
                 },
                 {
-                    header: 'Coeff P.',
-                    dataIndex: 'coeff_p'
+                    header: 'Coeff Points',
+                    dataIndex: 'coeff_p',
+                    align : 'center'
                 },
                 {
-                    header: 'Pnlts',
-                    dataIndex: 'penalites'
+                    header: 'Pénalités',
+                    dataIndex: 'penalites',
+                    align : 'center'
                 },
                 {
-                    header: 'Admin.',
+                    header: 'Administration',
                     xtype: 'actioncolumn',
                     hideable: false,
                     hidden: true,

@@ -171,7 +171,7 @@ Ext.onReady(function() {
                     }
                 },
                 {
-                    header: 'Equipe Dom.',
+                    header: 'Equipe Domicile',
                     dataIndex: 'equipe_dom',
                     renderer: function(value, metaData, record) {
                         if (record.get('score_equipe_dom') === 3) {
@@ -192,7 +192,7 @@ Ext.onReady(function() {
                     }
                 },
                 {
-                    header: 'Equipe Ext.',
+                    header: 'Equipe Extérieur',
                     dataIndex: 'equipe_ext',
                     renderer: function(value, metaData, record) {
                         if (record.get('score_equipe_ext') === 3) {
