@@ -270,23 +270,23 @@ Ext.onReady(function() {
                 items: [
                     {
                         xtype: 'combo',
-                        width : 400,
+                        width: 400,
                         fieldLabel: 'Filtre sur équipe',
                         store: storeClassement,
                         displayField: 'equipe',
                         valueField: 'equipe',
-                        listeners : {
-                            change : function(combo, newVal, oldVal) {
+                        listeners: {
+                            change: function(combo, newVal, oldVal) {
                                 var gridMatches = Ext.ComponentQuery.query('grid[title=Matches]')[0];
-                                if(newVal === null) {
+                                if (newVal === null) {
                                     gridMatches.getStore().clearFilter();
                                     return;
                                 }
                                 gridMatches.getStore().clearFilter(true);
                                 gridMatches.getStore().filter([
                                     {
-                                        filterFn: function(item) { 
-                                            return ((item.get("equipe_dom") === newVal)||(item.get("equipe_ext") === newVal)); 
+                                        filterFn: function(item) {
+                                            return ((item.get("equipe_dom") === newVal) || (item.get("equipe_ext") === newVal));
                                         }
                                     }
                                 ]);
@@ -294,10 +294,10 @@ Ext.onReady(function() {
                         }
                     },
                     {
-                        xtype : 'button',
-                        width : 120,
-                        text : 'Voir tout',
-                        handler : function() {
+                        xtype: 'button',
+                        width: 120,
+                        text: 'Voir tout',
+                        handler: function() {
                             var comboFiltre = Ext.ComponentQuery.query('combo[fieldLabel=Filtre sur équipe]')[0];
                             comboFiltre.clearValue();
                         }
@@ -311,8 +311,10 @@ Ext.onReady(function() {
         success: function(response) {
             var responseJson = Ext.decode(response.responseText);
             if (responseJson.message === 'admin') {
-                var adminColumn = Ext.ComponentQuery.query('actioncolumn[text=Admin.]')[0];
-                adminColumn.show();
+                var adminColumns = Ext.ComponentQuery.query('actioncolumn[text=Administration]');
+                Ext.each(adminColumns, function(adminColumn) {
+                    adminColumn.show();
+                });
             }
         }
     });

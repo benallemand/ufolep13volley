@@ -121,6 +121,7 @@ function recup_nom_equipe($compet, $id)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 15/04/2010
  */ {
+    conn_db();
     $sql = 'SELECT nom_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' and id_equipe = \'' . $id . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
@@ -140,6 +141,7 @@ function recup_mail_equipe($id)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 16/11/2010
  */ {
+    conn_db();
     $sql = 'SELECT email FROM details_equipes WHERE id_equipe = \'' . $id . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
@@ -179,6 +181,7 @@ function recup_compet_maitre($compet)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 11/05/2010
  */ {
+    conn_db();
     $sql = 'SELECT id_compet_maitre FROM competitions WHERE code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
@@ -978,28 +981,14 @@ function affich_admin_page($compet)
     }
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
-//************************************************************************************************
-/*
- * * Fonction    : envoi_mail 
- * * Input       : $id1, $id2 et $num_envoi
- * * Output      : aucun 
- * * Description : Envoi un mail d'avertissement
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 16/11/2010
- */ {
-
-// Création du mail
+function envoi_mail($id1, $id2, $compet, $date) {
     $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
     $headers .='Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .='Cc: laurent.gorlier@ufolep13volley.org' . "\n";
-    $headers .='Bcc: jean-marc.bernard.prestataire@gcetech.caisse-epargne.fr' . "\n";
+    $headers .='Bcc: benallemand@gmail.com' . "\n";
     $headers .='Content-Type: text/html; charset="iso-8859-1"' . "\n";
     $headers .='Content-Transfer-Encoding: 8bit';
 
-// Création du message
     $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
     $message = $message . 'Aux équipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
     $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
@@ -1011,11 +1000,9 @@ function envoi_mail($id1, $id2, $compet, $date, $num_envoi)
     $message = $message . 'Cordialement<BR><BR>Laurent Gorlier<BR>Responsable des classements<BR>';
     $message = $message . '</body></html>';
 
-// Initialisation des destinataires
     $dest = recup_mail_equipe($id1) . "," . recup_mail_equipe($id2);
 
-// Envoi du mail
-    mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
+    return mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
 }
 
 //************************************************************************************************
@@ -1788,6 +1775,46 @@ function supprimerMatch($code_match) {
     return true;
 }
 
+function checkNotifyUpdateReport($data) {
+    $computedDate = DateTime::createFromFormat('Y-m-d', $data['date_reception']);
+    $currentDate = new DateTime();
+    $tenDays = DateInterval::createFromDateString('+10 day');
+    $fifteenDays = DateInterval::createFromDateString('+15 day');
+    $computedDate->add($fifteenDays);
+    if ($currentDate > $computedDate) {
+        if (intval($data['retard']) == 2) {
+            return true;
+        }
+        if (!setRetard($data['code_match'], 2)) {
+            return false;
+        }
+        return envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
+    }
+    $computedDate->sub($fifteenDays);
+    $computedDate->add($tenDays);
+    if ($currentDate > $computedDate) {
+        if (intval($data['retard']) == 1) {
+            return true;
+        }
+        if (!setRetard($data['code_match'], 1)) {
+            return false;
+        }
+        return envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
+    }
+    return setRetard($data['code_match'], 0);
+}
+
+function setRetard($code_match, $valeur) {
+    conn_db();
+    $sql = "UPDATE matches SET retard = $valeur WHERE code_match = '$code_match'";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
+}
+
 function getMatches($compet, $div) {
     conn_db();
     if ($_SERVER['SERVER_NAME'] !== 'localhost') {
@@ -1833,6 +1860,11 @@ function getMatches($compet, $div) {
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
         $results[] = $data;
+        if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
+            checkNotifyUpdateReport($data);
+        } else {
+            setRetard($data['code_match'], 0);
+        }
     }
     return json_encode($results);
 }

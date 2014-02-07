@@ -122,7 +122,7 @@ Ext.onReady(function() {
             },
             {
                 name: 'retard',
-                type: 'bool'
+                type: 'int'
             }
 
         ],
@@ -155,7 +155,16 @@ Ext.onReady(function() {
             items: [
                 {
                     header: 'Code',
-                    dataIndex: 'code_match'
+                    dataIndex: 'code_match',
+                    renderer: function(value, metaData, record) {
+                        if (record.get('retard') === 1) {
+                            metaData.tdAttr = 'style="background-color:VioletRed;color:black;" data-qtip="Match non renseigné de + de 10 jours!"';
+                        }
+                        if (record.get('retard') === 2) {
+                            metaData.tdAttr = 'style="background-color:Red;color:black;" data-qtip="Match non renseigné de + de 15 jours!"';
+                        }
+                        return value;
+                    }
                 },
                 {
                     header: 'Heure',
@@ -166,7 +175,7 @@ Ext.onReady(function() {
                     dataIndex: 'date_reception',
                     renderer: function(value, metaData, record) {
                         if (record.get('report') === true) {
-                            metaData.tdAttr = 'style="background-color:Gold;color:black;"';
+                            metaData.tdAttr = 'style="background-color:Gold;color:black;" data-qtip="Match reporté"';
                         }
                         return Ext.Date.format(value, 'd/m/Y');
                     }
@@ -208,26 +217,26 @@ Ext.onReady(function() {
                     flex: 2,
                     renderer: function(val, meta, rec) {
                         var detailsMatch = '';
-                        if ((rec.get('set_1_dom') !== 0)||(rec.get('set_1_ext') !== 0)) {
+                        if ((rec.get('set_1_dom') !== 0) || (rec.get('set_1_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_1_dom') + '/' + rec.get('set_1_ext') + ' ';
                         }
-                        if ((rec.get('set_2_dom') !== 0)||(rec.get('set_2_ext') !== 0)) {
+                        if ((rec.get('set_2_dom') !== 0) || (rec.get('set_2_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_2_dom') + '/' + rec.get('set_2_ext') + ' ';
                         }
-                        if ((rec.get('set_3_dom') !== 0)||(rec.get('set_3_ext') !== 0)) {
+                        if ((rec.get('set_3_dom') !== 0) || (rec.get('set_3_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_3_dom') + '/' + rec.get('set_3_ext') + ' ';
                         }
-                        if ((rec.get('set_4_dom') !== 0)||(rec.get('set_4_ext') !== 0)) {
+                        if ((rec.get('set_4_dom') !== 0) || (rec.get('set_4_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_4_dom') + '/' + rec.get('set_4_ext') + ' ';
                         }
-                        if ((rec.get('set_5_dom') !== 0)||(rec.get('set_5_ext') !== 0)) {
+                        if ((rec.get('set_5_dom') !== 0) || (rec.get('set_5_ext') !== 0)) {
                             detailsMatch = detailsMatch + rec.get('set_5_dom') + '/' + rec.get('set_5_ext') + ' ';
                         }
                         return detailsMatch;
                     }
                 },
                 {
-                    header: 'Admin.',
+                    header: 'Administration',
                     xtype: 'actioncolumn',
                     hideable: false,
                     hidden: true,
@@ -530,7 +539,7 @@ Ext.onReady(function() {
         success: function(response) {
             var responseJson = Ext.decode(response.responseText);
             if (responseJson.message === 'admin') {
-                var adminColumns = Ext.ComponentQuery.query('actioncolumn[text=Admin.]');
+                var adminColumns = Ext.ComponentQuery.query('actioncolumn[text=Administration]');
                 Ext.each(adminColumns, function(adminColumn) {
                     adminColumn.show();
                 });
