@@ -282,6 +282,7 @@ Ext.onReady(function() {
                                     gridMatches.getStore().clearFilter();
                                     return;
                                 }
+                                gridMatches.getStore().clearFilter(true);
                                 gridMatches.getStore().filter([
                                     {
                                         filterFn: function(item) { 
