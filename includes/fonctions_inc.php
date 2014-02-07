@@ -982,6 +982,7 @@ function affich_admin_page($compet)
 }
 
 function envoi_mail($id1, $id2, $compet, $date) {
+    $matchDate = DateTime::createFromFormat('Y-m-d', $date);
     $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
     $headers .='Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .='Cc: laurent.gorlier@ufolep13volley.org' . "\n";
@@ -993,7 +994,7 @@ function envoi_mail($id1, $id2, $compet, $date) {
     $message = $message . 'Aux équipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
     $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
     $message = $message . 'Pour résumer, sur le site, 10 jours après la date indiquée pour le match (qui peut être en rouge si le match a été reportée), il doit y avoir un résultat affiché.<BR><BR>';
-    $message = $message . 'Pour votre match du <b>' . $date . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
+    $message = $message . 'Pour votre match du <b>' . $matchDate->format('d/m/Y') . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
     $message = $message . '- soit le résultat soit indiqué<BR>';
     $message = $message . '- soit une autre date de match soit affichée (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
     $message = $message . 'Je vous rappelle que les deux équipes doivent veiller à ce que cette règle soit suivie ; les deux pourraient donc être pénalisées.<BR><BR>';
