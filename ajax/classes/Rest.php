@@ -31,7 +31,7 @@ class Rest {
     }
 
     function getData() {
-        $sql = "SELECT ";
+        $sql = "SELECT SQL_CALC_FOUND_ROWS ";
         $columns = json_decode($this->getColumns(), true);
         foreach ($columns as $column) {
             switch ($column['Type']) {
@@ -48,12 +48,20 @@ class Rest {
         }
         $sql = rtrim($sql, ",");
         $sql .= " from " . $this->fileName;
+        $sql .= " limit " . $_REQUEST['start'] . "," . $_REQUEST['limit'];
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         $results = array();
         while ($data = mysql_fetch_assoc($req)) {
             $results[] = $data;
         }
-        return json_encode($results);
+        $req2 = mysql_query("SELECT FOUND_ROWS() AS total") or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+        $results2 = array();
+        while ($data = mysql_fetch_assoc($req2)) {
+            $results2[] = $data;
+        }
+        return json_encode(array(
+            'results' => $results,
+            'totalCount' => $results2[0]['total']));
     }
 
     function saveData() {
