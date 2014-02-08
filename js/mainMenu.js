@@ -290,6 +290,66 @@ Ext.onReady(function() {
                 var fields = [];
                 Ext.each(records, function(record) {
                     switch (record.get('Field')) {
+                        case 'id_club':
+                            if (record.get('Key') === 'PRI') {
+                                fields.push(
+                                        {
+                                            name: record.get('Field'),
+                                            type: 'int'
+                                        }
+                                );
+                                columns.push({
+                                    xtype: 'numbercolumn',
+                                    format: '0',
+                                    header: record.get('Field'),
+                                    dataIndex: record.get('Field'),
+                                    editor: 'numberfield'
+                                });
+                                return;
+                            }
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'int'
+                                    }
+                            );
+                            var storeClubs = Ext.create('Ext.data.Store', {
+                                fields: [
+                                    {
+                                        name: 'id',
+                                        type: 'int'
+                                    },
+                                    'nom'
+                                ],
+                                proxy: {
+                                    type: 'rest',
+                                    url: 'ajax/clubs.php',
+                                    reader: {
+                                        type: 'json',
+                                        root: 'results'
+                                    }
+                                },
+                                autoLoad: true
+                            });
+                            columns.push({
+                                header: record.get('Field'),
+                                dataIndex: record.get('Field'),
+                                editor: {
+                                    xtype: 'combo',
+                                    displayField: 'nom',
+                                    valueField: 'id',
+                                    queryMode: 'local',
+                                    store: storeClubs
+                                },
+                                renderer: function(val) {
+                                    var index = storeClubs.findExact('id', val);
+                                    if (index !== -1) {
+                                        var rs = storeClubs.getAt(index).data;
+                                        return rs.nom;
+                                    }
+                                }
+                            });
+                            return;
                         case 'id_equipe':
                         case 'id_equipe_dom':
                         case 'id_equipe_ext':
@@ -435,6 +495,34 @@ Ext.onReady(function() {
                             break;
                     }
                 });
+                var store = Ext.create('Ext.data.Store', {
+                    fields: fields,
+                    proxy: {
+                        type: 'rest',
+                        url: 'ajax/' + tableName + '.php',
+                        reader: {
+                            type: 'json',
+                            root: 'results',
+                            totalProperty: 'totalCount'
+                        },
+                        writer: {
+                            type: 'json'
+                        },
+                        listeners: {
+                            exception: function(proxy, response, operation) {
+                                var responseJson = Ext.decode(response.responseText);
+                                Ext.MessageBox.show({
+                                    title: 'Erreur',
+                                    msg: responseJson.message,
+                                    icon: Ext.MessageBox.ERROR,
+                                    buttons: Ext.Msg.OK
+                                });
+                            }
+                        }
+                    },
+                    autoLoad: true,
+                    autoSync: true
+                });
                 Ext.create('Ext.window.Window', {
                     title: tableName,
                     maximizable: true,
@@ -450,33 +538,7 @@ Ext.onReady(function() {
                                 clicksToEdit: 2
                             })
                         ],
-                        store: Ext.create('Ext.data.Store', {
-                            fields: fields,
-                            proxy: {
-                                type: 'rest',
-                                url: 'ajax/' + tableName + '.php',
-                                reader: {
-                                    type: 'json',
-                                    root: 'results'
-                                },
-                                writer: {
-                                    type: 'json'
-                                },
-                                listeners: {
-                                    exception: function(proxy, response, operation) {
-                                        var responseJson = Ext.decode(response.responseText);
-                                        Ext.MessageBox.show({
-                                            title: 'Erreur',
-                                            msg: responseJson.message,
-                                            icon: Ext.MessageBox.ERROR,
-                                            buttons: Ext.Msg.OK
-                                        });
-                                    }
-                                }
-                            },
-                            autoLoad: true,
-                            autoSync: true
-                        }),
+                        store: store,
                         columns: columns,
                         dockedItems: [
                             {
@@ -593,7 +655,13 @@ Ext.onReady(function() {
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        bbar: Ext.create('Ext.PagingToolbar', {
+                            store: store,
+                            displayInfo: true,
+                            displayMsg: 'Affichage des éléments {0} - {1} sur {2}',
+                            emptyMsg: "Rien à afficher"
+                        })
                     }
                 }).show();
             }
@@ -632,7 +700,8 @@ Ext.onReady(function() {
             'journees',
             'matches',
             'news',
-            'joueurs'
+            'joueurs',
+            'clubs'
         ];
         Ext.each(tableNames, function(tableName) {
             var store = getGenericColumnStore(tableName);
