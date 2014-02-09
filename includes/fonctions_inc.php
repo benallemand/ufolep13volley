@@ -697,7 +697,9 @@ function affich_annuaire()
 function getPlayersFromTeam($id_equipe) {
     $players = array();
     conn_db();
-    $sql = "SELECT CONCAT(prenom, ' ', nom) AS player FROM joueurs WHERE id_equipe = $id_equipe";
+    $sql = "select CONCAT(j.prenom, ' ', j.nom) AS player from joueur_equipe je
+    left join joueurs j on j.id = je.id_joueur
+    where id_equipe = $id_equipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $players[] = $data['player'];
