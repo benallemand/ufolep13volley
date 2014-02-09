@@ -703,6 +703,86 @@ Ext.onReady(function() {
             'joueurs',
             'clubs'
         ];
+        menuAdmin.add({
+            text: 'Indicateurs',
+            handler: function() {
+                var indicatorWindow = Ext.create('Ext.window.Window', {
+                    title: 'Indicateurs',
+                    maximizable: true,
+                    height: 400,
+                    width: 900,
+                    layout: 'anchor',
+                    defaults: {
+                        anchor: '100%'
+                    },
+                    items: []
+                });
+                indicatorWindow.show();
+                var storeIndicators = Ext.create('Ext.data.Store', {
+                    fields: [
+                        'fieldLabel',
+                        'value',
+                        'details'
+                    ],
+                    proxy: {
+                        type: 'rest',
+                        url: 'ajax/indicators.php',
+                        reader: {
+                            type: 'json',
+                            root: 'results'
+                        }
+                    }
+                });
+                storeIndicators.load({
+                    callback: function(records, operation, success) {
+                        Ext.each(records, function(record) {
+                            var detailsData = record.get('details');
+                            var fields = [];
+                            var columns = [];
+                            for (var k in detailsData[0]) {
+                                fields.push(k);
+                                columns.push({
+                                    header: k,
+                                    dataIndex: k,
+                                    flex: 1
+                                });
+                            }
+                            indicatorWindow.add(
+                                    {
+                                        xtype: 'container',
+                                        layout: 'hbox',
+                                        items: [
+                                            {
+                                                xtype: 'displayfield',
+                                                fieldLabel: record.get('fieldLabel'),
+                                                value: record.get('value'),
+                                                flex: 1
+                                            },
+                                            {
+                                                xtype: 'grid',
+                                                store: Ext.create('Ext.data.Store', {
+                                                    fields: fields,
+                                                    data: {
+                                                        'items': detailsData
+                                                    },
+                                                    proxy: {
+                                                        type: 'memory',
+                                                        reader: {
+                                                            type: 'json',
+                                                            root: 'items'
+                                                        }
+                                                    }
+                                                }),
+                                                columns: columns,
+                                                flex: 3
+                                            }
+                                        ]
+                                    });
+                        });
+                    }
+                });
+            }
+        });
         Ext.each(tableNames, function(tableName) {
             var store = getGenericColumnStore(tableName);
             store.load({
