@@ -711,10 +711,11 @@ Ext.onReady(function() {
                     maximizable: true,
                     height: 400,
                     width: 900,
-                    layout: 'anchor',
-                    defaults: {
-                        anchor: '100%'
+                    layout: {
+                        type : 'vbox',
+                        align : 'stretch'
                     },
+                    autoScroll: true,
                     items: []
                 });
                 indicatorWindow.show();
@@ -751,6 +752,8 @@ Ext.onReady(function() {
                                     {
                                         xtype: 'container',
                                         layout: 'hbox',
+                                        height: 150,
+                                        autoScroll: true,
                                         items: [
                                             {
                                                 xtype: 'displayfield',
@@ -774,7 +777,7 @@ Ext.onReady(function() {
                                                     }
                                                 }),
                                                 columns: columns,
-                                                flex: 3
+                                                flex: 5
                                             }
                                         ]
                                     });
