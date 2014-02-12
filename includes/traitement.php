@@ -182,11 +182,10 @@ function auth()
             // Si l'ID_EQUIPE est égal à 999 on passe en admin !
             if ($id_equipe == "999") {
                 $_SESSION['id_equipe'] = "admin";
-                die('<META HTTP-equiv="refresh" content=0;URL=../index.php>');
             } else {
                 $_SESSION['id_equipe'] = $id_equipe;
-                die('<META HTTP-equiv="refresh" content=0;URL=../portail.php>');
             }      // Sinon c'est une équipe
+            die('<META HTTP-equiv="refresh" content=0;URL=../portail.php>');
             mysql_close();
         }
     }

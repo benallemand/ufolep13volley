@@ -1026,7 +1026,7 @@ function affich_portail_equipe($id)
 // Affectation à une variable de l'ID de l'équipe
     $id_equipe = $_SESSION['id_equipe'];
     if ($_SESSION['id_equipe'] == "admin") {
-        die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
+        die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
     }
 
 // Récupération du nom de l'équipe
