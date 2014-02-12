@@ -1,47 +1,57 @@
 Ext.onReady(function() {
     Ext.create('Ext.container.Viewport', {
-        layout: 'border',
-        items: [
-            {
-                region : 'north',
-                height : 50,
-                items : [
-                    {
-                        xtype : 'button',
-                        text : "RETOUR A L'ACCUEIL",
-                        handler : function() {
-                            window.open('.', '_self', false);
+        layout: 'fit',
+        items: {
+            layout: 'border',
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: [
+                        'ADMINISTRATION',
+                        '->',
+                        {
+                            xtype: 'button',
+                            scale: 'large',
+                            text: "RETOUR A L'ACCUEIL",
+                            handler: function() {
+                                window.open('.', '_self', false);
+                            }
                         }
-                    }
-                ]
-            },
-            {
-                region: 'west',
-                collapsible: true,
-                title: 'Navigation',
-                split: true,
-                width: 150,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                defaults: {
-                    flex: 1,
-                    xtype: 'button'
-                },
-                items: []
-            },
-            {
-                region: 'center',
-                xtype: 'tabpanel',
-                activeTab: 0,
-                items: {
-                    title: 'Panneau Principal',
-                    autoScroll: true,
-                    items: []
+                    ]
                 }
-            }
-        ]
+            ],
+            items: [
+                {
+                    region: 'west',
+                    collapsible: true,
+                    title: 'Navigation',
+                    split: true,
+                    width: 150,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    defaults: {
+                        flex: 1,
+                        xtype: 'button',
+                        scale : 'large',
+                        margins : '10 5 5 5'
+                    },
+                    items: []
+                },
+                {
+                    region: 'center',
+                    xtype: 'tabpanel',
+                    activeTab: 0,
+                    items: {
+                        title: 'Panneau Principal',
+                        autoScroll: true,
+                        items: []
+                    }
+                }
+            ]
+        }
     });
     var getAdminButton = function(tableName, records) {
         return {
@@ -288,146 +298,146 @@ Ext.onReady(function() {
                 var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
                 mainPanel.removeAll();
                 mainPanel.add({
-                    title: tableName,
-                    xtype: 'grid',
-                    autoScroll: true,
-                    selType: 'rowmodel',
-                    plugins: [
-                        Ext.create('Ext.grid.plugin.RowEditing', {
-                            clicksToEdit: 2
-                        })
-                    ],
-                    store: store,
-                    columns: {
-                        items: columns,
-                        defaults: {
-                            flex: 1
-                        }
-                    },
-                    dockedItems: [
-                        {
-                            xtype: 'toolbar',
-                            dock: 'top',
+                        title: tableName,
+                        xtype: 'grid',
+                        autoScroll: true,
+                        selType: 'rowmodel',
+                        plugins: [
+                            Ext.create('Ext.grid.plugin.RowEditing', {
+                                clicksToEdit: 2
+                            })
+                        ],
+                        store: store,
+                        columns: {
+                            items: columns,
                             defaults: {
-                                scale: 'medium'
-                            },
-                            items: [
-                                {
-                                    icon: 'images/ajout.gif',
-                                    text: 'Ajouter',
-                                    tooltip: 'Ajouter',
-                                    handler: function(button) {
-                                        button.up('grid').getStore().insert(0, button.up('grid').getStore().getProxy().getModel());
-                                        var formFields = [];
-                                        Ext.each(button.up('grid').getStore().getProxy().getModel().getFields(), function(field) {
-                                            var formField = {
-                                                xtype: 'textfield',
-                                                fieldLabel: field.name,
-                                                name: field.name
-                                            };
-                                            switch (field.name) {
-                                                case 'id_equipe' :
-                                                    formField = {
-                                                        xtype: 'combo',
-                                                        queryMode: 'local',
-                                                        fieldLabel: field.name,
-                                                        name: field.name,
-                                                        displayField: 'nom_equipe',
-                                                        valueField: 'id_equipe',
-                                                        store: Ext.create('Ext.data.Store', {
-                                                            fields: [
-                                                                {
-                                                                    name: 'id_equipe',
-                                                                    type: 'int'
-                                                                },
-                                                                'nom_equipe'
-                                                            ],
-                                                            proxy: {
-                                                                type: 'rest',
-                                                                url: 'ajax/equipes.php',
-                                                                reader: {
-                                                                    type: 'json',
-                                                                    root: 'results'
-                                                                }
-                                                            },
-                                                            autoLoad: true
-                                                        })
-
-                                                    };
-                                                    formFields.push(formField);
-                                                    return;
-                                            }
-                                            switch (field.type.type) {
-                                                case 'int' :
-                                                    formField = {
-                                                        xtype: 'numberfield',
-                                                        fieldLabel: field.name,
-                                                        name: field.name
-                                                    };
-                                                    break;
-                                                case 'date' :
-                                                    formField = {
-                                                        xtype: 'datefield',
-                                                        fieldLabel: field.name,
-                                                        dateFormat: field.dateFormat,
-                                                        name: field.name
-                                                    };
-                                                    break;
-                                            }
-                                            formFields.push(formField);
-                                        });
-                                        var windowCreate = Ext.create('Ext.window.Window', {
-                                            title: 'Ajout',
-                                            height: 500,
-                                            width: 700,
-                                            layout: 'fit',
-                                            items: [
-                                                {
-                                                    xtype: 'form',
-                                                    layout: 'anchor',
-                                                    autoScroll: true,
-                                                    defaults: {
-                                                        anchor: '90%',
-                                                        margin: 10
-                                                    },
-                                                    items: formFields
-                                                }
-                                            ]
-                                        });
-                                        windowCreate.down('form').getForm().loadRecord(button.up('grid').getStore().getAt(0));
-                                        windowCreate.show();
-                                    }
-                                },
-                                {
-                                    icon: 'images/delete.gif',
-                                    tooltip: 'Supprimer',
-                                    text: 'Supprimer',
-                                    handler: function(button) {
-                                        var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
-                                        Ext.Msg.show({
-                                            title: 'Effacer ?',
-                                            msg: 'Confirmez vous la suppression ?',
-                                            buttons: Ext.Msg.OKCANCEL,
-                                            icon: Ext.Msg.QUESTION,
-                                            fn: function(btn) {
-                                                if (btn === 'ok') {
-                                                    button.up('grid').getStore().remove(rec);
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            ]
+                                flex: 1
+                            }
                         },
-                        {
-                            xtype: 'pagingtoolbar',
-                            dock: 'bottom',
-                            store: store,
-                            displayInfo: true,
-                            displayMsg: 'Affichage des éléments {0} - {1} sur {2}',
-                            emptyMsg: "Rien à afficher"
-                        }
-                    ]
+                        dockedItems: [
+                            {
+                                xtype: 'toolbar',
+                                dock: 'top',
+                                defaults: {
+                                    scale: 'medium'
+                                },
+                                items: [
+                                    {
+                                        icon: 'images/ajout.gif',
+                                        text: 'Ajouter',
+                                        tooltip: 'Ajouter',
+                                        handler: function(button) {
+                                            button.up('grid').getStore().insert(0, button.up('grid').getStore().getProxy().getModel());
+                                            var formFields = [];
+                                            Ext.each(button.up('grid').getStore().getProxy().getModel().getFields(), function(field) {
+                                                var formField = {
+                                                    xtype: 'textfield',
+                                                    fieldLabel: field.name,
+                                                    name: field.name
+                                                };
+                                                switch (field.name) {
+                                                    case 'id_equipe' :
+                                                        formField = {
+                                                            xtype: 'combo',
+                                                            queryMode: 'local',
+                                                            fieldLabel: field.name,
+                                                            name: field.name,
+                                                            displayField: 'nom_equipe',
+                                                            valueField: 'id_equipe',
+                                                            store: Ext.create('Ext.data.Store', {
+                                                                fields: [
+                                                                    {
+                                                                        name: 'id_equipe',
+                                                                        type: 'int'
+                                                                    },
+                                                                    'nom_equipe'
+                                                                ],
+                                                                proxy: {
+                                                                    type: 'rest',
+                                                                    url: 'ajax/equipes.php',
+                                                                    reader: {
+                                                                        type: 'json',
+                                                                        root: 'results'
+                                                                    }
+                                                                },
+                                                                autoLoad: true
+                                                            })
+
+                                                        };
+                                                        formFields.push(formField);
+                                                        return;
+                                                }
+                                                switch (field.type.type) {
+                                                    case 'int' :
+                                                        formField = {
+                                                            xtype: 'numberfield',
+                                                            fieldLabel: field.name,
+                                                            name: field.name
+                                                        };
+                                                        break;
+                                                    case 'date' :
+                                                        formField = {
+                                                            xtype: 'datefield',
+                                                            fieldLabel: field.name,
+                                                            dateFormat: field.dateFormat,
+                                                            name: field.name
+                                                        };
+                                                        break;
+                                                }
+                                                formFields.push(formField);
+                                            });
+                                            var windowCreate = Ext.create('Ext.window.Window', {
+                                                title: 'Ajout',
+                                                height: 500,
+                                                width: 700,
+                                                layout: 'fit',
+                                                items: [
+                                                    {
+                                                        xtype: 'form',
+                                                        layout: 'anchor',
+                                                        autoScroll: true,
+                                                        defaults: {
+                                                            anchor: '90%',
+                                                            margin: 10
+                                                        },
+                                                        items: formFields
+                                                    }
+                                                ]
+                                            });
+                                            windowCreate.down('form').getForm().loadRecord(button.up('grid').getStore().getAt(0));
+                                            windowCreate.show();
+                                        }
+                                    },
+                                    {
+                                        icon: 'images/delete.gif',
+                                        tooltip: 'Supprimer',
+                                        text: 'Supprimer',
+                                        handler: function(button) {
+                                            var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
+                                            Ext.Msg.show({
+                                                title: 'Effacer ?',
+                                                msg: 'Confirmez vous la suppression ?',
+                                                buttons: Ext.Msg.OKCANCEL,
+                                                icon: Ext.Msg.QUESTION,
+                                                fn: function(btn) {
+                                                    if (btn === 'ok') {
+                                                        button.up('grid').getStore().remove(rec);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'pagingtoolbar',
+                                dock: 'bottom',
+                                store: store,
+                                displayInfo: true,
+                                displayMsg: 'Affichage des éléments {0} - {1} sur {2}',
+                                emptyMsg: "Rien à afficher"
+                            }
+                        ]
                 });
             }
         };
