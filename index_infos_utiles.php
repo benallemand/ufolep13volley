@@ -23,7 +23,7 @@
             <div id="menu"></div>
             <div id="contenu">
                 <?php affich_connecte(); ?>
-                <IFRAME src="infos_utiles/index.html" width="1000px" height="100%"></IFRAME>
+                <IFRAME src="infos_utiles/index.html" width="1000px" height="800px"></IFRAME>
             </div>
         </div>
     </BODY>
