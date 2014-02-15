@@ -33,6 +33,7 @@ class Rest {
     function getData() {
         $sql = "SELECT SQL_CALC_FOUND_ROWS ";
         $columns = json_decode($this->getColumns(), true);
+        $queribles = array();
         foreach ($columns as $column) {
             switch ($column['Type']) {
                 case 'tinyint(1)' :
@@ -43,11 +44,22 @@ class Rest {
                     break;
                 default :
                     $sql .= " " . $column['Field'] . ",";
+                    $queribles[] = $column['Field'];
                     break;
             }
         }
         $sql = rtrim($sql, ",");
-        $sql .= " from " . $this->fileName;
+        $sql .= " FROM " . $this->fileName;
+        $whereClause = filter_input(INPUT_GET, 'query');
+        if ($whereClause !== null) {
+            $sql .= " WHERE ";
+            foreach ($queribles as $index => $querible) {
+                if ($index > 0) {
+                    $sql .= " OR ";
+                }
+                $sql .= " $querible LIKE '%$whereClause%' ";
+            }
+        }
         $sql .= " limit " . $_REQUEST['start'] . "," . $_REQUEST['limit'];
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         $results = array();
