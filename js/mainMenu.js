@@ -210,9 +210,11 @@ Ext.onReady(function() {
             {
                 text: 'Documents',
                 menu: [
-                    {text: 'Infos Utiles', handler: function() {
+                    {
+                        text: 'Infos Utiles', handler: function() {
                             window.open('index_infos_utiles.php', '_self', false);
-                        }},
+                        }
+                    },
                     {
                         text: 'Agenda',
                         handler: function() {
@@ -266,6 +268,12 @@ Ext.onReady(function() {
                                 }
                             }
                         ]
+                    },
+                    {
+                        text: 'Déclaration de sinistre',
+                        handler: function() {
+                            window.open('infos_utiles/Media/DeclarationSinistreApac.pdf', '_blank');
+                        }
                     }
                 ]
             },
