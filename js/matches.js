@@ -358,6 +358,63 @@ Ext.onReady(function() {
                                                                     name: 'equipe_dom'
                                                                 },
                                                                 {
+                                                                    xtype: 'button',
+                                                                    margin : 10,
+                                                                    text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
+                                                                    handler : function() {
+                                                                        this.up('form').getForm().setValues([
+                                                                            {
+                                                                                id : 'score_equipe_dom',
+                                                                                value : 3
+                                                                            },
+                                                                            {
+                                                                                id : 'score_equipe_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_1_dom',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_1_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_2_dom',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_2_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_3_dom',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_3_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_4_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_4_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_5_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_5_ext',
+                                                                                value : 0
+                                                                            }
+                                                                        ]);
+                                                                    }
+                                                                },
+                                                                {
                                                                     xtype: 'numberfield',
                                                                     fieldLabel: 'Sets Domicile',
                                                                     name: 'score_equipe_dom',
@@ -413,6 +470,63 @@ Ext.onReady(function() {
                                                                     xtype: 'displayfield',
                                                                     fieldLabel: 'Equipe Exterieur',
                                                                     name: 'equipe_ext'
+                                                                },
+                                                                {
+                                                                    xtype: 'button',
+                                                                    margin : 10,
+                                                                    text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
+                                                                    handler : function() {
+                                                                        this.up('form').getForm().setValues([
+                                                                            {
+                                                                                id : 'score_equipe_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'score_equipe_ext',
+                                                                                value : 3
+                                                                            },
+                                                                            {
+                                                                                id : 'set_1_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_1_ext',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_2_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_2_ext',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_3_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_3_ext',
+                                                                                value : 25
+                                                                            },
+                                                                            {
+                                                                                id : 'set_4_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_4_ext',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_5_dom',
+                                                                                value : 0
+                                                                            },
+                                                                            {
+                                                                                id : 'set_5_ext',
+                                                                                value : 0
+                                                                            }
+                                                                        ]);
+                                                                    }
                                                                 },
                                                                 {
                                                                     xtype: 'numberfield',
