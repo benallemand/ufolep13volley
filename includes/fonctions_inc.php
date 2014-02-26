@@ -5,7 +5,7 @@ session_start();
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
-    if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
         mysql_query("SET NAMES UTF8");
     }
     $sql = "select 
@@ -1572,7 +1572,7 @@ function calcul_classement($id_equipe, $compet, $division)
 
 function getClassement($compet, $div) {
     conn_db();
-    if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
         mysql_query("SET NAMES UTF8");
     }
     $sql = 'SELECT '
@@ -1820,7 +1820,7 @@ function setRetard($code_match, $valeur) {
 
 function getMatches($compet, $div) {
     conn_db();
-    if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
         mysql_query("SET NAMES UTF8");
     }
     $sql = "SELECT 

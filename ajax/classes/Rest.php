@@ -216,7 +216,7 @@ class Rest {
 
     function parseRequest() {
         conn_db();
-        if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+        if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
             mysql_query("SET NAMES UTF8");
         }
         if (!estAdmin()) {
