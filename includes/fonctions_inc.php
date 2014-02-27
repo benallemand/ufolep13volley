@@ -59,6 +59,9 @@ function estMemeClassement($id_equipe) {
         return true;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
+    if($sessionIdEquipe === $id_equipe) {
+        return true;
+    }
     conn_db();
     $sql = "select * from classements 
         where division in 
