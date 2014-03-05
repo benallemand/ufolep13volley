@@ -5,9 +5,6 @@ session_start();
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
-    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
-        mysql_query("SET NAMES UTF8");
-    }
     $sql = "select 
     c.libelle AS competition, 
     IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
@@ -59,7 +56,7 @@ function estMemeClassement($id_equipe) {
         return true;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    if($sessionIdEquipe === $id_equipe) {
+    if ($sessionIdEquipe === $id_equipe) {
         return true;
     }
     conn_db();
@@ -110,6 +107,9 @@ function conn_db()
 // on se connecte à MySQL 
     $db = mysql_connect($server, $user, $password);
     mysql_select_db($base, $db);
+    if (($_SERVER['SERVER_NAME'] !== 'localhost') && ($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
+        mysql_query("SET NAMES UTF8");
+    }
 }
 
 //************************************************************************************************
@@ -1069,6 +1069,8 @@ function affich_portail_equipe($id)
     echo'<div id="details_equipe">';
     echo'<a name="me"></a>';
     affich_details_equipe($id_equipe, $compet);
+//    echo'<p><div id="bouton_modif_equipe"></div></p>';
+//    echo'<script type="text/javascript" src="js/boutonModifEquipe.js"></script>';
     echo'<p><span><A href="javascript:popup(\'change.php?a=me&i=' . $id_equipe . '&c=' . $compet . '\')">Modifier les informations</A></span></p>';
     echo'</div>';
     echo'</div>';
@@ -1575,9 +1577,6 @@ function calcul_classement($id_equipe, $compet, $division)
 
 function getClassement($compet, $div) {
     conn_db();
-    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
-        mysql_query("SET NAMES UTF8");
-    }
     $sql = 'SELECT '
             . 'c.id_equipe AS id_equipe,  '
             . 'c.code_competition AS code_competition,  '
@@ -1823,9 +1822,6 @@ function setRetard($code_match, $valeur) {
 
 function getMatches($compet, $div) {
     conn_db();
-    if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
-        mysql_query("SET NAMES UTF8");
-    }
     $sql = "SELECT 
         m.id_match,
         m.code_match,
