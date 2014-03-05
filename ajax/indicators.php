@@ -41,8 +41,12 @@ $indicatorMatchesNonRenseignes = new Indicator(
         LEFT JOIN equipes e1 ON e1.id_equipe=m.id_equipe_dom
         LEFT JOIN equipes e2 ON e2.id_equipe=m.id_equipe_ext
         LEFT JOIN competitions c ON c.code_competition=m.code_competition
-        WHERE m.score_equipe_dom+0 = 0
-        AND m.score_equipe_ext+0 = 0
+        WHERE 
+        (
+        (m.score_equipe_dom+m.score_equipe_ext+0=0)
+        OR
+        ((m.set_1_dom+m.set_1_ext=0) AND (m.score_equipe_dom+m.score_equipe_ext>0))
+        )
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $results = array();
