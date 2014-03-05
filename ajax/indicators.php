@@ -1,13 +1,30 @@
 <?php
 
 require_once 'classes/Indicator.php';
+$indicatorEquipesEngageesChampionnat = new Indicator(
+        'Equipes', "SELECT e.nom_equipe,
+        comp.libelle,
+        c.division,
+        d.jour_reception,
+        d.heure_reception,
+        d.responsable,
+        d.email,
+        d.telephone_1,
+        d.gymnase
+        FROM equipes e
+        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
+        LEFT JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
+        LEFT JOIN details_equipes d ON d.id_equipe=e.id_equipe
+        WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
+        ORDER BY e.code_competition, c.division, e.id_equipe"
+);
 $indicatorLicencesDupliquees = new Indicator(
         'Licences dupliquees', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs 
          GROUP BY num_licence
          HAVING COUNT(*) > 1 AND num_licence != 'Encours'"
 );
 $indicatorMatchesNonRenseignes = new Indicator(
-        'Matches non renseignes', "SELECT 
+        'Retards', "SELECT 
         m.code_match AS code, 
         c.libelle AS competition, 
         e1.nom_equipe AS domicile, 
@@ -25,4 +42,5 @@ $results = array();
 
 $results[] = $indicatorLicencesDupliquees->getResult();
 $results[] = $indicatorMatchesNonRenseignes->getResult();
+$results[] = $indicatorEquipesEngageesChampionnat->getResult();
 echo json_encode(array('results' => $results));

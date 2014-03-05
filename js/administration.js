@@ -539,19 +539,26 @@ Ext.onReady(function() {
                             var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
                             indicatorPanel.add(
                                     {
-                                        xtype: 'container',
-                                        layout: 'hbox',
-                                        height: 150,
-                                        autoScroll: true,
+                                        layout: 'border',
+                                        height: 300,
                                         items: [
                                             {
-                                                xtype: 'displayfield',
-                                                fieldLabel: record.get('fieldLabel'),
-                                                value: record.get('value'),
-                                                flex: 1
+                                                layout: 'fit',
+                                                region: 'west',
+                                                title: record.get('fieldLabel'),
+                                                flex: 1,
+                                                items: {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: '',
+                                                    hideLabel: true,
+                                                    value: record.get('value')
+                                                }
                                             },
                                             {
+                                                region: 'center',
+                                                flex: 7,
                                                 xtype: 'grid',
+                                                autoScroll: true,
                                                 store: Ext.create('Ext.data.Store', {
                                                     fields: fields,
                                                     data: {
@@ -565,8 +572,7 @@ Ext.onReady(function() {
                                                         }
                                                     }
                                                 }),
-                                                columns: columns,
-                                                flex: 5
+                                                columns: columns
                                             }
                                         ]
                                     });

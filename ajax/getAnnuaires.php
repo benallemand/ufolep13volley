@@ -3,9 +3,6 @@
 require_once "../includes/fonctions_inc.php";
 $results = array();
 conn_db();
-        if (($_SERVER['SERVER_NAME'] !== 'localhost')&&($_SERVER['SERVER_NAME'] !== '82.228.19.67')) {
-            mysql_query("SET NAMES UTF8");
-        }
 $sql = 'SELECT DISTINCT(code_competition) FROM classements';
 $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
 while ($data = mysql_fetch_assoc($req)) {
