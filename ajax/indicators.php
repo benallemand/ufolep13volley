@@ -1,6 +1,13 @@
 <?php
 
 require_once 'classes/Indicator.php';
+$indicatorInfosManquantes = new Indicator(
+        'Infos Manquantes', "SELECT d.responsable, d.email, e.nom_equipe, c.libelle, cl.division FROM details_equipes d
+        LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
+        LEFT JOIN competitions c ON c.code_competition=e.code_competition
+        LEFT JOIN classements cl ON cl.id_equipe=e.id_equipe
+        WHERE (email='' OR responsable='') AND cl.division IS NOT NULL"
+);
 $indicatorEquipesEngageesChampionnat = new Indicator(
         'Equipes', "SELECT e.nom_equipe,
         comp.libelle,
@@ -43,4 +50,5 @@ $results = array();
 $results[] = $indicatorLicencesDupliquees->getResult();
 $results[] = $indicatorMatchesNonRenseignes->getResult();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
+$results[] = $indicatorInfosManquantes->getResult();
 echo json_encode(array('results' => $results));
