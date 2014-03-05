@@ -1069,9 +1069,9 @@ function affich_portail_equipe($id)
     echo'<div id="details_equipe">';
     echo'<a name="me"></a>';
     affich_details_equipe($id_equipe, $compet);
-//    echo'<p><div id="bouton_modif_equipe"></div></p>';
-//    echo'<script type="text/javascript" src="js/boutonModifEquipe.js"></script>';
-    echo'<p><span><A href="javascript:popup(\'change.php?a=me&i=' . $id_equipe . '&c=' . $compet . '\')">Modifier les informations</A></span></p>';
+    echo'<p><div id="bouton_modif_equipe"></div></p>';
+    echo'<script type="text/javascript" src="js/boutonModifEquipe.js"></script>';
+//    echo'<p><span><A href="javascript:popup(\'change.php?a=me&i=' . $id_equipe . '&c=' . $compet . '\')">Modifier les informations</A></span></p>';
     echo'</div>';
     echo'</div>';
 }
@@ -1769,6 +1769,55 @@ function modifierMatch($code_match) {
     return true;
 }
 
+function modifierMonEquipe() {
+    conn_db();
+    $id_equipe = filter_input(INPUT_POST, 'id_equipe');
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    if ($sessionIdEquipe != $id_equipe) {
+        return false;
+    }
+    $id_club = filter_input(INPUT_POST, 'id_club');
+    $responsable = filter_input(INPUT_POST, 'responsable');
+    $telephone_1 = filter_input(INPUT_POST, 'telephone_1');
+    $telephone_2 = filter_input(INPUT_POST, 'telephone_2');
+    $email = filter_input(INPUT_POST, 'email');
+    $gymnase = filter_input(INPUT_POST, 'gymnase');
+    $localisation = filter_input(INPUT_POST, 'localisation');
+    $jour_reception = filter_input(INPUT_POST, 'jour_reception');
+    $heure_reception = filter_input(INPUT_POST, 'heure_reception');
+    $site_web = filter_input(INPUT_POST, 'site_web');
+    $sql = "UPDATE details_equipes SET "
+            . "responsable='$responsable', "
+            . "telephone_1='$telephone_1', "
+            . "telephone_2='$telephone_2', "
+            . "email='$email', "
+            . "gymnase='$gymnase', "
+            . "localisation='$localisation', "
+            . "jour_reception='$jour_reception', "
+            . "heure_reception='$heure_reception', "
+            . "site_web='$site_web' "
+            . "WHERE id_equipe=$id_equipe";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $sql = "UPDATE equipes SET "
+            . "id_club=$id_club "
+            . "WHERE id_equipe=$id_equipe";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
+}
+
 function supprimerMatch($code_match) {
     conn_db();
     $sql = 'DELETE FROM matches WHERE code_match = \'' . $code_match . '\'';
@@ -1867,6 +1916,40 @@ function getMatches($compet, $div) {
         } else {
             setRetard($data['code_match'], 0);
         }
+    }
+    return json_encode($results);
+}
+
+function getMonEquipe() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT 
+        e.id_club,
+        d.id_equipe,
+        d.responsable,
+        d.telephone_1,
+        d.telephone_2,
+        d.email,
+        d.gymnase,
+        d.localisation,
+        d.jour_reception,
+        d.heure_reception,
+        d.site_web,
+        d.photo,
+        d.fdm
+        FROM details_equipes d
+        LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
+        WHERE d.id_equipe = $sessionIdEquipe";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
     }
     return json_encode($results);
 }
