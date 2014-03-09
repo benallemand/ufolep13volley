@@ -1051,17 +1051,20 @@ function affich_portail_equipe($id)
 //====================================================================
     echo'<h1>' . $nom_equipe . ' - Vos matches </h1>';
 
-//====================================================================
-// On regarde à quelles compétitions l'équipe est inscrite
-//====================================================================
-    $sql = 'SELECT DISTINCT code_competition from matches WHERE id_equipe_dom = \'' . $id_equipe . '\' OR id_equipe_ext = \'' . $id_equipe . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
-//====================================================================
-// On affiche les matches de la compétition en question
-//====================================================================
-        affich_matches_equipe($id_equipe, $data['code_competition']);
-    }
+    echo'<div id="liste_matches_equipe"></div>';
+    echo'<script type="text/javascript" src="js/grilleListeMatchesEquipe.js"></script>';
+
+////====================================================================
+//// On regarde à quelles compétitions l'équipe est inscrite
+////====================================================================
+//    $sql = 'SELECT DISTINCT code_competition from matches WHERE id_equipe_dom = \'' . $id_equipe . '\' OR id_equipe_ext = \'' . $id_equipe . '\'';
+//    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+//    while ($data = mysql_fetch_array($req)) {
+////====================================================================
+//// On affiche les matches de la compétition en question
+////====================================================================
+//        affich_matches_equipe($id_equipe, $data['code_competition']);
+//    }
 
 //====================================================================
 // On affiche les détails de l'équipe
@@ -1916,6 +1919,62 @@ function getMatches($compet, $div) {
         } else {
             setRetard($data['code_match'], 0);
         }
+    }
+    return json_encode($results);
+}
+
+function getMesMatches() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT 
+        m.id_match,
+        m.code_match,
+        m.code_competition,
+        c.libelle AS libelle_competition,
+        m.division,
+        CONCAT(j.nommage, ' : ', j.libelle) AS journee,
+        m.id_equipe_dom,
+        e1.nom_equipe AS equipe_dom,
+        m.id_equipe_ext,
+        e2.nom_equipe AS equipe_ext,
+        m.score_equipe_dom+0 AS score_equipe_dom,
+        m.score_equipe_ext+0 AS score_equipe_ext,
+        m.set_1_dom,
+        m.set_1_ext,
+        m.set_2_dom,
+        m.set_2_ext,
+        m.set_3_dom,
+        m.set_3_ext,
+        m.set_4_dom,
+        m.set_4_ext,
+        m.set_5_dom,
+        m.set_5_ext,
+        m.heure_reception,
+        m.date_reception,
+        m.gagnea5_dom+0 AS gagnea5_dom,
+        m.gagnea5_ext+0 AS gagnea5_ext,
+        m.forfait_dom+0 AS forfait_dom,
+        m.forfait_ext+0 AS forfait_ext,
+        m.certif+0 AS certif,
+        m.report+0 AS report,
+        m.retard+0 AS retard
+        FROM matches m 
+        JOIN competitions c ON c.code_competition = m.code_competition
+        JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
+        JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
+        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
+        WHERE m.id_equipe_dom = $sessionIdEquipe OR m.id_equipe_ext = $sessionIdEquipe
+        ORDER BY m.date_reception, m.code_match";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
     }
     return json_encode($results);
 }

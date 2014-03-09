@@ -360,7 +360,7 @@ Ext.onReady(function() {
                                                                 {
                                                                     xtype: 'button',
                                                                     margin : 10,
-                                                                    text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
+                                                                    text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
                                                                     handler : function() {
                                                                         this.up('form').getForm().setValues([
                                                                             {
@@ -474,7 +474,7 @@ Ext.onReady(function() {
                                                                 {
                                                                     xtype: 'button',
                                                                     margin : 10,
-                                                                    text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
+                                                                    text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
                                                                     handler : function() {
                                                                         this.up('form').getForm().setValues([
                                                                             {
