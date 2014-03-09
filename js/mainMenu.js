@@ -124,7 +124,10 @@ Ext.onReady(function() {
                                     reader: {
                                         type: 'json',
                                         root: 'results'
-                                    }
+                                    },
+                                    pageParam: undefined,
+                                    startParam: undefined,
+                                    limitParam: undefined
                                 },
                                 autoLoad: true,
                                 listeners: {
