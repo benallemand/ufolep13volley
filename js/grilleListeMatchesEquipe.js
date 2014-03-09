@@ -260,6 +260,11 @@ Ext.onReady(function() {
                             {
                                 icon: 'images/modif.gif',
                                 tooltip: 'Modifier le score',
+                                getClass: function(value, meta, rec) {
+                                    if (rec.get('certif') === true) {
+                                        return "x-hide-display";
+                                    }
+                                },
                                 handler: function(grid, rowIndex) {
                                     var rec = grid.getStore().getAt(rowIndex);
                                     afficheFormulaire = function() {
