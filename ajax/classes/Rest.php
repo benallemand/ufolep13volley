@@ -60,7 +60,11 @@ class Rest {
                 $sql .= " $querible LIKE '%$whereClause%' ";
             }
         }
-        $sql .= " limit " . $_REQUEST['start'] . "," . $_REQUEST['limit'];
+        $startParam = filter_input(INPUT_GET, 'start');
+        $limitParam = filter_input(INPUT_GET, 'limit');
+        if ($startParam !== null) {
+            $sql .= " limit $startParam,$limitParam";
+        }
         $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
         $results = array();
         while ($data = mysql_fetch_assoc($req)) {

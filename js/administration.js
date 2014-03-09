@@ -97,8 +97,11 @@ Ext.onReady(function() {
                                     url: 'ajax/clubs.php',
                                     reader: {
                                         type: 'json',
-                                        root: 'results'
-                                    }
+                                        root: 'results',
+                                    },
+                                    pageParam: undefined,
+                                    startParam: undefined,
+                                    limitParam: undefined
                                 },
                                 autoLoad: true
                             });
@@ -160,7 +163,10 @@ Ext.onReady(function() {
                                     reader: {
                                         type: 'json',
                                         root: 'results'
-                                    }
+                                    },
+                                    pageParam: undefined,
+                                    startParam: undefined,
+                                    limitParam: undefined
                                 },
                                 autoLoad: true
                             });
