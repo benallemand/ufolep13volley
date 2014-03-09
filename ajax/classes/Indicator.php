@@ -61,7 +61,7 @@ class Indicator {
 
     function getResult() {
         return array(
-            'fieldLabel' => $this->getFieldLabel(),
+            'fieldLabel' => utf8_encode($this->getFieldLabel()),
             'value' => $this->execSqlGetValue(),
             'details' => $this->execSqlGetDetails()
         );
