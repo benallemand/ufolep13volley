@@ -804,7 +804,6 @@ function affich_portail_equipe($id)
 ////====================================================================
 //        affich_matches_equipe($id_equipe, $data['code_competition']);
 //    }
-
 //====================================================================
 // On affiche les détails de l'équipe
 //====================================================================
@@ -1565,6 +1564,28 @@ function modifierMonEquipe() {
     $sql = "UPDATE equipes SET "
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    //addSqlActivity($sql);
+    mysql_close();
+    return true;
+}
+
+function modifierMonMotDePasse() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $password = filter_input(INPUT_POST, 'password');
+    $sql = "UPDATE comptes_acces SET "
+            . "password='$password' "
+            . "WHERE id_equipe=$sessionIdEquipe";
     $req = mysql_query($sql);
     if ($req === FALSE) {
         return false;
