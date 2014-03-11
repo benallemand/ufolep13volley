@@ -1,8 +1,12 @@
 <?php
 
 require_once 'classes/Indicator.php';
+$indicatorComptes = new Indicator(
+        'Comptes', "SELECT e.nom_equipe, de.email, ca.login, ca.password FROM equipes e
+        JOIN details_equipes de ON de.id_equipe=e.id_equipe
+        JOIN comptes_acces ca ON ca.id_equipe=e.id_equipe");
 $indicatorMatchesDupliques = new Indicator(
-        'Match dupliqué', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
+        'Matches dupliqués', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         GROUP BY m.id_equipe_dom, m.id_equipe_ext, m.code_competition
@@ -77,4 +81,5 @@ $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorInfosManquantes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
+$results[] = $indicatorComptes->getResult();
 echo json_encode(array('results' => $results));

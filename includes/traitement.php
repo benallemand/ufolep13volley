@@ -212,6 +212,7 @@ function certif_match()
 //on mets à jour l'entrée dans la table matches
     $sql = 'UPDATE matches SET certif = 1 WHERE code_match = \'' . $code_match . '\'';
     mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    //addSqlActivity($sql);
 
 // on ferme sql 
     mysql_close();
@@ -280,6 +281,7 @@ function maj_equipe()
     $sqlmaj = 'UPDATE details_equipes SET responsable = \'' . $responsable . '\', telephone_1 = \'' . $telephone_1 . '\', telephone_2 = \'' . $telephone_2 . '\', email = \'' . $email . '\', jour_reception = \'' . $jour_reception . '\', heure_reception = \'' . $heure_reception . '\', gymnase = \'' . $gymnase . '\', localisation = \'' . $localisation . '\', site_web = \'' . $site_web . '\' WHERE `id_equipe` = ' . $id_equipe . ' LIMIT 1;';
 
     mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+    //addSqlActivity($sqlmaj);
 
 // on ferme sql 
     mysql_close();
@@ -312,6 +314,7 @@ function maj_news()
 //Requête de MAJ
     $sqlmaj = 'UPDATE news SET texte_news = \'' . $texte_news . '\', titre_news = \'' . $titre_news . '\', date_news = \'' . $date_news . '\' WHERE `id_news` = ' . $id_news . ' LIMIT 1;';
     mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+    //addSqlActivity($sqlmaj);
 
 // on ferme sql 
     mysql_close();
@@ -402,6 +405,7 @@ function maj_result()
 
 // on insère les informations du formulaire dans la table =========================================================
     mysql_query($sql) or die('Erreur SQL !' . $sql . '<br>' . mysql_error());
+    //addSqlActivity($sql);
 
 // Mise à jour de la table derniers résultats =====================================================================
 // **************   A  F A I R E   ******************
@@ -462,6 +466,7 @@ function penalite($action)
 // on mets à jour la BDD
     $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+    //addSqlActivity($sqlmaj);
 
 // On recalcule le classement de l'équipe
     calcul_classement($id_equipe, $compet, $division);

@@ -19,23 +19,8 @@ class Indicator {
     private $sql;
 
     function __construct($fieldLabel, $sql) {
-        $this->fieldLabel = $fieldLabel;
+        $this->fieldLabel = utf8_encode($fieldLabel);
         $this->sql = $sql;
-    }
-
-    function getFieldLabel() {
-        return $this->fieldLabel;
-    }
-
-    function execSqlGetValue() {
-        conn_db();
-        $req = mysql_query($this->getSqlValue());
-        $results = array();
-        while ($data = mysql_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        mysql_close();
-        return $results[0]['cnt'];
     }
 
     function execSqlGetDetails() {
@@ -49,21 +34,12 @@ class Indicator {
         return $results;
     }
 
-    function getSqlValue() {
-        return "select count(*) AS cnt from ("
-                . "$this->sql"
-                . ") t";
-    }
-
-    function getSql() {
-        return $this->sql;
-    }
-
     function getResult() {
+        $results = $this->execSqlGetDetails();
         return array(
-            'fieldLabel' => utf8_encode($this->getFieldLabel()),
-            'value' => $this->execSqlGetValue(),
-            'details' => $this->execSqlGetDetails()
+            'fieldLabel' => $this->fieldLabel,
+            'value' => count($results),
+            'details' => $results
         );
     }
 

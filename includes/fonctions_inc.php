@@ -1315,6 +1315,7 @@ function calcul_classement($id_equipe, $compet, $division)
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
 
     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+    //addSqlActivity($sqlmaj);
 }
 
 function getClassement($compet, $div) {
@@ -1367,6 +1368,7 @@ function ajouterPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
+    //addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
     return true;
@@ -1393,6 +1395,7 @@ function enleverPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
+    //addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
     return true;
@@ -1421,6 +1424,7 @@ function certifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
+    //addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1505,10 +1509,18 @@ function modifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
+    //addSqlActivity($sql);
     calcul_classement($id_equipe_dom, $compet, $division);
     calcul_classement($id_equipe_ext, $compet, $division);
     mysql_close();
     return true;
+}
+
+function addSqlActivity($sql) {
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "INSERT activity SET comment=\"$sql\", activity_date=CURDATE(), user_id=$sessionIdEquipe";
+    $req = mysql_query($sql);
+    return;
 }
 
 function modifierMonEquipe() {
@@ -1549,6 +1561,7 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
+    //addSqlActivity($sql);
     $sql = "UPDATE equipes SET "
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
@@ -1556,6 +1569,7 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
+    //addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1607,6 +1621,7 @@ function setRetard($code_match, $valeur) {
     if ($req === FALSE) {
         return false;
     }
+    //addSqlActivity($sql);
     mysql_close();
     return true;
 }

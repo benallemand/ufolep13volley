@@ -13,3 +13,4 @@ ALTER TABLE joueurs MODIFY id smallint(10) AUTO_INCREMENT;
 ALTER TABLE journees MODIFY id smallint(10) AUTO_INCREMENT;
 ALTER TABLE matches MODIFY id_match smallint(10) AUTO_INCREMENT;
 ALTER TABLE news MODIFY id_news smallint(10) AUTO_INCREMENT;
+ALTER TABLE activity MODIFY id smallint(10) AUTO_INCREMENT;
