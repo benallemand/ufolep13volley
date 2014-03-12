@@ -543,6 +543,9 @@ Ext.onReady(function() {
                                 });
                             }
                             var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
+                            if(record.get('value') === 0) {
+                                return;
+                            }
                             indicatorPanel.add(
                                     {
                                         layout: 'border',
