@@ -70,6 +70,8 @@ $indicatorMatchesNonRenseignes = new Indicator(
         (m.score_equipe_dom+m.score_equipe_ext+0=0)
         OR
         ((m.set_1_dom+m.set_1_ext=0) AND (m.score_equipe_dom+m.score_equipe_ext>0))
+        OR
+        ((m.set_1_dom+m.set_1_ext>0) AND (m.score_equipe_dom+m.score_equipe_ext+0=0))
         )
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
