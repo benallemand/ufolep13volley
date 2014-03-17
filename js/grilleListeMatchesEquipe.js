@@ -36,6 +36,14 @@ Ext.onReady(function() {
                 type: 'string'
             },
             {
+                name: 'fdm_dom',
+                type: 'string'
+            },
+            {
+                name: 'fdm_ext',
+                type: 'string'
+            },
+            {
                 name: 'equipe_dom',
                 type: 'string'
             },
@@ -194,7 +202,7 @@ Ext.onReady(function() {
                                     if (record.get('score_equipe_dom') === 3) {
                                         metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                                     }
-                                    return value;
+                                    return '<a href="fdm/' + record.get('fdm_dom') + '" target="blank">' + value + '</a>';
                                 }
                             },
                             {
@@ -215,7 +223,7 @@ Ext.onReady(function() {
                                     if (record.get('score_equipe_ext') === 3) {
                                         metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                                     }
-                                    return value;
+                                    return '<a href="fdm/' + record.get('fdm_ext') + '" target="blank">' + value + '</a>';
                                 }
                             }
                         ]
