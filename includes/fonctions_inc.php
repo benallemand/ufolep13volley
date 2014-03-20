@@ -1924,6 +1924,7 @@ function addPlayerToMyTeam($idPlayer) {
     mysql_close();
     return true;
 }
+
 function removePlayerFromMyTeam($idPlayer) {
     conn_db();
     if (!isset($_SESSION['id_equipe'])) {
@@ -1944,4 +1945,41 @@ function removePlayerFromMyTeam($idPlayer) {
     //addSqlActivity($sql);
     mysql_close();
     return true;
+}
+
+function getMyTeamSheet() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT 
+        c.nom AS club,
+        comp.libelle AS championnat,
+        cla.division,
+        CONCAT(j.prenom, ' ', j.nom) AS capitaine,
+        j.telephone AS portable,
+        j.email AS courriel,
+        CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
+        de.gymnase,
+        e.nom_equipe AS equipe,
+        DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
+        FROM equipes e
+        JOIN clubs c ON c.id = e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
+        JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
+        JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
+        JOIN joueurs j ON j.id=je.id_joueur
+        JOIN details_equipes de ON de.id_equipe=e.id_equipe
+        WHERE je.est_capitaine=1
+        AND je.id_equipe = $sessionIdEquipe";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
 }

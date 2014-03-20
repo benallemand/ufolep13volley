@@ -8,13 +8,13 @@ Ext.onReady(function() {
         items: [
             {
                 xtype: 'button',
-                hidden: true,
                 text: 'Afficher la fiche équipe',
                 handler: function() {
                     var windowTeamSheet = Ext.create('Ext.window.Window', {
                         title: 'Fiche équipe',
-                        height: 400,
-                        width: 700,
+                        maximizable : true,
+                        height: 600,
+                        width: 800,
                         modal: true,
                         layout: 'fit',
                         items: {
@@ -30,6 +30,7 @@ Ext.onReady(function() {
                                             region: 'west',
                                             flex: 1,
                                             layout: 'anchor',
+                                            autoScroll: true,
                                             defaults: {
                                                 anchor: '90%'
                                             },
@@ -78,77 +79,245 @@ Ext.onReady(function() {
                                         },
                                         {
                                             region: 'center',
+                                            autoScroll: true,
                                             flex: 1,
-                                            layout: 'border',
+                                            layout: {
+                                                type: 'vbox',
+                                                align: 'center'
+                                            },
                                             items: [
                                                 {
-                                                    region: 'north',
-                                                    width: 200,
-                                                    height: 200,
+                                                    width: 100,
+                                                    height: 100,
                                                     xtype: 'image',
                                                     src: 'images/logo_ufolep.jpg'
                                                 },
                                                 {
-                                                    region: 'center',
                                                     xtype: 'displayfield',
                                                     hideLabel: true,
-                                                    name: 'equipe'
+                                                    name: 'equipe',
+                                                    flex: 1
                                                 },
                                                 {
-                                                    region: 'south',
                                                     xtype: 'displayfield',
                                                     fieldLabel: 'Visa C.T.S.D. le',
-                                                    name: 'date_visa_ctsd'
+                                                    name: 'date_visa_ctsd',
+                                                    flex: 1
                                                 }
                                             ]
                                         },
                                         {
                                             region: 'east',
+                                            autoScroll: true,
                                             flex: 1,
-                                            layout: 'anchor',
-                                            defaults: {
-                                                anchor: '90%'
-                                            },
+                                            layout: 'border',
                                             items: [
                                                 {
-                                                    width: 200,
-                                                    height: 200,
-                                                    xtype: 'image',
-                                                    src: 'images/logo_ufolep.jpg'
+                                                    region: 'north',
+                                                    layout: {
+                                                        type: 'vbox',
+                                                        align: 'center'
+                                                    },
+                                                    items: {
+                                                        width: 100,
+                                                        height: 100,
+                                                        xtype: 'image',
+                                                        src: 'images/logo_ufolep.jpg'
+                                                    }
                                                 },
                                                 {
-                                                    xtype: 'displayfield',
-                                                    fieldLabel: 'Le',
-                                                    name: 'date_match'
-                                                },
-                                                {
-                                                    xtype: 'displayfield',
-                                                    fieldLabel: 'Nombre de joueurs présents',
-                                                    name: 'nb_joueurs'
-                                                },
-                                                {
-                                                    xtype: 'displayfield',
-                                                    fieldLabel: 'Nombre de joueuses présentes',
-                                                    name: 'nb_joueuses'
-                                                },
-                                                {
-                                                    xtype: 'displayfield',
-                                                    fieldLabel: 'Equipe adverse',
-                                                    name: 'equipe_adverse'
+                                                    region: 'center',
+                                                    flex: 1,
+                                                    layout: 'anchor',
+                                                    defaults: {
+                                                        anchor: '90%'
+                                                    },
+                                                    items: [
+                                                        {
+                                                            xtype: 'displayfield',
+                                                            fieldLabel: 'Le',
+                                                            name: 'date_match',
+                                                            value: '...............'
+                                                        },
+                                                        {
+                                                            xtype: 'displayfield',
+                                                            fieldLabel: 'Nombre de joueurs présents',
+                                                            name: 'nb_joueurs',
+                                                            value: '...............'
+                                                        },
+                                                        {
+                                                            xtype: 'displayfield',
+                                                            fieldLabel: 'Nombre de joueuses présentes',
+                                                            name: 'nb_joueuses',
+                                                            value: '...............'
+                                                        },
+                                                        {
+                                                            xtype: 'displayfield',
+                                                            fieldLabel: 'Equipe adverse',
+                                                            name: 'equipe_adverse',
+                                                            value: '...............'
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    region: 'center',
+                                    autoScroll: true,
+                                    title: 'Joueurs',
+                                    flex: 2,
+                                    layout: {
+                                        type: 'table',
+                                        columns: 3
+                                    },
+                                    items: []
                                 }
                             ]
                         }
                     });
                     windowTeamSheet.show();
+                    var storeTeamSheet = Ext.create('Ext.data.Store', {
+                        fields: [
+                            'club',
+                            'championnat',
+                            'division',
+                            'capitaine',
+                            'portable',
+                            'courriel',
+                            'creneau',
+                            'gymnase',
+                            'equipe',
+                            'date_visa_ctsd'
+                        ],
+                        proxy: {
+                            type: 'ajax',
+                            url: 'ajax/getMyTeamSheet.php',
+                            reader: {
+                                type: 'json',
+                                root: 'results'
+                            }
+                        },
+                        autoLoad: false
+                    });
+                    storeTeamSheet.load(function(records) {
+                        var form = windowTeamSheet.down('form');
+                        if (records.length !== 1) {
+                            return;
+                        }
+                        var record = records[0];
+                        form.loadRecord(record);
+                    });
+                    var storeMyPlayers = Ext.create('Ext.data.Store', {
+                        fields: [
+                            'prenom',
+                            'nom',
+                            'telephone',
+                            'email',
+                            'num_licence',
+                            'path_photo',
+                            'sexe',
+                            {
+                                name: 'departement_affiliation',
+                                type: 'int'
+                            },
+                            {
+                                name: 'est_actif',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'id_club',
+                                type: 'int'
+                            },
+                            'adresse',
+                            'code_postal',
+                            'ville',
+                            'telephone2',
+                            'email2',
+                            'telephone3',
+                            'telephone4',
+                            {
+                                name: 'est_licence_valide',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'est_responsable_club',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'id',
+                                type: 'int'
+                            },
+                            {
+                                name: 'date_homologation',
+                                type: 'date'
+                            }
+                        ],
+                        proxy: {
+                            type: 'ajax',
+                            url: 'ajax/getMyPlayers.php',
+                            reader: {
+                                type: 'json',
+                                root: 'results'
+                            }
+                        },
+                        autoLoad: false
+                    });
+                    storeMyPlayers.load(function(records) {
+                        var panelPlayers = windowTeamSheet.down('panel[title=Joueurs]');
+                        Ext.each(records, function(record) {
+                            panelPlayers.add({
+                                layout: 'border',
+                                width: 250,
+                                height: 150,
+                                items: [
+                                    {
+                                        region: 'west',
+                                        xtype: 'image',
+                                        src: record.get('path_photo'),
+                                        height: 100,
+                                        width: 100
+                                    },
+                                    {
+                                        region: 'center',
+                                        layout: 'anchor',
+                                        defaults: {
+                                            anchor: '90%'
+                                        },
+                                        items: [
+                                            {
+                                                xtype: 'displayfield',
+                                                fieldLabel: 'Prenom',
+                                                hideLabel: true,
+                                                value: record.get('prenom')
+                                            },
+                                            {
+                                                xtype: 'displayfield',
+                                                fieldLabel: 'Nom',
+                                                hideLabel: true,
+                                                value: record.get('nom')
+                                            },
+                                            {
+                                                xtype: 'displayfield',
+                                                fieldLabel: 'Numéro de licence et Genre',
+                                                hideLabel: true,
+                                                value: record.get('num_licence') + ' /' + record.get('sexe')
+                                            },
+                                            {
+                                                xtype: 'checkbox',
+                                                boxLabel: 'Présent'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            });
+                        });
+                    });
                 }
             },
             {
                 xtype: 'button',
-                hidden: true,
                 text: 'Gestions des joueurs/joueuses',
                 handler: function() {
                     var storeMyPlayers = Ext.create('Ext.data.Store', {
