@@ -8,6 +8,410 @@ Ext.onReady(function() {
         items: [
             {
                 xtype: 'button',
+                hidden: true,
+                text: 'Afficher la fiche équipe',
+                handler: function() {
+                    var windowTeamSheet = Ext.create('Ext.window.Window', {
+                        title: 'Fiche équipe',
+                        height: 400,
+                        width: 700,
+                        modal: true,
+                        layout: 'fit',
+                        items: {
+                            xtype: 'form',
+                            layout: 'border',
+                            items: [
+                                {
+                                    region: 'north',
+                                    layout: 'border',
+                                    flex: 1,
+                                    items: [
+                                        {
+                                            region: 'west',
+                                            flex: 1,
+                                            layout: 'anchor',
+                                            defaults: {
+                                                anchor: '90%'
+                                            },
+                                            items: [
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Club',
+                                                    name: 'club'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Championnat',
+                                                    name: 'championnat'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Division',
+                                                    name: 'division'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Capitaine',
+                                                    name: 'capitaine'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Portable',
+                                                    name: 'portable'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Courriel',
+                                                    name: 'courriel'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Créneau',
+                                                    name: 'creneau'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Gymnase',
+                                                    name: 'gymnase'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            region: 'center',
+                                            flex: 1,
+                                            layout: 'border',
+                                            items: [
+                                                {
+                                                    region: 'north',
+                                                    width: 200,
+                                                    height: 200,
+                                                    xtype: 'image',
+                                                    src: 'images/logo_ufolep.jpg'
+                                                },
+                                                {
+                                                    region: 'center',
+                                                    xtype: 'displayfield',
+                                                    hideLabel: true,
+                                                    name: 'equipe'
+                                                },
+                                                {
+                                                    region: 'south',
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Visa C.T.S.D. le',
+                                                    name: 'date_visa_ctsd'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            region: 'east',
+                                            flex: 1,
+                                            layout: 'anchor',
+                                            defaults: {
+                                                anchor: '90%'
+                                            },
+                                            items: [
+                                                {
+                                                    width: 200,
+                                                    height: 200,
+                                                    xtype: 'image',
+                                                    src: 'images/logo_ufolep.jpg'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Le',
+                                                    name: 'date_match'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Nombre de joueurs présents',
+                                                    name: 'nb_joueurs'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Nombre de joueuses présentes',
+                                                    name: 'nb_joueuses'
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    fieldLabel: 'Equipe adverse',
+                                                    name: 'equipe_adverse'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    });
+                    windowTeamSheet.show();
+                }
+            },
+            {
+                xtype: 'button',
+                hidden: true,
+                text: 'Gestions des joueurs/joueuses',
+                handler: function() {
+                    var storeMyPlayers = Ext.create('Ext.data.Store', {
+                        fields: [
+                            'prenom',
+                            'nom',
+                            'telephone',
+                            'email',
+                            'num_licence',
+                            'path_photo',
+                            'sexe',
+                            {
+                                name: 'departement_affiliation',
+                                type: 'int'
+                            },
+                            {
+                                name: 'est_actif',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'id_club',
+                                type: 'int'
+                            },
+                            'adresse',
+                            'code_postal',
+                            'ville',
+                            'telephone2',
+                            'email2',
+                            'telephone3',
+                            'telephone4',
+                            {
+                                name: 'est_licence_valide',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'est_responsable_club',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'id',
+                                type: 'int'
+                            },
+                            {
+                                name: 'date_homologation',
+                                type: 'date'
+                            }
+                        ],
+                        proxy: {
+                            type: 'ajax',
+                            url: 'ajax/getMyPlayers.php',
+                            reader: {
+                                type: 'json',
+                                root: 'results'
+                            }
+                        },
+                        autoLoad: true
+                    });
+                    var windowManagePlayers = Ext.create('Ext.window.Window', {
+                        title: 'Gestion des joueurs/joueuses',
+                        height: 400,
+                        width: 700,
+                        modal: true,
+                        layout: 'fit',
+                        items: {
+                            xtype: 'grid',
+                            store: storeMyPlayers,
+                            columns: {
+                                items: [
+                                    {
+                                        header: 'Prénom',
+                                        dataIndex: 'prenom'
+                                    },
+                                    {
+                                        header: 'Nom',
+                                        dataIndex: 'nom'
+                                    },
+                                    {
+                                        header: 'Numéro de licence',
+                                        dataIndex: 'num_licence'
+                                    },
+                                    {
+                                        header: 'Photo',
+                                        dataIndex: 'path_photo',
+                                        width: 150,
+                                        flex: null,
+                                        renderer: function(value, meta, record) {
+                                            return '<img width="100" src="' + record.get('path_photo') + '" />';
+                                        }
+                                    },
+                                    {
+                                        header: 'Gestion',
+                                        xtype: 'actioncolumn',
+                                        width: 100,
+                                        flex: null,
+                                        items: [
+                                            {
+                                                icon: 'images/delete.gif',
+                                                handler: function(grid, rowIndex) {
+                                                    var rec = grid.getStore().getAt(rowIndex);
+                                                    Ext.Msg.show({
+                                                        title: 'Retirer un joueur',
+                                                        msg: 'Voulez-vous retirer ' + rec.get('prenom') + ' ' + rec.get('nom') + ' de votre équipe ?',
+                                                        buttons: Ext.Msg.OKCANCEL,
+                                                        icon: Ext.Msg.QUESTION,
+                                                        fn: function(btn) {
+                                                            if (btn === 'ok') {
+                                                                Ext.Ajax.request({
+                                                                    url: 'ajax/removePlayerFromMyTeam.php',
+                                                                    params: {
+                                                                        id: rec.get('id')
+                                                                    },
+                                                                    success: function(response) {
+                                                                        var responseJson = Ext.decode(response.responseText);
+                                                                        Ext.Msg.alert('Info', responseJson.message);
+                                                                        storeMyPlayers.load();
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                defaults: {
+                                    flex: 1
+                                }
+                            },
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar',
+                                    dock: 'top',
+                                    items: [
+                                        {
+                                            xtype: 'button',
+                                            text: 'Ajouter un joueur',
+                                            handler: function() {
+                                                var storePlayers = Ext.create('Ext.data.Store', {
+                                                    fields: [
+                                                        'full_name',
+                                                        'prenom',
+                                                        'nom',
+                                                        'telephone',
+                                                        'email',
+                                                        'num_licence',
+                                                        'path_photo',
+                                                        'sexe',
+                                                        {
+                                                            name: 'departement_affiliation',
+                                                            type: 'int'
+                                                        },
+                                                        {
+                                                            name: 'est_actif',
+                                                            type: 'bool'
+                                                        },
+                                                        {
+                                                            name: 'id_club',
+                                                            type: 'int'
+                                                        },
+                                                        'adresse',
+                                                        'code_postal',
+                                                        'ville',
+                                                        'telephone2',
+                                                        'email2',
+                                                        'telephone3',
+                                                        'telephone4',
+                                                        {
+                                                            name: 'est_licence_valide',
+                                                            type: 'bool'
+                                                        },
+                                                        {
+                                                            name: 'est_responsable_club',
+                                                            type: 'bool'
+                                                        },
+                                                        {
+                                                            name: 'id',
+                                                            type: 'int'
+                                                        },
+                                                        {
+                                                            name: 'date_homologation',
+                                                            type: 'date'
+                                                        }
+                                                    ],
+                                                    proxy: {
+                                                        type: 'ajax',
+                                                        url: 'ajax/getPlayers.php',
+                                                        reader: {
+                                                            type: 'json',
+                                                            root: 'results'
+                                                        }
+                                                    },
+                                                    autoLoad: true
+                                                });
+                                                var windowAddPlayerToMyTeam = Ext.create('Ext.window.Window', {
+                                                    title: "Ajout d'un joueur",
+                                                    height: 300,
+                                                    width: 400,
+                                                    modal: true,
+                                                    layout: 'fit',
+                                                    items: {
+                                                        xtype: 'form',
+                                                        layout: 'anchor',
+                                                        defaults: {
+                                                            anchor: '90%',
+                                                            margins: 10
+                                                        },
+                                                        url: 'ajax/addPlayerToMyTeam.php',
+                                                        items: [
+                                                            {
+                                                                xtype: 'combo',
+                                                                fieldLabel: 'Joueur',
+                                                                name: 'id_joueur',
+                                                                queryMode: 'local',
+                                                                allowBlank: false,
+                                                                store: storePlayers,
+                                                                displayField: 'full_name',
+                                                                valueField: 'id'
+                                                            }
+                                                        ],
+                                                        buttons: [
+                                                            {
+                                                                text: 'Annuler',
+                                                                handler: function() {
+                                                                    this.up('window').close();
+                                                                }
+                                                            },
+                                                            {
+                                                                text: 'Sauver',
+                                                                formBind: true,
+                                                                disabled: true,
+                                                                handler: function() {
+                                                                    var button = this;
+                                                                    var form = button.up('form').getForm();
+                                                                    if (form.isValid()) {
+                                                                        form.submit({
+                                                                            success: function(form, action) {
+                                                                                storeMyPlayers.load();
+                                                                                windowAddPlayerToMyTeam.close();
+                                                                            },
+                                                                            failure: function(form, action) {
+                                                                                Ext.Msg.alert('Erreur', action.result.message);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                });
+                                                windowAddPlayerToMyTeam.show();
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    });
+                    windowManagePlayers.show();
+                }
+            },
+            {
+                xtype: 'button',
                 text: 'Modifier les informations',
                 handler: function() {
                     var storeMonEquipe = Ext.create('Ext.data.Store', {

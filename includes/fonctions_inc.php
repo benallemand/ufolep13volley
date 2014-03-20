@@ -392,7 +392,7 @@ function affich_annuaire()
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
         $code_competition = $data['code_competition'];
-        // pour chaque enregistrement trouvé on récupère le libellé
+// pour chaque enregistrement trouvé on récupère le libellé
         $sql_libelle = 'SELECT libelle FROM competitions WHERE code_competition = \'' . $code_competition . '\'';
         $req_libelle = mysql_query($sql_libelle) or die('Erreur SQL !<br>' . $sql_libelle . '<br>' . mysql_error());
         $data_libelle = mysql_fetch_assoc($req_libelle);
@@ -401,7 +401,7 @@ function affich_annuaire()
         echo'<div class="competition">';
         echo'	<h1>' . $libelle_compet . '</h1>';
 
-        // pour chaque compétition on récupère les divisions
+// pour chaque compétition on récupère les divisions
         $sql_division = 'SELECT DISTINCT(division) FROM classements WHERE code_competition = \'' . $code_competition . '\'';
         $req_division = mysql_query($sql_division) or die('Erreur SQL !<br>' . $sql_division . '<br>' . mysql_error());
         while ($data_division = mysql_fetch_assoc($req_division)) {
@@ -417,7 +417,7 @@ function affich_annuaire()
             echo'  		<h2>Division ' . $nom_division . '</h2>';
             echo'  		<ul>';
 
-            // pour chaque division on cherche les équipes et on les affiche
+// pour chaque division on cherche les équipes et on les affiche
             $sql_equipe = 'SELECT equipes.nom_equipe, equipes.id_equipe FROM classements, equipes WHERE classements.code_competition = \'' . $code_competition . '\' AND classements.division = \'' . $division . '\' AND classements.id_equipe = equipes.id_equipe';
             $req_equipe = mysql_query($sql_equipe) or die('Erreur SQL !<br>' . $sql_equipe . '<br>' . mysql_error());
             while ($data_equipe = mysql_fetch_assoc($req_equipe)) {
@@ -539,7 +539,6 @@ function affich_details_equipe($id_equipe, $compet)
         } else {
             $fdm = $data['fdm'];
         }
-        $joueurs = implode(',', getPlayersFromTeam($id_equipe));
 
 //on affiche les données
         echo '  <div class="photo_equipe">';
@@ -606,12 +605,6 @@ function affich_details_equipe($id_equipe, $compet)
             echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
         }
         echo'	  </tr>';
-        if (strlen($joueurs) !== 0) {
-            echo'      <tr class="tr_130">';
-            echo'		<td class="titre_details">Joueurs :</td>';
-            echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode(utf8_encode($joueurs)) . '"/><td>';
-            echo'	  </tr>';
-        }
         echo'    </table>';
         echo'  </div>';
     }
@@ -1212,40 +1205,40 @@ function calcul_classement($id_equipe, $compet, $division)
     }
 
 //MATCHES GAGNES ET PERDUS =============================================================================================
-    //MATCHES GAGNES
+//MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $match_gag_dom = $data[0];
     }
-    //MATCHES PERDUS
+//MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $match_per_dom = $data[0];
     }
 //PARTIE MATCHES A L'EXTERIEUR
-    //MATCHES GAGNES
+//MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $match_gag_ext = $data[0];
     }
-    //MATCHES PERDUS
+//MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $match_per_ext = $data[0];
     }
 //SETS MARQUES ET ENCAISSES
-    // A DOMICILE
+// A DOMICILE
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $sets_mar_dom = $data[0];
         $sets_enc_dom = $data[1];
     }
-    // A L'EXTERIEUR
+// A L'EXTERIEUR
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
@@ -1254,7 +1247,7 @@ function calcul_classement($id_equipe, $compet, $division)
     }
 
 //POINTS MARQUES ET ENCAISSES
-    // A DOMICILE
+// A DOMICILE
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -1263,7 +1256,7 @@ function calcul_classement($id_equipe, $compet, $division)
         $pts_mar_dom = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
         $pts_enc_dom = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
     }
-    //A L'EXTERIEUR
+//A L'EXTERIEUR
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -1314,7 +1307,7 @@ function calcul_classement($id_equipe, $compet, $division)
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
 
     $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
-    //addSqlActivity($sqlmaj);
+//addSqlActivity($sqlmaj);
 }
 
 function getClassement($compet, $div) {
@@ -1367,7 +1360,7 @@ function ajouterPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-    //addSqlActivity($sqlmaj);
+//addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
     return true;
@@ -1394,7 +1387,7 @@ function enleverPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-    //addSqlActivity($sqlmaj);
+//addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
     return true;
@@ -1423,7 +1416,7 @@ function certifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1508,7 +1501,7 @@ function modifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     calcul_classement($id_equipe_dom, $compet, $division);
     calcul_classement($id_equipe_ext, $compet, $division);
     mysql_close();
@@ -1560,7 +1553,7 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     $sql = "UPDATE equipes SET "
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
@@ -1568,7 +1561,7 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1590,7 +1583,7 @@ function modifierMonMotDePasse() {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1642,7 +1635,7 @@ function setRetard($code_match, $valeur) {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
+//addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1792,5 +1785,163 @@ function getMonEquipe() {
     return json_encode($results);
 }
 
-//1
-?>
+function getMyPlayers() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT 
+        j.prenom, 
+        j.nom, 
+        j.telephone, 
+        j.email, 
+        j.num_licence, 
+        CONCAT('images/joueurs/', UPPER(j.nom), LOWER(j.prenom), '.jpg') AS path_photo,
+        j.sexe, 
+        j.departement_affiliation, 
+        j.est_actif+0 AS est_actif, 
+        j.id_club, 
+        j.adresse, 
+        j.code_postal, 
+        j.ville, 
+        j.telephone2, 
+        j.email2, 
+        j.telephone3, 
+        j.telephone4, 
+        j.est_licence_valide+0 AS est_licence_valide, 
+        j.est_responsable_club+0 AS est_responsable_club, 
+        j.id, 
+        j.date_homologation
+        FROM joueur_equipe je
+        LEFT JOIN joueurs j ON j.id=je.id_joueur
+        WHERE je.id_equipe = $sessionIdEquipe";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    foreach ($results as $index => $result) {
+        if (file_exists("../" . $result['path_photo']) === FALSE) {
+            switch ($result['sexe']) {
+                case 'M':
+                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                    break;
+                case 'F':
+                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return json_encode($results);
+}
+
+function getPlayers() {
+    conn_db();
+    $sql = "SELECT 
+        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
+        j.prenom, 
+        j.nom, 
+        j.telephone, 
+        j.email, 
+        j.num_licence, 
+        CONCAT('images/joueurs/', UPPER(j.nom), LOWER(j.prenom), '.jpg') AS path_photo,
+        j.sexe, 
+        j.departement_affiliation, 
+        j.est_actif+0 AS est_actif, 
+        j.id_club, 
+        j.adresse, 
+        j.code_postal, 
+        j.ville, 
+        j.telephone2, 
+        j.email2, 
+        j.telephone3, 
+        j.telephone4, 
+        j.est_licence_valide+0 AS est_licence_valide, 
+        j.est_responsable_club+0 AS est_responsable_club, 
+        j.id, 
+        j.date_homologation
+        FROM joueurs j";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    foreach ($results as $index => $result) {
+        if (file_exists("../" . $result['path_photo']) === FALSE) {
+            switch ($result['sexe']) {
+                case 'M':
+                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                    break;
+                case 'F':
+                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return json_encode($results);
+}
+
+function isPlayerInTeam($idPlayer, $idTeam) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function addPlayerToMyTeam($idPlayer) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $idTeam = $_SESSION['id_equipe'];
+    if (isPlayerInTeam($idPlayer, $idTeam)) {
+        return false;
+    }
+    $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    //addSqlActivity($sql);
+    mysql_close();
+    return true;
+}
+function removePlayerFromMyTeam($idPlayer) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $idTeam = $_SESSION['id_equipe'];
+    if (!isPlayerInTeam($idPlayer, $idTeam)) {
+        return false;
+    }
+    $sql = "DELETE FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    //addSqlActivity($sql);
+    mysql_close();
+    return true;
+}
