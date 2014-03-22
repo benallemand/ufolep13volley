@@ -1508,10 +1508,10 @@ function modifierMatch($code_match) {
     return true;
 }
 
-function addSqlActivity($sql) {
+function addActivity($comment) {
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "INSERT activity SET comment=\"$sql\", activity_date=CURDATE(), user_id=$sessionIdEquipe";
-    $req = mysql_query($sql);
+    $sql = "INSERT activity SET comment=\"$comment\", activity_date=CURDATE(), user_id=$sessionIdEquipe";
+    mysql_query($sql);
     return;
 }
 
@@ -1553,7 +1553,6 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
     $sql = "UPDATE equipes SET "
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
@@ -1561,7 +1560,15 @@ function modifierMonEquipe() {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
+    $champsModifies = filter_input(INPUT_POST, 'dirtyFields');
+    if ($champsModifies) {
+        $fieldsArray = explode(',', $champsModifies);
+        foreach ($fieldsArray as $fieldName) {
+            $fieldValue = filter_input(INPUT_POST, $fieldName);
+            $comment = "Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+            addActivity($comment);
+        }
+    }
     mysql_close();
     return true;
 }

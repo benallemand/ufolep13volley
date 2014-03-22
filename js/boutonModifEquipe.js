@@ -671,6 +671,7 @@ Ext.onReady(function() {
                         layout: 'fit',
                         items: {
                             xtype: 'form',
+                            trackResetOnLoad: true,
                             layout: 'anchor',
                             defaults: {
                                 anchor: '90%',
@@ -755,7 +756,15 @@ Ext.onReady(function() {
                                         var button = this;
                                         var form = button.up('form').getForm();
                                         if (form.isValid()) {
+                                            var dirtyFieldsJson = form.getFieldValues(true);
+                                            var dirtyFieldsArray = [];
+                                            for (var key in dirtyFieldsJson) {
+                                                dirtyFieldsArray.push(key);
+                                            }
                                             form.submit({
+                                                params: {
+                                                    dirtyFields: dirtyFieldsArray.join(',')
+                                                },
                                                 success: function(form, action) {
                                                     window.location.reload();
                                                 },

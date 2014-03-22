@@ -1,6 +1,10 @@
 <?php
 
 require_once 'classes/Indicator.php';
+$indicatorActivity = new Indicator(
+        'Evènements', "SELECT a.comment AS description, a.activity_date AS date, de.responsable AS utilisateur, de.email AS email_utilisateur 
+        FROM activity a
+        JOIN details_equipes de ON de.id_equipe=a.user_id");
 $indicatorComptes = new Indicator(
         'Comptes', "SELECT e.nom_equipe, de.email, ca.login, ca.password FROM equipes e
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
@@ -76,7 +80,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $results = array();
-
+$results[] = $indicatorActivity->getResult();
 $results[] = $indicatorLicencesDupliquees->getResult();
 $results[] = $indicatorMatchesNonRenseignes->getResult();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
