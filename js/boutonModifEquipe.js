@@ -522,8 +522,8 @@ Ext.onReady(function() {
                                                 });
                                                 var windowAddPlayerToMyTeam = Ext.create('Ext.window.Window', {
                                                     title: "Ajout d'un joueur",
-                                                    height: 300,
-                                                    width: 400,
+                                                    height: 500,
+                                                    width: 500,
                                                     modal: true,
                                                     layout: 'fit',
                                                     items: {
@@ -537,13 +537,25 @@ Ext.onReady(function() {
                                                         items: [
                                                             {
                                                                 xtype: 'combo',
+                                                                forceSelection: true,
                                                                 fieldLabel: 'Joueur',
                                                                 name: 'id_joueur',
                                                                 queryMode: 'local',
                                                                 allowBlank: false,
                                                                 store: storePlayers,
                                                                 displayField: 'full_name',
-                                                                valueField: 'id'
+                                                                valueField: 'id',
+                                                                listeners: {
+                                                                    select: function(combo, records) {
+                                                                        combo.up('form').down('image').setSrc(records[0].get('path_photo'));
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                xtype: 'image',
+                                                                anchor: '50%',
+                                                                margins: 10,
+                                                                src: null
                                                             }
                                                         ],
                                                         buttons: [
