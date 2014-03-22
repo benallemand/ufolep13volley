@@ -12,7 +12,7 @@ Ext.onReady(function() {
                 handler: function() {
                     var windowTeamSheet = Ext.create('Ext.window.Window', {
                         title: 'Fiche équipe',
-                        maximizable : true,
+                        maximizable: true,
                         height: 600,
                         width: 800,
                         modal: true,
@@ -90,7 +90,7 @@ Ext.onReady(function() {
                                                     width: 100,
                                                     height: 100,
                                                     xtype: 'image',
-                                                    src: 'images/logo_ufolep.jpg'
+                                                    src: 'images/Ufolep13Volley2.jpg'
                                                 },
                                                 {
                                                     xtype: 'displayfield',
@@ -118,12 +118,20 @@ Ext.onReady(function() {
                                                         type: 'vbox',
                                                         align: 'center'
                                                     },
-                                                    items: {
-                                                        width: 100,
-                                                        height: 100,
-                                                        xtype: 'image',
-                                                        src: 'images/logo_ufolep.jpg'
-                                                    }
+                                                    items: [
+                                                        {
+                                                            width: 100,
+                                                            height: 100,
+                                                            xtype: 'image',
+                                                            src: 'images/MainVolley.jpg'
+                                                        },
+                                                        {
+                                                            width: 100,
+                                                            height: 20,
+                                                            xtype: 'image',
+                                                            src: 'images/JeuAvantEnjeu.jpg'
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     region: 'center',
