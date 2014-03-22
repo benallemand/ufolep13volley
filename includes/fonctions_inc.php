@@ -1807,7 +1807,7 @@ function getMyPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), LOWER(REPLACE(j.prenom, '-', '')), '.jpg') AS path_photo,
+        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1831,20 +1831,20 @@ function getMyPlayers() {
     while ($data = mysql_fetch_assoc($req)) {
         $results[] = $data;
     }
-    foreach ($results as $index => $result) {
-        if (file_exists("../" . $result['path_photo']) === FALSE) {
-            switch ($result['sexe']) {
-                case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
-                    break;
-                case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+//    foreach ($results as $index => $result) {
+//        if (file_exists("../" . $result['path_photo']) === FALSE) {
+//            switch ($result['sexe']) {
+//                case 'M':
+//                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+//                    break;
+//                case 'F':
+//                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//    }
     return json_encode($results);
 }
 
@@ -1857,7 +1857,7 @@ function getPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), LOWER(REPLACE(j.prenom, '-', '')), '.jpg') AS path_photo,
+        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1879,20 +1879,20 @@ function getPlayers() {
     while ($data = mysql_fetch_assoc($req)) {
         $results[] = $data;
     }
-    foreach ($results as $index => $result) {
-        if (file_exists("../" . $result['path_photo']) === FALSE) {
-            switch ($result['sexe']) {
-                case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
-                    break;
-                case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+//    foreach ($results as $index => $result) {
+//        if (file_exists("../" . $result['path_photo']) === FALSE) {
+//            switch ($result['sexe']) {
+//                case 'M':
+//                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+//                    break;
+//                case 'F':
+//                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//    }
     return json_encode($results);
 }
 
