@@ -2,9 +2,10 @@
 
 require_once 'classes/Indicator.php';
 $indicatorActivity = new Indicator(
-        'Evènements', "SELECT a.comment AS description, a.activity_date AS date, de.responsable AS utilisateur, de.email AS email_utilisateur 
+        'Evènements', "SELECT DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, e.nom_equipe, a.comment AS description, de.responsable AS utilisateur, de.email AS email_utilisateur 
         FROM activity a
-        JOIN details_equipes de ON de.id_equipe=a.user_id");
+        JOIN details_equipes de ON de.id_equipe=a.user_id
+        JOIN equipes e ON e.id_equipe=a.user_id");
 $indicatorComptes = new Indicator(
         'Comptes', "SELECT e.nom_equipe, de.email, ca.login, ca.password FROM equipes e
         JOIN details_equipes de ON de.id_equipe=e.id_equipe

@@ -1510,7 +1510,7 @@ function modifierMatch($code_match) {
 
 function addActivity($comment) {
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "INSERT activity SET comment=\"$comment\", activity_date=CURDATE(), user_id=$sessionIdEquipe";
+    $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdEquipe";
     mysql_query($sql);
     return;
 }
