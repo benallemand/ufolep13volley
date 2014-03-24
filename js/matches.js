@@ -1,4 +1,13 @@
 Ext.onReady(function() {
+    Ext.Date.dayNames = [
+        "Dimanche",
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi"
+    ];
     Ext.QuickTips.init();
     var storeMatches = Ext.create('Ext.data.Store', {
         groupField: 'journee',
@@ -155,6 +164,7 @@ Ext.onReady(function() {
             items: [
                 {
                     header: 'Code',
+                    flex: 1,
                     dataIndex: 'code_match',
                     renderer: function(value, metaData, record) {
                         if (record.get('retard') === 1) {
@@ -167,21 +177,19 @@ Ext.onReady(function() {
                     }
                 },
                 {
-                    header: 'Heure',
-                    dataIndex: 'heure_reception'
-                },
-                {
                     header: 'Date',
+                    flex: 3,
                     dataIndex: 'date_reception',
                     renderer: function(value, metaData, record) {
                         if (record.get('report') === true) {
                             metaData.tdAttr = 'style="background-color:Gold;color:black;" data-qtip="Match reporté"';
                         }
-                        return Ext.Date.format(value, 'd/m/Y');
+                        return Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception');
                     }
                 },
                 {
                     header: 'Equipe Domicile',
+                    flex: 2,
                     dataIndex: 'equipe_dom',
                     renderer: function(value, metaData, record) {
                         if (record.get('score_equipe_dom') === 3) {
@@ -203,6 +211,7 @@ Ext.onReady(function() {
                 },
                 {
                     header: 'Equipe Extérieur',
+                    flex: 2,
                     dataIndex: 'equipe_ext',
                     renderer: function(value, metaData, record) {
                         if (record.get('score_equipe_ext') === 3) {
@@ -214,7 +223,7 @@ Ext.onReady(function() {
                 {
                     header: 'Sets',
                     dataIndex: 'set_1_dom',
-                    flex: 2,
+                    flex: 5,
                     renderer: function(val, meta, rec) {
                         var detailsMatch = '';
                         if ((rec.get('set_1_dom') !== 0) || (rec.get('set_1_ext') !== 0)) {
@@ -359,57 +368,57 @@ Ext.onReady(function() {
                                                                 },
                                                                 {
                                                                     xtype: 'button',
-                                                                    margin : 10,
+                                                                    margin: 10,
                                                                     text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
-                                                                    handler : function() {
+                                                                    handler: function() {
                                                                         this.up('form').getForm().setValues([
                                                                             {
-                                                                                id : 'score_equipe_dom',
-                                                                                value : 3
+                                                                                id: 'score_equipe_dom',
+                                                                                value: 3
                                                                             },
                                                                             {
-                                                                                id : 'score_equipe_ext',
-                                                                                value : 0
+                                                                                id: 'score_equipe_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_1_dom',
-                                                                                value : 25
+                                                                                id: 'set_1_dom',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_1_ext',
-                                                                                value : 0
+                                                                                id: 'set_1_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_2_dom',
-                                                                                value : 25
+                                                                                id: 'set_2_dom',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_2_ext',
-                                                                                value : 0
+                                                                                id: 'set_2_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_3_dom',
-                                                                                value : 25
+                                                                                id: 'set_3_dom',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_3_ext',
-                                                                                value : 0
+                                                                                id: 'set_3_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_4_dom',
-                                                                                value : 0
+                                                                                id: 'set_4_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_4_ext',
-                                                                                value : 0
+                                                                                id: 'set_4_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_5_dom',
-                                                                                value : 0
+                                                                                id: 'set_5_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_5_ext',
-                                                                                value : 0
+                                                                                id: 'set_5_ext',
+                                                                                value: 0
                                                                             }
                                                                         ]);
                                                                     }
@@ -473,57 +482,57 @@ Ext.onReady(function() {
                                                                 },
                                                                 {
                                                                     xtype: 'button',
-                                                                    margin : 10,
+                                                                    margin: 10,
                                                                     text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
-                                                                    handler : function() {
+                                                                    handler: function() {
                                                                         this.up('form').getForm().setValues([
                                                                             {
-                                                                                id : 'score_equipe_dom',
-                                                                                value : 0
+                                                                                id: 'score_equipe_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'score_equipe_ext',
-                                                                                value : 3
+                                                                                id: 'score_equipe_ext',
+                                                                                value: 3
                                                                             },
                                                                             {
-                                                                                id : 'set_1_dom',
-                                                                                value : 0
+                                                                                id: 'set_1_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_1_ext',
-                                                                                value : 25
+                                                                                id: 'set_1_ext',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_2_dom',
-                                                                                value : 0
+                                                                                id: 'set_2_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_2_ext',
-                                                                                value : 25
+                                                                                id: 'set_2_ext',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_3_dom',
-                                                                                value : 0
+                                                                                id: 'set_3_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_3_ext',
-                                                                                value : 25
+                                                                                id: 'set_3_ext',
+                                                                                value: 25
                                                                             },
                                                                             {
-                                                                                id : 'set_4_dom',
-                                                                                value : 0
+                                                                                id: 'set_4_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_4_ext',
-                                                                                value : 0
+                                                                                id: 'set_4_ext',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_5_dom',
-                                                                                value : 0
+                                                                                id: 'set_5_dom',
+                                                                                value: 0
                                                                             },
                                                                             {
-                                                                                id : 'set_5_ext',
-                                                                                value : 0
+                                                                                id: 'set_5_ext',
+                                                                                value: 0
                                                                             }
                                                                         ]);
                                                                     }
