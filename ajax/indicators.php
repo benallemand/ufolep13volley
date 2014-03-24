@@ -1,5 +1,18 @@
 <?php
 
+function generateCsv($data, $delimiter = ';', $enclosure = '"') {
+    $handle = fopen('php://temp', 'r+');
+    foreach ($data as $line) {
+        fputcsv($handle, $line, $delimiter, $enclosure);
+    }
+    rewind($handle);
+    while (!feof($handle)) {
+        $contents .= fread($handle, 8192);
+    }
+    fclose($handle);
+    return $contents;
+}
+
 require_once 'classes/Indicator.php';
 $indicatorActivity = new Indicator(
         'Evènements', "SELECT DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, e.nom_equipe, a.comment AS description, de.responsable AS utilisateur, de.email AS email_utilisateur 
@@ -91,4 +104,16 @@ $results[] = $indicatorInfosManquantes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
-echo json_encode(array('results' => $results));
+$indicatorName = filter_input(INPUT_GET, 'indicator');
+if (!$indicatorName) {
+    echo json_encode(array('results' => $results));
+    exit();
+}
+foreach ($results as $result) {
+    if ($result['fieldLabel'] === $indicatorName) {
+        header("Content-Type:application/csv");
+        header("Content-Disposition:attachment;filename=activite.csv");
+        echo generateCsv($result['details']);
+        exit();
+    }
+}
