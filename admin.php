@@ -14,7 +14,7 @@ if (!estAdmin()) {
         <link rel="shortcut icon" href="favicon.ico" />
         <link href="http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all-neptune.css" rel="stylesheet" />
         <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
-        <script src="http://cdn.sencha.com/ext/gpl/4.2.0/locale/ext-lang-fr.js"></script>
+        <script src="http://cdn.sencha.com/ext/gpl/4.2.0/locale/ext-lang-fr.js" charset="UTF-8"></script>
         <script type="text/javascript" src="js/administration.js"></script>
     </HEAD>
     <BODY>
