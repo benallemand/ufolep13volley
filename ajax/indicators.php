@@ -8,7 +8,7 @@ $indicatorActivity = new Indicator(
         JOIN equipes e ON e.id_equipe=a.user_id
         ORDER BY a.activity_date DESC");
 $indicatorComptes = new Indicator(
-        'Comptes', "SELECT e.nom_equipe, de.email, ca.login, ca.password FROM equipes e
+        'Comptes', "SELECT e.nom_equipe, de.email, ca.login, '****' AS password FROM equipes e
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
         JOIN comptes_acces ca ON ca.id_equipe=e.id_equipe");
 $indicatorMatchesDupliques = new Indicator(
