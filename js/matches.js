@@ -1,13 +1,4 @@
 Ext.onReady(function() {
-    Ext.Date.dayNames = [
-        "Dimanche",
-        "Lundi",
-        "Mardi",
-        "Mercredi",
-        "Jeudi",
-        "Vendredi",
-        "Samedi"
-    ];
     Ext.QuickTips.init();
     var storeMatches = Ext.create('Ext.data.Store', {
         groupField: 'journee',
