@@ -1,8 +1,19 @@
 <?php
 
-function generateCsv($data, $delimiter = ';', $enclosure = '"') {
+function generateCsv($data, $delimiter = ',', $enclosure = '"') {
     $handle = fopen('php://temp', 'r+');
+    $isHeaderWritten = false;
     foreach ($data as $line) {
+        $dateYesterday = new DateTime();
+        $dateYesterday->sub(new DateInterval('P1D'));
+        $dateActivity = DateTime::createFromFormat("d/m/Y", $line['date']);
+        if ($dateActivity < $dateYesterday) {
+            continue;
+        }
+        if (!$isHeaderWritten) {
+            fputcsv($handle, array_keys($line), $delimiter, $enclosure);
+            $isHeaderWritten = true;
+        }
         fputcsv($handle, $line, $delimiter, $enclosure);
     }
     rewind($handle);
@@ -111,8 +122,6 @@ if (!$indicatorName) {
 }
 foreach ($results as $result) {
     if ($result['fieldLabel'] === $indicatorName) {
-        header("Content-Type:application/csv");
-        header("Content-Disposition:attachment;filename=activite.csv");
         echo generateCsv($result['details']);
         exit();
     }
