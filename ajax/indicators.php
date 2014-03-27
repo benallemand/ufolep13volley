@@ -88,7 +88,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         'Retards', "SELECT 
         m.code_match AS code, 
         c.libelle AS competition, 
-        m.division AS division-poule,
+        m.division AS division_poule,
         e1.nom_equipe AS domicile, 
         e2.nom_equipe AS exterieur, 
         DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS 'date'
