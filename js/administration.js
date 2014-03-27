@@ -46,8 +46,7 @@ Ext.onReady(function() {
                     activeTab: 0,
                     items: {
                         title: 'Panneau Principal',
-                        autoScroll: true,
-                        items: []
+                        layout: 'fit'
                     }
                 }
             ]
@@ -64,6 +63,8 @@ Ext.onReady(function() {
                     columns.push({
                         header: 'path_photo',
                         dataIndex: 'path_photo',
+                        width: 120,
+                        flex: null,
                         renderer: function(val) {
                             return '<img src="' + val + '" width="100px" height="100px">';
                         }
@@ -316,6 +317,7 @@ Ext.onReady(function() {
                 mainPanel.add({
                     title: tableName,
                     xtype: 'grid',
+                    autoScroll: true,
                     selType: 'rowmodel',
                     plugins: [
                         Ext.create('Ext.grid.plugin.RowEditing', {
@@ -513,6 +515,7 @@ Ext.onReady(function() {
             handler: function() {
                 var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
                 mainPanel.removeAll();
+                mainPanel.setAutoScroll(true);
                 mainPanel.add({
                     title: 'Indicateurs',
                     layout: {
