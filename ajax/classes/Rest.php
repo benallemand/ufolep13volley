@@ -33,6 +33,9 @@ class Rest {
     function getData() {
         $sql = "SELECT SQL_CALC_FOUND_ROWS ";
         $columns = json_decode($this->getColumns(), true);
+        if($this->fileName === 'joueurs') {
+            $sql .= " CONCAT('images/joueurs/', UPPER(REPLACE(nom, '-', '')), UPPER(LEFT(prenom, 1)), LOWER(SUBSTRING(REPLACE(prenom, '-', ''),2)), '.jpg') AS path_photo,";
+        }
         $queribles = array();
         foreach ($columns as $column) {
             switch ($column['Type']) {

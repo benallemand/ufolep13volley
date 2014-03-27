@@ -59,6 +59,16 @@ Ext.onReady(function() {
             handler: function() {
                 var columns = [];
                 var fields = [];
+                if (tableName === 'joueurs') {
+                    fields.push('path_photo');
+                    columns.push({
+                        header: 'path_photo',
+                        dataIndex: 'path_photo',
+                        renderer: function(val) {
+                            return '<img src="' + val + '" width="100px" height="100px">';
+                        }
+                    });
+                }
                 Ext.each(records, function(record) {
                     switch (record.get('Field')) {
                         case 'id_club':
@@ -195,7 +205,7 @@ Ext.onReady(function() {
                                 header: record.get('Field'),
                                 dataIndex: record.get('Field'),
                                 renderer: function(val) {
-                                    return '<img src="' + val + '">';
+                                    return '<img src="' + val + '" width="150px" height="100px">';
                                 }
                             });
                             return;
@@ -306,7 +316,6 @@ Ext.onReady(function() {
                 mainPanel.add({
                     title: tableName,
                     xtype: 'grid',
-                    autoScroll: true,
                     selType: 'rowmodel',
                     plugins: [
                         Ext.create('Ext.grid.plugin.RowEditing', {
@@ -543,7 +552,7 @@ Ext.onReady(function() {
                                 });
                             }
                             var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
-                            if(record.get('value') === 0) {
+                            if (record.get('value') === 0) {
                                 return;
                             }
                             indicatorPanel.add(
