@@ -613,6 +613,11 @@ Ext.onReady(function() {
                             {
                                 icon: 'images/email-icon.png',
                                 tooltip: 'Envoi par email de la feuille de match',
+                                getClass: function(value, meta, rec) {
+                                    if (rec.get('certif') === true) {
+                                        return "x-hide-display";
+                                    }
+                                },
                                 handler: function(grid, rowIndex) {
                                     var rec = grid.getStore().getAt(rowIndex);
                                     var codeCompetition = rec.get('code_competition');
