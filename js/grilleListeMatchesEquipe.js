@@ -609,6 +609,58 @@ Ext.onReady(function() {
                                     };
                                     afficheFormulaire();
                                 }
+                            },
+                            {
+                                icon: 'images/email-icon.png',
+                                tooltip: 'Envoi par email de la feuille de match',
+                                handler: function(grid, rowIndex) {
+                                    var rec = grid.getStore().getAt(rowIndex);
+                                    var codeCompetition = rec.get('code_competition');
+                                    var division = rec.get('division');
+                                    var email = '';
+                                    switch (codeCompetition) {
+                                        case 'f':
+                                            email = 'd' + division + 'f-4x4-ufolep13-volley@googlegroups.com';
+                                            break;
+                                        case 'm':
+                                            email = 'd' + division + 'm-6x6-ufolep13-volley@googlegroups.com';
+                                            break;
+                                        case 'c':
+                                            if (division <= 3) {
+                                                email = 'p1a3-isoardi-ufolep13-volley@googlegroups.com';
+                                            }
+                                            else if (division <= 6) {
+                                                email = 'p4a6-isoardi-ufolep13-volley@googlegroups.com';
+                                            }
+                                            else if (division <= 9) {
+                                                email = 'p7a9-isoardi-ufolep13-volley@googlegroups.com';
+                                            }
+                                            break;
+                                        case 'cf':
+                                            email = 'isoardi-ufolep13-volley@googlegroups.com';
+                                            break;
+                                        case 'kh':
+                                            if (division <= 3) {
+                                                email = 'p1a3-khanna-ufolep13-volley@googlegroups.com';
+                                            }
+                                            else if (division <= 6) {
+                                                email = 'p4a6-khanna-ufolep13-volley@googlegroups.com';
+                                            }
+                                            break;
+                                        case 'kf':
+                                            email = 'khanna-ufolep13-volley@googlegroups.com';
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    var link = "mailto:" + email + "?" + Ext.Object.toQueryString({
+                                        subject: "Match " + rec.get('code_match') + " : " + rec.get('equipe_dom') + " contre " + rec.get('equipe_ext'),
+                                        body: "Bonjour,\n\
+Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.\n\
+Bien cordialement"
+                                    });
+                                    window.open(link, '_blank');
+                                }
                             }
                         ]
                     }
