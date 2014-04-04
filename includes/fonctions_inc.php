@@ -671,33 +671,6 @@ function affich_connecte()
 
 //************************************************************************************************
 //************************************************************************************************
-function affich_admin_site()
-//************************************************************************************************
-/*
- * * Fonction    : affich_admin
- * * Input       : aucun
- * * Output      : aucun 
- * * Description : Affiche le calque admin
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 10/05/2010 
- */ {
-// On affiche le div si on est connecté en admin
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-        echo'<div id="bottom">';
-        echo'  <ul>';
-        echo'    <li>';
-        echo'      <span><img src="images/logo_equipe.png" title="Nouvelle équipe" alt="Nouvelle équipe"/></span>';
-        echo'      <span><img src="images/logo_equipe_s.png" title="Supprimer une équipe" alt="Supprimer une équipe" /></span>';
-        echo'      <span><img src="images/n_compet.png" title="Nouvelle compétition" alt="Nouvelle compétition"/></span>';
-        echo'      <span><img src="images/s_compet.png" title="Supprimer une compétition" alt="Supprimer une compétition"/></span>';
-        echo'    </li>';
-        echo'  </ul>';
-        echo'</div>';
-    }
-}
-
-//************************************************************************************************
-//************************************************************************************************
 function affich_admin_page($compet)
 //************************************************************************************************
 /*

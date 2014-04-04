@@ -46,7 +46,6 @@ if ($div == "") {
                     ?>
                 </div> 
                 <div id="matches"></div>
-                <?php affich_admin_site(); ?>
             </div>
         </div>
     </BODY>

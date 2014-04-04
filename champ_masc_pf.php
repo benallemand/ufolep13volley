@@ -53,7 +53,6 @@ if ($div == "") {
                 <?php affich_connecte(); ?>
                 <div id="classement"></div>
                 <div id="matches"></div>
-                <?php affich_admin_site(); ?>
             </div>
         </div>
     </BODY>
