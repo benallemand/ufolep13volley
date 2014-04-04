@@ -95,6 +95,9 @@ Ext.onReady(function() {
                         }},
                     {text: 'Poule 6', handler: function() {
                             window.open('coupe_kh.php?d=6', '_self', false);
+                        }},
+                    {text: 'Phase Finale', handler: function() {
+                            window.open('coupe_kf.php', '_self', false);
                         }}
                 ]
             },
