@@ -26,10 +26,11 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 
 require_once 'classes/Indicator.php';
 $indicatorActivity = new Indicator(
-        'Evènements', "SELECT DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, e.nom_equipe, a.comment AS description, de.responsable AS utilisateur, de.email AS email_utilisateur 
+        'Evènements', "SELECT DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, e.nom_equipe, c.libelle AS competition, a.comment AS description, de.responsable AS utilisateur, de.email AS email_utilisateur 
         FROM activity a
         JOIN details_equipes de ON de.id_equipe=a.user_id
         JOIN equipes e ON e.id_equipe=a.user_id
+        JOIN competitions c ON c.code_competition=e.code_competition
         ORDER BY a.activity_date DESC");
 $indicatorComptes = new Indicator(
         'Comptes', "SELECT e.nom_equipe, de.email, ca.login, '****' AS password FROM equipes e
