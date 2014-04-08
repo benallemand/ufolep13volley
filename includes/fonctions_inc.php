@@ -2,6 +2,38 @@
 
 session_start();
 
+function getQuickDetails($idEquipe) {
+    conn_db();
+    $sql = "SELECT id_equipe, responsable, telephone_1, email, gymnase, localisation, jour_reception, heure_reception "
+            . "FROM details_equipes "
+            . "WHERE id_equipe=$idEquipe";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(
+            array(
+                'success' => true,
+                'data' => $results[0]
+            )
+    );
+}
+
+function getTournaments() {
+    conn_db();
+    $sql = "SELECT id, code_competition, libelle "
+            . "FROM competitions "
+            . "WHERE code_competition IN (SELECT DISTINCT code_competition FROM matches) "
+            . "ORDER BY libelle ASC";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
