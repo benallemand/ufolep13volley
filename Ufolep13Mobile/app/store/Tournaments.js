@@ -4,7 +4,7 @@ Ext.define('Ufolep13Mobile.store.Tournaments', {
         model: 'Ufolep13Mobile.model.Tournament',
         proxy: {
             type: 'ajax',
-            url: '/ajax/getTournaments.php'
+            url: '../ajax/getTournaments.php'
         },
         sorters: 'libelle',
         autoLoad: true

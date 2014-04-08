@@ -4,7 +4,7 @@ Ext.define('Ufolep13Mobile.store.Teams', {
         model: 'Ufolep13Mobile.model.Team',
         proxy: {
             type: 'ajax',
-            url: '/ajax/getAnnuaires.php'
+            url: '../ajax/getAnnuaires.php'
         },
         sorters: 'nom_equipe',
         grouper: {

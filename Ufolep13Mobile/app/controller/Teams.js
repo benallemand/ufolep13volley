@@ -23,7 +23,7 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
             items: [
                 {
                     xtype: 'formpanel',
-                    url: '/ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
+                    url: '../ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
                     defaults: {
                         xtype: 'textfield',
                         readOnly: true
