@@ -1,7 +1,7 @@
 Ext.onReady(function() {
     var tools = {
         showMobileVersion: function() {
-            location.href = '/Ufolep13/index_mobile.php';
+            location.href = 'Ufolep13Mobile';
         },
         showNormalVersion: function() {
             Ext.define('News', {
@@ -451,22 +451,22 @@ Ext.onReady(function() {
             });
         }
     };
-//    if (Ext.is.Phone || Ext.is.Tablet) {
-//        Ext.Msg.show({
-//            title: 'Voulez-vous accéder à la version mobile du site ?',
-//            msg: 'Vous naviguez sur un téléphone ou une tablette, voulez-vous accéder à la version mobile du site ?',
-//            buttons: Ext.Msg.YESNO,
-//            icon: Ext.Msg.QUESTION,
-//            fn: function(btn) {
-//                if (btn === 'no') {
-//                    tools.showNormalVersion();
-//                    return;
-//                }
-//                tools.showMobileVersion();
-//            }
-//        });
-//    }
-//    else {
+    if (Ext.is.Phone || Ext.is.Tablet) {
+        Ext.Msg.show({
+            title: 'Voulez-vous accéder à la version mobile du site ?',
+            msg: 'Vous naviguez sur un téléphone ou une tablette, voulez-vous accéder à la version mobile du site ?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function(btn) {
+                if (btn === 'no') {
+                    tools.showNormalVersion();
+                    return;
+                }
+                tools.showMobileVersion();
+            }
+        });
+    }
+    else {
     tools.showNormalVersion();
-//    }
+    }
 });
