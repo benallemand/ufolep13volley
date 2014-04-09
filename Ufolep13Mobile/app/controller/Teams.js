@@ -8,13 +8,20 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
         refs: {
             teamsList: 'listteams',
             mainPanel: 'navigationview',
-            formPanel: 'formpanel'
+            formPanel: 'formpanel',
+            callButton: 'button[text=Appeler]'
         },
         control: {
             teamsList: {
                 itemtap: 'doSelectTeam'
+            },
+            callButton: {
+                tap: 'doPhoneCall'
             }
         }
+    },
+    doPhoneCall: function() {
+        window.open('tel:' + this.getFormPanel().getValues().telephone_1);
     },
     doSelectTeam: function(list, index, item, record) {
         this.getMainPanel().push({
@@ -29,6 +36,15 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
                         readOnly: true
                     },
                     items: [
+                        {
+                            xtype: 'toolbar',
+                            docked: 'bottom',
+                            items: [
+                                {
+                                    text: 'Appeler'
+                                }
+                            ]
+                        },
                         {
                             xtype: 'hiddenfield',
                             name: 'id_equipe'
