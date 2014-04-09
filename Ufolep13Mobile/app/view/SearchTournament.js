@@ -8,7 +8,8 @@ Ext.define('Ufolep13Mobile.view.SearchTournament', {
         label: 'Recherche',
         name: 'query',
         listeners: {
-            change: function(search, newVal) {
+            keyup: function(search) {
+                var newVal = search.getValue();
                 if (newVal === '') {
                     var filtersAux = [];
                     var store = Ext.getStore('Tournaments');

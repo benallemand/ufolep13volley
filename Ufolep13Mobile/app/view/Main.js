@@ -8,7 +8,7 @@ Ext.define('Ufolep13Mobile.view.Main', {
     config: {
         items: [
             {
-                title: 'CompÃ©titions UFOLEP',
+                title: 'Compétitions UFOLEP',
                 layout: 'vbox',
                 items: [
                     {

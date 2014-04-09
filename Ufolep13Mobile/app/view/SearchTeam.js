@@ -8,7 +8,8 @@ Ext.define('Ufolep13Mobile.view.SearchTeam', {
         label: 'Recherche',
         name: 'query',
         listeners: {
-            change: function(search, newVal) {
+            keyup: function(search) {
+                var newVal = search.getValue();
                 if (newVal === '') {
                     var filtersAux = [];
                     var store = Ext.getStore('Teams');
@@ -24,7 +25,7 @@ Ext.define('Ufolep13Mobile.view.SearchTeam', {
                     });
                 }
                 else {
-                    Ext.getStore('Teams').filter('nom_equipe', newVal);
+                    Ext.getStore('Teams').filter('nom_equipe', newVal, true);
                 }
             }
         }

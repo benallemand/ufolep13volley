@@ -28,6 +28,7 @@ Ext.define('Ufolep13Mobile.controller.Tournaments', {
                 }
             ]
         });
+        Ext.getStore('Teams').clearFilter(true);
         Ext.getStore('Teams').filter('code_competition', record.get('code_competition'));
     }
 }
