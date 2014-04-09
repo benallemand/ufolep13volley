@@ -2,14 +2,16 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
     extend: 'Ext.app.Controller',
     requires: [
         'Ext.form.Panel',
-        'Ext.field.Hidden'
+        'Ext.field.Hidden',
+        'Ext.util.Geolocation'
     ],
     config: {
         refs: {
             teamsList: 'listteams',
             mainPanel: 'navigationview',
             formPanel: 'formpanel',
-            callButton: 'button[text=Appeler]'
+            callButton: 'button[text=Appeler]',
+            mapButton: 'button[text=Itineraire]'
         },
         control: {
             teamsList: {
@@ -17,11 +19,36 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
             },
             callButton: {
                 tap: 'doPhoneCall'
+            },
+            mapButton: {
+                tap: 'doMap'
             }
         }
     },
     doPhoneCall: function() {
         window.open('tel:' + this.getFormPanel().getValues().telephone_1);
+    },
+    doMap: function() {
+        var controller = this;
+        var geo = Ext.create('Ext.util.Geolocation', {
+            autoUpdate: false,
+            listeners: {
+                locationupdate: function(geo) {
+                    var currentLat = geo.getLatitude();
+                    var currentLong = geo.getLongitude();
+                    var currentLoc = currentLat + ',' + currentLong;
+                    window.open('http://maps.apple.com?daddr=' + controller.getFormPanel().getValues().localisation + '&saddr=' + currentLoc);
+                },
+                locationerror: function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
+                    if (bTimeout) {
+                        alert('Erreur : Temps de reponse trop important.');
+                    } else {
+                        alert('Erreur : ' + message);
+                    }
+                }
+            }
+        });
+        geo.updateLocation();
     },
     doSelectTeam: function(list, index, item, record) {
         this.getMainPanel().push({
@@ -41,7 +68,12 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
                             docked: 'bottom',
                             items: [
                                 {
-                                    text: 'Appeler'
+                                    text: 'Appeler',
+                                    iconCls: 'chat2'
+                                },
+                                {
+                                    text: 'Itineraire',
+                                    iconCls: 'maps'
                                 }
                             ]
                         },
