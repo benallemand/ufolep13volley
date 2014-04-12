@@ -66,7 +66,7 @@ Ext.onReady(function() {
                         width: 120,
                         flex: null,
                         renderer: function(val) {
-                            return '<img src="' + val + '" width="100px" height="100px">';
+                            return '<img src="' + val + '" width="80px" height="100px">';
                         }
                     });
                 }
