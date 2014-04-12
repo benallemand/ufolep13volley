@@ -1867,6 +1867,7 @@ function getPlayers() {
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
         j.id_club, 
+        c.nom AS club, 
         j.adresse, 
         j.code_postal, 
         j.ville, 
@@ -1878,7 +1879,8 @@ function getPlayers() {
         j.est_responsable_club+0 AS est_responsable_club, 
         j.id, 
         j.date_homologation
-        FROM joueurs j";
+        FROM joueurs j
+        LEFT JOIN clubs c ON c.id = j.id_club";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
