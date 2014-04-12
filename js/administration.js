@@ -27,7 +27,7 @@ Ext.onReady(function() {
                     collapsible: true,
                     title: 'Navigation',
                     split: true,
-                    width: 150,
+                    width: 200,
                     layout: {
                         type: 'vbox',
                         align: 'stretch'
@@ -602,6 +602,133 @@ Ext.onReady(function() {
                 });
             }
         });
+        menuAdmin.add(
+                {
+                    text: 'Gestion des joueurs',
+                    hidden: true,
+                    handler: function() {
+                        var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
+                        mainPanel.removeAll();
+                        mainPanel.setAutoScroll(true);
+                        var store = Ext.create('Ext.data.Store', {
+                            fields: [
+                                'full_name',
+                                'prenom',
+                                'nom',
+                                'telephone',
+                                'email',
+                                'num_licence',
+                                'path_photo',
+                                'sexe',
+                                {
+                                    name: 'departement_affiliation',
+                                    type: 'int'
+                                },
+                                {
+                                    name: 'est_actif',
+                                    type: 'bool'
+                                },
+                                {
+                                    name: 'id_club',
+                                    type: 'int'
+                                },
+                                'club',
+                                'adresse',
+                                'code_postal',
+                                'ville',
+                                'telephone2',
+                                'email2',
+                                'telephone3',
+                                'telephone4',
+                                {
+                                    name: 'est_licence_valide',
+                                    type: 'bool'
+                                },
+                                {
+                                    name: 'est_responsable_club',
+                                    type: 'bool'
+                                },
+                                {
+                                    name: 'id',
+                                    type: 'int'
+                                },
+                                {
+                                    name: 'date_homologation',
+                                    type: 'date'
+                                }
+                            ],
+                            pageSize: 25,
+                            proxy: {
+                                type: 'ajax',
+                                url: 'ajax/getPlayers.php',
+                                reader: {
+                                    type: 'json',
+                                    root: 'results'
+                                }
+                            },
+                            autoLoad: true
+                        });
+                        mainPanel.add({
+                            title: 'Gestion des joueurs',
+                            xtype: 'grid',
+                            autoScroll: true,
+                            selType: 'checkboxmodel',
+                            store: store,
+                            columns: {
+                                items: [
+                                    {
+                                        header: 'Photo',
+                                        dataIndex: 'path_photo',
+                                        width: 120,
+                                        renderer: function(val) {
+                                            return '<img src="' + val + '" width="80px" height="100px">';
+                                        }
+                                    },
+                                    {
+                                        header: 'Nom',
+                                        dataIndex: 'nom'
+                                    },
+                                    {
+                                        header: 'Prenom',
+                                        dataIndex: 'prenom'
+                                    },
+                                    {
+                                        header: 'Sexe',
+                                        dataIndex: 'sexe'
+                                    },
+                                    {
+                                        header: 'Numéro de licence',
+                                        dataIndex: 'num_licence'
+                                    },
+                                    {
+                                        header: 'Club',
+                                        dataIndex: 'club'
+                                    },
+                                    {
+                                        header: 'Valide',
+                                        dataIndex: 'est_licence_valide',
+                                        xtype: 'checkcolumn'
+                                    }
+                                ]
+                            },
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar',
+                                    dock: 'top',
+                                    items: [
+                                        {
+                                            text: 'Associer à un club'
+                                        },
+                                        {
+                                            text: 'Créer un joueur'
+                                        }
+                                    ]
+                                }
+                            ]
+                        });
+                    }
+                }
+        );
         Ext.each(tableNames, function(tableName) {
             var store = getGenericColumnStore(tableName);
             store.load({
