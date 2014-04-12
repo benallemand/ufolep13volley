@@ -605,7 +605,6 @@ Ext.onReady(function() {
         menuAdmin.add(
                 {
                     text: 'Gestion des joueurs',
-                    hidden: true,
                     handler: function() {
                         var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
                         mainPanel.removeAll();
@@ -702,12 +701,18 @@ Ext.onReady(function() {
                                     },
                                     {
                                         header: 'Club',
-                                        dataIndex: 'club'
+                                        dataIndex: 'club',
+                                        flex: 1
                                     },
                                     {
                                         header: 'Valide',
                                         dataIndex: 'est_licence_valide',
-                                        xtype: 'checkcolumn'
+                                        xtype: 'checkcolumn',
+                                        listeners: {
+                                            beforecheckchange: function() {
+                                                return false;
+                                            }
+                                        }
                                     }
                                 ]
                             },
@@ -717,10 +722,104 @@ Ext.onReady(function() {
                                     dock: 'top',
                                     items: [
                                         {
-                                            text: 'Associer à un club'
+                                            text: 'Associer à un club',
+                                            handler: function() {
+                                                var grid = this.up('grid');
+                                                var records = grid.getSelectionModel().getSelection();
+                                                var idPlayers = [];
+                                                Ext.each(records, function(record) {
+                                                    idPlayers.push(record.get('id'));
+                                                });
+                                                if (idPlayers.length === 0) {
+                                                    return;
+                                                }
+                                                var storeClubs = Ext.create('Ext.data.Store', {
+                                                    fields: [
+                                                        {name: 'id', type: 'int'},
+                                                        'nom'
+                                                    ],
+                                                    proxy: {
+                                                        type: 'ajax',
+                                                        url: 'ajax/clubs.php',
+                                                        reader: {
+                                                            type: 'json',
+                                                            root: 'results'
+                                                        },
+                                                        pageParam: undefined,
+                                                        startParam: undefined,
+                                                        limitParam: undefined
+                                                    },
+                                                    autoLoad: true
+                                                });
+                                                var windowAddPlayersToClub = Ext.create('Ext.window.Window', {
+                                                    title: 'Associer à un club',
+                                                    height: 500,
+                                                    width: 500,
+                                                    modal: true,
+                                                    layout: 'fit',
+                                                    items: {
+                                                        xtype: 'form',
+                                                        layout: 'anchor',
+                                                        defaults: {
+                                                            anchor: '90%',
+                                                            margins: 10
+                                                        },
+                                                        url: 'ajax/addPlayersToClub.php',
+                                                        items: [
+                                                            {
+                                                                xtype: 'hidden',
+                                                                name: 'id_players',
+                                                                allowBlank: false,
+                                                                value: idPlayers.join(',')
+                                                            },
+                                                            {
+                                                                xtype: 'combo',
+                                                                allowBlank: false,
+                                                                forceSelection: true,
+                                                                fieldLabel: 'Club',
+                                                                name: 'id_club',
+                                                                queryMode: 'local',
+                                                                store: storeClubs,
+                                                                displayField: 'nom',
+                                                                valueField: 'id'
+                                                            }
+                                                        ],
+                                                        buttons: [
+                                                            {
+                                                                text: 'Annuler',
+                                                                handler: function() {
+                                                                    this.up('window').close();
+                                                                }
+                                                            },
+                                                            {
+                                                                text: 'Sauver',
+                                                                formBind: true,
+                                                                disabled: true,
+                                                                handler: function() {
+                                                                    var button = this;
+                                                                    var form = button.up('form').getForm();
+                                                                    if (form.isValid()) {
+                                                                        form.submit({
+                                                                            success: function(form, action) {
+                                                                                grid.getStore().load();
+                                                                                windowAddPlayerToClub.close();
+                                                                            },
+                                                                            failure: function(form, action) {
+                                                                                Ext.Msg.alert('Erreur', action.result.message);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                });
+                                                windowAddPlayersToClub.show();
+                                            }
                                         },
                                         {
-                                            text: 'Créer un joueur'
+                                            text: 'Créer un joueur',
+                                            hidden: true
                                         }
                                     ]
                                 }

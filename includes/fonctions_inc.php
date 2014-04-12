@@ -1939,6 +1939,23 @@ function addPlayerToMyTeam($idPlayer) {
     return true;
 }
 
+function addPlayersToClub($idPlayers, $idClub) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] !== "admin") {
+        return false;
+    }
+    $sql = "UPDATE joueurs SET id_club = $idClub WHERE id IN ($idPlayers)";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return true;
+}
+
 function removePlayerFromMyTeam($idPlayer) {
     conn_db();
     if (!isset($_SESSION['id_equipe'])) {
