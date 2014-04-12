@@ -710,6 +710,35 @@ Ext.onReady(function() {
                                     dock: 'top',
                                     items: [
                                         {
+                                            xtype: 'textfield',
+                                            fieldLabel: 'Recherche',
+                                            listeners: {
+                                                change: function(textfield, newValue) {
+                                                    var store = textfield.up('grid').getStore();
+                                                    store.clearFilter(true);
+                                                    store.filter(
+                                                            {
+                                                                filterFn: function(item) {
+                                                                    var queribleFields = ['nom', 'prenom', 'num_licence', 'club'];
+                                                                    var found = false;
+                                                                    var regExp = new RegExp(newValue, "i");
+                                                                    Ext.each(queribleFields, function(queribleField) {
+                                                                        if (!item.get(queribleField)) {
+                                                                            return true;
+                                                                        }
+                                                                        if (regExp.test(item.get(queribleField))) {
+                                                                            found = true;
+                                                                            return false;
+                                                                        }
+                                                                    });
+                                                                    return found;
+                                                                }
+                                                            }
+                                                    );
+                                                }
+                                            }
+                                        },
+                                        {
                                             text: 'Associer à un club',
                                             handler: function() {
                                                 var grid = this.up('grid');
@@ -790,7 +819,7 @@ Ext.onReady(function() {
                                                                         form.submit({
                                                                             success: function(form, action) {
                                                                                 grid.getStore().load();
-                                                                                windowAddPlayerToClub.close();
+                                                                                windowAddPlayersToClub.close();
                                                                             },
                                                                             failure: function(form, action) {
                                                                                 Ext.Msg.alert('Erreur', action.result.message);
