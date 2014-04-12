@@ -58,18 +58,6 @@ Ext.onReady(function() {
             handler: function() {
                 var columns = [];
                 var fields = [];
-                if (tableName === 'joueurs') {
-                    fields.push('path_photo');
-                    columns.push({
-                        header: 'path_photo',
-                        dataIndex: 'path_photo',
-                        width: 120,
-                        flex: null,
-                        renderer: function(val) {
-                            return '<img src="' + val + '" width="80px" height="100px">';
-                        }
-                    });
-                }
                 Ext.each(records, function(record) {
                     switch (record.get('Field')) {
                         case 'id_club':
