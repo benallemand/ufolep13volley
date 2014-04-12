@@ -22,6 +22,7 @@
             <div id="banniere"></div>
             <div id="menu"></div>
             <div id="contenu">
+                <?php affich_connecte(); ?>
                 <div id="titre"><H1>Annuaire Equipes</H1></div>
 
                 <?php
