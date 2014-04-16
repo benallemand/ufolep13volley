@@ -330,6 +330,7 @@ Ext.onReady(function() {
                 handler: function() {
                     var storeMyPlayers = Ext.create('Ext.data.Store', {
                         fields: [
+                            'full_name',
                             'prenom',
                             'nom',
                             'telephone',
@@ -362,6 +363,10 @@ Ext.onReady(function() {
                             },
                             {
                                 name: 'est_responsable_club',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'est_capitaine',
                                 type: 'bool'
                             },
                             {
@@ -405,6 +410,16 @@ Ext.onReady(function() {
                                     {
                                         header: 'Numéro de licence',
                                         dataIndex: 'num_licence'
+                                    },
+                                    {
+                                        header: 'Capitaine ?',
+                                        dataIndex: 'est_capitaine',
+                                        xtype: 'checkcolumn',
+                                        listeners: {
+                                            beforecheckchange: function() {
+                                                return false;
+                                            }
+                                        }
                                     },
                                     {
                                         header: 'Photo',
@@ -589,6 +604,70 @@ Ext.onReady(function() {
                                                     }
                                                 });
                                                 windowAddPlayerToMyTeam.show();
+                                            }
+                                        },
+                                        {
+                                            xtype: 'button',
+                                            text: "Modifier le responsable d'équipe",
+                                            handler: function() {
+                                                var windowUpdateMyTeamCaptain = Ext.create('Ext.window.Window', {
+                                                    title: "Modifier le responsable d'équipe",
+                                                    height: 500,
+                                                    width: 500,
+                                                    modal: true,
+                                                    layout: 'fit',
+                                                    items: {
+                                                        xtype: 'form',
+                                                        layout: 'anchor',
+                                                        defaults: {
+                                                            anchor: '90%',
+                                                            margins: 10
+                                                        },
+                                                        url: 'ajax/updateMyTeamCaptain.php',
+                                                        items: [
+                                                            {
+                                                                xtype: 'combo',
+                                                                forceSelection: true,
+                                                                fieldLabel: 'Joueur',
+                                                                name: 'id_joueur',
+                                                                queryMode: 'local',
+                                                                allowBlank: false,
+                                                                store: this.up('grid').getStore(),
+                                                                displayField: 'full_name',
+                                                                valueField: 'id'
+                                                            }
+                                                        ],
+                                                        buttons: [
+                                                            {
+                                                                text: 'Annuler',
+                                                                handler: function() {
+                                                                    this.up('window').close();
+                                                                }
+                                                            },
+                                                            {
+                                                                text: 'Sauver',
+                                                                formBind: true,
+                                                                disabled: true,
+                                                                handler: function() {
+                                                                    var button = this;
+                                                                    var form = button.up('form').getForm();
+                                                                    if (form.isValid()) {
+                                                                        form.submit({
+                                                                            success: function(form, action) {
+                                                                                storeMyPlayers.load();
+                                                                                windowUpdateMyTeamCaptain.close();
+                                                                            },
+                                                                            failure: function(form, action) {
+                                                                                Ext.Msg.alert('Erreur', action.result.message);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                });
+                                                windowUpdateMyTeamCaptain.show();
                                             }
                                         }
                                     ]

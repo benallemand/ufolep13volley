@@ -1,4 +1,5 @@
 <?php
+
 require_once 'db_inc.php';
 session_start();
 
@@ -1772,7 +1773,8 @@ function getMyPlayers() {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "SELECT 
+    $sql = "SELECT
+        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
         j.prenom, 
         j.nom, 
         j.telephone, 
@@ -1792,6 +1794,7 @@ function getMyPlayers() {
         j.telephone4, 
         j.est_licence_valide+0 AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
+        je.est_capitaine+0 AS est_capitaine, 
         j.id, 
         j.date_homologation
         FROM joueur_equipe je
@@ -1880,6 +1883,33 @@ function isPlayerInTeam($idPlayer, $idTeam) {
     if (intval($results[0]['cnt']) === 0) {
         return false;
     }
+    return true;
+}
+
+function updateMyTeamCaptain($idPlayer) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $idTeam = $_SESSION['id_equipe'];
+    if (!isPlayerInTeam($idPlayer, $idTeam)) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET est_capitaine = 0 WHERE id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET est_capitaine = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    //addSqlActivity($sql);
+    mysql_close();
     return true;
 }
 
