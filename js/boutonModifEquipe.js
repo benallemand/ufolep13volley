@@ -1,4 +1,24 @@
 Ext.onReady(function() {
+//    Ext.define("plugin.Printer", {
+//        statics: {
+//            print: function(htmlElement, printAutomatically) {
+//                var win = window.open('', 'Print Panel');
+//                win.document.open();
+//                win.document.write(htmlElement.outerHTML);
+//                win.document.close();
+//                if (printAutomatically) {
+//                    win.print();
+//                }
+//                if (this.closeAutomaticallyAfterPrint) {
+//                    if (Ext.isIE) {
+//                        window.close();
+//                    } else {
+//                        win.close();
+//                    }
+//                }
+//            }
+//        }
+//    });
     Ext.create('Ext.panel.Panel', {
         layout: 'hbox',
         renderTo: Ext.get('bouton_modif_equipe'),
@@ -12,13 +32,28 @@ Ext.onReady(function() {
                 handler: function() {
                     var windowTeamSheet = Ext.create('Ext.window.Window', {
                         title: 'Fiche équipe',
-                        maximizable: true,
                         height: 600,
                         width: 800,
                         modal: true,
                         layout: 'fit',
+//                        dockedItems: [
+//                            {
+//                                xtype: 'toolbar',
+//                                dock: 'top',
+//                                items: [
+//                                    {
+//                                        text: 'Imprimer',
+//                                        handler: function() {
+//                                            var html = Ext.dom.Query.selectNode('#myPanelId-body');
+//                                            plugin.Printer.print(html, true);
+//                                        }
+//                                    }
+//                                ]
+//                            }
+//                        ],
                         items: {
                             xtype: 'form',
+//                            id: 'myPanelId',
                             layout: 'border',
                             items: [
                                 {
@@ -219,6 +254,7 @@ Ext.onReady(function() {
                     });
                     var storeMyPlayers = Ext.create('Ext.data.Store', {
                         fields: [
+                            'full_name',
                             'prenom',
                             'nom',
                             'telephone',
@@ -251,6 +287,10 @@ Ext.onReady(function() {
                             },
                             {
                                 name: 'est_responsable_club',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'est_capitaine',
                                 type: 'bool'
                             },
                             {
@@ -315,6 +355,13 @@ Ext.onReady(function() {
                                             {
                                                 xtype: 'checkbox',
                                                 boxLabel: 'Présent'
+                                            },
+                                            {
+                                                xtype: 'checkbox',
+                                                boxLabel: 'Capitaine',
+                                                checked: record.get('est_capitaine'),
+                                                readOnly: true,
+                                                hidden: !record.get('est_capitaine')
                                             }
                                         ]
                                     }
