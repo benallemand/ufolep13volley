@@ -284,7 +284,34 @@ Ext.onReady(function() {
                     {
                         text: 'Déclaration de sinistre',
                         handler: function() {
-                            window.open('infos_utiles/Media/DeclarationSinistreApac.pdf', '_blank');
+                            Ext.Msg.show({
+                                title: 'Déclaration de sinistre',
+                                msg: "Le document téléchargé doit être transmis à :<br/>\
+Fédération des A. I. L, Service Apac, 192 rue Horace Bertin, 13005 Marseille<br/>\
+La responsable Apac est : Céline Pouillot<br/>\
+04 91 24 31 47 ou 61<br/>\
+Pour votre information, le service APAC est ouvert :<br/>\
+Du lundi au vendredi de 10h à 12h et de 14h30 à 17h<br/>\
+- Sur place avec ou sans rendez-vous : 192 Rue Horace Bertin 13005 Marseille<br/>\
+- Par tél. 04.91.24.31.47<br/>\
+- Par mail<br/>\
+Déléguée APAC Céline POUILLOT celine.pouillot@laligue13.fr<br/>\
+Secrétariat APAC Aurore RACLOT apac@laligue13.fr <br/>\
+Pour nous suivre, connectez-vous sur Facebook & notre site officiel<br/>\
+Il faudra retourner par voie postale :<br/>\
+- La déclaration de sinistre dûment remplie et signée<br/>\
+- Le certificat médical original de constatation de blessure<br/>\
+- La copie de la licence en cours du joueur blessé<br/>\
+- La copie de la feuille de match",
+                                buttons: Ext.Msg.OK,
+                                icon: Ext.Msg.INFO,
+                                buttonText: {
+                                    ok: 'Télécharger'
+                                },
+                                fn: function(btn) {
+                                    window.open('infos_utiles/Media/DeclarationSinistreApac.pdf', '_blank');
+                                }
+                            });
                         }
                     }
                 ]
