@@ -297,7 +297,6 @@ Du lundi au vendredi de 10h à 12h et de 14h30 à 17h<br/>\
 - Par mail<br/>\
 Déléguée APAC Céline POUILLOT celine.pouillot@laligue13.fr<br/>\
 Secrétariat APAC Aurore RACLOT apac@laligue13.fr <br/>\
-Pour nous suivre, connectez-vous sur Facebook & notre site officiel<br/>\
 Il faudra retourner par voie postale :<br/>\
 - La déclaration de sinistre dûment remplie et signée<br/>\
 - Le certificat médical original de constatation de blessure<br/>\
