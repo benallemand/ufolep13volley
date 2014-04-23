@@ -3,6 +3,9 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
     alias: 'widget.playeredit',
     title: 'Joueur',
     layout: 'fit',
+    modal: true,
+    width: 700,
+    height: 500,
     autoShow: true,
     buttons: [
         {
@@ -20,8 +23,9 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             xtype: 'form',
             defaults: {
                 xtype: 'textfield',
-                anchor: '100%'
+                anchor: '90%'
             },
+            autoScroll: true,
             layout: 'anchor',
             items: [
                 {
@@ -81,14 +85,36 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                     fieldLabel: "Date d'homologation"
                 },
                 {
+                    name: 'photo',
+                    xtype: 'filefield',
+                    fieldLabel: 'Photo',
+                    buttonText: 'Sélection Photo...'
+                },
+                {
                     name: 'est_responsable_club',
                     xtype: 'checkboxfield',
-                    fieldLabel: 'Responsable ?'
+                    fieldLabel: 'Responsable ?',
+                    listeners: {
+                        change: function(box, newVal, oldVal) {
+                            var fieldsetDetails = Ext.ComponentQuery.query('fieldset[title=Détails du responsable]')[0];
+                            if (newVal) {
+                                fieldsetDetails.show();
+                            }
+                            else {
+                                fieldsetDetails.hide();
+                            }
+                        }
+                    }
                 },
                 {
                     xtype: 'fieldset',
                     title: 'Détails du responsable',
                     hidden: true,
+                    layout: 'anchor',
+                    defaults: {
+                        xtype: 'textfield',
+                        anchor: '90%'
+                    },
                     items: [
                         {
                             name: 'telephone',
