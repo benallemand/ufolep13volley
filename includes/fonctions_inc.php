@@ -2010,3 +2010,82 @@ function getMyTeamSheet() {
     }
     return json_encode($results);
 }
+
+function savePhoto($lastName, $firstName) {
+    if (empty($_FILES['photo']['name'])) {
+        return true;
+    }
+    $uploaddir = '../images/joueurs/';
+    $uploadfile = $uploaddir . strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
+        return true;
+    }
+    return false;
+}
+
+function savePlayer() {
+    $inputs = array(
+        'prenom' => filter_input(INPUT_POST, 'prenom'),
+        'nom' => filter_input(INPUT_POST, 'nom'),
+        'telephone' => filter_input(INPUT_POST, 'telephone'),
+        'email' => filter_input(INPUT_POST, 'email'),
+        'num_licence' => filter_input(INPUT_POST, 'num_licence'),
+        'sexe' => filter_input(INPUT_POST, 'sexe'),
+        'departement_affiliation' => filter_input(INPUT_POST, 'departement_affiliation'),
+        'est_actif' => filter_input(INPUT_POST, 'est_actif'),
+        'id_club' => filter_input(INPUT_POST, 'id_club'),
+        'adresse' => filter_input(INPUT_POST, 'adresse'),
+        'code_postal' => filter_input(INPUT_POST, 'code_postal'),
+        'ville' => filter_input(INPUT_POST, 'ville'),
+        'telephone2' => filter_input(INPUT_POST, 'telephone2'),
+        'email2' => filter_input(INPUT_POST, 'email2'),
+        'est_licence_valide' => filter_input(INPUT_POST, 'est_licence_valide'),
+        'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
+        'id' => filter_input(INPUT_POST, 'id'),
+        'date_homologation' => filter_input(INPUT_POST, 'date_homologation')
+    );
+    conn_db();
+    if ($_SESSION['id_equipe'] !== "admin") {
+        return false;
+    }
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "joueurs SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
+            case 'departement_affiliation':
+            case 'id_club':
+                $sql .= "$key = $value,";
+                break;
+            case 'est_actif':
+            case 'est_licence_valide':
+            case 'est_responsable_club':
+                $val = ($value === 'on') ? 1 : 0;
+                $sql .= "$key = $val,";
+                break;
+            case 'date_homologation':
+                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    return savePhoto($inputs['nom'], $inputs['prenom']);
+}

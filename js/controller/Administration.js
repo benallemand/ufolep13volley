@@ -17,8 +17,16 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'clubselect form'
         },
         {
+            ref: 'formPanelEditPlayer',
+            selector: 'playeredit form'
+        },
+        {
             ref: 'windowSelectClub',
             selector: 'clubselect'
+        },
+        {
+            ref: 'windowEditPlayer',
+            selector: 'playeredit'
         }
     ],
     init: function() {
@@ -53,14 +61,27 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         if (!record) {
             return;
         }
-        var view = Ext.widget('playeredit');
-        view.down('form').loadRecord(record);
+        Ext.widget('playeredit');
+        this.getFormPanelEditPlayer().loadRecord(record);
     },
     addPlayer: function() {
         Ext.widget('playeredit');
     },
     updatePlayer: function() {
-        Ext.Msg.alert('Erreur', "Cette fonction n'est pas encore disponible !");
+        var thisController = this;
+        var form = this.getFormPanelEditPlayer().getForm();
+        if (form.isValid()) {
+            form.submit({
+                success: function() {
+                    thisController.getManagePlayersGrid().getStore().load();
+                    thisController.getWindowEditPlayer().close();
+                    thisController.getManagePlayersGrid().getSelectionModel().deselectAll();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
     },
     showPlayersGrid: function() {
         this.getMainPanel().removeAll();

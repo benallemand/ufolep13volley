@@ -15,7 +15,10 @@ Ext.define('Ufolep13Volley.model.Player', {
         },
         {
             name: 'est_actif',
-            type: 'bool'
+            type: 'bool',
+            convert: function(val) {
+                return val === '1';
+            }
         },
         {
             name: 'id_club',
@@ -31,11 +34,17 @@ Ext.define('Ufolep13Volley.model.Player', {
         'telephone4',
         {
             name: 'est_licence_valide',
-            type: 'bool'
+            type: 'bool',
+            convert: function(val) {
+                return val === '1';
+            }
         },
         {
             name: 'est_responsable_club',
-            type: 'bool'
+            type: 'bool',
+            convert: function(val) {
+                return val === '1';
+            }
         },
         {
             name: 'id',
@@ -43,7 +52,8 @@ Ext.define('Ufolep13Volley.model.Player', {
         },
         {
             name: 'date_homologation',
-            type: 'date'
+            type: 'date',
+            dateFormat: 'Y-m-d'
         }
     ]
 });
