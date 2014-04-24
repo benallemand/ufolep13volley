@@ -1844,7 +1844,18 @@ function getPlayers() {
         j.email2, 
         j.telephone3, 
         j.telephone4, 
-        j.est_licence_valide+0 AS est_licence_valide, 
+        CASE 
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
+                END
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
+                END         
+        END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         j.id, 
         j.date_homologation
