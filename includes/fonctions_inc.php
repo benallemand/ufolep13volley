@@ -38,7 +38,7 @@ function getTournaments() {
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
-    $sql = "select 
+    $sql = "SELECT 
     c.libelle AS competition, 
     IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
     c.code_competition AS code_competition,
@@ -53,13 +53,16 @@ function getLastResults() {
     CONCAT(m.set_4_dom, '-', set_4_ext) AS set4, 
     CONCAT(m.set_5_dom, '-', set_5_ext) AS set5, 
     m.date_reception
-    from matches m
-    left join journees j on j.numero=m.journee and j.code_competition=m.code_competition
-    left join competitions c on c.code_competition =  m.code_competition
-    left join equipes e1 on e1.id_equipe =  m.id_equipe_dom
-    left join equipes e2 on e2.id_equipe =  m.id_equipe_ext
-    where m.score_equipe_dom!=0 OR m.score_equipe_ext!=0
-    order by date_reception DESC";
+    FROM matches m
+    LEFT JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
+    LEFT JOIN competitions c ON c.code_competition =  m.code_competition
+    LEFT JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
+    LEFT JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
+    WHERE (
+    (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
+    AND (m.date_reception <= CURDATE())
+    )
+    ORDER BY date_reception DESC";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {

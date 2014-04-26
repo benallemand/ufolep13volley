@@ -247,12 +247,12 @@ Ext.onReady(function() {
                 autoScroll: true,
                 columns: [
                     {
-                        header: 'competition',
+                        header: 'Compétition',
                         dataIndex: 'competition',
                         width: 180
                     },
                     {
-                        header: 'division_journee',
+                        header: 'Journée',
                         dataIndex: 'division_journee',
                         width: 150,
                         renderer: function(val, meta, record) {
@@ -261,7 +261,7 @@ Ext.onReady(function() {
                         }
                     },
                     {
-                        header: 'equipe_domicile',
+                        header: 'Domicile',
                         dataIndex: 'equipe_domicile',
                         width: 120,
                         renderer: function(val, meta, record) {
@@ -282,7 +282,7 @@ Ext.onReady(function() {
                         width: 15
                     },
                     {
-                        header: 'equipe_exterieur',
+                        header: 'Extérieur',
                         dataIndex: 'equipe_exterieur',
                         width: 120,
                         renderer: function(val, meta, record) {
@@ -293,32 +293,34 @@ Ext.onReady(function() {
                         }
                     },
                     {
-                        header: 'set1',
+                        header: 'Set 1',
                         dataIndex: 'set1',
                         width: 50
                     },
                     {
-                        header: 'set2',
+                        header: 'Set 2',
                         dataIndex: 'set2',
                         width: 50
                     },
                     {
-                        header: 'set3',
+                        header: 'Set 3',
                         dataIndex: 'set3',
                         width: 50
                     },
                     {
-                        header: 'set4',
+                        header: 'Set 4',
                         dataIndex: 'set4',
                         width: 50
                     },
                     {
-                        header: 'set5',
+                        header: 'Set 5',
                         dataIndex: 'set5',
                         width: 50
                     },
                     {
-                        header: 'date_reception',
+                        header: 'Date',
+                        xtype : 'datecolumn',
+                        format : 'd/m/Y',
                         dataIndex: 'date_reception',
                         width: 80
                     }
