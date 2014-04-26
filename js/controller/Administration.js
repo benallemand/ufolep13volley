@@ -52,6 +52,39 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'clubselect button[action=save]': {
                         click: this.linkPlayerToClub
+                    },
+                    'grid[title=Gestion des joueurs] > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
+                        change: this.searchPlayer
+                    }
+                }
+        );
+    },
+    searchPlayer: function(textfield, searchText) {
+        var searchTerms = searchText.split(',');
+        var store = this.getManagePlayersGrid().getStore();
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function(item) {
+                        var queribleFields = ['nom', 'prenom', 'num_licence', 'club'];
+                        var found = false;
+                        Ext.each(searchTerms, function(searchTerm) {
+                            var regExp = new RegExp(searchTerm, "i");
+                            Ext.each(queribleFields, function(queribleField) {
+                                if (!item.get(queribleField)) {
+                                    return true;
+                                }
+                                if (regExp.test(item.get(queribleField))) {
+                                    found = true;
+                                    return false;
+                                }
+                            });
+                            if (found) {
+                                return false;
+                            }
+                            return true;
+                        });
+                        return found;
                     }
                 }
         );

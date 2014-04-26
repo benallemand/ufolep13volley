@@ -55,32 +55,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
             items: [
                 {
                     xtype: 'textfield',
-                    fieldLabel: 'Recherche',
-                    listeners: {
-                        change: function(textfield, newValue) {
-                            var store = textfield.up('grid').getStore();
-                            store.clearFilter(true);
-                            store.filter(
-                                    {
-                                        filterFn: function(item) {
-                                            var queribleFields = ['nom', 'prenom', 'num_licence', 'club'];
-                                            var found = false;
-                                            var regExp = new RegExp(newValue, "i");
-                                            Ext.each(queribleFields, function(queribleField) {
-                                                if (!item.get(queribleField)) {
-                                                    return true;
-                                                }
-                                                if (regExp.test(item.get(queribleField))) {
-                                                    found = true;
-                                                    return false;
-                                                }
-                                            });
-                                            return found;
-                                        }
-                                    }
-                            );
-                        }
-                    }
+                    fieldLabel: 'Recherche'
                 },
                 {
                     text: 'Associer à un club'
