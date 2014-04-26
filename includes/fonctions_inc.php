@@ -2053,7 +2053,6 @@ function savePlayer() {
         'ville' => filter_input(INPUT_POST, 'ville'),
         'telephone2' => filter_input(INPUT_POST, 'telephone2'),
         'email2' => filter_input(INPUT_POST, 'email2'),
-        'est_licence_valide' => filter_input(INPUT_POST, 'est_licence_valide'),
         'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
         'id' => filter_input(INPUT_POST, 'id'),
         'date_homologation' => filter_input(INPUT_POST, 'date_homologation')
@@ -2077,7 +2076,6 @@ function savePlayer() {
                 $sql .= "$key = $value,";
                 break;
             case 'est_actif':
-            case 'est_licence_valide':
             case 'est_responsable_club':
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";

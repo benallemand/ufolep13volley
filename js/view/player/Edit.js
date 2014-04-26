@@ -66,12 +66,6 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 valueField: 'id'
             },
             {
-                name: 'est_licence_valide',
-                xtype: 'checkboxfield',
-                fieldLabel: 'Licence Valide ?',
-                checked: true
-            },
-            {
                 name: 'date_homologation',
                 xtype: 'datefield',
                 format: 'd/m/Y',
