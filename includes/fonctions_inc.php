@@ -43,9 +43,11 @@ function getLastResults() {
     IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
     c.code_competition AS code_competition,
     m.division AS division,
+    e1.id_equipe AS id_dom,
     e1.nom_equipe AS equipe_domicile,
     m.score_equipe_dom+0 AS score_equipe_dom, 
     m.score_equipe_ext+0 AS score_equipe_ext, 
+    e2.id_equipe AS id_ext,
     e2.nom_equipe AS equipe_exterieur, 
     CONCAT(m.set_1_dom, '-', set_1_ext) AS set1, 
     CONCAT(m.set_2_dom, '-', set_2_ext) AS set2, 
@@ -66,14 +68,25 @@ function getLastResults() {
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
-        if ($data['code_competition'] === 'm') {
-            $data['url'] = 'champ_masc.php?d=' . $data['division'];
-        } else if ($data['code_competition'] === 'f') {
-            $data['url'] = 'champ_fem.php?d=' . $data['division'];
-        } else if ($data['code_competition'] === 'kh') {
-            $data['url'] = 'coupe_kh.php?d=' . $data['division'];
-        } else if ($data['code_competition'] === 'c') {
-            $data['url'] = 'coupe.php?d=' . $data['division'];
+        switch ($data['code_competition']) {
+            case 'm':
+                $data['url'] = 'champ_masc.php?d=' . $data['division'];
+                $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
+                $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
+                break;
+            case 'f':
+                $data['url'] = 'champ_fem.php?d=' . $data['division'];
+                $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
+                $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
+                break;
+            case 'kh':
+                $data['url'] = 'coupe_kh.php?d=' . $data['division'];
+                break;
+            case 'c':
+                $data['url'] = 'coupe.php?d=' . $data['division'];
+                break;
+            default :
+                break;
         }
         $results[] = $data;
     }
@@ -1315,6 +1328,16 @@ function getClassement($compet, $div) {
         $rang++;
     }
     return json_encode($results);
+}
+
+function getTeamRank($competition, $league, $idTeam) {
+    $results = json_decode(getClassement($competition, $league), true);
+    foreach ($results as $data) {
+        if ($data['id_equipe'] === $idTeam) {
+            return $data['rang'];
+        }
+    }
+    return '';
 }
 
 function ajouterPenalite($compet, $id_equipe) {

@@ -263,12 +263,21 @@ Ext.onReady(function() {
                     {
                         header: 'Domicile',
                         dataIndex: 'equipe_domicile',
-                        width: 120,
+                        width: 140,
                         renderer: function(val, meta, record) {
-                            if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
-                                return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                            var displayValue = val;
+                            switch (record.get('code_competition')) {
+                                case 'm':
+                                case 'f':
+                                    displayValue = displayValue + ' (' + record.get('rang_dom') + ')';
+                                    break;
+                                default :
+                                    break;
                             }
-                            return val;
+                            if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
+                                return '<span style="color:green;font-weight:bold">' + displayValue + '</span>';
+                            }
+                            return displayValue;
                         }
                     },
                     {
@@ -284,43 +293,52 @@ Ext.onReady(function() {
                     {
                         header: 'Extérieur',
                         dataIndex: 'equipe_exterieur',
-                        width: 120,
+                        width: 140,
                         renderer: function(val, meta, record) {
-                            if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
-                                return '<span style="color:green;font-weight:bold">' + val + '</span>';
+                            var displayValue = val;
+                            switch (record.get('code_competition')) {
+                                case 'm':
+                                case 'f':
+                                    displayValue = displayValue + ' (' + record.get('rang_ext') + ')';
+                                    break;
+                                default :
+                                    break;
                             }
-                            return val;
+                            if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
+                                return '<span style="color:green;font-weight:bold">' + displayValue + '</span>';
+                            }
+                            return displayValue;
                         }
                     },
                     {
-                        header: 'Set 1',
+                        header: 'S1',
                         dataIndex: 'set1',
-                        width: 50
+                        width: 45
                     },
                     {
-                        header: 'Set 2',
+                        header: 'S2',
                         dataIndex: 'set2',
-                        width: 50
+                        width: 45
                     },
                     {
-                        header: 'Set 3',
+                        header: 'S3',
                         dataIndex: 'set3',
-                        width: 50
+                        width: 45
                     },
                     {
-                        header: 'Set 4',
+                        header: 'S4',
                         dataIndex: 'set4',
-                        width: 50
+                        width: 45
                     },
                     {
-                        header: 'Set 5',
+                        header: 'S5',
                         dataIndex: 'set5',
-                        width: 50
+                        width: 45
                     },
                     {
                         header: 'Date',
-                        xtype : 'datecolumn',
-                        format : 'd/m/Y',
+                        xtype: 'datecolumn',
+                        format: 'd/m/Y',
                         dataIndex: 'date_reception',
                         width: 80
                     }
@@ -328,11 +346,14 @@ Ext.onReady(function() {
                 store: Ext.create('Ext.data.Store', {
                     fields: [
                         'competition',
+                        'code_competition',
                         'division_journee',
                         'equipe_domicile',
                         'equipe_exterieur',
                         'score_equipe_dom',
                         'score_equipe_ext',
+                        'rang_dom',
+                        'rang_ext',
                         'set1',
                         'set2',
                         'set3',
@@ -469,6 +490,6 @@ Ext.onReady(function() {
         });
     }
     else {
-    tools.showNormalVersion();
+        tools.showNormalVersion();
     }
 });
