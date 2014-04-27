@@ -48,14 +48,12 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'departement_affiliation',
                 fieldLabel: 'Département',
                 xtype: 'numberfield',
-                value: 13,
                 allowBlank: false
             },
             {
                 name: 'est_actif',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Actif ?',
-                checked: true
+                fieldLabel: 'Actif ?'
             },
             {
                 name: 'id_club',
@@ -110,18 +108,6 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                     {
                         name: 'email',
                         fieldLabel: 'Email'
-                    },
-                    {
-                        name: 'adresse',
-                        fieldLabel: 'Adresse'
-                    },
-                    {
-                        name: 'code_postal',
-                        fieldLabel: 'Code postal'
-                    },
-                    {
-                        name: 'ville',
-                        fieldLabel: 'Ville'
                     },
                     {
                         name: 'telephone2',
