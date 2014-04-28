@@ -9,6 +9,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
     autoShow: true,
     items: {
         xtype: 'form',
+        trackResetOnLoad: true,
         defaults: {
             xtype: 'textfield',
             anchor: '90%'
