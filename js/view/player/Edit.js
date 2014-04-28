@@ -70,6 +70,11 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 fieldLabel: "Date d'homologation"
             },
             {
+                name: 'show_photo',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Diffusion photo autorisée ?'
+            },
+            {
                 name: 'photo',
                 xtype: 'filefield',
                 fieldLabel: 'Photo',

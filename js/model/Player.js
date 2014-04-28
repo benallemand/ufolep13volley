@@ -54,6 +54,13 @@ Ext.define('Ufolep13Volley.model.Player', {
             name: 'date_homologation',
             type: 'date',
             dateFormat: 'Y-m-d'
+        },
+        {
+            name: 'show_photo',
+            type: 'bool',
+            convert: function(val) {
+                return val === '1';
+            }
         }
     ]
 });

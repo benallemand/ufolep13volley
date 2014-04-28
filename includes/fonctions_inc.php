@@ -1856,7 +1856,7 @@ function getPlayers() {
         j.nom, 
         j.telephone, 
         j.email, 
-        j.num_licence, 
+        j.num_licence,
         CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
@@ -1884,7 +1884,8 @@ function getPlayers() {
         END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         j.id, 
-        j.date_homologation
+        j.date_homologation,
+        j.show_photo+0 AS show_photo 
         FROM joueurs j
         LEFT JOIN clubs c ON c.id = j.id_club";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
@@ -1893,7 +1894,20 @@ function getPlayers() {
         $results[] = $data;
     }
     foreach ($results as $index => $result) {
-        if (file_exists("../" . $result['path_photo']) === FALSE) {
+        if ($result['show_photo'] === '1') {
+            if (file_exists("../" . $result['path_photo']) === FALSE) {
+                switch ($result['sexe']) {
+                    case 'M':
+                        $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                        break;
+                    case 'F':
+                        $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
             switch ($result['sexe']) {
                 case 'M':
                     $results[$index]['path_photo'] = 'images/joueurs/Male.png';
@@ -2078,7 +2092,8 @@ function savePlayer() {
         'email2' => filter_input(INPUT_POST, 'email2'),
         'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
         'id' => filter_input(INPUT_POST, 'id'),
-        'date_homologation' => filter_input(INPUT_POST, 'date_homologation')
+        'date_homologation' => filter_input(INPUT_POST, 'date_homologation'),
+        'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
     conn_db();
     if ($_SESSION['id_equipe'] !== "admin") {
@@ -2100,6 +2115,7 @@ function savePlayer() {
                 break;
             case 'est_actif':
             case 'est_responsable_club':
+            case 'show_photo':
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";
                 break;
