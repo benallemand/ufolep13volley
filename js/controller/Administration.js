@@ -104,7 +104,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var thisController = this;
         var form = this.getFormPanelEditPlayer().getForm();
         if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
             form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
                 success: function() {
                     thisController.getManagePlayersGrid().getStore().load();
                     thisController.getWindowEditPlayer().close();
