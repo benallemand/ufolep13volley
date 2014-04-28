@@ -1811,18 +1811,25 @@ function getMyPlayers() {
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
         j.id_club, 
-        j.adresse, 
-        j.code_postal, 
-        j.ville, 
         j.telephone2, 
         j.email2, 
-        j.telephone3, 
-        j.telephone4, 
-        j.est_licence_valide+0 AS est_licence_valide, 
+        CASE 
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
+                END
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
+                END         
+        END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         je.est_capitaine+0 AS est_capitaine, 
         j.id, 
-        j.date_homologation
+        j.date_homologation,
+        j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         WHERE je.id_equipe = $sessionIdEquipe";
@@ -1832,13 +1839,26 @@ function getMyPlayers() {
         $results[] = $data;
     }
     foreach ($results as $index => $result) {
-        if (file_exists("../" . $result['path_photo']) === FALSE) {
+        if ($result['show_photo'] === '1') {
+            if (file_exists("../" . $result['path_photo']) === FALSE) {
+                switch ($result['sexe']) {
+                    case 'M':
+                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        break;
+                    case 'F':
+                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
             switch ($result['sexe']) {
                 case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
                     break;
                 case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
                     break;
                 default:
                     break;
@@ -1863,13 +1883,8 @@ function getPlayers() {
         j.est_actif+0 AS est_actif, 
         j.id_club, 
         c.nom AS club, 
-        j.adresse, 
-        j.code_postal, 
-        j.ville, 
         j.telephone2, 
         j.email2, 
-        j.telephone3, 
-        j.telephone4, 
         CASE 
             WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
                 CASE 
@@ -1898,10 +1913,10 @@ function getPlayers() {
             if (file_exists("../" . $result['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
-                        $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
                         break;
                     case 'F':
-                        $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
                         break;
                     default:
                         break;
@@ -1910,10 +1925,10 @@ function getPlayers() {
         } else {
             switch ($result['sexe']) {
                 case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/Male.png';
+                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
                     break;
                 case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/Female.jpg';
+                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
                     break;
                 default:
                     break;
