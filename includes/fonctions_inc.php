@@ -1508,6 +1508,9 @@ function modifierMatch($code_match) {
 
 function addActivity($comment) {
     $sessionIdEquipe = $_SESSION['id_equipe'];
+    if($sessionIdEquipe === "admin") {
+        $sessionIdEquipe = 999;
+    }
     $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdEquipe";
     mysql_query($sql);
     return;
@@ -2151,6 +2154,17 @@ function savePlayer() {
     $req = mysql_query($sql);
     if ($req === FALSE) {
         return false;
+    }
+    $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
+    if ($dirtyFields) {
+        $fieldsArray = explode(',', $dirtyFields);
+        foreach ($fieldsArray as $fieldName) {
+            $fieldValue = filter_input(INPUT_POST, $fieldName);
+            $firstName = $inputs['prenom'];
+            $name = $inputs['nom'];
+            $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+            addActivity($comment);
+        }
     }
     mysql_close();
     return savePhoto($inputs['nom'], $inputs['prenom']);
