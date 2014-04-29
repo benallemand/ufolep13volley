@@ -61,6 +61,7 @@ Ext.define('Ufolep13Volley.model.Player', {
             convert: function(val) {
                 return val === '1';
             }
-        }
+        },
+        'team_leader_list'
     ]
 });

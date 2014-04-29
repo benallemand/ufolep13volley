@@ -82,6 +82,11 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 buttonText: 'Sélection Photo...'
             },
             {
+                name: 'team_leader_list',
+                xtype: 'displayfield',
+                fieldLabel: 'Capitaine de'
+            },
+            {
                 name: 'est_responsable_club',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Responsable ?',

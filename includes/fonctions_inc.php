@@ -1508,7 +1508,7 @@ function modifierMatch($code_match) {
 
 function addActivity($comment) {
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    if($sessionIdEquipe === "admin") {
+    if ($sessionIdEquipe === "admin") {
         $sessionIdEquipe = 999;
     }
     $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdEquipe";
@@ -1938,7 +1938,22 @@ function getPlayers() {
             }
         }
     }
+    foreach ($results as $index => $result) {
+        $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
+    }
     return json_encode($results);
+}
+
+function getTeamsListForCaptain($playerId) {
+    $teams = array();
+    conn_db();
+    $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
+    WHERE je.id_joueur = $playerId AND est_capitaine+0=1";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $teams[] = $data['team'];
+    }
+    return implode(',', $teams);
 }
 
 function isPlayerInTeam($idPlayer, $idTeam) {
