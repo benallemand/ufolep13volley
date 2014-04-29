@@ -749,9 +749,9 @@ function ajouterPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-//addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
+    addActivity("Une pénalité a été infligée à l'équipe " . getTeamName($id_equipe));
     return true;
 }
 
@@ -776,9 +776,9 @@ function enleverPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-//addSqlActivity($sqlmaj);
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
+    addActivity("Une pénalité a été annulée pour l'équipe " . getTeamName($id_equipe));
     return true;
 }
 
@@ -795,6 +795,7 @@ function supprimerEquipeCompetition($compet, $id_equipe) {
         return false;
     }
     mysql_close();
+    addActivity("L'équipe " . getTeamName($id_equipe) . " a été supprimée de la compétition " . getTournamentName($compet));
     return true;
 }
 
@@ -805,8 +806,8 @@ function certifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
     mysql_close();
+    addActivity("Le match $code_match a été certifié");
     return true;
 }
 
@@ -890,20 +891,22 @@ function modifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
     calcul_classement($id_equipe_dom, $compet, $division);
     calcul_classement($id_equipe_ext, $compet, $division);
     mysql_close();
+    addActivity("Le match $code_match a été modifié");
     return true;
 }
 
 function addActivity($comment) {
+    conn_db();
     $sessionIdEquipe = $_SESSION['id_equipe'];
     if ($sessionIdEquipe === "admin") {
         $sessionIdEquipe = 999;
     }
     $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdEquipe";
     mysql_query($sql);
+    mysql_close();
     return;
 }
 
@@ -949,6 +952,7 @@ function modifierMonEquipe() {
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
     $req = mysql_query($sql);
+    mysql_close();
     if ($req === FALSE) {
         return false;
     }
@@ -961,7 +965,6 @@ function modifierMonEquipe() {
             addActivity($comment);
         }
     }
-    mysql_close();
     return true;
 }
 
@@ -982,8 +985,8 @@ function modifierMonMotDePasse() {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
     mysql_close();
+    addActivity("Mot de passe modifié");
     return true;
 }
 
@@ -995,6 +998,7 @@ function supprimerMatch($code_match) {
         return false;
     }
     mysql_close();
+    addActivity("Le match $code_match a été supprimé");
     return true;
 }
 
@@ -1034,7 +1038,6 @@ function setRetard($code_match, $valeur) {
     if ($req === FALSE) {
         return false;
     }
-//addSqlActivity($sql);
     mysql_close();
     return true;
 }
@@ -1383,8 +1386,8 @@ function updateMyTeamCaptain($idPlayer) {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
     mysql_close();
+    addActivity("L'équipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
     return true;
 }
 
@@ -1402,12 +1405,72 @@ function addPlayerToMyTeam($idPlayer) {
     }
     $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
     $req = mysql_query($sql);
+    mysql_close();
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
-    mysql_close();
+    addActivity("Ajout de " . getPlayerFullName($idPlayer) . " à l'équipe " . getTeamName($idTeam));
     return true;
+}
+
+function getPlayerFullName($idPlayer) {
+    conn_db();
+    $sql = "SELECT 
+        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS player_full_name
+        FROM joueurs j
+        WHERE j.id = $idPlayer";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['player_full_name'];
+}
+
+function getTeamName($idTeam) {
+    conn_db();
+    $sql = "SELECT 
+        CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team_name 
+        FROM equipes e 
+        WHERE e.id_equipe = $idTeam";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['team_name'];
+}
+
+function getTournamentName($tournamentCode) {
+    conn_db();
+    $sql = "SELECT 
+        c.libelle AS tournament_name
+        FROM competitions c 
+        WHERE c.code_competition = '$tournamentCode'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['tournament_name'];
+}
+
+function getClubName($idClub) {
+    conn_db();
+    $sql = "SELECT 
+        c.nom as club_name 
+        FROM clubs c 
+        WHERE c.id = $idClub";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['club_name'];
 }
 
 function addPlayersToClub($idPlayers, $idClub) {
@@ -1424,6 +1487,9 @@ function addPlayersToClub($idPlayers, $idClub) {
         return false;
     }
     mysql_close();
+    foreach (explode(',', $idPlayers) as $idPlayer) {
+        addActivity(getPlayerFullName($idPlayer) . " a été ajouté au club " . getClubName($idClub));
+    }
     return true;
 }
 
@@ -1444,8 +1510,8 @@ function removePlayerFromMyTeam($idPlayer) {
     if ($req === FALSE) {
         return false;
     }
-    //addSqlActivity($sql);
     mysql_close();
+    addActivity(getPlayerFullName($idPlayer) . " a été supprimé de l'équipe " . getTeamName($idTeam));
     return true;
 }
 
@@ -1493,6 +1559,7 @@ function savePhoto($lastName, $firstName) {
     $uploaddir = '../images/joueurs/';
     $uploadfile = $uploaddir . strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
+        addActivity("Une nouvelle photo a été transmise pour le joueur $firstName $lastName");
         return true;
     }
     return false;
@@ -1558,6 +1625,7 @@ function savePlayer() {
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysql_query($sql);
+    mysql_close();
     if ($req === FALSE) {
         return false;
     }
@@ -1572,6 +1640,5 @@ function savePlayer() {
             addActivity($comment);
         }
     }
-    mysql_close();
     return savePhoto($inputs['nom'], $inputs['prenom']);
 }
