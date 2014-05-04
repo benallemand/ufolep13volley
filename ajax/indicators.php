@@ -1,5 +1,7 @@
 <?php
 
+header('Content-Type: text/html; charset=utf-8');
+
 function generateCsv($data, $delimiter = ',', $enclosure = '"') {
     $handle = fopen('php://temp', 'r+');
     $isHeaderWritten = false;
