@@ -294,6 +294,10 @@ Ext.onReady(function() {
                                 type: 'bool'
                             },
                             {
+                                name: 'is_vice_captain',
+                                type: 'bool'
+                            },
+                            {
                                 name: 'id',
                                 type: 'int'
                             },
@@ -414,6 +418,10 @@ Ext.onReady(function() {
                             },
                             {
                                 name: 'est_capitaine',
+                                type: 'bool'
+                            },
+                            {
+                                name: 'is_vice_captain',
                                 type: 'bool'
                             },
                             {

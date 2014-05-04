@@ -1224,6 +1224,7 @@ function getMyPlayers() {
         END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         je.est_capitaine+0 AS est_capitaine, 
+        je.is_vice_captain+0 AS is_vice_captain, 
         j.id, 
         j.date_homologation,
         j.show_photo+0 AS show_photo 
