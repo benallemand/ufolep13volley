@@ -92,20 +92,21 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 fieldLabel: 'Responsable ?',
                 listeners: {
                     change: function(box, newVal, oldVal) {
-                        var fieldsetDetails = Ext.ComponentQuery.query('fieldset[title=Détails du responsable]')[0];
+                        var fieldsetDetails = Ext.ComponentQuery.query('fieldset[title=Détails]')[0];
                         if (newVal) {
-                            fieldsetDetails.show();
+                            fieldsetDetails.expand();
                         }
                         else {
-                            fieldsetDetails.hide();
+                            fieldsetDetails.collapse();
                         }
                     }
                 }
             },
             {
                 xtype: 'fieldset',
-                title: 'Détails du responsable',
-                hidden: true,
+                collapsible : true,
+                collapsed : true,
+                title: 'Détails',
                 layout: 'anchor',
                 defaults: {
                     xtype: 'textfield',
