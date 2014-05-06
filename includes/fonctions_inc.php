@@ -751,7 +751,7 @@ function ajouterPenalite($compet, $id_equipe) {
     }
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
-    addActivity("Une pénalité a été infligée à l'équipe " . getTeamName($id_equipe));
+    addActivity("Une penalite a ete infligee a l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
@@ -778,7 +778,7 @@ function enleverPenalite($compet, $id_equipe) {
     }
     calcul_classement($id_equipe, $compet, $division);
     mysql_close();
-    addActivity("Une pénalité a été annulée pour l'équipe " . getTeamName($id_equipe));
+    addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
@@ -795,7 +795,7 @@ function supprimerEquipeCompetition($compet, $id_equipe) {
         return false;
     }
     mysql_close();
-    addActivity("L'équipe " . getTeamName($id_equipe) . " a été supprimée de la compétition " . getTournamentName($compet));
+    addActivity("L'equipe " . getTeamName($id_equipe) . " a ete supprimee de la competition " . getTournamentName($compet));
     return true;
 }
 
@@ -807,7 +807,7 @@ function certifierMatch($code_match) {
         return false;
     }
     mysql_close();
-    addActivity("Le match $code_match a été certifié");
+    addActivity("Le match $code_match a ete certifie");
     return true;
 }
 
@@ -894,7 +894,7 @@ function modifierMatch($code_match) {
     calcul_classement($id_equipe_dom, $compet, $division);
     calcul_classement($id_equipe_ext, $compet, $division);
     mysql_close();
-    addActivity("Le match $code_match a été modifié");
+    addActivity("Le match $code_match a ete modifie");
     return true;
 }
 
@@ -986,7 +986,7 @@ function modifierMonMotDePasse() {
         return false;
     }
     mysql_close();
-    addActivity("Mot de passe modifié");
+    addActivity("Mot de passe modifie");
     return true;
 }
 
@@ -998,7 +998,7 @@ function supprimerMatch($code_match) {
         return false;
     }
     mysql_close();
-    addActivity("Le match $code_match a été supprimé");
+    addActivity("Le match $code_match a ete supprime");
     return true;
 }
 
@@ -1388,7 +1388,7 @@ function updateMyTeamCaptain($idPlayer) {
         return false;
     }
     mysql_close();
-    addActivity("L'équipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
+    addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
     return true;
 }
 
@@ -1410,7 +1410,7 @@ function addPlayerToMyTeam($idPlayer) {
     if ($req === FALSE) {
         return false;
     }
-    addActivity("Ajout de " . getPlayerFullName($idPlayer) . " à l'équipe " . getTeamName($idTeam));
+    addActivity("Ajout de " . getPlayerFullName($idPlayer) . " a l'equipe " . getTeamName($idTeam));
     return true;
 }
 
@@ -1489,7 +1489,7 @@ function addPlayersToClub($idPlayers, $idClub) {
     }
     mysql_close();
     foreach (explode(',', $idPlayers) as $idPlayer) {
-        addActivity(getPlayerFullName($idPlayer) . " a été ajouté au club " . getClubName($idClub));
+        addActivity(getPlayerFullName($idPlayer) . " a ete ajoute au club " . getClubName($idClub));
     }
     return true;
 }
@@ -1512,7 +1512,7 @@ function removePlayerFromMyTeam($idPlayer) {
         return false;
     }
     mysql_close();
-    addActivity(getPlayerFullName($idPlayer) . " a été supprimé de l'équipe " . getTeamName($idTeam));
+    addActivity(getPlayerFullName($idPlayer) . " a ete supprime de l'equipe " . getTeamName($idTeam));
     return true;
 }
 
@@ -1560,7 +1560,7 @@ function savePhoto($lastName, $firstName) {
     $uploaddir = '../images/joueurs/';
     $uploadfile = $uploaddir . strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
-        addActivity("Une nouvelle photo a été transmise pour le joueur $firstName $lastName");
+        addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
     }
     return false;
