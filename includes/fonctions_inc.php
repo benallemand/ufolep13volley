@@ -86,7 +86,7 @@ function getLastResults() {
                 $data['url'] = 'coupe_kf.php';
                 break;
             case 'cf':
-                $data['url'] = 'coupe_kf.php';
+                $data['url'] = 'coupe_cf.php';
                 break;
             case 'c':
                 $data['url'] = 'coupe.php?d=' . $data['division'];
