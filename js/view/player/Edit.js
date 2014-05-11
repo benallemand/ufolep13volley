@@ -87,25 +87,17 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 fieldLabel: 'Capitaine de'
             },
             {
+                name: 'teams_list',
+                xtype: 'displayfield',
+                fieldLabel: 'Membre de'
+            },
+            {
                 name: 'est_responsable_club',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Responsable ?',
-                listeners: {
-                    change: function(box, newVal, oldVal) {
-                        var fieldsetDetails = Ext.ComponentQuery.query('fieldset[title=Détails]')[0];
-                        if (newVal) {
-                            fieldsetDetails.expand();
-                        }
-                        else {
-                            fieldsetDetails.collapse();
-                        }
-                    }
-                }
+                fieldLabel: 'Responsable ?'
             },
             {
                 xtype: 'fieldset',
-                collapsible : true,
-                collapsed : true,
                 title: 'Détails',
                 layout: 'anchor',
                 defaults: {

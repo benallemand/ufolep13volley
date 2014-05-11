@@ -35,6 +35,21 @@ function getTournaments() {
     return json_encode($results);
 }
 
+function getTeams() {
+    conn_db();
+    $sql = "SELECT e.id_equipe, e.code_competition, e.nom_equipe, e.id_club, CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name "
+            . "FROM equipes e "
+            . "LEFT JOIN clubs c ON c.id=e.id_club "
+            . "LEFT JOIN competitions comp ON comp.code_competition=e.code_competition "
+            . "ORDER BY nom_equipe ASC";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
@@ -1341,6 +1356,7 @@ function getPlayers() {
     }
     foreach ($results as $index => $result) {
         $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
+        $results[$index]['teams_list'] = getTeamsList($results[$index]['id']);
     }
     return json_encode($results);
 }
@@ -1350,6 +1366,18 @@ function getTeamsListForCaptain($playerId) {
     conn_db();
     $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
     WHERE je.id_joueur = $playerId AND est_capitaine+0=1";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $teams[] = $data['team'];
+    }
+    return implode(',', $teams);
+}
+
+function getTeamsList($playerId) {
+    $teams = array();
+    conn_db();
+    $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
+    WHERE je.id_joueur = $playerId";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $teams[] = $data['team'];
@@ -1409,6 +1437,21 @@ function addPlayerToMyTeam($idPlayer) {
     $idTeam = $_SESSION['id_equipe'];
     if (isPlayerInTeam($idPlayer, $idTeam)) {
         return false;
+    }
+    $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    mysql_close();
+    if ($req === FALSE) {
+        return false;
+    }
+    addActivity("Ajout de " . getPlayerFullName($idPlayer) . " a l'equipe " . getTeamName($idTeam));
+    return true;
+}
+
+function addPlayerToTeam($idPlayer, $idTeam) {
+    conn_db();
+    if (isPlayerInTeam($idPlayer, $idTeam)) {
+        return true;
     }
     $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
     $req = mysql_query($sql);
@@ -1496,6 +1539,40 @@ function addPlayersToClub($idPlayers, $idClub) {
     mysql_close();
     foreach (explode(',', $idPlayers) as $idPlayer) {
         addActivity(getPlayerFullName($idPlayer) . " a ete ajoute au club " . getClubName($idClub));
+    }
+    return true;
+}
+
+function getIdClubFromIdTeam($idTeam) {
+    conn_db();
+    $sql = "SELECT 
+        e.id_club
+        FROM equipes e 
+        WHERE e.id_equipe = $idTeam";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['id_club'];
+}
+
+function addPlayersToTeam($idPlayers, $idTeam) {
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] !== "admin") {
+        return false;
+    }
+    $idClub = getIdClubFromIdTeam($idTeam);
+    if (!addPlayersToClub($idPlayers, $idClub)) {
+        return false;
+    }
+    foreach (explode(',', $idPlayers) as $idPlayer) {
+        if (!addPlayerToTeam($idPlayer, $idTeam)) {
+            return false;
+        }
     }
     return true;
 }
