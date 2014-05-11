@@ -33,7 +33,7 @@ $indicatorActivity = new Indicator(
         LEFT JOIN details_equipes de ON de.id_equipe=a.user_id
         LEFT JOIN equipes e ON e.id_equipe=a.user_id
         LEFT JOIN competitions c ON c.code_competition=e.code_competition
-        ORDER BY a.activity_date DESC");
+        ORDER BY a.id DESC");
 $indicatorComptes = new Indicator(
         'Comptes', "SELECT e.nom_equipe, de.email, ca.login, '****' AS password FROM equipes e
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
