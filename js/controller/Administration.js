@@ -80,7 +80,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
                 {
                     filterFn: function(item) {
-                        var queribleFields = ['nom', 'prenom', 'num_licence', 'club'];
+                        var queribleFields = ['nom', 'prenom', 'num_licence', 'club', 'teams_list'];
                         var found = false;
                         Ext.each(searchTerms, function(searchTerm) {
                             var regExp = new RegExp(searchTerm, "i");
