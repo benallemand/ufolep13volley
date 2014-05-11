@@ -2,26 +2,26 @@
     <g id="viewport">
         <g id="header">
             <g id="teamDetails">
-                <text fill="black" font-size="10" font-family="Verdana" y="10" x="0">Club:</text>
+                <text fill="black" font-size="10" font-weight="bold" font-family="Verdana" y="10" x="0">Club:</text>
                 <text id="club" fill="black" font-size="10" font-family="Verdana" y="10" x="100"></text>
                 <text fill="black" font-size="10" font-family="Verdana" y="25" x="0">Championnat:</text>
                 <text id="championship" fill="black" font-size="10" font-family="Verdana" y="25" x="100"></text>
                 <text fill="black" font-size="10" font-family="Verdana" y="40" x="0">Division:</text>
-                <text id="league" fill="black" font-size="10" font-family="Verdana" y="40" x="100"></text>
-                <text fill="black" font-size="10" font-family="Verdana" y="55" x="0">Capitaine:</text>
-                <text id="captain" fill="black" font-size="10" font-family="Verdana" y="55" x="100"></text>
+                <text id="league" fill="black" font-size="10" font-weight="bold" font-family="Verdana" y="40" x="100"></text>
+                <text fill="black" font-size="10" font-weight="bold" font-family="Verdana" y="55" x="0">Capitaine:</text>
+                <text id="captain" fill="black" font-size="10" font-weight="bold" font-family="Verdana" y="55" x="100"></text>
                 <text fill="black" font-size="10" font-family="Verdana" y="70" x="0">Portable:</text>
                 <text id="phone" fill="black" font-size="10" font-family="Verdana" y="70" x="100"></text>
                 <text fill="black" font-size="10" font-family="Verdana" y="85" x="0">Courriel:</text>
                 <text id="email" fill="black" font-size="10" font-family="Verdana" y="85" x="100"></text>
-                <text fill="black" font-size="10" font-family="Verdana" y="100" x="0">Creneau:</text>
+                <text fill="black" font-size="10" font-weight="bold" font-family="Verdana" y="100" x="0">Creneau:</text>
                 <text id="scheduler" fill="black" font-size="10" font-family="Verdana" y="100" x="100"></text>
                 <text fill="black" font-size="10" font-family="Verdana" y="115" x="0">Gymnase:</text>
                 <text id="court" fill="black" font-size="10" font-family="Verdana" y="115" x="100"></text>
             </g>
             <g id="teamTitleVisa">
                 <image x="0" y="0" width="200" height="140" id="svg_4" xlink:href="images/Ufolep13Volley2.jpg"/>
-                <text id="team" fill="black" font-size="30" font-family="Verdana" y="180" x="100" text-anchor="middle">TEAM NAME</text>
+                <text id="team" fill="black" font-size="30" font-weight="bold" font-family="Verdana" y="180" x="100" text-anchor="middle"></text>
                 <text id="visaDate" fill="black" font-size="10" font-family="Verdana" y="200" x="100" text-anchor="middle">Visa CTSD le:</text>
             </g>
             <g id="matchDetails">
