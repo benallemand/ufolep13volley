@@ -98,7 +98,11 @@ Ext.onReady(function() {
                 {
                     header: 'Equipe',
                     dataIndex: 'equipe',
-                    flex: 2
+                    flex: 2,
+                    renderer: function(val, meta, record) {
+                        var url = 'annuaire.php?id=' + record.get('id_equipe') + '&c=' + record.get('code_competition');
+                        return '<a href="' + url + '" target="blank">' + val + '</a>';
+                    }
                 },
                 {
                     header: 'Points',
