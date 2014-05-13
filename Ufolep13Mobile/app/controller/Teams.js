@@ -90,6 +90,10 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
                             name: 'telephone_1'
                         },
                         {
+                            label: 'Telephone (2)',
+                            name: 'telephone_2'
+                        },
+                        {
                             label: 'Mail',
                             name: 'email'
                         },

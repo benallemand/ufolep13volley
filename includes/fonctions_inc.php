@@ -5,7 +5,7 @@ session_start();
 
 function getQuickDetails($idEquipe) {
     conn_db();
-    $sql = "SELECT id_equipe, responsable, telephone_1, email, gymnase, localisation, jour_reception, heure_reception "
+    $sql = "SELECT id_equipe, responsable, telephone_1, telephone_2, email, gymnase, localisation, jour_reception, heure_reception "
             . "FROM details_equipes "
             . "WHERE id_equipe=$idEquipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
