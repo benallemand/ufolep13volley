@@ -27,7 +27,7 @@ Ext.onReady(function() {
         autoLoad: true,
         listeners: {
             load: function(storeCompet, records) {
-                var competitions = storeCompet.collect('libelle_competition');
+                var competitions = Ext.Array.sort(storeCompet.collect('libelle_competition'));
                 Ext.each(competitions, function(competition) {
                     var panelCompetition = Ext.create('Ext.panel.Panel', {
                         margins: 10,
