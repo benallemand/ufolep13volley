@@ -249,7 +249,28 @@ Ext.onReady(function() {
                     {
                         header: 'Compétition',
                         dataIndex: 'competition',
-                        width: 180
+                        width: 180,
+                        renderer: function(val, meta, record) {
+                            switch (record.get('code_competition')) {
+                                case 'm':
+                                    meta.tdAttr = 'style="background-color:lightblue;color:black;"';
+                                    break;
+                                case 'f':
+                                    meta.tdAttr = 'style="background-color:pink;color:black;"';
+                                    break;
+                                case 'c':
+                                case 'cf':
+                                    meta.tdAttr = 'style="background-color:yellow;color:black;"';
+                                    break;
+                                case 'kh':
+                                case 'kf':
+                                    meta.tdAttr = 'style="background-color:orange;color:black;"';
+                                    break;
+                                default :
+                                    break;
+                            }
+                            return val;
+                        }
                     },
                     {
                         header: 'Journée',
