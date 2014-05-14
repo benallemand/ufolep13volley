@@ -628,7 +628,9 @@ Ext.onReady(function() {
                                                 ]
                                             }
                                         }).show();
-                                        Ext.ComponentQuery.query('window[title=Modifier un match] > form')[0].getForm().loadRecord(rec);
+                                        var form = Ext.ComponentQuery.query('window[title=Modifier un match] > form')[0];
+                                        form.getForm().loadRecord(rec);
+                                        form.down('textfield[name=score_equipe_dom]').focus(true, 10);
                                     };
                                     afficheFormulaire();
                                 }
