@@ -6,6 +6,17 @@ Ext.define('Ufolep13Volley.model.Team', {
         'nom_equipe',
         'team_full_name',
         {name: 'id_club', type: 'int'},
-        'team_full_name'
+        'club',
+        'responsable',
+        'telephone_1',
+        'telephone_2',
+        'email',
+        'gymnase',
+        'localisation',
+        'jour_reception',
+        'heure_reception',
+        'site_web',
+        'photo',
+        'fdm'
     ]
 });
