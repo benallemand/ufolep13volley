@@ -11,6 +11,28 @@ Ext.application({
             renderTo: Ext.get('portail'),
             width: 980,
             height: 1200,
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: [
+                        '->',
+                        {
+                            xtype: 'tbtext',
+                            text: 'Non connecté',
+                            style: {
+                                color: 'red',
+                                fontWeight : 'bold'
+                            }
+                        },
+                        {
+                            text: 'Se déconnecter',
+                            href: "includes/traitement.php?a=deconn",
+                            hrefTarget: '_self'
+                        }
+                    ]
+                }
+            ],
             items: [
                 {
                     region: 'north',
