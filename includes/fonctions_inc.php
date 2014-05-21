@@ -488,52 +488,6 @@ function envoi_mail($id1, $id2, $compet, $date) {
 
 //************************************************************************************************
 //************************************************************************************************
-function affich_portail_equipe($id)
-//************************************************************************************************
-/*
- * * Fonction    : affich_portail_equipe
- * * Input       : STRING $id, id de l'équipe
- * * Output      : aucun 
- * * Description : Affiche le portail de l'équipe qui vient de se connecter.
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 27/04/2010 
- */ {//1
-//Connexion à la base
-    conn_db();
-// Affectation à une variable de l'ID de l'équipe
-    $id_equipe = $_SESSION['id_equipe'];
-    if ($_SESSION['id_equipe'] == "admin") {
-        die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
-    }
-// Récupération du nom de l'équipe
-    $sql = 'SELECT * from equipes WHERE id_equipe = \'' . $id_equipe . '\' LIMIT 1';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    if (mysql_num_rows($req) > 0) {    // si la requête comporte un résultat
-        $data = mysql_fetch_assoc($req);
-        $nom_equipe = $data['nom_equipe'];  // et on récupère la valeur nom_equipe que l'on affecte à une variable
-        $compet = $data['code_competition'];    // on récupère aussi la valeur du code de competition
-    }
-//====================================================================
-// on affiche le lien "se déconnecter" 
-//====================================================================
-    affich_connecte();
-//====================================================================
-// Titre de l'accueil
-//====================================================================
-    echo'<h1>' . $nom_equipe . ' - Vos matches </h1>';
-    echo'<div id="liste_matches_equipe"></div>';
-    echo'<script type="text/javascript" src="js/grilleListeMatchesEquipe.js"></script>';
-    echo'<div id="details_equipe">';
-    echo'<a name="me"></a>';
-    affich_details_equipe($id_equipe, $compet);
-    echo'<p><div id="bouton_modif_equipe"></div></p>';
-    echo'<script type="text/javascript" src="js/boutonModifEquipe.js"></script>';
-    echo'</div>';
-    echo'</div>';
-}
-
-//************************************************************************************************
-//************************************************************************************************
 function calcul_classement($id_equipe, $compet, $division)
 //************************************************************************************************
 /*
@@ -1185,6 +1139,7 @@ function getMonEquipe() {
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = "SELECT 
         e.id_club,
+        c.nom AS club,
         d.id_equipe,
         d.responsable,
         d.telephone_1,
@@ -1199,6 +1154,7 @@ function getMonEquipe() {
         d.fdm
         FROM details_equipes d
         LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
+        LEFT JOIN clubs c ON c.id=e.id_club
         WHERE d.id_equipe = $sessionIdEquipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
