@@ -4,5 +4,6 @@ Ext.define('Ufolep13Volley.store.Players', {
     proxy: {
         type: 'ajax',
         url: 'ajax/getPlayers.php'
-    }
+    },
+    autoLoad: true
 });
