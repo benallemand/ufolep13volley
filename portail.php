@@ -46,7 +46,7 @@
                     }
 // on traite si les sessions $_SESSION sont créées
                     if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
-                        affich_portail_equipe($_SESSION['login']);
+                        echo'<script type="text/javascript" src="js/portal.js"></script>';
                     } else { // sinon on affiche le formulaire
                         affich_formulaire($err);
                     }
