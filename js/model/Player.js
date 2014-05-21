@@ -63,6 +63,13 @@ Ext.define('Ufolep13Volley.model.Player', {
             }
         },
         'team_leader_list',
-        'teams_list'
+        'teams_list',
+        {
+            name: 'est_capitaine',
+            type: 'bool',
+            convert: function(val) {
+                return val === '1';
+            }
+        }
     ]
 });
