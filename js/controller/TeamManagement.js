@@ -31,6 +31,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         {
             ref: 'setMyTeamCaptainWindow',
             selector: "window[title=Modifier le responsable d'équipe]"
+        },
+        {
+            ref: 'connectedTeamNameToolbarText',
+            selector: "tbtext"
         }
     ],
     init: function() {
@@ -66,10 +70,12 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 });
     },
     loadTeamDetails: function() {
+        var me = this;
         var form = this.getTeamDetailsForm();
         this.getMyTeamStore().load({
             callback: function(records, operation, success) {
                 form.getForm().loadRecord(records[0]);
+                me.getConnectedTeamNameToolbarText().setText(records[0].get('team_full_name'));
             }
         });
     },
