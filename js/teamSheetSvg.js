@@ -110,7 +110,7 @@ Ext.onReady(function() {
             Ext.each(records, function(record, index) {
                 var group = groupPlayers.g();
                 group.image(record.get('path_photo'), 0, 0, 100, 100).attr({
-                    preserveAspectRatio: true
+                    preserveAspectRatio: "xMinYMin meet"
                 });
                 group.text(110, 10, record.get('prenom'));
                 group.text(110, 30, record.get('nom'));
