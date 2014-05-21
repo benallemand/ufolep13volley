@@ -1138,6 +1138,9 @@ function getMonEquipe() {
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = "SELECT 
+        e.code_competition, 
+        e.nom_equipe, 
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
         e.id_club,
         c.nom AS club,
         d.id_equipe,
@@ -1155,6 +1158,7 @@ function getMonEquipe() {
         FROM details_equipes d
         LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
         LEFT JOIN clubs c ON c.id=e.id_club
+        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
         WHERE d.id_equipe = $sessionIdEquipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
