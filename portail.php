@@ -46,6 +46,9 @@
                     }
 // on traite si les sessions $_SESSION sont créées
                     if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
+                        if (estAdmin()) {
+                            die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
+                        }
                         echo'<script type="text/javascript" src="js/portal.js"></script>';
                     } else { // sinon on affiche le formulaire
                         affich_formulaire($err);
