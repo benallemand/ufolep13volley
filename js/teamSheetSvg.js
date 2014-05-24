@@ -112,8 +112,8 @@ Ext.onReady(function() {
                 group.image(record.get('path_photo'), 0, 0, 100, 100).attr({
                     preserveAspectRatio: "xMinYMin meet"
                 });
-                group.text(110, 10, record.get('prenom'));
-                group.text(110, 30, record.get('nom'));
+                group.text(110, 10, record.get('nom'));
+                group.text(110, 30, record.get('prenom'));
                 group.text(110, 60, record.get('num_licence') + ' /' + record.get('sexe'));
                 group.text(110, 80, 'Present:');
                 group.rect(250, 65, 20, 20).attr({
