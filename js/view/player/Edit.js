@@ -55,7 +55,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 name: 'departement_affiliation',
-                fieldLabel: 'Département',
+                fieldLabel: "Département d'affiliation",
                 xtype: 'numberfield',
                 allowBlank: false,
                 msgTarget: 'under'
