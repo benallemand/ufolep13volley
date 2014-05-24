@@ -21,40 +21,50 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             {
                 xtype: 'hidden',
                 name: 'id',
-                fieldLabel: 'Id'
+                fieldLabel: 'Id',
+                msgTarget: 'under'
             },
             {
                 name: 'prenom',
                 fieldLabel: 'Prénom',
-                allowBlank: false
+                allowBlank: false,
+                msgTarget: 'under'
             },
             {
                 name: 'nom',
                 fieldLabel: 'Nom',
-                allowBlank: false
+                allowBlank: false,
+                msgTarget: 'under'
             },
             {
                 name: 'num_licence',
                 fieldLabel: 'Numéro de licence',
                 minLength: 8,
                 maxLength: 8,
-                allowBlank: false
+                allowBlank: false,
+                msgTarget: 'under'
             },
             {
                 name: 'sexe',
                 fieldLabel: 'Sexe',
-                allowBlank: false
+                allowBlank: false,
+                maskRe : /[MF]{1}/,
+                minLength: 1,
+                maxLength: 1,
+                msgTarget: 'under'                
             },
             {
                 name: 'departement_affiliation',
                 fieldLabel: 'Département',
                 xtype: 'numberfield',
-                allowBlank: false
+                allowBlank: false,
+                msgTarget: 'under'
             },
             {
                 name: 'est_actif',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Actif ?'
+                fieldLabel: 'Actif ?',
+                msgTarget: 'under'
             },
             {
                 name: 'id_club',
@@ -62,39 +72,46 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 xtype: 'combo',
                 store: 'Clubs',
                 displayField: 'nom',
-                valueField: 'id'
+                valueField: 'id',
+                msgTarget: 'under'
             },
             {
                 name: 'date_homologation',
                 xtype: 'datefield',
                 format: 'd/m/Y',
-                fieldLabel: "Date d'homologation"
+                fieldLabel: "Date d'homologation",
+                msgTarget: 'under'
             },
             {
                 name: 'show_photo',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Diffusion photo autorisée ?'
+                fieldLabel: 'Diffusion photo autorisée ?',
+                msgTarget: 'under'
             },
             {
                 name: 'photo',
                 xtype: 'filefield',
                 fieldLabel: 'Photo',
-                buttonText: 'Sélection Photo...'
+                buttonText: 'Sélection Photo...',
+                msgTarget: 'under'
             },
             {
                 name: 'team_leader_list',
                 xtype: 'displayfield',
-                fieldLabel: 'Capitaine de'
+                fieldLabel: 'Capitaine de',
+                msgTarget: 'under'
             },
             {
                 name: 'teams_list',
                 xtype: 'displayfield',
-                fieldLabel: 'Membre de'
+                fieldLabel: 'Membre de',
+                msgTarget: 'under'
             },
             {
                 name: 'est_responsable_club',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Responsable ?'
+                fieldLabel: 'Responsable ?',
+                msgTarget: 'under'
             },
             {
                 xtype: 'fieldset',
@@ -107,19 +124,23 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 items: [
                     {
                         name: 'telephone',
-                        fieldLabel: 'Numéro de téléphone'
+                        fieldLabel: 'Numéro de téléphone',
+                        msgTarget: 'under'
                     },
                     {
                         name: 'email',
-                        fieldLabel: 'Email'
+                        fieldLabel: 'Email',
+                        msgTarget: 'under'
                     },
                     {
                         name: 'telephone2',
-                        fieldLabel: 'Numéro de téléphone secondaire'
+                        fieldLabel: 'Numéro de téléphone secondaire',
+                        msgTarget: 'under'
                     },
                     {
                         name: 'email2',
-                        fieldLabel: 'Email secondaire'
+                        fieldLabel: 'Email secondaire',
+                        msgTarget: 'under'
                     }
                 ]
             }
