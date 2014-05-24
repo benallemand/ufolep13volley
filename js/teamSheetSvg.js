@@ -131,6 +131,9 @@ Ext.onReady(function() {
                     group.text(110, 100, '');
                 }
                 var maxPlayersByLine = 3;
+                if(records.length > 18) {
+                    maxPlayersByLine = 4;
+                }
                 var playerNumber = index;
                 group.transform('t' + (playerNumber % maxPlayersByLine) * 300 + ',' + Math.floor(playerNumber / maxPlayersByLine) * 110);
                 group.rect(0, -5, 300, 110).attr({
