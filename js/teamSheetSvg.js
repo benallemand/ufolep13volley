@@ -162,7 +162,7 @@ Ext.onReady(function() {
             var widthMatchDetails = s.select("g[id='matchDetails']").node.getBoundingClientRect().width;
             var diffLength = widthPlayers - (widthTeamDetails + widthTeamTitleVisa + widthMatchDetails);
             s.select("g[id='teamTitleVisa']").transform('t' + (widthTeamDetails + diffLength / 2) + ',0');
-            s.select("g[id='teamTitleVisa']").rect(0, 150, s.select("g[id='teamTitleVisa']").node.getBoundingClientRect().width, s.select("text[id='team']").node.getBoundingClientRect().height, 10, 10).attr({
+            s.select("g[id='teamTitleVisa']").rect(0, 150, s.select("text[id='team']").node.getBoundingClientRect().width, s.select("text[id='team']").node.getBoundingClientRect().height, 10, 10).attr({
                 'fill': 'white',
                 'stroke': 'black',
                 'stroke-width': 1,

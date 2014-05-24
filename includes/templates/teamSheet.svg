@@ -21,7 +21,7 @@
             </g>
             <g id="teamTitleVisa">
                 <image x="0" y="0" width="200" height="140" id="svg_4" xlink:href="images/Ufolep13Volley2.jpg"/>
-                <text id="team" fill="black" font-size="30" font-weight="bold" font-family="Verdana" y="180" x="100" text-anchor="middle"></text>
+                <text id="team" fill="black" font-size="30" font-weight="bold" font-family="Verdana" y="180" x="0"></text>
                 <text id="visaDate" fill="black" font-size="10" font-family="Verdana" y="200" x="100" text-anchor="middle">Visa CTSD le:</text>
             </g>
             <g id="matchDetails">
