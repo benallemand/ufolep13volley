@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Mobile.controller.Teams', {
+Ext.define('Ufolep13.controller.Teams', {
     extend: 'Ext.app.Controller',
     requires: [
         'Ext.form.Panel',
@@ -10,8 +10,8 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
             teamsList: 'listteams',
             mainPanel: 'navigationview',
             formPanel: 'formpanel',
-            callButton: 'button[text=Appeler]',
-            mapButton: 'button[text=Itineraire]'
+            callButton: 'button[action=call]',
+            mapButton: 'button[action=map]'
         },
         control: {
             teamsList: {
@@ -65,14 +65,16 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
                     items: [
                         {
                             xtype: 'toolbar',
-                            docked: 'bottom',
+                            docked: 'right',
                             items: [
                                 {
-                                    text: 'Appeler',
+                                    text: 'Appel',
+                                    action: 'call',
                                     icon: '../images/phone.png'
                                 },
                                 {
-                                    text: 'Itineraire',
+                                    text: 'Carte',
+                                    action: 'map',
                                     icon: '../images/map.png'
                                 }
                             ]

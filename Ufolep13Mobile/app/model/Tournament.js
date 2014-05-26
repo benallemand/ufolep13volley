@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Mobile.model.Tournament', {
+Ext.define('Ufolep13.model.Tournament', {
     extend: 'Ext.data.Model',
     config: {
         fields: [

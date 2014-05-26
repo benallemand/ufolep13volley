@@ -1,7 +1,7 @@
-Ext.define('Ufolep13Mobile.store.Teams', {
+Ext.define('Ufolep13.store.Teams', {
     extend: 'Ext.data.Store',
     config: {
-        model: 'Ufolep13Mobile.model.Team',
+        model: 'Ufolep13.model.Team',
         proxy: {
             type: 'ajax',
             url: '../ajax/getAnnuaires.php'

@@ -1,8 +1,8 @@
-Ext.define('Ufolep13Mobile.controller.Tournaments', {
+Ext.define('Ufolep13.controller.Tournaments', {
     extend: 'Ext.app.Controller',
     requires: [
-        'Ufolep13Mobile.view.SearchTeam',
-        'Ufolep13Mobile.view.Teams'
+        'Ufolep13.view.SearchTeam',
+        'Ufolep13.view.Teams'
     ],
     config: {
         refs: {

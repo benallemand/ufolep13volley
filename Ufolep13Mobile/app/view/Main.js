@@ -1,20 +1,28 @@
-Ext.define('Ufolep13Mobile.view.Main', {
+Ext.define('Ufolep13.view.Main', {
     extend: 'Ext.NavigationView',
     requires: [
-        'Ext.TitleBar',
-        'Ufolep13Mobile.view.Tournaments'
+        'Ext.TitleBar'
     ],
     config: {
         items: [
             {
-                title: 'Competitions UFOLEP',
-                layout: 'vbox',
+                title: 'Competitions UFOLEP'
+            },
+            {
+                xtype: 'toolbar',
+                docked: 'bottom',
                 items: [
                     {
-                        xtype: 'listtournaments'
+                        text: 'Annuaire',
+                        icon: '../images/phonebook.png'
+                    },
+                    {
+                        text: 'Matches',
+                        icon: '../images/cup.png'
                     }
                 ]
             }
+
         ]
     }
 });

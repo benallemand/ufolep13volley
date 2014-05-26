@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Mobile.view.Teams', {
+Ext.define('Ufolep13.view.Teams', {
     extend: 'Ext.dataview.List',
     requires: [
         'Ext.dataview.List'

@@ -1,19 +1,19 @@
 Ext.application({
-    name: 'Ufolep13Mobile',
+    name: 'Ufolep13',
     requires: [
         'Ext.MessageBox'
     ],
     models: [
-        'Team', 'Tournament'
+        'Team', 'Tournament', 'Match'
     ],
     controllers: [
-        'Tournaments', 'Teams'
+        'Main', 'Tournaments', 'Teams'
     ],
     views: [
         'Main'
     ],
     stores: [
-        'Teams', 'Tournaments'
+        'Teams', 'Tournaments', 'Matches'
     ],
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -31,6 +31,6 @@ Ext.application({
         '1496x2048': 'resources/startup/1496x2048.png'
     },
     launch: function() {
-        Ext.Viewport.add(Ext.create('Ufolep13Mobile.view.Main'));
+        Ext.Viewport.add(Ext.create('Ufolep13.view.Main'));
     }
 });
