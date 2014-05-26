@@ -79,7 +79,7 @@ function getLastResults() {
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
     AND (m.date_reception <= CURDATE())
     )
-    ORDER BY date_reception DESC";
+    ORDER BY date_reception DESC LIMIT 100";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
