@@ -26,7 +26,7 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
         }
     },
     doPhoneCall: function() {
-        window.open('tel:' + this.getFormPanel().getValues().telephone_1);
+        window.open('tel:' + this.getFormPanel().getValues().telephone_1, '_self');
     },
     doMap: function() {
         var controller = this;
