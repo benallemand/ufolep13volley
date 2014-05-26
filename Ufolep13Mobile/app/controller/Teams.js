@@ -65,7 +65,7 @@ Ext.define('Ufolep13.controller.Teams', {
                     items: [
                         {
                             xtype: 'toolbar',
-                            docked: 'right',
+                            docked: 'top',
                             items: [
                                 {
                                     text: 'Appel',
