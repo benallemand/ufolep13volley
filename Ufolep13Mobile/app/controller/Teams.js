@@ -69,11 +69,11 @@ Ext.define('Ufolep13Mobile.controller.Teams', {
                             items: [
                                 {
                                     text: 'Appeler',
-                                    iconCls: 'chat2'
+                                    icon: '../images/phone.png'
                                 },
                                 {
                                     text: 'Itineraire',
-                                    iconCls: 'maps'
+                                    icon: '../images/map.png'
                                 }
                             ]
                         },
