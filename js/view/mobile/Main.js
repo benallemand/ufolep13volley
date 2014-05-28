@@ -1,4 +1,4 @@
-Ext.define('Ufolep13.view.Main', {
+Ext.define('Ufolep13Volley.view.mobile.Main', {
     extend: 'Ext.NavigationView',
     requires: [
         'Ext.TitleBar'
@@ -14,11 +14,11 @@ Ext.define('Ufolep13.view.Main', {
                 items: [
                     {
                         text: 'Annuaire',
-                        icon: '../images/phonebook.png'
+                        icon: 'images/phonebook.png'
                     },
                     {
                         text: 'Matches',
-                        icon: '../images/cup.png'
+                        icon: 'images/cup.png'
                     }
                 ]
             }

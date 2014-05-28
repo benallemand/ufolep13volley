@@ -1,10 +1,10 @@
-Ext.define('Ufolep13.controller.Teams', {
+Ext.define('Ufolep13Volley.controller.mobile.Teams', {
     extend: 'Ext.app.Controller',
     requires: [
         'Ext.form.Panel',
         'Ext.field.Hidden',
         'Ext.util.Geolocation',
-        'Ufolep13.view.Players'
+        'Ufolep13Volley.view.mobile.Players'
     ],
     config: {
         refs: {
@@ -73,7 +73,7 @@ Ext.define('Ufolep13.controller.Teams', {
             items: [
                 {
                     xtype: 'formpanel',
-                    url: '../ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
+                    url: 'ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
                     defaults: {
                         xtype: 'textfield',
                         readOnly: true
@@ -86,17 +86,17 @@ Ext.define('Ufolep13.controller.Teams', {
                                 {
                                     text: 'Appel',
                                     action: 'call',
-                                    icon: '../images/phone.png'
+                                    icon: 'images/phone.png'
                                 },
                                 {
                                     text: 'Carte',
                                     action: 'map',
-                                    icon: '../images/map.png'
+                                    icon: 'images/map.png'
                                 },
                                 {
                                     text: 'Joueurs',
                                     action: 'viewPlayers',
-                                    icon: '../images/man.png'
+                                    icon: 'images/man.png'
                                 }
                             ]
                         },

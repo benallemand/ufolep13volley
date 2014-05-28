@@ -1,7 +1,7 @@
 Ext.onReady(function() {
     var tools = {
         showMobileVersion: function() {
-            location.href = 'Ufolep13Mobile';
+            location.href = 'index_mobile.html';
         },
         showNormalVersion: function() {
             Ext.define('News', {

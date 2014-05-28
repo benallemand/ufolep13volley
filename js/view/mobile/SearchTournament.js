@@ -1,4 +1,4 @@
-Ext.define('Ufolep13.view.SearchTournament', {
+Ext.define('Ufolep13Volley.view.mobile.SearchTournament', {
     extend: 'Ext.field.Search',
     requires: [
         'Ext.field.Search'

@@ -1,19 +1,20 @@
 Ext.application({
-    name: 'Ufolep13',
+    appFolder: 'js',
+    name: 'Ufolep13Volley',
     requires: [
         'Ext.MessageBox'
     ],
     models: [
-        'Team', 'Tournament', 'Match', 'Player'
+        'mobile.Team', 'mobile.Tournament', 'mobile.Match', 'mobile.Player'
     ],
     controllers: [
-        'Main', 'Tournaments', 'Teams'
+        'mobile.Main', 'mobile.Tournaments', 'mobile.Teams'
     ],
     views: [
-        'Main'
+        'mobile.Main'
     ],
     stores: [
-        'Teams', 'Tournaments', 'Matches', 'Players'
+        'mobile.Teams', 'mobile.Tournaments', 'mobile.Matches', 'mobile.Players'
     ],
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -31,6 +32,6 @@ Ext.application({
         '1496x2048': 'resources/startup/1496x2048.png'
     },
     launch: function() {
-        Ext.Viewport.add(Ext.create('Ufolep13.view.Main'));
+        Ext.Viewport.add(Ext.create('Ufolep13Volley.view.mobile.Main'));
     }
 });

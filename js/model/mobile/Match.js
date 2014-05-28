@@ -1,4 +1,4 @@
-Ext.define('Ufolep13.model.Match', {
+Ext.define('Ufolep13Volley.model.mobile.Match', {
     extend: 'Ext.data.Model',
     config: {
         fields: [
