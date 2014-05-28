@@ -3,15 +3,18 @@ Ext.define('Ufolep13.controller.Teams', {
     requires: [
         'Ext.form.Panel',
         'Ext.field.Hidden',
-        'Ext.util.Geolocation'
+        'Ext.util.Geolocation',
+        'Ufolep13.view.Players'
     ],
     config: {
         refs: {
             teamsList: 'listteams',
+            playersList: 'listplayers',
             mainPanel: 'navigationview',
             formPanel: 'formpanel',
             callButton: 'button[action=call]',
-            mapButton: 'button[action=map]'
+            mapButton: 'button[action=map]',
+            viewPlayersButton: 'button[action=viewPlayers]'
         },
         control: {
             teamsList: {
@@ -22,11 +25,24 @@ Ext.define('Ufolep13.controller.Teams', {
             },
             mapButton: {
                 tap: 'doMap'
+            },
+            viewPlayersButton: {
+                tap: 'doViewPlayers'
             }
         }
     },
     doPhoneCall: function() {
         window.open('tel:' + this.getFormPanel().getValues().telephone_1, '_self');
+    },
+    doViewPlayers: function() {
+        this.getMainPanel().push({
+            xtype: 'listplayers'
+        });
+        this.getPlayersList().getStore().load({
+            params: {
+                idTeam: this.getFormPanel().getValues().id_equipe
+            }
+        });
     },
     doMap: function() {
         var controller = this;
@@ -76,6 +92,11 @@ Ext.define('Ufolep13.controller.Teams', {
                                     text: 'Carte',
                                     action: 'map',
                                     icon: '../images/map.png'
+                                },
+                                {
+                                    text: 'Joueurs',
+                                    action: 'viewPlayers',
+                                    icon: '../images/man.png'
                                 }
                             ]
                         },

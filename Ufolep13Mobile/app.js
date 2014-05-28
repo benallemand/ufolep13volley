@@ -4,7 +4,7 @@ Ext.application({
         'Ext.MessageBox'
     ],
     models: [
-        'Team', 'Tournament', 'Match'
+        'Team', 'Tournament', 'Match', 'Player'
     ],
     controllers: [
         'Main', 'Tournaments', 'Teams'
@@ -13,7 +13,7 @@ Ext.application({
         'Main'
     ],
     stores: [
-        'Teams', 'Tournaments', 'Matches'
+        'Teams', 'Tournaments', 'Matches', 'Players'
     ],
     icon: {
         '57': 'resources/icons/Icon.png',

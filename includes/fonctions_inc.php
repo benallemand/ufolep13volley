@@ -229,16 +229,75 @@ function recup_compet_maitre($compet)
 }
 
 function getPlayersFromTeam($id_equipe) {
-    $players = array();
     conn_db();
-    $sql = "select CONCAT(j.prenom, ' ', j.nom) AS player from joueur_equipe je
-    left join joueurs j on j.id = je.id_joueur
-    where id_equipe = $id_equipe";
+    $sql = "SELECT
+        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
+        j.prenom, 
+        j.nom, 
+        j.telephone, 
+        j.email, 
+        j.num_licence, 
+        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
+        j.sexe, 
+        j.departement_affiliation, 
+        j.est_actif+0 AS est_actif, 
+        j.id_club, 
+        j.telephone2, 
+        j.email2, 
+        CASE 
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
+                END
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
+                END         
+        END AS est_licence_valide, 
+        j.est_responsable_club+0 AS est_responsable_club, 
+        je.est_capitaine+0 AS est_capitaine, 
+        je.is_vice_captain+0 AS is_vice_captain, 
+        j.id, 
+        j.date_homologation,
+        j.show_photo+0 AS show_photo 
+        FROM joueur_equipe je
+        LEFT JOIN joueurs j ON j.id=je.id_joueur
+    WHERE id_equipe = $id_equipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
-        $players[] = $data['player'];
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
     }
-    return $players;
+    foreach ($results as $index => $result) {
+        if ($result['show_photo'] === '1') {
+            if (file_exists("../" . $result['path_photo']) === FALSE) {
+                switch ($result['sexe']) {
+                    case 'M':
+                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        break;
+                    case 'F':
+                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
+            switch ($result['sexe']) {
+                case 'M':
+                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
+                    break;
+                case 'F':
+                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return json_encode($results);
 }
 
 function isLatLong($localisation) {
