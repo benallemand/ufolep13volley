@@ -5,7 +5,7 @@ Ext.define('Ufolep13.view.Matches', {
     ],
     xtype: 'listmatches',
     config: {
-        itemTpl: '{equipe_domicile} {score_equipe_dom}-{score_equipe_ext} {equipe_exterieur}',
+        itemTpl: '{equipe_domicile} vs {equipe_exterieur} | {score_equipe_dom}-{score_equipe_ext}',
         grouped: true,
         store: 'Matches',
         flex: 1
