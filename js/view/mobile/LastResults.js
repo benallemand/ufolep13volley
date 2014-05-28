@@ -1,12 +1,12 @@
-Ext.define('Ufolep13Volley.view.mobile.Matches', {
+Ext.define('Ufolep13Volley.view.mobile.LastResults', {
     extend: 'Ext.dataview.List',
     requires: [
         'Ext.dataview.List'
     ],
-    xtype: 'listmatches',
+    xtype: 'listlastresults',
     config: {
         itemTpl: '{competition} - {division_journee} | {equipe_domicile} vs {equipe_exterieur} | {score_equipe_dom}-{score_equipe_ext}',
-        store: 'Matches',
+        store: 'LastResults',
         flex: 1
     }
 });

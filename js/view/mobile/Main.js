@@ -14,11 +14,13 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                 items: [
                     {
                         text: 'Annuaire',
-                        icon: 'images/phonebook.png'
+                        icon: 'images/phonebook.png',
+                        action : 'getPhonebook'
                     },
                     {
-                        text: 'Matches',
-                        icon: 'images/cup.png'
+                        text: 'Résultats',
+                        icon: 'images/cup.png',
+                        action : 'getLastResults'
                     }
                 ]
             }

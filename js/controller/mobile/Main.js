@@ -2,20 +2,20 @@ Ext.define('Ufolep13Volley.controller.mobile.Main', {
     extend: 'Ext.app.Controller',
     requires: [
         'Ufolep13Volley.view.mobile.Tournaments',
-        'Ufolep13Volley.view.mobile.Matches'
+        'Ufolep13Volley.view.mobile.LastResults'
     ],
     config: {
         refs: {
             mainPanel: 'navigationview',
-            buttonPhonebook: 'button[text=Annuaire]',
-            buttonMatches: 'button[text=Matches]'
+            buttonPhonebook: 'button[action=getPhonebook]',
+            buttonResultats: 'button[action=getLastResults]'
         },
         control: {
             buttonPhonebook: {
                 tap: 'showPhonebook'
             },
-            buttonMatches: {
-                tap: 'showMatches'
+            buttonResultats: {
+                tap: 'showLastResults'
             }
         }
     },
@@ -25,10 +25,10 @@ Ext.define('Ufolep13Volley.controller.mobile.Main', {
             xtype: 'listtournaments'
         });
     },
-    showMatches: function() {
+    showLastResults: function() {
         this.getMainPanel().reset();
         this.getMainPanel().push({
-            xtype: 'listmatches'
+            xtype: 'listlastresults'
         });
     }
 }
