@@ -10,7 +10,7 @@ body {
 
 #general {
     width: 1000px;
-    color: #3d3d3f;
+    /* color: #3d3d3f; */
     text-align: center;
     border-top-width: 1px;
     border-right-width: 1px;
@@ -239,14 +239,14 @@ body {
 
 /* ----- CALQUE CLASSEMENT---------------------------------------------------------------------------- */
 #classement {
-    width: 1000px;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-bottom: 20px;
+    /* width: 1000px; */
+    /* font-family: Arial, Helvetica, sans-serif; */
+    /* margin-bottom: 20px; */
 }
 
 #classement table{
-    border-collapse: collapse;
-    width: 100%;
+    /* border-collapse: collapse; */
+    /* width: 100%; */
 }
 #classement th {
     border: thin solid #FFFFFF;
@@ -805,4 +805,11 @@ body {
 #portail .table_modif_score .submit {
     background-color: #F0F0F0;
     font-size: 12px;
+}
+
+.grid-red .x-grid-cell {
+    background: pink !important;
+}
+.grid-green .x-grid-cell {
+    background: greenyellow !important;
 }

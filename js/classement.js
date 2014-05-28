@@ -86,6 +86,19 @@ Ext.onReady(function() {
         title: 'Classement',
         store: storeClassement,
         width: 1000,
+        viewConfig: {
+            getRowClass: function(record, rowIndex, rowParams, store) {
+                var total = store.getCount();
+                var rang = record.get('rang');
+                if (rang >= total - 1) {
+                    return 'grid-red';
+                }
+                if (rang <= 2) {
+                    return 'grid-green';
+                }
+                return '';
+            }
+        },
         columns: {
             items: [
                 {
