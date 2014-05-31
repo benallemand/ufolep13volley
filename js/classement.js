@@ -65,6 +65,10 @@ Ext.onReady(function() {
             {
                 name: 'penalites',
                 type: 'int'
+            },
+            {
+                name: 'matches_won_with_5_players_count',
+                type: 'int'
             }
         ],
         proxy: {
@@ -130,7 +134,15 @@ Ext.onReady(function() {
                 {
                     header: 'Gagnés',
                     dataIndex: 'gagnes',
-                    align: 'center'
+                    align: 'center',
+                    renderer: function(val, meta, record) {
+                        if (record.get('matches_won_with_5_players_count') > 0) {
+                            var tip = 'Dont ' + record.get('matches_won_with_5_players_count') + ' gagné(s) à 5';
+                            meta['tdAttr'] = 'data-qtip="' + tip + '"';
+                            return val + '*';
+                        }
+                        return val;
+                    }
                 },
                 {
                     header: 'Perdus',

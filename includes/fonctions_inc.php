@@ -723,6 +723,20 @@ function calcul_classement($id_equipe, $compet, $division)
 //addSqlActivity($sqlmaj);
 }
 
+function getMatchesWonWith5PlayersCount($idTeam, $codeCompetition) {
+    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_dom = \'1\'';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $gagnea5_dom = $data[0];
+    }
+    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_ext = \'1\'';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $gagnea5_ext = $data[0];
+    }
+    return $gagnea5_dom + $gagnea5_ext;
+}
+
 function getClassement($compet, $div) {
     conn_db();
     $sql = 'SELECT '
@@ -749,6 +763,7 @@ function getClassement($compet, $div) {
     $rang = 1;
     while ($data = mysql_fetch_assoc($req)) {
         $data['rang'] = $rang;
+        $data['matches_won_with_5_players_count'] = getMatchesWonWith5PlayersCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
         $rang++;
     }
