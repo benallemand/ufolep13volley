@@ -26,26 +26,23 @@ if ($div == "") {
         <script type="text/javascript">
             var competition = 'f';
             var division = '<?php echo $div; ?>';
+            var connectedUser = '<?php echo getConnectedUser(); ?>';
         </script>
-        <script type="text/javascript" src="js/classement.js"></script>
-        <script type="text/javascript" src="js/matches.js"></script>
+        <script type="text/javascript" src="js/championship.js"></script>
     </HEAD>
 
     <BODY>
         <div id="general">
             <div id="banniere"></div>
             <div id="menu"></div>
+            <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Féminin</H1></div>
+            <div id="infos">
+                <?php
+                echo "Date limite des matches : ";
+                affich_infos("f");
+                ?>
+            </div> 
             <div id="contenu">
-                <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Féminin</H1></div>
-                <?php affich_connecte(); ?>
-                <div id="classement"></div>
-                <div id="infos">
-                    <?php
-                    echo "Date limite des matches : ";
-                    affich_infos("f", $div);
-                    ?>
-                </div> 
-                <div id="matches"></div>
             </div>
         </div>
     </BODY>

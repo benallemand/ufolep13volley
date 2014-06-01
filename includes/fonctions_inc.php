@@ -190,7 +190,7 @@ function recup_mail_equipe($id)
 
 //************************************************************************************************
 //************************************************************************************************
-function affich_infos($compet, $div)
+function affich_infos($compet)
 //************************************************************************************************
 /*
  * * Fonction    : affich_infos 
@@ -487,6 +487,18 @@ function affich_formulaire($err)
     echo'    </div>';
     echo'  </form>';
     echo'</div> <!-- login -->';
+}
+
+function getConnectedUser() {
+    $nom_equipe = '';
+    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
+        $nom_equipe = "Administrateur";
+    }
+    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] != "admin") {
+        $jsonTeamDetails = json_decode(getMonEquipe());
+        $nom_equipe = $jsonTeamDetails[0]->team_full_name;
+    }
+    return $nom_equipe;
 }
 
 //************************************************************************************************

@@ -1,8 +1,8 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
-    views: ['match.Grid'],
-    controllers: ['Matches'],
-    stores: ['Matches'],
+    views: ['rank.Grid', 'match.Grid'],
+    controllers: ['Matches', 'Classement'],
+    stores: ['Matches', 'Classement'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
@@ -41,6 +41,11 @@ Ext.application({
                 }
             ],
             items: [
+                {
+                    region: 'north',
+                    xtype: 'gridRanking',
+                    flex: 1
+                },
                 {
                     region: 'center',
                     xtype: 'gridMatches',
