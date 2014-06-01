@@ -1091,67 +1091,8 @@ function setRetard($code_match, $valeur) {
     return true;
 }
 
-function getMatches($compet, $div) {
-    conn_db();
-    $sql = "SELECT 
-        m.id_match,
-        m.code_match,
-        m.code_competition,
-        m.division,
-        CONCAT(j.nommage, ' : ', j.libelle) AS journee,
-        m.id_equipe_dom,
-        e1.nom_equipe AS equipe_dom,
-        m.id_equipe_ext,
-        e2.nom_equipe AS equipe_ext,
-        m.score_equipe_dom+0 AS score_equipe_dom,
-        m.score_equipe_ext+0 AS score_equipe_ext,
-        m.set_1_dom,
-        m.set_1_ext,
-        m.set_2_dom,
-        m.set_2_ext,
-        m.set_3_dom,
-        m.set_3_ext,
-        m.set_4_dom,
-        m.set_4_ext,
-        m.set_5_dom,
-        m.set_5_ext,
-        m.heure_reception,
-        m.date_reception,
-        m.gagnea5_dom+0 AS gagnea5_dom,
-        m.gagnea5_ext+0 AS gagnea5_ext,
-        m.forfait_dom+0 AS forfait_dom,
-        m.forfait_ext+0 AS forfait_ext,
-        m.certif+0 AS certif,
-        m.report+0 AS report,
-        m.retard+0 AS retard
-        FROM matches m 
-        JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
-        JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
-        WHERE m.code_competition = '$compet' AND m.division = '$div' ORDER BY code_match";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
-        $results[] = $data;
-        if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
-            checkNotifyUpdateReport($data);
-        } else {
-            setRetard($data['code_match'], 0);
-        }
-    }
-    return json_encode($results);
-}
-
-function getMesMatches() {
-    conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
-        return false;
-    }
-    if ($_SESSION['id_equipe'] == "admin") {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "SELECT 
+function getSqlSelectMatches($whereClause, $orderClause) {
+    return "SELECT 
         m.id_match,
         m.code_match,
         m.code_competition,
@@ -1191,9 +1132,35 @@ function getMesMatches() {
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         JOIN details_equipes de1 ON de1.id_equipe = m.id_equipe_dom
         JOIN details_equipes de2 ON de2.id_equipe = m.id_equipe_ext
-        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
-        WHERE m.id_equipe_dom = $sessionIdEquipe OR m.id_equipe_ext = $sessionIdEquipe
-        ORDER BY m.date_reception, m.code_match";
+        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition " . $whereClause . " " . $orderClause;
+}
+
+function getMatches($compet, $div) {
+    conn_db();
+    $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+        if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
+            checkNotifyUpdateReport($data);
+        } else {
+            setRetard($data['code_match'], 0);
+        }
+    }
+    return json_encode($results);
+}
+
+function getMyMatches() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = getSqlSelectMatches("WHERE m.id_equipe_dom = $sessionIdEquipe OR m.id_equipe_ext = $sessionIdEquipe", "ORDER BY m.date_reception, m.code_match");
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
