@@ -219,13 +219,36 @@ Ext.onReady(function() {
                     }
                 }
             });
-            var pad = function(n, width, z) {
-                z = z || '0';
-                n = n + '';
-                return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-            };
             var changingImage = Ext.create('Ext.Img', {
-                src: 'images/photos/imagevolley' + pad(Ext.Number.randomInt(1, 20), 3) + '.jpg'
+                src: ''
+            });
+            var sourceUrl = "https://api.flickr.com/services/rest?method=flickr.photos.search&sort=relevance&api_key=5dc398923c15e04b803a4022344d39c6&text=volleyball&format=json&extras=url_c%2Cicon_urls_deep";
+            jsonFlickrApi = function(response) {
+                var photos = response.photos.photo;
+                photos = Ext.Array.filter(photos, function(item) {
+                    return (!item.url_c ? false : true);
+                });
+                var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                changingImage.setSrc(photo.url_c);
+                var task = {
+                    run: function() {
+                        var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                        if (photo.url_c) {
+                            changingImage.setSrc(photo.url_c);
+                        }
+                        else {
+                            console.log(photo);
+                        }
+                    },
+                    interval: 3000
+                };
+                Ext.TaskManager.start(task);
+
+            };
+            Ext.data.JsonP.request({
+                url: sourceUrl,
+                callbackKey: 'jsonFlickrApi',
+                success: jsonFlickrApi
             });
             var photosPanel = Ext.create('Ext.panel.Panel', {
                 flex: 1,
@@ -234,13 +257,6 @@ Ext.onReady(function() {
                     changingImage
                 ]
             });
-            var task = {
-                run: function() {
-                    changingImage.setSrc('images/photos/imagevolley' + pad(Ext.Number.randomInt(1, 20), 3) + '.jpg');
-                },
-                interval: 5000
-            };
-            Ext.TaskManager.start(task);
             var lastResultsPanel = Ext.create('Ext.grid.Panel', {
                 title: 'Derniers résultats',
                 flex: 1,
