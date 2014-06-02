@@ -222,37 +222,34 @@ Ext.onReady(function() {
             var changingImage = Ext.create('Ext.Img', {
                 src: ''
             });
-            var sourceUrl = "https://api.flickr.com/services/rest?method=flickr.photos.search&sort=relevance&api_key=5dc398923c15e04b803a4022344d39c6&text=volleyball&format=json&extras=url_c%2Cicon_urls_deep";
-            jsonFlickrApi = function(response) {
-                var photos = response.photos.photo;
-                photos = Ext.Array.filter(photos, function(item) {
-                    return (!item.url_c ? false : true);
-                });
-                var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                changingImage.setSrc(photo.url_c);
-                var task = {
-                    run: function() {
-                        var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                        if (photo.url_c) {
-                            changingImage.setSrc(photo.url_c);
-                        }
-                        else {
-                            console.log(photo);
-                        }
-                    },
-                    interval: 3000
-                };
-                Ext.TaskManager.start(task);
-
-            };
-            Ext.data.JsonP.request({
-                url: sourceUrl,
-                callbackKey: 'jsonFlickrApi',
-                success: jsonFlickrApi
+            Ext.Ajax.request({
+                url: 'ajax/getVolleyballImages.php',
+                success: function(response) {
+                    var responseJson = Ext.decode(response.responseText);
+                    var photos = responseJson.photos.photo;
+                    photos = Ext.Array.filter(photos, function(item) {
+                        return (!item.url_c ? false : true);
+                    });
+                    var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                    changingImage.setSrc(photo.url_c);
+                    var task = {
+                        run: function() {
+                            var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                            if (photo.url_c) {
+                                changingImage.setSrc(photo.url_c);
+                                changingImage.setWidth(400);
+                            }
+                            else {
+                                console.log(photo);
+                            }
+                        },
+                        interval: 3000
+                    };
+                    Ext.TaskManager.start(task);
+                }
             });
             var photosPanel = Ext.create('Ext.panel.Panel', {
                 flex: 1,
-                layout: 'fit',
                 items: [
                     changingImage
                 ]
