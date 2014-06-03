@@ -252,31 +252,31 @@ Ext.onReady(function() {
                             {
                                 text: 'Général',
                                 handler: function() {
-                                    window.open('reglements/ReglementGeneral.pdf', '_blank');
+                                    window.open('infos_utiles/Media/ReglementGeneral.pdf', '_blank');
                                 }
                             },
                             {
                                 text: 'Féminin',
                                 handler: function() {
-                                    window.open('reglements/ReglementFeminin.pdf', '_blank');
+                                    window.open('infos_utiles/Media/ReglementFeminin.pdf', '_blank');
                                 }
                             },
                             {
                                 text: 'Masculin',
                                 handler: function() {
-                                    window.open('reglements/ReglementMasculin.pdf', '_blank');
+                                    window.open('infos_utiles/Media/ReglementMasculin.pdf', '_blank');
                                 }
                             },
                             {
                                 text: 'Koury Hanna',
                                 handler: function() {
-                                    window.open('reglements/ReglementKouryHanna.pdf', '_blank');
+                                    window.open('infos_utiles/Media/ReglementKouryHanna.pdf', '_blank');
                                 }
                             },
                             {
                                 text: 'Isoardi',
                                 handler: function() {
-                                    window.open('reglements/ReglementIsoardi.pdf', '_blank');
+                                    window.open('infos_utiles/Media/ReglementIsoardi.pdf', '_blank');
                                 }
                             }
                         ]
