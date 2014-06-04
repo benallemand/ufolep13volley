@@ -749,6 +749,20 @@ function getMatchesWonWith5PlayersCount($idTeam, $codeCompetition) {
     return $gagnea5_dom + $gagnea5_ext;
 }
 
+function getMatchesLostByForfeitCount($idTeam, $codeCompetition) {
+    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND forfait_dom = \'1\'';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $forfait_dom = $data[0];
+    }
+    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND forfait_ext = \'1\'';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    while ($data = mysql_fetch_array($req)) {
+        $forfait_ext = $data[0];
+    }
+    return $forfait_ext + $forfait_dom;
+}
+
 function getClassement($compet, $div) {
     conn_db();
     $sql = 'SELECT '
@@ -776,6 +790,7 @@ function getClassement($compet, $div) {
     while ($data = mysql_fetch_assoc($req)) {
         $data['rang'] = $rang;
         $data['matches_won_with_5_players_count'] = getMatchesWonWith5PlayersCount($data['id_equipe'], $data['code_competition']);
+        $data['matches_lost_by_forfeit_count'] = getMatchesLostByForfeitCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
         $rang++;
     }

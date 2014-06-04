@@ -68,6 +68,10 @@ Ext.define('Ufolep13Volley.model.Classement', {
         {
             name: 'matches_won_with_5_players_count',
             type: 'int'
+        },
+        {
+            name: 'matches_lost_by_forfeit_count',
+            type: 'int'
         }
     ]
 });

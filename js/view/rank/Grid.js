@@ -61,7 +61,15 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             {
                 header: 'Perdus',
                 dataIndex: 'perdus',
-                align: 'center'
+                align: 'center',
+                renderer: function(val, meta, record) {
+                    if (record.get('matches_lost_by_forfeit_count') > 0) {
+                        var tip = 'Dont ' + record.get('matches_lost_by_forfeit_count') + ' par forfait';
+                        meta['tdAttr'] = 'data-qtip="' + tip + '"';
+                        return val + '*';
+                    }
+                    return val;
+                }
             },
             {
                 header: 'Sets Pour',
