@@ -1279,7 +1279,9 @@ function getMyPlayers() {
         j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
-        WHERE je.id_equipe = $sessionIdEquipe";
+        WHERE je.id_equipe = $sessionIdEquipe
+        ORDER BY sexe ASC";
+        
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
