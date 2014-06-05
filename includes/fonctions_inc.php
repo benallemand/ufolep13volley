@@ -1280,7 +1280,7 @@ function getMyPlayers() {
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         WHERE je.id_equipe = $sessionIdEquipe
-        ORDER BY sexe ASC";
+        ORDER BY sexe, nom ASC";
         
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
