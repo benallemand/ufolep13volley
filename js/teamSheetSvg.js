@@ -130,12 +130,12 @@ Ext.onReady(function() {
                 else {
                     group.text(110, 100, '');
                 }
-                var maxPlayersByLine = 3;
-                if(records.length > 18) {
-                    maxPlayersByLine = 4;
-                }
+                var maxPlayersByColumn = 6;
+//                if(records.length > 18) {
+//                    maxPlayersByColumn = 8;
+//                }
                 var playerNumber = index;
-                group.transform('t' + (playerNumber % maxPlayersByLine) * 300 + ',' + Math.floor(playerNumber / maxPlayersByLine) * 110);
+                group.transform('t' + Math.floor(playerNumber / maxPlayersByColumn) * 300 + ',' + (playerNumber % maxPlayersByColumn) * 110);
                 group.rect(0, -5, 300, 110).attr({
                     'fill': 'gray',
                     'stroke': 'black',
