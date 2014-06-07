@@ -175,7 +175,8 @@ Ext.onReady(function() {
             var widthViewport = s.select("g[id='viewport']").node.getBoundingClientRect().width;
             var heightViewport = s.select("g[id='viewport']").node.getBoundingClientRect().height;
             s.select("svg").attr({
-                viewBox: "0 0 " + widthViewport + " " + heightViewport
+                viewBox: "0 0 " + widthViewport + " " + heightViewport,
+                preserveAspectRatio: "xMinYMin meet"
             });
         });
     });
