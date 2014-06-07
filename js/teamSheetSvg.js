@@ -163,15 +163,15 @@ Ext.onReady(function() {
             });
             var widthTeamTitleVisa = s.select("g[id='teamTitleVisa']").node.getBoundingClientRect().width;
             var widthMatchDetails = s.select("g[id='matchDetails']").node.getBoundingClientRect().width;
-            var diffLength = widthPlayers - (widthTeamDetails + widthTeamTitleVisa + widthMatchDetails);
-            s.select("g[id='teamTitleVisa']").transform('t' + (widthTeamDetails + diffLength / 2) + ',0');
+            var finalWidth = Math.max(widthPlayers, widthTeamDetails + widthTeamTitleVisa + widthMatchDetails);
+            s.select("g[id='teamTitleVisa']").transform('t' + (finalWidth / 2) + ',0');
             s.select("g[id='teamTitleVisa']").rect(0, 150, s.select("text[id='team']").node.getBoundingClientRect().width, s.select("text[id='team']").node.getBoundingClientRect().height, 10, 10).attr({
                 'fill': 'white',
                 'stroke': 'black',
                 'stroke-width': 1,
                 'fill-opacity': 0.1
             });
-            s.select("g[id='matchDetails']").transform('t' + (widthTeamDetails + widthTeamTitleVisa + diffLength) + ',0');
+            s.select("g[id='matchDetails']").transform('t' + (finalWidth) + ',0');
             var widthViewport = s.select("g[id='viewport']").node.getBoundingClientRect().width;
             var heightViewport = s.select("g[id='viewport']").node.getBoundingClientRect().height;
             s.select("svg").attr({
