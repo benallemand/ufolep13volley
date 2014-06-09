@@ -4,6 +4,11 @@ Ext.application({
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
+        Ext.define('Ext.form.PasswordField', {
+            extend: 'Ext.form.field.Text',
+            alias: 'widget.passwordfield',
+            inputType: 'password'
+        });
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {
