@@ -1236,7 +1236,7 @@ function getMonEquipe() {
     return json_encode($results);
 }
 
-function getMyPlayers() {
+function getMyPlayers($rootPath = '../') {
     conn_db();
     if (!isset($_SESSION['id_equipe'])) {
         return false;
@@ -1281,7 +1281,7 @@ function getMyPlayers() {
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         WHERE je.id_equipe = $sessionIdEquipe
         ORDER BY sexe, nom ASC";
-        
+
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
@@ -1289,7 +1289,7 @@ function getMyPlayers() {
     }
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
-            if (file_exists("../" . $result['path_photo']) === FALSE) {
+            if (file_exists($rootPath . $result['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
@@ -1315,6 +1315,10 @@ function getMyPlayers() {
         }
     }
     return json_encode($results);
+}
+
+function getMyPlayersPdf() {
+    return getMyPlayers('');
 }
 
 function getPlayers() {

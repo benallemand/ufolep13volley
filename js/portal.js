@@ -50,7 +50,7 @@ Ext.application({
                             items: [
                                 {
                                     text: 'Fiche Equipe',
-                                    href: 'teamSheetSvg.php'
+                                    href: 'teamSheetPdf.php'
                                 },
                                 {
                                     text: 'Gestions des joueurs/joueuses'
