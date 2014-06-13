@@ -52,7 +52,7 @@ $pdf->SetXY(0, 70);
 $NbByColumns = 6;
 $widthPhoto = 20;
 $offsetYPlayers = 70;
-$offsetXPlayers = 50;
+$offsetXPlayers = 60;
 foreach ($jsonMyPlayers as $index => $jsonPlayer) {
     $pdf->SetXY(5+$offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 35 * ($index % $NbByColumns));
     $pdf->Rect(2+$offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers-2 + 35 * ($index % $NbByColumns), $offsetXPlayers-2, 32);
