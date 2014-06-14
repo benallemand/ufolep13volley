@@ -51,6 +51,20 @@ Ext.define('Ufolep13Volley.view.team.PlayerAddToMyTeam', {
                 formBind: true,
                 disabled: true
             }
+        ],
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                docked: 'top',
+                items: [
+                    'Joueur Introuvable ?',
+                    {
+                        xtype: 'button',
+                        text: 'Créer un joueur',
+                        action: 'createPlayer'
+                    }
+                ]
+            }
         ]
     }
 });
