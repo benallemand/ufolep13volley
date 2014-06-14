@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
     stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers'],
     models: ['Club', 'Team', 'Player'],
-    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain'],
+    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'player.Edit'],
     refs: [
         {
             ref: 'teamDetailsForm',
@@ -35,6 +35,14 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         {
             ref: 'connectedTeamNameToolbarText',
             selector: "tbtext"
+        },
+        {
+            ref: 'formPanelEditPlayer',
+            selector: 'playeredit form'
+        },
+        {
+            ref: 'WindowEditPlayer',
+            selector: 'playeredit'
         }
     ],
     init: function() {
@@ -66,8 +74,40 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     },
                     "window[title=Modification de l'équipe] > form > toolbar > button[action=save]": {
                         click: this.saveTeamDetails
+                    },
+                    'button[action=createPlayer]': {
+                        click: this.createPlayer
+                    },
+                    'playeredit button[action=save]': {
+                        click: this.savePlayer
                     }
                 });
+    },
+    savePlayer: function() {
+        var thisController = this;
+        var form = this.getFormPanelEditPlayer().getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function() {
+                    thisController.getPlayersStore().load();
+                    thisController.getWindowEditPlayer().close();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    createPlayer: function() {
+        Ext.widget('playeredit');
     },
     loadTeamDetails: function() {
         var me = this;
