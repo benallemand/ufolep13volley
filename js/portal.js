@@ -49,11 +49,11 @@ Ext.application({
                             dock: 'top',
                             items: [
                                 {
-                                    text: 'Fiche Equipe',
-                                    href: 'teamSheetPdf.php'
+                                    text: 'Gestions des joueurs/joueuses'
                                 },
                                 {
-                                    text: 'Gestions des joueurs/joueuses'
+                                    text: 'Fiche Equipe',
+                                    href: 'teamSheetPdf.php'
                                 },
                                 {
                                     text: 'Modifier les informations'
