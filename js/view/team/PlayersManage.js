@@ -95,7 +95,8 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     },
                     {
                         xtype: 'button',
-                        text: "Modifier le responsable d'équipe"
+                        text: "Modifier le capitaine",
+                        action: 'modifyTeamCaptain'
                     }
                 ]
             }

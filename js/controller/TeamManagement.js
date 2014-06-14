@@ -26,11 +26,11 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         },
         {
             ref: 'setMyTeamCaptainForm',
-            selector: "window[title=Modifier le responsable d'équipe] > form"
+            selector: "setmyteamcaptain > form"
         },
         {
             ref: 'setMyTeamCaptainWindow',
-            selector: "window[title=Modifier le responsable d'équipe]"
+            selector: "setmyteamcaptain"
         },
         {
             ref: 'connectedTeamNameToolbarText',
@@ -63,7 +63,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'form[url=ajax/addPlayerToMyTeam.php] > toolbar > button[text=Sauver]': {
                         click: this.saveAddPlayerToMyTeam
                     },
-                    "button[text=Modifier le responsable d'équipe]": {
+                    "button[action=modifyTeamCaptain]": {
                         click: this.showSetMyTeamCaptain
                     },
                     'form[url=ajax/updateMyTeamCaptain.php] > toolbar > button[text=Sauver]': {

@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.team.SetMyTeamCaptain', {
     extend: 'Ext.window.Window',
     alias: 'widget.setmyteamcaptain',
     autoShow: true,
-    title: "Modifier le responsable d'équipe",
+    title: "Modifier le capitaine",
     height: 500,
     width: 500,
     modal: true,
