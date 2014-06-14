@@ -1702,9 +1702,6 @@ function savePlayer() {
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
     conn_db();
-    if ($_SESSION['id_equipe'] !== "admin") {
-        return false;
-    }
     if (empty($inputs['id'])) {
         $sql = "INSERT INTO ";
     } else {
@@ -1744,15 +1741,22 @@ function savePlayer() {
     if ($req === FALSE) {
         return false;
     }
-    $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
-    if ($dirtyFields) {
-        $fieldsArray = explode(',', $dirtyFields);
-        foreach ($fieldsArray as $fieldName) {
-            $fieldValue = filter_input(INPUT_POST, $fieldName);
-            $firstName = $inputs['prenom'];
-            $name = $inputs['nom'];
-            $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-            addActivity($comment);
+    if (empty($inputs['id'])) {
+        $firstName = $inputs['prenom'];
+        $name = $inputs['nom'];
+        $comment = "Creation d'un nouveau joueur : $firstName $name";
+        addActivity($comment);
+    } else {
+        $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
+        if ($dirtyFields) {
+            $fieldsArray = explode(',', $dirtyFields);
+            foreach ($fieldsArray as $fieldName) {
+                $fieldValue = filter_input(INPUT_POST, $fieldName);
+                $firstName = $inputs['prenom'];
+                $name = $inputs['nom'];
+                $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+                addActivity($comment);
+            }
         }
     }
     return savePhoto($inputs['nom'], $inputs['prenom']);
