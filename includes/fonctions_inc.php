@@ -3,6 +3,59 @@
 require_once 'db_inc.php';
 session_start();
 
+function logout() {
+    session_destroy();
+    die('<META HTTP-equiv="refresh" content=0;URL=' . $_SERVER['HTTP_REFERER'] . '>');
+}
+
+function login() {
+    conn_db();
+    if ((empty($_POST['login'])) || (empty($_POST['password']))) {
+        mysql_close();
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Veuillez remplir les champs de connexion'
+        ));
+        return;
+    }
+    $login = $_POST['login'];
+    $password = addslashes($_POST['password']);
+    $sql = 'SELECT * FROM comptes_acces WHERE login = \'' . $login . '\' LIMIT 1';
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    if (mysql_num_rows($req) <= 0) {
+        mysql_close();
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Login incorrect'
+        ));
+        return;
+    }
+    $data = mysql_fetch_assoc($req);
+    if ($data['password'] != $password) {
+        mysql_close();
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Mot de passe invalide'
+        ));
+        return;
+    }
+    $id_equipe = $data['id_equipe'];
+    session_start();
+    $_SESSION['login'] = $login;
+    $_SESSION['password'] = $password;
+    if ($id_equipe == "999") {
+        $_SESSION['id_equipe'] = "admin";
+    } else {
+        $_SESSION['id_equipe'] = $id_equipe;
+    }
+    mysql_close();
+    echo json_encode(array(
+        'success' => true,
+        'message' => 'Connexion OK'
+    ));
+    return;
+}
+
 function getQuickDetails($idEquipe) {
     conn_db();
     $sql = "SELECT id_equipe, responsable, telephone_1, telephone_2, email, gymnase, localisation, jour_reception, heure_reception "
@@ -463,32 +516,6 @@ function affich_details_equipe($id_equipe, $compet)
     echo'<div id="flux"></div>';
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function affich_formulaire($err)
-//************************************************************************************************
-/*
- * * Fonction    : affich_formulaire
- * * Input       : $err code d'erreur si echec de l'authentification
- * * Output      : aucun 
- * * Description : Affiche le formulaire d'authentification 
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 27/04/2010 
- */ {
-    echo'<div id="login">';
-    echo'  <form id="login-form" action="includes/traitement.php?a=auth" method="post">';
-    echo'    <div id="login-first">';
-    echo'    <p><span>Login</span><input id="login-name" class="input-mini" name="login" value="" title="Login" type="text" /></p>';
-    echo'    <p><span>Mot de passe</span><input id="login-pass" class="input-mini" name="password" value="" title="Mot de passe" type="password" /></p>';
-    echo'    <p>' . $err . '</p>';
-    echo'    </div>';
-    echo'    <div id="login-second">';
-    echo'    <input value="Connexion" name="login-submit" id="login-submit" class="submit" type="submit" />';
-    echo'    </div>';
-    echo'  </form>';
-    echo'</div> <!-- login -->';
-}
-
 function getConnectedUser() {
     $nom_equipe = '';
     if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
@@ -526,7 +553,7 @@ function affich_connecte()
         echo'<ul>';
         echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
         echo' | ';
-        echo'<span><a href="includes/traitement.php?a=deconn">Se déconnecter</a></span></li>';
+        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
         echo'</ul>';
         echo'</div>';
     }

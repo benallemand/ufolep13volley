@@ -27,7 +27,7 @@ Ext.application({
                         },
                         {
                             text: 'Se déconnecter',
-                            href: "includes/traitement.php?a=deconn",
+                            href: "ajax/logout.php",
                             hrefTarget: '_self'
                         }
                     ]

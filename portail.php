@@ -51,7 +51,8 @@
                         }
                         echo'<script type="text/javascript" src="js/portal.js"></script>';
                     } else { // sinon on affiche le formulaire
-                        affich_formulaire($err);
+                        echo'<div id="login"/>';
+                        echo'<script type="text/javascript" src="js/login.js"></script>';
                     }
                     ?>
                 </div>
