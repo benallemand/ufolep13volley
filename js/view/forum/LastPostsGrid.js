@@ -8,7 +8,7 @@ Ext.define('Ufolep13Volley.view.forum.LastPostsGrid', {
     columns: [
         {
             header: 'Titre',
-            flex: 7,
+            flex: 4,
             dataIndex: 'title',
             renderer: function(value, meta, record) {
                 return Ext.String.format('<a href="{0}" target="_blank">{1}</a>', record.get('guid'), value);
@@ -16,20 +16,21 @@ Ext.define('Ufolep13Volley.view.forum.LastPostsGrid', {
         },
         {
             header: 'Auteur',
-            flex: 4,
+            flex: 1,
             dataIndex: 'creator'
         },
         {
             header: 'Catégorie',
-            flex: 3,
+            flex: 1,
+            hidden : true,
             dataIndex: 'category'
         },
         {
             header: 'Date',
-            flex: 3,
+            flex: 1,
             dataIndex: 'pubdate',
             xtype: 'datecolumn',
-            format: 'd/m/Y h:i'
+            format: 'd/m h:i'
         }
     ],
     store : 'LastPosts'

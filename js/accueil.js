@@ -1,9 +1,9 @@
 Ext.application({
     requires: [],
-    views: ['new.Grid', 'match.LastResultsGrid', 'forum.LastPostsGrid'],
+    views: ['new.Grid', 'match.LastResultsGrid', 'forum.LastPostsGrid', 'team.WebSitesGrid'],
     controllers: [],
-    stores: ['News', 'LastResults', 'LastPosts'],
-    models: ['New', 'LastResult', 'LastPost'],
+    stores: ['News', 'LastResults', 'LastPosts', 'WebSites'],
+    models: ['New', 'LastResult', 'LastPost', 'WebSite'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
@@ -155,11 +155,18 @@ Ext.application({
                             items: [
                                 {
                                     region: 'north',
+                                    flex : 2,
                                     xtype: 'LastResultsGrid'
                                 },
                                 {
                                     region: 'center',
+                                    flex : 2,
                                     xtype: 'LastPostsGrid'
+                                },
+                                {
+                                    region: 'east',
+                                    flex : 1,
+                                    xtype: 'WebSitesGrid'
                                 }
                             ]
                         }

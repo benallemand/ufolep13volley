@@ -103,6 +103,20 @@ function getTeams() {
     return json_encode($results);
 }
 
+function getWebSites() {
+    conn_db();
+    $sql = "SELECT e.nom_equipe, de.site_web FROM details_equipes de
+        JOIN equipes e ON e.id_equipe=de.id_equipe
+        WHERE site_web!=''
+        ORDER BY nom_equipe ASC";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getLastResults() {
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
