@@ -1,8 +1,13 @@
-Ext.define('Ufolep13Volley.view.mobile.Main', {
+Ext.define('Ufolep13Volley.view.mobile.Portal', {
     extend: 'Ext.NavigationView',
-    requires: [],
+    requires: [
+        'Ext.TitleBar'
+    ],
     config: {
         items: [
+            {
+                title: 'Mon Equipe'
+            },
             {
                 xtype: 'toolbar',
                 docked: 'bottom',
@@ -16,6 +21,16 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                         text: 'Résultats',
                         icon: 'images/cup.png',
                         action: 'getLastResults'
+                    },
+                    {
+                        text: 'Mes Joueurs',
+                        icon: 'images/man.png',
+                        action: 'getMyPlayers'
+                    },
+                    {
+                        text: 'Deconnexion',
+                        icon: 'images/exit.png',
+                        action: 'disconnect'
                     }
                 ]
             }

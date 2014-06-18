@@ -9,7 +9,7 @@ Ext.application({
     launch: function() {
         var tools = {
             showMobileVersion: function() {
-                location.href = 'index_mobile.html';
+                location.href = 'index_mobile.php';
             },
             showNormalVersion: function() {
                 afficheFormulaireNews = function(isUpdate) {

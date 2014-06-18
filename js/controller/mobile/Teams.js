@@ -11,7 +11,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
             teamsList: 'listteams',
             playersList: 'listplayers',
             mainPanel: 'navigationview',
-            formPanel: 'formpanel',
+            formPanel: 'formpanel[title=Details]',
             callButton: 'button[action=call]',
             mapButton: 'button[action=map]',
             viewPlayersButton: 'button[action=viewPlayers]'
@@ -72,6 +72,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
             layout: 'fit',
             items: [
                 {
+                    title : 'Details',
                     xtype: 'formpanel',
                     url: 'ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
                     defaults: {
