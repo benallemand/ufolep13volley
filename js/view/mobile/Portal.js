@@ -6,29 +6,29 @@ Ext.define('Ufolep13Volley.view.mobile.Portal', {
     config: {
         items: [
             {
-                title: 'Mon Equipe'
+                title: 'Portail Equipe'
             },
             {
                 xtype: 'toolbar',
                 docked: 'bottom',
                 items: [
                     {
-                        text: 'Annuaire',
+                        text: '',
                         icon: 'images/phonebook.png',
                         action: 'getPhonebook'
                     },
                     {
-                        text: 'Résultats',
+                        text: '',
                         icon: 'images/cup.png',
                         action: 'getLastResults'
                     },
                     {
-                        text: 'Mes Joueurs',
+                        text: '',
                         icon: 'images/man.png',
                         action: 'getMyPlayers'
                     },
                     {
-                        text: 'Deconnexion',
+                        text: '',
                         icon: 'images/exit.png',
                         action: 'disconnect'
                     }

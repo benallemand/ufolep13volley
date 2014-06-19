@@ -5,6 +5,7 @@ Ext.define('Ufolep13Volley.view.mobile.MyPlayers', {
     ],
     xtype: 'listmyplayers',
     config: {
+        title : 'Mon Equipe',
         itemTpl: "<img src='{path_photo}' width='80px'/>{full_name}",
         store: 'MyPlayers',
         flex: 1

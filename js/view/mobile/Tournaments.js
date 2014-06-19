@@ -5,6 +5,7 @@ Ext.define('Ufolep13Volley.view.mobile.Tournaments', {
     ],
     xtype: 'listtournaments',
     config: {
+        title : 'Annuaire',
         itemTpl: '{libelle}',
         store: 'Tournaments',
         flex: 1
