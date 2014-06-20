@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
-    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers'],
-    models: ['Club', 'Team', 'Player'],
-    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'player.Edit'],
+    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences'],
+    models: ['Club', 'Team', 'Player', 'Preference'],
+    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'player.Edit', 'team.EditPreferences'],
     refs: [
         {
             ref: 'teamDetailsForm',
@@ -43,6 +43,14 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         {
             ref: 'WindowEditPlayer',
             selector: 'playeredit'
+        },
+        {
+            ref: 'EditPreferencesForm',
+            selector: 'editpreferences form'
+        },
+        {
+            ref: 'EditPreferencesWindow',
+            selector: 'editpreferences'
         }
     ],
     init: function() {
@@ -80,8 +88,37 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     },
                     'playeredit button[action=save]': {
                         click: this.savePlayer
+                    },
+                    'button[action=editPreferences]': {
+                        click: this.showEditPreferences
+                    },
+                    'editpreferences button[action=save]': {
+                        click: this.savePreferences
                     }
                 });
+    },
+    savePreferences: function() {
+        var thisController = this;
+        var form = this.getEditPreferencesForm().getForm();
+        if (form.isValid()) {
+            form.submit({
+                success: function() {
+                    thisController.getEditPreferencesWindow().close();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    showEditPreferences: function() {
+        Ext.widget('editpreferences');
+        var form = this.getEditPreferencesForm();
+        this.getMyPreferencesStore().load({
+            callback: function(records) {
+                form.getForm().loadRecord(records[0]);
+            }
+        });
     },
     savePlayer: function() {
         var thisController = this;

@@ -22,11 +22,19 @@ Ext.application({
                             text: 'Non connecté',
                             style: {
                                 color: 'red',
-                                fontWeight : 'bold'
+                                fontWeight: 'bold'
                             }
                         },
                         {
+                            text: 'Préférences',
+                            scale: 'large',
+                            icon: 'images/preferences.png',
+                            action: 'editPreferences'
+                        },
+                        {
                             text: 'Se déconnecter',
+                            scale: 'large',
+                            icon: 'images/exit.png',
                             href: "ajax/logout.php",
                             hrefTarget: '_self'
                         }
@@ -49,17 +57,25 @@ Ext.application({
                             dock: 'top',
                             items: [
                                 {
-                                    text: 'Gestions des joueurs/joueuses'
+                                    text: 'Gestions des joueurs/joueuses',
+                                    scale: 'large',
+                                    icon: 'images/man.png'
                                 },
                                 {
                                     text: 'Fiche Equipe',
-                                    href: 'teamSheetPdf.php'
+                                    href: 'teamSheetPdf.php',
+                                    scale: 'large',
+                                    icon: 'images/pdf.png'
                                 },
                                 {
-                                    text: 'Modifier les informations'
+                                    text: 'Modifier les informations',
+                                    scale: 'large',
+                                    icon: 'images/modify.png'
                                 },
                                 {
-                                    text: 'Changer de mot de passe'
+                                    text: 'Changer de mot de passe',
+                                    scale: 'large',
+                                    icon: 'images/password.png'
                                 }
                             ]
                         }

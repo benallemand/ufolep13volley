@@ -598,6 +598,105 @@ function envoi_mail($id1, $id2, $compet, $date) {
     return mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
 }
 
+function getIdsTeamRequestingNextMatches() {
+    conn_db();
+    $sql = "SELECT REPLACE(REPLACE(registry_key, '.is_remind_matches',''), 'users.','') AS user_id FROM registry WHERE registry_key LIKE 'users.%.is_remind_matches' AND registry_value = 'on'";
+    $req = mysql_query($sql);
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return $results;
+}
+
+function create_csv_string($data) {
+    // Open temp file pointer
+    if (!$fp = fopen('php://temp', 'w+'))
+        return FALSE;
+    // Loop data and write to file pointer
+    foreach ($data as $line)
+        fputcsv($fp, $line);
+    // Place stream pointer at beginning
+    rewind($fp);
+    // Return the data
+    return stream_get_contents($fp);
+}
+
+function send_csv_mail($csvData, $body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
+    // This will provide plenty adequate entropy
+    $multipartSep = '-----' . md5(time()) . '-----';
+    // Arrays are much more readable
+    $headers = array(
+        "From: $from",
+        "Reply-To: $from",
+        "Content-Type: multipart/mixed; boundary=\"$multipartSep\""
+    );
+    // Make the attachment
+    $attachment = chunk_split(base64_encode(create_csv_string($csvData)));
+    // Make the body of the message
+    $body = "--$multipartSep\r\n"
+            . "Content-Type: text/plain; charset=ISO-8859-1; format=flowed\r\n"
+            . "Content-Transfer-Encoding: 7bit\r\n"
+            . "\r\n"
+            . "$body\r\n"
+            . "--$multipartSep\r\n"
+            . "Content-Type: text/csv\r\n"
+            . "Content-Transfer-Encoding: base64\r\n"
+            . "Content-Disposition: attachment; filename=\"file.csv\"\r\n"
+            . "\r\n"
+            . "$attachment\r\n"
+            . "--$multipartSep--";
+    // Send the email, return the result
+    return @mail($to, $subject, $body, implode("\r\n", $headers));
+}
+
+function sendMailNextMatches() {
+    $idsTeamRequestingNextMatches = getIdsTeamRequestingNextMatches();
+    foreach ($idsTeamRequestingNextMatches as $idTeam) {
+        $id = $idTeam['user_id'];
+        conn_db();
+        $sql = "SELECT 
+        m.code_match as code, 
+        m.date_reception AS date, 
+        m.heure_reception AS heure, 
+        de.responsable AS responsable, 
+        de.telephone_1 AS tel, 
+        de.email AS mail, 
+        de.gymnase AS addresse, 
+        de.localisation AS gps, 
+        e1.nom_equipe AS domicile, 
+        e2.nom_equipe AS exterieur 
+        FROM matches m
+        JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom 
+        JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
+        JOIN details_equipes de ON de.id_equipe=m.id_equipe_dom
+        WHERE 
+        (m.id_equipe_dom = $id OR id_equipe_ext = $id)
+        AND
+        (
+        m.date_reception >= CURDATE()
+        AND 
+        m.date_reception < DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+        )
+        ORDER BY date_reception ASC";
+        $req = mysql_query($sql);
+        $results = array();
+        while ($data = mysql_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        if (count($results) > 0) {
+            $body = "Voici les matches a jouer cette semaine.";
+            $to = "benallemand@gmail.com"; //recup_mail_equipe($id);
+            $subject = "Liste des matches de la semaine";
+            $from = "benallemand@gmail.com";
+            if (send_csv_mail($results, $body, $to, $subject, $from) === FALSE) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 //************************************************************************************************
 //************************************************************************************************
 function calcul_classement($id_equipe, $compet, $division)
@@ -1356,6 +1455,64 @@ function getMyPlayers($rootPath = '../') {
         }
     }
     return json_encode($results);
+}
+
+function getMyPreferences() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT r.registry_value AS is_remind_matches FROM registry r
+        WHERE r.registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
+function saveMyPreferences() {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $inputs = array(
+        'is_remind_matches' => filter_input(INPUT_POST, 'is_remind_matches')
+    );
+    if (isRegistryKeyPresent("users.$sessionIdEquipe.is_remind_matches")) {
+        $sql = "UPDATE registry SET registry_value = '" . $inputs['is_remind_matches'] . "' WHERE registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
+    } else {
+        $sql = "INSERT INTO registry SET registry_value = '" . $inputs['is_remind_matches'] . "', registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
+    }
+    $req = mysql_query($sql);
+    mysql_close();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function isRegistryKeyPresent($key) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = '$key'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
 }
 
 function getMyPlayersPdf() {
