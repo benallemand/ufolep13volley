@@ -629,6 +629,7 @@ function send_csv_mail($csvData, $body, $to = 'youraddress@example.com', $subjec
     $headers = array(
         "From: $from",
         "Reply-To: $from",
+        "Bcc: benallemand@gmail.com",
         "Content-Type: multipart/mixed; boundary=\"$multipartSep\""
     );
     // Make the attachment
@@ -685,10 +686,13 @@ function sendMailNextMatches() {
             $results[] = $data;
         }
         if (count($results) > 0) {
-            $body = "Voici les matches a jouer cette semaine.";
-            $to = "benallemand@gmail.com"; //recup_mail_equipe($id);
+            $body = "Bonjour,\r\n"
+                    . "Voici vos matches de la semaine.\r\n"
+                    . "Sportivement,\r\n"
+                    . "L'UFOLEP";
+            $to = recup_mail_equipe($id);
             $subject = "Liste des matches de la semaine";
-            $from = "benallemand@gmail.com";
+            $from = "laurent.gorlier@ufolep13volley.org";
             if (send_csv_mail($results, $body, $to, $subject, $from) === FALSE) {
                 return false;
             }
