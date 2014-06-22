@@ -14,8 +14,8 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                 url: 'ajax/login.php',
                 defaults: {
                     width: '90%',
-                    margin : 5,
-                    labelWidth : '50%'
+                    margin: 5,
+                    labelWidth: '50%'
                 },
                 items: [
                     {
@@ -32,8 +32,8 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                         xtype: 'button',
                         text: 'Connexion',
                         action: 'login',
-                    width: '50%',
-                    margin : 10
+                        width: '50%',
+                        margin: 10
                     }
                 ]
             },
