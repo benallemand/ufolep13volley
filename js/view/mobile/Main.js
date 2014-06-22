@@ -7,30 +7,33 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                 title: 'UFOLEP 13 VOLLEY',
                 layout: {
                     type: 'vbox',
-                    align: 'stretch'
+                    align: 'center',
+                    pack: 'center'
                 },
                 xtype: 'formpanel',
                 url: 'ajax/login.php',
                 defaults: {
-                    margin: 20
+                    width: '90%',
+                    margin : 5,
+                    labelWidth : '50%'
                 },
                 items: [
                     {
                         xtype: 'textfield',
-                        labelAlign: 'top',
                         name: 'login',
                         label: 'Login'
                     },
                     {
                         xtype: 'passwordfield',
-                        labelAlign: 'top',
                         name: 'password',
                         label: 'Mot de passe'
                     },
                     {
                         xtype: 'button',
                         text: 'Connexion',
-                        action: 'login'
+                        action: 'login',
+                    width: '50%',
+                    margin : 10
                     }
                 ]
             },
