@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['login.AutoCompleteField'],
-    controllers: ['Login'],
+    controllers: [],
     stores: [],
     name: 'Ufolep13Volley',
     appFolder: 'js',
