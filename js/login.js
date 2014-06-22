@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['login.AutoCompleteField'],
-    controllers: [],
+    controllers: ['Login'],
     stores: [],
     name: 'Ufolep13Volley',
     appFolder: 'js',
@@ -50,6 +50,10 @@ Ext.application({
                             });
                         }
                     }
+                },
+                {
+                    text: 'Inscription',
+                    action: 'showUserRegistration'
                 }
             ]
         });

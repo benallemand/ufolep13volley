@@ -3,6 +3,51 @@
 require_once 'db_inc.php';
 session_start();
 
+function randomPassword() {
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 8; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
+
+function isLoginInDatabase($login) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE login = '$login'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function createUser($login, $idTeam) {
+    conn_db();
+    if (isLoginInDatabase($login)) {
+        return false;
+    }
+    if ($idTeam === NULL) {
+        $idTeam = 0;
+    }
+    $password = randomPassword();
+    $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', password = '$password'";
+    $req = mysql_query($sql);
+    mysql_close();
+    if ($req === FALSE) {
+        return false;
+    }
+    addActivity("Creation du compte $login pour l'equipe " . getTeamName($idTeam));
+    sendMailNewUser($login, $password, $idTeam);
+    return true;
+}
+
 function logout() {
     session_destroy();
     die('<META HTTP-equiv="refresh" content=0;URL=' . $_SERVER['HTTP_REFERER'] . '>');
@@ -649,6 +694,34 @@ function send_csv_mail($csvData, $body, $to = 'youraddress@example.com', $subjec
             . "--$multipartSep--";
     // Send the email, return the result
     return @mail($to, $subject, $body, implode("\r\n", $headers));
+}
+
+function send_mail($body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
+    $headers = array(
+        "From: $from",
+        "Reply-To: $from",
+        "Bcc: benallemand@gmail.com",
+        "Content-Type: text/plain"
+    );
+    return @mail($to, $subject, $body, implode("\r\n", $headers));
+}
+
+function sendMailNewUser($login, $password, $idTeam) {
+    $body = "Bonjour,\r\n"
+            . "Voici vos Informations de connexion au site http://www.ufolep13volley.org :\r\n"
+            . "Identifiant : $login\r\n"
+            . "Mot de passe : $password\r\n"
+            . "Equipe de rattachement : " . getTeamName($idTeam) . "\r\n"
+            . "\r\n"
+            . "\r\n"
+            . "\r\n"
+            . "L'UFOLEP";
+    $to = $login;
+    $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
+    $from = "laurent.gorlier@ufolep13volley.org";
+    if (send_mail($body, $to, $subject, $from) === FALSE) {
+        return false;
+    }
 }
 
 function sendMailNextMatches() {
@@ -1715,6 +1788,9 @@ function getPlayerFullName($idPlayer) {
 }
 
 function getTeamName($idTeam) {
+    if ($idTeam === 0) {
+        return 'Non renseigné';
+    }
     conn_db();
     $sql = "SELECT 
         CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team_name 
