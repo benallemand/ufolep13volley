@@ -1,0 +1,1 @@
+ALTER TABLE comptes_acces MODIFY login VARCHAR(200)
