@@ -19,7 +19,7 @@ class Indicator {
     private $sql;
 
     function __construct($fieldLabel, $sql) {
-        $this->fieldLabel = utf8_encode_mix($fieldLabel);
+        $this->fieldLabel = utf8_encode($fieldLabel);
         $this->sql = $sql;
     }
 

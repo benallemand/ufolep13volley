@@ -1680,7 +1680,7 @@ function getPlayers() {
         $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
         $results[$index]['teams_list'] = getTeamsList($results[$index]['id']);
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getTeamsListForCaptain($playerId) {
