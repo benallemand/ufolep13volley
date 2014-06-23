@@ -222,7 +222,7 @@ class Rest {
         conn_db();
         if (!estAdmin()) {
             if ($this->fileName === 'comptes_acces') {
-                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
+                $message = utf8_encode_mix("Vous n'avez pas les droits suffisants pour executer cette action");
                 echo json_encode(array(
                     'success' => false,
                     'message' => $message
@@ -230,7 +230,7 @@ class Rest {
                 exit;
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
+                $message = utf8_encode_mix("Vous n'avez pas les droits suffisants pour executer cette action");
                 echo json_encode(array(
                     'success' => false,
                     'message' => $message

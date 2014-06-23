@@ -3,6 +3,19 @@
 require_once 'db_inc.php';
 session_start();
 
+function utf8_encode_mix($input, $encode_keys = false) {
+    if (is_array($input)) {
+        $result = array();
+        foreach ($input as $k => $v) {
+            $key = ($encode_keys) ? utf8_encode($k) : $k;
+            $result[$key] = utf8_encode_mix($v, $encode_keys);
+        }
+    } else {
+        $result = utf8_encode($input);
+    }
+    return $result;
+}
+
 function randomPassword() {
     $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
     $pass = array(); //remember to declare $pass as an array
@@ -1667,7 +1680,7 @@ function getPlayers() {
         $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
         $results[$index]['teams_list'] = getTeamsList($results[$index]['id']);
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getTeamsListForCaptain($playerId) {
@@ -1961,6 +1974,20 @@ function savePhoto($lastName, $firstName) {
     return false;
 }
 
+function isPlayerExists($licenceNumber) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueurs WHERE num_licence = '$licenceNumber'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
 function savePlayer() {
     $inputs = array(
         'prenom' => filter_input(INPUT_POST, 'prenom'),
@@ -1979,6 +2006,11 @@ function savePlayer() {
         'date_homologation' => filter_input(INPUT_POST, 'date_homologation'),
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
+    if (empty($inputs['id'])) {
+        if (isPlayerExists($inputs['num_licence'])) {
+            return false;
+        }
+    }
     conn_db();
     if (empty($inputs['id'])) {
         $sql = "INSERT INTO ";
