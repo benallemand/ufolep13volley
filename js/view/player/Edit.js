@@ -48,10 +48,10 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'sexe',
                 fieldLabel: 'Sexe',
                 allowBlank: false,
-                maskRe : /[MF]{1}/,
+                maskRe: /[MF]{1}/,
                 minLength: 1,
                 maxLength: 1,
-                msgTarget: 'under'                
+                msgTarget: 'under'
             },
             {
                 name: 'departement_affiliation',
@@ -67,13 +67,26 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 msgTarget: 'under'
             },
             {
-                name: 'id_club',
-                fieldLabel: 'Club',
-                xtype: 'combo',
-                store: 'Clubs',
-                displayField: 'nom',
-                valueField: 'id',
-                msgTarget: 'under'
+                xtype: 'fieldset',
+                title: 'Club',
+                layout: 'anchor',
+                items: [
+                    {
+                        xtype: 'label',
+                        text: "A modifier uniquement si le joueur vient d'un autre club (prêt, changement de club)",
+                        anchor: '100%'
+                    },
+                    {
+                        name: 'id_club',
+                        fieldLabel: 'Club',
+                        xtype: 'combo',
+                        store: 'Clubs',
+                        displayField: 'nom',
+                        valueField: 'id',
+                        msgTarget: 'under',
+                        anchor: '100%'
+                    }
+                ]
             },
             {
                 name: 'date_homologation',

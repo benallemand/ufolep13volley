@@ -135,6 +135,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 },
                 success: function() {
                     thisController.getPlayersStore().load();
+                    thisController.getMyPlayersStore().load();
                     thisController.getWindowEditPlayer().close();
                 },
                 failure: function(form, action) {
@@ -145,6 +146,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     },
     createPlayer: function() {
         Ext.widget('playeredit');
+        var idClub = this.getMyTeamStore().getAt(0).get('id_club');
+        this.getFormPanelEditPlayer().getForm().findField('id_club').setValue(idClub);
     },
     loadTeamDetails: function() {
         var me = this;
