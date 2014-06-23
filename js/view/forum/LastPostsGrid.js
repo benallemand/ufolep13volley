@@ -17,12 +17,13 @@ Ext.define('Ufolep13Volley.view.forum.LastPostsGrid', {
         {
             header: 'Auteur',
             flex: 1,
+            hidden: true,
             dataIndex: 'creator'
         },
         {
             header: 'Catégorie',
             flex: 1,
-            hidden : true,
+            hidden: true,
             dataIndex: 'category'
         },
         {
@@ -33,5 +34,5 @@ Ext.define('Ufolep13Volley.view.forum.LastPostsGrid', {
             format: 'd/m h:i'
         }
     ],
-    store : 'LastPosts'
+    store: 'LastPosts'
 });

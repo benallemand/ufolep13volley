@@ -136,36 +136,31 @@ Ext.application({
                             items: [
                                 {
                                     region: 'west',
-                                    xtype: 'NewGrid'
+                                    xtype: 'LastPostsGrid',
+                                    flex: 1
                                 },
                                 {
                                     xtype: 'panel',
                                     flex: 1,
                                     region: 'center',
-                                    items: [
-                                        changingImage
-                                    ]
+                                    items: changingImage
                                 }
                             ]
                         },
                         {
                             region: 'center',
+                            margin : '10 0 0 0',
                             flex: 2,
                             layout: 'border',
                             items: [
                                 {
                                     region: 'north',
-                                    flex : 2,
+                                    flex: 1,
                                     xtype: 'LastResultsGrid'
                                 },
                                 {
                                     region: 'center',
-                                    flex : 2,
-                                    xtype: 'LastPostsGrid'
-                                },
-                                {
-                                    region: 'east',
-                                    flex : 1,
+                                    flex: 1,
                                     xtype: 'WebSitesGrid'
                                 }
                             ]
