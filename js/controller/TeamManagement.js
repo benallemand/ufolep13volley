@@ -148,6 +148,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         Ext.widget('playeredit');
         var idClub = this.getMyTeamStore().getAt(0).get('id_club');
         this.getFormPanelEditPlayer().getForm().findField('id_club').setValue(idClub);
+        this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').setValue(false);
+        this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').hide();
     },
     loadTeamDetails: function() {
         var me = this;
