@@ -10,6 +10,14 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
     items: {
         xtype: 'grid',
         store: 'MyPlayers',
+        viewConfig: {
+            getRowClass: function(record, rowIndex, rowParams, store) {
+                if (record.get('est_actif') === false) {
+                    return 'grid-red';
+                }
+                return '';
+            }
+        },
         columns: {
             items: [
                 {

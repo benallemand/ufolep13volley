@@ -1466,7 +1466,7 @@ function getMonEquipe() {
     return json_encode($results);
 }
 
-function getMyPlayers($rootPath = '../') {
+function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
     conn_db();
     if (!isset($_SESSION['id_equipe'])) {
         return false;
@@ -1475,20 +1475,7 @@ function getMyPlayers($rootPath = '../') {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "SELECT
-        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
-        j.prenom, 
-        j.nom, 
-        j.telephone, 
-        j.email, 
-        j.num_licence, 
-        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
-        j.sexe, 
-        j.departement_affiliation, 
-        j.est_actif+0 AS est_actif, 
-        j.id_club, 
-        j.telephone2, 
-        j.email2, 
+    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, j.prenom, j.nom, j.telephone, j.email, j.num_licence, CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
         CASE 
             WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
                 CASE 
@@ -1501,16 +1488,15 @@ function getMyPlayers($rootPath = '../') {
                     WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
                 END         
         END AS est_licence_valide, 
-        j.est_responsable_club+0 AS est_responsable_club, 
-        je.est_capitaine+0 AS est_capitaine, 
-        je.is_vice_captain+0 AS is_vice_captain, 
-        j.id, 
-        j.date_homologation,
-        j.show_photo+0 AS show_photo 
+        j.est_responsable_club+0 AS est_responsable_club, je.est_capitaine+0 AS est_capitaine, je.is_vice_captain+0 AS is_vice_captain, j.id, j.date_homologation, j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
-        WHERE je.id_equipe = $sessionIdEquipe
-        ORDER BY sexe, nom ASC";
+        WHERE 
+        je.id_equipe = $sessionIdEquipe";
+    if ($doHideInactivePlayers) {
+        $sql .= " AND j.est_actif+0=1 ";
+    }
+    $sql .= "ORDER BY sexe, nom ASC";
 
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
@@ -1606,7 +1592,7 @@ function isRegistryKeyPresent($key) {
 }
 
 function getMyPlayersPdf() {
-    return getMyPlayers('');
+    return getMyPlayers('', true);
 }
 
 function getPlayers() {
