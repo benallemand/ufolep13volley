@@ -669,11 +669,18 @@ function getIdsTeamRequestingNextMatches() {
 
 function create_csv_string($data) {
     // Open temp file pointer
-    if (!$fp = fopen('php://temp', 'w+'))
+    if (!$fp = fopen('php://temp', 'w+')) {
         return FALSE;
+    }
+    $isHeaderWritten = false;
     // Loop data and write to file pointer
-    foreach ($data as $line)
+    foreach ($data as $line) {
+        if (!$isHeaderWritten) {
+            fputcsv($fp, array_keys($line));
+            $isHeaderWritten = true;
+        }
         fputcsv($fp, $line);
+    }
     // Place stream pointer at beginning
     rewind($fp);
     // Return the data
@@ -743,16 +750,16 @@ function sendMailNextMatches() {
         $id = $idTeam['user_id'];
         conn_db();
         $sql = "SELECT 
-        m.code_match as code, 
-        m.date_reception AS date, 
+        e1.nom_equipe AS equipe_domicile, 
+        e2.nom_equipe AS equipe_exterieur, 
+        m.code_match as code_match, 
+        DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date, 
         m.heure_reception AS heure, 
         de.responsable AS responsable, 
-        de.telephone_1 AS tel, 
-        de.email AS mail, 
+        de.telephone_1 AS telephone, 
+        de.email AS email, 
         de.gymnase AS addresse, 
-        de.localisation AS gps, 
-        e1.nom_equipe AS domicile, 
-        e2.nom_equipe AS exterieur 
+        CONCAT('https://maps.google.com/?ie=UTF8&t=m&q=',de.localisation,'&z=12') AS lien_maps 
         FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom 
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
