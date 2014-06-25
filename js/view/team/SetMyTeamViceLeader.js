@@ -1,8 +1,8 @@
-Ext.define('Ufolep13Volley.view.team.SetMyTeamCaptain', {
+Ext.define('Ufolep13Volley.view.team.SetMyTeamViceLeader', {
     extend: 'Ext.window.Window',
-    alias: 'widget.setmyteamcaptain',
+    alias: 'widget.setmyteamviceleader',
     autoShow: true,
-    title: "Modifier le capitaine",
+    title: "Modifier le Suppléant",
     height: 500,
     width: 500,
     modal: true,
@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.team.SetMyTeamCaptain', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/updateMyTeamCaptain.php',
+        url: 'ajax/updateMyTeamViceLeader.php',
         items: [
             {
                 xtype: 'combo',

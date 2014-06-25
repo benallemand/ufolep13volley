@@ -7,7 +7,7 @@ Ext.onReady(function() {
                 'club',
                 'championnat',
                 'division',
-                'capitaine',
+                'leader',
                 'portable',
                 'courriel',
                 'creneau',
@@ -33,7 +33,7 @@ Ext.onReady(function() {
             s.select("text[id='club']").node.innerHTML = record.get('club');
             s.select("text[id='championship']").node.innerHTML = record.get('championnat');
             s.select("text[id='league']").node.innerHTML = record.get('division');
-            s.select("text[id='captain']").node.innerHTML = record.get('capitaine');
+            s.select("text[id='leader']").node.innerHTML = record.get('leader');
             s.select("text[id='phone']").node.innerHTML = record.get('portable');
             s.select("text[id='email']").node.innerHTML = record.get('courriel');
             s.select("text[id='scheduler']").node.innerHTML = record.get('creneau');
@@ -79,11 +79,15 @@ Ext.onReady(function() {
                     type: 'bool'
                 },
                 {
-                    name: 'est_capitaine',
+                    name: 'is_captain',
                     type: 'bool'
                 },
                 {
-                    name: 'is_vice_captain',
+                    name: 'is_leader',
+                    type: 'bool'
+                },
+                {
+                    name: 'is_vice_leader',
                     type: 'bool'
                 },
                 {
@@ -121,15 +125,17 @@ Ext.onReady(function() {
                     'stroke': 'black',
                     'stroke-width': 1
                 });
-                if (record.get('est_capitaine')) {
-                    group.text(110, 100, 'CAPITAINE').attr({'fill': 'red'});
+                var roles = [];
+                if (record.get('is_leader')) {
+                    roles.push('RESP');
                 }
-                else if (record.get('is_vice_captain')) {
-                    group.text(110, 100, 'SUPPLEANT').attr({'fill': 'blue'});
+                if (record.get('is_captain')) {
+                    roles.push('CAP');
                 }
-                else {
-                    group.text(110, 100, '');
+                if (record.get('is_vice_leader')) {
+                    roles.push('SUPP');
                 }
+                group.text(110, 100, roles.join('/')).attr({'fill': 'red'});
                 var maxPlayersByColumn = 6;
 //                if(records.length > 18) {
 //                    maxPlayersByColumn = 8;

@@ -33,8 +33,28 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     dataIndex: 'num_licence'
                 },
                 {
-                    header: 'Capitaine ?',
-                    dataIndex: 'est_capitaine',
+                    header: 'Capitaine',
+                    dataIndex: 'is_captain',
+                    xtype: 'checkcolumn',
+                    listeners: {
+                        beforecheckchange: function() {
+                            return false;
+                        }
+                    }
+                },
+                {
+                    header: 'Responsable',
+                    dataIndex: 'is_leader',
+                    xtype: 'checkcolumn',
+                    listeners: {
+                        beforecheckchange: function() {
+                            return false;
+                        }
+                    }
+                },
+                {
+                    header: 'Suppléant',
+                    dataIndex: 'is_vice_leader',
                     xtype: 'checkcolumn',
                     listeners: {
                         beforecheckchange: function() {
@@ -104,7 +124,17 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     {
                         xtype: 'button',
                         text: "Modifier le capitaine",
-                        action: 'modifyTeamCaptain'
+                        action: 'modifyCaptain'
+                    },
+                    {
+                        xtype: 'button',
+                        text: "Modifier le responsable",
+                        action: 'modifyLeader'
+                    },
+                    {
+                        xtype: 'button',
+                        text: "Modifier le suppléant",
+                        action: 'modifyViceLeader'
                     }
                 ]
             }

@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
     stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences'],
     models: ['Club', 'Team', 'Player', 'Preference'],
-    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'player.Edit', 'team.EditPreferences'],
+    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'team.EditPreferences'],
     refs: [
         {
             ref: 'teamDetailsForm',
@@ -29,8 +29,24 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
             selector: "setmyteamcaptain > form"
         },
         {
+            ref: 'setMyTeamLeaderForm',
+            selector: "setmyteamleader > form"
+        },
+        {
+            ref: 'setMyTeamViceLeaderForm',
+            selector: "setmyteamviceleader > form"
+        },
+        {
             ref: 'setMyTeamCaptainWindow',
             selector: "setmyteamcaptain"
+        },
+        {
+            ref: 'setMyTeamLeaderWindow',
+            selector: "setmyteamleader"
+        },
+        {
+            ref: 'setMyTeamViceLeaderWindow',
+            selector: "setmyteamviceleader"
         },
         {
             ref: 'connectedTeamNameToolbarText',
@@ -71,11 +87,23 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'form[url=ajax/addPlayerToMyTeam.php] > toolbar > button[text=Sauver]': {
                         click: this.saveAddPlayerToMyTeam
                     },
-                    "button[action=modifyTeamCaptain]": {
+                    "button[action=modifyCaptain]": {
                         click: this.showSetMyTeamCaptain
                     },
-                    'form[url=ajax/updateMyTeamCaptain.php] > toolbar > button[text=Sauver]': {
+                    "button[action=modifyLeader]": {
+                        click: this.showSetMyTeamLeader
+                    },
+                    "button[action=modifyViceLeader]": {
+                        click: this.showSetMyTeamViceLeader
+                    },
+                    'setmyteamcaptain button[action=save]': {
                         click: this.saveSetMyTeamCaptain
+                    },
+                    'setmyteamleader button[action=save]': {
+                        click: this.saveSetMyTeamLeader
+                    },
+                    'setmyteamviceleader button[action=save]': {
+                        click: this.saveSetMyTeamViceLeader
                     },
                     'form[title=Vos Détails]': {
                         render: this.loadTeamDetails
@@ -200,8 +228,46 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
             });
         }
     },
+    saveSetMyTeamLeader: function() {
+        var windowSetMyTeamLeader = this.getSetMyTeamLeaderWindow();
+        var form = this.getSetMyTeamLeaderForm().getForm();
+        var storeMyPlayers = this.getMyPlayersStore();
+        if (form.isValid()) {
+            form.submit({
+                success: function(form, action) {
+                    storeMyPlayers.load();
+                    windowSetMyTeamLeader.close();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    saveSetMyTeamViceLeader: function() {
+        var windowSetMyTeamViceLeader = this.getSetMyTeamViceLeaderWindow();
+        var form = this.getSetMyTeamViceLeaderForm().getForm();
+        var storeMyPlayers = this.getMyPlayersStore();
+        if (form.isValid()) {
+            form.submit({
+                success: function(form, action) {
+                    storeMyPlayers.load();
+                    windowSetMyTeamViceLeader.close();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
     showSetMyTeamCaptain: function() {
         Ext.widget('setmyteamcaptain');
+    },
+    showSetMyTeamLeader: function() {
+        Ext.widget('setmyteamleader');
+    },
+    showSetMyTeamViceLeader: function() {
+        Ext.widget('setmyteamviceleader');
     },
     saveAddPlayerToMyTeam: function() {
         var windowAddPlayerToMyTeam = this.getAddPlayerToMyTeamWindow();

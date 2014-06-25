@@ -66,7 +66,21 @@ Ext.define('Ufolep13Volley.model.mobile.Player', {
             'team_leader_list',
             'teams_list',
             {
-                name: 'est_capitaine',
+                name: 'is_captain',
+                type: 'bool',
+                convert: function(val) {
+                    return val === '1';
+                }
+            },
+            {
+                name: 'is_leader',
+                type: 'bool',
+                convert: function(val) {
+                    return val === '1';
+                }
+            },
+            {
+                name: 'is_vice_leader',
                 type: 'bool',
                 convert: function(val) {
                     return val === '1';

@@ -23,9 +23,9 @@ $pdf->Cell(20, 5, 'Championnat: ', 0, 0, 'L');
 $pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->championnat), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Division: ', 0, 0, 'L');
 $pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->division), 0, 1, 'L');
-$pdf->Cell(20, 5, 'Capitaine: ', 0, 0, 'L');
+$pdf->Cell(20, 5, 'Responsable: ', 0, 0, 'L');
 $pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->capitaine), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->leader), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(20, 5, 'Portable: ', 0, 0, 'L');
 $pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->portable), 0, 1, 'L');
@@ -72,10 +72,20 @@ foreach ($jsonMyPlayers as $index => $jsonPlayer) {
     $pdf->SetFont('ZapfDingbats', '', 18);
     $pdf->Cell(5, 5, 'o', 0, 0, 'L');
     $pdf->SetFont('Arial', '', 8);
-    if (toWellFormatted($jsonPlayer->est_capitaine) === "1") {
+    $roles = array();
+    if (toWellFormatted($jsonPlayer->is_captain) === "1") {
+        $roles[] = 'CAP';
+    }
+    if (toWellFormatted($jsonPlayer->is_leader) === "1") {
+        $roles[] = 'RESP';
+    }
+    if (toWellFormatted($jsonPlayer->is_vice_leader) === "1") {
+        $roles[] = 'SUPP';
+    }
+    if (count($roles) > 0) {
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 20 + 35 * ($index % $NbByColumns));
         $pdf->SetTextColor(255, 0, 0);
-        $pdf->Cell(50, 5, 'CAPITAINE', 0, 1, 'L');
+        $pdf->Cell(50, 5, implode('/', $roles), 0, 1, 'L');
         $pdf->SetTextColor(0, 0, 0);
     }
 }

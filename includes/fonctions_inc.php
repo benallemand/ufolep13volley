@@ -382,8 +382,9 @@ function getPlayersFromTeam($id_equipe) {
                 END         
         END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
-        je.est_capitaine+0 AS est_capitaine, 
-        je.is_vice_captain+0 AS is_vice_captain, 
+        je.is_captain+0 AS is_captain, 
+        je.is_vice_leader+0 AS is_vice_leader, 
+        je.is_leader+0 AS is_leader, 
         j.id, 
         j.date_homologation,
         j.show_photo+0 AS show_photo 
@@ -1495,7 +1496,11 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
                     WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
                 END         
         END AS est_licence_valide, 
-        j.est_responsable_club+0 AS est_responsable_club, je.est_capitaine+0 AS est_capitaine, je.is_vice_captain+0 AS is_vice_captain, j.id, j.date_homologation, j.show_photo+0 AS show_photo 
+        j.est_responsable_club+0 AS est_responsable_club, 
+        je.is_captain+0 AS is_captain, 
+        je.is_vice_leader+0 AS is_vice_leader, 
+        je.is_leader+0 AS is_leader, 
+        j.id, j.date_homologation, j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         WHERE 
@@ -1503,7 +1508,7 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
     if ($doHideInactivePlayers) {
         $sql .= " AND j.est_actif+0=1 ";
     }
-    $sql .= "ORDER BY sexe, nom ASC";
+    $sql .= " ORDER BY sexe, nom ASC";
 
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
@@ -1680,7 +1685,7 @@ function getTeamsListForCaptain($playerId) {
     $teams = array();
     conn_db();
     $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
-    WHERE je.id_joueur = $playerId AND est_capitaine+0=1";
+    WHERE je.id_joueur = $playerId AND is_captain+0=1";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     while ($data = mysql_fetch_array($req)) {
         $teams[] = $data['team'];
@@ -1726,18 +1731,72 @@ function updateMyTeamCaptain($idPlayer) {
     if (!isPlayerInTeam($idPlayer, $idTeam)) {
         return false;
     }
-    $sql = "UPDATE joueur_equipe SET est_capitaine = 0 WHERE id_equipe = $idTeam";
+    $sql = "UPDATE joueur_equipe SET is_captain = 0 WHERE id_equipe = $idTeam";
     $req = mysql_query($sql);
     if ($req === FALSE) {
         return false;
     }
-    $sql = "UPDATE joueur_equipe SET est_capitaine = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
+    $sql = "UPDATE joueur_equipe SET is_captain = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
     $req = mysql_query($sql);
     if ($req === FALSE) {
         return false;
     }
     mysql_close();
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
+    return true;
+}
+
+function updateMyTeamViceLeader($idPlayer) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $idTeam = $_SESSION['id_equipe'];
+    if (!isPlayerInTeam($idPlayer, $idTeam)) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET is_vice_leader = 0 WHERE id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET is_vice_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau suppleant : " . getPlayerFullName($idPlayer));
+    return true;
+}
+
+function updateMyTeamLeader($idPlayer) {
+    conn_db();
+    if (!isset($_SESSION['id_equipe'])) {
+        return false;
+    }
+    if ($_SESSION['id_equipe'] == "admin") {
+        return false;
+    }
+    $idTeam = $_SESSION['id_equipe'];
+    if (!isPlayerInTeam($idPlayer, $idTeam)) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET is_leader = 0 WHERE id_equipe = $idTeam";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $sql = "UPDATE joueur_equipe SET is_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
+    $req = mysql_query($sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysql_close();
+    addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau responsable : " . getPlayerFullName($idPlayer));
     return true;
 }
 
@@ -1930,7 +1989,7 @@ function getMyTeamSheet() {
         c.nom AS club,
         comp.libelle AS championnat,
         cla.division,
-        CONCAT(j.prenom, ' ', j.nom) AS capitaine,
+        CONCAT(j.prenom, ' ', j.nom) AS leader,
         j.telephone AS portable,
         j.email AS courriel,
         CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
@@ -1944,7 +2003,7 @@ function getMyTeamSheet() {
         JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
         JOIN joueurs j ON j.id=je.id_joueur
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
-        WHERE je.est_capitaine=1
+        WHERE je.is_leader=1
         AND je.id_equipe = $sessionIdEquipe";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
