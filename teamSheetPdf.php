@@ -57,17 +57,33 @@ $NbByColumns = 6;
 $widthPhoto = 20;
 $offsetYPlayers = 70;
 $offsetXPlayers = 60;
+$nbGirls = 0;
+$isFirstMaleReached = false;
+$isSortMaleFemaleNeeded = false;
+if (($jsonMyTeam[0]->code_competition === 'kh') || ($jsonMyTeam[0]->code_competition === 'kf')) {
+    $isSortMaleFemaleNeeded = true;
+}
 foreach ($jsonMyPlayers as $index => $jsonPlayer) {
-    $pdf->SetXY(5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 35 * ($index % $NbByColumns));
-    $pdf->Rect(2 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers - 2 + 35 * ($index % $NbByColumns), $offsetXPlayers - 2, 32);
+    $currentIndex = $index;
+    if ($isSortMaleFemaleNeeded) {
+        if ($jsonPlayer->sexe === 'M') {
+            $isFirstMaleReached = true;
+            $currentIndex = $index + ($NbByColumns - $nbGirls);
+        }
+        if (!$isFirstMaleReached) {
+            $nbGirls++;
+        }
+    }
+    $pdf->SetXY(5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 35 * ($currentIndex % $NbByColumns));
+    $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + 35 * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, 32);
     $pdf->Image(toWellFormatted($jsonPlayer->path_photo), null, null, $widthPhoto);
-    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 35 * ($index % $NbByColumns));
-    $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->nom), 0, 1, 'L');
-    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 5 + 35 * ($index % $NbByColumns));
+    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 35 * ($currentIndex % $NbByColumns));
     $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->prenom), 0, 1, 'L');
-    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 10 + 35 * ($index % $NbByColumns));
+    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 5 + 35 * ($currentIndex % $NbByColumns));
+    $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->nom), 0, 1, 'L');
+    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 10 + 35 * ($currentIndex % $NbByColumns));
     $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->num_licence) . ' /' . toWellFormatted($jsonPlayer->sexe), 0, 1, 'L');
-    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 15 + 35 * ($index % $NbByColumns));
+    $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 15 + 35 * ($currentIndex % $NbByColumns));
     $pdf->Cell(16, 5, 'Présent(e) : ', 0, 0, 'L');
     $pdf->SetFont('ZapfDingbats', '', 18);
     $pdf->Cell(5, 5, 'o', 0, 0, 'L');
@@ -83,7 +99,7 @@ foreach ($jsonMyPlayers as $index => $jsonPlayer) {
         $roles[] = 'SUPP';
     }
     if (count($roles) > 0) {
-        $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($index / $NbByColumns), $offsetYPlayers + 20 + 35 * ($index % $NbByColumns));
+        $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 20 + 35 * ($currentIndex % $NbByColumns));
         $pdf->SetTextColor(255, 0, 0);
         $pdf->Cell(50, 5, implode('/', $roles), 0, 1, 'L');
         $pdf->SetTextColor(0, 0, 0);
