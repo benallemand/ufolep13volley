@@ -37,16 +37,13 @@ Ext.application({
                         collapsible: true,
                         title: 'Navigation',
                         split: true,
-                        width: 200,
-                        layout: {
-                            type: 'vbox',
-                            align: 'stretch'
-                        },
+                        width: 250,
+                        layout: 'anchor',
+                        autoScroll: true,
                         defaults: {
-                            flex: 1,
+                            anchor: '100%',
                             xtype: 'button',
-                            scale: 'large',
-                            margins: '10 5 5 5'
+                            margin: 5
                         },
                         items: [
                             {
@@ -56,6 +53,10 @@ Ext.application({
                             {
                                 text: 'Gestion des profils',
                                 action: 'manageProfiles'
+                            },
+                            {
+                                text: 'Gestion des comptes utilisateur',
+                                action: 'manageUserAccounts'
                             }
                         ]
                     },
