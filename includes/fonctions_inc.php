@@ -2205,3 +2205,19 @@ function saveProfile() {
     }
     return true;
 }
+
+function getUsers() {
+    conn_db();
+    $sql = "SELECT ca.id, ca.login, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
+        FROM comptes_acces ca 
+        LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe 
+        LEFT JOIN clubs c ON c.id=e.id_club 
+        LEFT JOIN users_profiles up ON up.user_id=ca.id 
+        LEFT JOIN profiles p ON p.id=up.profile_id";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}

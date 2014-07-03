@@ -37,7 +37,7 @@ Ext.application({
                         collapsible: true,
                         title: 'Navigation',
                         split: true,
-                        width: 250,
+                        width: 200,
                         layout: 'anchor',
                         autoScroll: true,
                         defaults: {
@@ -55,8 +55,8 @@ Ext.application({
                                 action: 'manageProfiles'
                             },
                             {
-                                text: 'Gestion des comptes utilisateur',
-                                action: 'manageUserAccounts'
+                                text: 'Gestion des utilisateurs',
+                                action: 'manageUsers'
                             }
                         ]
                     },
