@@ -1683,7 +1683,7 @@ function getPlayers() {
 
 function getProfiles() {
     conn_db();
-    $sql = "SELECT id, name FROM PROFILES";
+    $sql = "SELECT id, name FROM profiles";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     $results = array();
     while ($data = mysql_fetch_assoc($req)) {
