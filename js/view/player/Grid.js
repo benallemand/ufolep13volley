@@ -63,16 +63,20 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     fieldLabel: 'Recherche'
                 },
                 {
-                    text: 'Associer à un club'
+                    text: 'Associer à un club',
+                    action: 'showClubSelect'
                 },
                 {
-                    text: 'Associer à une équipe'
+                    text: 'Associer à une équipe',
+                    action: 'showTeamSelect'
                 },
                 {
-                    text: 'Créer un joueur'
+                    text: 'Créer un joueur',
+                    action: 'addPlayer'
                 },
                 {
-                    text: 'Editer joueur'
+                    text: 'Editer joueur',
+                    action: 'editPlayer'
                 }
             ]
         }

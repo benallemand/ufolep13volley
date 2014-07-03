@@ -50,7 +50,12 @@ Ext.application({
                         },
                         items: [
                             {
-                                text: 'Gestion des joueurs'
+                                text: 'Gestion des joueurs',
+                                action: 'managePlayers'
+                            },
+                            {
+                                text: 'Gestion des profils',
+                                action: 'manageProfiles'
                             }
                         ]
                     },

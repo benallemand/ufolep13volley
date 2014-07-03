@@ -1681,6 +1681,17 @@ function getPlayers() {
     return json_encode($results);
 }
 
+function getProfiles() {
+    conn_db();
+    $sql = "SELECT id, name FROM PROFILES";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getTeamsListForCaptain($playerId) {
     $teams = array();
     conn_db();
@@ -2041,6 +2052,20 @@ function isPlayerExists($licenceNumber) {
     return true;
 }
 
+function isProfileExists($name) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM profiles WHERE name = '$name'";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
 function savePlayer() {
     $inputs = array(
         'prenom' => filter_input(INPUT_POST, 'prenom'),
@@ -2123,4 +2148,60 @@ function savePlayer() {
         }
     }
     return savePhoto($inputs['nom'], $inputs['prenom']);
+}
+
+function saveProfile() {
+    $inputs = array(
+        'id' => filter_input(INPUT_POST, 'id'),
+        'name' => filter_input(INPUT_POST, 'name')
+    );
+    if (empty($inputs['id'])) {
+        if (isProfileExists($inputs['name'])) {
+            return false;
+        }
+    }
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "profiles SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysql_query($sql);
+    mysql_close();
+    if ($req === FALSE) {
+        return false;
+    }
+    if (empty($inputs['id'])) {
+        $name = $inputs['name'];
+        $comment = "Creation d'un nouveau profil : $name";
+        addActivity($comment);
+    } else {
+        $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
+        if ($dirtyFields) {
+            $fieldsArray = explode(',', $dirtyFields);
+            foreach ($fieldsArray as $fieldName) {
+                $fieldValue = filter_input(INPUT_POST, $fieldName);
+                $name = $inputs['name'];
+                $comment = "$name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+                addActivity($comment);
+            }
+        }
+    }
+    return true;
 }
