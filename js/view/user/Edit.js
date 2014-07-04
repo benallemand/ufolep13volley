@@ -29,8 +29,23 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
                 fieldLabel: 'Login',
                 allowBlank: false,
                 msgTarget: 'under'
+            },
+            {
+                name: 'password',
+                xtype: 'passwordfield',
+                fieldLabel: 'Password',
+                allowBlank: false,
+                msgTarget: 'under'
+            },
+            {
+                name: 'id_team',
+                xtype: 'combo',
+                queryMode: 'local',
+                fieldLabel: 'Equipe',
+                store: 'Teams',
+                displayField: 'team_full_name',
+                valueField: 'id_equipe'
             }
-            //TODO add id_team, id_profile, password
         ],
         buttons: [
             {

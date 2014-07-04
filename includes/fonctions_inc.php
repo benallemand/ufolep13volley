@@ -27,7 +27,7 @@ function randomPassword() {
     return implode($pass); //turn the array into a string
 }
 
-function isLoginInDatabase($login) {
+function isUserExists($login) {
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE login = '$login'";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
@@ -43,7 +43,7 @@ function isLoginInDatabase($login) {
 
 function createUser($login, $idTeam) {
     conn_db();
-    if (isLoginInDatabase($login)) {
+    if (isUserExists($login)) {
         return false;
     }
     if ($idTeam === NULL) {
@@ -76,9 +76,12 @@ function login() {
         ));
         return;
     }
-    $login = $_POST['login'];
-    $password = addslashes($_POST['password']);
-    $sql = 'SELECT * FROM comptes_acces WHERE login = \'' . $login . '\' LIMIT 1';
+    $login = filter_input(INPUT_POST, 'login');
+    $password = addslashes(filter_input(INPUT_POST, 'password'));
+    $sql = "SELECT ca.id_equipe, ca.login, ca.password, ca.id AS id_user, p.name AS profile_name FROM comptes_acces ca
+        LEFT JOIN users_profiles up ON up.user_id=ca.id
+        LEFT JOIN profiles p ON p.id=up.profile_id
+        WHERE ca.login = '$login' LIMIT 1";
     $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
     if (mysql_num_rows($req) <= 0) {
         mysql_close();
@@ -97,15 +100,12 @@ function login() {
         ));
         return;
     }
-    $id_equipe = $data['id_equipe'];
     session_start();
-    $_SESSION['login'] = $login;
-    $_SESSION['password'] = $password;
-    if ($id_equipe == "999") {
-        $_SESSION['id_equipe'] = "admin";
-    } else {
-        $_SESSION['id_equipe'] = $id_equipe;
-    }
+    $_SESSION['id_equipe'] = $data['id_equipe'];
+    $_SESSION['login'] = $data['login'];
+    $_SESSION['password'] = $data['password'];
+    $_SESSION['id_user'] = $data['id_user'];
+    $_SESSION['profile_name'] = $data['profile_name'];
     mysql_close();
     echo json_encode(array(
         'success' => true,
@@ -240,15 +240,15 @@ function getLastResults() {
 }
 
 function estAdmin() {
-    return (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin");
+    return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
 }
 
 function estMemeClassement($id_equipe) {
+    if (estAdmin()) {
+        return true;
+    }
     if (!isset($_SESSION['id_equipe'])) {
         return false;
-    }
-    if ($_SESSION['id_equipe'] == "admin") {
-        return true;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     if ($sessionIdEquipe === $id_equipe) {
@@ -590,15 +590,14 @@ function affich_details_equipe($id_equipe, $compet)
 }
 
 function getConnectedUser() {
-    $nom_equipe = '';
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
-        $nom_equipe = "Administrateur";
+    if (estAdmin()) {
+        return "Administrateur";
     }
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] != "admin") {
+    if (isset($_SESSION['id_equipe'])) {
         $jsonTeamDetails = json_decode(getMonEquipe());
-        $nom_equipe = $jsonTeamDetails[0]->team_full_name;
+        return $jsonTeamDetails[0]->team_full_name;
     }
-    return $nom_equipe;
+    return "Non connecté";
 }
 
 //************************************************************************************************
@@ -614,14 +613,19 @@ function affich_connecte()
  * * Date        : 07/05/2010 
  */ {
 // On affiche le div
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] == "admin") {
+    if (estAdmin()) {
         $nom_equipe = "Administrateur";
+        echo'<div id="deconn">';
+        echo'<ul>';
+        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
+        echo' | ';
+        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
+        echo'</ul>';
+        echo'</div>';
+        return;
     }
-    if (isset($_SESSION['id_equipe']) && $_SESSION['id_equipe'] != "admin") {
-        $nom_equipe = $_SESSION['login'];
-    }
-
     if (isset($_SESSION['id_equipe'])) {
+        $nom_equipe = $_SESSION['login'];
         echo'<div id="deconn">';
         echo'<ul>';
         echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
@@ -630,6 +634,7 @@ function affich_connecte()
         echo'</ul>';
         echo'</div>';
     }
+    return;
 }
 
 function envoi_mail($id1, $id2, $compet, $date) {
@@ -1214,11 +1219,8 @@ function modifierMatch($code_match) {
 
 function addActivity($comment) {
     conn_db();
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    if ($sessionIdEquipe === "admin") {
-        $sessionIdEquipe = 999;
-    }
-    $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdEquipe";
+    $sessionIdUser = $_SESSION['id_user'];
+    $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdUser";
     mysql_query($sql);
     mysql_close();
     return;
@@ -1230,7 +1232,7 @@ function modifierMonEquipe() {
     if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (estAdmin()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1287,7 +1289,7 @@ function modifierMonMotDePasse() {
     if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (estAdmin()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1418,10 +1420,10 @@ function getMatches($compet, $div) {
 
 function getMyMatches() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1436,10 +1438,10 @@ function getMyMatches() {
 
 function getMonEquipe() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1476,10 +1478,10 @@ function getMonEquipe() {
 
 function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1547,10 +1549,10 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
 
 function getMyPreferences() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1566,10 +1568,10 @@ function getMyPreferences() {
 
 function saveMyPreferences() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1732,10 +1734,10 @@ function isPlayerInTeam($idPlayer, $idTeam) {
 
 function updateMyTeamCaptain($idPlayer) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1759,10 +1761,10 @@ function updateMyTeamCaptain($idPlayer) {
 
 function updateMyTeamViceLeader($idPlayer) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1786,10 +1788,10 @@ function updateMyTeamViceLeader($idPlayer) {
 
 function updateMyTeamLeader($idPlayer) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1813,10 +1815,10 @@ function updateMyTeamLeader($idPlayer) {
 
 function addPlayerToMyTeam($idPlayer) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1861,6 +1863,21 @@ function getPlayerFullName($idPlayer) {
     }
     mysql_close();
     return $results[0]['player_full_name'];
+}
+
+function getUserLogin($idUser) {
+    conn_db();
+    $sql = "SELECT 
+        ca.login AS login
+        FROM comptes_acces ca
+        WHERE ca.id = $idUser";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['login'];
 }
 
 function getTeamName($idTeam) {
@@ -1911,12 +1928,24 @@ function getClubName($idClub) {
     return $results[0]['club_name'];
 }
 
+function getProfileName($idProfile) {
+    conn_db();
+    $sql = "SELECT 
+        p.name as profile_name 
+        FROM profiles p 
+        WHERE p.id = $idProfile";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysql_close();
+    return $results[0]['profile_name'];
+}
+
 function addPlayersToClub($idPlayers, $idClub) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
-        return false;
-    }
-    if ($_SESSION['id_equipe'] !== "admin") {
+    if (!estAdmin()) {
         return false;
     }
     $sql = "UPDATE joueurs SET id_club = $idClub WHERE id IN ($idPlayers)";
@@ -1927,6 +1956,43 @@ function addPlayersToClub($idPlayers, $idClub) {
     mysql_close();
     foreach (explode(',', $idPlayers) as $idPlayer) {
         addActivity(getPlayerFullName($idPlayer) . " a ete ajoute au club " . getClubName($idClub));
+    }
+    return true;
+}
+
+function hasProfile($idUser) {
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM users_profiles WHERE user_id = $idUser";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $results = array();
+    while ($data = mysql_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function addProfileToUsers($idProfile, $idUsers) {
+    foreach (explode(',', $idUsers) as $idUser) {
+        $hasProfile = hasProfile($idUser);
+        conn_db();
+        if ($hasProfile) {
+            $sql = "UPDATE ";
+        } else {
+            $sql = "INSERT ";
+        }
+        $sql .= "users_profiles SET profile_id = $idProfile, user_id = $idUser ";
+        if ($hasProfile) {
+            $sql.="WHERE user_id = $idUser";
+        }
+        $req = mysql_query($sql);
+        if ($req === FALSE) {
+            return false;
+        }
+        mysql_close();
+        addActivity(getUserLogin($idUser) . " a obtenu le profil " . getProfileName($idProfile));
     }
     return true;
 }
@@ -1947,10 +2013,7 @@ function getIdClubFromIdTeam($idTeam) {
 }
 
 function addPlayersToTeam($idPlayers, $idTeam) {
-    if (!isset($_SESSION['id_equipe'])) {
-        return false;
-    }
-    if ($_SESSION['id_equipe'] !== "admin") {
+    if (!estAdmin()) {
         return false;
     }
     $idClub = getIdClubFromIdTeam($idTeam);
@@ -1967,10 +2030,10 @@ function addPlayersToTeam($idPlayers, $idTeam) {
 
 function removePlayerFromMyTeam($idPlayer) {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1989,10 +2052,10 @@ function removePlayerFromMyTeam($idPlayer) {
 
 function getMyTeamSheet() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if ($_SESSION['id_equipe'] == "admin") {
+    if (!isset($_SESSION['id_equipe'])) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -2208,7 +2271,7 @@ function saveProfile() {
 
 function getUsers() {
     conn_db();
-    $sql = "SELECT ca.id, ca.login, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
+    $sql = "SELECT ca.id, ca.login, ca.password, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
         FROM comptes_acces ca 
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe 
         LEFT JOIN clubs c ON c.id=e.id_club 
@@ -2220,4 +2283,70 @@ function getUsers() {
         $results[] = $data;
     }
     return json_encode($results);
+}
+
+function saveUser() {
+    $inputs = array(
+        'id' => filter_input(INPUT_POST, 'id'),
+        'login' => filter_input(INPUT_POST, 'login'),
+        'password' => filter_input(INPUT_POST, 'password'),
+        'id_team' => filter_input(INPUT_POST, 'id_team')
+    );
+    if (empty($inputs['id'])) {
+        if (isUserExists($inputs['login'])) {
+            return false;
+        }
+    }
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "comptes_acces SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
+            case 'id_team':
+                if(strlen($value) === 0) {
+                    $sql .= "id_equipe = NULL,";
+                }
+                else {
+                    $sql .= "id_equipe = $value,";
+                }
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysql_query($sql);
+    mysql_close();
+    if ($req === FALSE) {
+        return false;
+    }
+    if (empty($inputs['id'])) {
+        $login = $inputs['login'];
+        $comment = "Creation d'un nouvel utilisateur : $login";
+        addActivity($comment);
+    } else {
+        $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
+        if ($dirtyFields) {
+            $fieldsArray = explode(',', $dirtyFields);
+            foreach ($fieldsArray as $fieldName) {
+                $fieldValue = filter_input(INPUT_POST, $fieldName);
+                $login = $inputs['login'];
+                $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+                addActivity($comment);
+            }
+        }
+    }
+    return true;
 }

@@ -41,6 +41,10 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 {
                     text: 'Editer',
                     action: 'edit'
+                },
+                {
+                    text: 'Associer à un profil',
+                    action: 'showProfileSelect'
                 }
             ]
         }

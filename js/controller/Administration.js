@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
     stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users'],
     models: ['Player', 'Club', 'Team', 'Profile', 'User'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'user.Grid', 'user.Edit'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit'],
     refs: [
         {
             ref: 'managePlayersGrid',
@@ -25,6 +25,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'clubselect form'
         },
         {
+            ref: 'formPanelSelectProfile',
+            selector: 'profileselect form'
+        },
+        {
             ref: 'formPanelSelectTeam',
             selector: 'teamselect form'
         },
@@ -43,6 +47,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'windowSelectClub',
             selector: 'clubselect'
+        },
+        {
+            ref: 'windowSelectProfile',
+            selector: 'profileselect'
         },
         {
             ref: 'windowSelectTeam',
@@ -112,11 +120,17 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'button[action=showClubSelect]': {
                         click: this.showClubSelect
                     },
+                    'button[action=showProfileSelect]': {
+                        click: this.showProfileSelect
+                    },
                     'button[action=showTeamSelect]': {
                         click: this.showTeamSelect
                     },
                     'clubselect button[action=save]': {
                         click: this.linkPlayerToClub
+                    },
+                    'profileselect button[action=save]': {
+                        click: this.linkUsersToProfile
                     },
                     'teamselect button[action=save]': {
                         click: this.linkPlayerToTeam
@@ -297,6 +311,20 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             id_players: idPlayers.join(',')
         });
     },
+    showProfileSelect: function() {
+        var records = this.getManageUsersGrid().getSelectionModel().getSelection();
+        var idUsers = [];
+        Ext.each(records, function(record) {
+            idUsers.push(record.get('id'));
+        });
+        if (idUsers.length === 0) {
+            return;
+        }
+        Ext.widget('profileselect');
+        this.getFormPanelSelectProfile().getForm().setValues({
+            id_users: idUsers.join(',')
+        });
+    },
     showTeamSelect: function() {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
         var idPlayers = [];
@@ -319,6 +347,21 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 success: function() {
                     thisController.getPlayersStore().load();
                     thisController.getWindowSelectClub().close();
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    linkUsersToProfile: function() {
+        var thisController = this;
+        var form = this.getFormPanelSelectProfile().getForm();
+        if (form.isValid()) {
+            form.submit({
+                success: function() {
+                    thisController.getUsersStore().load();
+                    thisController.getWindowSelectProfile().close();
                 },
                 failure: function(form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
