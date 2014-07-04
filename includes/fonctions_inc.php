@@ -597,7 +597,7 @@ function getConnectedUser() {
         $jsonTeamDetails = json_decode(getMonEquipe());
         return $jsonTeamDetails[0]->team_full_name;
     }
-    return "Non connecté";
+    return "";
 }
 
 //************************************************************************************************
