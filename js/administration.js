@@ -507,15 +507,12 @@ Ext.application({
             var tableNames = [
                 'classements',
                 'competitions',
-                'comptes_acces',
                 'dates_limite',
                 'details_equipes',
                 'equipes',
                 'images',
                 'journees',
                 'matches',
-                'news',
-                'joueurs',
                 'clubs'
             ];
             menuAdmin.add({

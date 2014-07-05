@@ -243,11 +243,15 @@ function estAdmin() {
     return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
 }
 
+function isTeamLeader() {
+    return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
+}
+
 function estMemeClassement($id_equipe) {
     if (estAdmin()) {
         return true;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -593,7 +597,7 @@ function getConnectedUser() {
     if (estAdmin()) {
         return "Administrateur";
     }
-    if (isset($_SESSION['id_equipe'])) {
+    if (isTeamLeader()) {
         $jsonTeamDetails = json_decode(getMonEquipe());
         return $jsonTeamDetails[0]->team_full_name;
     }
@@ -624,7 +628,7 @@ function affich_connecte()
         echo'</div>';
         return;
     }
-    if (isset($_SESSION['id_equipe'])) {
+    if (isTeamLeader()) {
         $nom_equipe = $_SESSION['login'];
         echo'<div id="deconn">';
         echo'<ul>';
@@ -1228,11 +1232,11 @@ function addActivity($comment) {
 
 function modifierMonEquipe() {
     conn_db();
-    $id_equipe = filter_input(INPUT_POST, 'id_equipe');
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if (estAdmin()) {
+    $id_equipe = filter_input(INPUT_POST, 'id_equipe');
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1286,10 +1290,10 @@ function modifierMonEquipe() {
 
 function modifierMonMotDePasse() {
     conn_db();
-    if (!isset($_SESSION['id_equipe'])) {
+    if (estAdmin()) {
         return false;
     }
-    if (estAdmin()) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1423,7 +1427,7 @@ function getMyMatches() {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1441,7 +1445,7 @@ function getMonEquipe() {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1481,7 +1485,7 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1552,7 +1556,7 @@ function getMyPreferences() {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1571,7 +1575,7 @@ function saveMyPreferences() {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
@@ -1737,7 +1741,7 @@ function updateMyTeamCaptain($idPlayer) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1764,7 +1768,7 @@ function updateMyTeamViceLeader($idPlayer) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1791,7 +1795,7 @@ function updateMyTeamLeader($idPlayer) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -1818,7 +1822,7 @@ function addPlayerToMyTeam($idPlayer) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -2033,7 +2037,7 @@ function removePlayerFromMyTeam($idPlayer) {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
@@ -2055,7 +2059,7 @@ function getMyTeamSheet() {
     if (estAdmin()) {
         return false;
     }
-    if (!isset($_SESSION['id_equipe'])) {
+    if (!isTeamLeader()) {
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
