@@ -601,6 +601,9 @@ function getConnectedUser() {
         $jsonTeamDetails = json_decode(getMonEquipe());
         return $jsonTeamDetails[0]->team_full_name;
     }
+    if (isset($_SESSION['login'])) {
+        return $_SESSION['login'];
+    }
     return "";
 }
 
@@ -629,6 +632,16 @@ function affich_connecte()
         return;
     }
     if (isTeamLeader()) {
+        $nom_equipe = $_SESSION['login'];
+        echo'<div id="deconn">';
+        echo'<ul>';
+        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
+        echo' | ';
+        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
+        echo'</ul>';
+        echo'</div>';
+    }
+    if (isset($_SESSION['login'])) {
         $nom_equipe = $_SESSION['login'];
         echo'<div id="deconn">';
         echo'<ul>';

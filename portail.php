@@ -49,7 +49,12 @@
                         if (estAdmin()) {
                             die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
                         }
-                        echo'<script type="text/javascript" src="js/portal.js"></script>';
+                        if (isTeamLeader()) {
+                            echo'<script type="text/javascript" src="js/portal.js"></script>';
+                        }
+                        else {
+                            die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
+                        }
                     } else { // sinon on affiche le formulaire
                         echo'<div id="login"/>';
                         echo'<script type="text/javascript" src="js/login.js"></script>';

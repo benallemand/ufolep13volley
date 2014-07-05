@@ -11,7 +11,12 @@
             if (estAdmin()) {
                 die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
             }
-            echo'<script type="text/javascript" src="js/mobilePortal.js"></script>';
+            if (isTeamLeader()) {
+                echo'<script type="text/javascript" src="js/mobilePortal.js"></script>';
+            } 
+            else {
+                echo'<script type="text/javascript" src="js/mobile.js"></script>';
+            } 
         } else {
             echo'<script type="text/javascript" src="js/mobile.js"></script>';
         }
