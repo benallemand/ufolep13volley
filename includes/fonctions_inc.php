@@ -2326,10 +2326,9 @@ function saveUser() {
             case 'id':
                 continue;
             case 'id_team':
-                if(strlen($value) === 0) {
+                if (strlen($value) === 0) {
                     $sql .= "id_equipe = NULL,";
-                }
-                else {
+                } else {
                     $sql .= "id_equipe = $value,";
                 }
                 break;
@@ -2361,6 +2360,9 @@ function saveUser() {
                 $fieldValue = filter_input(INPUT_POST, $fieldName);
                 $login = $inputs['login'];
                 $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+                if ($fieldName === 'password') {
+                    $comment = "$login : Modification du champ $fieldName";
+                }
                 addActivity($comment);
             }
         }
