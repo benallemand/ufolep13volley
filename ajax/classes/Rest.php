@@ -11,13 +11,14 @@ class Rest {
     }
 
     function getColumns() {
+        global $db;
         $sql = "show columns from " . $this->fileName;
-        $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
-        while ($data = mysql_fetch_assoc($req)) {
+        while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        return json_encode($results);
+        return json_encode(utf8_encode_mix($results));
     }
 
     function getPrimaryKey() {
@@ -31,6 +32,7 @@ class Rest {
     }
 
     function getData() {
+        global $db;
         $sql = "SELECT SQL_CALC_FOUND_ROWS ";
         $columns = json_decode($this->getColumns(), true);
         $queribles = array();
@@ -65,32 +67,33 @@ class Rest {
         if ($startParam !== null) {
             $sql .= " limit $startParam,$limitParam";
         }
-        $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
-        while ($data = mysql_fetch_assoc($req)) {
+        while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        $req2 = mysql_query("SELECT FOUND_ROWS() AS total") or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+        $req2 = mysqli_query($db, "SELECT FOUND_ROWS() AS total") or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results2 = array();
-        while ($data = mysql_fetch_assoc($req2)) {
+        while ($data = mysqli_fetch_assoc($req2)) {
             $results2[] = $data;
         }
-        return json_encode(array(
+        return json_encode(utf8_encode_mix(array(
             'results' => $results,
-            'totalCount' => $results2[0]['total']));
+            'totalCount' => $results2[0]['total'])));
     }
 
     function saveData() {
+        global $db;
         $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(array(
+            return json_encode(utf8_encode_mix(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            ));
+            )));
         }
         $sql = "UPDATE " . $this->fileName . " SET ";
         $columns = json_decode($this->getColumns(), true);
@@ -118,57 +121,59 @@ class Rest {
         }
         $sql = rtrim($sql, ",");
         $sql .= " WHERE $primaryKey=\"" . $dataArray[$primaryKey] . "\";";
-        $success = mysql_query($sql);
+        $success = mysqli_query($db, $sql);
         if ($success) {
             $message = 'Sauvegarde OK';
         } else {
-            $message = "Erreur SQL : $sql : " . mysql_error();
+            $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(array(
+        return json_encode(utf8_encode_mix(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        ));
+        )));
     }
 
     function deleteData() {
+        global $db;
         $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(array(
+            return json_encode(utf8_encode_mix(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            ));
+            )));
         }
         $sql = "DELETE FROM " . $this->fileName;
         $sql .= " WHERE $primaryKey=\"" . $dataArray[$primaryKey] . "\";";
-        $success = mysql_query($sql);
+        $success = mysqli_query($db, $sql);
         if ($success) {
             $message = 'Suppression OK';
         } else {
-            $message = "Erreur SQL : $sql : " . mysql_error();
+            $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(array(
+        return json_encode(utf8_encode_mix(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        ));
+        )));
     }
 
     function addData() {
+        global $db;
         $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(array(
+            return json_encode(utf8_encode_mix(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            ));
+            )));
         }
         $sql = "INSERT INTO " . $this->fileName . " (";
         $columns = json_decode($this->getColumns(), true);
@@ -205,17 +210,17 @@ class Rest {
         }
         $sql = rtrim($sql, ",");
         $sql.= ");";
-        $success = mysql_query($sql);
+        $success = mysqli_query($db, $sql);
         if ($success) {
             $message = 'Sauvegarde OK';
         } else {
-            $message = "Erreur SQL : $sql : " . mysql_error();
+            $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(array(
+        return json_encode(utf8_encode_mix(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        ));
+        )));
     }
 
     function parseRequest() {
@@ -223,24 +228,24 @@ class Rest {
         if (!estAdmin()) {
             if ($this->fileName === 'comptes_acces') {
                 $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
-                echo json_encode(array(
+                echo json_encode(utf8_encode_mix(array(
                     'success' => false,
                     'message' => $message
-                ));
+                )));
                 exit;
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
                 $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
-                echo json_encode(array(
+                echo json_encode(utf8_encode_mix(array(
                     'success' => false,
                     'message' => $message
-                ));
+                )));
                 exit;
             }
         }
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                if ($_REQUEST['GET_COLUMNS'] === 'true') {
+                if (filter_input(INPUT_GET, 'GET_COLUMNS') === 'true') {
                     echo $this->getColumns();
                 } else {
                     echo $this->getData();

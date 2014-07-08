@@ -19,18 +19,19 @@ class Indicator {
     private $sql;
 
     function __construct($fieldLabel, $sql) {
-        $this->fieldLabel = utf8_encode($fieldLabel);
+        $this->fieldLabel = $fieldLabel;
         $this->sql = $sql;
     }
 
     function execSqlGetDetails() {
+        global $db;
         conn_db();
-        $req = mysql_query($this->sql);
+        $req = mysqli_query($db, $this->sql);
         $results = array();
-        while ($data = mysql_fetch_assoc($req)) {
+        while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        mysql_close();
+        mysqli_close($db);
         return $results;
     }
 

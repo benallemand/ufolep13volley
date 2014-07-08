@@ -127,7 +127,7 @@ $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
-    echo json_encode(array('results' => $results));
+    echo json_encode(utf8_encode_mix(array('results' => $results)));
     exit();
 }
 foreach ($results as $result) {

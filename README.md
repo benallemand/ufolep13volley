@@ -6,8 +6,8 @@ Some folders/files have been ignored in GIT :
 
 /nbproject/sql/ufolep_13volley.sql --> contains sql dump of actual database data
 /includes/db_inc.php --> contains function : function conn_db().  It aims to set db connection :
-    - $db = mysql_connect($server, $user, $password);
-    - mysql_select_db($base, $db);
+    - $db = mysqli_connect($server, $user, $password);
+    - mysqli_select_db($db, $base);
 /nbproject/private/
 /images/ --> contains misc pictures : 
     - root folder contains major banners, icons

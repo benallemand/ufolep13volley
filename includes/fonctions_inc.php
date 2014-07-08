@@ -28,11 +28,12 @@ function randomPassword() {
 }
 
 function isUserExists($login) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE login = '$login'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -42,6 +43,7 @@ function isUserExists($login) {
 }
 
 function createUser($login, $idTeam) {
+    global $db;
     conn_db();
     if (isUserExists($login)) {
         return false;
@@ -51,8 +53,8 @@ function createUser($login, $idTeam) {
     }
     $password = randomPassword();
     $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', password = '$password'";
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -67,13 +69,14 @@ function logout() {
 }
 
 function login() {
+    global $db;
     conn_db();
     if ((empty($_POST['login'])) || (empty($_POST['password']))) {
-        mysql_close();
-        echo json_encode(array(
+        mysqli_close($db);
+        echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Veuillez remplir les champs de connexion'
-        ));
+        )));
         return;
     }
     $login = filter_input(INPUT_POST, 'login');
@@ -82,100 +85,105 @@ function login() {
         LEFT JOIN users_profiles up ON up.user_id=ca.id
         LEFT JOIN profiles p ON p.id=up.profile_id
         WHERE ca.login = '$login' LIMIT 1";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    if (mysql_num_rows($req) <= 0) {
-        mysql_close();
-        echo json_encode(array(
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    if (mysqli_num_rows($req) <= 0) {
+        mysqli_close($db);
+        echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Login incorrect'
-        ));
+        )));
         return;
     }
-    $data = mysql_fetch_assoc($req);
+    $data = mysqli_fetch_assoc($req);
     if ($data['password'] != $password) {
-        mysql_close();
-        echo json_encode(array(
+        mysqli_close($db);
+        echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Mot de passe invalide'
-        ));
+        )));
         return;
     }
-    session_start();
+    //session_start();
     $_SESSION['id_equipe'] = $data['id_equipe'];
     $_SESSION['login'] = $data['login'];
     $_SESSION['password'] = $data['password'];
     $_SESSION['id_user'] = $data['id_user'];
     $_SESSION['profile_name'] = $data['profile_name'];
-    mysql_close();
-    echo json_encode(array(
+    mysqli_close($db);
+    echo json_encode(utf8_encode_mix(array(
         'success' => true,
         'message' => 'Connexion OK'
-    ));
+    )));
     return;
 }
 
 function getQuickDetails($idEquipe) {
+    global $db;
     conn_db();
     $sql = "SELECT id_equipe, responsable, telephone_1, telephone_2, email, gymnase, localisation, jour_reception, heure_reception "
             . "FROM details_equipes "
             . "WHERE id_equipe=$idEquipe";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(
-            array(
-                'success' => true,
-                'data' => $results[0]
-            )
-    );
+    return json_encode(utf8_encode_mix(
+                    array(
+                        'success' => true,
+                        'data' => $results[0]
+                    )
+    ));
 }
 
 function getTournaments() {
+    global $db;
     conn_db();
     $sql = "SELECT id, code_competition, libelle "
             . "FROM competitions "
             . "WHERE code_competition IN (SELECT DISTINCT code_competition FROM matches) "
             . "ORDER BY libelle ASC";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getTeams() {
+    global $db;
     conn_db();
     $sql = "SELECT e.id_equipe, e.code_competition, e.nom_equipe, e.id_club, CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name "
             . "FROM equipes e "
             . "LEFT JOIN clubs c ON c.id=e.id_club "
             . "LEFT JOIN competitions comp ON comp.code_competition=e.code_competition "
             . "ORDER BY nom_equipe ASC";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getWebSites() {
+    global $db;
     conn_db();
     $sql = "SELECT e.nom_equipe, de.site_web FROM details_equipes de
         JOIN equipes e ON e.id_equipe=de.id_equipe
         WHERE site_web!=''
         ORDER BY nom_equipe ASC";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getLastResults() {
+    global $db;
     conn_db();
     /** Format UTF8 pour afficher correctement les accents */
     $sql = "SELECT 
@@ -205,9 +213,9 @@ function getLastResults() {
     AND (m.date_reception <= CURDATE())
     )
     ORDER BY date_reception DESC LIMIT 100";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         switch ($data['code_competition']) {
             case 'm':
                 $data['url'] = 'champ_masc.php?d=' . $data['division'];
@@ -236,7 +244,7 @@ function getLastResults() {
         }
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function estAdmin() {
@@ -248,6 +256,7 @@ function isTeamLeader() {
 }
 
 function estMemeClassement($id_equipe) {
+    global $db;
     if (estAdmin()) {
         return true;
     }
@@ -264,9 +273,9 @@ function estMemeClassement($id_equipe) {
         (select division from classements where id_equipe=$sessionIdEquipe)
         and code_competition in 
         (select code_competition from classements where id_equipe=$sessionIdEquipe);";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     foreach ($results as $result) {
@@ -289,10 +298,11 @@ function recup_nom_equipe($compet, $id)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 15/04/2010
  */ {
+    global $db;
     conn_db();
     $sql = 'SELECT nom_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' and id_equipe = \'' . $id . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_assoc($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_assoc($req)) {
         return $data['nom_equipe'];
     }
 }
@@ -309,10 +319,11 @@ function recup_mail_equipe($id)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 16/11/2010
  */ {
+    global $db;
     conn_db();
     $sql = 'SELECT email FROM details_equipes WHERE id_equipe = \'' . $id . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_assoc($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_assoc($req)) {
         return $data['email'];
     }
 }
@@ -329,10 +340,11 @@ function affich_infos($compet)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 03/05/2012
  */ {
+    global $db;
     conn_db();
     $sql = 'SELECT date_limite FROM dates_limite WHERE code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_assoc($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_assoc($req)) {
         echo $data['date_limite'];
     }
 }
@@ -349,15 +361,17 @@ function recup_compet_maitre($compet)
  * * Creator     : Jean-Marc Bernard 
  * * Date        : 11/05/2010
  */ {
+    global $db;
     conn_db();
     $sql = 'SELECT id_compet_maitre FROM competitions WHERE code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_assoc($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_assoc($req)) {
         return $data['id_compet_maitre'];
     }
 }
 
 function getPlayersFromTeam($id_equipe) {
+    global $db;
     conn_db();
     $sql = "SELECT
         CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
@@ -395,9 +409,9 @@ function getPlayersFromTeam($id_equipe) {
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
     WHERE id_equipe = $id_equipe";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     foreach ($results as $index => $result) {
@@ -427,7 +441,7 @@ function getPlayersFromTeam($id_equipe) {
             }
         }
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function isLatLong($localisation) {
@@ -457,12 +471,13 @@ function affich_details_equipe($id_equipe, $compet)
  * * Date        : 23/04/2010 
  */ {
 //Connexion à la base
+    global $db;
     conn_db();
 
 // on exécute la requête
     $sql = 'SELECT * FROM `details_equipes`  WHERE `id_equipe` = \'' . $id_equipe . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
 //on récupère les données et on les affecte
         $nom_equipe = recup_nom_equipe($compet, $id_equipe);
         if (empty($data['responsable'])) {
@@ -680,11 +695,12 @@ function envoi_mail($id1, $id2, $compet, $date) {
 }
 
 function getIdsTeamRequestingNextMatches() {
+    global $db;
     conn_db();
     $sql = "SELECT REPLACE(REPLACE(registry_key, '.is_remind_matches',''), 'users.','') AS user_id FROM registry WHERE registry_key LIKE 'users.%.is_remind_matches' AND registry_value = 'on'";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     return $results;
@@ -768,6 +784,7 @@ function sendMailNewUser($login, $password, $idTeam) {
 }
 
 function sendMailNextMatches() {
+    global $db;
     $idsTeamRequestingNextMatches = getIdsTeamRequestingNextMatches();
     foreach ($idsTeamRequestingNextMatches as $idTeam) {
         $id = $idTeam['user_id'];
@@ -796,9 +813,9 @@ function sendMailNextMatches() {
         m.date_reception < DATE_ADD(CURDATE(), INTERVAL 7 DAY)
         )
         ORDER BY date_reception ASC";
-        $req = mysql_query($sql);
+        $req = mysqli_query($db, $sql);
         $results = array();
-        while ($data = mysql_fetch_assoc($req)) {
+        while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
         if (count($results) > 0) {
@@ -830,6 +847,7 @@ function calcul_classement($id_equipe, $compet, $division)
  * * Date        : 06/05/2010 
  */ {//1
 //Connexion à la base
+    global $db;
     conn_db();
 
 //Initialisation des variables
@@ -859,74 +877,74 @@ function calcul_classement($id_equipe, $compet, $division)
 
 //MATCHES PERDUS PAR FORFAIT  ==========================================================================================
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND forfait_dom = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $forfait_dom = $data[0];
     }
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND forfait_ext = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $forfait_ext = $data[0];
     }
 
 //POINTS DE PENALITES ==================================================================================================
     $sql = 'SELECT penalite FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    if (mysql_num_rows($req) == 1) {
-        $data = mysql_fetch_assoc($req);
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    if (mysqli_num_rows($req) == 1) {
+        $data = mysqli_fetch_assoc($req);
         $penalite = $data['penalite'];
     }
 
 //MATCHES GAGNES A 5 JOUEURS ===========================================================================================
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND gagnea5_dom = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $gagnea5_dom = $data[0];
     }
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND gagnea5_ext = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $gagnea5_ext = $data[0];
     }
 
 //MATCHES GAGNES ET PERDUS =============================================================================================
 //MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $match_gag_dom = $data[0];
     }
 //MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $match_per_dom = $data[0];
     }
 //PARTIE MATCHES A L'EXTERIEUR
 //MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $match_gag_ext = $data[0];
     }
 //MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $match_per_ext = $data[0];
     }
 //SETS MARQUES ET ENCAISSES
 // A DOMICILE
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $sets_mar_dom = $data[0];
         $sets_enc_dom = $data[1];
     }
 // A L'EXTERIEUR
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $sets_enc_ext = $data[0];
         $sets_mar_ext = $data[1];
     }
@@ -936,8 +954,8 @@ function calcul_classement($id_equipe, $compet, $division)
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $pts_mar_dom = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
         $pts_enc_dom = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
     }
@@ -945,8 +963,8 @@ function calcul_classement($id_equipe, $compet, $division)
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $pts_enc_ext = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
         $pts_mar_ext = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
     }
@@ -991,39 +1009,42 @@ function calcul_classement($id_equipe, $compet, $division)
             . 'coeff_sets = \'' . $coeff_sets . '\', points_pour = \'' . $pts_marques . '\', points_contre = \'' . $pts_encaisses . '\', '
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
 
-    $reqmaj = mysql_query($sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysql_error());
+    $reqmaj = mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
 //addSqlActivity($sqlmaj);
 }
 
 function getMatchesWonWith5PlayersCount($idTeam, $codeCompetition) {
+    global $db;
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_dom = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $gagnea5_dom = $data[0];
     }
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_ext = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $gagnea5_ext = $data[0];
     }
     return $gagnea5_dom + $gagnea5_ext;
 }
 
 function getMatchesLostByForfeitCount($idTeam, $codeCompetition) {
+    global $db;
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND forfait_dom = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $forfait_dom = $data[0];
     }
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND forfait_ext = \'1\'';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $forfait_ext = $data[0];
     }
     return $forfait_ext + $forfait_dom;
 }
 
 function getClassement($compet, $div) {
+    global $db;
     conn_db();
     $sql = 'SELECT '
             . 'c.id_equipe AS id_equipe,  '
@@ -1044,17 +1065,17 @@ function getClassement($compet, $div) {
             . 'FROM classements c '
             . 'JOIN equipes e ON e.id_equipe = c.id_equipe '
             . 'WHERE c.code_competition = \'' . $compet . '\' AND c.division = \'' . $div . '\' ORDER BY points DESC, difference DESC, coeff_points DESC';
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     $rang = 1;
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $data['rang'] = $rang;
         $data['matches_won_with_5_players_count'] = getMatchesWonWith5PlayersCount($data['id_equipe'], $data['code_competition']);
         $data['matches_lost_by_forfeit_count'] = getMatchesLostByForfeitCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
         $rang++;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getTeamRank($competition, $league, $idTeam) {
@@ -1068,38 +1089,40 @@ function getTeamRank($competition, $league, $idTeam) {
 }
 
 function ajouterPenalite($compet, $id_equipe) {
+    global $db;
     conn_db();
     $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    if (mysql_num_rows($req) == 1) {
-        $data = mysql_fetch_assoc($req);
+    if (mysqli_num_rows($req) == 1) {
+        $data = mysqli_fetch_assoc($req);
         $penalite = $data['penalite'];
         $division = $data['division'];
     }
     $penalite++;
     $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req2 = mysql_query($sqlmaj);
+    $req2 = mysqli_query($db, $sqlmaj);
     if ($req2 === FALSE) {
         return false;
     }
     calcul_classement($id_equipe, $compet, $division);
-    mysql_close();
+    mysqli_close($db);
     addActivity("Une penalite a ete infligee a l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
 function enleverPenalite($compet, $id_equipe) {
+    global $db;
     conn_db();
     $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    if (mysql_num_rows($req) == 1) {
-        $data = mysql_fetch_assoc($req);
+    if (mysqli_num_rows($req) == 1) {
+        $data = mysqli_fetch_assoc($req);
         $penalite = $data['penalite'];
         $division = $data['division'];
     }
@@ -1108,46 +1131,49 @@ function enleverPenalite($compet, $id_equipe) {
         $penalite = 0;
     }
     $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req2 = mysql_query($sqlmaj);
+    $req2 = mysqli_query($db, $sqlmaj);
     if ($req2 === FALSE) {
         return false;
     }
     calcul_classement($id_equipe, $compet, $division);
-    mysql_close();
+    mysqli_close($db);
     addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
 function supprimerEquipeCompetition($compet, $id_equipe) {
+    global $db;
     conn_db();
     $sql = 'DELETE FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     $sql = 'DELETE FROM matches WHERE (id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\') OR (id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\')';
-    $req2 = mysql_query($sql);
+    $req2 = mysqli_query($db, $sql);
     if ($req2 === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("L'equipe " . getTeamName($id_equipe) . " a ete supprimee de la competition " . getTournamentName($compet));
     return true;
 }
 
 function certifierMatch($code_match) {
+    global $db;
     conn_db();
     $sql = 'UPDATE matches SET certif = 1 WHERE code_match = \'' . $code_match . '\'';
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("Le match $code_match a ete certifie");
     return true;
 }
 
 function modifierMatch($code_match) {
+    global $db;
     conn_db();
     $score_equipe_dom = filter_input(INPUT_POST, 'score_equipe_dom');
     $score_equipe_ext = filter_input(INPUT_POST, 'score_equipe_ext');
@@ -1223,27 +1249,29 @@ function modifierMatch($code_match) {
             . "heure_reception = '$heure_reception', "
             . "report = '$report' "
             . "WHERE code_match = '$code_match'";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     calcul_classement($id_equipe_dom, $compet, $division);
     calcul_classement($id_equipe_ext, $compet, $division);
-    mysql_close();
+    mysqli_close($db);
     addActivity("Le match $code_match a ete modifie");
     return true;
 }
 
 function addActivity($comment) {
+    global $db;
     conn_db();
     $sessionIdUser = $_SESSION['id_user'];
     $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdUser";
-    mysql_query($sql);
-    mysql_close();
+    mysqli_query($db, $sql);
+    mysqli_close($db);
     return;
 }
 
 function modifierMonEquipe() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1277,15 +1305,15 @@ function modifierMonEquipe() {
             . "heure_reception='$heure_reception', "
             . "site_web='$site_web' "
             . "WHERE id_equipe=$id_equipe";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     $sql = "UPDATE equipes SET "
             . "id_club=$id_club "
             . "WHERE id_equipe=$id_equipe";
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -1302,6 +1330,7 @@ function modifierMonEquipe() {
 }
 
 function modifierMonMotDePasse() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1314,23 +1343,24 @@ function modifierMonMotDePasse() {
     $sql = "UPDATE comptes_acces SET "
             . "password='$password' "
             . "WHERE id_equipe=$sessionIdEquipe";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("Mot de passe modifie");
     return true;
 }
 
 function supprimerMatch($code_match) {
+    global $db;
     conn_db();
     $sql = 'DELETE FROM matches WHERE code_match = \'' . $code_match . '\'';
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("Le match $code_match a ete supprime");
     return true;
 }
@@ -1365,13 +1395,14 @@ function checkNotifyUpdateReport($data) {
 }
 
 function setRetard($code_match, $valeur) {
+    global $db;
     conn_db();
     $sql = "UPDATE matches SET retard = $valeur WHERE code_match = '$code_match'";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     return true;
 }
 
@@ -1420,11 +1451,12 @@ function getSqlSelectMatches($whereClause, $orderClause) {
 }
 
 function getMatches($compet, $div) {
+    global $db;
     conn_db();
     $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
         if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
             checkNotifyUpdateReport($data);
@@ -1432,10 +1464,11 @@ function getMatches($compet, $div) {
             setRetard($data['code_match'], 0);
         }
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getMyMatches() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1445,15 +1478,16 @@ function getMyMatches() {
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = getSqlSelectMatches("WHERE m.id_equipe_dom = $sessionIdEquipe OR m.id_equipe_ext = $sessionIdEquipe", "ORDER BY m.date_reception, m.code_match");
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getMonEquipe() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1485,15 +1519,16 @@ function getMonEquipe() {
         LEFT JOIN clubs c ON c.id=e.id_club
         LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
         WHERE d.id_equipe = $sessionIdEquipe";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1528,10 +1563,9 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
         $sql .= " AND j.est_actif+0=1 ";
     }
     $sql .= " ORDER BY sexe, nom ASC";
-
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     foreach ($results as $index => $result) {
@@ -1561,10 +1595,11 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
             }
         }
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getMyPreferences() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1575,15 +1610,16 @@ function getMyPreferences() {
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = "SELECT r.registry_value AS is_remind_matches FROM registry r
         WHERE r.registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function saveMyPreferences() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1600,8 +1636,8 @@ function saveMyPreferences() {
     } else {
         $sql = "INSERT INTO registry SET registry_value = '" . $inputs['is_remind_matches'] . "', registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
     }
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -1609,11 +1645,12 @@ function saveMyPreferences() {
 }
 
 function isRegistryKeyPresent($key) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = '$key'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -1627,6 +1664,7 @@ function getMyPlayersPdf() {
 }
 
 function getPlayers() {
+    global $db;
     conn_db();
     $sql = "SELECT 
         CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
@@ -1661,9 +1699,9 @@ function getPlayers() {
         j.show_photo+0 AS show_photo 
         FROM joueurs j
         LEFT JOIN clubs c ON c.id = j.id_club";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     foreach ($results as $index => $result) {
@@ -1697,50 +1735,54 @@ function getPlayers() {
         $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
         $results[$index]['teams_list'] = getTeamsList($results[$index]['id']);
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getProfiles() {
+    global $db;
     conn_db();
     $sql = "SELECT id, name FROM profiles";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getTeamsListForCaptain($playerId) {
+    global $db;
     $teams = array();
     conn_db();
     $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
     WHERE je.id_joueur = $playerId AND is_captain+0=1";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $teams[] = $data['team'];
     }
     return implode(',', $teams);
 }
 
 function getTeamsList($playerId) {
+    global $db;
     $teams = array();
     conn_db();
     $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
     WHERE je.id_joueur = $playerId";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
-    while ($data = mysql_fetch_array($req)) {
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    while ($data = mysqli_fetch_array($req)) {
         $teams[] = $data['team'];
     }
     return implode(',', $teams);
 }
 
 function isPlayerInTeam($idPlayer, $idTeam) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -1750,6 +1792,7 @@ function isPlayerInTeam($idPlayer, $idTeam) {
 }
 
 function updateMyTeamCaptain($idPlayer) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1762,21 +1805,22 @@ function updateMyTeamCaptain($idPlayer) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_captain = 0 WHERE id_equipe = $idTeam";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_captain = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
     return true;
 }
 
 function updateMyTeamViceLeader($idPlayer) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1789,21 +1833,22 @@ function updateMyTeamViceLeader($idPlayer) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_vice_leader = 0 WHERE id_equipe = $idTeam";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_vice_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau suppleant : " . getPlayerFullName($idPlayer));
     return true;
 }
 
 function updateMyTeamLeader($idPlayer) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1816,21 +1861,22 @@ function updateMyTeamLeader($idPlayer) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_leader = 0 WHERE id_equipe = $idTeam";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
     $sql = "UPDATE joueur_equipe SET is_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau responsable : " . getPlayerFullName($idPlayer));
     return true;
 }
 
 function addPlayerToMyTeam($idPlayer) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -1843,8 +1889,8 @@ function addPlayerToMyTeam($idPlayer) {
         return false;
     }
     $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -1853,13 +1899,14 @@ function addPlayerToMyTeam($idPlayer) {
 }
 
 function addPlayerToTeam($idPlayer, $idTeam) {
+    global $db;
     conn_db();
     if (isPlayerInTeam($idPlayer, $idTeam)) {
         return true;
     }
     $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -1868,36 +1915,39 @@ function addPlayerToTeam($idPlayer, $idTeam) {
 }
 
 function getPlayerFullName($idPlayer) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS player_full_name
         FROM joueurs j
         WHERE j.id = $idPlayer";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['player_full_name'];
 }
 
 function getUserLogin($idUser) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         ca.login AS login
         FROM comptes_acces ca
         WHERE ca.id = $idUser";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['login'];
 }
 
 function getTeamName($idTeam) {
+    global $db;
     if ($idTeam === 0) {
         return 'Non renseigné';
     }
@@ -1906,71 +1956,75 @@ function getTeamName($idTeam) {
         CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team_name 
         FROM equipes e 
         WHERE e.id_equipe = $idTeam";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['team_name'];
 }
 
 function getTournamentName($tournamentCode) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         c.libelle AS tournament_name
         FROM competitions c 
         WHERE c.code_competition = '$tournamentCode'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['tournament_name'];
 }
 
 function getClubName($idClub) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         c.nom as club_name 
         FROM clubs c 
         WHERE c.id = $idClub";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['club_name'];
 }
 
 function getProfileName($idProfile) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         p.name as profile_name 
         FROM profiles p 
         WHERE p.id = $idProfile";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['profile_name'];
 }
 
 function addPlayersToClub($idPlayers, $idClub) {
+    global $db;
     conn_db();
     if (!estAdmin()) {
         return false;
     }
     $sql = "UPDATE joueurs SET id_club = $idClub WHERE id IN ($idPlayers)";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     foreach (explode(',', $idPlayers) as $idPlayer) {
         addActivity(getPlayerFullName($idPlayer) . " a ete ajoute au club " . getClubName($idClub));
     }
@@ -1978,11 +2032,12 @@ function addPlayersToClub($idPlayers, $idClub) {
 }
 
 function hasProfile($idUser) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM users_profiles WHERE user_id = $idUser";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -1992,6 +2047,7 @@ function hasProfile($idUser) {
 }
 
 function addProfileToUsers($idProfile, $idUsers) {
+    global $db;
     foreach (explode(',', $idUsers) as $idUser) {
         $hasProfile = hasProfile($idUser);
         conn_db();
@@ -2004,28 +2060,29 @@ function addProfileToUsers($idProfile, $idUsers) {
         if ($hasProfile) {
             $sql.="WHERE user_id = $idUser";
         }
-        $req = mysql_query($sql);
+        $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             return false;
         }
-        mysql_close();
+        mysqli_close($db);
         addActivity(getUserLogin($idUser) . " a obtenu le profil " . getProfileName($idProfile));
     }
     return true;
 }
 
 function getIdClubFromIdTeam($idTeam) {
+    global $db;
     conn_db();
     $sql = "SELECT 
         e.id_club
         FROM equipes e 
         WHERE e.id_equipe = $idTeam";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysql_close();
+    mysqli_close($db);
     return $results[0]['id_club'];
 }
 
@@ -2046,6 +2103,7 @@ function addPlayersToTeam($idPlayers, $idTeam) {
 }
 
 function removePlayerFromMyTeam($idPlayer) {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -2058,16 +2116,17 @@ function removePlayerFromMyTeam($idPlayer) {
         return false;
     }
     $sql = "DELETE FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
-    $req = mysql_query($sql);
+    $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
     }
-    mysql_close();
+    mysqli_close($db);
     addActivity(getPlayerFullName($idPlayer) . " a ete supprime de l'equipe " . getTeamName($idTeam));
     return true;
 }
 
 function getMyTeamSheet() {
+    global $db;
     conn_db();
     if (estAdmin()) {
         return false;
@@ -2097,12 +2156,12 @@ function getMyTeamSheet() {
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
         WHERE je.is_leader=1
         AND je.id_equipe = $sessionIdEquipe";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function savePhoto($lastName, $firstName) {
@@ -2119,11 +2178,12 @@ function savePhoto($lastName, $firstName) {
 }
 
 function isPlayerExists($licenceNumber) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM joueurs WHERE num_licence = '$licenceNumber'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -2133,11 +2193,12 @@ function isPlayerExists($licenceNumber) {
 }
 
 function isProfileExists($name) {
+    global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM profiles WHERE name = '$name'";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     if (intval($results[0]['cnt']) === 0) {
@@ -2147,6 +2208,7 @@ function isProfileExists($name) {
 }
 
 function savePlayer() {
+    global $db;
     $inputs = array(
         'prenom' => filter_input(INPUT_POST, 'prenom'),
         'nom' => filter_input(INPUT_POST, 'nom'),
@@ -2204,8 +2266,8 @@ function savePlayer() {
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
     }
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -2231,6 +2293,7 @@ function savePlayer() {
 }
 
 function saveProfile() {
+    global $db;
     $inputs = array(
         'id' => filter_input(INPUT_POST, 'id'),
         'name' => filter_input(INPUT_POST, 'name')
@@ -2262,8 +2325,8 @@ function saveProfile() {
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
     }
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
@@ -2287,6 +2350,7 @@ function saveProfile() {
 }
 
 function getUsers() {
+    global $db;
     conn_db();
     $sql = "SELECT ca.id, ca.login, ca.password, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
         FROM comptes_acces ca 
@@ -2294,15 +2358,16 @@ function getUsers() {
         LEFT JOIN clubs c ON c.id=e.id_club 
         LEFT JOIN users_profiles up ON up.user_id=ca.id 
         LEFT JOIN profiles p ON p.id=up.profile_id";
-    $req = mysql_query($sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    while ($data = mysql_fetch_assoc($req)) {
+    while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode($results);
+    return json_encode(utf8_encode_mix($results));
 }
 
 function saveUser() {
+    global $db;
     $inputs = array(
         'id' => filter_input(INPUT_POST, 'id'),
         'login' => filter_input(INPUT_POST, 'login'),
@@ -2343,8 +2408,8 @@ function saveUser() {
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
     }
-    $req = mysql_query($sql);
-    mysql_close();
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }

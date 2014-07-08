@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+//session_start();
 require_once "../includes/fonctions_inc.php";
 if (estAdmin()) {
     echo json_encode(array(
