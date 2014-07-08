@@ -102,21 +102,18 @@ Ext.application({
                     success: function(response) {
                         var responseJson = Ext.decode(response.responseText);
                         var photos = responseJson.photos.photo;
-                        photos = Ext.Array.filter(photos, function(item) {
-                            return (!item.url_o ? false : true);
-                        });
+//                        photos = Ext.Array.filter(photos, function(item) {
+//                            return (!item.url_o ? false : true);
+//                        });
                         var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                        changingImage.setSrc(photo.url_o);
+                        var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
+                        changingImage.setSrc(src);
                         var task = {
                             run: function() {
                                 var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                                if (photo.url_o) {
-                                    changingImage.setSrc(photo.url_o);
-                                    changingImage.setWidth(400);
-                                }
-                                else {
-                                    console.log(photo);
-                                }
+                                var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
+                                changingImage.setSrc(src);
+                                changingImage.setWidth(400);
                             },
                             interval: 3000
                         };
@@ -149,7 +146,7 @@ Ext.application({
                         },
                         {
                             region: 'center',
-                            margin : '10 0 0 0',
+                            margin: '10 0 0 0',
                             flex: 2,
                             layout: 'border',
                             items: [
