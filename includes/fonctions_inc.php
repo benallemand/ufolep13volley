@@ -2169,7 +2169,7 @@ function savePhoto($lastName, $firstName) {
         return true;
     }
     $uploaddir = '../images/joueurs/';
-    $uploadfile = $uploaddir . strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
+    $uploadfile = $uploaddir . mb_strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
