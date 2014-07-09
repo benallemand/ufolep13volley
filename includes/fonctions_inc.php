@@ -3,6 +3,15 @@
 require_once 'db_inc.php';
 session_start();
 
+function accentedToNonAccented($str) {
+    $unwanted_array = array('?' => 'S', '?' => 's', '?' => 'Z', '?' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+        'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
+        'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
+        'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+        'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
+    return strtr($str, $unwanted_array);
+}
+
 function utf8_encode_mix($input, $encode_keys = false) {
     if (is_array($input)) {
         $result = array();
@@ -416,7 +425,8 @@ function getPlayersFromTeam($id_equipe) {
     }
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
-            if (file_exists("../" . $result['path_photo']) === FALSE) {
+            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
+            if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
@@ -1570,7 +1580,8 @@ function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
     }
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
-            if (file_exists($rootPath . $result['path_photo']) === FALSE) {
+            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
+            if (file_exists($rootPath . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
@@ -1706,7 +1717,8 @@ function getPlayers() {
     }
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
-            if (file_exists("../" . $result['path_photo']) === FALSE) {
+            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
+            if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
@@ -2169,7 +2181,7 @@ function savePhoto($lastName, $firstName) {
         return true;
     }
     $uploaddir = '../images/joueurs/';
-    $uploadfile = $uploaddir . mb_strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg';
+    $uploadfile = accentedToNonAccented($uploaddir . mb_strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg');
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
