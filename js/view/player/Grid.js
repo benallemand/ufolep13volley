@@ -59,6 +59,10 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
             dock: 'top',
             items: [
                 {
+                    text: 'Vérifier une licence...',
+                    action: 'showCheckLicence'
+                },
+                {
                     xtype: 'textfield',
                     fieldLabel: 'Recherche'
                 },

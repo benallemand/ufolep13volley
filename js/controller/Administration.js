@@ -137,6 +137,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'playersgrid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
                         change: this.searchPlayer
+                    },
+                    'button[action=showCheckLicence]': {
+                        click: this.showCheckLicence
                     }
                 }
         );
@@ -309,6 +312,29 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('clubselect');
         this.getFormPanelSelectClub().getForm().setValues({
             id_players: idPlayers.join(',')
+        });
+    },
+    showCheckLicence: function() {
+        var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
+        var licence = '0' + records[0].get('departement_affiliation') + '_' + records[0].get('num_licence');
+        Ext.Ajax.request({
+            url: 'ajax/checkLicence.php',
+            params: {
+                licence_number: licence
+            },
+            success: function(response) {
+                var el = document.createElement( 'div' );
+                el.innerHTML = response.responseText;
+                var infos = el.getElementsByTagName('td');
+                var displayMessage = "";
+                Ext.each(infos, function(info, index) {
+                    if(index === 6) {
+                        return false;
+                    }
+                    displayMessage = displayMessage + ' ' + info.innerHTML;
+                });
+                Ext.Msg.alert('Infos licence', displayMessage);
+            }
         });
     },
     showProfileSelect: function() {
