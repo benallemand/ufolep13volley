@@ -95,6 +95,19 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 }
             },
             {
+                header: 'Partage',
+                xtype: 'actioncolumn',
+                items: [
+                    {
+                        icon: 'images/facebook.jpg',
+                        tooltip: 'Partager',
+                        handler: function() {
+                            window.open('http://www.facebook.com/sharer/sharer.php?u=' + window.location.href, '_blank');
+                        }
+                    }
+                ]
+            },
+            {
                 header: 'Administration',
                 xtype: 'actioncolumn',
                 hideable: false,
