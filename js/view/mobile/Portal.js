@@ -29,7 +29,7 @@ Ext.define('Ufolep13Volley.view.mobile.Portal', {
                     },
                     {
                         text: '',
-                        icon: 'images/exit.png',
+                        icon: 'images/unlock.png',
                         action: 'disconnect'
                     }
                 ]

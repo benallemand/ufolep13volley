@@ -55,12 +55,7 @@ body {
 
 #infos {
     font-size: 24px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-top-style: solid;
-    border-bottom-style: solid;
-    border-top-color: #CCCCCC;
-    border-bottom-color: #999999;
+    margin: 10;
     text-align: center;
     color: #0099CC;
     font-family: Arial, Helvetica, sans-serif;

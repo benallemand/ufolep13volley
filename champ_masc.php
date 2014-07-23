@@ -19,32 +19,16 @@ if ($div == "") {
         <link href="http://dev.sencha.com/ext/5.0.0/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css" rel="stylesheet" />
         <script src="http://dev.sencha.com/ext/5.0.0/ext-all.js"></script>
         <script src="http://dev.sencha.com/ext/5.0.0/packages/ext-locale/build/ext-locale-fr.js" charset="UTF-8"></script>
-        <script type="text/javascript" src="js/banniere.js"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
-        <script type="text/javascript" src="js/mainMenu.js"></script>
         <script type="text/javascript">
             var competition = 'm';
             var division = '<?php echo $div; ?>';
             var connectedUser = '<?php echo getConnectedUser(); ?>';
+            var title = "Division <?php echo $div; ?> - Championnat Masculin";
+            var limitDateLabel = "Date limite des matches : <?php affich_infos("m"); ?>";
         </script>
         <script type="text/javascript" src="js/championship.js"></script>
     </HEAD>
-
-    <BODY>
-        <div id="general">
-            <div id="banniere"></div>
-            <div id="menu"></div>
-            <div id="titre"><H1>Division <?php echo $div; ?> - Championnat Masculin</H1></div>
-            <div id="infos">
-                <?php
-                echo "Date limite des matches : ";
-                affich_infos("m");
-                ?>
-            </div> 
-            <div id="contenu">
-            </div>
-        </div>
-    </BODY>
-
+    <BODY/>
 </HTML>
