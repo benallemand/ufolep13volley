@@ -6,6 +6,7 @@ Ext.define('Ufolep13Volley.view.site.ChampionshipPanel', {
         align: 'center'
     },
     autoScroll: true,
+    bodyStyle: 'background-color: #C9D7E5;',
     items: {
         layout: 'border',
         width: 1280,
