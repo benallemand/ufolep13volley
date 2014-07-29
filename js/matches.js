@@ -1,52 +1,16 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
-    views: ['match.Grid'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.MatchesPanel', 'match.Grid'],
     controllers: ['Matches'],
     stores: ['Matches'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
-        Ext.create('Ext.panel.Panel', {
-            layout: 'border',
-            renderTo: Ext.get('contenu'),
-            width: 1000,
-            height: 1200,
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'top',
-                    items: [
-                        '->',
-                        {
-                            xtype: 'tbtext',
-                            text: connectedUser,
-                            style: {
-                                color: 'red',
-                                fontWeight: 'bold'
-                            }
-                        },
-                        {
-                            text: 'Se déconnecter',
-                            href: "ajax/logout.php",
-                            hrefTarget: '_self',
-                            hidden: connectedUser === ''
-                        },
-                        {
-                            text: 'Connexion',
-                            href: "portail.php",
-                            hrefTarget: '_self',
-                            hidden: connectedUser !== ''
-                        }
-                    ]
-                }
-            ],
-            items: [
-                {
-                    region: 'center',
-                    xtype: 'gridMatches',
-                    flex: 2
-                }
-            ]
+        Ext.create('Ext.container.Viewport', {
+            layout: 'fit',
+            items: {
+                xtype: 'matchesPanel'
+            }
         });
         Ext.Ajax.request({
             url: 'ajax/getSessionRights.php',
@@ -62,5 +26,3 @@ Ext.application({
         });
     }
 });
-
-
