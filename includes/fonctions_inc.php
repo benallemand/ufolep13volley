@@ -163,11 +163,28 @@ function getTournaments() {
 function getTeams() {
     global $db;
     conn_db();
-    $sql = "SELECT e.id_equipe, e.code_competition, e.nom_equipe, e.id_club, CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name "
-            . "FROM equipes e "
-            . "LEFT JOIN clubs c ON c.id=e.id_club "
-            . "LEFT JOIN competitions comp ON comp.code_competition=e.code_competition "
-            . "ORDER BY nom_equipe ASC";
+    $sql = "SELECT 
+        e.id_equipe, 
+        e.code_competition, 
+        e.nom_equipe, 
+        e.id_club, 
+        c.nom AS club,
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name, 
+        d.responsable,
+        d.telephone_1,
+        d.telephone_2,
+        d.email,
+        d.gymnase,
+        d.localisation,
+        d.jour_reception,
+        d.heure_reception,
+        d.site_web,
+        d.photo
+        FROM equipes e 
+        LEFT JOIN clubs c ON c.id=e.id_club 
+        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition 
+        LEFT JOIN details_equipes d ON d.id_equipe=e.id_equipe
+        ORDER BY nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -466,156 +483,6 @@ function isLatLong($localisation) {
         return false;
     }
     return true;
-}
-
-//************************************************************************************************
-//************************************************************************************************
-function affich_details_equipe($id_equipe, $compet)
-//************************************************************************************************
-/*
- * * Fonction    : affich_details_equipe
- * * Input       : STRING $var_id_equipe,$var_id_table
- * * Output      : aucun 
- * * Description : Affiche les détails d'une équipe 
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 23/04/2010 
- */ {
-//Connexion à la base
-    global $db;
-    conn_db();
-
-// on exécute la requête
-    $sql = 'SELECT * FROM `details_equipes`  WHERE `id_equipe` = \'' . $id_equipe . '\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-//on récupère les données et on les affecte
-        $nom_equipe = recup_nom_equipe($compet, $id_equipe);
-        if (empty($data['responsable'])) {
-            $responsable = "-";
-        } else {
-            $responsable = $data['responsable'];
-        }
-        if (empty($data['telephone_1'])) {
-            $telephone_1 = "-";
-        } else {
-            $telephone_1 = $data['telephone_1'];
-        }
-        if (empty($data['telephone_2'])) {
-            $telephone_2 = "-";
-        } else {
-            $telephone_2 = $data['telephone_2'];
-        }
-        if (empty($data['email'])) {
-            $email = "-";
-        } else {
-            $email = $data['email'];
-        }
-        if (empty($data['jour_reception'])) {
-            $jour_reception = "-";
-        } else {
-            $jour_reception = $data['jour_reception'];
-        }
-        if (empty($data['heure_reception'])) {
-            $heure_reception = "-";
-        } else {
-            $heure_reception = $data['heure_reception'];
-        }
-        if (empty($data['gymnase'])) {
-            $gymnase = "-";
-        } else {
-            $gymnase = $data['gymnase'];
-        }
-        if (empty($data['localisation'])) {
-            $localisation = "-";
-        } else {
-            $localisation = $data['localisation'];
-        }
-        if (empty($data['photo'])) {
-            $photo = 'images/equipes/inconnu.png';
-        } else {
-            $photo = 'images/equipes/' . $data['photo'];
-        }
-        if (empty($data['site_web'])) {
-            $site_web = "-";
-        } else {
-            $site_web = $data['site_web'];
-        }
-        if (empty($data['fdm'])) {
-            $fdm = "-";
-        } else {
-            $fdm = $data['fdm'];
-        }
-
-//on affiche les données
-        echo '  <div class="photo_equipe">';
-        echo '<img src="' . $photo . '" width="300" height="200">';
-        if ($_SESSION['id_equipe'] === $id_equipe) {
-            echo '<br/><a href="mailto:photos@ufolep13volley.org" target="_blank">Envoyer une photo d\'équipe</a>';
-        }
-        echo '</div>';
-        echo'  <div class="infos_equipe">';
-        echo'    <h1>' . $nom_equipe . ' - Vos détails</h1>';
-        echo'    <table>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Responsable :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($responsable) . '"/><td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Téléphone 1 :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($telephone_1) . '"/><td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Téléphone 2 :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($telephone_2) . '"/><td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Email :</td>';
-        echo'		<td class="datas_details"><img src="ajax/getImageFromText.php?text=' . base64_encode($email) . '"/><td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Réception le :</td>';
-        echo'		<td class="datas_details">' . $jour_reception . '<td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Horaire :</td>';
-        echo'		<td class="datas_details">' . $heure_reception . '<td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Gymnase :</td>';
-        echo'		<td class="datas_details">' . $gymnase . '<td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Localisation GPS :</td>';
-        echo'		<td class="datas_details">' . $localisation . '<td>';
-        echo'	  </tr>';
-        $localisation = str_replace(' ', '', $localisation);
-        if (isLatLong($localisation)) {
-            echo'      <tr class="tr_130">';
-            echo'		<td class="titre_details">Plan :</td>';
-            echo'		<td class="datas_details"><iframe width="450" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/?ie=UTF8&t=m&q=' . $localisation . '&z=12&output=embed"></iframe><td>';
-            echo'	  </tr>';
-        }
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Site Web :</td>';
-        echo'		<td class="datas_details">' . $site_web . '<td>';
-        echo'	  </tr>';
-        echo'      <tr class="tr_130">';
-        echo'		<td class="titre_details">Fiche Equipe :</td>';
-        if (file_exists("fdm/$fdm")) {
-            if (estMemeClassement($id_equipe)) {
-                echo'		<td class="datas_details"><a href="fdm/' . $fdm . '">Telecharger</a><td>';
-            } else {
-                echo'		<td class="datas_details">Téléchargement Non Autorisé<td>';
-            }
-        } else {
-            echo'		<td class="datas_details">Fiche Equipe Non Créée !!! <td>';
-        }
-        echo'	  </tr>';
-        echo'    </table>';
-        echo'  </div>';
-    }
-
-    echo'<div id="flux"></div>';
 }
 
 function getConnectedUser() {
@@ -1522,8 +1389,7 @@ function getMonEquipe() {
         d.jour_reception,
         d.heure_reception,
         d.site_web,
-        d.photo,
-        d.fdm
+        d.photo
         FROM details_equipes d
         LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
         LEFT JOIN clubs c ON c.id=e.id_club

@@ -1,49 +1,34 @@
 <?php include("includes/fonctions_inc.php"); ?>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <HTML>
-
     <HEAD>
         <TITLE>Annuaire Equipes - UFOLEP 13 VOLLEY</TITLE>
         <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <link rel="shortcut icon" href="favicon.ico" /><LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
-        <link href="http://cdn.sencha.io/ext/gpl/4.2.0/resources/css/ext-all-neptune.css" rel="stylesheet" />
-        <script src="http://cdn.sencha.com/ext/gpl/4.2.0/ext-all.js"></script>
-        <script src="http://cdn.sencha.com/ext/gpl/4.2.0/locale/ext-lang-fr.js" charset="UTF-8"></script>
-        <script type="text/javascript" src="js/banniere.js"></script>
+        <link href="http://dev.sencha.com/ext/5.0.0/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css" rel="stylesheet" />
+        <script src="http://dev.sencha.com/ext/5.0.0/ext-all.js"></script>
+        <script src="http://dev.sencha.com/ext/5.0.0/packages/ext-locale/build/ext-locale-fr.js" charset="UTF-8"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
-        <script type="text/javascript" src="js/mainMenu.js"></script>
+        <script type="text/javascript">
+            var connectedUser = '<?php echo getConnectedUser(); ?>';
+            var title = "Annuaire Equipes";
+<?php
+$idTeam = filter_input(INPUT_GET, 'id');
+$competition = filter_input(INPUT_GET, 'c');
+if (($idTeam !== NULL) || ($competition !== NULL)) {
+    echo "var idTeam = $idTeam;";
+    echo "var competition = '$competition';";
+}
+?>
+        </script>
+        <?php
+        if (($idTeam !== NULL) || ($competition !== NULL)) {
+            echo '<script type="text/javascript" src="js/teamDetails.js"></script>';
+        } else {
+            echo '<script type="text/javascript" src="js/annuaire.js"></script>';
+        }
+        ?>
     </HEAD>
-
-    <BODY>
-        <div id="general">
-            <div id="banniere"></div>
-            <div id="menu"></div>
-            <div id="contenu">
-                <?php affich_connecte(); ?>
-                <div id="titre"><H1>Annuaire Equipes</H1></div>
-
-                <?php
-                if (isset($_GET['id']) && isset($_GET['c'])) {
-                    ?>
-                    <div id="annuaire"><div id="details_equipe">
-                            <?php
-                            affich_details_equipe($_GET['id'], $_GET['c']);
-                            ?>
-                        </div></div>
-                    <?php
-                } else {
-                    ?>
-                    <div id="annuaire_complet"></div>
-                    <script type="text/javascript" src="js/annuaire.js"></script>
-                    <?php
-                }
-                ?>
-
-            </div>
-        </div>
-    </BODY>
-
+    <BODY/>
 </HTML>

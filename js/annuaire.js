@@ -1,54 +1,21 @@
 Ext.application({
-    requires: [],
-    views: [],
+    requires: ['Ext.panel.Panel'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.PhonebookPanel'],
     controllers: [],
-    stores: [],
+    stores: ['Phonebooks'],
+    models: ['Phonebook'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
-        var panel = Ext.create('Ext.panel.Panel', {
-            layout: 'vbox',
-            items: [],
-            renderTo: 'annuaire_complet'
+        Ext.create('Ext.container.Viewport', {
+            layout: 'fit',
+            items: {
+                xtype: 'phonebookPanel'
+            }
         });
-        Ext.define('Annuaire', {
-            extend: 'Ext.data.Model',
-            fields: [
-                'code_competition',
-                'libelle_competition',
-                'division',
-                'id_equipe',
-                'nom_equipe'
-            ]
-        });
-        var storeAnnuaires = Ext.create('Ext.data.Store', {
-            model: 'Annuaire',
-            proxy: {
-                type: 'ajax',
-                url: 'ajax/getAnnuaires.php',
-                reader: {
-                    type: 'json',
-                    root: 'results'
-                }
-            },
-            autoLoad: false
-        });
-        function deepCloneStore(source) {
-            var target = Ext.create('Ext.data.Store', {
-                model: source.model
-            });
-
-            Ext.each(source.getRange(), function(record) {
-                var newRecordData = Ext.clone(record.copy().data);
-                var model = new source.model(newRecordData, newRecordData.id);
-
-                target.add(model);
-            });
-
-            return target;
-        }
-        storeAnnuaires.load(function(store, records) {
-            var competitions = Ext.Array.sort(storeAnnuaires.collect('libelle_competition'));
+        var phonebooksStore = this.getPhonebooksStore();
+        phonebooksStore.load(function(store, records) {
+            var competitions = Ext.Array.sort(phonebooksStore.collect('libelle_competition'));
             Ext.each(competitions, function(competition) {
                 var panelCompetition = Ext.create('Ext.panel.Panel', {
                     margins: 10,
@@ -58,16 +25,27 @@ Ext.application({
                     title: competition,
                     items: []
                 });
-                storeAnnuaires.clearFilter(true);
-                storeAnnuaires.filter('libelle_competition', competition);
-                var divisions = storeAnnuaires.collect('division');
+                phonebooksStore.clearFilter(true);
+                phonebooksStore.filter('libelle_competition', competition);
+                var divisions = phonebooksStore.collect('division');
                 Ext.each(divisions, function(division) {
                     var panelDivision = Ext.create('Ext.panel.Panel', {
                         flex: 1,
                         header: false,
                         items: []
                     });
-                    var storeDiv = deepCloneStore(storeAnnuaires);
+                    var storeDiv = Ext.create('Ext.data.Store', {
+                        model: 'Ufolep13Volley.model.Phonebook',
+                        proxy: {
+                            type: 'ajax',
+                            url: 'ajax/getAnnuaires.php',
+                            reader: {
+                                type: 'json',
+                                root: 'results'
+                            }
+                        },
+                        autoLoad: true
+                    });
                     storeDiv.clearFilter(true);
                     storeDiv.filter('libelle_competition', competition);
                     storeDiv.filter('division', division);
@@ -92,9 +70,9 @@ Ext.application({
                     });
                     panelCompetition.add(panelDivision);
                 });
+                var panel = Ext.ComponentQuery.query('panel[id=phonebooksContainer]')[0];
                 panel.add(panelCompetition);
             });
         });
-
     }
 });

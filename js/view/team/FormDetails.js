@@ -1,6 +1,6 @@
 Ext.define('Ufolep13Volley.view.team.FormDetails', {
     extend: 'Ext.form.Panel',
-    title: 'Vos Détails',
+    title: 'Détails',
     alias: 'widget.formTeamDetails',
     layout: 'anchor',
     autoScroll: true,
@@ -69,6 +69,14 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'displayfield',
+            fieldLabel: 'Site web',
+            name: 'site_web',
+            renderer: function(val) {
+                return "<a href='" + val + "' target='_blank'>" + val + "</a>";
+            }
+        },
+        {
+            xtype: 'displayfield',
             fieldLabel: 'Localisation GPS',
             name: 'localisation',
             regex: /^\d+[\.]\d+,\d+[\.]\d+$/,
@@ -78,14 +86,6 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                     return 'Champ Absent';
                 }
                 return "<iframe width='450' height='300' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='https://maps.google.com/?ie=UTF8&t=m&q=" + val + "&z=12&output=embed'></iframe>";
-            }
-        },
-        {
-            xtype: 'displayfield',
-            fieldLabel: 'Site web',
-            name: 'site_web',
-            renderer: function(val) {
-                return "<a href='" + val + "' target='_blank'>" + val + "</a>";
             }
         }
     ]

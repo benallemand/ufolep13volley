@@ -6,7 +6,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     refs: [
         {
             ref: 'teamDetailsForm',
-            selector: "form[title=Vos Détails]"
+            selector: "formTeamDetails"
         },
         {
             ref: 'teamEditForm',
@@ -105,7 +105,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'setmyteamviceleader button[action=save]': {
                         click: this.saveSetMyTeamViceLeader
                     },
-                    'form[title=Vos Détails]': {
+                    'formTeamDetails': {
                         render: this.loadTeamDetails
                     },
                     "window[title=Modification de l'équipe] > form > toolbar > button[action=save]": {

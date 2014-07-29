@@ -16,7 +16,6 @@ Ext.define('Ufolep13Volley.model.Team', {
         'jour_reception',
         'heure_reception',
         'site_web',
-        'photo',
-        'fdm'
+        'photo'
     ]
 });
