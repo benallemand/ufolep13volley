@@ -31,7 +31,7 @@ Ext.define('Ufolep13Volley.view.forum.LastPostsGrid', {
             flex: 1,
             dataIndex: 'pubdate',
             xtype: 'datecolumn',
-            format: 'd/m h:i'
+            format: 'd/m H:i'
         }
     ],
     store: 'LastPosts'
