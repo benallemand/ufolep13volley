@@ -25,7 +25,7 @@ Ext.define('Ufolep13Volley.view.site.MatchesPanel', {
                 flex: 1,
                 layout: 'fit',
                 items: {
-                    xtype: 'gridMatches',
+                    xtype: 'gridMatches'
                 }
             }
         ]}
