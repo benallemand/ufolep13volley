@@ -1,6 +1,6 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
-    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.MatchesPanel', 'match.Grid'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.LimitDatePanel', 'site.MatchesPanel', 'match.Grid'],
     controllers: ['Matches'],
     stores: ['Matches'],
     name: 'Ufolep13Volley',

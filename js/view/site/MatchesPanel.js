@@ -21,6 +21,10 @@ Ext.define('Ufolep13Volley.view.site.MatchesPanel', {
                 xtype: 'titlePanel'
             },
             {
+                region: 'north',
+                xtype: 'limitDatePanel'
+            },
+            {
                 region: 'center',
                 flex: 1,
                 layout: 'fit',
