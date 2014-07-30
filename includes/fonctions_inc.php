@@ -499,53 +499,6 @@ function getConnectedUser() {
     return "";
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function affich_connecte()
-//************************************************************************************************
-/*
- * * Fonction    : affich_connecte
- * * Input       : aucun
- * * Output      : aucun 
- * * Description : Affiche le nom de l'équipe connecté
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 07/05/2010 
- */ {
-// On affiche le div
-    if (estAdmin()) {
-        $nom_equipe = "Administrateur";
-        echo'<div id="deconn">';
-        echo'<ul>';
-        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
-        echo' | ';
-        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
-        echo'</ul>';
-        echo'</div>';
-        return;
-    }
-    if (isTeamLeader()) {
-        $nom_equipe = $_SESSION['login'];
-        echo'<div id="deconn">';
-        echo'<ul>';
-        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
-        echo' | ';
-        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
-        echo'</ul>';
-        echo'</div>';
-    }
-    if (isset($_SESSION['login'])) {
-        $nom_equipe = $_SESSION['login'];
-        echo'<div id="deconn">';
-        echo'<ul>';
-        echo'<li class="admin">Connecté : <span class="grouge">' . $nom_equipe . '</span>';
-        echo' | ';
-        echo'<span><a href="ajax/logout.php">Se déconnecter</a></span></li>';
-        echo'</ul>';
-        echo'</div>';
-    }
-    return;
-}
-
 function envoi_mail($id1, $id2, $compet, $date) {
     $matchDate = DateTime::createFromFormat('Y-m-d', $date);
     $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
