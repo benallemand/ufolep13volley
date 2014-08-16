@@ -74,13 +74,15 @@ function createUser($login, $idTeam) {
 
 function logout() {
     session_destroy();
-    die('<META HTTP-equiv="refresh" content=0;URL=' . $_SERVER['HTTP_REFERER'] . '>');
+    die('<META HTTP-equiv="refresh" content=0;URL=' . filter_input(INPUT_SERVER, 'HTTP_REFERER') . '>');
 }
 
 function login() {
     global $db;
     conn_db();
-    if ((empty($_POST['login'])) || (empty($_POST['password']))) {
+    $login = filter_input(INPUT_POST, 'login');
+    $password = filter_input(INPUT_POST, 'password');
+    if (($login === NULL) || ($password === NULL)) {
         mysqli_close($db);
         echo json_encode(utf8_encode_mix(array(
             'success' => false,
@@ -88,8 +90,7 @@ function login() {
         )));
         return;
     }
-    $login = filter_input(INPUT_POST, 'login');
-    $password = addslashes(filter_input(INPUT_POST, 'password'));
+    $password = addslashes($password);
     $sql = "SELECT ca.id_equipe, ca.login, ca.password, ca.id AS id_user, p.name AS profile_name FROM comptes_acces ca
         LEFT JOIN users_profiles up ON up.user_id=ca.id
         LEFT JOIN profiles p ON p.id=up.profile_id
@@ -112,7 +113,6 @@ function login() {
         )));
         return;
     }
-    //session_start();
     $_SESSION['id_equipe'] = $data['id_equipe'];
     $_SESSION['login'] = $data['login'];
     $_SESSION['password'] = $data['password'];
