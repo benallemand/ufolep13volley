@@ -2,7 +2,6 @@ Ext.define('Ufolep13Volley.view.site.MatchesPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.matchesPanel',
     layout: 'border',
-    autoScroll: true,
     defaults: {
         border: false
     },

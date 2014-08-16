@@ -2,7 +2,6 @@ Ext.define('Ufolep13Volley.view.site.PhonebookPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.phonebookPanel',
     layout: 'border',
-    autoScroll: true,
     defaults: {
         border: false
     },

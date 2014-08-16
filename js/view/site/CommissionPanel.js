@@ -2,7 +2,6 @@ Ext.define('Ufolep13Volley.view.site.CommissionPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.commissionPanel',
     layout: 'border',
-    autoScroll: true,
     defaults: {
         border: false
     },
