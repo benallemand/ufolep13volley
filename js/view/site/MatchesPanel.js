@@ -1,36 +1,29 @@
 Ext.define('Ufolep13Volley.view.site.MatchesPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.matchesPanel',
-    layout: {
-        type: 'vbox',
-        align: 'center'
-    },
+    layout: 'border',
     autoScroll: true,
-    bodyStyle: 'background-color: #C9D7E5;',
-    items: {
-        layout: 'border',
-        width: 1280,
-        height: 2048,
-        items: [
-            {
-                region: 'north',
-                xtype: 'headerPanel'
-            },
-            {
-                region: 'north',
-                xtype: 'titlePanel'
-            },
-            {
-                region: 'north',
-                xtype: 'limitDatePanel'
-            },
-            {
-                region: 'center',
-                flex: 1,
-                layout: 'fit',
-                items: {
-                    xtype: 'gridMatches'
-                }
+    defaults: {
+        border: false
+    },
+    items: [
+        {
+            region: 'north', xtype: 'headerPanel'
+        },
+        {
+            region: 'north',
+            xtype: 'titlePanel'
+        },
+        {
+            region: 'north',
+            xtype: 'limitDatePanel'
+        },
+        {
+            region: 'center',
+            layout: 'fit',
+            items: {
+                xtype: 'gridMatches'
             }
-        ]}
+        }
+    ]
 });

@@ -4,17 +4,16 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
     title: 'Derniers résultats',
     flex: 1,
     autoScroll: true,
-    forceFit: true,
     columns: [
         {
             header: 'Compétition',
             dataIndex: 'competition',
-            width: 180
+            width: 250
         },
         {
             header: 'Journée',
             dataIndex: 'division_journee',
-            width: 150,
+            width: 200,
             renderer: function(val, meta, record) {
                 var url = record.get('url');
                 return '<a href="' + url + '" target="blank">' + val + '</a>';
@@ -23,7 +22,7 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
         {
             header: 'Domicile',
             dataIndex: 'equipe_domicile',
-            width: 140,
+            width: 180,
             renderer: function(val, meta, record) {
                 var displayValue = val;
                 switch (record.get('code_competition')) {
@@ -43,17 +42,17 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
         {
             header: '',
             dataIndex: 'score_equipe_dom',
-            width: 15
+            width: 20
         },
         {
             header: '',
             dataIndex: 'score_equipe_ext',
-            width: 15
+            width: 20
         },
         {
             header: 'Extérieur',
             dataIndex: 'equipe_exterieur',
-            width: 140,
+            width: 180,
             renderer: function(val, meta, record) {
                 var displayValue = val;
                 switch (record.get('code_competition')) {
@@ -73,34 +72,34 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
         {
             header: 'S1',
             dataIndex: 'set1',
-            width: 45
+            width: 55
         },
         {
             header: 'S2',
             dataIndex: 'set2',
-            width: 45
+            width: 55
         },
         {
             header: 'S3',
             dataIndex: 'set3',
-            width: 45
+            width: 55
         },
         {
             header: 'S4',
             dataIndex: 'set4',
-            width: 45
+            width: 55
         },
         {
             header: 'S5',
             dataIndex: 'set5',
-            width: 45
+            width: 55
         },
         {
             header: 'Date',
             xtype: 'datecolumn',
             format: 'd/m/Y',
             dataIndex: 'date_reception',
-            width: 80
+            width: 100
         }
     ],
     store: 'LastResults'

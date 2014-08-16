@@ -2,9 +2,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
     extend: 'Ext.toolbar.Toolbar',
     alias: 'widget.mainMenu',
     defaultButtonUI: 'default',
-    defaults: {
-        flex: 1
-    },
+    enableOverflow: true,
     items: [
         {
             text: 'Masculins',
@@ -326,6 +324,31 @@ Il faudra retourner par voie postale :<br/>\
             handler: function() {
                 location.href = 'index_mobile.php';
             }
+        },
+        '->',
+        {
+            xtype: 'tbtext',
+            text: connectedUser,
+            style: {
+                color: 'red',
+                fontWeight: 'bold'
+            }
+        },
+        {
+            text: 'Se déconnecter',
+            scale: 'large',
+            icon: 'images/unlock.png',
+            href: "ajax/logout.php",
+            hrefTarget: '_self',
+            hidden: connectedUser === ''
+        },
+        {
+            text: 'Connexion',
+            scale: 'large',
+            icon: 'images/lock.png',
+            href: "portail.php",
+            hrefTarget: '_self',
+            hidden: connectedUser !== ''
         }
     ]
 });

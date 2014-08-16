@@ -13,26 +13,5 @@ Ext.application({
                 xtype: 'mainPanel'
             }
         });
-        var changingImage = Ext.getCmp('randomImage');
-        Ext.Ajax.request({
-            url: 'ajax/getVolleyballImages.php',
-            success: function(response) {
-                var responseJson = Ext.decode(response.responseText);
-                var photos = responseJson.photos.photo;
-                var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
-                changingImage.setSrc(src);
-                var task = {
-                    run: function() {
-                        var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                        var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
-                        changingImage.setSrc(src);
-                        changingImage.setWidth(400);
-                    },
-                    interval: 3000
-                };
-                Ext.TaskManager.start(task);
-            }
-        });
     }
 });
