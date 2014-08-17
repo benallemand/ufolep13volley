@@ -15,18 +15,15 @@ Ext.application({
                 items: [
                     {
                         region: 'north',
+                        split: true,
                         xtype: 'headerPanel'
-                    },
-                    {
-                        region: 'north',
-                        xtype: 'titlePanel'
                     },
                     {
                         region: 'center',
                         flex: 1,
                         layout: 'center',
                         items: {
-                            width: '50%',
+                            width: '80%',
                             xtype: 'form',
                             title: 'Connexion',
                             layout: 'anchor',

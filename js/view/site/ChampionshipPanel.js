@@ -8,11 +8,8 @@ Ext.define('Ufolep13Volley.view.site.ChampionshipPanel', {
     items: [
         {
             region: 'north',
+            split: true,
             xtype: 'headerPanel'
-        },
-        {
-            region: 'north',
-            xtype: 'titlePanel'
         },
         {
             region: 'north',

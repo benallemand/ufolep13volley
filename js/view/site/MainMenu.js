@@ -5,6 +5,13 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
     enableOverflow: true,
     items: [
         {
+            text: 'Accueil',
+            scale: 'large',
+            icon: 'images/home.png',
+            href: 'index.php',
+            hrefTarget: '_self'
+        },
+        {
             text: 'Masculins',
             menu: [
                 {text: 'Division 1', handler: function() {

@@ -7,11 +7,9 @@ Ext.define('Ufolep13Volley.view.site.MatchesPanel', {
     },
     items: [
         {
-            region: 'north', xtype: 'headerPanel'
-        },
-        {
             region: 'north',
-            xtype: 'titlePanel'
+            split: true,
+            xtype: 'headerPanel'
         },
         {
             region: 'north',
