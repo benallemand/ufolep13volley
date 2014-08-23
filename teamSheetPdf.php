@@ -6,8 +6,20 @@ function toWellFormatted($string) {
 
 require_once './includes/fonctions_inc.php';
 require_once './libs/Fpdf/fpdf.php';
-$jsonMyTeam = json_decode(getMyTeamSheet());
-$jsonMyPlayers = json_decode(getMyPlayersPdf());
+$id = filter_input(INPUT_GET, 'id');
+if ($id === NULL) {
+    $id = $_SESSION['id_equipe'];
+}
+$teamSheet = getTeamSheet($id);
+if ($teamSheet === false) {
+    die('Erreur durant la recuperation des informations !');
+}
+$jsonTeam = json_decode($teamSheet);
+$playersPdf = getPlayersPdf($id, '', true);
+if ($playersPdf === false) {
+    die('Erreur durant la recuperation des joueurs !');
+}
+$jsonPlayers = json_decode($playersPdf);
 $pdf = new FPDF();
 $pdf->SetMargins(0, 5);
 $pdf->SetLineWidth(0.5);
@@ -18,32 +30,32 @@ $pdf->Line(0, 10, 85, 10);
 $pdf->Line(0, 20, 85, 20);
 $pdf->Line(0, 35, 85, 35);
 $pdf->Cell(20, 5, 'Club: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->club), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->club), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Championnat: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->championnat), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->championnat), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Division: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->division), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->division), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Responsable: ', 0, 0, 'L');
 $pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->leader), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->leader), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(20, 5, 'Portable: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->portable), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->portable), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Courriel: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->courriel), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->courriel), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Créneau: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->creneau), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->creneau), 0, 1, 'L');
 $pdf->Cell(20, 5, 'Gymnase: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonMyTeam[0]->gymnase), 0, 1, 'L');
+$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->gymnase), 0, 1, 'L');
 $pdf->Image('images/Ufolep13Volley2.jpg', 100, 5, 50, 30);
 $pdf->Image('images/MainVolley.jpg', 175, 5, 20);
 $pdf->Image('images/JeuAvantEnjeu.jpg', 175, 25, 20);
 $pdf->SetXY(100, 35);
 $pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(50, 10, toWellFormatted($jsonMyTeam[0]->equipe), 1, 1, 'C');
+$pdf->Cell(50, 10, toWellFormatted($jsonTeam[0]->equipe), 1, 1, 'C');
 $pdf->SetFont('Arial', '', 8);
 $pdf->SetXY(100, 50);
-$pdf->Cell(40, 5, 'Visa CTSD le: ' . toWellFormatted($jsonMyTeam[0]->date_visa_ctsd), 0, 1, 'C');
+$pdf->Cell(40, 5, 'Visa CTSD le: ' . toWellFormatted($jsonTeam[0]->date_visa_ctsd), 0, 1, 'C');
 $pdf->SetXY(150, 30);
 $pdf->Cell(50, 15, 'Le: ....../....../......', 0, 1, 'C');
 $pdf->SetXY(150, 45);
@@ -60,10 +72,10 @@ $offsetXPlayers = 60;
 $nbGirls = 0;
 $isFirstMaleReached = false;
 $isSortMaleFemaleNeeded = false;
-if (($jsonMyTeam[0]->code_competition === 'kh') || ($jsonMyTeam[0]->code_competition === 'kf')) {
+if (($jsonTeam[0]->code_competition === 'kh') || ($jsonTeam[0]->code_competition === 'kf')) {
     $isSortMaleFemaleNeeded = true;
 }
-foreach ($jsonMyPlayers as $index => $jsonPlayer) {
+foreach ($jsonPlayers as $index => $jsonPlayer) {
     $currentIndex = $index;
     if ($isSortMaleFemaleNeeded) {
         if ($jsonPlayer->sexe === 'M') {

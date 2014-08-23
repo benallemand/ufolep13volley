@@ -49,7 +49,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                             if (record.get('score_equipe_dom') === 3) {
                                 metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                             }
-                            return '<a href="fdm/' + record.get('fdm_dom') + '" target="blank">' + value + '</a>';
+                            return '<a href="teamSheetPdf.php?id=' + record.get('id_equipe_dom') + '" target="blank">' + value + '</a>';
                         }
                     },
                     {
@@ -70,7 +70,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                             if (record.get('score_equipe_ext') === 3) {
                                 metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                             }
-                            return '<a href="fdm/' + record.get('fdm_ext') + '" target="blank">' + value + '</a>';
+                            return '<a href="teamSheetPdf.php?id=' + record.get('id_equipe_ext') + '" target="blank">' + value + '</a>';
                         }
                     }
                 ]

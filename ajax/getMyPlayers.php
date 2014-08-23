@@ -2,5 +2,5 @@
 
 require_once "../includes/fonctions_inc.php";
 
-echo getMyPlayers();
+echo getPlayersPdf($_SESSION['id_equipe']);
 

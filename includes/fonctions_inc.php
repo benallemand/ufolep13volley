@@ -277,28 +277,31 @@ function estAdmin() {
     return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
 }
 
-function isTeamLeader() {
-    return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
-}
-
-function estMemeClassement($id_equipe) {
-    global $db;
+function isTeamSheetAllowedForUser($idTeam) {
     if (estAdmin()) {
         return true;
     }
     if (!isTeamLeader()) {
         return false;
     }
+    return estMemeClassement($idTeam);
+}
+
+function isTeamLeader() {
+    return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
+}
+
+function estMemeClassement($id_equipe) {
+    global $db;
     $sessionIdEquipe = $_SESSION['id_equipe'];
     if ($sessionIdEquipe === $id_equipe) {
         return true;
     }
     conn_db();
-    $sql = "select * from classements 
-        where division in 
-        (select division from classements where id_equipe=$sessionIdEquipe)
-        and code_competition in 
-        (select code_competition from classements where id_equipe=$sessionIdEquipe);";
+    $sql = "SELECT * FROM classements WHERE division IN 
+        (SELECT division FROM classements WHERE id_equipe=$sessionIdEquipe)
+        AND code_competition IN 
+        (SELECT code_competition FROM classements WHERE id_equipe=$sessionIdEquipe);";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1489,8 +1492,78 @@ function isRegistryKeyPresent($key) {
     return true;
 }
 
-function getMyPlayersPdf() {
-    return getMyPlayers('', true);
+function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = false) {
+    if ($idTeam === NULL) {
+        return false;
+    }
+    global $db;
+    conn_db();
+    if (!isTeamSheetAllowedForUser($idTeam)) {
+        return false;
+    }
+    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, UPPER(j.nom) AS nom, j.telephone, j.email, j.num_licence, CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
+        CASE 
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
+                END
+            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
+                CASE 
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
+                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
+                END         
+        END AS est_licence_valide, 
+        j.est_responsable_club+0 AS est_responsable_club, 
+        je.is_captain+0 AS is_captain, 
+        je.is_vice_leader+0 AS is_vice_leader, 
+        je.is_leader+0 AS is_leader, 
+        j.id, j.date_homologation, j.show_photo+0 AS show_photo 
+        FROM joueur_equipe je
+        LEFT JOIN joueurs j ON j.id=je.id_joueur
+        WHERE 
+        je.id_equipe = $idTeam";
+    if ($doHideInactivePlayers) {
+        $sql .= " AND j.est_actif+0=1 ";
+    }
+    $sql .= " ORDER BY sexe, nom ASC";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    foreach ($results as $index => $result) {
+        if ($result['show_photo'] === '1') {
+            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
+            if (file_exists($rootPath . $results[$index]['path_photo']) === FALSE) {
+                switch ($result['sexe']) {
+                    case 'M':
+                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        break;
+                    case 'F':
+                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
+            switch ($result['sexe']) {
+                case 'M':
+                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
+                    break;
+                case 'F':
+                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    if (count($results) === 0) {
+        return false;
+    }
+    return json_encode(utf8_encode_mix($results));
 }
 
 function getPlayers() {
@@ -1956,16 +2029,15 @@ function removePlayerFromMyTeam($idPlayer) {
     return true;
 }
 
-function getMyTeamSheet() {
+function getTeamSheet($idTeam) {
+    if ($idTeam === NULL) {
+        return false;
+    }
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (!isTeamSheetAllowedForUser($idTeam)) {
         return false;
     }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = "SELECT 
         c.nom AS club,
         comp.code_competition AS code_competition,
@@ -1986,11 +2058,14 @@ function getMyTeamSheet() {
         JOIN joueurs j ON j.id=je.id_joueur
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
         WHERE je.is_leader=1
-        AND je.id_equipe = $sessionIdEquipe";
+        AND je.id_equipe = $idTeam";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
+    }
+    if (count($results) === 0) {
+        return false;
     }
     return json_encode(utf8_encode_mix($results));
 }

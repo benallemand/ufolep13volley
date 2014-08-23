@@ -2,5 +2,5 @@
 
 require_once "../includes/fonctions_inc.php";
 
-echo getMyTeamSheet();
+echo getTeamSheet($_SESSION['id_equipe']);
 
