@@ -10,6 +10,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
     items: {
         xtype: 'grid',
         store: 'MyPlayers',
+        autoScroll: true,
         viewConfig: {
             getRowClass: function(record, rowIndex, rowParams, store) {
                 if (record.get('est_actif') === false) {
@@ -65,8 +66,6 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 {
                     header: 'Photo',
                     dataIndex: 'path_photo',
-                    width: 150,
-                    flex: null,
                     renderer: function(value, meta, record) {
                         return '<img width="100" src="' + record.get('path_photo') + '" />';
                     }
@@ -74,8 +73,6 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 {
                     header: 'Gestion',
                     xtype: 'actioncolumn',
-                    width: 100,
-                    flex: null,
                     items: [
                         {
                             icon: 'images/delete.gif',
@@ -109,7 +106,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 }
             ],
             defaults: {
-                flex: 1
+                width : 150
             }
         },
         dockedItems: [
