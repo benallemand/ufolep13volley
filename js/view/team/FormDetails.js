@@ -77,6 +77,14 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'displayfield',
+            fieldLabel: 'Fiche Equipe',
+            name: 'id_equipe',
+            renderer: function(val) {
+                return '<a href="teamSheetPdf.php?id=' + val + '" target="blank">Telecharger</a>';
+            }
+        },
+        {
+            xtype: 'displayfield',
             fieldLabel: 'Localisation GPS',
             name: 'localisation',
             regex: /^\d+[\.]\d+,\d+[\.]\d+$/,
