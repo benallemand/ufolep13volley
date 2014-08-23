@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 $feed = new DOMDocument();
-$feed->load('http://ufolep13volley.forumzen.com/rss');
+$feed->load('http://ufolep13volley.forumzen.com/feed');
 $json = array();
 $json['title'] = $feed->getElementsByTagName('channel')->item(0)->getElementsByTagName('title')->item(0)->firstChild->nodeValue;
 $json['description'] = $feed->getElementsByTagName('channel')->item(0)->getElementsByTagName('description')->item(0)->firstChild->nodeValue;
