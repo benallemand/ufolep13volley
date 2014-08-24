@@ -2043,9 +2043,9 @@ function getTeamSheet($idTeam) {
         comp.code_competition AS code_competition,
         comp.libelle AS championnat,
         cla.division,
-        CONCAT(j.prenom, ' ', j.nom) AS leader,
-        j.telephone AS portable,
-        j.email AS courriel,
+        de.responsable AS leader,
+        de.telephone_1 AS portable,
+        de.email AS courriel,
         CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
         de.gymnase,
         e.nom_equipe AS equipe,
@@ -2054,11 +2054,29 @@ function getTeamSheet($idTeam) {
         JOIN clubs c ON c.id = e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
-        JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
-        JOIN joueurs j ON j.id=je.id_joueur
         JOIN details_equipes de ON de.id_equipe=e.id_equipe
-        WHERE je.is_leader=1
-        AND je.id_equipe = $idTeam";
+        WHERE de.id_equipe = $idTeam";
+//    $sql = "SELECT 
+//        c.nom AS club,
+//        comp.code_competition AS code_competition,
+//        comp.libelle AS championnat,
+//        cla.division,
+//        CONCAT(j.prenom, ' ', j.nom) AS leader,
+//        j.telephone AS portable,
+//        j.email AS courriel,
+//        CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
+//        de.gymnase,
+//        e.nom_equipe AS equipe,
+//        DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
+//        FROM equipes e
+//        JOIN clubs c ON c.id = e.id_club
+//        JOIN competitions comp ON comp.code_competition=e.code_competition
+//        JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
+//        JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
+//        JOIN joueurs j ON j.id=je.id_joueur
+//        JOIN details_equipes de ON de.id_equipe=e.id_equipe
+//        WHERE je.is_leader=1
+//        AND je.id_equipe = $idTeam";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
