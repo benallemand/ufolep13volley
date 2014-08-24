@@ -27,6 +27,13 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorNotValidatedPlayers = new Indicator(
+        'Joueurs en attente de validation', "SELECT 
+        j.prenom, j.nom, CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, c.nom AS nom_club
+        FROM joueurs j
+        LEFT JOIN clubs c ON c.id = j.id_club
+        WHERE j.est_actif+0 = 0
+        ORDER BY j.id ASC");
 $indicatorActivity = new Indicator(
         'Evènements', "SELECT 
         DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, 
@@ -117,6 +124,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $results = array();
+$results[] = $indicatorNotValidatedPlayers->getResult();
 $results[] = $indicatorActivity->getResult();
 $results[] = $indicatorLicencesDupliquees->getResult();
 $results[] = $indicatorMatchesNonRenseignes->getResult();
