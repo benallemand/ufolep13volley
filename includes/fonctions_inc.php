@@ -298,17 +298,19 @@ function estMemeClassement($id_equipe) {
         return true;
     }
     conn_db();
-    $sql = "SELECT * FROM classements WHERE division IN 
-        (SELECT division FROM classements WHERE id_equipe=$sessionIdEquipe)
-        AND code_competition IN 
-        (SELECT code_competition FROM classements WHERE id_equipe=$sessionIdEquipe);";
+    $sql = "SELECT * FROM matches 
+        WHERE id_equipe_dom=$sessionIdEquipe 
+        OR id_equipe_ext=$sessionIdEquipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
     foreach ($results as $result) {
-        if ($result['id_equipe'] === $id_equipe) {
+        if ($result['id_equipe_dom'] === $id_equipe) {
+            return true;
+        }
+        if ($result['id_equipe_ext'] === $id_equipe) {
             return true;
         }
     }
