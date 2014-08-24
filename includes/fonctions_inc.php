@@ -1560,9 +1560,6 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
             }
         }
     }
-    if (count($results) === 0) {
-        return false;
-    }
     return json_encode(utf8_encode_mix($results));
 }
 
