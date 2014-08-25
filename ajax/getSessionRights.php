@@ -2,7 +2,7 @@
 
 //session_start();
 require_once "../includes/fonctions_inc.php";
-if (estAdmin()) {
+if (isAdmin()) {
     echo json_encode(array(
         'success' => true,
         'message' => 'admin'

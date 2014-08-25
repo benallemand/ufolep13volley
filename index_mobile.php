@@ -8,7 +8,7 @@
         <script src="http://cdn.sencha.io/touch/sencha-touch-2.3.1/sencha-touch-all.js"></script>
         <?php
         if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
-            if (estAdmin()) {
+            if (isAdmin()) {
                 die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
             }
             if (isTeamLeader()) {

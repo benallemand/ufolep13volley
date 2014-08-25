@@ -8,12 +8,12 @@ switch ($type) {
     case 'ajout':
         $compet = filter_input(INPUT_POST, 'compet');
         $equipe = filter_input(INPUT_POST, 'equipe');
-        $success = ajouterPenalite($compet, $equipe);
+        $success = addPenalty($compet, $equipe);
         break;
     case 'suppression':
         $compet = filter_input(INPUT_POST, 'compet');
         $equipe = filter_input(INPUT_POST, 'equipe');
-        $success = enleverPenalite($compet, $equipe);
+        $success = removePenalty($compet, $equipe);
         break;
 
     default:

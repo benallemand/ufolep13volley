@@ -1,6 +1,6 @@
 <?php
 include("includes/fonctions_inc.php");
-if (!estAdmin()) {
+if (!isAdmin()) {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
 }
 ?>

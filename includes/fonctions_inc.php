@@ -27,13 +27,13 @@ function utf8_encode_mix($input, $encode_keys = false) {
 
 function randomPassword() {
     $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
-    $pass = array(); //remember to declare $pass as an array
-    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    $pass = array();
+    $alphaLength = strlen($alphabet) - 1;
     for ($i = 0; $i < 8; $i++) {
         $n = rand(0, $alphaLength);
         $pass[] = $alphabet[$n];
     }
-    return implode($pass); //turn the array into a string
+    return implode($pass);
 }
 
 function isUserExists($login) {
@@ -211,7 +211,6 @@ function getWebSites() {
 function getLastResults() {
     global $db;
     conn_db();
-    /** Format UTF8 pour afficher correctement les accents */
     $sql = "SELECT 
     c.libelle AS competition, 
     IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
@@ -273,25 +272,25 @@ function getLastResults() {
     return json_encode(utf8_encode_mix($results));
 }
 
-function estAdmin() {
+function isAdmin() {
     return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
 }
 
 function isTeamSheetAllowedForUser($idTeam) {
-    if (estAdmin()) {
+    if (isAdmin()) {
         return true;
     }
     if (!isTeamLeader()) {
         return false;
     }
-    return estMemeClassement($idTeam);
+    return isSameRankingTable($idTeam);
 }
 
 function isTeamLeader() {
     return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
 }
 
-function estMemeClassement($id_equipe) {
+function isSameRankingTable($id_equipe) {
     global $db;
     $sessionIdEquipe = $_SESSION['id_equipe'];
     if ($sessionIdEquipe === $id_equipe) {
@@ -317,39 +316,7 @@ function estMemeClassement($id_equipe) {
     return false;
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function recup_nom_equipe($compet, $id)
-//************************************************************************************************
-/*
- * * Fonction    : recup_nom_equipe 
- * * Input       : STRING $id
- * * Output      : aucun 
- * * Description : Récupère le nom d'une équipe
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 15/04/2010
- */ {
-    global $db;
-    conn_db();
-    $sql = 'SELECT nom_equipe FROM equipes WHERE code_competition = \'' . recup_compet_maitre($compet) . '\' and id_equipe = \'' . $id . '\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_assoc($req)) {
-        return $data['nom_equipe'];
-    }
-}
-
-//************************************************************************************************
-//************************************************************************************************
-function recup_mail_equipe($id)
-//************************************************************************************************
-/*
- * * Fonction    : recup_mail_equipe 
- * * Input       : STRING $id
- * * Output      : aucun 
- * * Description : Récupère le mail d'une équipe
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 16/11/2010
- */ {
+function getTeamEmail($id) {
     global $db;
     conn_db();
     $sql = 'SELECT email FROM details_equipes WHERE id_equipe = \'' . $id . '\'';
@@ -359,18 +326,7 @@ function recup_mail_equipe($id)
     }
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function affich_infos($compet)
-//************************************************************************************************
-/*
- * * Fonction    : affich_infos 
- * * Input       : STRING $compet, $div
- * * Output      : $result
- * * Description : Date limite des matches en fonction de la compet et de la division 
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 03/05/2012
- */ {
+function getLimitDate($compet) {
     global $db;
     conn_db();
     $sql = 'SELECT date_limite FROM dates_limite WHERE code_competition = \'' . $compet . '\'';
@@ -380,18 +336,7 @@ function affich_infos($compet)
     }
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function recup_compet_maitre($compet)
-//************************************************************************************************
-/*
- * * Fonction    : recup_compet_maitre 
- * * Input       : STRING $compet
- * * Output      : aucun 
- * * Description : Récupère la compétition maitre m ou f d'une équipe
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 11/05/2010
- */ {
+function getParentCompetition($compet) {
     global $db;
     conn_db();
     $sql = 'SELECT id_compet_maitre FROM competitions WHERE code_competition = \'' . $compet . '\'';
@@ -476,26 +421,12 @@ function getPlayersFromTeam($id_equipe) {
     return json_encode(utf8_encode_mix($results));
 }
 
-function isLatLong($localisation) {
-    $latLongStrings = explode(',', $localisation);
-    if (count($latLongStrings) !== 2) {
-        return false;
-    }
-    if (floatval($latLongStrings[0]) === 0) {
-        return false;
-    }
-    if (floatval($latLongStrings[1]) === 0) {
-        return false;
-    }
-    return true;
-}
-
 function getConnectedUser() {
-    if (estAdmin()) {
+    if (isAdmin()) {
         return "Administrateur";
     }
     if (isTeamLeader()) {
-        $jsonTeamDetails = json_decode(getMonEquipe());
+        $jsonTeamDetails = json_decode(getMyTeam());
         return $jsonTeamDetails[0]->team_full_name;
     }
     if (isset($_SESSION['login'])) {
@@ -504,7 +435,7 @@ function getConnectedUser() {
     return "";
 }
 
-function envoi_mail($id1, $id2, $compet, $date) {
+function sendMailSubmitResult($id1, $id2, $compet, $date) {
     $matchDate = DateTime::createFromFormat('Y-m-d', $date);
     $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
     $headers .='Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
@@ -514,7 +445,7 @@ function envoi_mail($id1, $id2, $compet, $date) {
     $headers .='Content-Transfer-Encoding: 8bit';
 
     $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
-    $message = $message . 'Aux équipes de ' . recup_nom_equipe($compet, $id1) . ' et ' . recup_nom_equipe($compet, $id2) . '<BR>';
+    $message = $message . 'Aux équipes de ' . getTeamName($id1) . ' et ' . getTeamName($id2) . '<BR>';
     $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
     $message = $message . 'Pour résumer, sur le site, 10 jours après la date indiquée pour le match (qui peut être en rouge si le match a été reportée), il doit y avoir un résultat affiché.<BR><BR>';
     $message = $message . 'Pour votre match du <b>' . $matchDate->format('d/m/Y') . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
@@ -524,7 +455,7 @@ function envoi_mail($id1, $id2, $compet, $date) {
     $message = $message . 'Cordialement<BR><BR>Laurent Gorlier<BR>Responsable des classements<BR>';
     $message = $message . '</body></html>';
 
-    $dest = recup_mail_equipe($id1) . "," . recup_mail_equipe($id2);
+    $dest = getTeamEmail($id1) . "," . getTeamEmail($id2);
 
     return mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
 }
@@ -541,13 +472,11 @@ function getIdsTeamRequestingNextMatches() {
     return $results;
 }
 
-function create_csv_string($data) {
-    // Open temp file pointer
+function createCsvString($data) {
     if (!$fp = fopen('php://temp', 'w+')) {
         return FALSE;
     }
     $isHeaderWritten = false;
-    // Loop data and write to file pointer
     foreach ($data as $line) {
         if (!$isHeaderWritten) {
             fputcsv($fp, array_keys($line));
@@ -555,25 +484,19 @@ function create_csv_string($data) {
         }
         fputcsv($fp, $line);
     }
-    // Place stream pointer at beginning
     rewind($fp);
-    // Return the data
     return stream_get_contents($fp);
 }
 
-function send_csv_mail($csvData, $body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
-    // This will provide plenty adequate entropy
+function sendCsvMail($csvData, $body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
     $multipartSep = '-----' . md5(time()) . '-----';
-    // Arrays are much more readable
     $headers = array(
         "From: $from",
         "Reply-To: $from",
         "Bcc: benallemand@gmail.com",
         "Content-Type: multipart/mixed; boundary=\"$multipartSep\""
     );
-    // Make the attachment
-    $attachment = chunk_split(base64_encode(create_csv_string($csvData)));
-    // Make the body of the message
+    $attachment = chunk_split(base64_encode(createCsvString($csvData)));
     $body = "--$multipartSep\r\n"
             . "Content-Type: text/plain; charset=ISO-8859-1; format=flowed\r\n"
             . "Content-Transfer-Encoding: 7bit\r\n"
@@ -586,11 +509,10 @@ function send_csv_mail($csvData, $body, $to = 'youraddress@example.com', $subjec
             . "\r\n"
             . "$attachment\r\n"
             . "--$multipartSep--";
-    // Send the email, return the result
     return @mail($to, $subject, $body, implode("\r\n", $headers));
 }
 
-function send_mail($body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
+function sendMail($body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com') {
     $headers = array(
         "From: $from",
         "Reply-To: $from",
@@ -613,7 +535,7 @@ function sendMailNewUser($login, $password, $idTeam) {
     $to = $login;
     $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
     $from = "laurent.gorlier@ufolep13volley.org";
-    if (send_mail($body, $to, $subject, $from) === FALSE) {
+    if (sendMail($body, $to, $subject, $from) === FALSE) {
         return false;
     }
 }
@@ -658,10 +580,10 @@ function sendMailNextMatches() {
                     . "Voici vos matches de la semaine.\r\n"
                     . "Sportivement,\r\n"
                     . "L'UFOLEP";
-            $to = recup_mail_equipe($id);
+            $to = getTeamEmail($id);
             $subject = "Liste des matches de la semaine";
             $from = "laurent.gorlier@ufolep13volley.org";
-            if (send_csv_mail($results, $body, $to, $subject, $from) === FALSE) {
+            if (sendCsvMail($results, $body, $to, $subject, $from) === FALSE) {
                 return false;
             }
         }
@@ -669,23 +591,9 @@ function sendMailNextMatches() {
     }
 }
 
-//************************************************************************************************
-//************************************************************************************************
-function calcul_classement($id_equipe, $compet, $division)
-//************************************************************************************************
-/*
- * * Fonction    : calcul_classement 
- * * Input       : STRING $id_equipe,$compet, $div
- * * Output      : aucun 
- * * Description : calcule les points de l'équipe qui dont le score vient d'être modifié
- * * Creator     : Jean-Marc Bernard 
- * * Date        : 06/05/2010 
- */ {//1
-//Connexion à la base
+function computeRank($id_equipe, $compet, $division) {
     global $db;
     conn_db();
-
-//Initialisation des variables
     $pts_mar_dom = 0;
     $pts_mar_ext = 0;
     $pts_enc_dom = 0;
@@ -709,8 +617,6 @@ function calcul_classement($id_equipe, $compet, $division)
     $match_joues = 0;
     $points = 0;
     $forfait = 0;
-
-//MATCHES PERDUS PAR FORFAIT  ==========================================================================================
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND forfait_dom = \'1\'';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
@@ -721,16 +627,12 @@ function calcul_classement($id_equipe, $compet, $division)
     while ($data = mysqli_fetch_array($req)) {
         $forfait_ext = $data[0];
     }
-
-//POINTS DE PENALITES ==================================================================================================
     $sql = 'SELECT penalite FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     if (mysqli_num_rows($req) == 1) {
         $data = mysqli_fetch_assoc($req);
         $penalite = $data['penalite'];
     }
-
-//MATCHES GAGNES A 5 JOUEURS ===========================================================================================
     $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND gagnea5_dom = \'1\'';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
@@ -741,51 +643,38 @@ function calcul_classement($id_equipe, $compet, $division)
     while ($data = mysqli_fetch_array($req)) {
         $gagnea5_ext = $data[0];
     }
-
-//MATCHES GAGNES ET PERDUS =============================================================================================
-//MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $match_gag_dom = $data[0];
     }
-//MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $match_per_dom = $data[0];
     }
-//PARTIE MATCHES A L'EXTERIEUR
-//MATCHES GAGNES
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom < M.score_equipe_ext';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $match_gag_ext = $data[0];
     }
-//MATCHES PERDUS
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $match_per_ext = $data[0];
     }
-//SETS MARQUES ET ENCAISSES
-// A DOMICILE
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $sets_mar_dom = $data[0];
         $sets_enc_dom = $data[1];
     }
-// A L'EXTERIEUR
     $sql = 'SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $sets_enc_ext = $data[0];
         $sets_mar_ext = $data[1];
     }
-
-//POINTS MARQUES ET ENCAISSES
-// A DOMICILE
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -794,7 +683,6 @@ function calcul_classement($id_equipe, $compet, $division)
         $pts_mar_dom = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
         $pts_enc_dom = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
     }
-//A L'EXTERIEUR
     $sql = 'SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), '
             . 'SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) '
             . 'FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -803,49 +691,35 @@ function calcul_classement($id_equipe, $compet, $division)
         $pts_enc_ext = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
         $pts_mar_ext = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
     }
-
-// REGROUPEMENT DES RESULTATS
-    $match_gagnes = $match_gag_dom + $match_gag_ext;   // Matches gagnés 
-    $match_perdus = $match_per_dom + $match_per_ext;  // Matches perdus
-    $match_joues = $match_gagnes + $match_perdus;   // Matches joués
-    $sets_marques = $sets_mar_dom + $sets_mar_ext;   // Sets marqués
-    $sets_encaisses = $sets_enc_dom + $sets_enc_ext;  // Sets encaissés
-    $difference = $sets_marques - $sets_encaisses;   // Différence de sets			
-    $gagnea5 = $gagnea5_dom + $gagnea5_ext;     // Matches gagnés à 5 joueurs
-    $forfait = $forfait_dom + $forfait_ext;     // Matches perdus par forfait
-
+    $match_gagnes = $match_gag_dom + $match_gag_ext;
+    $match_perdus = $match_per_dom + $match_per_ext;
+    $match_joues = $match_gagnes + $match_perdus;
+    $sets_marques = $sets_mar_dom + $sets_mar_ext;
+    $sets_encaisses = $sets_enc_dom + $sets_enc_ext;
+    $difference = $sets_marques - $sets_encaisses;
+    $gagnea5 = $gagnea5_dom + $gagnea5_ext;
+    $forfait = $forfait_dom + $forfait_ext;
     $points = 3 * $match_gagnes + $match_perdus - $forfait - $gagnea5 - $penalite;
     $pts_marques = $pts_mar_dom + $pts_mar_ext;
     $pts_encaisses = $pts_enc_dom + $pts_enc_ext;
-
     $points = 3 * $match_gagnes + $match_perdus - $forfait - $gagnea5 - $penalite;
     $pts_marques = $pts_mar_dom + $pts_mar_ext;
     $pts_encaisses = $pts_enc_dom + $pts_enc_ext;
-
-
-
-// On évite la division par 0 pour le calcul des points
     if ($pts_encaisses != 0) {
         $coeff_points = ($pts_marques / $pts_encaisses);
     } else {
         $coeff_points = $pts_marques;
     }
-// On évite la division par 0 pour le calcul des sets
     if ($sets_encaisses != 0) {
         $coeff_sets = ($sets_marques / $sets_encaisses);
     } else {
         $coeff_sets = $sets_marques;
     }
-
-
-//MISE A JOUR DE LA BASE
     $sqlmaj = 'UPDATE classements SET points = \'' . $points . '\', joues = \'' . $match_joues . '\', gagnes = \'' . $match_gagnes . '\', '
             . 'perdus = \'' . $match_perdus . '\', sets_pour = \'' . $sets_marques . '\', sets_contre = \'' . $sets_encaisses . '\', '
             . 'coeff_sets = \'' . $coeff_sets . '\', points_pour = \'' . $pts_marques . '\', points_contre = \'' . $pts_encaisses . '\', '
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
-
-    $reqmaj = mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
-//addSqlActivity($sqlmaj);
+    mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
 }
 
 function getMatchesWonWith5PlayersCount($idTeam, $codeCompetition) {
@@ -878,7 +752,7 @@ function getMatchesLostByForfeitCount($idTeam, $codeCompetition) {
     return $forfait_ext + $forfait_dom;
 }
 
-function getClassement($compet, $div) {
+function getRank($compet, $div) {
     global $db;
     conn_db();
     $sql = 'SELECT '
@@ -914,7 +788,7 @@ function getClassement($compet, $div) {
 }
 
 function getTeamRank($competition, $league, $idTeam) {
-    $results = json_decode(getClassement($competition, $league), true);
+    $results = json_decode(getRank($competition, $league), true);
     foreach ($results as $data) {
         if ($data['id_equipe'] === $idTeam) {
             return $data['rang'];
@@ -923,7 +797,7 @@ function getTeamRank($competition, $league, $idTeam) {
     return '';
 }
 
-function ajouterPenalite($compet, $id_equipe) {
+function addPenalty($compet, $id_equipe) {
     global $db;
     conn_db();
     $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -942,13 +816,13 @@ function ajouterPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-    calcul_classement($id_equipe, $compet, $division);
+    computeRank($id_equipe, $compet, $division);
     mysqli_close($db);
     addActivity("Une penalite a ete infligee a l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
-function enleverPenalite($compet, $id_equipe) {
+function removePenalty($compet, $id_equipe) {
     global $db;
     conn_db();
     $sql = 'SELECT penalite,division FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -970,13 +844,13 @@ function enleverPenalite($compet, $id_equipe) {
     if ($req2 === FALSE) {
         return false;
     }
-    calcul_classement($id_equipe, $compet, $division);
+    computeRank($id_equipe, $compet, $division);
     mysqli_close($db);
     addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
-function supprimerEquipeCompetition($compet, $id_equipe) {
+function removeTeamFromCompetition($compet, $id_equipe) {
     global $db;
     conn_db();
     $sql = 'DELETE FROM classements WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
@@ -994,7 +868,7 @@ function supprimerEquipeCompetition($compet, $id_equipe) {
     return true;
 }
 
-function certifierMatch($code_match) {
+function certifyMatch($code_match) {
     global $db;
     conn_db();
     $sql = 'UPDATE matches SET certif = 1 WHERE code_match = \'' . $code_match . '\'';
@@ -1007,7 +881,7 @@ function certifierMatch($code_match) {
     return true;
 }
 
-function modifierMatch($code_match) {
+function modifyMatch($code_match) {
     global $db;
     conn_db();
     $score_equipe_dom = filter_input(INPUT_POST, 'score_equipe_dom');
@@ -1088,8 +962,8 @@ function modifierMatch($code_match) {
     if ($req === FALSE) {
         return false;
     }
-    calcul_classement($id_equipe_dom, $compet, $division);
-    calcul_classement($id_equipe_ext, $compet, $division);
+    computeRank($id_equipe_dom, $compet, $division);
+    computeRank($id_equipe_ext, $compet, $division);
     mysqli_close($db);
     addActivity("Le match $code_match a ete modifie");
     return true;
@@ -1105,10 +979,10 @@ function addActivity($comment) {
     return;
 }
 
-function modifierMonEquipe() {
+function modifyMyTeam() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     $id_equipe = filter_input(INPUT_POST, 'id_equipe');
@@ -1164,10 +1038,10 @@ function modifierMonEquipe() {
     return true;
 }
 
-function modifierMonMotDePasse() {
+function modifyMyPassword() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1187,7 +1061,7 @@ function modifierMonMotDePasse() {
     return true;
 }
 
-function supprimerMatch($code_match) {
+function removeMatch($code_match) {
     global $db;
     conn_db();
     $sql = 'DELETE FROM matches WHERE code_match = \'' . $code_match . '\'';
@@ -1210,10 +1084,10 @@ function checkNotifyUpdateReport($data) {
         if (intval($data['retard']) == 2) {
             return true;
         }
-        if (!setRetard($data['code_match'], 2)) {
+        if (!setSubmitResultDelay($data['code_match'], 2)) {
             return false;
         }
-        return envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
+        return sendMailSubmitResult($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
     }
     $computedDate->sub($fifteenDays);
     $computedDate->add($tenDays);
@@ -1221,15 +1095,15 @@ function checkNotifyUpdateReport($data) {
         if (intval($data['retard']) == 1) {
             return true;
         }
-        if (!setRetard($data['code_match'], 1)) {
+        if (!setSubmitResultDelay($data['code_match'], 1)) {
             return false;
         }
-        return envoi_mail($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
+        return sendMailSubmitResult($data['id_equipe_dom'], $data['id_equipe_ext'], $data['code_competition'], $data['date_reception']);
     }
-    return setRetard($data['code_match'], 0);
+    return setSubmitResultDelay($data['code_match'], 0);
 }
 
-function setRetard($code_match, $valeur) {
+function setSubmitResultDelay($code_match, $valeur) {
     global $db;
     conn_db();
     $sql = "UPDATE matches SET retard = $valeur WHERE code_match = '$code_match'";
@@ -1296,7 +1170,7 @@ function getMatches($compet, $div) {
         if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
             checkNotifyUpdateReport($data);
         } else {
-            setRetard($data['code_match'], 0);
+            setSubmitResultDelay($data['code_match'], 0);
         }
     }
     return json_encode(utf8_encode_mix($results));
@@ -1305,7 +1179,7 @@ function getMatches($compet, $div) {
 function getMyMatches() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1321,10 +1195,10 @@ function getMyMatches() {
     return json_encode(utf8_encode_mix($results));
 }
 
-function getMonEquipe() {
+function getMyTeam() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1361,82 +1235,10 @@ function getMonEquipe() {
     return json_encode(utf8_encode_mix($results));
 }
 
-function getMyPlayers($rootPath = '../', $doHideInactivePlayers = false) {
-    global $db;
-    conn_db();
-    if (estAdmin()) {
-        return false;
-    }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, UPPER(j.nom) AS nom, j.telephone, j.email, j.num_licence, CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
-        CASE 
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
-                END
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
-                END         
-        END AS est_licence_valide, 
-        j.est_responsable_club+0 AS est_responsable_club, 
-        je.is_captain+0 AS is_captain, 
-        je.is_vice_leader+0 AS is_vice_leader, 
-        je.is_leader+0 AS is_leader, 
-        j.id, j.date_homologation, j.show_photo+0 AS show_photo 
-        FROM joueur_equipe je
-        LEFT JOIN joueurs j ON j.id=je.id_joueur
-        WHERE 
-        je.id_equipe = $sessionIdEquipe";
-    if ($doHideInactivePlayers) {
-        $sql .= " AND j.est_actif+0=1 ";
-    }
-    $sql .= " ORDER BY sexe, nom ASC";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    foreach ($results as $index => $result) {
-        if ($result['show_photo'] === '1') {
-            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
-            if (file_exists($rootPath . $results[$index]['path_photo']) === FALSE) {
-                switch ($result['sexe']) {
-                    case 'M':
-                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
-                        break;
-                    case 'F':
-                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else {
-            switch ($result['sexe']) {
-                case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
-                    break;
-                case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    return json_encode(utf8_encode_mix($results));
-}
-
 function getMyPreferences() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1456,7 +1258,7 @@ function getMyPreferences() {
 function saveMyPreferences() {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1697,7 +1499,7 @@ function isPlayerInTeam($idPlayer, $idTeam) {
 function updateMyTeamCaptain($idPlayer) {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1725,7 +1527,7 @@ function updateMyTeamCaptain($idPlayer) {
 function updateMyTeamViceLeader($idPlayer) {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1753,7 +1555,7 @@ function updateMyTeamViceLeader($idPlayer) {
 function updateMyTeamLeader($idPlayer) {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1781,7 +1583,7 @@ function updateMyTeamLeader($idPlayer) {
 function addPlayerToMyTeam($idPlayer) {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {
@@ -1919,7 +1721,7 @@ function getProfileName($idProfile) {
 function addPlayersToClub($idPlayers, $idClub) {
     global $db;
     conn_db();
-    if (!estAdmin()) {
+    if (!isAdmin()) {
         return false;
     }
     $sql = "UPDATE joueurs SET id_club = $idClub WHERE id IN ($idPlayers)";
@@ -1990,7 +1792,7 @@ function getIdClubFromIdTeam($idTeam) {
 }
 
 function addPlayersToTeam($idPlayers, $idTeam) {
-    if (!estAdmin()) {
+    if (!isAdmin()) {
         return false;
     }
     $idClub = getIdClubFromIdTeam($idTeam);
@@ -2008,7 +1810,7 @@ function addPlayersToTeam($idPlayers, $idTeam) {
 function removePlayerFromMyTeam($idPlayer) {
     global $db;
     conn_db();
-    if (estAdmin()) {
+    if (isAdmin()) {
         return false;
     }
     if (!isTeamLeader()) {

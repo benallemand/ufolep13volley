@@ -19,7 +19,7 @@
         </script>
         <?php
         if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
-            if (estAdmin()) {
+            if (isAdmin()) {
                 die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
             }
             if (!isTeamLeader()) {

@@ -26,7 +26,7 @@ if ($div == "") {
             var division = '<?php echo $div; ?>';
             var connectedUser = '<?php echo getConnectedUser(); ?>';
             var title = "Division <?php echo $div; ?> - Championnat Masculin";
-            var limitDateLabel = "Date limite des matches : <?php affich_infos("m"); ?>";
+            var limitDateLabel = "Date limite des matches : <?php getLimitDate("m"); ?>";
         </script>
         <script type="text/javascript" src="js/championship.js"></script>
     </HEAD>

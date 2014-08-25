@@ -225,7 +225,7 @@ class Rest {
 
     function parseRequest() {
         conn_db();
-        if (!estAdmin()) {
+        if (!isAdmin()) {
             if ($this->fileName === 'comptes_acces') {
                 $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
                 echo json_encode(utf8_encode_mix(array(
