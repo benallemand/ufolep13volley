@@ -12,10 +12,9 @@ Some folders/files have been ignored in GIT :
 /images/ --> contains misc pictures : 
     - root folder contains major banners, icons
     - equipes folder contains photos of teams
-    - joueurs folder contains photos of players
-    - photos folder contains randomly chosen photos for main page
+    - photos folder
         - ctsd folder contains photos of site's team
-/fdm/ --> contains PDF files with Team Sheet. It will self-generated in a later revision
+/players_pics/ --> contains photos of players
 
 Used code is PHP/MySQL for server side, Javascript/Sencha ExtJS/Sencha Touch for client side.
 
