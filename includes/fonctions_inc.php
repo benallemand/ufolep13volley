@@ -356,7 +356,7 @@ function getPlayersFromTeam($id_equipe) {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
+        CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -396,10 +396,10 @@ function getPlayersFromTeam($id_equipe) {
             if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
-                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
                         break;
                     case 'F':
-                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
                         break;
                     default:
                         break;
@@ -408,10 +408,10 @@ function getPlayersFromTeam($id_equipe) {
         } else {
             switch ($result['sexe']) {
                 case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
                     break;
                 case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
                     break;
                 default:
                     break;
@@ -1305,7 +1305,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
     if (!isTeamSheetAllowedForUser($idTeam)) {
         return false;
     }
-    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, UPPER(j.nom) AS nom, j.telephone, j.email, j.num_licence, CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
+    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, UPPER(j.nom) AS nom, j.telephone, j.email, j.num_licence, CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
         CASE 
             WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
                 CASE 
@@ -1342,10 +1342,10 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
             if (file_exists($rootPath . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
-                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
                         break;
                     case 'F':
-                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
                         break;
                     default:
                         break;
@@ -1354,10 +1354,10 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         } else {
             switch ($result['sexe']) {
                 case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
                     break;
                 case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
                     break;
                 default:
                     break;
@@ -1377,7 +1377,7 @@ function getPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence,
-        CONCAT('images/joueurs/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
+        CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1414,10 +1414,10 @@ function getPlayers() {
             if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
                 switch ($result['sexe']) {
                     case 'M':
-                        $results[$index]['path_photo'] = 'images/joueurs/MaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
                         break;
                     case 'F':
-                        $results[$index]['path_photo'] = 'images/joueurs/FemaleMissingPhoto.png';
+                        $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
                         break;
                     default:
                         break;
@@ -1426,10 +1426,10 @@ function getPlayers() {
         } else {
             switch ($result['sexe']) {
                 case 'M':
-                    $results[$index]['path_photo'] = 'images/joueurs/MalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
                     break;
                 case 'F':
-                    $results[$index]['path_photo'] = 'images/joueurs/FemalePhotoNotAllowed.png';
+                    $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
                     break;
                 default:
                     break;
@@ -1893,7 +1893,7 @@ function savePhoto($lastName, $firstName) {
     if (empty($_FILES['photo']['name'])) {
         return true;
     }
-    $uploaddir = '../images/joueurs/';
+    $uploaddir = '../players_pics/';
     $uploadfile = accentedToNonAccented($uploaddir . mb_strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg');
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
