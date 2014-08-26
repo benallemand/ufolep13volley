@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
     alias: 'widget.gridRanking',
     title: 'Classement',
     store: 'Classement',
-    width: 1000,
+    autoScroll: true,
     viewConfig: {
         getRowClass: function(record, rowIndex, rowParams, store) {
             var total = store.getCount();
@@ -22,14 +22,13 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             {
                 header: '',
                 dataIndex: 'rang',
-                flex: null,
                 width: 20,
                 align: 'center'
             },
             {
                 header: 'Equipe',
                 dataIndex: 'equipe',
-                flex: 2,
+                width: 180,
                 renderer: function(val, meta, record) {
                     var url = 'annuaire.php?id=' + record.get('id_equipe') + '&c=' + record.get('code_competition');
                     return '<a href="' + url + '" target="blank">' + val + '</a>';
@@ -37,16 +36,19 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             },
             {
                 header: 'Points',
+                width: 100,
                 dataIndex: 'points',
                 align: 'center'
             },
             {
                 header: 'Joués',
+                width: 100,
                 dataIndex: 'joues',
                 align: 'center'
             },
             {
                 header: 'Gagnés',
+                width: 100,
                 dataIndex: 'gagnes',
                 align: 'center',
                 renderer: function(val, meta, record) {
@@ -60,6 +62,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             },
             {
                 header: 'Perdus',
+                width: 100,
                 dataIndex: 'perdus',
                 align: 'center',
                 renderer: function(val, meta, record) {
@@ -73,46 +76,55 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             },
             {
                 header: 'Sets Pour',
+                width: 100,
                 dataIndex: 'sets_pour',
                 align: 'center'
             },
             {
                 header: 'Sets Contre',
+                width: 100,
                 dataIndex: 'sets_contre',
                 align: 'center'
             },
             {
                 header: 'Difference',
+                width: 100,
                 dataIndex: 'diff',
                 align: 'center'
             },
             {
                 header: 'Coeff Sets',
+                width: 100,
                 dataIndex: 'coeff_s',
                 align: 'center'
             },
             {
                 header: 'Pts Pour',
+                width: 100,
                 dataIndex: 'points_pour',
                 align: 'center'
             },
             {
                 header: 'Pts Contre',
+                width: 100,
                 dataIndex: 'points_contre',
                 align: 'center'
             },
             {
                 header: 'Coeff Points',
+                width: 100,
                 dataIndex: 'coeff_p',
                 align: 'center'
             },
             {
                 header: 'Pénalités',
+                width: 100,
                 dataIndex: 'penalites',
                 align: 'center'
             },
             {
                 header: 'Administration',
+                width: 200,
                 xtype: 'actioncolumn',
                 hideable: false,
                 hidden: true,
@@ -140,10 +152,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     }
                 ]
             }
-        ],
-        defaults: {
-            flex: 1
-        }
+        ]
     },
     dockedItems: [
         {

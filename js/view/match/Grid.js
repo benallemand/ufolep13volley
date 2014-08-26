@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
     alias: 'widget.gridMatches',
     title: 'Matches',
     store: 'Matches',
-    width: 1000,
+    autoScroll: true,
     features: [
         {
             ftype: 'grouping',
@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
         items: [
             {
                 header: 'Code',
-                flex: 1,
+                width: 100,
                 dataIndex: 'code_match',
                 renderer: function(value, metaData, record) {
                     if (record.get('retard') === 1) {
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             },
             {
                 header: 'Date',
-                flex: 3,
+                width: 180,
                 dataIndex: 'date_reception',
                 renderer: function(value, metaData, record) {
                     if (record.get('report') === true) {
@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             },
             {
                 header: 'Equipe Domicile',
-                flex: 2,
+                width: 180,
                 dataIndex: 'equipe_dom',
                 renderer: function(value, metaData, record) {
                     if (record.get('score_equipe_dom') === 3) {
@@ -51,8 +51,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             {
                 header: 'Score',
                 dataIndex: 'score_equipe_dom',
-                flex: null,
-                width: 50,
+                width: 100,
                 renderer: function(val, meta, rec) {
                     if ((rec.get('score_equipe_dom') === 3) || (rec.get('score_equipe_ext') === 3)) {
                         return rec.get('score_equipe_dom') + '/' + rec.get('score_equipe_ext');
@@ -61,7 +60,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             },
             {
                 header: 'Equipe Extérieur',
-                flex: 2,
+                width: 180,
                 dataIndex: 'equipe_ext',
                 renderer: function(value, metaData, record) {
                     if (record.get('score_equipe_ext') === 3) {
@@ -73,7 +72,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             {
                 header: 'Sets',
                 dataIndex: 'set_1_dom',
-                flex: 5,
+                width: 250,
                 renderer: function(val, meta, rec) {
                     var detailsMatch = '';
                     if ((rec.get('set_1_dom') !== 0) || (rec.get('set_1_ext') !== 0)) {
@@ -96,6 +95,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             },
             {
                 header: 'Partage',
+                width: 100,
                 xtype: 'actioncolumn',
                 items: [
                     {
@@ -109,6 +109,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
             },
             {
                 header: 'Administration',
+                width: 200,
                 xtype: 'actioncolumn',
                 hideable: false,
                 hidden: true,
@@ -141,9 +142,6 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     }
                 ]
             }
-        ],
-        defaults: {
-            flex: 1
-        }
+        ]
     }
 });
