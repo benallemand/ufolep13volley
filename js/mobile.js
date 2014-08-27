@@ -2,7 +2,7 @@ Ext.application({
     appFolder: 'js',
     name: 'Ufolep13Volley',
     requires: [],
-    models: ['mobile.Team', 'mobile.Tournament', 'mobile.LastResult', 'mobile.Player'],
+    models: ['Phonebook', 'Tournament', 'LastResult', 'Player'],
     controllers: ['mobile.Phonebook', 'mobile.LastResults', 'mobile.Main', 'mobile.Tournaments', 'mobile.Teams'],
     views: ['mobile.Main'],
     stores: ['mobile.Teams', 'mobile.Tournaments', 'mobile.LastResults', 'mobile.Players'],

@@ -1,6 +1,5 @@
-Ext.define('Ufolep13Volley.model.mobile.Tournament', {
+Ext.define('Ufolep13Volley.model.Tournament', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
-    config: {
         fields: [
             {
                 name: 'id',
@@ -9,5 +8,4 @@ Ext.define('Ufolep13Volley.model.mobile.Tournament', {
             'code_competition',
             'libelle'
         ]
-    }
-});
+}));

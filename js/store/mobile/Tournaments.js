@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.store.mobile.Tournaments', {
     extend: 'Ext.data.Store',
     config: {
-        model: 'Ufolep13Volley.model.mobile.Tournament',
+        model: 'Ufolep13Volley.model.Tournament',
         proxy: {
             type: 'ajax',
             url: 'ajax/getTournaments.php'

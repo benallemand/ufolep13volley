@@ -6,6 +6,7 @@
         <title>Ufolep13Mobile</title>
         <link href="http://cdn.sencha.io/touch/sencha-touch-2.3.1/resources/css/sencha-touch.css" rel="stylesheet" />
         <script src="http://cdn.sencha.io/touch/sencha-touch-2.3.1/sencha-touch-all.js"></script>
+        <script type="text/javascript" src="js/libs/Commons.js"></script>
         <?php
         if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
             if (isAdmin()) {

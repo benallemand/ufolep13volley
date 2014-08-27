@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.LastResult', {
+Ext.define('Ufolep13Volley.model.LastResult', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         'competition',
@@ -18,4 +18,4 @@ Ext.define('Ufolep13Volley.model.LastResult', {
         'date_reception',
         'url'
     ]
-});
+}));

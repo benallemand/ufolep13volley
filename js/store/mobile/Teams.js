@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.store.mobile.Teams', {
     extend: 'Ext.data.Store',
     config: {
-        model: 'Ufolep13Volley.model.mobile.Team',
+        model: 'Ufolep13Volley.model.Phonebook',
         proxy: {
             type: 'ajax',
             url: 'ajax/getAnnuaires.php'
