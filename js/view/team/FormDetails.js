@@ -12,27 +12,57 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         {
             xtype: 'displayfield',
             fieldLabel: 'Club',
-            name: 'club'
+            name: 'club',
+            renderer: function(val) {
+                if (val.length === 0) {
+                    return 'Pas de valeur';
+                }
+                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+            }
         },
         {
             xtype: 'displayfield',
             fieldLabel: 'Responsable',
-            name: 'responsable'
+            name: 'responsable',
+            renderer: function(val) {
+                if (val.length === 0) {
+                    return 'Pas de valeur';
+                }
+                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+            }
         },
         {
             xtype: 'displayfield',
             fieldLabel: 'Téléphone 1',
-            name: 'telephone_1'
+            name: 'telephone_1',
+            renderer: function(val) {
+                if (val.length === 0) {
+                    return 'Pas de valeur';
+                }
+                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+            }
         },
         {
             xtype: 'displayfield',
             fieldLabel: 'Téléphone 2',
-            name: 'telephone_2'
+            name: 'telephone_2',
+            renderer: function(val) {
+                if (val.length === 0) {
+                    return 'Pas de valeur';
+                }
+                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+            }
         },
         {
             xtype: 'displayfield',
             fieldLabel: 'Email',
-            name: 'email'
+            name: 'email',
+            renderer: function(val) {
+                if (val.length === 0) {
+                    return 'Pas de valeur';
+                }
+                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+            }
         },
         {
             xtype: 'displayfield',
