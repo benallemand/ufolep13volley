@@ -1,6 +1,6 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
-    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'login.AutoCompleteField'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel'],
     controllers: ['Login'],
     stores: [],
     name: 'Ufolep13Volley',
@@ -25,29 +25,46 @@ Ext.application({
                         items: {
                             width: '80%',
                             xtype: 'form',
+                            autoEl: {
+                                tag: 'form',
+                                method: 'POST',
+                                action: 'blank.html',
+                                target: 'submitTarget'
+                            },
                             title: 'Connexion',
                             layout: 'anchor',
                             defaults: {
                                 anchor: '100%',
                                 margin: 10
                             },
-                            autoEl: {
-                                tag: 'form'
-                            },
                             url: 'ajax/login.php',
                             items: [
                                 {
-                                    xtype: 'actextfield',
+                                    xtype: 'textfield',
                                     name: 'login',
                                     fieldLabel: 'Login',
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    'inputAttrTpl': [
+                                        'autocomplete="on"'
+                                    ]
                                 },
                                 {
-                                    xtype: 'actextfield',
+                                    xtype: 'textfield',
                                     name: 'password',
                                     fieldLabel: 'Mot de passe',
                                     inputType: 'password',
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    'inputAttrTpl': [
+                                        'autocomplete="on"'
+                                    ]
+                                },
+                                {
+                                    xtype: 'component',
+                                    html: '<iframe id="submitTarget" name="submitTarget" style="display:none"></iframe>'
+                                },
+                                {
+                                    xtype: 'component',
+                                    html: '<input type="submit" id="submitButton" style="display:none">'
                                 }
                             ],
                             buttons: [
