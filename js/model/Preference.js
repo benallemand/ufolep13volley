@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Preference', {
+Ext.define('Ufolep13Volley.model.Preference', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.model.Preference', {
             }
         }
     ]
-});
+}));

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Users', {
+Ext.define('Ufolep13Volley.store.Users', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.User',
@@ -7,4 +7,4 @@ Ext.define('Ufolep13Volley.store.Users', {
             url: 'ajax/getUsers.php'
         },
         autoLoad: true}
-});
+}));

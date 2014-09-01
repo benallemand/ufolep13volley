@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Teams', {
+Ext.define('Ufolep13Volley.store.Teams', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Team',
@@ -14,4 +14,4 @@ Ext.define('Ufolep13Volley.store.Teams', {
             limitParam: undefined
         },
         autoLoad: true}
-});
+}));

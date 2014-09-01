@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.User', {
+Ext.define('Ufolep13Volley.model.User', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -19,4 +19,4 @@ Ext.define('Ufolep13Volley.model.User', {
             type: 'int'
         }
     ]
-});
+}));

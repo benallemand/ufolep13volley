@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.WebSites', {
+Ext.define('Ufolep13Volley.store.WebSites', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.WebSite',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.store.WebSites', {
             }
         },
         autoLoad: true}
-});
+}));

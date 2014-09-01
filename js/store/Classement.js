@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Classement', {
+Ext.define('Ufolep13Volley.store.Classement', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Classement',
@@ -15,4 +15,4 @@ Ext.define('Ufolep13Volley.store.Classement', {
             }
         },
         autoLoad: true}
-});
+}));

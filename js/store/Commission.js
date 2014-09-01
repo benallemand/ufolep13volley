@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Commission', {
+Ext.define('Ufolep13Volley.store.Commission', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Commission',
@@ -26,4 +26,4 @@ Ext.define('Ufolep13Volley.store.Commission', {
         },
         autoLoad: true,
         autoSync: true}
-});
+}));

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.LastPosts', {
+Ext.define('Ufolep13Volley.store.LastPosts', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.LastPost',
@@ -16,4 +16,4 @@ Ext.define('Ufolep13Volley.store.LastPosts', {
             }
         ],
         autoLoad: true}
-});
+}));

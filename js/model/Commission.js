@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Commission', {
+Ext.define('Ufolep13Volley.model.Commission', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         'id_commission',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.model.Commission', {
         'photo',
         'type'
     ]
-});
+}));

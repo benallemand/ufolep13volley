@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.LastPost', {
+Ext.define('Ufolep13Volley.model.LastPost', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         'title',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.model.LastPost', {
         'description',
         'guid'
     ]
-});
+}));
