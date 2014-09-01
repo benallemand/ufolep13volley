@@ -18,11 +18,9 @@ Ext.application({
             var competitions = Ext.Array.sort(phonebooksStore.collect('libelle_competition'));
             Ext.each(competitions, function(competition) {
                 var panelCompetition = Ext.create('Ext.panel.Panel', {
-                    margins: 10,
                     layout: 'hbox',
-                    width: '100%',
-                    flex: 1,
                     title: competition,
+                    autoScroll: true,
                     items: []
                 });
                 phonebooksStore.clearFilter(true);
@@ -30,7 +28,7 @@ Ext.application({
                 var divisions = phonebooksStore.collect('division');
                 Ext.each(divisions, function(division) {
                     var panelDivision = Ext.create('Ext.panel.Panel', {
-                        flex: 1,
+                        width: 180,
                         header: false,
                         items: []
                     });
@@ -76,6 +74,7 @@ Ext.application({
                 });
                 var panel = Ext.ComponentQuery.query('panel[id=phonebooksContainer]')[0];
                 panel.add(panelCompetition);
+                panel.setActiveTab(0);
             });
         });
     }
