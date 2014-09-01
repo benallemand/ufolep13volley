@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.mobile.SearchTeam', {
                 var newVal = search.getValue();
                 if (newVal === '') {
                     var filtersAux = [];
-                    var store = Ext.getStore('Teams');
+                    var store = Ext.getStore('Phonebooks');
                     Ext.Array.each(store.getFilters(), function(element, pos, array) {
                         if (element.getProperty() === 'nom_equipe') {
                             return true;
@@ -25,7 +25,7 @@ Ext.define('Ufolep13Volley.view.mobile.SearchTeam', {
                     });
                 }
                 else {
-                    Ext.getStore('Teams').filter('nom_equipe', newVal, true);
+                    Ext.getStore('Phonebooks').filter('nom_equipe', newVal, true);
                 }
             }
         }

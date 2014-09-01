@@ -7,7 +7,7 @@ Ext.define('Ufolep13Volley.view.mobile.Players', {
     config: {
         title : 'Joueurs',
         itemTpl: "<img src='{path_photo}' width='80px'/>{full_name}",
-        store: 'Players',
+        store: 'TeamPlayers',
         flex: 1
     }
 });

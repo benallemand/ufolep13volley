@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Phonebooks', {
+Ext.define('Ufolep13Volley.store.Phonebooks', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Phonebook',
@@ -18,5 +18,4 @@ Ext.define('Ufolep13Volley.store.Phonebooks', {
         },
         autoLoad: false
     }
-
-});
+}));

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.mobile.Tournaments', {
+Ext.define('Ufolep13Volley.store.Tournaments', Sencha.storeCompatibility({
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Tournament',
@@ -9,5 +9,4 @@ Ext.define('Ufolep13Volley.store.mobile.Tournaments', {
         sorters: 'libelle',
         autoLoad: true
     }
-
-});
+}));

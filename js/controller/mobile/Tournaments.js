@@ -28,8 +28,8 @@ Ext.define('Ufolep13Volley.controller.mobile.Tournaments', {
                 }
             ]
         });
-        Ext.getStore('Teams').clearFilter(true);
-        Ext.getStore('Teams').filter('code_competition', record.get('code_competition'));
+        Ext.getStore('Phonebooks').clearFilter(true);
+        Ext.getStore('Phonebooks').filter('code_competition', record.get('code_competition'));
     }
 }
 );

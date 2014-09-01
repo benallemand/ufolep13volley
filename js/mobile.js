@@ -5,7 +5,7 @@ Ext.application({
     models: ['Phonebook', 'Tournament', 'LastResult', 'Player'],
     controllers: ['mobile.Phonebook', 'mobile.LastResults', 'mobile.Main', 'mobile.Tournaments', 'mobile.Teams'],
     views: ['mobile.Main'],
-    stores: ['mobile.Teams', 'mobile.Tournaments', 'mobile.LastResults', 'mobile.Players'],
+    stores: ['Phonebooks', 'Tournaments', 'LastResults', 'TeamPlayers'],
     icon: {
         '57': 'resources/icons/Icon.png',
         '72': 'resources/icons/Icon~ipad.png',

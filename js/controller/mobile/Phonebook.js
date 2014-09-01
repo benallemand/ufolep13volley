@@ -17,6 +17,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Phonebook', {
         this.getMainPanel().push({
             xtype: 'listtournaments'
         });
+        Ext.getStore('Phonebooks').load();
     }
 }
 );

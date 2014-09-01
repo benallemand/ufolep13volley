@@ -7,7 +7,7 @@ Ext.define('Ufolep13Volley.view.mobile.Teams', {
     config: {
         itemTpl: '{nom_equipe}',
         grouped: true,
-        store: 'Teams',
+        store: 'Phonebooks',
         flex: 1
     }
 });
