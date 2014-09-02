@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.controller.Login', {
     extend: 'Ext.app.Controller',
     stores: ['Teams'],
-    models: [],
+    models: ['Team'],
     views: ['login.CreateUser'],
     refs: [
         {

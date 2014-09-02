@@ -3,6 +3,7 @@ Ext.application({
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'team.GridMatches', 'team.FormDetails'],
     controllers: ['TeamManagement'],
     stores: ['MyMatches'],
+    models: ['Match'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function() {
