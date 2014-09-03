@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.login.CreateUser', {
             },
             {
                 xtype: 'textfield',
-                name: 'login',
+                name: 'email',
                 fieldLabel: 'Adresse Email',
                 allowBlank: false,
                 vtype: 'email'
