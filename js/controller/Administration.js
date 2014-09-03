@@ -219,17 +219,28 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         if (!records) {
             return;
         }
-        var ids = [];
-        Ext.each(records, function(record) {
-            ids.push(record.get('id'));
-        });
-        Ext.Ajax.request({
-            url: 'ajax/deleteUsers.php',
-            params: {
-                ids: ids.join(',')
-            },
-            success: function(response) {
-                me.getUsersStore().load();
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function(btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function(record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteUsers.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function(response) {
+                        me.getUsersStore().load();
+                    }
+                });
             }
         });
     },
@@ -239,17 +250,28 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         if (!records) {
             return;
         }
-        var ids = [];
-        Ext.each(records, function(record) {
-            ids.push(record.get('id'));
-        });
-        Ext.Ajax.request({
-            url: 'ajax/deletePlayers.php',
-            params: {
-                ids: ids.join(',')
-            },
-            success: function(response) {
-                me.getPlayersStore().load();
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function(btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function(record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deletePlayers.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function(response) {
+                        me.getPlayersStore().load();
+                    }
+                });
             }
         });
     },
