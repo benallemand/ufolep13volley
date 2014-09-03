@@ -1,0 +1,1 @@
+ALTER TABLE comptes_acces ADD email VARCHAR(200);
