@@ -7,6 +7,7 @@ Ext.define('Ufolep13Volley.model.User', Sencha.modelCompatibility({
         },
         'login',
         'password',
+        'email',
         {
             name: 'id_team',
             type: 'int'

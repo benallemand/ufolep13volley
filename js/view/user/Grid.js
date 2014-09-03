@@ -23,6 +23,11 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 flex: 1
             },
             {
+                header: 'Email',
+                dataIndex: 'email',
+                flex: 1
+            },
+            {
                 header: 'Profil',
                 dataIndex: 'profile',
                 flex: 1

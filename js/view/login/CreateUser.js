@@ -21,6 +21,14 @@ Ext.define('Ufolep13Volley.view.login.CreateUser', {
             {
                 xtype: 'textfield',
                 name: 'login',
+                fieldLabel: 'Choisir un identifiant',
+                allowBlank: false,
+                maxLength: 200,
+                vtype: 'alphanum'
+            },
+            {
+                xtype: 'textfield',
+                name: 'login',
                 fieldLabel: 'Adresse Email',
                 allowBlank: false,
                 vtype: 'email'

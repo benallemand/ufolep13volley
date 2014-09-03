@@ -51,7 +51,7 @@ function isUserExists($login) {
     return true;
 }
 
-function createUser($login, $idTeam) {
+function createUser($login, $email, $idTeam) {
     global $db;
     conn_db();
     if (isUserExists($login)) {
@@ -61,14 +61,14 @@ function createUser($login, $idTeam) {
         $idTeam = 0;
     }
     $password = randomPassword();
-    $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', password = '$password'";
+    $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', email = '$email', password = '$password'";
     $req = mysqli_query($db, $sql);
     mysqli_close($db);
     if ($req === FALSE) {
         return false;
     }
     addActivity("Creation du compte $login pour l'equipe " . getTeamName($idTeam));
-    sendMailNewUser($login, $password, $idTeam);
+    sendMailNewUser($email, $login, $password, $idTeam);
     return true;
 }
 
@@ -522,7 +522,7 @@ function sendMail($body, $to = 'youraddress@example.com', $subject = 'Test email
     return @mail($to, $subject, $body, implode("\r\n", $headers));
 }
 
-function sendMailNewUser($login, $password, $idTeam) {
+function sendMailNewUser($email, $login, $password, $idTeam) {
     $body = "Bonjour,\r\n"
             . "Voici vos Informations de connexion au site http://www.ufolep13volley.org :\r\n"
             . "Identifiant : $login\r\n"
@@ -532,7 +532,7 @@ function sendMailNewUser($login, $password, $idTeam) {
             . "\r\n"
             . "\r\n"
             . "L'UFOLEP";
-    $to = $login;
+    $to = $email;
     $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
     $from = "laurent.gorlier@ufolep13volley.org";
     if (sendMail($body, $to, $subject, $from) === FALSE) {
@@ -2077,7 +2077,7 @@ function saveProfile() {
 function getUsers() {
     global $db;
     conn_db();
-    $sql = "SELECT ca.id, ca.login, ca.password, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
+    $sql = "SELECT ca.id, ca.login, ca.password, ca.email, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
         FROM comptes_acces ca 
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe 
         LEFT JOIN clubs c ON c.id=e.id_club 
@@ -2096,6 +2096,7 @@ function saveUser() {
     $inputs = array(
         'id' => filter_input(INPUT_POST, 'id'),
         'login' => filter_input(INPUT_POST, 'login'),
+        'email' => filter_input(INPUT_POST, 'email'),
         'password' => filter_input(INPUT_POST, 'password'),
         'id_team' => filter_input(INPUT_POST, 'id_team')
     );

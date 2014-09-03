@@ -38,6 +38,12 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
                 msgTarget: 'under'
             },
             {
+                name: 'email',
+                fieldLabel: 'Email',
+                allowBlank: false,
+                msgTarget: 'under'
+            },
+            {
                 name: 'id_team',
                 xtype: 'combo',
                 queryMode: 'local',
