@@ -81,6 +81,10 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 {
                     text: 'Editer joueur',
                     action: 'editPlayer'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'delete'
                 }
             ]
         }

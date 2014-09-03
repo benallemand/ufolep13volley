@@ -72,6 +72,46 @@ function createUser($login, $email, $idTeam) {
     return true;
 }
 
+function deleteUsers($ids) {
+    $explodedIds = explode(',', $ids);
+    $logins = array();
+    foreach ($explodedIds as $id) {
+        $logins[] = getUserLogin($id);
+    }
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM comptes_acces WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    foreach ($logins as $login) {
+        addActivity("Suppression du compte : $login");
+    }
+    return true;
+}
+
+function deletePlayers($ids) {
+    $explodedIds = explode(',', $ids);
+    $playersFullNames = array();
+    foreach ($explodedIds as $id) {
+        $playersFullNames[] = getPlayerFullName($id);
+    }
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM joueurs WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    foreach ($playersFullNames as $playerFullName) {
+        addActivity("Suppression du joueur : $playerFullName");
+    }
+    return true;
+}
+
 function logout() {
     session_destroy();
     die('<META HTTP-equiv="refresh" content=0;URL=' . filter_input(INPUT_SERVER, 'HTTP_REFERER') . '>');

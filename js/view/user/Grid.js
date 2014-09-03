@@ -50,6 +50,10 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 {
                     text: 'Associer à un profil',
                     action: 'showProfileSelect'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'delete'
                 }
             ]
         }

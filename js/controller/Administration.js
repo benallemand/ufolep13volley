@@ -90,6 +90,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'usersgrid button[action=edit]': {
                         click: this.editUser
                     },
+                    'usersgrid button[action=delete]': {
+                        click: this.deleteUsers
+                    },
                     'playersgrid': {
                         itemdblclick: this.editPlayer
                     },
@@ -140,6 +143,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'button[action=showCheckLicence]': {
                         click: this.showCheckLicence
+                    },
+                    'playersgrid button[action=delete]': {
+                        click: this.deletePlayers
                     }
                 }
         );
@@ -206,6 +212,46 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addUser: function() {
         Ext.widget('useredit');
+    },
+    deleteUsers: function() {
+        var me = this;
+        var records = this.getManageUsersGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        var ids = [];
+        Ext.each(records, function(record) {
+            ids.push(record.get('id'));
+        });
+        Ext.Ajax.request({
+            url: 'ajax/deleteUsers.php',
+            params: {
+                ids: ids.join(',')
+            },
+            success: function(response) {
+                me.getUsersStore().load();
+            }
+        });
+    },
+    deletePlayers: function() {
+        var me = this;
+        var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        var ids = [];
+        Ext.each(records, function(record) {
+            ids.push(record.get('id'));
+        });
+        Ext.Ajax.request({
+            url: 'ajax/deletePlayers.php',
+            params: {
+                ids: ids.join(',')
+            },
+            success: function(response) {
+                me.getPlayersStore().load();
+            }
+        });
     },
     updatePlayer: function() {
         var thisController = this;
@@ -323,12 +369,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 licence_number: licence
             },
             success: function(response) {
-                var el = document.createElement( 'div' );
+                var el = document.createElement('div');
                 el.innerHTML = response.responseText;
                 var infos = el.getElementsByTagName('td');
                 var displayMessage = "";
                 Ext.each(infos, function(info, index) {
-                    if(index === 6) {
+                    if (index === 6) {
                         return false;
                     }
                     displayMessage = displayMessage + ' ' + info.innerHTML;
