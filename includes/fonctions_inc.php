@@ -1991,11 +1991,11 @@ function savePlayer() {
         'date_homologation' => filter_input(INPUT_POST, 'date_homologation'),
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
-    if (empty($inputs['id'])) {
-        if (isPlayerExists($inputs['num_licence'])) {
-            return false;
-        }
-    }
+//    if (empty($inputs['id'])) {
+//        if (isPlayerExists($inputs['num_licence'])) {
+//            return false;
+//        }
+//    }
     conn_db();
     if (empty($inputs['id'])) {
         $sql = "INSERT INTO ";
