@@ -25,6 +25,12 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 msgTarget: 'under'
             },
             {
+                xtype: 'hidden',
+                name: 'id_team',
+                fieldLabel: 'IdTeam',
+                msgTarget: 'under'
+            },
+            {
                 name: 'prenom',
                 fieldLabel: 'Prénom',
                 allowBlank: false,
@@ -44,19 +50,41 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 msgTarget: 'under'
             },
             {
+                xtype: 'combo',
                 name: 'sexe',
                 fieldLabel: 'Sexe',
                 allowBlank: false,
-                maskRe: /[MF]{1}/,
-                minLength: 1,
-                maxLength: 1,
+                store: Ext.create('Ext.data.Store', {
+                    fields: ['abbr', 'name'],
+                    data: [
+                        {"abbr": "M", "name": "Masculin"},
+                        {"abbr": "F", "name": "Féminin"}
+                    ]
+                }),
+                queryMode: 'local',
+                displayField: 'name',
+                valueField: 'abbr',
+                forceSelection: true,
                 msgTarget: 'under'
             },
             {
                 name: 'departement_affiliation',
                 fieldLabel: "Département d'affiliation",
-                xtype: 'numberfield',
+                xtype: 'combo',
                 allowBlank: false,
+                store: Ext.create('Ext.data.Store', {
+                    fields: [{name: 'abbr', type: 'int'}, 'name'],
+                    data: [
+                        {"abbr": 13, "name": "Bouches du Rhône"},
+                        {"abbr": 84, "name": "Vaucluse"},
+                        {"abbr": 83, "name": "Var"},
+                        {"abbr": 0, "name": "Autres"}
+                    ]
+                }),
+                queryMode: 'local',
+                displayField: 'name',
+                valueField: 'abbr',
+                forceSelection: true,
                 msgTarget: 'under'
             },
             {
@@ -98,6 +126,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'show_photo',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Diffusion photo autorisée ?',
+                boxLabel: 'Oui',
                 msgTarget: 'under'
             },
             {
