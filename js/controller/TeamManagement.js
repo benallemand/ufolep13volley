@@ -67,6 +67,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         {
             ref: 'EditPreferencesWindow',
             selector: 'editpreferences'
+        },
+        {
+            ref: 'MyPlayersGrid',
+            selector: 'playersmanage > grid'
         }
     ],
     init: function() {
@@ -122,6 +126,9 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     },
                     'editpreferences button[action=save]': {
                         click: this.savePreferences
+                    },
+                    "button[action=removePlayerFromMyTeam]": {
+                        click: this.removePlayerFromMyTeam
                     }
                 });
     },
@@ -165,6 +172,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     thisController.getPlayersStore().load();
                     thisController.getMyPlayersStore().load();
                     thisController.getWindowEditPlayer().close();
+                    thisController.getAddPlayerToMyTeamWindow().close();
                 },
                 failure: function(form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
@@ -175,6 +183,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     createPlayer: function() {
         Ext.widget('playeredit');
         var idClub = this.getMyTeamStore().getAt(0).get('id_club');
+        var idTeam = this.getMyTeamStore().getAt(0).get('id_equipe');
+        this.getFormPanelEditPlayer().getForm().findField('id_team').setValue(idTeam);
         this.getFormPanelEditPlayer().getForm().findField('id_club').setValue(idClub);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').setValue(false);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').hide();
@@ -302,5 +312,31 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     },
     showModifyPassword: function() {
         Ext.widget('modifypassword');
+    },
+    removePlayerFromMyTeam: function() {
+        var gridMyPlayers = this.getMyPlayersGrid();
+        var currentRecord = gridMyPlayers.getSelectionModel().getSelection()[0];
+        var storeMyPlayers = gridMyPlayers.getStore();
+        Ext.Msg.show({
+            title: 'Retirer un joueur',
+            msg: 'Voulez-vous retirer ' + currentRecord.get('prenom') + ' ' + currentRecord.get('nom') + ' de votre équipe ?',
+            buttons: Ext.Msg.OKCANCEL,
+            icon: Ext.Msg.QUESTION,
+            fn: function(btn) {
+                if (btn === 'ok') {
+                    Ext.Ajax.request({
+                        url: 'ajax/removePlayerFromMyTeam.php',
+                        params: {
+                            id: currentRecord.get('id')
+                        },
+                        success: function(response) {
+                            var responseJson = Ext.decode(response.responseText);
+                            Ext.Msg.alert('Info', responseJson.message);
+                            storeMyPlayers.load();
+                        }
+                    });
+                }
+            }
+        });
     }
 });
