@@ -6,7 +6,7 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
         border: false
     },
     items: [
-        {
+        Ext.is.Phone ? null : {
             region: 'north',
             height: Ext.is.Phone ? 0 : 280,
             split: true,
@@ -15,69 +15,74 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                 border: false
             },
             items: [
-                Ext.is.Phone ? null : {
-                    region: 'north',
+                {
+                    region: 'center',
+                    flex: 2,
                     layout: 'center',
                     defaults: {
                         border: false
                     },
                     items: {
-                        width: 796,
-                        defaults: {
-                            border: false
+                        layout: {
+                            type: 'vbox',
+                            align: 'center'
                         },
-                        items: {
-                            xtype: 'banner'
-                        }
+                        xtype: 'panel',
+                        items: [
+                            {
+                                width: 500,
+                                height: 50,
+                                xtype: 'banner'
+                            },
+                            {
+                                width: 400,
+                                height: 50,
+                                xtype: 'image',
+                                src: './images/JeuAvantEnjeu.jpg'
+                            }
+                        ]
                     }
                 },
-                Ext.is.Phone ? null : {
-                    region: 'center',
-                    layout: 'center',
+                {
+                    region: 'east',
+                    width: 400,
+                    layout: 'fit',
                     defaults: {
                         border: false
                     },
                     items: {
-                        width: 200,
-                        defaults: {
-                            border: false
+                        xtype: 'image',
+                        id: 'randomImage',
+                        src: '',
+                        style: {
+                            cursor: 'pointer'
                         },
-                        items: {
-                            xtype: 'image',
-                            region: 'center',
-                            id: 'randomImage',
-                            src: '',
-                            style: {
-                                cursor: 'pointer'
-                            },
-                            listeners: {
-                                el: {
-                                    click: function() {
-                                        window.open('.', '_self', false);
-                                    }
-                                },
-                                render: function(changingImage) {
-                                    Ext.Ajax.request({
-                                        url: 'ajax/getVolleyballImages.php',
-                                        success: function(response) {
-                                            var responseJson = Ext.decode(response.responseText);
-                                            var photos = responseJson.photos.photo;
-                                            var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                                            var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
-                                            changingImage.setSrc(src);
-                                            var task = {
-                                                run: function() {
-                                                    var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
-                                                    var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
-                                                    changingImage.setSrc(src);
-                                                    changingImage.setWidth(200);
-                                                },
-                                                interval: 3000
-                                            };
-                                            Ext.TaskManager.start(task);
-                                        }
-                                    });
+                        listeners: {
+                            el: {
+                                click: function() {
+                                    window.open('.', '_self', false);
                                 }
+                            },
+                            render: function(changingImage) {
+                                Ext.Ajax.request({
+                                    url: 'ajax/getVolleyballImages.php',
+                                    success: function(response) {
+                                        var responseJson = Ext.decode(response.responseText);
+                                        var photos = responseJson.photos.photo;
+                                        var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                                        var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
+                                        changingImage.setSrc(src);
+                                        var task = {
+                                            run: function() {
+                                                var photo = photos[Ext.Number.randomInt(0, photos.length - 1)];
+                                                var src = Ext.String.format("https://farm{0}.staticflickr.com/{1}/{2}_{3}.jpg", photo.farm, photo.server, photo.id, photo.secret);
+                                                changingImage.setSrc(src);
+                                            },
+                                            interval: 3000
+                                        };
+                                        Ext.TaskManager.start(task);
+                                    }
+                                });
                             }
                         }
                     }
