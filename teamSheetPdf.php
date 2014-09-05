@@ -52,7 +52,7 @@ $pdf->Image('images/MainVolley.jpg', 175, 5, 20);
 $pdf->Image('images/JeuAvantEnjeu.jpg', 175, 25, 20);
 $pdf->SetXY(100, 35);
 $pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(50, 10, toWellFormatted($jsonTeam[0]->equipe), 1, 1, 'C');
+$pdf->Cell(50, 10, toWellFormatted($jsonTeam[0]->equipe), 0, 1, 'C');
 $pdf->SetFont('Arial', '', 8);
 $pdf->SetXY(100, 50);
 $pdf->Cell(40, 5, 'Visa CTSD le: ' . toWellFormatted($jsonTeam[0]->date_visa_ctsd), 0, 1, 'C');
@@ -117,4 +117,4 @@ foreach ($jsonPlayers as $index => $jsonPlayer) {
         $pdf->SetTextColor(0, 0, 0);
     }
 }
-$pdf->Output();
+$pdf->Output(toWellFormatted($jsonTeam[0]->equipe . '.pdf'), 'D');
