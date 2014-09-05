@@ -1943,6 +1943,9 @@ function savePhoto($lastName, $firstName) {
 }
 
 function isPlayerExists($licenceNumber) {
+    if ($licenceNumber === '') {
+        return false;
+    }
     global $db;
     conn_db();
     $sql = "SELECT COUNT(*) AS cnt FROM joueurs WHERE num_licence = '$licenceNumber'";
@@ -1984,6 +1987,7 @@ function savePlayer() {
         'departement_affiliation' => filter_input(INPUT_POST, 'departement_affiliation'),
         'est_actif' => filter_input(INPUT_POST, 'est_actif'),
         'id_club' => filter_input(INPUT_POST, 'id_club'),
+        'id_team' => filter_input(INPUT_POST, 'id_team'),
         'telephone2' => filter_input(INPUT_POST, 'telephone2'),
         'email2' => filter_input(INPUT_POST, 'email2'),
         'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
@@ -1991,11 +1995,11 @@ function savePlayer() {
         'date_homologation' => filter_input(INPUT_POST, 'date_homologation'),
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
-//    if (empty($inputs['id'])) {
-//        if (isPlayerExists($inputs['num_licence'])) {
-//            return false;
-//        }
-//    }
+    if (empty($inputs['id'])) {
+        if (isPlayerExists($inputs['num_licence'])) {
+            return false;
+        }
+    }
     conn_db();
     if (empty($inputs['id'])) {
         $sql = "INSERT INTO ";
@@ -2006,6 +2010,7 @@ function savePlayer() {
     foreach ($inputs as $key => $value) {
         switch ($key) {
             case 'id':
+            case 'id_team':
                 continue;
             case 'departement_affiliation':
             case 'id_club':
@@ -2032,9 +2037,19 @@ function savePlayer() {
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
     if ($req === FALSE) {
         return false;
+    }
+    $newId = mysqli_insert_id($db);
+    mysqli_close($db);
+    if (empty($inputs['id'])) {
+        if ($inputs['id_team'] !== null) {
+            if ($newId > 0) {
+                if (!addPlayerToMyTeam($newId)) {
+                    return false;
+                }
+            }
+        }
     }
     if (empty($inputs['id'])) {
         $firstName = $inputs['prenom'];
