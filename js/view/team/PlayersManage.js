@@ -2,8 +2,8 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
     extend: 'Ext.window.Window',
     alias: 'widget.playersmanage',
     title: 'Gestion des joueurs/joueuses',
-    height: 400,
-    width: 700,
+    height: 750,
+    width: 1100,
     modal: true,
     layout: 'fit',
     autoShow: true,
@@ -21,6 +21,13 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
         },
         columns: {
             items: [
+                {
+                    header: 'Photo',
+                    dataIndex: 'path_photo',
+                    renderer: function(value, meta, record) {
+                        return '<img width="100" src="' + record.get('path_photo') + '" />';
+                    }
+                },
                 {
                     header: 'Prénom',
                     dataIndex: 'prenom'
@@ -62,47 +69,6 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                             return false;
                         }
                     }
-                },
-                {
-                    header: 'Photo',
-                    dataIndex: 'path_photo',
-                    renderer: function(value, meta, record) {
-                        return '<img width="100" src="' + record.get('path_photo') + '" />';
-                    }
-                },
-                {
-                    header: 'Gestion',
-                    xtype: 'actioncolumn',
-                    items: [
-                        {
-                            icon: 'images/delete.gif',
-                            handler: function(grid, rowIndex) {
-                                var storeMyPlayers = grid.getStore();
-                                var rec = storeMyPlayers.getAt(rowIndex);
-                                Ext.Msg.show({
-                                    title: 'Retirer un joueur',
-                                    msg: 'Voulez-vous retirer ' + rec.get('prenom') + ' ' + rec.get('nom') + ' de votre équipe ?',
-                                    buttons: Ext.Msg.OKCANCEL,
-                                    icon: Ext.Msg.QUESTION,
-                                    fn: function(btn) {
-                                        if (btn === 'ok') {
-                                            Ext.Ajax.request({
-                                                url: 'ajax/removePlayerFromMyTeam.php',
-                                                params: {
-                                                    id: rec.get('id')
-                                                },
-                                                success: function(response) {
-                                                    var responseJson = Ext.decode(response.responseText);
-                                                    Ext.Msg.alert('Info', responseJson.message);
-                                                    storeMyPlayers.load();
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    ]
                 }
             ],
             defaults: {
@@ -117,6 +83,11 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     {
                         xtype: 'button',
                         text: 'Ajouter un joueur'
+                    },
+                    {
+                        xtype: 'button',
+                        text: 'Retirer un joueur',
+                        action: 'removePlayerFromMyTeam'
                     },
                     {
                         xtype: 'button',
