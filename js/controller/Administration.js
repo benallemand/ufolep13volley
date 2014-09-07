@@ -67,6 +67,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'windowEditUser',
             selector: 'useredit'
+        },
+        {
+            ref: 'displayFilteredCount',
+            selector: 'displayfield[action=displayFilteredCount]'
         }
     ],
     init: function() {
@@ -157,6 +161,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var store = this.getPlayersStore();
         if (newValue !== true) {
             store.clearFilter();
+            this.getDisplayFilteredCount().setValue(store.getCount());
             return;
         }
         store.clearFilter(true);
@@ -171,6 +176,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     }
                 }
         );
+        this.getDisplayFilteredCount().setValue(store.getCount());
     },
     searchPlayer: function(textfield, searchText) {
         var searchTerms = searchText.split(',');
@@ -201,6 +207,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     }
                 }
         );
+        this.getDisplayFilteredCount().setValue(store.getCount());
     },
     editPlayer: function() {
         var record = this.getManagePlayersGrid().getSelectionModel().getSelection()[0];
