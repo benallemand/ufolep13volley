@@ -58,13 +58,13 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
             xtype: 'toolbar',
             dock: 'top',
             items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
                 {
                     text: 'Vérifier une licence...',
                     action: 'showCheckLicence'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
                 },
                 {
                     text: 'Associer à un club',
@@ -85,6 +85,28 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                }
+            ]
+        },
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'checkbox',
+                    boxLabel: 'Joueurs sans photo',
+                    action: 'filterPlayersWithoutPhoto'
                 }
             ]
         }

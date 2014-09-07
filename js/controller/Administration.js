@@ -72,6 +72,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     init: function() {
         this.control(
                 {
+                    'checkbox[action=filterPlayersWithoutPhoto]': {
+                        change: this.filterPlayersWithoutPhoto
+                    },
                     'button[action=addPlayer]': {
                         click: this.addPlayer
                     },
@@ -146,6 +149,25 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'playersgrid button[action=delete]': {
                         click: this.deletePlayers
+                    }
+                }
+        );
+    },
+    filterPlayersWithoutPhoto: function(checkbox, newValue) {
+        var store = this.getPlayersStore();
+        if (newValue !== true) {
+            store.clearFilter();
+            return;
+        }
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function(item) {
+                        var regExp = new RegExp('Missing', "i");
+                        if (regExp.test(item.get('path_photo'))) {
+                            return true;
+                        }
+                        return false;
                     }
                 }
         );
