@@ -396,7 +396,7 @@ function getPlayersFromTeam($id_equipe) {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1352,7 +1352,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1430,7 +1430,7 @@ function getPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence,
-        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1947,7 +1947,7 @@ function savePhoto($lastName, $firstName) {
         return true;
     }
     $uploaddir = '../players_pics/';
-    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtoupper($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . '.jpg');
+    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . '.jpg');
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
