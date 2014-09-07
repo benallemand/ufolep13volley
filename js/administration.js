@@ -510,7 +510,6 @@ Ext.application({
                 'dates_limite',
                 'details_equipes',
                 'equipes',
-                'images',
                 'journees',
                 'matches',
                 'clubs'
