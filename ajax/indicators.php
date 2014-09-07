@@ -3,6 +3,7 @@
 header('Content-Type: text/html; charset=utf-8');
 
 function generateCsv($data, $delimiter = ',', $enclosure = '"') {
+    $contents = '';
     $handle = fopen('php://temp', 'r+');
     $isHeaderWritten = false;
     foreach ($data as $line) {
@@ -133,7 +134,7 @@ $results[] = $indicatorInfosManquantes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
-$indicatorName = filter_input(INPUT_GET, 'indicator');
+$indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
     exit();
