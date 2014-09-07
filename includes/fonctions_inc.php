@@ -396,7 +396,7 @@ function getPlayersFromTeam($id_equipe) {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
+        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1345,7 +1345,20 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
     if (!isTeamSheetAllowedForUser($idTeam)) {
         return false;
     }
-    $sql = "SELECT CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, UPPER(j.nom) AS nom, j.telephone, j.email, j.num_licence, CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo, j.sexe, j.departement_affiliation, j.est_actif+0 AS est_actif, j.id_club, j.telephone2, j.email2, 
+    $sql = "SELECT 
+        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, 
+        CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, 
+        UPPER(j.nom) AS nom, 
+        j.telephone, 
+        j.email, 
+        j.num_licence, 
+        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        j.sexe, 
+        j.departement_affiliation, 
+        j.est_actif+0 AS est_actif, 
+        j.id_club, 
+        j.telephone2, 
+        j.email2, 
         CASE 
             WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
                 CASE 
@@ -1417,7 +1430,7 @@ function getPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence,
-        CONCAT('players_pics/', UPPER(REPLACE(j.nom, '-', '')), UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(REPLACE(j.prenom, '-', ''),2)), '.jpg') AS path_photo,
+        CONCAT('players_pics/', UPPER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1934,7 +1947,7 @@ function savePhoto($lastName, $firstName) {
         return true;
     }
     $uploaddir = '../players_pics/';
-    $uploadfile = accentedToNonAccented($uploaddir . mb_strtoupper(str_replace('-', '', $lastName)) . ucwords(str_replace('-', '', $firstName)) . '.jpg');
+    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtoupper($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . '.jpg');
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
