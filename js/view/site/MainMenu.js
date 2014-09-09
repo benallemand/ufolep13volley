@@ -12,6 +12,20 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
             hrefTarget: '_self'
         },
         {
+            text: 'Version Mobile',
+            scale: 'large',
+            icon: 'images/mobile.png',
+            href: 'index_mobile.php',
+            hrefTarget: '_self'
+        },
+        {
+            text: 'Forum',
+            scale: 'large',
+            icon: 'images/forum.png',
+            href: "http://ufolep13volley.forumzen.com",
+            hrefTarget: '_blank'
+        },
+        {
             text: 'Masculins',
             menu: [
                 {text: 'Division 1', handler: function() {
@@ -319,18 +333,6 @@ Il faudra retourner par voie postale :<br/>\
                     }
                 }
             ]
-        },
-        {
-            text: 'Forum',
-            handler: function() {
-                window.open('http://ufolep13volley.forumzen.com/', '_blank');
-            }
-        },
-        {
-            text: 'Version Mobile',
-            handler: function() {
-                location.href = 'index_mobile.php';
-            }
         },
         '->',
         {
