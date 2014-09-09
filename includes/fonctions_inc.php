@@ -2159,6 +2159,27 @@ function getUsers() {
     return json_encode(utf8_encode_mix($results));
 }
 
+function getGymnasiums() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        id, 
+        nom, 
+        adresse, 
+        code_postal, 
+        ville, 
+        gps, 
+        CONCAT(ville, ' - ', nom, ' - ', adresse) AS full_name 
+        FROM gymnase
+        ORDER BY ville, nom, adresse";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
 function saveUser() {
     global $db;
     $inputs = array(
