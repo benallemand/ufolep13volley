@@ -2249,3 +2249,28 @@ function saveUser() {
     }
     return true;
 }
+
+function getTimeSlots() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        c.id, 
+        c.id_gymnase, 
+        c.id_equipe, 
+        c.jour, 
+        c.heure, 
+        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnasium_full_name, 
+        CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')') AS team_full_name
+        FROM creneau c
+        JOIN gymnase g ON g.id = c.id_gymnase
+        JOIN equipes e ON e.id_equipe = c.id_equipe
+        JOIN clubs cl ON cl.id = e.id_club
+        JOIN competitions comp ON comp.code_competition = e.code_competition
+        ORDER BY team_full_name, gymnasium_full_name";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
