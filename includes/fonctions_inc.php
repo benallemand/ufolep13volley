@@ -169,9 +169,24 @@ function login() {
 function getQuickDetails($idEquipe) {
     global $db;
     conn_db();
-    $sql = "SELECT id_equipe, responsable, telephone_1, telephone_2, email, gymnase, localisation, jour_reception, heure_reception "
-            . "FROM details_equipes "
-            . "WHERE id_equipe=$idEquipe";
+    $sql = "SELECT 
+        e.id_equipe,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone AS telephone_1,
+        jsupp.telephone AS telephone_2,
+        jresp.email,
+        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
+        g.gps AS localisation,
+        cr.jour AS jour_reception,
+        cr.heure AS heure_reception
+        FROM equipes e
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
+        WHERE e.id_equipe=$idEquipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -204,26 +219,32 @@ function getTeams() {
     global $db;
     conn_db();
     $sql = "SELECT 
-        e.id_equipe, 
         e.code_competition, 
         e.nom_equipe, 
-        e.id_club, 
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
+        e.id_club,
         c.nom AS club,
-        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name, 
-        d.responsable,
-        d.telephone_1,
-        d.telephone_2,
-        d.email,
-        d.gymnase,
-        d.localisation,
-        d.jour_reception,
-        d.heure_reception,
+        e.id_equipe,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone AS telephone_1,
+        jsupp.telephone AS telephone_2,
+        jresp.email,
+        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
+        g.gps AS localisation,
+        cr.jour AS jour_reception,
+        cr.heure AS heure_reception,
         d.site_web,
         d.photo
-        FROM equipes e 
-        LEFT JOIN clubs c ON c.id=e.id_club 
-        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition 
-        LEFT JOIN details_equipes d ON d.id_equipe=e.id_equipe
+        FROM equipes e
+        JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        JOIN clubs c ON c.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase        
         ORDER BY nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -1034,26 +1055,10 @@ function modifyMyTeam() {
         return false;
     }
     $id_club = filter_input(INPUT_POST, 'id_club');
-    $responsable = filter_input(INPUT_POST, 'responsable');
-    $telephone_1 = filter_input(INPUT_POST, 'telephone_1');
-    $telephone_2 = filter_input(INPUT_POST, 'telephone_2');
-    $email = filter_input(INPUT_POST, 'email');
-    $gymnase = filter_input(INPUT_POST, 'gymnase');
-    $localisation = filter_input(INPUT_POST, 'localisation');
-    $jour_reception = filter_input(INPUT_POST, 'jour_reception');
-    $heure_reception = filter_input(INPUT_POST, 'heure_reception');
     $site_web = filter_input(INPUT_POST, 'site_web');
-    $sql = "UPDATE details_equipes SET "
-            . "responsable='$responsable', "
-            . "telephone_1='$telephone_1', "
-            . "telephone_2='$telephone_2', "
-            . "email='$email', "
-            . "gymnase='$gymnase', "
-            . "localisation='$localisation', "
-            . "jour_reception='$jour_reception', "
-            . "heure_reception='$heure_reception', "
-            . "site_web='$site_web' "
-            . "WHERE id_equipe=$id_equipe";
+    $sql = "UPDATE details_equipes SET 
+        site_web='$site_web'
+        WHERE id_equipe=$id_equipe";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         return false;
@@ -1251,22 +1256,28 @@ function getMyTeam() {
         CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
         e.id_club,
         c.nom AS club,
-        d.id_equipe,
-        d.responsable,
-        d.telephone_1,
-        d.telephone_2,
-        d.email,
-        d.gymnase,
-        d.localisation,
-        d.jour_reception,
-        d.heure_reception,
+        e.id_equipe,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone AS telephone_1,
+        jsupp.telephone AS telephone_2,
+        jresp.email,
+        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
+        g.gps AS localisation,
+        cr.jour AS jour_reception,
+        cr.heure AS heure_reception,
         d.site_web,
         d.photo
-        FROM details_equipes d
-        LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
-        LEFT JOIN clubs c ON c.id=e.id_club
-        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
-        WHERE d.id_equipe = $sessionIdEquipe";
+        FROM equipes e
+        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        JOIN clubs c ON c.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
+        WHERE e.id_equipe=$sessionIdEquipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1883,6 +1894,25 @@ function removePlayerFromMyTeam($idPlayer) {
     return true;
 }
 
+function removeTimeSlot($id) {
+    global $db;
+    conn_db();
+    if (isAdmin()) {
+        return false;
+    }
+    if (!isTeamLeader()) {
+        return false;
+    }
+    $sql = "DELETE FROM creneau WHERE id = $id";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysqli_close($db);
+    addActivity("Un créneau a été supprimé");
+    return true;
+}
+
 function getTeamSheet($idTeam) {
     if ($idTeam === NULL) {
         return false;
@@ -1894,43 +1924,25 @@ function getTeamSheet($idTeam) {
     }
     $sql = "SELECT 
         c.nom AS club,
-        comp.code_competition AS code_competition,
+        e.code_competition, 
         comp.libelle AS championnat,
         cla.division,
-        de.responsable AS leader,
-        de.telephone_1 AS portable,
-        de.email AS courriel,
-        CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
-        de.gymnase,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS leader,
+        jresp.telephone AS portable,
+        jresp.email AS courriel,
+        CONCAT (cr.jour, ' ', cr.heure) AS creneau,
+        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
         e.nom_equipe AS equipe,
         DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
         FROM equipes e
-        JOIN clubs c ON c.id = e.id_club
+        JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
-        JOIN details_equipes de ON de.id_equipe=e.id_equipe
-        WHERE de.id_equipe = $idTeam";
-//    $sql = "SELECT 
-//        c.nom AS club,
-//        comp.code_competition AS code_competition,
-//        comp.libelle AS championnat,
-//        cla.division,
-//        CONCAT(j.prenom, ' ', j.nom) AS leader,
-//        j.telephone AS portable,
-//        j.email AS courriel,
-//        CONCAT(de.jour_reception, ' ', de.heure_reception) AS creneau,
-//        de.gymnase,
-//        e.nom_equipe AS equipe,
-//        DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
-//        FROM equipes e
-//        JOIN clubs c ON c.id = e.id_club
-//        JOIN competitions comp ON comp.code_competition=e.code_competition
-//        JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
-//        JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
-//        JOIN joueurs j ON j.id=je.id_joueur
-//        JOIN details_equipes de ON de.id_equipe=e.id_equipe
-//        WHERE je.is_leader=1
-//        AND je.id_equipe = $idTeam";
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
+        WHERE e.id_equipe = $idTeam";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -2083,6 +2095,58 @@ function savePlayer() {
         }
     }
     return savePhoto($inputs['nom'], $inputs['prenom']);
+}
+
+function saveTimeSlot() {
+    global $db;
+    $inputs = array(
+        'id' => filter_input(INPUT_POST, 'id'),
+        'id_equipe' => filter_input(INPUT_POST, 'id_equipe'),
+        'id_gymnase' => filter_input(INPUT_POST, 'id_gymnase'),
+        'jour' => filter_input(INPUT_POST, 'jour'),
+        'heure' => filter_input(INPUT_POST, 'heure')
+    );
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "creneau SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
+            case 'id_equipe':
+            case 'id_gymnase':
+                $sql .= "$key = $value,";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $newId = mysqli_insert_id($db);
+    mysqli_close($db);
+    if (empty($inputs['id'])) {
+        $teamName = getTeamName($inputs['id_equipe']);
+        $comment = "Creation d'un nouveau creneau pour l'équipe $teamName";
+    } else {
+        $teamName = getTeamName($inputs['id_equipe']);
+        $comment = "Modification d'un creneau existant pour l'équipe $teamName";
+    }
+    addActivity($comment);
+    return true;
 }
 
 function saveProfile() {
@@ -2273,4 +2337,169 @@ function getTimeSlots() {
         $results[] = $data;
     }
     return json_encode(utf8_encode_mix($results));
+}
+
+function getAlerts() {
+    $results = array();
+    if (isAdmin()) {
+        return json_encode(utf8_encode_mix($results));
+    }
+    if (!isTeamLeader()) {
+        return json_encode(utf8_encode_mix($results));
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sessionLogin = $_SESSION['login'];
+    if (!hasLeader($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Responsable d'équipe non défini",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpSelectLeader'
+        );
+    }
+    if (!hasViceLeader($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Responsable suppléant d'équipe non défini",
+            'criticity' => 'warning',
+            'expected_action' => 'showHelpSelectViceLeader'
+        );
+    }
+    if (!hasCaptain($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Capitaine d'équipe non défini",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpSelectCaptain'
+        );
+    }
+    if (!hasTimeSlot($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas de gymnase de réception",
+            'criticity' => 'info',
+            'expected_action' => 'showHelpSelectTimeSlot'
+        );
+    }
+    if (!hasAnyPhone($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas de numéro de téléphone",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpAddPhoneNumber'
+        );
+    }
+    if (!hasAnyEmail($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas d'email",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpAddEmail'
+        );
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
+function hasLeader($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_leader+0 > 0";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasViceLeader($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_vice_leader+0 > 0";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasCaptain($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_captain+0 > 0";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasTimeSlot($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM creneau WHERE id_equipe = $sessionIdEquipe";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasAnyPhone($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe je
+        JOIN joueurs j ON j.id=je.id_joueur AND (
+            (j.telephone IS NOT NULL AND j.telephone != '')
+            OR 
+            (j.telephone2 IS NOT NULL AND j.telephone2 != '')
+            )
+        WHERE je.id_equipe = $sessionIdEquipe 
+        AND (je.is_leader+0 > 0 OR je.is_vice_leader+0 > 0)";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasAnyEmail($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe je
+        JOIN joueurs j ON j.id=je.id_joueur AND (
+            (j.email IS NOT NULL AND j.email != '')
+            OR 
+            (j.email2 IS NOT NULL AND j.email2 != '')
+        )
+        WHERE je.id_equipe = $sessionIdEquipe 
+        AND (je.is_leader+0 > 0 OR je.is_vice_leader+0 > 0)";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
 }

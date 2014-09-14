@@ -72,7 +72,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 }
             ],
             defaults: {
-                width : 150
+                width: 150
             }
         },
         dockedItems: [
@@ -88,6 +88,11 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                         xtype: 'button',
                         text: 'Retirer un joueur',
                         action: 'removePlayerFromMyTeam'
+                    },
+                    {
+                        xtype: 'button',
+                        text: 'Editer un joueur',
+                        action: 'editPlayer'
                     },
                     {
                         xtype: 'button',

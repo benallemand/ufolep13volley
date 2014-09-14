@@ -33,48 +33,6 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
             },
             {
                 xtype: 'textfield',
-                fieldLabel: 'Responsable',
-                name: 'responsable'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Téléphone 1',
-                name: 'telephone_1'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Téléphone 2',
-                name: 'telephone_2'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Email',
-                name: 'email'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Réception le',
-                name: 'jour_reception'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Horaire',
-                name: 'heure_reception'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Gymnase',
-                name: 'gymnase'
-            },
-            {
-                xtype: 'textfield',
-                fieldLabel: 'Localisation GPS',
-                name: 'localisation',
-                regex: /^\d+[\.]\d+,\d+[\.]\d+$/,
-                regexText: "Merci d'utiliser le format Google Maps, par exemple : 43.410496,5.242646"
-            },
-            {
-                xtype: 'textfield',
                 fieldLabel: 'Site web',
                 name: 'site_web'
             }

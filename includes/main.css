@@ -99,6 +99,9 @@ body {
 .grid-red .x-grid-cell {
     background: pink !important;
 }
+.grid-orange .x-grid-cell {
+    background: gold !important;
+}
 .grid-green .x-grid-cell {
     background: greenyellow !important;
 }

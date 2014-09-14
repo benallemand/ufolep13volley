@@ -1,12 +1,12 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
-    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'team.GridMatches', 'team.FormDetails'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'team.GridMatches', 'team.FormDetails', 'team.GridAlerts'],
     controllers: ['TeamManagement'],
-    stores: ['MyMatches'],
-    models: ['Match'],
+    stores: ['MyMatches', 'Alerts'],
+    models: ['Match', 'Alert'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
-    launch: function() {
+    launch: function () {
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {
@@ -26,12 +26,19 @@ Ext.application({
                         dockedItems: [
                             {
                                 xtype: 'toolbar',
+                                enableOverflow: true,
                                 dock: 'top',
                                 items: [
                                     {
                                         text: 'Gestions des joueurs/joueuses',
                                         scale: 'large',
                                         icon: 'images/man.png'
+                                    },
+                                    {
+                                        text: 'Gestions des gymnases/créneaux',
+                                        scale: 'large',
+                                        icon: 'images/volleyballcourt.jpg',
+                                        action: 'showTimeSlotsManage'
                                     },
                                     {
                                         text: 'Fiche Equipe',
@@ -66,8 +73,20 @@ Ext.application({
                             },
                             {
                                 region: 'center',
-                                xtype: 'formTeamDetails',
-                                flex: 1
+                                layout: 'border',
+                                flex: 1,
+                                items: [
+                                    {
+                                        region: 'west',
+                                        width: 550,
+                                        xtype: 'gridAlerts'
+                                    },
+                                    {
+                                        region: 'center',
+                                        flex: 1,
+                                        xtype: 'formTeamDetails'
+                                    }
+                                ]
                             }
                         ]
                     }
