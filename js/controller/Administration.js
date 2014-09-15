@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users'],
-    models: ['Player', 'Club', 'Team', 'Profile', 'User'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit'],
+    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums'],
+    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit'],
     refs: [
         {
             ref: 'managePlayersGrid',
@@ -15,6 +15,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'manageUsersGrid',
             selector: 'usersgrid'
+        },
+        {
+            ref: 'manageGymnasiumsGrid',
+            selector: 'gymnasiumsgrid'
         },
         {
             ref: 'mainPanel',
@@ -45,6 +49,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'useredit form'
         },
         {
+            ref: 'formPanelEditGymnasium',
+            selector: 'gymnasiumedit form'
+        },
+        {
             ref: 'windowSelectClub',
             selector: 'clubselect'
         },
@@ -69,11 +77,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'useredit'
         },
         {
+            ref: 'windowEditGymnasium',
+            selector: 'gymnasiumedit'
+        },
+        {
             ref: 'displayFilteredCount',
             selector: 'displayfield[action=displayFilteredCount]'
         }
     ],
-    init: function() {
+    init: function () {
         this.control(
                 {
                     'checkbox[action=filterPlayersWithoutPhoto]': {
@@ -94,11 +106,20 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'usersgrid button[action=add]': {
                         click: this.addUser
                     },
+                    'gymnasiumsgrid button[action=add]': {
+                        click: this.addGymnasium
+                    },
                     'usersgrid button[action=edit]': {
                         click: this.editUser
                     },
+                    'gymnasiumsgrid button[action=edit]': {
+                        click: this.editGymnasium
+                    },
                     'usersgrid button[action=delete]': {
                         click: this.deleteUsers
+                    },
+                    'gymnasiumsgrid button[action=delete]': {
+                        click: this.deleteGymnasiums
                     },
                     'playersgrid': {
                         itemdblclick: this.editPlayer
@@ -109,6 +130,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'usersgrid': {
                         itemdblclick: this.editUser
                     },
+                    'gymnasiumsgrid': {
+                        itemdblclick: this.editGymnasium
+                    },
                     'playeredit button[action=save]': {
                         click: this.updatePlayer
                     },
@@ -118,6 +142,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'useredit button[action=save]': {
                         click: this.updateUser
                     },
+                    'gymnasiumedit button[action=save]': {
+                        click: this.updateGymnasium
+                    },
                     'button[action=managePlayers]': {
                         click: this.showPlayersGrid
                     },
@@ -126,6 +153,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'button[action=manageUsers]': {
                         click: this.showUsersGrid
+                    },
+                    'button[action=manageGymnasiums]': {
+                        click: this.showGymnasiumsGrid
                     },
                     'button[action=showClubSelect]': {
                         click: this.showClubSelect
@@ -157,7 +187,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
         );
     },
-    filterPlayersWithoutPhoto: function(checkbox, newValue) {
+    filterPlayersWithoutPhoto: function (checkbox, newValue) {
         var store = this.getPlayersStore();
         if (newValue !== true) {
             store.clearFilter();
@@ -167,7 +197,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.clearFilter(true);
         store.filter(
                 {
-                    filterFn: function(item) {
+                    filterFn: function (item) {
                         var regExp = new RegExp('Missing', "i");
                         if (regExp.test(item.get('path_photo'))) {
                             return true;
@@ -178,18 +208,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
-    searchPlayer: function(textfield, searchText) {
+    searchPlayer: function (textfield, searchText) {
         var searchTerms = searchText.split(',');
         var store = this.getPlayersStore();
         store.clearFilter(true);
         store.filter(
                 {
-                    filterFn: function(item) {
+                    filterFn: function (item) {
                         var queribleFields = ['nom', 'prenom', 'num_licence', 'club', 'teams_list'];
                         var found = false;
-                        Ext.each(searchTerms, function(searchTerm) {
+                        Ext.each(searchTerms, function (searchTerm) {
                             var regExp = new RegExp(searchTerm, "i");
-                            Ext.each(queribleFields, function(queribleField) {
+                            Ext.each(queribleFields, function (queribleField) {
                                 if (!item.get(queribleField)) {
                                     return true;
                                 }
@@ -209,7 +239,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
-    editPlayer: function() {
+    editPlayer: function () {
         var record = this.getManagePlayersGrid().getSelectionModel().getSelection()[0];
         if (!record) {
             return;
@@ -217,7 +247,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('playeredit');
         this.getFormPanelEditPlayer().loadRecord(record);
     },
-    editProfile: function() {
+    editProfile: function () {
         var record = this.getManageProfilesGrid().getSelectionModel().getSelection()[0];
         if (!record) {
             return;
@@ -225,7 +255,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('profileedit');
         this.getFormPanelEditProfile().loadRecord(record);
     },
-    editUser: function() {
+    editUser: function () {
         var record = this.getManageUsersGrid().getSelectionModel().getSelection()[0];
         if (!record) {
             return;
@@ -233,16 +263,27 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('useredit');
         this.getFormPanelEditUser().loadRecord(record);
     },
-    addPlayer: function() {
+    editGymnasium: function () {
+        var record = this.getManageGymnasiumsGrid().getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        Ext.widget('gymnasiumedit');
+        this.getFormPanelEditGymnasium().loadRecord(record);
+    },
+    addPlayer: function () {
         Ext.widget('playeredit');
     },
-    addProfile: function() {
+    addProfile: function () {
         Ext.widget('profileedit');
     },
-    addUser: function() {
+    addUser: function () {
         Ext.widget('useredit');
     },
-    deleteUsers: function() {
+    addGymnasium: function () {
+        Ext.widget('gymnasiumedit');
+    },
+    deleteUsers: function () {
         var me = this;
         var records = this.getManageUsersGrid().getSelectionModel().getSelection();
         if (!records) {
@@ -253,12 +294,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn !== 'yes') {
                     return;
                 }
                 var ids = [];
-                Ext.each(records, function(record) {
+                Ext.each(records, function (record) {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
@@ -266,14 +307,45 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     params: {
                         ids: ids.join(',')
                     },
-                    success: function(response) {
+                    success: function (response) {
                         me.getUsersStore().load();
                     }
                 });
             }
         });
     },
-    deletePlayers: function() {
+    deleteGymnasiums: function () {
+        var me = this;
+        var records = this.getManageGymnasiumsGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteGymnasiums.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function (response) {
+                        me.getGymnasiumsStore().load();
+                    }
+                });
+            }
+        });
+    },
+    deletePlayers: function () {
         var me = this;
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
         if (!records) {
@@ -284,12 +356,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn !== 'yes') {
                     return;
                 }
                 var ids = [];
-                Ext.each(records, function(record) {
+                Ext.each(records, function (record) {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
@@ -297,14 +369,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     params: {
                         ids: ids.join(',')
                     },
-                    success: function(response) {
+                    success: function (response) {
                         me.getPlayersStore().load();
                     }
                 });
             }
         });
     },
-    updatePlayer: function() {
+    updatePlayer: function () {
         var thisController = this;
         var form = this.getFormPanelEditPlayer().getForm();
         if (form.isValid()) {
@@ -317,18 +389,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
-                success: function() {
+                success: function () {
                     thisController.getPlayersStore().load();
                     thisController.getWindowEditPlayer().close();
                     thisController.getManagePlayersGrid().getSelectionModel().deselectAll();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
         }
     },
-    updateProfile: function() {
+    updateProfile: function () {
         var thisController = this;
         var form = this.getFormPanelEditProfile().getForm();
         if (form.isValid()) {
@@ -341,18 +413,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
-                success: function() {
+                success: function () {
                     thisController.getProfilesStore().load();
                     thisController.getWindowEditProfile().close();
                     thisController.getManageProfilesGrid().getSelectionModel().deselectAll();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
         }
     },
-    updateUser: function() {
+    updateUser: function () {
         var thisController = this;
         var form = this.getFormPanelEditUser().getForm();
         if (form.isValid()) {
@@ -365,42 +437,73 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
-                success: function() {
+                success: function () {
                     thisController.getUsersStore().load();
                     thisController.getWindowEditUser().close();
                     thisController.getManageUsersGrid().getSelectionModel().deselectAll();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
         }
     },
-    showPlayersGrid: function() {
+    updateGymnasium: function () {
+        var thisController = this;
+        var form = this.getFormPanelEditGymnasium().getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getGymnasiumsStore().load();
+                    thisController.getWindowEditGymnasium().close();
+                    thisController.getManageGymnasiumsGrid().getSelectionModel().deselectAll();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    showPlayersGrid: function () {
         this.getMainPanel().removeAll();
         this.getMainPanel().setAutoScroll(true);
         this.getMainPanel().add({
             xtype: 'playersgrid'
         });
     },
-    showProfilesGrid: function() {
+    showProfilesGrid: function () {
         this.getMainPanel().removeAll();
         this.getMainPanel().setAutoScroll(true);
         this.getMainPanel().add({
             xtype: 'profilesgrid'
         });
     },
-    showUsersGrid: function() {
+    showUsersGrid: function () {
         this.getMainPanel().removeAll();
         this.getMainPanel().setAutoScroll(true);
         this.getMainPanel().add({
             xtype: 'usersgrid'
         });
     },
-    showClubSelect: function() {
+    showGymnasiumsGrid: function () {
+        this.getMainPanel().removeAll();
+        this.getMainPanel().setAutoScroll(true);
+        this.getMainPanel().add({
+            xtype: 'gymnasiumsgrid'
+        });
+    },
+    showClubSelect: function () {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
         var idPlayers = [];
-        Ext.each(records, function(record) {
+        Ext.each(records, function (record) {
             idPlayers.push(record.get('id'));
         });
         if (idPlayers.length === 0) {
@@ -411,7 +514,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             id_players: idPlayers.join(',')
         });
     },
-    showCheckLicence: function() {
+    showCheckLicence: function () {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
         var licence = '0' + records[0].get('departement_affiliation') + '_' + records[0].get('num_licence');
         Ext.Ajax.request({
@@ -419,12 +522,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             params: {
                 licence_number: licence
             },
-            success: function(response) {
+            success: function (response) {
                 var el = document.createElement('div');
                 el.innerHTML = response.responseText;
                 var infos = el.getElementsByTagName('td');
                 var displayMessage = "";
-                Ext.each(infos, function(info, index) {
+                Ext.each(infos, function (info, index) {
                     if (index === 6) {
                         return false;
                     }
@@ -434,10 +537,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    showProfileSelect: function() {
+    showProfileSelect: function () {
         var records = this.getManageUsersGrid().getSelectionModel().getSelection();
         var idUsers = [];
-        Ext.each(records, function(record) {
+        Ext.each(records, function (record) {
             idUsers.push(record.get('id'));
         });
         if (idUsers.length === 0) {
@@ -448,10 +551,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             id_users: idUsers.join(',')
         });
     },
-    showTeamSelect: function() {
+    showTeamSelect: function () {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
         var idPlayers = [];
-        Ext.each(records, function(record) {
+        Ext.each(records, function (record) {
             idPlayers.push(record.get('id'));
         });
         if (idPlayers.length === 0) {
@@ -462,46 +565,46 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             id_players: idPlayers.join(',')
         });
     },
-    linkPlayerToClub: function() {
+    linkPlayerToClub: function () {
         var thisController = this;
         var form = this.getFormPanelSelectClub().getForm();
         if (form.isValid()) {
             form.submit({
-                success: function() {
+                success: function () {
                     thisController.getPlayersStore().load();
                     thisController.getWindowSelectClub().close();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
         }
     },
-    linkUsersToProfile: function() {
+    linkUsersToProfile: function () {
         var thisController = this;
         var form = this.getFormPanelSelectProfile().getForm();
         if (form.isValid()) {
             form.submit({
-                success: function() {
+                success: function () {
                     thisController.getUsersStore().load();
                     thisController.getWindowSelectProfile().close();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
         }
     },
-    linkPlayerToTeam: function() {
+    linkPlayerToTeam: function () {
         var thisController = this;
         var form = this.getFormPanelSelectTeam().getForm();
         if (form.isValid()) {
             form.submit({
-                success: function() {
+                success: function () {
                     thisController.getPlayersStore().load();
                     thisController.getWindowSelectTeam().close();
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });

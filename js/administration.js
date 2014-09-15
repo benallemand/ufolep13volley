@@ -57,6 +57,10 @@ Ext.application({
                             {
                                 text: 'Gestion des utilisateurs',
                                 action: 'manageUsers'
+                            },
+                            {
+                                text: 'Gestion des gymnases',
+                                action: 'manageGymnasiums'
                             }
                         ]
                     },

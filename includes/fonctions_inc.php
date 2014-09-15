@@ -92,6 +92,18 @@ function deleteUsers($ids) {
     return true;
 }
 
+function deleteGymnasiums($ids) {
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM gymnase WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids) {
     $explodedIds = explode(',', $ids);
     $playersFullNames = array();
@@ -2310,6 +2322,53 @@ function saveUser() {
                 addActivity($comment);
             }
         }
+    }
+    return true;
+}
+
+function saveGymnasium() {
+    global $db;
+    $inputs = array(
+        'id' => filter_input(INPUT_POST, 'id'),
+        'nom' => filter_input(INPUT_POST, 'nom'),
+        'adresse' => filter_input(INPUT_POST, 'adresse'),
+        'code_postal' => filter_input(INPUT_POST, 'code_postal'),
+        'ville' => filter_input(INPUT_POST, 'ville'),
+        'gps' => filter_input(INPUT_POST, 'gps')
+    );
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "gymnase SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
+            case 'code_postal':
+                if (strlen($value) === 0) {
+                    $sql .= "$key = NULL,";
+                } else {
+                    $sql .= "$key = $value,";
+                }
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
     }
     return true;
 }
