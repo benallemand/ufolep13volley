@@ -9,15 +9,18 @@ Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
         items: [
             {
                 header: 'Nom',
-                dataIndex: 'nom'
+                dataIndex: 'nom',
+                width: 300
             },
             {
                 header: 'Adresse',
-                dataIndex: 'adresse'
+                dataIndex: 'adresse',
+                width: 300
             },
             {
                 header: 'Ville',
-                dataIndex: 'ville'
+                dataIndex: 'ville',
+                width: 300
             }
         ]
     },
