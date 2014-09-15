@@ -340,7 +340,7 @@ Ext.application({
                         columns: {
                             items: columns,
                             defaults: {
-                                flex: 1
+                                width: 120
                             }
                         },
                         dockedItems: [
