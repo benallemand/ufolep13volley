@@ -1,7 +1,7 @@
 Ext.application({
     requires: [],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'match.LastResultsGrid', 'forum.LastPostsGrid', 'team.WebSitesGrid'],
-    controllers: [],
+    controllers: ['Menu'],
     stores: ['LastResults', 'LastPosts', 'WebSites'],
     models: ['LastResult', 'LastPost', 'WebSite'],
     name: 'Ufolep13Volley',
