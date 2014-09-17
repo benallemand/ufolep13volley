@@ -3,7 +3,7 @@ Ext.application({
     controllers: ['Administration'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
-    launch: function() {
+    launch: function () {
         Ext.define('Ext.form.PasswordField', {
             extend: 'Ext.form.field.Text',
             alias: 'widget.passwordfield',
@@ -24,7 +24,7 @@ Ext.application({
                                 xtype: 'button',
                                 scale: 'large',
                                 text: "RETOUR A L'ACCUEIL",
-                                handler: function() {
+                                handler: function () {
                                     window.open('.', '_self', false);
                                 }
                             }
@@ -76,13 +76,13 @@ Ext.application({
                 ]
             }
         });
-        var getAdminButton = function(tableName, records) {
+        var getAdminButton = function (tableName, records) {
             return {
                 text: tableName,
-                handler: function() {
+                handler: function () {
                     var columns = [];
                     var fields = [];
-                    Ext.each(records, function(record) {
+                    Ext.each(records, function (record) {
                         switch (record.get('Field')) {
                             case 'id_club':
                                 if (record.get('Key') === 'PRI') {
@@ -138,7 +138,7 @@ Ext.application({
                                         queryMode: 'local',
                                         store: storeClubs
                                     },
-                                    renderer: function(val) {
+                                    renderer: function (val) {
                                         var index = storeClubs.findExact('id', val);
                                         if (index !== -1) {
                                             var rs = storeClubs.getAt(index).data;
@@ -203,7 +203,7 @@ Ext.application({
                                         queryMode: 'local',
                                         store: storeEquipes
                                     },
-                                    renderer: function(val) {
+                                    renderer: function (val) {
                                         var index = storeEquipes.findExact('id_equipe', val);
                                         if (index !== -1) {
                                             var rs = storeEquipes.getAt(index).data;
@@ -217,7 +217,7 @@ Ext.application({
                                 columns.push({
                                     header: record.get('Field'),
                                     dataIndex: record.get('Field'),
-                                    renderer: function(val) {
+                                    renderer: function (val) {
                                         return '<img src="' + val + '" width="150px" height="100px">';
                                     }
                                 });
@@ -280,7 +280,7 @@ Ext.application({
                                         header: record.get('Field'),
                                         dataIndex: record.get('Field'),
                                         editor: 'passwordfield',
-                                        renderer: function() {
+                                        renderer: function () {
                                             return 'Edit...';
                                         }
                                     });
@@ -310,7 +310,7 @@ Ext.application({
                                 type: 'json'
                             },
                             listeners: {
-                                exception: function(proxy, response, operation) {
+                                exception: function (proxy, response, operation) {
                                     var responseJson = Ext.decode(response.responseText);
                                     Ext.MessageBox.show({
                                         title: 'Erreur',
@@ -355,7 +355,7 @@ Ext.application({
                                         xtype: 'textfield',
                                         fieldLabel: 'Recherche',
                                         listeners: {
-                                            change: function(textfield, newValue, oldValue) {
+                                            change: function (textfield, newValue, oldValue) {
                                                 var store = textfield.up('grid').getStore();
                                                 store.load({
                                                     params: {
@@ -370,10 +370,10 @@ Ext.application({
                                         icon: 'images/ajout.gif',
                                         text: 'Ajouter',
                                         tooltip: 'Ajouter',
-                                        handler: function(button) {
+                                        handler: function (button) {
                                             button.up('grid').getStore().insert(0, button.up('grid').getStore().getProxy().getModel());
                                             var formFields = [];
-                                            Ext.each(button.up('grid').getStore().getProxy().getModel().getFields(), function(field) {
+                                            Ext.each(button.up('grid').getStore().getProxy().getModel().getFields(), function (field) {
                                                 var formField = {
                                                     xtype: 'textfield',
                                                     fieldLabel: field.name,
@@ -456,14 +456,14 @@ Ext.application({
                                         icon: 'images/delete.gif',
                                         tooltip: 'Supprimer',
                                         text: 'Supprimer',
-                                        handler: function(button) {
+                                        handler: function (button) {
                                             var rec = button.up('grid').getView().getSelectionModel().getSelection()[0];
                                             Ext.Msg.show({
                                                 title: 'Effacer ?',
                                                 msg: 'Confirmez vous la suppression ?',
                                                 buttons: Ext.Msg.OKCANCEL,
                                                 icon: Ext.Msg.QUESTION,
-                                                fn: function(btn) {
+                                                fn: function (btn) {
                                                     if (btn === 'ok') {
                                                         button.up('grid').getStore().remove(rec);
                                                     }
@@ -486,7 +486,7 @@ Ext.application({
                 }
             };
         };
-        var getGenericColumnStore = function(tableName) {
+        var getGenericColumnStore = function (tableName) {
             return Ext.create('Ext.data.Store', {
                 fields: [
                     'Field',
@@ -506,7 +506,7 @@ Ext.application({
                 }
             });
         };
-        var initMenuAdmin = function() {
+        var initMenuAdmin = function () {
             var menuAdmin = Ext.ComponentQuery.query('panel[title=Navigation]')[0];
             var tableNames = [
                 'classements',
@@ -520,7 +520,7 @@ Ext.application({
             ];
             menuAdmin.add({
                 text: 'Indicateurs',
-                handler: function() {
+                handler: function () {
                     var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
                     mainPanel.removeAll();
                     mainPanel.setAutoScroll(true);
@@ -549,9 +549,12 @@ Ext.application({
                         }
                     });
                     storeIndicators.load({
-                        callback: function(records, operation, success) {
-                            Ext.each(records, function(record) {
+                        callback: function (records, operation, success) {
+                            Ext.each(records, function (record) {
                                 var detailsData = record.get('details');
+                                if (!detailsData) {
+                                    return;
+                                }
                                 var fields = [];
                                 var columns = [];
                                 for (var k in detailsData[0]) {
@@ -568,40 +571,46 @@ Ext.application({
                                 }
                                 indicatorPanel.add(
                                         {
-                                            layout: 'border',
-                                            height: 300,
+                                            layout: 'hbox',
                                             items: [
                                                 {
-                                                    layout: 'fit',
-                                                    region: 'west',
-                                                    title: record.get('fieldLabel'),
-                                                    flex: 1,
-                                                    items: {
-                                                        xtype: 'displayfield',
-                                                        fieldLabel: '',
-                                                        hideLabel: true,
-                                                        value: record.get('value')
-                                                    }
+                                                    xtype: 'displayfield',
+                                                    margin: 10,
+                                                    fieldLabel: record.get('fieldLabel'),
+                                                    labelWidth: 250,
+                                                    value: record.get('value'),
+                                                    width: 300
                                                 },
                                                 {
-                                                    region: 'center',
-                                                    flex: 7,
-                                                    xtype: 'grid',
-                                                    autoScroll: true,
-                                                    store: Ext.create('Ext.data.Store', {
-                                                        fields: fields,
-                                                        data: {
-                                                            'items': detailsData
-                                                        },
-                                                        proxy: {
-                                                            type: 'memory',
-                                                            reader: {
-                                                                type: 'json',
-                                                                root: 'items'
+                                                    xtype: 'button',
+                                                    margin: 10,
+                                                    text: 'Détails',
+                                                    handler: function () {
+                                                        Ext.create('Ext.window.Window', {
+                                                            title: 'Détails',
+                                                            height: 500,
+                                                            width: 700,
+                                                            layout: 'fit',
+                                                            items: {
+                                                                xtype: 'grid',
+                                                                autoScroll: true,
+                                                                store: Ext.create('Ext.data.Store', {
+                                                                    fields: fields,
+                                                                    data: {
+                                                                        'items': detailsData
+                                                                    },
+                                                                    proxy: {
+                                                                        type: 'memory',
+                                                                        reader: {
+                                                                            type: 'json',
+                                                                            root: 'items'
+                                                                        }
+                                                                    }
+                                                                }),
+                                                                columns: columns
                                                             }
-                                                        }
-                                                    }),
-                                                    columns: columns
+                                                        }).show();
+                                                    }
                                                 }
                                             ]
                                         });
@@ -610,13 +619,13 @@ Ext.application({
                     });
                 }
             });
-            Ext.each(tableNames, function(tableName) {
+            Ext.each(tableNames, function (tableName) {
                 var store = getGenericColumnStore(tableName);
                 store.load({
                     params: {
                         GET_COLUMNS: true
                     },
-                    callback: function(records, operation, success) {
+                    callback: function (records, operation, success) {
                         menuAdmin.add(getAdminButton(tableName, records));
                     }
                 });

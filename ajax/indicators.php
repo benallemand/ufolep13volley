@@ -50,8 +50,7 @@ $indicatorActivity = new Indicator(
         LEFT JOIN competitions c ON c.code_competition=e.code_competition
         ORDER BY a.id DESC");
 $indicatorComptes = new Indicator(
-        'Comptes', "SELECT e.nom_equipe, de.email, ca.login, '****' AS password FROM equipes e
-        JOIN details_equipes de ON de.id_equipe=e.id_equipe
+        'Comptes', "SELECT e.nom_equipe, ca.email, ca.login FROM equipes e
         JOIN comptes_acces ca ON ca.id_equipe=e.id_equipe");
 $indicatorMatchesDupliques = new Indicator(
         'Matches dupliqués', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
@@ -72,31 +71,6 @@ $indicatorEquipesSansClub = new Indicator(
         AND e.id_club IS NULL
         )
         ORDER BY e.code_competition, c.division, e.id_equipe"
-);
-$indicatorInfosManquantes = new Indicator(
-        'Infos Manquantes', "SELECT d.responsable, d.email, e.nom_equipe, c.libelle, cl.division FROM details_equipes d
-        LEFT JOIN equipes e ON e.id_equipe=d.id_equipe
-        LEFT JOIN competitions c ON c.code_competition=e.code_competition
-        LEFT JOIN classements cl ON cl.id_equipe=e.id_equipe
-        WHERE (email='' OR responsable='') AND cl.division IS NOT NULL"
-);
-$indicatorEquipesEngageesChampionnat = new Indicator(
-        'Equipes', "SELECT 
-            e.nom_equipe,
-            comp.libelle,
-            c.division,
-            d.jour_reception,
-            d.heure_reception,
-            d.responsable,
-            d.email,
-            d.telephone_1,
-            d.gymnase
-            FROM equipes e
-            LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
-            LEFT JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
-            LEFT JOIN details_equipes d ON d.id_equipe=e.id_equipe
-            WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
-            ORDER BY e.code_competition, c.division, e.id_equipe"
 );
 $indicatorLicencesDupliquees = new Indicator(
         'Licences dupliquées', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs 
@@ -130,8 +104,6 @@ $results[] = $indicatorNotValidatedPlayers->getResult();
 $results[] = $indicatorActivity->getResult();
 $results[] = $indicatorLicencesDupliquees->getResult();
 $results[] = $indicatorMatchesNonRenseignes->getResult();
-$results[] = $indicatorEquipesEngageesChampionnat->getResult();
-$results[] = $indicatorInfosManquantes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
