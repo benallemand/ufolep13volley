@@ -2408,6 +2408,22 @@ function getAlerts() {
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sessionLogin = $_SESSION['login'];
+    if (!hasEnoughPlayers($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas assez de joueurs dans l'équipe",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpAddPlayer'
+        );
+    }
+    if (!hasEnoughWomen($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas assez de filles dans l'équipe",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpAddPlayer'
+        );
+    }
     if (!hasLeader($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
@@ -2456,7 +2472,117 @@ function getAlerts() {
             'expected_action' => 'showHelpAddEmail'
         );
     }
+    if (hasInactivePlayers($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Joueurs inactifs",
+            'criticity' => 'info',
+            'expected_action' => 'showHelpInactivePlayers'
+        );
+    }
     return json_encode(utf8_encode_mix($results));
+}
+
+function hasEnoughPlayers($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        COUNT(*) AS cnt, 
+        e.code_competition
+        FROM joueur_equipe je 
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        WHERE je.id_equipe = $sessionIdEquipe";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    $minCount = 0;
+    switch ($results[0]['code_competition']) {
+        case 'm':
+        case 'c':
+        case 'cf':
+        case 'pf':
+            $minCount = 6;
+            break;
+        case 'f':
+        case 't':
+        case 'ff':
+        case 'kh':
+        case 'kf':
+            $minCount = 4;
+            break;
+        default:
+            break;
+    }
+    if (intval($results[0]['cnt']) < $minCount) {
+        return false;
+    }
+    return true;
+}
+
+function hasInactivePlayers($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        COUNT(*) AS cnt 
+        FROM joueur_equipe je 
+        JOIN joueurs j ON j.id = je.id_joueur
+        WHERE 
+        je.id_equipe = $sessionIdEquipe
+        AND j.est_actif+0 = 0";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
+}
+
+function hasEnoughWomen($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        COUNT(*) AS cnt, 
+        e.code_competition
+        FROM joueur_equipe je 
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        JOIN joueurs j ON j.id = je.id_joueur
+        WHERE 
+        je.id_equipe = $sessionIdEquipe
+        AND j.sexe = 'F'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    $minCount = 0;
+    switch ($results[0]['code_competition']) {
+        case 'm':
+        case 'c':
+        case 'cf':
+        case 'pf':
+            $minCount = 0;
+            break;
+        case 'f':
+        case 't':
+        case 'ff':
+            $minCount = 4;
+            break;
+        case 'kh':
+        case 'kf':
+            $minCount = 2;
+            break;
+        default:
+            break;
+    }
+    if (intval($results[0]['cnt']) < $minCount) {
+        return false;
+    }
+    return true;
 }
 
 function hasLeader($sessionIdEquipe) {

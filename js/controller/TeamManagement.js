@@ -195,6 +195,14 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 this.showManagePlayers();
                 Ext.Msg.alert('Adresse email', 'Editer le capitaine ou le suppléant, et ajouter au moins une adresse email.');
                 break;
+            case 'showHelpAddPlayer':
+                this.showManagePlayers();
+                Ext.Msg.alert('Ajout de joueur', "Cliquer sur 'Ajouter un joueur' pour sélectionner l'un des joueurs connus du système. Si ce joueur n'existe pas, cliquer sur 'Créer un joueur'. Les joueurs n'apparaissent pas immédiatement sur la fiche équipe, ils doivent être activés par les responsables UFOLEP.");
+                break;
+             case 'showHelpInactivePlayers':
+                this.showManagePlayers();
+                Ext.Msg.alert('Joueurs inactifs', "Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche équipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vérifier la validité de ces joueurs. Si le délai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concerné.");
+                break;    
         }
     },
     savePreferences: function () {
