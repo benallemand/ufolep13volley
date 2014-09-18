@@ -1,0 +1,1 @@
+UPDATE joueurs j SET j.est_actif = 0;
