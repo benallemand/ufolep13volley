@@ -473,32 +473,28 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
     },
     showPlayersGrid: function () {
-        this.getMainPanel().removeAll();
-        this.getMainPanel().setAutoScroll(true);
-        this.getMainPanel().add({
+        var tab = this.getMainPanel().add({
             xtype: 'playersgrid'
         });
+        this.getMainPanel().setActiveTab(tab);
     },
     showProfilesGrid: function () {
-        this.getMainPanel().removeAll();
-        this.getMainPanel().setAutoScroll(true);
-        this.getMainPanel().add({
+        var tab = this.getMainPanel().add({
             xtype: 'profilesgrid'
         });
+        this.getMainPanel().setActiveTab(tab);
     },
     showUsersGrid: function () {
-        this.getMainPanel().removeAll();
-        this.getMainPanel().setAutoScroll(true);
-        this.getMainPanel().add({
+        var tab = this.getMainPanel().add({
             xtype: 'usersgrid'
         });
+        this.getMainPanel().setActiveTab(tab);
     },
     showGymnasiumsGrid: function () {
-        this.getMainPanel().removeAll();
-        this.getMainPanel().setAutoScroll(true);
-        this.getMainPanel().add({
+        var tab = this.getMainPanel().add({
             xtype: 'gymnasiumsgrid'
         });
+        this.getMainPanel().setActiveTab(tab);
     },
     showClubSelect: function () {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();

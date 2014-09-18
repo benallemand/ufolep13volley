@@ -66,11 +66,11 @@ Ext.application({
                     },
                     {
                         region: 'center',
+                        title: 'Panneau Principal',
+                        layout: 'fit',
                         xtype: 'tabpanel',
-                        activeTab: 0,
-                        items: {
-                            title: 'Panneau Principal',
-                            layout: 'fit'
+                        defaults: {
+                            closable: true
                         }
                     }
                 ]
@@ -324,9 +324,8 @@ Ext.application({
                         autoLoad: true,
                         autoSync: true
                     });
-                    var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
-                    mainPanel.removeAll();
-                    mainPanel.add({
+                    var mainPanel = Ext.ComponentQuery.query('tabpanel[title=Panneau Principal]')[0];
+                    var tab = mainPanel.add({
                         title: tableName,
                         xtype: 'grid',
                         autoScroll: true,
@@ -483,6 +482,7 @@ Ext.application({
                             }
                         ]
                     });
+                    mainPanel.setActiveTab(tab);
                 }
             };
         };
@@ -521,10 +521,9 @@ Ext.application({
             menuAdmin.add({
                 text: 'Indicateurs',
                 handler: function () {
-                    var mainPanel = Ext.ComponentQuery.query('panel[title=Panneau Principal]')[0];
-                    mainPanel.removeAll();
+                    var mainPanel = Ext.ComponentQuery.query('tabpanel[title=Panneau Principal]')[0];
                     mainPanel.setAutoScroll(true);
-                    mainPanel.add({
+                    var tab = mainPanel.add({
                         title: 'Indicateurs',
                         layout: {
                             type: 'vbox',
@@ -533,6 +532,7 @@ Ext.application({
                         autoScroll: true,
                         items: []
                     });
+                    mainPanel.setActiveTab(tab);
                     var storeIndicators = Ext.create('Ext.data.Store', {
                         fields: [
                             'fieldLabel',
