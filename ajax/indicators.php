@@ -30,9 +30,15 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 require_once 'classes/Indicator.php';
 $indicatorNotValidatedPlayers = new Indicator(
         'Joueurs en attente de validation', "SELECT 
-        j.prenom, j.nom, CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, c.nom AS nom_club
+        j.prenom, 
+        j.nom, 
+        CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
+        e.nom_equipe, 
+        c.nom AS nom_club
         FROM joueurs j
-        LEFT JOIN clubs c ON c.id = j.id_club
+        JOIN joueur_equipe je ON je.id_joueur = j.id
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        JOIN clubs c ON c.id = e.id_club
         WHERE j.est_actif+0 = 0
         ORDER BY j.id ASC");
 $indicatorActivity = new Indicator(
@@ -42,16 +48,20 @@ $indicatorActivity = new Indicator(
         c.libelle AS competition, 
         a.comment AS description, 
         ca.login AS utilisateur, 
-        de.email AS email_utilisateur 
+        ca.email AS email_utilisateur 
         FROM activity a
         LEFT JOIN comptes_acces ca ON ca.id=a.user_id
-        LEFT JOIN details_equipes de ON de.id_equipe=ca.id_equipe
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
         LEFT JOIN competitions c ON c.code_competition=e.code_competition
         ORDER BY a.id DESC");
 $indicatorComptes = new Indicator(
-        'Comptes', "SELECT e.nom_equipe, ca.email, ca.login FROM equipes e
-        JOIN comptes_acces ca ON ca.id_equipe=e.id_equipe");
+        'Comptes', "SELECT 
+            e.nom_equipe, 
+            ca.email, 
+            ca.login 
+            FROM equipes e
+            JOIN comptes_acces ca ON ca.id_equipe=e.id_equipe
+            ORDER BY e.nom_equipe");
 $indicatorMatchesDupliques = new Indicator(
         'Matches dupliqués', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
@@ -59,23 +69,24 @@ $indicatorMatchesDupliques = new Indicator(
         GROUP BY m.id_equipe_dom, m.id_equipe_ext, m.code_competition
         HAVING COUNT(*) > 1");
 $indicatorEquipesSansClub = new Indicator(
-        'Club non renseigné', "SELECT e.nom_equipe,
-        comp.libelle,
-        c.division
-        FROM equipes e
-        LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
-        LEFT JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
-        WHERE (
-        (e.code_competition='m' OR e.code_competition='f' OR e.code_competition='kh') 
-        AND c.division IS NOT NULL
-        AND e.id_club IS NULL
-        )
-        ORDER BY e.code_competition, c.division, e.id_equipe"
+        'Club non renseigné', "SELECT 
+            e.nom_equipe,
+            comp.libelle,
+            c.division
+            FROM equipes e
+            LEFT JOIN competitions comp ON comp.code_competition=e.code_competition
+            LEFT JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
+            WHERE (
+            (e.code_competition='m' OR e.code_competition='f' OR e.code_competition='kh') 
+            AND c.division IS NOT NULL
+            AND e.id_club IS NULL
+            )
+            ORDER BY e.code_competition, c.division, e.id_equipe"
 );
 $indicatorLicencesDupliquees = new Indicator(
         'Licences dupliquées', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs 
          GROUP BY num_licence
-         HAVING COUNT(*) > 1 AND num_licence != 'Encours'"
+         HAVING COUNT(*) > 1 AND num_licence != ''"
 );
 $indicatorMatchesNonRenseignes = new Indicator(
         'Retards', "SELECT 
