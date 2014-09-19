@@ -5,4 +5,5 @@ $url = "https://api.flickr.com/services/rest?method=flickr.photos.search&sort=re
 //$url = "https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=$flickr_api_key&user_id=42227760@N04&format=json&nojsoncallback=1";
 Unirest::verifyPeer(false);
 $response = Unirest::get($url);
-echo $response->__get('raw_body');
+$test = json_decode($response->__get('raw_body'));
+echo json_encode($test->photos);

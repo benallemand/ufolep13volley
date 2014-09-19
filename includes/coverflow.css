@@ -1,0 +1,18 @@
+div.coverflow-wrapper{
+	 overflow: hidden; 
+	 position: relative; 
+	 margin: 0; 
+	background-color: white;
+}
+div.coverflow{
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+div.coverflow-item{
+	position: absolute;
+}
+img.coverflow-image{
+	position: absolute;
+	float: left;
+}
