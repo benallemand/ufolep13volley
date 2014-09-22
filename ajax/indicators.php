@@ -32,7 +32,7 @@ $indicatorNotValidatedPlayers = new Indicator(
         'Joueurs en attente de validation', "SELECT DISTINCT
         j.prenom, 
         j.nom, 
-        DISTINCT CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
+        CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
         c.nom AS nom_club
         FROM joueurs j
         JOIN joueur_equipe je ON je.id_joueur = j.id
