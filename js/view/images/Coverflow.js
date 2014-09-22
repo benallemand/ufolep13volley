@@ -266,10 +266,10 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
             }
         });
 
-        this.mon(Ext.getDoc(), {
-            scope: this,
-            mousewheel: this.onMouseWheel
-        });
+//        this.mon(Ext.getDoc(), {
+//            scope: this,
+//            mousewheel: this.onMouseWheel
+//        });
     },
     /*
      * @private
