@@ -7,10 +7,6 @@ Some folders/files have been ignored in GIT :
     - $db = mysqli_connect($server, $user, $password);
     - mysqli_select_db($db, $base);
 /nbproject/private/
-/images/ --> contains misc pictures : 
-    - root folder contains major banners, icons
-    - photos folder
-        - ctsd folder contains photos of site's team
 /players_pics/ --> contains photos of players
 /teams_pics/ --> contains photos of teams
 
