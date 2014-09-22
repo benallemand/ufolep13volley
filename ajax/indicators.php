@@ -29,11 +29,10 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 
 require_once 'classes/Indicator.php';
 $indicatorNotValidatedPlayers = new Indicator(
-        'Joueurs en attente de validation', "SELECT 
+        'Joueurs en attente de validation', "SELECT DISTINCT
         j.prenom, 
         j.nom, 
-        CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
-        e.nom_equipe, 
+        DISTINCT CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
         c.nom AS nom_club
         FROM joueurs j
         JOIN joueur_equipe je ON je.id_joueur = j.id
