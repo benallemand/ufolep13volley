@@ -49,7 +49,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
      * @cfg {Number} selectedItemScale
      * The factor used to scale up selected items
      */
-    selectedItemScale: 1.3,
+    selectedItemScale: 1,
     /*
      * @cfg {String} orientation
      * Orientation of the component. Possible values: 'horizontal', 'vertical'.
@@ -249,6 +249,10 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
                 var me = this;
                 var task = {
                     run: function () {
+                        if (me.current === me.getStore().getCount() - 1) {
+                            me.select(0);
+                            return;
+                        }
                         me.selectNext();
                     },
                     interval: 3000
