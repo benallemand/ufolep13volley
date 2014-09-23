@@ -1046,7 +1046,7 @@ function addActivity($comment) {
     global $db;
     conn_db();
     $sessionIdUser = $_SESSION['id_user'];
-    $sql = "INSERT activity SET comment=\"$comment\", activity_date=NOW(), user_id=$sessionIdUser";
+    $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
     mysqli_query($db, $sql);
     mysqli_close($db);
     return;
@@ -2390,6 +2390,29 @@ function getTimeSlots() {
         JOIN clubs cl ON cl.id = e.id_club
         JOIN competitions comp ON comp.code_competition = e.code_competition
         ORDER BY team_full_name, gymnasium_full_name";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
+function getActivity() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
+        e.nom_equipe, 
+        c.libelle AS competition, 
+        a.comment AS description, 
+        ca.login AS utilisateur, 
+        ca.email AS email_utilisateur 
+        FROM activity a
+        LEFT JOIN comptes_acces ca ON ca.id=a.user_id
+        LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
+        LEFT JOIN competitions c ON c.code_competition=e.code_competition
+        ORDER BY a.activity_date DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
