@@ -516,7 +516,6 @@ Ext.application({
                 'classements',
                 'competitions',
                 'dates_limite',
-                'details_equipes',
                 'equipes',
                 'journees',
                 'matches',

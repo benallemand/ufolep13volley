@@ -390,6 +390,7 @@ function isSameRankingTable($id_equipe) {
 }
 
 function getTeamEmail($id) {
+    /* @TODO change details_equipes to point to player instead  */
     global $db;
     conn_db();
     $sql = 'SELECT email FROM details_equipes WHERE id_equipe = \'' . $id . '\'';
@@ -619,6 +620,7 @@ function sendMailNextMatches() {
     foreach ($idsTeamRequestingNextMatches as $idTeam) {
         $id = $idTeam['user_id'];
         conn_db();
+        /* @TODO change details_equipes to point to player instead  */
         $sql = "SELECT 
         e1.nom_equipe AS equipe_domicile, 
         e2.nom_equipe AS equipe_exterieur, 
@@ -1173,6 +1175,7 @@ function setSubmitResultDelay($code_match, $valeur) {
 }
 
 function getSqlSelectMatches($whereClause, $orderClause) {
+    /* @TODO change details_equipes to point to player instead  */
     return "SELECT 
         m.id_match,
         m.code_match,
