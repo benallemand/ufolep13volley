@@ -47,6 +47,10 @@ Ext.application({
                         },
                         items: [
                             {
+                                text: 'Activité',
+                                action: 'displayActivity'
+                            },
+                            {
                                 text: 'Gestion des joueurs',
                                 action: 'managePlayers'
                             },

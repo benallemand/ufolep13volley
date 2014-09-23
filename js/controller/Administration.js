@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums'],
-    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit'],
+    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Activity'],
+    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Activity'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'activity.Grid'],
     refs: [
         {
             ref: 'managePlayersGrid',
@@ -144,6 +144,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'gymnasiumedit button[action=save]': {
                         click: this.updateGymnasium
+                    },
+                    'button[action=displayActivity]': {
+                        click: this.showActivityGrid
                     },
                     'button[action=managePlayers]': {
                         click: this.showPlayersGrid
@@ -471,6 +474,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
+    },
+    showActivityGrid: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'activitygrid'
+        });
+        this.getMainPanel().setActiveTab(tab);
     },
     showPlayersGrid: function () {
         var tab = this.getMainPanel().add({
