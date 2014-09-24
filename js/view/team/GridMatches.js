@@ -16,7 +16,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 header: 'Code',
                 width: 100,
                 dataIndex: 'code_match',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
                         metaData.tdAttr = 'style="background-color:VioletRed;color:black;" data-qtip="Match non renseigné de + de 10 jours!"';
                     }
@@ -35,7 +35,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 header: 'Date',
                 width: 100,
                 dataIndex: 'date_reception',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('report') === true) {
                         metaData.tdAttr = 'style="background-color:Gold;color:black;" data-qtip="Match reporté"';
                     }
@@ -49,7 +49,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         header: '',
                         width: 200,
                         dataIndex: 'equipe_dom',
-                        renderer: function(value, metaData, record) {
+                        renderer: function (value, metaData, record) {
                             if (record.get('score_equipe_dom') === 3) {
                                 metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                             }
@@ -60,7 +60,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         header: '',
                         dataIndex: 'score_equipe_dom',
                         width: 50,
-                        renderer: function(val, meta, rec) {
+                        renderer: function (val, meta, rec) {
                             if ((rec.get('score_equipe_dom') === 3) || (rec.get('score_equipe_ext') === 3)) {
                                 return rec.get('score_equipe_dom') + '/' + rec.get('score_equipe_ext');
                             }
@@ -70,7 +70,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         header: '',
                         width: 200,
                         dataIndex: 'equipe_ext',
-                        renderer: function(value, metaData, record) {
+                        renderer: function (value, metaData, record) {
                             if (record.get('score_equipe_ext') === 3) {
                                 metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                             }
@@ -83,7 +83,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 header: 'Détails de sets',
                 dataIndex: 'set_1_dom',
                 width: 300,
-                renderer: function(val, meta, rec) {
+                renderer: function (val, meta, rec) {
                     var detailsMatch = '';
                     if ((rec.get('set_1_dom') !== 0) || (rec.get('set_1_ext') !== 0)) {
                         detailsMatch = detailsMatch + rec.get('set_1_dom') + '/' + rec.get('set_1_ext') + ' ';
@@ -111,23 +111,23 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                     {
                         icon: 'images/certif.gif',
                         tooltip: 'Feuille de match reçue et certifiée',
-                        getClass: function(value, meta, rec) {
+                        getClass: function (value, meta, rec) {
                             if (rec.get('certif') === false) {
-                                return "x-hide-display";
+                                return "x-hidden-display";
                             }
                         }
                     },
                     {
                         icon: 'images/modif.gif',
                         tooltip: 'Modifier le score',
-                        getClass: function(value, meta, rec) {
+                        getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
-                                return "x-hide-display";
+                                return "x-hidden-display";
                             }
                         },
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
-                            afficheFormulaire = function() {
+                            afficheFormulaire = function () {
                                 Ext.create('Ext.window.Window', {
                                     title: 'Modifier un match',
                                     height: 600,
@@ -152,7 +152,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                         xtype: 'button',
                                                         margin: 10,
                                                         text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
-                                                        handler: function() {
+                                                        handler: function () {
                                                             this.up('form').getForm().setValues([
                                                                 {
                                                                     id: 'score_equipe_dom',
@@ -209,7 +209,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                         xtype: 'button',
                                                         margin: 10,
                                                         text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
-                                                        handler: function() {
+                                                        handler: function () {
                                                             this.up('form').getForm().setValues([
                                                                 {
                                                                     id: 'score_equipe_dom',
@@ -452,7 +452,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                         buttons: [
                                             {
                                                 text: 'Annuler',
-                                                handler: function() {
+                                                handler: function () {
                                                     this.up('window').close();
                                                 }
                                             },
@@ -460,17 +460,17 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                 text: 'Sauver',
                                                 formBind: true,
                                                 disabled: true,
-                                                handler: function() {
+                                                handler: function () {
                                                     var button = this;
                                                     var form = button.up('form').getForm();
                                                     if (form.isValid()) {
                                                         form.submit({
-                                                            success: function(form, action) {
+                                                            success: function (form, action) {
                                                                 Ext.Msg.alert('Modification OK', action.result.message);
                                                                 button.up('window').close();
                                                                 Ext.ComponentQuery.query('grid[title=Matches]')[0].getStore().load();
                                                             },
-                                                            failure: function(form, action) {
+                                                            failure: function (form, action) {
                                                                 Ext.Msg.alert('Erreur', action.result.message);
                                                             }
                                                         });
@@ -490,12 +490,12 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                     {
                         icon: 'images/email-icon.png',
                         tooltip: 'Envoi par email de la feuille de match',
-                        getClass: function(value, meta, rec) {
+                        getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
-                                return "x-hide-display";
+                                return "x-hidden-display";
                             }
                         },
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
                             var codeCompetition = rec.get('code_competition');
                             var division = rec.get('division');

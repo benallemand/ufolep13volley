@@ -16,7 +16,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Code',
                 width: 100,
                 dataIndex: 'code_match',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
                         metaData.tdAttr = 'style="background-color:VioletRed;color:black;" data-qtip="Match non renseigné de + de 10 jours!"';
                     }
@@ -30,7 +30,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Date',
                 width: 180,
                 dataIndex: 'date_reception',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('report') === true) {
                         metaData.tdAttr = 'style="background-color:Gold;color:black;" data-qtip="Match reporté"';
                     }
@@ -41,7 +41,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Equipe Domicile',
                 width: 180,
                 dataIndex: 'equipe_dom',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('score_equipe_dom') === 3) {
                         metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                     }
@@ -52,7 +52,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Score',
                 dataIndex: 'score_equipe_dom',
                 width: 100,
-                renderer: function(val, meta, rec) {
+                renderer: function (val, meta, rec) {
                     if ((rec.get('score_equipe_dom') === 3) || (rec.get('score_equipe_ext') === 3)) {
                         return rec.get('score_equipe_dom') + '/' + rec.get('score_equipe_ext');
                     }
@@ -62,7 +62,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Equipe Extérieur',
                 width: 180,
                 dataIndex: 'equipe_ext',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     if (record.get('score_equipe_ext') === 3) {
                         metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
                     }
@@ -73,7 +73,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 header: 'Sets',
                 dataIndex: 'set_1_dom',
                 width: 250,
-                renderer: function(val, meta, rec) {
+                renderer: function (val, meta, rec) {
                     var detailsMatch = '';
                     if ((rec.get('set_1_dom') !== 0) || (rec.get('set_1_ext') !== 0)) {
                         detailsMatch = detailsMatch + rec.get('set_1_dom') + '/' + rec.get('set_1_ext') + ' ';
@@ -101,7 +101,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     {
                         icon: 'images/facebook.jpg',
                         tooltip: 'Partager',
-                        handler: function() {
+                        handler: function () {
                             window.open('http://www.facebook.com/sharer/sharer.php?u=' + window.location.href, '_blank');
                         }
                     }
@@ -117,26 +117,26 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     {
                         icon: 'images/certified.png',
                         tooltip: 'Certifier avoir reçu la feuille de ce match',
-                        getClass: function(value, meta, rec) {
+                        getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
-                                return "x-hide-display";
+                                return "x-hidden-display";
                             }
                         },
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemcertifybuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/modif.gif',
                         tooltip: 'Modifier le score du match',
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemeditbuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/delete.gif',
                         tooltip: 'Supprimer ce match',
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
                         }
                     }
