@@ -26,192 +26,182 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
             hrefTarget: '_blank'
         },
         {
-            text: 'Masculins',
+            text: 'Championnats',
+            scale: 'large',
+            icon: 'images/volleyball.png',
             menu: [
                 {
-                    text: 'Division 1',
-                    href: 'champ_masc.php?d=1',
-                    hrefTarget: '_self'
+                    text: 'Mixte',
+                    menu: [
+                        {
+                            text: 'Division 1',
+                            href: 'champ_masc.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 2',
+                            href: 'champ_masc.php?d=2',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 3',
+                            href: 'champ_masc.php?d=3',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 4',
+                            href: 'champ_masc.php?d=4',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 5',
+                            href: 'champ_masc.php?d=5',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 6',
+                            href: 'champ_masc.php?d=6',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 7',
+                            href: 'champ_masc.php?d=7',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 },
                 {
-                    text: 'Division 2',
-                    href: 'champ_masc.php?d=2',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Division 3',
-                    href: 'champ_masc.php?d=3',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Division 4',
-                    href: 'champ_masc.php?d=4',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Division 5',
-                    href: 'champ_masc.php?d=5',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Division 6',
-                    href: 'champ_masc.php?d=6',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Division 7',
-                    href: 'champ_masc.php?d=7',
-                    hrefTarget: '_self'
+                    text: 'Féminin',
+                    menu: [
+                        {
+                            text: 'Division 1',
+                            href: 'champ_fem.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 2',
+                            href: 'champ_fem.php?d=2',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 }
             ]
         },
         {
-            text: 'Féminines',
+            text: 'Coupes',
+            scale: 'large',
+            icon: 'images/cup.png',
             menu: [
                 {
-                    text: 'Division 1',
-                    href: 'champ_fem.php?d=1',
-                    hrefTarget: '_self'
+                    text: 'Isoardi',
+                    menu: [
+                        {
+                            text: 'Poule 1',
+                            href: 'coupe.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 2',
+                            href: 'coupe.php?d=2',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 3',
+                            href: 'coupe.php?d=3',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 4',
+                            href: 'coupe.php?d=4',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 5',
+                            href: 'coupe.php?d=5',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 6',
+                            href: 'coupe.php?d=6',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 7',
+                            href: 'coupe.php?d=7',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 8',
+                            href: 'coupe.php?d=8',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 9',
+                            href: 'coupe.php?d=9',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Phase Finale',
+                            href: 'coupe_cf.php',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 },
                 {
-                    text: 'Division 2',
-                    href: 'champ_fem.php?d=2',
-                    hrefTarget: '_self'
+                    text: 'Khoury Hanna',
+                    menu: [
+                        {
+                            text: 'Poule 1',
+                            href: 'coupe_kh.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 2',
+                            href: 'coupe_kh.php?d=2',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 3',
+                            href: 'coupe_kh.php?d=3',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 4',
+                            href: 'coupe_kh.php?d=4',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 5',
+                            href: 'coupe_kh.php?d=5',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 6',
+                            href: 'coupe_kh.php?d=6',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Phase Finale',
+                            href: 'coupe_kf.php',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 }
             ]
         },
         {
-            text: 'Coupe Isoardi',
+            text: 'Informations',
+            scale: 'large',
+            icon: 'images/info30x30.png',
             menu: [
                 {
-                    text: 'Poule 1',
-                    href: 'coupe.php?d=1',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 2',
-                    href: 'coupe.php?d=2',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 3',
-                    href: 'coupe.php?d=3',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 4',
-                    href: 'coupe.php?d=4',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 5',
-                    href: 'coupe.php?d=5',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 6',
-                    href: 'coupe.php?d=6',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 7',
-                    href: 'coupe.php?d=7',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 8',
-                    href: 'coupe.php?d=8',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 9',
-                    href: 'coupe.php?d=9',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Phase Finale',
-                    href: 'coupe_cf.php',
-                    hrefTarget: '_self'
-                }
-            ]
-        },
-        {
-            text: 'Coupe K. Hanna',
-            menu: [
-                {
-                    text: 'Poule 1',
-                    href: 'coupe_kh.php?d=1',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 2',
-                    href: 'coupe_kh.php?d=2',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 3',
-                    href: 'coupe_kh.php?d=3',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 4',
-                    href: 'coupe_kh.php?d=4',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 5',
-                    href: 'coupe_kh.php?d=5',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Poule 6',
-                    href: 'coupe_kh.php?d=6',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Phase Finale',
-                    href: 'coupe_kf.php',
-                    hrefTarget: '_self'
-                }
-            ]
-        },
-        {
-            text: 'Portail Equipes',
-            menu: [
-                {
-                    text: 'Connexion Portail',
-                    href: 'portail.php',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Annuaire Equipes',
+                    text: 'Annuaire',
                     href: 'annuaire.php',
                     hrefTarget: '_self'
                 },
                 {
-                    text: 'Localisation des Gymnases',
+                    text: 'Gymnases',
                     action: 'showGymnasiumsMap'
-                },
-                {
-                    text: 'La Commission',
-                    href: 'commission.php',
-                    hrefTarget: '_self'
-                },
-                {
-                    text: 'Ecrire au Webmaster',
-                    handler: function () {
-                        window.open('mailto:benallemand@gmail.com');
-                    }
-                }
-            ]
-        },
-        {
-            text: 'Documents',
-            menu: [
-                {
-                    text: 'Infos Utiles',
-                    href: 'index_infos_utiles.php',
-                    hrefTarget: '_self'
                 },
                 {
                     text: 'Agenda',
@@ -231,6 +221,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             ]
                         }).show();
                     }
+                },
+                {
+                    text: 'Infos Utiles',
+                    href: 'index_infos_utiles.php',
+                    hrefTarget: '_self'
                 },
                 {
                     text: 'Règlements',
@@ -293,25 +288,48 @@ Il faudra retourner par voie postale :<br/>\
                             }
                         });
                     }
+                },
+                {
+                    text: 'Commission',
+                    href: 'commission.php',
+                    hrefTarget: '_self'
+                },
+                {
+                    text: 'Contact',
+                    handler: function () {
+                        window.open('mailto:benallemand@gmail.com');
+                    }
                 }
             ]
         },
         '->',
         {
-            xtype: 'tbtext',
-            text: connectedUser,
-            style: {
-                color: 'red',
-                fontWeight: 'bold'
-            }
-        },
-        {
-            text: 'Se déconnecter',
+            text: 'Mon Compte',
             scale: 'large',
-            icon: 'images/unlock.png',
-            href: "ajax/logout.php",
-            hrefTarget: '_self',
-            hidden: connectedUser === ''
+            icon: 'images/account.png',
+            hidden: connectedUser === '',
+            menu: [
+                {
+                    xtype: 'tbtext',
+                    text: connectedUser,
+                    style: {
+                        color: 'red',
+                        fontWeight: 'bold'
+                    }
+                },
+                {
+                    text: "Ma page (Responsable d'équipe uniquement)",
+                    href: 'portail.php',
+                    hrefTarget: '_self'
+                },
+                {
+                    text: 'Se déconnecter',
+                    scale: 'large',
+                    icon: 'images/unlock.png',
+                    href: "ajax/logout.php",
+                    hrefTarget: '_self'
+                }
+            ]
         },
         {
             text: 'Connexion',
