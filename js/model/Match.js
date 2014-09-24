@@ -108,27 +108,45 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
         },
         {
             name: 'gagnea5_dom',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'gagnea5_ext',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'forfait_dom',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'forfait_ext',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'certif',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'report',
-            type: 'bool'
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
         },
         {
             name: 'retard',

@@ -1,6 +1,6 @@
-Ext.onReady(function() {
+Ext.onReady(function () {
     var s = Snap("body");
-    Snap.load('includes/templates/teamSheet.svg', function(loadedSvg) {
+    Snap.load('includes/templates/teamSheet.svg', function (loadedSvg) {
         s.append(loadedSvg);
         var storeTeamSheet = Ext.create('Ext.data.Store', {
             fields: [
@@ -25,7 +25,7 @@ Ext.onReady(function() {
             },
             autoLoad: false
         });
-        storeTeamSheet.load(function(records) {
+        storeTeamSheet.load(function (records) {
             if (records.length !== 1) {
                 return;
             }
@@ -57,7 +57,10 @@ Ext.onReady(function() {
                 },
                 {
                     name: 'est_actif',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'id_club',
@@ -72,23 +75,38 @@ Ext.onReady(function() {
                 'telephone4',
                 {
                     name: 'est_licence_valide',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'est_responsable_club',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'is_captain',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'is_leader',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'is_vice_leader',
-                    type: 'bool'
+                    type: 'bool',
+                    convert: function (val) {
+                        return val === '1';
+                    }
                 },
                 {
                     name: 'id',
@@ -109,9 +127,9 @@ Ext.onReady(function() {
             },
             autoLoad: false
         });
-        storeMyPlayers.load(function(records) {
+        storeMyPlayers.load(function (records) {
             var groupPlayers = s.select("g[id='teamPlayers']");
-            Ext.each(records, function(record, index) {
+            Ext.each(records, function (record, index) {
                 var group = groupPlayers.g();
                 group.image(record.get('path_photo'), 0, 0, 100, 100).attr({
                     preserveAspectRatio: "xMinYMin meet"
