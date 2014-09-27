@@ -269,10 +269,12 @@ function getTeams() {
 function getWebSites() {
     global $db;
     conn_db();
-    $sql = "SELECT e.nom_equipe, de.site_web FROM details_equipes de
-        JOIN equipes e ON e.id_equipe=de.id_equipe
-        WHERE site_web!=''
-        ORDER BY nom_equipe ASC";
+    $sql = "SELECT DISTINCT c.nom AS nom_club, de.site_web 
+        FROM details_equipes de
+        JOIN equipes e ON e.id_equipe = de.id_equipe
+        JOIN clubs c ON c.id = e.id_club
+        WHERE site_web != ''
+        ORDER BY c.nom ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

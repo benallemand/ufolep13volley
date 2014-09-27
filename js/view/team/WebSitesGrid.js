@@ -1,11 +1,11 @@
 Ext.define('Ufolep13Volley.view.team.WebSitesGrid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.WebSitesGrid',
-    title: 'Liens vers sites web des équipes',
+    title: 'Sites web des clubs',
     columns: [
         {
-            header: 'Equipe',
-            dataIndex: 'nom_equipe',
+            header: 'Club',
+            dataIndex: 'nom_club',
             width: 200
         },
         {
