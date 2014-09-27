@@ -12,26 +12,12 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
             hrefTarget: '_self'
         },
         {
-            text: 'Version Mobile',
-            scale: 'large',
-            icon: 'images/mobile.png',
-            href: 'index_mobile.php',
-            hrefTarget: '_self'
-        },
-        {
-            text: 'Forum',
-            scale: 'large',
-            icon: 'images/forum.png',
-            href: "http://ufolep13volley.forumzen.com",
-            hrefTarget: '_blank'
-        },
-        {
             text: 'Championnats',
             scale: 'large',
             icon: 'images/volleyball.png',
             menu: [
                 {
-                    text: 'Mixte',
+                    text: 'Masculin (Mixte)',
                     menu: [
                         {
                             text: 'Division 1',
@@ -302,7 +288,20 @@ Il faudra retourner par voie postale :<br/>\
                 }
             ]
         },
-        '->',
+        {
+            text: 'Forum',
+            scale: 'large',
+            icon: 'images/forum.png',
+            href: "http://ufolep13volley.forumzen.com",
+            hrefTarget: '_blank'
+        },
+        {
+            text: 'Version Mobile',
+            scale: 'large',
+            icon: 'images/mobile.png',
+            href: 'index_mobile.php',
+            hrefTarget: '_self'
+        },
         {
             text: 'Mon Compte',
             scale: 'large',
