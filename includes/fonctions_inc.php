@@ -430,7 +430,7 @@ function getPlayersFromTeam($id_equipe) {
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        p.path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -458,6 +458,7 @@ function getPlayersFromTeam($id_equipe) {
         j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
+        LEFT JOIN photos p ON p.id = j.id_photo
     WHERE id_equipe = $id_equipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -1378,7 +1379,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         j.telephone, 
         j.email, 
         j.num_licence, 
-        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        p.path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1404,6 +1405,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         j.id, j.date_homologation, j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
+        LEFT JOIN photos p ON p.id = j.id_photo
         WHERE 
         je.id_equipe = $idTeam";
     if ($doHideInactivePlayers) {
@@ -1456,7 +1458,7 @@ function getPlayers() {
         j.telephone, 
         j.email, 
         j.num_licence,
-        CONCAT('players_pics/', LOWER(REPLACE(REPLACE(j.nom, ' ', ''), '-', '')), LOWER(REPLACE(REPLACE(j.prenom, ' ', ''), '-', '')), '.jpg') AS path_photo,
+        p.path_photo,
         j.sexe, 
         j.departement_affiliation, 
         j.est_actif+0 AS est_actif, 
@@ -1481,7 +1483,8 @@ function getPlayers() {
         j.date_homologation,
         j.show_photo+0 AS show_photo 
         FROM joueurs j
-        LEFT JOIN clubs c ON c.id = j.id_club";
+        LEFT JOIN clubs c ON c.id = j.id_club
+        LEFT JOIN photos p ON p.id = j.id_photo";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1969,12 +1972,55 @@ function getTeamSheet($idTeam) {
     return json_encode(utf8_encode_mix($results));
 }
 
-function savePhoto($lastName, $firstName) {
+function insertPhoto($uploadfile, &$idPhoto) {
+    global $db;
+    conn_db();
+    $sql = "INSERT INTO photos SET path_photo = '$uploadfile'";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    $idPhoto = mysqli_insert_id($db);
+    mysqli_close($db);
+    return true;
+}
+
+function linkPlayerToPhoto($idPlayer, $idPhoto) {
+    global $db;
+    conn_db();
+    $sql = "UPDATE joueurs j SET j.id_photo = $idPhoto WHERE id = $idPlayer";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    mysqli_close($db);
+    return true;
+}
+
+function savePhoto($inputs, $newId = 0) {
+    $lastName = $inputs['nom'];
+    $firstName = $inputs['prenom'];
     if (empty($_FILES['photo']['name'])) {
         return true;
     }
     $uploaddir = '../players_pics/';
-    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . '.jpg');
+    $iteration = 1;
+    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . $iteration . '.jpg');
+    while (file_exists($uploadfile)) {
+        $iteration++;
+        $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . $iteration . '.jpg');
+    }
+    $idPhoto = 0;
+    if (!insertPhoto(substr($uploadfile, 3), $idPhoto)) {
+        return false;
+    }
+    $idPlayer = $inputs['id'];
+    if (empty($inputs['id'])) {
+        $idPlayer = $newId;
+    }
+    if (!linkPlayerToPhoto($idPlayer, $idPhoto)) {
+        return false;
+    }
     if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
         return true;
@@ -2083,7 +2129,7 @@ function savePlayer() {
     $newId = mysqli_insert_id($db);
     mysqli_close($db);
     if (empty($inputs['id'])) {
-        if ($inputs['id_team'] !== null) {
+        if (!empty($inputs['id_team'])) {
             if ($newId > 0) {
                 if (!addPlayerToMyTeam($newId)) {
                     return false;
@@ -2109,7 +2155,7 @@ function savePlayer() {
             }
         }
     }
-    return savePhoto($inputs['nom'], $inputs['prenom']);
+    return savePhoto($inputs, $newId);
 }
 
 function saveTimeSlot() {
