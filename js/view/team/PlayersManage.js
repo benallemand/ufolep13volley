@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
         store: 'MyPlayers',
         autoScroll: true,
         viewConfig: {
-            getRowClass: function(record, rowIndex, rowParams, store) {
+            getRowClass: function (record, rowIndex, rowParams, store) {
                 if (record.get('est_actif') === false) {
                     return 'grid-red';
                 }
@@ -24,17 +24,19 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 {
                     header: 'Photo',
                     dataIndex: 'path_photo',
-                    renderer: function(value, meta, record) {
+                    renderer: function (value, meta, record) {
                         return '<img width="100" src="' + record.get('path_photo') + '" />';
                     }
                 },
                 {
                     header: 'Prénom',
-                    dataIndex: 'prenom'
+                    dataIndex: 'prenom',
+                    tdCls: 'x-style-cell'
                 },
                 {
                     header: 'Nom',
-                    dataIndex: 'nom'
+                    dataIndex: 'nom',
+                    tdCls: 'x-style-cell'
                 },
                 {
                     header: 'Numéro de licence',
@@ -45,7 +47,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     dataIndex: 'is_captain',
                     xtype: 'checkcolumn',
                     listeners: {
-                        beforecheckchange: function() {
+                        beforecheckchange: function () {
                             return false;
                         }
                     }
@@ -55,7 +57,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     dataIndex: 'is_leader',
                     xtype: 'checkcolumn',
                     listeners: {
-                        beforecheckchange: function() {
+                        beforecheckchange: function () {
                             return false;
                         }
                     }
@@ -65,7 +67,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     dataIndex: 'is_vice_leader',
                     xtype: 'checkcolumn',
                     listeners: {
-                        beforecheckchange: function() {
+                        beforecheckchange: function () {
                             return false;
                         }
                     }
@@ -108,6 +110,19 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                         xtype: 'button',
                         text: "Modifier le suppléant",
                         action: 'modifyViceLeader'
+                    }
+                ]
+            },
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                items: [
+                    {
+                        xtype: 'tbtext',
+                        text: "Les joueurs sur fond rose n'ont pas été vérifiés par la Commission.",
+                        style: {
+                            background: 'pink !important'
+                        }
                     }
                 ]
             }

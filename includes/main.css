@@ -96,12 +96,12 @@ body {
 }
 
 /* ----- MISC ---------------------------------------------------------------------------- */
-.grid-red .x-grid-cell {
-    background: pink !important;
+.grid-red .x-style-cell {
+    background: pink;
 }
-.grid-orange .x-grid-cell {
+.grid-orange .x-style-cell {
     background: gold !important;
 }
-.grid-green .x-grid-cell {
+.grid-green .x-style-cell {
     background: greenyellow !important;
 }

@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
     store: 'Classement',
     autoScroll: true,
     viewConfig: {
-        getRowClass: function(record, rowIndex, rowParams, store) {
+        getRowClass: function (record, rowIndex, rowParams, store) {
             var total = store.getCount();
             var rang = record.get('rang');
             if (rang >= total - 1) {
@@ -29,10 +29,11 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 header: 'Equipe',
                 dataIndex: 'equipe',
                 width: 180,
-                renderer: function(val, meta, record) {
+                renderer: function (val, meta, record) {
                     var url = 'annuaire.php?id=' + record.get('id_equipe') + '&c=' + record.get('code_competition');
                     return '<a href="' + url + '" target="blank">' + val + '</a>';
-                }
+                },
+                tdCls: 'x-style-cell'
             },
             {
                 header: 'Points',
@@ -51,7 +52,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 width: 100,
                 dataIndex: 'gagnes',
                 align: 'center',
-                renderer: function(val, meta, record) {
+                renderer: function (val, meta, record) {
                     if (record.get('matches_won_with_5_players_count') > 0) {
                         var tip = 'Dont ' + record.get('matches_won_with_5_players_count') + ' gagné(s) à 5';
                         meta['tdAttr'] = 'data-qtip="' + tip + '"';
@@ -65,7 +66,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 width: 100,
                 dataIndex: 'perdus',
                 align: 'center',
-                renderer: function(val, meta, record) {
+                renderer: function (val, meta, record) {
                     if (record.get('matches_lost_by_forfeit_count') > 0) {
                         var tip = 'Dont ' + record.get('matches_lost_by_forfeit_count') + ' par forfait';
                         meta['tdAttr'] = 'data-qtip="' + tip + '"';
@@ -132,21 +133,21 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     {
                         icon: 'images/moins.png',
                         tooltip: 'Ajouter un point de pénalité',
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemaddpenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/plus.png',
                         tooltip: 'Enlever un point de pénalité',
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemremovepenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/delete.gif',
                         tooltip: 'Supprimer cette équipe de la compétition',
-                        handler: function(grid, rowIndex) {
+                        handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
                         }
                     }
@@ -168,7 +169,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     displayField: 'equipe',
                     valueField: 'equipe',
                     listeners: {
-                        change: function(combo, newVal, oldVal) {
+                        change: function (combo, newVal, oldVal) {
                             var gridMatches = Ext.ComponentQuery.query('grid[title=Matches]')[0];
                             if (newVal === null) {
                                 gridMatches.getStore().clearFilter();
@@ -177,7 +178,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                             gridMatches.getStore().clearFilter(true);
                             gridMatches.getStore().filter([
                                 {
-                                    filterFn: function(item) {
+                                    filterFn: function (item) {
                                         return ((item.get("equipe_dom") === newVal) || (item.get("equipe_ext") === newVal));
                                     }
                                 }
@@ -189,7 +190,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     xtype: 'button',
                     width: 120,
                     text: 'Voir tout',
-                    handler: function() {
+                    handler: function () {
                         var comboFiltre = Ext.ComponentQuery.query('combo[fieldLabel=Filtre sur équipe]')[0];
                         comboFiltre.clearValue();
                     }
