@@ -15,7 +15,7 @@ if ($teamSheet === false) {
     die('Erreur durant la recuperation des informations !');
 }
 $jsonTeam = json_decode($teamSheet);
-$playersPdf = getPlayersPdf($id, '', true);
+$playersPdf = getPlayersPdf($id, '', false);
 if ($playersPdf === false) {
     die('Erreur durant la recuperation des joueurs !');
 }
@@ -25,49 +25,46 @@ $pdf->SetMargins(0, 5);
 $pdf->SetLineWidth(0.5);
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 8);
-$pdf->Line(20, 5, 20, 45);
-$pdf->Line(0, 10, 85, 10);
-$pdf->Line(0, 20, 85, 20);
-$pdf->Line(0, 35, 85, 35);
 $pdf->Cell(20, 5, 'Club: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->club), 0, 1, 'L');
-$pdf->Cell(20, 5, 'Championnat: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->championnat), 0, 1, 'L');
+$pdf->MultiCell(40, 5, toWellFormatted($jsonTeam[0]->club), 'L', 'L');
+$pdf->Cell(20, 5, 'Championnat: ', 'T', 0, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->championnat), 'TL', 1, 'L');
 $pdf->Cell(20, 5, 'Division: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->division), 0, 1, 'L');
-$pdf->Cell(20, 5, 'Responsable: ', 0, 0, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->division), 'L', 1, 'L');
+$pdf->Cell(20, 5, 'Responsable: ', 'T', 0, 'L');
 $pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->leader), 0, 1, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->leader), 'TL', 1, 'L');
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(20, 5, 'Portable: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->portable), 0, 1, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->portable), 'L', 1, 'L');
 $pdf->Cell(20, 5, 'Courriel: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->courriel), 0, 1, 'L');
-$pdf->Cell(20, 5, 'Créneau: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->creneau), 0, 1, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->courriel), 'L', 1, 'L');
+$pdf->Cell(20, 5, 'Créneau: ', 'T', 0, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->creneau), 'TL', 1, 'L');
 $pdf->Cell(20, 5, 'Gymnase: ', 0, 0, 'L');
-$pdf->Cell(35, 5, toWellFormatted($jsonTeam[0]->gymnase), 0, 1, 'L');
-$pdf->Image('images/Ufolep13Volley2.jpg', 100, 5, 50, 30);
-$pdf->Image('images/MainVolley.jpg', 175, 5, 20);
-$pdf->Image('images/JeuAvantEnjeu.jpg', 175, 25, 20);
-$pdf->SetXY(100, 35);
-$pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(50, 10, toWellFormatted($jsonTeam[0]->equipe), 0, 1, 'C');
+$pdf->MultiCell(35, 5, toWellFormatted($jsonTeam[0]->gymnase), 'L', 'L');
+$pdf->Cell(20, 5, 'Visa CTSD: ', 'T', 0, 'L');
+$pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->date_visa_ctsd), 'TL', 1, 'L');
+$pdf->Cell(20, 5, 'Nota: ', 'T', 0, 'L');
+$pdf->MultiCell(40, 5, "Les joueurs en rose n'ont pas été validés par la CTSD", 'TL', 'L');
+$offsetYPlayers = $pdf->GetY()+5;
+$pdf->Image('images/Ufolep13Volley2.jpg', 80, 5, 50, 30);
+$pdf->Image('images/MainVolley.jpg', 150, 5, 20);
+$pdf->Image('images/JeuAvantEnjeu.jpg', 150, 25, 20);
+$pdf->SetXY(80, 40);
+$pdf->SetFont('Arial', '', 16);
+$pdf->MultiCell(50, 7, toWellFormatted($jsonTeam[0]->equipe), 0, 'C');
 $pdf->SetFont('Arial', '', 8);
-$pdf->SetXY(100, 50);
-$pdf->Cell(40, 5, 'Visa CTSD le: ' . toWellFormatted($jsonTeam[0]->date_visa_ctsd), 0, 1, 'C');
 $pdf->SetXY(150, 30);
-$pdf->Cell(50, 15, 'Le: ....../....../......', 0, 1, 'C');
+$pdf->Cell(50, 15, 'Le: ....../....../......', 0, 1, 'L');
+$pdf->SetXY(150, 40);
+$pdf->Cell(50, 5, 'Joueurs présents:  ......................', 0, 1, 'L');
 $pdf->SetXY(150, 45);
-$pdf->Cell(50, 5, 'Joueurs présents:  ......................', 0, 1, 'R');
-$pdf->SetXY(150, 50);
-$pdf->Cell(50, 5, 'Joueuses présentes: .....................', 0, 1, 'R');
-$pdf->SetXY(150, 60);
-$pdf->Cell(50, 5, 'Adversaire: ..................................', 0, 1, 'R');
-$pdf->SetXY(0, 70);
-$NbByColumns = 6;
+$pdf->Cell(50, 5, 'Joueuses présentes: .....................', 0, 1, 'L');
+$pdf->SetXY(150, 55);
+$pdf->Cell(50, 5, 'Adversaire: ..................................', 0, 1, 'L');
+$NbByColumns = 5;
 $widthPhoto = 20;
-$offsetYPlayers = 70;
 $offsetXPlayers = 60;
 $nbGirls = 0;
 $isFirstMaleReached = false;
@@ -87,7 +84,14 @@ foreach ($jsonPlayers as $index => $jsonPlayer) {
         }
     }
     $pdf->SetXY(5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 35 * ($currentIndex % $NbByColumns));
-    $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + 35 * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, 32);
+    if (toWellFormatted($jsonPlayer->est_actif) === "1") {
+        $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + 35 * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, 32);
+    }
+    else {
+        $pdf->SetFillColor(255,192,203);
+        $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + 35 * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, 32, 'DF');
+        $pdf->SetFillColor(0,0,0);
+    }
     $pdf->Image(toWellFormatted($jsonPlayer->path_photo), null, null, $widthPhoto);
     $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 35 * ($currentIndex % $NbByColumns));
     $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->prenom), 0, 1, 'L');
