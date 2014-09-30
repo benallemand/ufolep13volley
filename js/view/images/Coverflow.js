@@ -285,13 +285,13 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
         // Scaling item elements
         this.getEl().select(this.itemSelector).each(function (el) {
             el.setWidth(me.itemWidth * me.compensateScale);
-            el.setHeight(me.itemHeight * me.compensateScale);
+            //el.setHeight(me.itemHeight * me.compensateScale);
         });
 
         // Scaling images
         this.getEl().select(this.imageSelector).each(function (el) {
             el.setWidth(me.itemWidth * me.compensateScale);
-            el.setHeight(me.itemHeight * me.compensateScale);
+            //el.setHeight(me.itemHeight * me.compensateScale);
         });
     },
     //@override
@@ -329,7 +329,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
     _adjustBodySize: function () {
         var css = [];
         css[this.props[0]] = (this.getStore().getCount() + 1) * this.itemWidth * this.compensateScale + 'px';
-        css[this.props[5]] = this.itemHeight * 0.4 + 'px';
+        //css[this.props[5]] = this.itemHeight * 0.4 + 'px';
         this.innerElement.applyStyles(css);
     },
     _adjustBodyOffset: function () {
@@ -347,7 +347,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
                 -
                 (this.center ? innerElement.getPadding(this.props[4]) : 0) // Subtract the padding of the body
                 -
-                (this.center ? innerElement.getMargin(this.props[4]) : 0) // Subtract the margin of the body
+                (this.center ? innerElement.getMargin(this.props[4]) : 0); // Subtract the margin of the body
     },
     selectNext: function () {
         if (this.current < this.getStore().getCount() - 1) {
