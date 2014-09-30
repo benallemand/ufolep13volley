@@ -65,6 +65,10 @@ Ext.application({
                             {
                                 text: 'Gestion des gymnases',
                                 action: 'manageGymnasiums'
+                            },
+                            {
+                                text: 'Planning de la semaine',
+                                action: 'displayWeekSchedule'
                             }
                         ]
                     },

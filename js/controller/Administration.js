@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Activity'],
-    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Activity'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'activity.Grid'],
+    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule'],
+    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
     refs: [
         {
             ref: 'managePlayersGrid',
@@ -159,6 +159,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'button[action=manageGymnasiums]': {
                         click: this.showGymnasiumsGrid
+                    },
+                    'button[action=displayWeekSchedule]': {
+                        click: this.showWeekScheduleGrid
                     },
                     'button[action=showClubSelect]': {
                         click: this.showClubSelect
@@ -498,6 +501,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showUsersGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'usersgrid'
+        });
+        this.getMainPanel().setActiveTab(tab);
+    },
+    showWeekScheduleGrid: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'weekschedulegrid'
         });
         this.getMainPanel().setActiveTab(tab);
     },

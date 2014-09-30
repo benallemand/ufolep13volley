@@ -2286,6 +2286,28 @@ function getUsers() {
     return json_encode(utf8_encode_mix($results));
 }
 
+function getWeekSchedule() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        CONCAT(g.ville, ' - ', g.nom) AS gymnasium,
+        c.jour AS dayOfWeek,
+        c.heure AS startTime,
+        CONCAT(e.nom_equipe, ' - ', comp.libelle) AS team
+        FROM creneau c
+        JOIN gymnase g ON g.id = c.id_gymnase
+        JOIN equipes e ON e.id_equipe = c.id_equipe
+        JOIN clubs cl ON cl.id = e.id_club
+        JOIN competitions comp ON comp.code_competition = e.code_competition
+        ORDER BY dayOfWeek, startTime, gymnasium";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
 function getGymnasiums() {
     global $db;
     conn_db();
