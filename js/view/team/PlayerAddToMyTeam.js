@@ -25,12 +25,7 @@ Ext.define('Ufolep13Volley.view.team.PlayerAddToMyTeam', {
                 allowBlank: false,
                 store: 'Players',
                 displayField: 'full_name',
-                valueField: 'id',
-                listeners: {
-                    select: function(combo, records) {
-                        combo.up('form').down('image').setSrc(records[0].get('path_photo'));
-                    }
-                }
+                valueField: 'id'
             },
             {
                 xtype: 'image',
@@ -41,15 +36,16 @@ Ext.define('Ufolep13Volley.view.team.PlayerAddToMyTeam', {
         ],
         buttons: [
             {
+                text: 'Sauver',
+                action: 'save',
+                formBind: true,
+                disabled: true
+            },
+            {
                 text: 'Annuler',
                 handler: function() {
                     this.up('window').close();
                 }
-            },
-            {
-                text: 'Sauver',
-                formBind: true,
-                disabled: true
             }
         ],
         dockedItems: [

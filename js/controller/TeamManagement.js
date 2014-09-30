@@ -83,11 +83,26 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         {
             ref: 'TimeSlotsGrid',
             selector: 'timeslotsmanage > grid'
+        },
+        {
+            ref: 'SelectPlayerCombo',
+            selector: 'playeraddtomyteam combo[name=id_joueur]'
+        },
+        {
+            ref: 'SelectPlayerImage',
+            selector: 'playeraddtomyteam image'
+        },
+        {
+            ref: 'SelectPlayerSubmitButton',
+            selector: 'playeraddtomyteam button[action=save]'
         }
     ],
     init: function () {
         this.control(
                 {
+                    'playeraddtomyteam combo[name=id_joueur]': {
+                        select: this.setPlayerImage
+                    },
                     'button[action=showTimeSlotsManage]': {
                         click: this.showManageTimeSlots
                     },
@@ -103,7 +118,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'button[text=Ajouter un joueur]': {
                         click: this.showAddPlayerToMyTeam
                     },
-                    'form[url=ajax/addPlayerToMyTeam.php] > toolbar > button[text=Sauver]': {
+                    'playeraddtomyteam button[action=save]': {
                         click: this.saveAddPlayerToMyTeam
                     },
                     "button[action=modifyCaptain]": {
@@ -171,6 +186,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     }
                 });
     },
+    setPlayerImage: function (combo, records) {
+        this.getSelectPlayerImage().setSrc(records[0].get('path_photo'));
+        this.getSelectPlayerSubmitButton().focus(false, 100);
+    },
     getAlertResolution: function (column, action, view, rowIndex, colIndex, item, e) {
         var record = this.getAlertsStore().getAt(rowIndex);
         switch (record.get('expected_action')) {
@@ -199,10 +218,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 this.showManagePlayers();
                 Ext.Msg.alert('Ajout de joueur', "Cliquer sur 'Ajouter un joueur' pour sélectionner l'un des joueurs connus du système. Si ce joueur n'existe pas, cliquer sur 'Créer un joueur'. Les joueurs n'apparaissent pas immédiatement sur la fiche équipe, ils doivent être activés par les responsables UFOLEP.");
                 break;
-             case 'showHelpInactivePlayers':
+            case 'showHelpInactivePlayers':
                 this.showManagePlayers();
                 Ext.Msg.alert('Joueurs inactifs', "Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche équipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vérifier la validité de ces joueurs. Si le délai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concerné.");
-                break;    
+                break;
         }
     },
     savePreferences: function () {
@@ -431,6 +450,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     },
     showAddPlayerToMyTeam: function () {
         Ext.widget('playeraddtomyteam');
+        this.getSelectPlayerCombo().focus();
     },
     showManagePlayers: function () {
         Ext.widget('playersmanage');
