@@ -305,6 +305,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         this.getFormPanelEditPlayer().getForm().findField('id_club').setValue(idClub);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').setValue(false);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').hide();
+        this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     createTimeSlot: function () {
         Ext.widget('timeslotedit');
@@ -333,6 +334,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         this.getFormPanelEditPlayer().down('displayfield[name=team_leader_list]').hide();
         this.getFormPanelEditPlayer().down('displayfield[name=teams_list]').hide();
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_responsable_club]').hide();
+        this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     loadTeamDetails: function () {
         var me = this;

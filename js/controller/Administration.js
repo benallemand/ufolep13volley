@@ -249,6 +249,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         Ext.widget('playeredit');
         this.getFormPanelEditPlayer().loadRecord(record);
+        this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     editProfile: function () {
         var record = this.getManageProfilesGrid().getSelectionModel().getSelection()[0];
@@ -276,6 +277,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addPlayer: function () {
         Ext.widget('playeredit');
+        this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     addProfile: function () {
         Ext.widget('profileedit');
