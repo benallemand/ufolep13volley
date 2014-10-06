@@ -28,6 +28,17 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorPlayersWithTeamButNoClub = new Indicator(
+        'Joueurs avec équipe mais sans club', "SELECT DISTINCT
+        j.prenom, 
+        j.nom, 
+        CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
+        e.nom_equipe AS nom_equipe
+        FROM joueurs j
+        JOIN joueur_equipe je ON je.id_joueur = j.id
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        WHERE j.id_club = 0
+        ORDER BY j.id ASC");
 $indicatorNotValidatedPlayers = new Indicator(
         'Joueurs en attente de validation', "SELECT DISTINCT
         j.prenom, 
@@ -112,6 +123,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $results = array();
+$results[] = $indicatorPlayersWithTeamButNoClub->getResult();
 $results[] = $indicatorNotValidatedPlayers->getResult();
 $results[] = $indicatorActivity->getResult();
 $results[] = $indicatorLicencesDupliquees->getResult();
