@@ -1674,20 +1674,15 @@ function addPlayerToMyTeam($idPlayer) {
         return false;
     }
     $idTeam = $_SESSION['id_equipe'];
-    if (isPlayerInTeam($idPlayer, $idTeam)) {
+    if (addPlayerToTeam($idPlayer, $idTeam) === false) {
         return false;
     }
-    $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
-    $req = mysqli_query($db, $sql);
-    mysqli_close($db);
-    if ($req === FALSE) {
-        return false;
-    }
-    addActivity("Ajout de " . getPlayerFullName($idPlayer) . " a l'equipe " . getTeamName($idTeam));
     $idClubPlayer = getPlayersIdClub($idPlayer);
-    $idClubMyTeam = getMyTeamIdClub();
     if ($idClubPlayer === '0') {
-        addPlayersToClub($idPlayer, $idClubMyTeam);
+        $idClubMyTeam = getMyTeamIdClub();
+        if (addPlayersToClub($idPlayer, $idClubMyTeam) === false) {
+            return false;
+        }
     }
     return true;
 }
