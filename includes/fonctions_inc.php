@@ -1684,7 +1684,49 @@ function addPlayerToMyTeam($idPlayer) {
         return false;
     }
     addActivity("Ajout de " . getPlayerFullName($idPlayer) . " a l'equipe " . getTeamName($idTeam));
+    $idClubPlayer = getPlayersIdClub($idPlayer);
+    $idClubMyTeam = getMyTeamIdClub();
+    if ($idClubPlayer === '0') {
+        addPlayersToClub($idPlayer, $idClubMyTeam);
+    }
     return true;
+}
+
+function getMyTeamIdClub() {
+    global $db;
+    conn_db();
+    if (isAdmin()) {
+        return false;
+    }
+    if (!isTeamLeader()) {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "SELECT 
+        e.id_club
+        FROM equipes e
+        WHERE e.id_equipe=$sessionIdEquipe";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return $results[0]['id_club'];
+}
+
+function getPlayersIdClub($idPlayer) {
+    global $db;
+    conn_db();
+    $sql = "SELECT j.id_club
+        FROM joueurs j
+        WHERE j.id = $idPlayer";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    mysqli_close($db);
+    return $results[0]['id_club'];
 }
 
 function addPlayerToTeam($idPlayer, $idTeam) {
@@ -1806,7 +1848,9 @@ function addPlayersToClub($idPlayers, $idClub) {
     global $db;
     conn_db();
     if (!isAdmin()) {
-        return false;
+        if (!isTeamLeader()) {
+            return false;
+        }
     }
     $sql = "UPDATE joueurs SET id_club = $idClub WHERE id IN ($idPlayers)";
     $req = mysqli_query($db, $sql);
