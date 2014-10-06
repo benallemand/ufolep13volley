@@ -166,6 +166,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     width: 400,
                     fieldLabel: 'Filtre sur équipe',
                     store: 'Classement',
+                    queryMode: 'local',
                     displayField: 'equipe',
                     valueField: 'equipe',
                     listeners: {

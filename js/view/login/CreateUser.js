@@ -39,6 +39,7 @@ Ext.define('Ufolep13Volley.view.login.CreateUser', {
                 fieldLabel: 'Equipe de rattachement',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
+                queryMode: 'local',
                 store: 'Teams'
             }
         ],

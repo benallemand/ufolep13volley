@@ -107,6 +107,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                         name: 'id_club',
                         fieldLabel: 'Club',
                         xtype: 'combo',
+                        queryMode: 'local',
                         store: 'Clubs',
                         displayField: 'nom',
                         valueField: 'id',
