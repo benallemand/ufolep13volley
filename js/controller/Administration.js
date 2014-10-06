@@ -91,6 +91,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'checkbox[action=filterPlayersWithoutPhoto]': {
                         change: this.filterPlayersWithoutPhoto
                     },
+                    'checkbox[action=filterPlayersWithoutClub]': {
+                        change: this.filterPlayersWithoutClub
+                    },
                     'button[action=addPlayer]': {
                         click: this.addPlayer
                     },
@@ -209,6 +212,23 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                             return true;
                         }
                         return false;
+                    }
+                }
+        );
+        this.getDisplayFilteredCount().setValue(store.getCount());
+    },
+    filterPlayersWithoutClub: function (checkbox, newValue) {
+        var store = this.getPlayersStore();
+        if (newValue !== true) {
+            store.clearFilter();
+            this.getDisplayFilteredCount().setValue(store.getCount());
+            return;
+        }
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function (item) {
+                        return item.get('id_club') === 0;
                     }
                 }
         );

@@ -108,6 +108,11 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     boxLabel: 'Joueurs sans photo',
                     action: 'filterPlayersWithoutPhoto'
                 },
+                {
+                    xtype: 'checkbox',
+                    boxLabel: 'Joueurs sans club',
+                    action: 'filterPlayersWithoutClub'
+                },
                 '->',
                 {
                     xtype: 'displayfield',
