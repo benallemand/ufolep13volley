@@ -372,12 +372,6 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                                 name: 'set_5_dom',
                                                                 minValue: 0,
                                                                 tabIndex: 11
-                                                            },
-                                                            {
-                                                                xtype: 'checkbox',
-                                                                boxLabel: 'Match gagné à 5',
-                                                                name: 'gagnea5_dom',
-                                                                tabIndex: 13
                                                             }
                                                         ]
                                                     },
@@ -437,12 +431,6 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                                 name: 'set_5_ext',
                                                                 minValue: 0,
                                                                 tabIndex: 12
-                                                            },
-                                                            {
-                                                                xtype: 'checkbox',
-                                                                boxLabel: 'Match gagné à 5',
-                                                                name: 'gagnea5_ext',
-                                                                tabIndex: 14
                                                             }
                                                         ]
                                                     }

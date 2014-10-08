@@ -213,11 +213,6 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                             fieldLabel: 'Set 5',
                                             name: 'set_5_dom',
                                             minValue: 0
-                                        },
-                                        {
-                                            xtype: 'checkbox',
-                                            boxLabel: 'Match gagné à 5',
-                                            name: 'gagnea5_dom'
                                         }
                                     ]
                                 },
@@ -328,11 +323,6 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                             hideLabel: true,
                                             name: 'set_5_ext',
                                             minValue: 0
-                                        },
-                                        {
-                                            xtype: 'checkbox',
-                                            boxLabel: 'Match gagné à 5',
-                                            name: 'gagnea5_ext'
                                         }
                                     ]
                                 }

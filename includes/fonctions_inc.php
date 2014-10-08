@@ -723,16 +723,6 @@ function computeRank($id_equipe, $compet, $division) {
         $data = mysqli_fetch_assoc($req);
         $penalite = $data['penalite'];
     }
-    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND gagnea5_dom = \'1\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $gagnea5_dom = $data[0];
-    }
-    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND gagnea5_ext = \'1\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $gagnea5_ext = $data[0];
-    }
     $sql = 'SELECT COUNT(*) FROM matches M WHERE M.id_equipe_dom = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\' AND M.score_equipe_dom > M.score_equipe_ext';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
@@ -787,12 +777,11 @@ function computeRank($id_equipe, $compet, $division) {
     $sets_marques = $sets_mar_dom + $sets_mar_ext;
     $sets_encaisses = $sets_enc_dom + $sets_enc_ext;
     $difference = $sets_marques - $sets_encaisses;
-    $gagnea5 = $gagnea5_dom + $gagnea5_ext;
     $forfait = $forfait_dom + $forfait_ext;
-    $points = 3 * $match_gagnes + $match_perdus - $forfait - $gagnea5 - $penalite;
+    $points = 3 * $match_gagnes + $match_perdus - $forfait - $penalite;
     $pts_marques = $pts_mar_dom + $pts_mar_ext;
     $pts_encaisses = $pts_enc_dom + $pts_enc_ext;
-    $points = 3 * $match_gagnes + $match_perdus - $forfait - $gagnea5 - $penalite;
+    $points = 3 * $match_gagnes + $match_perdus - $forfait - $penalite;
     $pts_marques = $pts_mar_dom + $pts_mar_ext;
     $pts_encaisses = $pts_enc_dom + $pts_enc_ext;
     if ($pts_encaisses != 0) {
@@ -810,21 +799,6 @@ function computeRank($id_equipe, $compet, $division) {
             . 'coeff_sets = \'' . $coeff_sets . '\', points_pour = \'' . $pts_marques . '\', points_contre = \'' . $pts_encaisses . '\', '
             . 'coeff_points = \'' . $coeff_points . '\', difference = \'' . $difference . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND division = \'' . $division . '\' AND code_competition = \'' . $compet . '\'';
     mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
-}
-
-function getMatchesWonWith5PlayersCount($idTeam, $codeCompetition) {
-    global $db;
-    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_dom = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_dom = \'1\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $gagnea5_dom = $data[0];
-    }
-    $sql = 'SELECT COUNT(*) FROM matches WHERE id_equipe_ext = \'' . $idTeam . '\' AND code_competition = \'' . $codeCompetition . '\' AND gagnea5_ext = \'1\'';
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $gagnea5_ext = $data[0];
-    }
-    return $gagnea5_dom + $gagnea5_ext;
 }
 
 function getMatchesLostByForfeitCount($idTeam, $codeCompetition) {
@@ -869,7 +843,6 @@ function getRank($compet, $div) {
     $rang = 1;
     while ($data = mysqli_fetch_assoc($req)) {
         $data['rang'] = $rang;
-        $data['matches_won_with_5_players_count'] = getMatchesWonWith5PlayersCount($data['id_equipe'], $data['code_competition']);
         $data['matches_lost_by_forfeit_count'] = getMatchesLostByForfeitCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
         $rang++;
@@ -981,13 +954,11 @@ function modifyMatch($code_match) {
     $set_3_dom = filter_input(INPUT_POST, 'set_3_dom');
     $set_4_dom = filter_input(INPUT_POST, 'set_4_dom');
     $set_5_dom = filter_input(INPUT_POST, 'set_5_dom');
-    $gagnea5_dom = filter_input(INPUT_POST, 'gagnea5_dom');
     $set_1_ext = filter_input(INPUT_POST, 'set_1_ext');
     $set_2_ext = filter_input(INPUT_POST, 'set_2_ext');
     $set_3_ext = filter_input(INPUT_POST, 'set_3_ext');
     $set_4_ext = filter_input(INPUT_POST, 'set_4_ext');
     $set_5_ext = filter_input(INPUT_POST, 'set_5_ext');
-    $gagnea5_ext = filter_input(INPUT_POST, 'gagnea5_ext');
     $code_match = filter_input(INPUT_POST, 'code_match');
     $compet = filter_input(INPUT_POST, 'code_competition');
     $division = filter_input(INPUT_POST, 'division');
@@ -996,18 +967,6 @@ function modifyMatch($code_match) {
     $date_originale = filter_input(INPUT_POST, 'date_originale');
     $id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
     $id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
-    if ($gagnea5_dom === null) {
-        $gagnea5_dom = 0;
-    }
-    if ($gagnea5_dom === 'on') {
-        $gagnea5_dom = 1;
-    }
-    if ($gagnea5_ext === null) {
-        $gagnea5_ext = 0;
-    }
-    if ($gagnea5_ext === 'on') {
-        $gagnea5_ext = 1;
-    }
     if ($date_originale !== null) {
         if ($date_originale !== $date_reception) {
             $report = 1;
@@ -1040,8 +999,6 @@ function modifyMatch($code_match) {
             . "set_4_ext = '$set_4_ext', "
             . "set_5_dom = '$set_5_dom', "
             . "set_5_ext = '$set_5_ext', "
-            . "gagnea5_dom = '$gagnea5_dom', "
-            . "gagnea5_ext = '$gagnea5_ext', "
             . "forfait_dom = '$forfait_dom', "
             . "forfait_ext = '$forfait_ext', "
             . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
@@ -1218,8 +1175,6 @@ function getSqlSelectMatches($whereClause, $orderClause) {
         m.set_5_ext,
         m.heure_reception,
         m.date_reception,
-        m.gagnea5_dom+0 AS gagnea5_dom,
-        m.gagnea5_ext+0 AS gagnea5_ext,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,

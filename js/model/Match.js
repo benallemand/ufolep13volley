@@ -107,20 +107,6 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             dateFormat: 'Y-m-d'
         },
         {
-            name: 'gagnea5_dom',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
-        },
-        {
-            name: 'gagnea5_ext',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
-        },
-        {
             name: 'forfait_dom',
             type: 'bool',
             convert: function (val) {
