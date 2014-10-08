@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule'],
-    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
+    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Clubs', 'Activity', 'WeekSchedule'],
+    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Club', 'Activity', 'WeekSchedule'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
     refs: [
         {
             ref: 'managePlayersGrid',
@@ -19,6 +19,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'manageGymnasiumsGrid',
             selector: 'gymnasiumsgrid'
+        },
+        {
+            ref: 'manageClubsGrid',
+            selector: 'clubsgrid'
         },
         {
             ref: 'mainPanel',
@@ -53,6 +57,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'gymnasiumedit form'
         },
         {
+            ref: 'formPanelEditClub',
+            selector: 'clubedit form'
+        },
+        {
             ref: 'windowSelectClub',
             selector: 'clubselect'
         },
@@ -79,6 +87,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'windowEditGymnasium',
             selector: 'gymnasiumedit'
+        },
+        {
+            ref: 'windowEditClub',
+            selector: 'clubedit'
         },
         {
             ref: 'displayFilteredCount',
@@ -112,17 +124,26 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'gymnasiumsgrid button[action=add]': {
                         click: this.addGymnasium
                     },
+                    'clubsgrid button[action=add]': {
+                        click: this.addClub
+                    },
                     'usersgrid button[action=edit]': {
                         click: this.editUser
                     },
                     'gymnasiumsgrid button[action=edit]': {
                         click: this.editGymnasium
                     },
+                    'clubsgrid button[action=edit]': {
+                        click: this.editClub
+                    },
                     'usersgrid button[action=delete]': {
                         click: this.deleteUsers
                     },
                     'gymnasiumsgrid button[action=delete]': {
                         click: this.deleteGymnasiums
+                    },
+                    'clubsgrid button[action=delete]': {
+                        click: this.deleteClubs
                     },
                     'playersgrid': {
                         itemdblclick: this.editPlayer
@@ -136,6 +157,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'gymnasiumsgrid': {
                         itemdblclick: this.editGymnasium
                     },
+                    'clubsgrid': {
+                        itemdblclick: this.editClub
+                    },
                     'playeredit button[action=save]': {
                         click: this.updatePlayer
                     },
@@ -147,6 +171,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'gymnasiumedit button[action=save]': {
                         click: this.updateGymnasium
+                    },
+                    'clubedit button[action=save]': {
+                        click: this.updateClub
                     },
                     'button[action=displayActivity]': {
                         click: this.showActivityGrid
@@ -162,6 +189,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     'button[action=manageGymnasiums]': {
                         click: this.showGymnasiumsGrid
+                    },
+                    'button[action=manageClubs]': {
+                        click: this.showClubsGrid
                     },
                     'button[action=displayWeekSchedule]': {
                         click: this.showWeekScheduleGrid
@@ -298,6 +328,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('gymnasiumedit');
         this.getFormPanelEditGymnasium().loadRecord(record);
     },
+    editClub: function () {
+        var record = this.getManageClubsGrid().getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        Ext.widget('clubedit');
+        this.getFormPanelEditClub().loadRecord(record);
+    },
     addPlayer: function () {
         Ext.widget('playeredit');
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
@@ -310,6 +348,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addGymnasium: function () {
         Ext.widget('gymnasiumedit');
+    },
+    addClub: function () {
+        Ext.widget('clubedit');
     },
     deleteUsers: function () {
         var me = this;
@@ -368,6 +409,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function (response) {
                         me.getGymnasiumsStore().load();
+                    }
+                });
+            }
+        });
+    },
+    deleteClubs: function () {
+        var me = this;
+        var records = this.getManageClubsGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteClubs.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function (response) {
+                        me.getClubsStore().load();
                     }
                 });
             }
@@ -500,6 +572,30 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             });
         }
     },
+    updateClub: function () {
+        var thisController = this;
+        var form = this.getFormPanelEditClub().getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getClubsStore().load();
+                    thisController.getWindowEditClub().close();
+                    thisController.getManageClubsGrid().getSelectionModel().deselectAll();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
     showActivityGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'activitygrid'
@@ -533,6 +629,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showGymnasiumsGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'gymnasiumsgrid'
+        });
+        this.getMainPanel().setActiveTab(tab);
+    },
+    showClubsGrid: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'clubsgrid'
         });
         this.getMainPanel().setActiveTab(tab);
     },

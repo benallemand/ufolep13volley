@@ -63,6 +63,10 @@ Ext.application({
                                 action: 'manageUsers'
                             },
                             {
+                                text: 'Gestion des clubs',
+                                action: 'manageClubs'
+                            },
+                            {
                                 text: 'Gestion des gymnases',
                                 action: 'manageGymnasiums'
                             },
@@ -92,69 +96,6 @@ Ext.application({
                     var fields = [];
                     Ext.each(records, function (record) {
                         switch (record.get('Field')) {
-                            case 'id_club':
-                                if (record.get('Key') === 'PRI') {
-                                    fields.push(
-                                            {
-                                                name: record.get('Field'),
-                                                type: 'int'
-                                            }
-                                    );
-                                    columns.push({
-                                        xtype: 'numbercolumn',
-                                        format: '0',
-                                        header: record.get('Field'),
-                                        dataIndex: record.get('Field'),
-                                        editor: 'numberfield'
-                                    });
-                                    return;
-                                }
-                                fields.push(
-                                        {
-                                            name: record.get('Field'),
-                                            type: 'int'
-                                        }
-                                );
-                                var storeClubs = Ext.create('Ext.data.Store', {
-                                    fields: [
-                                        {
-                                            name: 'id',
-                                            type: 'int'
-                                        },
-                                        'nom'
-                                    ],
-                                    proxy: {
-                                        type: 'rest',
-                                        url: 'ajax/clubs.php',
-                                        reader: {
-                                            type: 'json',
-                                            root: 'results'
-                                        },
-                                        pageParam: undefined,
-                                        startParam: undefined,
-                                        limitParam: undefined
-                                    },
-                                    autoLoad: true
-                                });
-                                columns.push({
-                                    header: record.get('Field'),
-                                    dataIndex: record.get('Field'),
-                                    editor: {
-                                        xtype: 'combo',
-                                        displayField: 'nom',
-                                        valueField: 'id',
-                                        queryMode: 'local',
-                                        store: storeClubs
-                                    },
-                                    renderer: function (val) {
-                                        var index = storeClubs.findExact('id', val);
-                                        if (index !== -1) {
-                                            var rs = storeClubs.getAt(index).data;
-                                            return rs.nom;
-                                        }
-                                    }
-                                });
-                                return;
                             case 'id_equipe':
                             case 'id_equipe_dom':
                             case 'id_equipe_ext':
@@ -522,8 +463,7 @@ Ext.application({
                 'dates_limite',
                 'equipes',
                 'journees',
-                'matches',
-                'clubs'
+                'matches'
             ];
             menuAdmin.add({
                 text: 'Indicateurs',

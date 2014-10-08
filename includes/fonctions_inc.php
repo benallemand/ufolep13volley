@@ -104,6 +104,18 @@ function deleteGymnasiums($ids) {
     return true;
 }
 
+function deleteClubs($ids) {
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM clubs WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids) {
     $explodedIds = explode(',', $ids);
     $playersFullNames = array();
@@ -2368,6 +2380,22 @@ function getGymnasiums() {
     return json_encode(utf8_encode_mix($results));
 }
 
+function getClubs() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        id, 
+        nom
+        FROM clubs
+        ORDER BY nom";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
 function saveUser() {
     global $db;
     $inputs = array(
@@ -2466,6 +2494,42 @@ function saveGymnasium() {
                     $sql .= "$key = $value,";
                 }
                 break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+        
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function saveClub() {
+    global $db;
+    $inputs = array(
+        'id' => filter_input(INPUT_POST, 'id'),
+        'nom' => filter_input(INPUT_POST, 'nom')
+    );
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "clubs SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+                continue;
             default:
                 $sql .= "$key = '$value',";
                 break;
