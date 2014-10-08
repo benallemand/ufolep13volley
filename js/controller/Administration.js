@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Clubs', 'Activity', 'WeekSchedule'],
-    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Club', 'Activity', 'WeekSchedule'],
+    stores: ['Players', 'Clubs', 'Teams', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule'],
+    models: ['Player', 'Club', 'Team', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule'],
     views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
     refs: [
         {
