@@ -68,6 +68,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             text: 'Division 2',
                             href: 'champ_fem.php?d=2',
                             hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 3',
+                            href: 'champ_fem.php?d=3',
+                            hrefTarget: '_self'
                         }
                     ]
                 }
