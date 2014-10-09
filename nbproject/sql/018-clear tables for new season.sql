@@ -1,5 +1,5 @@
 TRUNCATE TABLE matches;
-DELETE FROM classements WHERE code_competition = 'f';
+DELETE FROM classements WHERE code_competition NOT IN ('m');
 INSERT INTO classements (code_competition, division, id_equipe, points, joues, gagnes, perdus, sets_pour, sets_contre, difference, coeff_sets, points_pour, points_contre, coeff_points, penalite)
 SELECT 'f', '1', e.id_equipe, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 FROM equipes e WHERE e.nom_equipe IN (
 'Pélissanne',
