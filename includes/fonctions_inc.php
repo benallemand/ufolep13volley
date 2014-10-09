@@ -116,6 +116,18 @@ function deleteClubs($ids) {
     return true;
 }
 
+function deleteTeams($ids) {
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM equipes WHERE id_equipe IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids) {
     $explodedIds = explode(',', $ids);
     $playersFullNames = array();
@@ -244,6 +256,7 @@ function getTeams() {
     conn_db();
     $sql = "SELECT 
         e.code_competition, 
+        comp.libelle AS libelle_competition, 
         e.nom_equipe, 
         CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
         e.id_club,
@@ -260,7 +273,7 @@ function getTeams() {
         d.site_web,
         d.photo
         FROM equipes e
-        JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
@@ -269,7 +282,7 @@ function getTeams() {
         LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase        
-        ORDER BY nom_equipe ASC";
+        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -2351,6 +2364,24 @@ function getClubs() {
     return json_encode(utf8_encode_mix($results));
 }
 
+function getCompetitions() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        id,
+        code_competition,
+        libelle,
+        id_compet_maitre
+        FROM competitions
+        ORDER BY libelle";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
 function saveUser() {
     global $db;
     $inputs = array(
@@ -2495,6 +2526,47 @@ function saveClub() {
         
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function saveTeam() {
+    global $db;
+    $inputs = array(
+        'id_equipe' => filter_input(INPUT_POST, 'id_equipe'),
+        'code_competition' => filter_input(INPUT_POST, 'code_competition'),
+        'nom_equipe' => filter_input(INPUT_POST, 'nom_equipe'),
+        'id_club' => filter_input(INPUT_POST, 'id_club')
+    );
+    conn_db();
+    if (empty($inputs['id_equipe'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "equipes SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id_equipe':
+                continue;
+            case 'id_club':
+                $sql .= "$key = $value,";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id_equipe'])) {
+        
+    } else {
+        $sql .= " WHERE id_equipe=" . $inputs['id_equipe'];
     }
     $req = mysqli_query($db, $sql);
     mysqli_close($db);

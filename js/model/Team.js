@@ -3,6 +3,7 @@ Ext.define('Ufolep13Volley.model.Team', Sencha.modelCompatibility({
     fields: [
         {name: 'id_equipe', type: 'int'},
         'code_competition',
+        'libelle_competition',
         'nom_equipe',
         'team_full_name',
         {name: 'id_club', type: 'int'},

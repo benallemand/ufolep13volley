@@ -1,6 +1,6 @@
-Ext.define('Ufolep13Volley.view.team.Edit', {
+Ext.define('Ufolep13Volley.view.team.DetailsEdit', {
     extend: 'Ext.window.Window',
-    alias: 'widget.teamedit',
+    alias: 'widget.teamdetailsedit',
     title: "Modification de l'équipe",
     height: 400,
     width: 700,
@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveTeam.php',
+        url: 'ajax/modifierMonEquipe.php',
         items: [
             {
                 xtype: 'hidden',
@@ -32,25 +32,15 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
                 queryMode: 'local'
             },
             {
-                xtype: 'combo',
-                fieldLabel: 'Competition',
-                name: 'code_competition',
-                displayField: 'libelle',
-                valueField: 'code_competition',
-                store: 'Competitions',
-                queryMode: 'local'
-            },
-            {
                 xtype: 'textfield',
-                fieldLabel: 'Nom',
-                name: 'nom_equipe',
-                allowBlank: false
+                fieldLabel: 'Site web',
+                name: 'site_web'
             }
         ],
         buttons: [
             {
                 text: 'Annuler',
-                handler: function () {
+                handler: function() {
                     this.up('window').close();
                 }
             },

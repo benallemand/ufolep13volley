@@ -9,32 +9,32 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
             selector: "formTeamDetails"
         },
         {
-            ref: 'teamEditForm',
-            selector: "window[title=Modification de l'équipe] > form"
+            ref: 'teamDetailsEditForm',
+            selector: "teamdetailsedit form"
         },
         {
-            ref: 'teamEditWindow',
-            selector: "window[title=Modification de l'équipe]"
+            ref: 'teamDetailsEditWindow',
+            selector: "teamdetailsedit"
         },
         {
             ref: 'addPlayerToMyTeamForm',
-            selector: "window[title=Ajout d'un joueur] > form"
+            selector: "playeraddtomyteam form"
         },
         {
             ref: 'addPlayerToMyTeamWindow',
-            selector: "window[title=Ajout d'un joueur]"
+            selector: "playeraddtomyteam"
         },
         {
             ref: 'setMyTeamCaptainForm',
-            selector: "setmyteamcaptain > form"
+            selector: "setmyteamcaptain form"
         },
         {
             ref: 'setMyTeamLeaderForm',
-            selector: "setmyteamleader > form"
+            selector: "setmyteamleader form"
         },
         {
             ref: 'setMyTeamViceLeaderForm',
-            selector: "setmyteamviceleader > form"
+            selector: "setmyteamviceleader form"
         },
         {
             ref: 'setMyTeamCaptainWindow',
@@ -78,11 +78,11 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         },
         {
             ref: 'MyPlayersGrid',
-            selector: 'playersmanage > grid'
+            selector: 'playersmanage grid'
         },
         {
             ref: 'TimeSlotsGrid',
-            selector: 'timeslotsmanage > grid'
+            selector: 'timeslotsmanage grid'
         },
         {
             ref: 'SelectPlayerCombo',
@@ -110,7 +110,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                         click: this.showManagePlayers
                     },
                     'button[text=Modifier les informations]': {
-                        click: this.showTeamEdit
+                        click: this.showTeamDetailsEdit
                     },
                     'button[text=Changer de mot de passe]': {
                         click: this.showModifyPassword
@@ -142,7 +142,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'formTeamDetails': {
                         render: this.loadTeamDetails
                     },
-                    "window[title=Modification de l'équipe] > form > toolbar > button[action=save]": {
+                    "teamdetailsedit button[action=save]": {
                         click: this.saveTeamDetails
                     },
                     'button[action=createPlayer]': {
@@ -151,10 +151,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'button[action=createTimeSlot]': {
                         click: this.createTimeSlot
                     },
-                    'playersmanage > grid': {
+                    'playersmanage grid': {
                         itemdblclick: this.editPlayer
                     },
-                    'timeslotsmanage > grid': {
+                    'timeslotsmanage grid': {
                         itemdblclick: this.editTimeSlot
                     },
                     'button[action=editPlayer]': {
@@ -348,7 +348,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     },
     saveTeamDetails: function () {
         var me = this;
-        var form = this.getTeamEditForm().getForm();
+        var form = this.getTeamDetailsEditForm().getForm();
         if (form.isValid()) {
             var dirtyFieldsJson = form.getFieldValues(true);
             var dirtyFieldsArray = [];
@@ -361,7 +361,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 },
                 success: function (form, action) {
                     me.loadTeamDetails();
-                    me.getTeamEditWindow().close();
+                    me.getTeamDetailsEditWindow().close();
                 },
                 failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
@@ -460,9 +460,9 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     showManageTimeSlots: function () {
         Ext.widget('timeslotsmanage');
     },
-    showTeamEdit: function () {
-        Ext.widget('teamedit');
-        var form = this.getTeamEditForm();
+    showTeamDetailsEdit: function () {
+        Ext.widget('teamdetailsedit');
+        var form = this.getTeamDetailsEditForm();
         this.getMyTeamStore().load({
             callback: function (records, operation, success) {
                 form.getForm().loadRecord(records[0]);
