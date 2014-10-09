@@ -80,6 +80,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Coupes',
+            hidden: true,
             scale: 'large',
             icon: 'images/cup.png',
             menu: [
