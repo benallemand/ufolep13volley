@@ -118,6 +118,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     'checkbox[action=filterPlayersWithoutClub]': {
                         change: this.filterPlayersWithoutClub
                     },
+                    'checkbox[action=filterInactivePlayers]': {
+                        change: this.filterInactivePlayers
+                    },
                     'button[action=addPlayer]': {
                         click: this.addPlayer
                     },
@@ -289,6 +292,23 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     filterFn: function (item) {
                         return item.get('id_club') === 0;
+                    }
+                }
+        );
+        this.getDisplayFilteredCount().setValue(store.getCount());
+    },
+    filterInactivePlayers: function (checkbox, newValue) {
+        var store = this.getPlayersStore();
+        if (newValue !== true) {
+            store.clearFilter();
+            this.getDisplayFilteredCount().setValue(store.getCount());
+            return;
+        }
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function (item) {
+                        return ((item.get('est_actif') === false) && (item.get('teams_list').length > 0));
                     }
                 }
         );
