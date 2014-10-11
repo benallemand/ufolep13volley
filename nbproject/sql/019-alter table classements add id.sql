@@ -1,0 +1,1 @@
+ALTER TABLE classements ADD id smallint(10) PRIMARY KEY AUTO_INCREMENT;
