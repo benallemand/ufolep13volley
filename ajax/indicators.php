@@ -28,6 +28,29 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorEquipesEngageesChampionnat = new Indicator(
+        'Equipes', "SELECT e.nom_equipe,
+        '' AS my_trim,
+        clubs.nom AS club,
+        e.id_equipe AS id,
+        e.code_competition AS compet,
+        c.division,
+        cr.jour,
+        cr.heure,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.email,
+        jresp.telephone,
+        gym.nom AS gymnase
+        FROM equipes e
+        JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
+        JOIN joueurs jresp ON jresp.id = je.id_joueur AND je.is_leader+0 = 1
+        LEFT JOIN creneau cr ON cr.id_equipe=e.id_equipe
+        LEFT JOIN gymnase gym ON gym.id=cr.id_gymnase
+        JOIN clubs ON clubs.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
+        JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
+        WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
+        ORDER BY e.code_competition, c.division, e.id_equipe");
 $indicatorPlayersWithTeamButNoClub = new Indicator(
         'Joueurs avec équipe mais sans club', "SELECT DISTINCT
         j.prenom, 
@@ -123,6 +146,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $results = array();
+$results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
 $results[] = $indicatorNotValidatedPlayers->getResult();
 $results[] = $indicatorActivity->getResult();
