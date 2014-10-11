@@ -2577,6 +2577,7 @@ function saveTeam() {
 }
 
 function getTimeSlots() {
+    $isTeamLeader = isTeamLeader();
     global $db;
     conn_db();
     $sql = "SELECT 
@@ -2591,8 +2592,12 @@ function getTimeSlots() {
         JOIN gymnase g ON g.id = c.id_gymnase
         JOIN equipes e ON e.id_equipe = c.id_equipe
         JOIN clubs cl ON cl.id = e.id_club
-        JOIN competitions comp ON comp.code_competition = e.code_competition
-        ORDER BY team_full_name, gymnasium_full_name";
+        JOIN competitions comp ON comp.code_competition = e.code_competition";
+    if ($isTeamLeader) {
+        $sessionIdEquipe = $_SESSION['id_equipe'];
+        $sql .= " WHERE c.id_equipe = $sessionIdEquipe";
+    }
+    $sql .= " ORDER BY team_full_name, gymnasium_full_name";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
