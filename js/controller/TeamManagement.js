@@ -264,6 +264,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     thisController.getPlayersStore().load();
                     thisController.getMyPlayersStore().load();
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     thisController.getWindowEditPlayer().close();
                     thisController.getAddPlayerToMyTeamWindow().close();
                 },
@@ -289,6 +290,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 success: function () {
                     thisController.getTimeSlotsStore().load();
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     thisController.getWindowEditTimeSlot().close();
                 },
                 failure: function (form, action) {
@@ -379,6 +381,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 success: function (form, action) {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     windowSetMyTeamCaptain.close();
                 },
                 failure: function (form, action) {
@@ -397,6 +400,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 success: function (form, action) {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     windowSetMyTeamLeader.close();
                 },
                 failure: function (form, action) {
@@ -414,6 +418,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
             form.submit({
                 success: function (form, action) {
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     storeMyPlayers.load();
                     windowSetMyTeamViceLeader.close();
                 },
@@ -442,6 +447,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 success: function (form, action) {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
+                    thisController.loadTeamDetails();
                     windowAddPlayerToMyTeam.close();
                 },
                 failure: function (form, action) {
@@ -497,6 +503,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                             Ext.Msg.alert('Info', responseJson.message);
                             storeMyPlayers.load();
                             thisController.getAlertsStore().load();
+                            thisController.loadTeamDetails();
                         }
                     });
                 }
@@ -528,6 +535,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                             Ext.Msg.alert('Info', responseJson.message);
                             storeTimeSlots.load();
                             thisController.getAlertsStore().load();
+                            thisController.loadTeamDetails();
                         }
                     });
                 }
