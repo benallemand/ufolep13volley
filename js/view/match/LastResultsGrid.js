@@ -2,7 +2,6 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.LastResultsGrid',
     title: 'Derniers résultats',
-    autoScroll: true,
     columns: [
         {
             header: 'Compétition',
