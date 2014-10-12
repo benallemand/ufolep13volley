@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
     stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences', 'TimeSlots', 'Gymnasiums', 'Teams', 'Days', 'Alerts'],
     models: ['Club', 'Team', 'Player', 'Preference', 'TimeSlot', 'Gymnasium', 'Day', 'Alert'],
-    views: ['team.Edit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences'],
+    views: ['team.DetailsEdit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences'],
     refs: [
         {
             ref: 'teamDetailsForm',
