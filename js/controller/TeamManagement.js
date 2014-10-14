@@ -106,7 +106,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     'button[action=showTimeSlotsManage]': {
                         click: this.showManageTimeSlots
                     },
-                    'button[text=Gestions des joueurs/joueuses]': {
+                    'button[action=showManagePlayers]': {
                         click: this.showManagePlayers
                     },
                     'button[text=Modifier les informations]': {

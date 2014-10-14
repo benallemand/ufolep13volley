@@ -30,12 +30,13 @@ Ext.application({
                                 dock: 'top',
                                 items: [
                                     {
-                                        text: 'Gestions des joueurs/joueuses',
+                                        text: 'Gestion des joueurs/joueuses',
                                         scale: 'large',
-                                        icon: 'images/man.png'
+                                        icon: 'images/man.png',
+                                        action: 'showManagePlayers'
                                     },
                                     {
-                                        text: 'Gestions des gymnases/créneaux',
+                                        text: 'Gestion des gymnases/créneaux',
                                         scale: 'large',
                                         icon: 'images/volleyballcourt.jpg',
                                         action: 'showTimeSlotsManage'
