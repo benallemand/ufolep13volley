@@ -5,23 +5,33 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
     autoScroll: true,
     selType: 'checkboxmodel',
     store: 'Players',
+    viewConfig: {
+        getRowClass: function (record, rowIndex, rowParams, store) {
+            if (record.get('est_actif') === false) {
+                return 'grid-red';
+            }
+            return '';
+        }
+    },
     columns: {
         items: [
             {
                 header: 'Photo',
                 dataIndex: 'path_photo',
                 width: 120,
-                renderer: function(val) {
+                renderer: function (val) {
                     return '<img src="' + val + '" width="80px" height="100px">';
                 }
             },
             {
                 header: 'Nom',
-                dataIndex: 'nom'
+                dataIndex: 'nom',
+                tdCls: 'x-style-cell'
             },
             {
                 header: 'Prenom',
-                dataIndex: 'prenom'
+                dataIndex: 'prenom',
+                tdCls: 'x-style-cell'
             },
             {
                 header: 'Sexe',
@@ -46,7 +56,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 dataIndex: 'est_licence_valide',
                 xtype: 'checkcolumn',
                 listeners: {
-                    beforecheckchange: function() {
+                    beforecheckchange: function () {
                         return false;
                     }
                 }
