@@ -4,6 +4,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
     defaultButtonUI: 'default',
     enableOverflow: true,
     items: [
+        '->',
         {
             text: 'Accueil',
             scale: 'large',
@@ -343,6 +344,7 @@ Il faudra retourner par voie postale :<br/>\
             href: "portail.php",
             hrefTarget: '_self',
             hidden: connectedUser !== ''
-        }
+        },
+        '->'
     ]
 });
