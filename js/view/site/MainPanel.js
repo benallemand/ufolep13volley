@@ -17,20 +17,23 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                     layout: 'border',
                     items: [
                         {
+                            region: 'west',
+                            flex: 2,
+                            split: true,
+                            xtype: 'LastResultsGrid'
+                        },
+                        {
                             region: 'center',
+                            flex: 3,
                             xtype: 'tabpanel',
                             items: [
                                 {
-                                    xtype: 'LastResultsGrid'
+                                    xtype: 'LastPostsGrid'
                                 },
                                 {
                                     xtype: 'WebSitesGrid'
                                 }
                             ]
-                        },
-                        {
-                            region: 'east',
-                            xtype: 'LastPostsGrid'
                         }
                     ]
 
@@ -88,13 +91,13 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                     items: [
                         {
                             region: 'west',
-                            flex: 3,
+                            flex: 2,
                             split: true,
                             xtype: 'LastResultsGrid'
                         },
                         {
                             region: 'center',
-                            flex: 2,
+                            flex: 3,
                             xtype: 'tabpanel',
                             items: [
                                 {
