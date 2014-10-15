@@ -14,17 +14,13 @@ body {
 
 /* ----- CALQUE TITRE---------------------------------------------------------------------------- */
 #titre {
-    background-image: url(../images/bandeau_titre_1000x30.png);
-    text-align: left;
-    background-repeat: no-repeat;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    height: 30px;
-    font-size: 16px;
-    text-indent: 60px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
     color: #0099CC;
+    text-align: center;
+    font-weight: bold;
+    font-family: 'Ultra', sans-serif;   
+    font-size: 36px;
+    line-height: 42px;
+    text-shadow: 0 3px #CCCCCC;
 }
 
 /* ----- CALQUE COMMISSION ---------------------------------------------------------------------------- */

@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.site.HeaderPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.headerPanel',
-    layout: 'border',
+    layout: 'fit',
     height: 100,
     dockedItems: [
         {
@@ -12,10 +12,7 @@ Ext.define('Ufolep13Volley.view.site.HeaderPanel', {
     defaults: {
         border: false
     },
-    items: [
-        {
-            region: 'center',
-            xtype: 'titlePanel'
-        }
-    ]
+    items: {
+        xtype: 'titlePanel'
+    }
 });
