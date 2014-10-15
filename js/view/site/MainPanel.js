@@ -14,18 +14,26 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                 },
                 {
                     region: 'center',
-                    xtype: 'tabpanel',
+                    layout: 'border',
                     items: [
                         {
-                            xtype: 'LastResultsGrid'
+                            region: 'center',
+                            xtype: 'tabpanel',
+                            items: [
+                                {
+                                    xtype: 'LastResultsGrid'
+                                },
+                                {
+                                    xtype: 'WebSitesGrid'
+                                }
+                            ]
                         },
                         {
+                            region: 'east',
                             xtype: 'LastPostsGrid'
-                        },
-                        {
-                            xtype: 'WebSitesGrid'
                         }
                     ]
+
                 }
             ] :
             [
@@ -76,18 +84,54 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                 },
                 {
                     region: 'center',
-                    xtype: 'tabpanel',
+                    layout: 'border',
                     items: [
                         {
+                            region: 'west',
+                            flex: 3,
+                            split: true,
                             xtype: 'LastResultsGrid'
                         },
                         {
-                            xtype: 'LastPostsGrid'
-                        },
-                        {
-                            xtype: 'WebSitesGrid'
+                            region: 'center',
+                            flex: 2,
+                            xtype: 'tabpanel',
+                            items: [
+                                {
+                                    xtype: 'LastPostsGrid'
+                                },
+                                {
+                                    xtype: 'WebSitesGrid'
+                                }
+                            ]
                         }
                     ]
+
+                }
+            ],
+    dockedItems: [
+        {
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [
+                '->',
+                {
+                    xtype: 'tbtext',
+                    text: 'UFOLEP 13 VOLLEY (c) 2014-2015',
+                    style: {
+                        color: '#0099CC',
+                        fontWeight: 'bold'
+                    }
+                },
+                '->',
+                {
+                    xtype: 'button',
+                    icon: 'images/email-icon.png',
+                    text: 'Contact',
+                    scale: 'large',
+                    href: 'mailto:benallemand@gmail.com'
                 }
             ]
+        }
+    ]
 });
