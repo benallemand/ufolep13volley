@@ -1,6 +1,6 @@
 <?php include("includes/fonctions_inc.php"); ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE HTML>
 
 <HTML>
 
@@ -20,5 +20,5 @@
         </script>
         <script type="text/javascript" src="js/commission.js"></script>
     </HEAD>
-    <BODY/>
+    <BODY></BODY>
 </HTML>

@@ -1,6 +1,6 @@
 <?php include("includes/fonctions_inc.php"); ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE HTML>
 
 <HTML>
 
@@ -32,5 +32,5 @@
         }
         ?>
     </HEAD>
-    <BODY/>
+    <BODY></BODY>
 </HTML>
