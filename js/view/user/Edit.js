@@ -32,7 +32,6 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
             },
             {
                 name: 'password',
-                xtype: 'passwordfield',
                 fieldLabel: 'Password',
                 allowBlank: false,
                 msgTarget: 'under'
