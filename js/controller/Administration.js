@@ -775,8 +775,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
     },
     showCheckLicence: function () {
+        var me = this;
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
+        if(records[0].get('est_actif')) {
+            Ext.Msg.alert('Infos licence', 'Joueur actif');
+            return;
+        }
         var licence = '0' + records[0].get('departement_affiliation') + '_' + records[0].get('num_licence');
+        
         Ext.Ajax.request({
             url: 'ajax/checkLicence.php',
             params: {
@@ -791,9 +797,43 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     if (index === 6) {
                         return false;
                     }
-                    displayMessage = displayMessage + ' ' + info.innerHTML;
+                    displayMessage = displayMessage + info.innerHTML.trim() + ' ';
                 });
-                Ext.Msg.alert('Infos licence', displayMessage);
+                var resultMessage = displayMessage.trim();
+                var dt = new Date();
+                var currentYear = Ext.Date.format(dt, 'Y');
+                dt = Ext.Date.add(dt, Ext.Date.YEAR, 1);
+                var nextYear = Ext.Date.format(dt, 'Y');
+                if (Ext.String.endsWith(resultMessage, currentYear) || Ext.String.endsWith(resultMessage, nextYear)) {
+                    Ext.Msg.show({
+                        title: 'Infos licence',
+                        message: 'Trouvé : ' + displayMessage.trim() + ', Voulez vous activer le joueur ?',
+                        buttons: Ext.Msg.YESNO,
+                        icon: Ext.Msg.QUESTION,
+                        fn: function (btn) {
+                            if (btn !== 'yes') {
+                                return;
+                            }
+                            var ids = [];
+                            Ext.each(records, function (record) {
+                                ids.push(record.get('id'));
+                            });
+                            Ext.Ajax.request({
+                                url: 'ajax/activatePlayers.php',
+                                params: {
+                                    ids: ids.join(',')
+                                },
+                                success: function (response) {
+                                    me.getPlayersStore().load();
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Ext.Msg.alert('Infos licence', displayMessage.trim());
+                }
+
             }
         });
     },
