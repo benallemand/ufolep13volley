@@ -91,6 +91,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'est_actif',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Actif ?',
+                boxLabel: 'Oui',
                 msgTarget: 'under'
             },
             {
@@ -115,13 +116,6 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                         anchor: '100%'
                     }
                 ]
-            },
-            {
-                name: 'date_homologation',
-                xtype: 'datefield',
-                format: 'd/m/Y',
-                fieldLabel: "Date d'homologation",
-                msgTarget: 'under'
             },
             {
                 name: 'show_photo',

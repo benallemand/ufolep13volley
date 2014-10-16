@@ -332,7 +332,6 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         Ext.widget('playeredit');
         this.getFormPanelEditPlayer().loadRecord(record);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').hide();
-        this.getFormPanelEditPlayer().down('datefield[name=date_homologation]').hide();
         this.getFormPanelEditPlayer().down('displayfield[name=team_leader_list]').hide();
         this.getFormPanelEditPlayer().down('displayfield[name=teams_list]').hide();
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_responsable_club]').hide();

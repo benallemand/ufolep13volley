@@ -33,13 +33,6 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         'telephone3',
         'telephone4',
         {
-            name: 'est_licence_valide',
-            type: 'bool',
-            convert: function(val) {
-                return val === '1';
-            }
-        },
-        {
             name: 'est_responsable_club',
             type: 'bool',
             convert: function(val) {
@@ -49,11 +42,6 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         {
             name: 'id',
             type: 'int'
-        },
-        {
-            name: 'date_homologation',
-            type: 'date',
-            dateFormat: 'Y-m-d'
         },
         {
             name: 'show_photo',

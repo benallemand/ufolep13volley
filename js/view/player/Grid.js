@@ -53,7 +53,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
             },
             {
                 header: 'Valide',
-                dataIndex: 'est_licence_valide',
+                dataIndex: 'est_actif',
                 xtype: 'checkcolumn',
                 listeners: {
                     beforecheckchange: function () {

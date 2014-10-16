@@ -484,24 +484,11 @@ function getPlayersFromTeam($id_equipe) {
         j.id_club, 
         j.telephone2, 
         j.email2, 
-        CASE 
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
-                END
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
-                END         
-        END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         je.is_captain+0 AS is_captain, 
         je.is_vice_leader+0 AS is_vice_leader, 
         je.is_leader+0 AS is_leader, 
         j.id, 
-        j.date_homologation,
         j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
@@ -1388,23 +1375,12 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         j.id_club, 
         j.telephone2, 
         j.email2, 
-        CASE 
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
-                END
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
-                END         
-        END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         je.is_captain+0 AS is_captain, 
         je.is_vice_leader+0 AS is_vice_leader, 
         je.is_leader+0 AS is_leader, 
-        j.id, j.date_homologation, j.show_photo+0 AS show_photo 
+        j.id, 
+        j.show_photo+0 AS show_photo 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         LEFT JOIN photos p ON p.id = j.id_photo
@@ -1468,21 +1444,8 @@ function getPlayers() {
         c.nom AS club, 
         j.telephone2, 
         j.email2, 
-        CASE 
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) > 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation)+1, '-08-31'), CURDATE()) <= 0) THEN 0
-                END
-            WHEN (DATEDIFF(j.date_homologation, CONCAT(YEAR(j.date_homologation), '-08-31')) <= 0) THEN 
-                CASE 
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'),CURDATE()) > 0) THEN 1
-                    WHEN (DATEDIFF(CONCAT(YEAR(j.date_homologation), '-08-31'), CURDATE()) <= 0) THEN 0
-                END         
-        END AS est_licence_valide, 
         j.est_responsable_club+0 AS est_responsable_club, 
         j.id, 
-        j.date_homologation,
         j.show_photo+0 AS show_photo 
         FROM joueurs j
         LEFT JOIN clubs c ON c.id = j.id_club
@@ -2119,7 +2082,6 @@ function savePlayer() {
         'email2' => filter_input(INPUT_POST, 'email2'),
         'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
         'id' => filter_input(INPUT_POST, 'id'),
-        'date_homologation' => filter_input(INPUT_POST, 'date_homologation'),
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
     if (empty($inputs['id'])) {
@@ -2148,9 +2110,6 @@ function savePlayer() {
             case 'show_photo':
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";
-                break;
-            case 'date_homologation':
-                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
                 break;
             default:
                 $sql .= "$key = '$value',";
