@@ -126,6 +126,12 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                         fontWeight: 'bold'
                     }
                 },
+                '|',
+                {
+                    xtype: 'tbtext',
+                    id: 'textShowLastCommit',
+                    text: ''
+                },
                 '->',
                 {
                     xtype: 'button',
