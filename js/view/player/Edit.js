@@ -19,6 +19,13 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
         layout: 'anchor',
         items: [
             {
+                xtype: 'image',
+                src: '',
+                anchor: null,
+                width: 80,
+                height: 100
+            },
+            {
                 xtype: 'hidden',
                 name: 'id',
                 fieldLabel: 'Id',
@@ -190,7 +197,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function() {
+                handler: function () {
                     this.up('window').close();
                 }
             }

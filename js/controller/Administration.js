@@ -5,6 +5,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
     refs: [
         {
+            ref: 'ImagePlayer',
+            selector: 'playeredit image'
+        },
+        {
             ref: 'managePlayersGrid',
             selector: 'playersgrid'
         },
@@ -352,6 +356,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         Ext.widget('playeredit');
         this.getFormPanelEditPlayer().loadRecord(record);
+        this.getImagePlayer().show();
+        this.getImagePlayer().setSrc(record.get('path_photo'));
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     editProfile: function () {
@@ -396,6 +402,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addPlayer: function () {
         Ext.widget('playeredit');
+        this.getImagePlayer().hide();
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     addProfile: function () {

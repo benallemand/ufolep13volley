@@ -5,6 +5,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     views: ['team.DetailsEdit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences'],
     refs: [
         {
+            ref: 'ImagePlayer',
+            selector: 'playeredit image'
+        },
+        {
             ref: 'teamDetailsForm',
             selector: "formTeamDetails"
         },
@@ -307,6 +311,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         this.getFormPanelEditPlayer().getForm().findField('id_club').setValue(idClub);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').setValue(false);
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_actif]').hide();
+        this.getImagePlayer().hide();
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     createTimeSlot: function () {
@@ -335,6 +340,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         this.getFormPanelEditPlayer().down('displayfield[name=team_leader_list]').hide();
         this.getFormPanelEditPlayer().down('displayfield[name=teams_list]').hide();
         this.getFormPanelEditPlayer().down('checkboxfield[name=est_responsable_club]').hide();
+        this.getImagePlayer().show();
+        this.getImagePlayer().setSrc(record.get('path_photo'));
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
     },
     loadTeamDetails: function () {

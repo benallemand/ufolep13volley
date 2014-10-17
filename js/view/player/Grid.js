@@ -16,14 +16,6 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
     columns: {
         items: [
             {
-                header: 'Photo',
-                dataIndex: 'path_photo',
-                width: 120,
-                renderer: function (val) {
-                    return '<img src="' + val + '" width="80px" height="100px">';
-                }
-            },
-            {
                 header: 'Nom',
                 dataIndex: 'nom',
                 tdCls: 'x-style-cell'
