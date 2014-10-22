@@ -1167,7 +1167,6 @@ function setSubmitResultDelay($code_match, $valeur) {
 }
 
 function getSqlSelectMatches($whereClause, $orderClause) {
-    /* @TODO change details_equipes to point to player instead  */
     return "SELECT 
         m.id_match,
         m.code_match,
@@ -1176,10 +1175,8 @@ function getSqlSelectMatches($whereClause, $orderClause) {
         m.division,
         CONCAT(j.nommage, ' : ', j.libelle) AS journee,
         m.id_equipe_dom,
-        de1.fdm AS fdm_dom,
         e1.nom_equipe AS equipe_dom,
         m.id_equipe_ext,
-        de2.fdm AS fdm_ext,
         e2.nom_equipe AS equipe_ext,
         m.score_equipe_dom+0 AS score_equipe_dom,
         m.score_equipe_ext+0 AS score_equipe_ext,
@@ -1204,8 +1201,6 @@ function getSqlSelectMatches($whereClause, $orderClause) {
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        JOIN details_equipes de1 ON de1.id_equipe = m.id_equipe_dom
-        JOIN details_equipes de2 ON de2.id_equipe = m.id_equipe_ext
         JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition " . $whereClause . " " . $orderClause;
 }
 

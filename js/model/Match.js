@@ -34,14 +34,6 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             type: 'string'
         },
         {
-            name: 'fdm_dom',
-            type: 'string'
-        },
-        {
-            name: 'fdm_ext',
-            type: 'string'
-        },
-        {
             name: 'equipe_dom',
             type: 'string'
         },
