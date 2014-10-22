@@ -540,6 +540,7 @@ Ext.application({
                                                             title: 'Détails',
                                                             height: 500,
                                                             width: 700,
+                                                            maximizable: true,
                                                             layout: 'fit',
                                                             items: {
                                                                 xtype: 'grid',
