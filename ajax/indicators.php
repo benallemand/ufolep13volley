@@ -28,6 +28,10 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorDoublonsJoueursEquipes = new Indicator(
+        'Doublons dans une équipe', "SELECT id_joueur, id_equipe, COUNT(*) AS cnt FROM joueur_equipe
+        GROUP BY id_joueur, id_equipe
+        HAVING cnt > 1");
 $indicatorEquipesEngageesChampionnat = new Indicator(
         'Equipes', "SELECT e.nom_equipe,
         '' AS my_trim,
@@ -155,6 +159,7 @@ $results[] = $indicatorMatchesNonRenseignes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
+$results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
