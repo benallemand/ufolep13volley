@@ -226,6 +226,10 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 this.showManagePlayers();
                 Ext.Msg.alert('Joueurs inactifs', "Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche équipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vérifier la validité de ces joueurs. Si le délai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concerné.");
                 break;
+            case 'showHelpPlayersWithoutLicenceNumber':
+                this.showManagePlayers();
+                Ext.Msg.alert('Joueurs sans licence', "Certains joueurs n'ont pas encore leur numéro de licence. Ils ne peuvent être vérifiés par la commission que lorsqu'ils auront leur numéro de licence. Merci de renseigner ce numéro dès que vous l'aurez récupéré.");
+                break;
         }
     },
     savePreferences: function () {

@@ -2644,7 +2644,36 @@ function getAlerts() {
             'expected_action' => 'showHelpInactivePlayers'
         );
     }
+    if (hasNotLicencedPlayers($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Joueurs sans licence",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpPlayersWithoutLicenceNumber'
+        );
+    }
     return json_encode(utf8_encode_mix($results));
+}
+
+function hasNotLicencedPlayers($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        COUNT(*) AS cnt 
+        FROM joueur_equipe je 
+        JOIN joueurs j ON j.id = je.id_joueur
+        WHERE 
+        je.id_equipe = $sessionIdEquipe
+        AND j.num_licence = ''";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['cnt']) === 0) {
+        return false;
+    }
+    return true;
 }
 
 function hasEnoughPlayers($sessionIdEquipe) {
