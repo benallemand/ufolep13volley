@@ -1424,63 +1424,35 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
 function getPlayers() {
     global $db;
     conn_db();
-    $sql = "SELECT 
-        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
-        j.prenom, 
-        j.nom, 
-        j.telephone, 
-        j.email, 
-        j.num_licence,
-        p.path_photo,
-        j.sexe, 
-        j.departement_affiliation, 
-        j.est_actif+0 AS est_actif, 
-        j.id_club, 
-        c.nom AS club, 
-        j.telephone2, 
-        j.email2, 
-        j.est_responsable_club+0 AS est_responsable_club, 
-        j.id, 
-        j.show_photo+0 AS show_photo 
-        FROM joueurs j
-        LEFT JOIN clubs c ON c.id = j.id_club
-        LEFT JOIN photos p ON p.id = j.id_photo";
+    $sql = "SELECT
+    CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
+    j.prenom, 
+    j.nom, 
+    j.telephone, 
+    j.email, 
+    j.num_licence,
+    p.path_photo,
+    j.sexe, 
+    j.departement_affiliation, 
+    j.est_actif+0 AS est_actif, 
+    j.id_club, 
+    c.nom AS club, 
+    j.telephone2, 
+    j.email2, 
+    j.est_responsable_club+0 AS est_responsable_club, 
+    j.show_photo+0 AS show_photo,
+    j.id, 
+    GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list
+FROM joueurs j 
+LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
+LEFT JOIN equipes e ON e.id_equipe=je.id_equipe
+LEFT JOIN clubs c ON c.id = j.id_club
+LEFT JOIN photos p ON p.id = j.id_photo
+GROUP BY full_name";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
-    }
-    foreach ($results as $index => $result) {
-        if ($result['show_photo'] === '1') {
-            $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
-            if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
-                switch ($result['sexe']) {
-                    case 'M':
-                        $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
-                        break;
-                    case 'F':
-                        $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else {
-            switch ($result['sexe']) {
-                case 'M':
-                    $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
-                    break;
-                case 'F':
-                    $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    foreach ($results as $index => $result) {
-        $results[$index]['team_leader_list'] = getTeamsListForCaptain($results[$index]['id']);
-        $results[$index]['teams_list'] = getTeamsList($results[$index]['id']);
     }
     return json_encode(utf8_encode_mix($results));
 }
@@ -1503,19 +1475,6 @@ function getTeamsListForCaptain($playerId) {
     conn_db();
     $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
     WHERE je.id_joueur = $playerId AND is_captain+0=1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $teams[] = $data['team'];
-    }
-    return implode(',', $teams);
-}
-
-function getTeamsList($playerId) {
-    global $db;
-    $teams = array();
-    conn_db();
-    $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
-    WHERE je.id_joueur = $playerId";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_array($req)) {
         $teams[] = $data['team'];

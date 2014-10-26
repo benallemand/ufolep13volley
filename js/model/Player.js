@@ -7,7 +7,40 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         'telephone',
         'email',
         'num_licence',
-        'path_photo',
+        {
+            name: 'path_photo',
+            type: 'string',
+            convert: function (val, rec) {
+                if (!rec.get('show_photo')) {
+                    switch (rec.get('sexe')) {
+                        case 'M':
+                            return 'images/MalePhotoNotAllowed.png';
+                        case 'F':
+                            return 'images/FemalePhotoNotAllowed.png';
+                        default:
+                            break;
+                    }
+                }
+                var UrlExists = function (url)
+                {
+                    var http = new XMLHttpRequest();
+                    http.open('HEAD', url, false);
+                    http.send();
+                    return http.status !== 404;
+                };
+                if (!UrlExists(val)) {
+                    switch (rec.get('sexe')) {
+                        case 'M':
+                            return 'images/MaleMissingPhoto.png';
+                        case 'F':
+                            return 'images/FemaleMissingPhoto.png';
+                        default:
+                            break;
+                    }
+                }
+                return val;
+            }
+        },
         'sexe',
         {
             name: 'departement_affiliation',
@@ -16,7 +49,7 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         {
             name: 'est_actif',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         },
@@ -35,7 +68,7 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         {
             name: 'est_responsable_club',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         },
@@ -46,7 +79,7 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         {
             name: 'show_photo',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         },
@@ -55,21 +88,21 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         {
             name: 'is_captain',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         },
         {
             name: 'is_leader',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         },
         {
             name: 'is_vice_leader',
             type: 'bool',
-            convert: function(val) {
+            convert: function (val) {
                 return val === '1';
             }
         }
