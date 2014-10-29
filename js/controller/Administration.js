@@ -116,8 +116,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     init: function () {
         this.control(
                 {
-                    'checkbox[action=filterPlayersWithoutPhoto]': {
-                        change: this.filterPlayersWithoutPhoto
+                    'checkbox[action=filterPlayersWithoutLicence]': {
+                        change: this.filterPlayersWithoutLicence
                     },
                     'checkbox[action=filterPlayersWithoutClub]': {
                         change: this.filterPlayersWithoutClub
@@ -263,27 +263,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
         );
     },
-    filterPlayersWithoutPhoto: function (checkbox, newValue) {
-        var store = this.getPlayersStore();
-        if (newValue !== true) {
-            store.clearFilter();
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
-        }
-        store.clearFilter(true);
-        store.filter(
-                {
-                    filterFn: function (item) {
-                        var regExp = new RegExp('Missing', "i");
-                        if (regExp.test(item.get('path_photo'))) {
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-        );
-        this.getDisplayFilteredCount().setValue(store.getCount());
-    },
     filterPlayersWithoutClub: function (checkbox, newValue) {
         var store = this.getPlayersStore();
         if (newValue !== true) {
@@ -295,7 +274,24 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
                 {
                     filterFn: function (item) {
-                        return item.get('id_club') === 0;
+                        return ((item.get('teams_list').length > 0) && (item.get('id_club') === 0));
+                    }
+                }
+        );
+        this.getDisplayFilteredCount().setValue(store.getCount());
+    },
+    filterPlayersWithoutLicence: function (checkbox, newValue) {
+        var store = this.getPlayersStore();
+        if (newValue !== true) {
+            store.clearFilter();
+            this.getDisplayFilteredCount().setValue(store.getCount());
+            return;
+        }
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function (item) {
+                        return ((item.get('teams_list').length > 0) && (item.get('num_licence').length === 0));
                     }
                 }
         );
@@ -312,7 +308,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
                 {
                     filterFn: function (item) {
-                        return ((item.get('est_actif') === false) && (item.get('teams_list').length > 0));
+                        return ((item.get('num_licence').length > 0) && (item.get('est_actif') === false) && (item.get('teams_list').length > 0));
                     }
                 }
         );
@@ -784,12 +780,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showCheckLicence: function () {
         var me = this;
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
-        if(records[0].get('est_actif')) {
+        if (records[0].get('est_actif')) {
             Ext.Msg.alert('Infos licence', 'Joueur actif');
             return;
         }
         var licence = '0' + records[0].get('departement_affiliation') + '_' + records[0].get('num_licence');
-        
+
         Ext.Ajax.request({
             url: 'ajax/checkLicence.php',
             params: {
