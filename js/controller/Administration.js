@@ -116,6 +116,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     init: function () {
         this.control(
                 {
+                    'checkbox[action=filterPlayersWith2TeamsSameCompetition]': {
+                        change: this.filterPlayersWith2TeamsSameCompetition
+                    },
                     'checkbox[action=filterPlayersWithoutLicence]': {
                         change: this.filterPlayersWithoutLicence
                     },
@@ -292,6 +295,28 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     filterFn: function (item) {
                         return ((item.get('teams_list').length > 0) && (item.get('num_licence').length === 0));
+                    }
+                }
+        );
+        this.getDisplayFilteredCount().setValue(store.getCount());
+    },
+    filterPlayersWith2TeamsSameCompetition: function (checkbox, newValue) {
+        var store = this.getPlayersStore();
+        if (newValue !== true) {
+            store.clearFilter();
+            this.getDisplayFilteredCount().setValue(store.getCount());
+            return;
+        }
+        store.clearFilter(true);
+        store.filter(
+                {
+                    filterFn: function (item) {
+                        var countM = (item.get('teams_list').match(/(m)/g) || []).length;
+                        var countF = (item.get('teams_list').match(/(f)/g) || []).length;
+                        var countKH = (item.get('teams_list').match(/(kh)/g) || []).length;
+                        var countC = (item.get('teams_list').match(/(c)/g) || []).length;
+                        
+                        return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
                     }
                 }
         );

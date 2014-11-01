@@ -120,6 +120,11 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     boxLabel: 'Joueurs non valides',
                     action: 'filterInactivePlayers'
                 },
+                {
+                    xtype: 'checkbox',
+                    boxLabel: 'Joueurs dans 2 équipes',
+                    action: 'filterPlayersWith2TeamsSameCompetition'
+                },
                 '->',
                 {
                     xtype: 'displayfield',
