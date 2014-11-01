@@ -311,10 +311,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
                 {
                     filterFn: function (item) {
-                        var countM = (item.get('teams_list').match(/(m)/g) || []).length;
-                        var countF = (item.get('teams_list').match(/(f)/g) || []).length;
-                        var countKH = (item.get('teams_list').match(/(kh)/g) || []).length;
-                        var countC = (item.get('teams_list').match(/(c)/g) || []).length;
+                        var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
+                        var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
+                        var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
+                        var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
                         
                         return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
                     }
