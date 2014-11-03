@@ -437,10 +437,11 @@ function isSameRankingTable($id_equipe) {
 }
 
 function getTeamEmail($id) {
-    /* @TODO change details_equipes to point to player instead  */
     global $db;
     conn_db();
-    $sql = 'SELECT email FROM details_equipes WHERE id_equipe = \'' . $id . '\'';
+    $sql = "SELECT j.email 
+        FROM joueurs j 
+        LEFT JOIN joueur_equipe je ON je.id_equipe = $id AND je.id_joueur = j.id AND je.is_leader+0 > 0";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_assoc($req)) {
         return $data['email'];
@@ -655,22 +656,24 @@ function sendMailNextMatches() {
     foreach ($idsTeamRequestingNextMatches as $idTeam) {
         $id = $idTeam['user_id'];
         conn_db();
-        /* @TODO change details_equipes to point to player instead  */
         $sql = "SELECT 
         e1.nom_equipe AS equipe_domicile, 
         e2.nom_equipe AS equipe_exterieur, 
         m.code_match as code_match, 
         DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date, 
         m.heure_reception AS heure, 
-        de.responsable AS responsable, 
-        de.telephone_1 AS telephone, 
-        de.email AS email, 
-        de.gymnase AS addresse, 
-        CONCAT('https://maps.google.com/?ie=UTF8&t=m&q=',de.localisation,'&z=12') AS lien_maps 
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone,
+        jresp.email,
+        CONCAT(g.nom, ' (', g.ville, ')') AS addresse, 
+        CONCAT('https://maps.google.com/?ie=UTF8&t=m&q=',g.gps,'&z=12') AS lien_maps 
         FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom 
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        JOIN details_equipes de ON de.id_equipe=m.id_equipe_dom
+        LEFT JOIN creneau c ON c.id_equipe = e1.id_equipe
+        LEFT JOIN gymnase g ON g.id = c.id_gymnase
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e1.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         WHERE 
         (m.id_equipe_dom = $id OR id_equipe_ext = $id)
         AND
