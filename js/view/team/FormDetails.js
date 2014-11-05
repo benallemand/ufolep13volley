@@ -66,34 +66,17 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'displayfield',
-            fieldLabel: 'Gymnase',
-            name: 'gymnase',
+            fieldLabel: 'Créneaux',
+            name: 'gymnasiums_list',
             renderer: function(val) {
                 if (val.length === 0) {
                     return 'Pas de gymnase';
                 }
-                return val;
-            }
-        },
-        {
-            xtype: 'displayfield',
-            fieldLabel: 'Réception le',
-            name: 'jour_reception',
-            renderer: function(val) {
-                if (val.length === 0) {
-                    return 'NA';
-                }
-                return val;
-            }
-        },
-        {
-            xtype: 'displayfield',
-            fieldLabel: 'Horaire',
-            name: 'heure_reception',
-            renderer: function(val) {
-                if (val.length === 0) {
-                    return 'NA';
-                }
+                var timeSlots = val.split(', ');
+                val = '';
+                Ext.each(timeSlots, function(timeSlot) {
+                    val = val + timeSlot + '<br/>';
+                });
                 return val;
             }
         },
@@ -111,19 +94,6 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
             name: 'id_equipe',
             renderer: function(val) {
                 return '<a href="teamSheetPdf.php?id=' + val + '" target="blank">Telecharger</a>';
-            }
-        },
-        {
-            xtype: 'displayfield',
-            fieldLabel: 'Localisation GPS',
-            name: 'localisation',
-            regex: /^\d+[\.]\d+,\d+[\.]\d+$/,
-            regexText: "Merci d'utiliser le format Google Maps, par exemple : 43.410496,5.242646",
-            renderer: function(val) {
-                if (val.length === 0) {
-                    return 'Champ Absent';
-                }
-                return "<iframe width='450' height='300' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='https://maps.google.com/?ie=UTF8&t=m&q=" + val + "&z=12&output=embed'></iframe>";
             }
         }
     ]

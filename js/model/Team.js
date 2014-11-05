@@ -12,10 +12,7 @@ Ext.define('Ufolep13Volley.model.Team', Sencha.modelCompatibility({
         'telephone_1',
         'telephone_2',
         'email',
-        'gymnase',
-        'localisation',
-        'jour_reception',
-        'heure_reception',
+        'gymnasiums_list',
         'site_web',
         'photo'
     ]

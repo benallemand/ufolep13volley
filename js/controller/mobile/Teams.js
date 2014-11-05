@@ -31,10 +31,10 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
             }
         }
     },
-    doPhoneCall: function() {
+    doPhoneCall: function () {
         window.open('tel:' + this.getFormPanel().getValues().telephone_1, '_self');
     },
-    doViewPlayers: function() {
+    doViewPlayers: function () {
         this.getMainPanel().push({
             xtype: 'listplayers'
         });
@@ -44,18 +44,19 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
             }
         });
     },
-    doMap: function() {
+    doMap: function () {
         var controller = this;
         var geo = Ext.create('Ext.util.Geolocation', {
             autoUpdate: false,
             listeners: {
-                locationupdate: function(geo) {
+                locationupdate: function (geo) {
                     var currentLat = geo.getLatitude();
                     var currentLong = geo.getLongitude();
                     var currentLoc = currentLat + ',' + currentLong;
-                    window.open('http://maps.apple.com?daddr=' + controller.getFormPanel().getValues().localisation + '&saddr=' + currentLoc);
+                    var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
+                    window.open('http://maps.apple.com?daddr=' + gps + '&saddr=' + currentLoc);
                 },
-                locationerror: function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
+                locationerror: function (geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
                     if (bTimeout) {
                         alert('Erreur : Temps de reponse trop important.');
                     } else {
@@ -66,13 +67,13 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
         });
         geo.updateLocation();
     },
-    doSelectTeam: function(list, index, item, record) {
+    doSelectTeam: function (list, index, item, record) {
         this.getMainPanel().push({
             title: record.get('nom_equipe'),
             layout: 'fit',
             items: [
                 {
-                    title : 'Details',
+                    title: 'Details',
                     xtype: 'formpanel',
                     url: 'ajax/getQuickDetails.php?id_equipe=' + record.get('id_equipe'),
                     defaults: {
@@ -122,27 +123,16 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
                             name: 'email'
                         },
                         {
-                            label: 'Gymnase',
-                            name: 'gymnase'
-                        },
-                        {
-                            label: 'GPS',
-                            name: 'localisation'
-                        },
-                        {
-                            label: 'Jour',
-                            name: 'jour_reception'
-                        },
-                        {
-                            label: 'Heure',
-                            name: 'heure_reception'
+                            xtype: 'textareafield',
+                            label: 'Creneaux',
+                            name: 'gymnasiums_list'
                         }
                     ]
                 }
             ]
         });
         this.getFormPanel().load({
-            success: function(form, result, data) {
+            success: function (form, result, data) {
                 form.setValues(result.data);
             }
         });

@@ -226,23 +226,33 @@ function getQuickDetails($idEquipe) {
     global $db;
     conn_db();
     $sql = "SELECT 
+        e.code_competition, 
+        comp.libelle AS libelle_competition, 
+        e.nom_equipe, 
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
+        e.id_club,
+        c.nom AS club,
         e.id_equipe,
         CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
-        g.gps AS localisation,
-        cr.jour AS jour_reception,
-        cr.heure AS heure_reception
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR '\n') AS gymnasiums_list,
+        d.site_web,
+        d.photo
         FROM equipes e
+        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        JOIN clubs c ON c.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
-        WHERE e.id_equipe=$idEquipe";
+        WHERE e.id_equipe=$idEquipe        
+        GROUP BY id_equipe
+        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -286,10 +296,7 @@ function getTeams() {
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
-        g.gps AS localisation,
-        cr.jour AS jour_reception,
-        cr.heure AS heure_reception,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR ', ') AS gymnasiums_list,
         d.site_web,
         d.photo
         FROM equipes e
@@ -302,6 +309,7 @@ function getTeams() {
         LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase        
+        GROUP BY team_full_name
         ORDER BY comp.libelle, c.nom, nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -665,23 +673,23 @@ function sendMailNextMatches() {
         CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
         jresp.telephone,
         jresp.email,
-        CONCAT(g.nom, ' (', g.ville, ')') AS addresse, 
-        CONCAT('https://maps.google.com/?ie=UTF8&t=m&q=',g.gps,'&z=12') AS lien_maps 
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR ', ') AS creneaux
         FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom 
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        LEFT JOIN creneau c ON c.id_equipe = e1.id_equipe
-        LEFT JOIN gymnase g ON g.id = c.id_gymnase
+        LEFT JOIN creneau cr ON cr.id_equipe = e1.id_equipe
+        LEFT JOIN gymnase g ON g.id = cr.id_gymnase
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e1.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         WHERE 
-        (m.id_equipe_dom = $id OR id_equipe_ext = $id)
-        AND
+         (m.id_equipe_dom = $id OR id_equipe_ext = $id)
+         AND
         (
         m.date_reception >= CURDATE()
         AND 
         m.date_reception < DATE_ADD(CURDATE(), INTERVAL 7 DAY)
         )
+        GROUP BY e1.id_equipe
         ORDER BY date_reception ASC";
         $req = mysqli_query($db, $sql);
         $results = array();
@@ -1255,6 +1263,7 @@ function getMyTeam() {
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sql = "SELECT 
         e.code_competition, 
+        comp.libelle AS libelle_competition, 
         e.nom_equipe, 
         CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
         e.id_club,
@@ -1264,10 +1273,7 @@ function getMyTeam() {
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
-        g.gps AS localisation,
-        cr.jour AS jour_reception,
-        cr.heure AS heure_reception,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR ', ') AS gymnasiums_list,
         d.site_web,
         d.photo
         FROM equipes e
@@ -1280,7 +1286,9 @@ function getMyTeam() {
         LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
-        WHERE e.id_equipe=$sessionIdEquipe";
+        WHERE e.id_equipe=$sessionIdEquipe        
+        GROUP BY team_full_name
+        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1909,8 +1917,7 @@ function getTeamSheet($idTeam) {
         CONCAT(jresp.prenom, ' ', jresp.nom) AS leader,
         jresp.telephone AS portable,
         jresp.email AS courriel,
-        CONCAT (cr.jour, ' ', cr.heure) AS creneau,
-        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnase,
+        GROUP_CONCAT(CONCAT(LEFT(cr.jour, 2), ' ', cr.heure, ' ', g.nom) SEPARATOR '\n') AS gymnasiums_list,
         e.nom_equipe AS equipe,
         DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
         FROM equipes e
@@ -1921,7 +1928,8 @@ function getTeamSheet($idTeam) {
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
-        WHERE e.id_equipe = $idTeam";
+        WHERE e.id_equipe = $idTeam
+        GROUP BY equipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

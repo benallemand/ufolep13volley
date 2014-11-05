@@ -39,12 +39,12 @@ $indicatorEquipesEngageesChampionnat = new Indicator(
         e.id_equipe AS id,
         e.code_competition AS compet,
         c.division,
-        cr.jour,
-        cr.heure,
+        GROUP_CONCAT(cr.jour SEPARATOR ',') AS jour,
+        GROUP_CONCAT(cr.heure SEPARATOR ',') AS heure,
         CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
         jresp.email,
         jresp.telephone,
-        gym.nom AS gymnase
+        GROUP_CONCAT(gym.nom SEPARATOR ',') AS gymnase
         FROM equipes e
         JOIN joueur_equipe je ON je.id_equipe=e.id_equipe
         JOIN joueurs jresp ON jresp.id = je.id_joueur AND je.is_leader+0 = 1
@@ -54,6 +54,7 @@ $indicatorEquipesEngageesChampionnat = new Indicator(
         JOIN competitions comp ON comp.code_competition=e.code_competition
         JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
         WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
+        GROUP BY id
         ORDER BY e.code_competition, c.division, e.id_equipe");
 $indicatorPlayersWithTeamButNoClub = new Indicator(
         'Joueurs avec équipe mais sans club', "SELECT DISTINCT
