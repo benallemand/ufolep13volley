@@ -42,8 +42,8 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 width: 180,
                 dataIndex: 'equipe_dom',
                 renderer: function (value, metaData, record) {
-                    if (record.get('score_equipe_dom') === 3) {
-                        metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
+                    if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
+                        return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
                     return value;
                 }
@@ -63,8 +63,8 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 width: 180,
                 dataIndex: 'equipe_ext',
                 renderer: function (value, metaData, record) {
-                    if (record.get('score_equipe_ext') === 3) {
-                        metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
+                    if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
+                        return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
                     return value;
                 }
@@ -92,20 +92,6 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     }
                     return detailsMatch;
                 }
-            },
-            {
-                header: 'Partage',
-                width: 100,
-                xtype: 'actioncolumn',
-                items: [
-                    {
-                        icon: 'images/facebook.jpg',
-                        tooltip: 'Partager',
-                        handler: function () {
-                            window.open('http://www.facebook.com/sharer/sharer.php?u=' + window.location.href, '_blank');
-                        }
-                    }
-                ]
             },
             {
                 header: 'Administration',
@@ -141,6 +127,19 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     }
                 ]
+            }
+        ]
+    },
+    dockedItems: {
+        xtype: 'toolbar',
+        dock: 'top',
+        items: [
+            {
+                icon: 'images/facebook.jpg',
+                text: 'PARTAGER !',
+                tooltip: 'Partager',
+                href: 'http://www.facebook.com/sharer/sharer.php?u=' + window.location.href,
+                hrefTarget: '_blank'
             }
         ]
     }
