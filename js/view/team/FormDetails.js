@@ -65,8 +65,9 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
             }
         },
         {
-            xtype: 'displayfield',
+            xtype: 'textarea',
             fieldLabel: 'Créneaux',
+            readOnly: true,
             name: 'gymnasiums_list',
             renderer: function(val) {
                 if (val.length === 0) {
