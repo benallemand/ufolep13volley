@@ -12,6 +12,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
     /* Begin Definitions */
     extend: 'Ext.view.View',
     alias: 'widget.coverflow',
+    border: false,
     requires: ['Ext.fx.PropertyHandler'],
     /* End Definitions */
 
@@ -19,7 +20,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
      * @cfg {Number} item
      * The item selected by default when this component is rendered
      */
-    item: 0,
+    item: 10,
     /*
      * @cfg {String} cls
      * The css class to be applied to the outer element of this component
@@ -39,12 +40,12 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
      * @cfg {Number} itemWidth
      * The width of each item, when not selected
      */
-    itemWidth: 260,
+    itemWidth: 150,
     /*
      * @cfg {Number} itemHeight
      * The width of each item, when not selected
      */
-    itemHeight: 260,
+    itemHeight: 150,
     /*
      * @cfg {Number} selectedItemScale
      * The factor used to scale up selected items

@@ -3,6 +3,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
     alias: 'widget.mainMenu',
     defaultButtonUI: 'default',
     enableOverflow: true,
+    border: false,
     items: [
         '->',
         {

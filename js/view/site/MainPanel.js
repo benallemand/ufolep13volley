@@ -1,121 +1,67 @@
 Ext.define('Ufolep13Volley.view.site.MainPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.mainPanel',
-    layout: 'border',
-    defaults: {
-        border: false
-    },
-    items: Ext.is.Phone ?
-            [
-                {
-                    region: 'north',
-                    height: 110,
-                    xtype: 'headerPanel'
-                },
-                {
-                    region: 'center',
-                    layout: 'border',
-                    items: [
-                        {
-                            region: 'center',
-                            flex: 3,
-                            split: true,
-                            xtype: 'LastResultsGrid'
-                        },
-                        {
-                            region: 'east',
-                            flex: 1,
-                            xtype: 'tabpanel',
-                            items: [
-                                {
-                                    xtype: 'LastPostsGrid'
-                                },
-                                {
-                                    xtype: 'WebSitesGrid'
-                                }
-                            ]
-                        }
-                    ]
-
-                }
-            ] :
-            [
-                {
-                    region: 'north',
-                    height: 360,
-                    layout: 'border',
-                    items: [
-                        {
-                            region: 'north',
-                            height: 100,
-                            layout: 'center',
-                            defaults: {
-                                border: false
-                            },
-                            items: {
-                                layout: {
-                                    type: 'vbox',
-                                    align: 'center'
-                                },
-                                xtype: 'panel',
-                                items: [
-                                    {
-                                        width: 500,
-                                        height: 50,
-                                        xtype: 'banner'
-                                    },
-                                    {
-                                        width: 400,
-                                        height: 50,
-                                        xtype: 'image',
-                                        src: './images/JeuAvantEnjeu.jpg'
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            region: 'center',
-                            xtype: 'coverflow',
-                            store: 'Images'
-                        }
-                    ]
-                },
-                {
-                    region: 'north',
-                    height: 110,
-                    xtype: 'headerPanel'
-                },
-                {
-                    region: 'center',
-                    layout: 'border',
-                    items: [
-                        {
-                            region: 'center',
-                            flex: 3,
-                            split: true,
-                            xtype: 'LastResultsGrid'
-                        },
-                        {
-                            region: 'east',
-                            flex: 2,
-                            xtype: 'tabpanel',
-                            items: [
-                                {
-                                    xtype: 'LastPostsGrid'
-                                },
-                                {
-                                    xtype: 'WebSitesGrid'
-                                }
-                            ]
-                        }
-                    ]
-
-                }
-            ],
+    layout: Ext.is.Phone ? 'accordion' : 'anchor',
+    autoScroll: true,
+    border: false,
+    margin: Ext.is.Phone ? 0 : '0 50 0 50',
+    items: [
+        {
+            xtype: 'LastResultsGrid'
+        },
+        {
+            xtype: 'LastPostsGrid'
+        },
+        {
+            xtype: 'WebSitesGrid'
+        }
+    ],
     dockedItems: [
+        Ext.is.Phone ? null : {
+            height: 150,
+            dock: 'top',
+            border: false,
+            layout: 'border',
+            items: [
+                {
+                    region: 'west',
+                    layout: 'center',
+                    border: false,
+                    items: {
+                        layout: {
+                            type: 'vbox',
+                            align: 'center'
+                        },
+                        border: false,
+                        xtype: 'panel',
+                        items: [
+                            {
+                                height: 30,
+                                xtype: 'banner'
+                            },
+                            {
+                                height: 30,
+                                xtype: 'image',
+                                src: './images/JeuAvantEnjeu.jpg'
+                            }
+                        ]
+                    }
+                },
+                {
+                    region: 'center',
+                    xtype: 'coverflow',
+                    store: 'Images'
+                }
+            ]
+        },
+        {
+            dock: 'top',
+            xtype: 'headerPanel'
+        },
         {
             xtype: 'toolbar',
             dock: 'bottom',
+            border: false,
             items: [
                 '->',
                 {
@@ -144,3 +90,4 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
         }
     ]
 });
+        
