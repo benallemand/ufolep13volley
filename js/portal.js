@@ -11,8 +11,6 @@ Ext.application({
             layout: 'fit',
             items: {
                 layout: 'border',
-                width: 1280,
-                height: 2048,
                 items: [
                     {
                         region: 'north',
@@ -21,8 +19,9 @@ Ext.application({
                     },
                     {
                         region: 'center',
-                        flex: 1,
-                        layout: 'border',
+                        layout: Ext.is.Phone ? 'accordion' : 'anchor',
+                        margin: Ext.is.Phone ? 0 : '0 50 0 50',
+                        autoScroll: true,
                         dockedItems: [
                             {
                                 xtype: 'toolbar',
@@ -46,7 +45,14 @@ Ext.application({
                                         href: 'teamSheetPdf.php',
                                         scale: 'large',
                                         icon: 'images/pdf.png'
-                                    },
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'toolbar',
+                                enableOverflow: true,
+                                dock: 'top',
+                                items: [
                                     {
                                         text: 'Modifier les informations',
                                         scale: 'large',
@@ -62,32 +68,25 @@ Ext.application({
                                         scale: 'large',
                                         icon: 'images/preferences.png',
                                         action: 'editPreferences'
+                                    },
+                                    {
+                                        text: 'Historique',
+                                        scale: 'large',
+                                        icon: 'images/ic_history_24px.svg',
+                                        action: 'showHistory'
                                     }
                                 ]
                             }
                         ],
                         items: [
                             {
-                                region: 'north',
-                                xtype: 'gridTeamMatches',
-                                flex: 1
+                                xtype: 'gridTeamMatches'
                             },
                             {
-                                region: 'center',
-                                layout: 'border',
-                                flex: 1,
-                                items: [
-                                    {
-                                        region: 'west',
-                                        width: 550,
-                                        xtype: 'gridAlerts'
-                                    },
-                                    {
-                                        region: 'center',
-                                        flex: 1,
-                                        xtype: 'formTeamDetails'
-                                    }
-                                ]
+                                xtype: 'gridAlerts'
+                            },
+                            {
+                                xtype: 'formTeamDetails'
                             }
                         ]
                     }

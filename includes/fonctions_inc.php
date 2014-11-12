@@ -2551,6 +2551,7 @@ function getTimeSlots() {
 }
 
 function getActivity() {
+    $isTeamLeader = isTeamLeader();
     global $db;
     conn_db();
     $sql = "SELECT 
@@ -2563,8 +2564,12 @@ function getActivity() {
         FROM activity a
         LEFT JOIN comptes_acces ca ON ca.id=a.user_id
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
-        LEFT JOIN competitions c ON c.code_competition=e.code_competition
-        ORDER BY a.activity_date DESC";
+        LEFT JOIN competitions c ON c.code_competition=e.code_competition";
+    if ($isTeamLeader) {
+        $sessionIdEquipe = $_SESSION['id_equipe'];
+        $sql .= " WHERE e.id_equipe = $sessionIdEquipe";
+    }
+    $sql .= " ORDER BY a.activity_date DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

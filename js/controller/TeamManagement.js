@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
-    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences', 'TimeSlots', 'Gymnasiums', 'Teams', 'Days', 'Alerts'],
-    models: ['Club', 'Team', 'Player', 'Preference', 'TimeSlot', 'Gymnasium', 'Day', 'Alert'],
-    views: ['team.DetailsEdit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences'],
+    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences', 'TimeSlots', 'Gymnasiums', 'Teams', 'Days', 'Alerts', 'Activity'],
+    models: ['Club', 'Team', 'Player', 'Preference', 'TimeSlot', 'Gymnasium', 'Day', 'Alert', 'Activity'],
+    views: ['team.DetailsEdit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences', 'activity.Grid', 'activity.Window'],
     refs: [
         {
             ref: 'ImagePlayer',
@@ -187,6 +187,9 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     },
                     "gridAlerts actioncolumn": {
                         itemclick: this.getAlertResolution
+                    },
+                    "button[action=showHistory]": {
+                        click: this.showHistory
                     }
                 });
     },
@@ -254,6 +257,9 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 form.getForm().loadRecord(records[0]);
             }
         });
+    },
+    showHistory: function () {
+        Ext.widget('activitywindow');
     },
     savePlayer: function () {
         var thisController = this;
