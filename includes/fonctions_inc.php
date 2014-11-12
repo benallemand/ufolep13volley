@@ -238,10 +238,10 @@ function getQuickDetails($idEquipe) {
         jsupp.telephone AS telephone_2,
         jresp.email,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR '\n') AS gymnasiums_list,
-        d.site_web,
-        d.photo
+        e.web_site,
+        p.path_photo
         FROM equipes e
-        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
@@ -297,10 +297,10 @@ function getTeams() {
         jsupp.telephone AS telephone_2,
         jresp.email,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR ', ') AS gymnasiums_list,
-        d.site_web,
-        d.photo
+        e.web_site,
+        p.path_photo
         FROM equipes e
-        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
@@ -322,11 +322,10 @@ function getTeams() {
 function getWebSites() {
     global $db;
     conn_db();
-    $sql = "SELECT DISTINCT c.nom AS nom_club, de.site_web 
-        FROM details_equipes de
-        JOIN equipes e ON e.id_equipe = de.id_equipe
+    $sql = "SELECT DISTINCT c.nom AS nom_club, e.web_site 
+        FROM equipes e
         JOIN clubs c ON c.id = e.id_club
-        WHERE site_web != ''
+        WHERE web_site != ''
         ORDER BY c.nom ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -1072,9 +1071,9 @@ function modifyMyTeam() {
         return false;
     }
     $id_club = filter_input(INPUT_POST, 'id_club');
-    $site_web = filter_input(INPUT_POST, 'site_web');
-    $sql = "UPDATE details_equipes SET 
-        site_web='$site_web'
+    $site_web = filter_input(INPUT_POST, 'web_site');
+    $sql = "UPDATE equipes SET 
+        web_site='$site_web'
         WHERE id_equipe=$id_equipe";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
@@ -1274,10 +1273,10 @@ function getMyTeam() {
         jsupp.telephone AS telephone_2,
         jresp.email,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')') SEPARATOR ', ') AS gymnasiums_list,
-        d.site_web,
-        d.photo
+        e.web_site,
+        p.path_photo
         FROM equipes e
-        LEFT JOIN details_equipes d ON d.id_equipe = e.id_equipe
+        LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0

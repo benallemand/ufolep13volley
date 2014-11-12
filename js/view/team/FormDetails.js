@@ -84,7 +84,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         {
             xtype: 'displayfield',
             fieldLabel: 'Site web',
-            name: 'site_web',
+            name: 'web_site',
             renderer: function(val) {
                 return "<a href='" + val + "' target='_blank'>" + val + "</a>";
             }

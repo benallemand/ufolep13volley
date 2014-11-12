@@ -10,7 +10,7 @@ Ext.define('Ufolep13Volley.view.team.WebSitesGrid', {
         },
         {
             header: 'Site Web',
-            dataIndex: 'site_web',
+            dataIndex: 'web_site',
             renderer: function(val) {
                 return Ext.String.format("<a href='{0}' target='blank'>{0}</a>", val);
             },

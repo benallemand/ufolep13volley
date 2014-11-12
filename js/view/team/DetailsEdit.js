@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.view.team.DetailsEdit', {
             {
                 xtype: 'textfield',
                 fieldLabel: 'Site web',
-                name: 'site_web'
+                name: 'web_site'
             }
         ],
         buttons: [

@@ -22,8 +22,8 @@ Ext.application({
                         form.setTitle(record.get('team_full_name'));
                         var image = Ext.ComponentQuery.query('image[id=teamPicture]')[0];
                         var src= 'images/unknownTeam.png';
-                        if(record.get('photo') !== '') {
-                            src = 'teams_pics/' + record.get('photo');
+                        if(record.get('path_photo') !== '') {
+                            src = 'teams_pics/' + record.get('path_photo');
                         }
                         image.setSrc(src);
                         return false;
