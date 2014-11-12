@@ -50,8 +50,8 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         width: 200,
                         dataIndex: 'equipe_dom',
                         renderer: function (value, metaData, record) {
-                            if (record.get('score_equipe_dom') === 3) {
-                                metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
+                            if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
+                                return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                             }
                             return '<a href="teamSheetPdf.php?id=' + record.get('id_equipe_dom') + '" target="blank">' + value + '</a>';
                         }
@@ -71,8 +71,8 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         width: 200,
                         dataIndex: 'equipe_ext',
                         renderer: function (value, metaData, record) {
-                            if (record.get('score_equipe_ext') === 3) {
-                                metaData.tdAttr = 'style="background-color:GreenYellow;color:black;"';
+                            if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
+                                return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                             }
                             return '<a href="teamSheetPdf.php?id=' + record.get('id_equipe_ext') + '" target="blank">' + value + '</a>';
                         }
