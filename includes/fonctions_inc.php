@@ -740,13 +740,13 @@ function sendMailPlayersWithoutLicenceNumber() {
         }
         $emails = array_unique($emails);
         $body = "Bonjour,\r\n"
-                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numéro de licence renseigné sur le site de l'UFOLEP 13 VOLLEY.\r\n"
-                . "Merci de mettre à jour ce numéro de licence dès que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche équipe.\r\n"
-                . "La liste des joueurs concernés est en pièce jointe.\r\n"
+                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numero de licence renseigne sur le site de l'UFOLEP 13 VOLLEY.\r\n"
+                . "Merci de mettre a jour ce numero de licence des que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche equipe.\r\n"
+                . "La liste des joueurs concernes est en piece jointe.\r\n"
                 . "Sportivement,\r\n"
                 . "L'UFOLEP";
         $to = implode(',', $emails);
-        $subject = "[UFOLEP13VOLLEY]Joueurs sans numéro de licence";
+        $subject = "[UFOLEP13VOLLEY]Joueurs sans numero de licence";
         $from = "laurent.gorlier@ufolep13volley.org";
         if (sendCsvMail($results, $body, $to, $subject, $from) === FALSE) {
             return false;
