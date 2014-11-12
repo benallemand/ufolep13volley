@@ -711,6 +711,50 @@ function sendMailNextMatches() {
     }
 }
 
+function sendMailPlayersWithoutLicenceNumber() {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        CONCAT(j.nom, ' ', j.prenom) AS joueur, 
+        c.nom AS club,
+        CONCAT(e.nom_equipe, ' (', comp.libelle, ')') AS equipe,
+        jresp.email AS responsable
+        FROM joueur_equipe je 
+        JOIN joueurs j ON j.id = je.id_joueur
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        JOIN joueur_equipe jeresp ON jeresp.id_equipe = e.id_equipe AND jeresp.is_leader+0 > 0
+        JOIN joueurs jresp ON jresp.id = jeresp.id_joueur
+        JOIN competitions comp ON comp.code_competition = e.code_competition
+        JOIN clubs c ON c.id = j.id_club
+        WHERE j.num_licence = ''
+        ORDER BY equipe ASC";
+    $req = mysqli_query($db, $sql);
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (count($results) > 0) {
+        $emails = array();
+        foreach ($results as $record) {
+           $emails[] = $record['responsable'];
+        }
+        $emails = array_unique($emails);
+        $body = "Bonjour,\r\n"
+                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numéro de licence renseigné sur le site de l'UFOLEP 13 VOLLEY.\r\n"
+                . "Merci de mettre à jour ce numéro de licence dès que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche équipe.\r\n"
+                . "La liste des joueurs concernés est en pièce jointe.\r\n"
+                . "Sportivement,\r\n"
+                . "L'UFOLEP";
+        $to = implode(',', $emails);
+        $subject = "[UFOLEP13VOLLEY]Joueurs sans numéro de licence";
+        $from = "laurent.gorlier@ufolep13volley.org";
+        if (sendCsvMail($results, $body, $to, $subject, $from) === FALSE) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function computeRank($id_equipe, $compet, $division) {
     global $db;
     conn_db();
