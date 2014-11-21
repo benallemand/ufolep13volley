@@ -448,7 +448,7 @@ function getTeamEmail($id) {
     conn_db();
     $sql = "SELECT j.email 
         FROM joueurs j 
-        LEFT JOIN joueur_equipe je ON je.id_equipe = $id AND je.id_joueur = j.id AND je.is_leader+0 > 0";
+        JOIN joueur_equipe je ON je.id_equipe = $id AND je.id_joueur = j.id AND je.is_leader+0 > 0";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_assoc($req)) {
         return $data['email'];
