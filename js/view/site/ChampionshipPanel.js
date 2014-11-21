@@ -1,31 +1,26 @@
 Ext.define('Ufolep13Volley.view.site.ChampionshipPanel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.championshipPanel',
-    layout: 'border',
-    defaults: {
-        border: false
-    },
+    layout: Ext.is.Phone ? 'accordion' : 'anchor',
+    autoScroll: true,
+    border: false,
+    margin: Ext.is.Phone ? 0 : '0 50 0 50',
     items: [
         {
-            region: 'north',
-            split: true,
+            xtype: 'gridRanking'
+        },
+        {
+            xtype: 'gridMatches'
+        }
+    ],
+    dockedItems: [
+        {
+            dock: 'top',
             xtype: 'headerPanel'
         },
         {
-            region: 'north',
+            dock: 'top',
             xtype: 'limitDatePanel'
-        },
-        {
-            region: 'center',
-            xtype: 'tabpanel',
-            items: [
-                {
-                    xtype: 'gridRanking'
-                },
-                {
-                    xtype: 'gridMatches'
-                }
-            ]
         }
     ]
 });
