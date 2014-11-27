@@ -18,10 +18,12 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 dataIndex: 'code_match',
                 renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
-                        metaData.tdAttr = 'style="background-color:VioletRed;color:black;" data-qtip="Match non renseigné de + de 10 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 10 jours!"';
+                        return '<span style="background-color:VioletRed;color:black">' + value + '</span>';
                     }
                     if (record.get('retard') === 2) {
-                        metaData.tdAttr = 'style="background-color:Red;color:black;" data-qtip="Match non renseigné de + de 15 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 15 jours!"';
+                        return '<span style="background-color:Red;color:black">' + value + '</span>';
                     }
                     return value;
                 }
@@ -32,7 +34,8 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 dataIndex: 'date_reception',
                 renderer: function (value, metaData, record) {
                     if (record.get('report') === true) {
-                        metaData.tdAttr = 'style="background-color:Gold;color:black;" data-qtip="Match reporté"';
+                        metaData.tdAttr = 'data-qtip="Match reporté"';
+                        return '<span style="background-color:Gold;color:black">' + Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception') + '</span>';
                     }
                     return Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception');
                 }
