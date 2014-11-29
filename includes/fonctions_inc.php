@@ -363,8 +363,9 @@ function getLastResults() {
     WHERE (
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
     AND (m.date_reception <= CURDATE())
+    AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
     )
-    ORDER BY date_reception DESC LIMIT 100";
+    ORDER BY code_competition ASC, division_journee ASC, date_reception DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
