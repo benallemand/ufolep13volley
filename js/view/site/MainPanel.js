@@ -7,13 +7,16 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
     margin: Ext.is.Phone ? 0 : '0 50 0 50',
     items: [
         {
-            xtype: 'LastResultsGrid'
+            xtype: 'LastResultsGrid',
+            maxHeight: 480
         },
         {
-            xtype: 'LastPostsGrid'
+            xtype: 'LastPostsGrid',
+            maxHeight: 480
         },
         {
-            xtype: 'WebSitesGrid'
+            xtype: 'WebSitesGrid',
+            maxHeight: 480
         }
     ],
     dockedItems: [
