@@ -355,7 +355,8 @@ function getLastResults() {
     CONCAT(m.set_4_dom, '-', set_4_ext) AS set4, 
     CONCAT(m.set_5_dom, '-', set_5_ext) AS set5, 
     m.date_reception
-    FROM matches m
+    FROM activity a
+    JOIN matches m ON m.code_match = SPLIT_STRING(a.comment, ' ', 3)
     LEFT JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
     LEFT JOIN competitions c ON c.code_competition =  m.code_competition
     LEFT JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
@@ -364,8 +365,9 @@ function getLastResults() {
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
     AND (m.date_reception <= CURDATE())
     AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
+    AND (a.comment LIKE 'Le match % a ete modifie')
     )
-    ORDER BY code_competition ASC, division_journee ASC, date_reception DESC";
+    ORDER BY a.activity_date DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
