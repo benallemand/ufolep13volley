@@ -357,10 +357,10 @@ function getLastResults() {
     m.date_reception
     FROM activity a
     JOIN matches m ON m.code_match = SPLIT_STRING(a.comment, ' ', 3)
-    LEFT JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
-    LEFT JOIN competitions c ON c.code_competition =  m.code_competition
-    LEFT JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
-    LEFT JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
+    JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
+    JOIN competitions c ON c.code_competition =  m.code_competition
+    JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
+    JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
     WHERE (
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
     AND (m.date_reception <= CURDATE())
