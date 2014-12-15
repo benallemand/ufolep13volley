@@ -77,6 +77,26 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         }
                     ]
+                },
+                {
+                    text: 'Play Off',
+                    menu: [
+                        {
+                            text: 'Poule 1',
+                            href: 'playoff.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 2',
+                            href: 'playoff.php?d=2',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 3',
+                            href: 'playoff.php?d=3',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 }
             ]
         },
