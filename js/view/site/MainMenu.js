@@ -95,6 +95,26 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             text: 'Division 3',
                             href: 'champ_fem.php?d=3',
                             hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Play Off',
+                            menu: [
+                                {
+                                    text: 'Poule 1',
+                                    href: 'playoff_fem.php?d=1',
+                                    hrefTarget: '_self'
+                                },
+                                {
+                                    text: 'Poule 2',
+                                    href: 'playoff_fem.php?d=2',
+                                    hrefTarget: '_self'
+                                },
+                                {
+                                    text: 'Poule 3',
+                                    href: 'playoff_fem.php?d=3',
+                                    hrefTarget: '_self'
+                                }
+                            ]
                         }
                     ]
                 }
