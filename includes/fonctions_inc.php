@@ -1,4 +1,4 @@
-l<?php
+<?php
 
 require_once 'db_inc.php';
 session_start();
