@@ -338,7 +338,7 @@ function getWebSites() {
 function getLastResults() {
     global $db;
     conn_db();
-    $sql = "SELECT 
+    $sql = "SELECT DISTINCT 
     c.libelle AS competition, 
     IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
     c.code_competition AS code_competition,
