@@ -1,4 +1,4 @@
-<?php
+l<?php
 
 require_once 'db_inc.php';
 session_start();
@@ -393,6 +393,12 @@ function getLastResults() {
                 break;
             case 'c':
                 $data['url'] = 'coupe.php?d=' . $data['division'];
+                break;
+            case 'po':
+                $data['url'] = 'playoff_masc.php?d=' . $data['division'];
+                break;
+            case 'px':
+                $data['url'] = 'playoff_fem.php?d=' . $data['division'];
                 break;
             default :
                 break;
