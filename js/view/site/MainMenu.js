@@ -122,7 +122,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Coupes',
-            hidden: true,
+            hidden: false,
             scale: 'large',
             icon: 'images/cup.png',
             menu: [
@@ -175,7 +175,18 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
+                            text: 'Poule 10',
+                            href: 'coupe.php?d=10',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Poule 11',
+                            href: 'coupe.php?d=11',
+                            hrefTarget: '_self'
+                        },
+                        {
                             text: 'Phase Finale',
+                            hidden: true,
                             href: 'coupe_cf.php',
                             hrefTarget: '_self'
                         }
@@ -200,22 +211,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
-                            text: 'Poule 4',
-                            href: 'coupe_kh.php?d=4',
-                            hrefTarget: '_self'
-                        },
-                        {
-                            text: 'Poule 5',
-                            href: 'coupe_kh.php?d=5',
-                            hrefTarget: '_self'
-                        },
-                        {
-                            text: 'Poule 6',
-                            href: 'coupe_kh.php?d=6',
-                            hrefTarget: '_self'
-                        },
-                        {
                             text: 'Phase Finale',
+                            hidden: true,
                             href: 'coupe_kf.php',
                             hrefTarget: '_self'
                         }
