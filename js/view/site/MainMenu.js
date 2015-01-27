@@ -211,6 +211,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
+                            text: 'Poule 4',
+                            href: 'coupe_kh.php?d=4',
+                            hrefTarget: '_self'
+                        },
+                        {
                             text: 'Phase Finale',
                             hidden: true,
                             href: 'coupe_kf.php',
