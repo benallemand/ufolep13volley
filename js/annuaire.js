@@ -6,7 +6,7 @@ Ext.application({
     models: ['Phonebook'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
-    launch: function() {
+    launch: function () {
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {
@@ -14,11 +14,14 @@ Ext.application({
             }
         });
         var phonebooksStore = this.getPhonebooksStore();
-        phonebooksStore.load(function(store, records) {
+        phonebooksStore.load(function (store, records) {
             var competitions = Ext.Array.sort(phonebooksStore.collect('libelle_competition'));
-            Ext.each(competitions, function(competition) {
+            Ext.each(competitions, function (competition) {
                 var panelCompetition = Ext.create('Ext.panel.Panel', {
-                    layout: 'hbox',
+                    layout: {
+                        type: 'table',
+                        columns: 4
+                    },
                     title: competition,
                     autoScroll: true,
                     items: []
@@ -26,10 +29,12 @@ Ext.application({
                 phonebooksStore.clearFilter(true);
                 phonebooksStore.filter('libelle_competition', competition);
                 var divisions = phonebooksStore.collect('division');
-                Ext.each(divisions, function(division) {
+                Ext.each(divisions, function (division) {
                     var panelDivision = Ext.create('Ext.panel.Panel', {
                         width: 180,
+                        height: 250,
                         header: false,
+                        border: false,
                         items: []
                     });
                     var storeDiv = Ext.create('Ext.data.Store', {
@@ -45,8 +50,17 @@ Ext.application({
                         autoLoad: true
                     });
                     storeDiv.clearFilter(true);
-                    storeDiv.filter('libelle_competition', competition);
-                    storeDiv.filter('division', division);
+                    storeDiv.filter([
+                        {
+                            property: 'libelle_competition',
+                            value: competition
+                        },
+                        {
+                            filterFn: function (item) {
+                                return item.get("division") === division;
+                            }
+                        }
+                    ]);
                     storeDiv.sort('nom_equipe', 'ASC');
                     var libelle_division = 'Division ';
                     if (competition.indexOf('Coupe') !== -1) {
@@ -60,9 +74,9 @@ Ext.application({
                                 header: libelle_division + division,
                                 dataIndex: 'nom_equipe',
                                 flex: 1,
-                                renderer: function(value, meta, record) {
+                                renderer: function (value, meta, record) {
                                     var competition = record.get('code_competition');
-                                    if(competition === 'c') {
+                                    if (competition === 'c') {
                                         competition = 'm';
                                     }
                                     return Ext.String.format("<a href='annuaire.php?id={0}&c={1}' target='_self'>{2}</a>", record.get('id_equipe'), competition, record.get('nom_equipe'));
