@@ -508,6 +508,9 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                     else if (division <= 9) {
                                         email = 'p7a9-isoardi-ufolep13-volley@googlegroups.com';
                                     }
+                                    else if (division <= 11) {
+                                        email = 'p10et11-isoardi-ufolep13-volley@googlegroups.com';
+                                    }
                                     break;
                                 case 'cf':
                                     email = 'isoardi-ufolep13-volley@googlegroups.com';
