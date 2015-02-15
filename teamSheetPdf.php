@@ -69,23 +69,23 @@ $NbByColumns = 6;
 $widthPhoto = 15;
 $offsetXPlayers = 50;
 $heightPlayer = 30;
-$nbGirls = 0;
-$isFirstMaleReached = false;
-$isSortMaleFemaleNeeded = false;
-if (($jsonTeam[0]->code_competition === 'kh') || ($jsonTeam[0]->code_competition === 'kf')) {
-    $isSortMaleFemaleNeeded = true;
-}
+//$nbGirls = 0;
+//$isFirstMaleReached = false;
+//$isSortMaleFemaleNeeded = false;
+//if (($jsonTeam[0]->code_competition === 'kh') || ($jsonTeam[0]->code_competition === 'kf')) {
+//    $isSortMaleFemaleNeeded = true;
+//}
 foreach ($jsonPlayers as $index => $jsonPlayer) {
     $currentIndex = $index;
-    if ($isSortMaleFemaleNeeded) {
-        if ($jsonPlayer->sexe === 'M') {
-            $isFirstMaleReached = true;
-            $currentIndex = $index + ($NbByColumns - $nbGirls);
-        }
-        if (!$isFirstMaleReached) {
-            $nbGirls++;
-        }
-    }
+//    if ($isSortMaleFemaleNeeded) {
+//        if ($jsonPlayer->sexe === 'M') {
+//            $isFirstMaleReached = true;
+//            $currentIndex = $index + ($NbByColumns - $nbGirls);
+//        }
+//        if (!$isFirstMaleReached) {
+//            $nbGirls++;
+//        }
+//    }
     $pdf->SetXY(5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
     if (toWellFormatted($jsonPlayer->est_actif) === "1") {
         $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + $heightPlayer * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, $heightPlayer - 2);
