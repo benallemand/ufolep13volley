@@ -58,6 +58,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                         },
                         {
                             text: 'Play Off',
+                            hidden: true,
                             menu: [
                                 {
                                     text: 'Poule 1',
@@ -98,6 +99,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                         },
                         {
                             text: 'Play Off',
+                            hidden: true,
                             menu: [
                                 {
                                     text: 'Poule 1',
