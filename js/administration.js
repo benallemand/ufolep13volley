@@ -98,7 +98,18 @@ Ext.application({
                 handler: function () {
                     var columns = [];
                     var fields = [];
+                    var idParam = 'id';
                     Ext.each(records, function (record) {
+                        if (record.get('Key') === 'PRI') {
+                            idParam = record.get('Field');
+                            fields.push(
+                                    {
+                                        name: record.get('Field'),
+                                        type: 'int'
+                                    }
+                            );
+                            return;
+                        }
                         switch (record.get('Field')) {
                             case 'id_equipe':
                             case 'id_equipe_dom':
@@ -180,21 +191,8 @@ Ext.application({
                         }
                         switch (record.get('Type')) {
                             case 'smallint(3)' :
+                            case 'smallint(10)' :
                             case 'tinyint(2)' :
-                                fields.push(
-                                        {
-                                            name: record.get('Field'),
-                                            type: 'int'
-                                        }
-                                );
-                                columns.push({
-                                    xtype: 'numbercolumn',
-                                    format: '0',
-                                    header: record.get('Field'),
-                                    dataIndex: record.get('Field'),
-                                    editor: 'numberfield'
-                                });
-                                break;
                             case 'tinyint(1)' :
                                 fields.push(
                                         {
@@ -254,13 +252,15 @@ Ext.application({
                         proxy: {
                             type: 'rest',
                             url: 'ajax/' + tableName + '.php',
+                            idParam: idParam,
                             reader: {
                                 type: 'json',
                                 root: 'results',
                                 totalProperty: 'totalCount'
                             },
                             writer: {
-                                type: 'json'
+                                type: 'json',
+                                writeAllFields: true
                             },
                             listeners: {
                                 exception: function (proxy, response, operation) {
