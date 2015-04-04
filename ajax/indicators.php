@@ -28,6 +28,22 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorDuplicateMatchCode = new Indicator(
+        'Code match dupliqués', "SELECT 
+m.code_match,
+c.libelle AS competition,
+m.division,
+edom.nom_equipe AS domicile,
+eext.nom_equipe AS exterieur,
+CONCAT(DATE_FORMAT(m.date_reception, '%d/%m/%Y'), ' à ', m.heure_reception) AS reception_le
+FROM matches m
+JOIN competitions c ON c.code_competition = m.code_competition
+JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
+JOIN equipes eext ON eext.id_equipe = m.id_equipe_ext
+WHERE m.code_match IN
+(SELECT code_match FROM matches GROUP BY code_match HAVING COUNT(*) > 1)
+ORDER BY m.code_match"
+);
 $indicatorPlayersWithoutLicence = new Indicator(
         'Joueurs sans numéro de licence', "SELECT 
         CONCAT(j.nom, ' ', j.prenom) AS joueur, 
@@ -177,6 +193,7 @@ $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
 $results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
+$results[] = $indicatorDuplicateMatchCode->getResult();
 $indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
