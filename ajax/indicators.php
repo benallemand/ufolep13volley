@@ -28,6 +28,16 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorWrongMatchTime = new Indicator(
+        'Horaires de match incorrects', "SELECT m.code_match, edom.nom_equipe AS equipe_dom, eext.nom_equipe AS equipe_ext, ELT(WEEKDAY(m.date_reception)+2, 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi') AS jour_match, REPLACE(m.heure_reception, 'h', ':') AS heure_match, c.jour AS jour_creneau, c.heure AS heure_creneau
+FROM matches m
+JOIN creneau c ON c.id_equipe = m.id_equipe_dom
+JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
+JOIN equipes eext ON eext.id_equipe = m.id_equipe_ext
+WHERE 
+    REPLACE(m.heure_reception, 'h', ':') != c.heure
+    AND ELT(WEEKDAY(m.date_reception)+2, 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi') = c.jour
+");
 $indicatorDuplicateMatchCode = new Indicator(
         'Code match dupliqués', "SELECT 
 m.code_match,
@@ -194,6 +204,7 @@ $results[] = $indicatorComptes->getResult();
 $results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
 $results[] = $indicatorDuplicateMatchCode->getResult();
+$results[] = $indicatorWrongMatchTime->getResult();
 $indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
