@@ -28,6 +28,19 @@ function generateCsv($data, $delimiter = ',', $enclosure = '"') {
 }
 
 require_once 'classes/Indicator.php';
+$indicatorSuspectTransfert = new Indicator(
+        'Transferts suspect de joueurs', "SELECT 
+SUBSTRING(comment, 10, LOCATE('(', comment) - 11) AS joueur,
+GROUP_CONCAT(SUBSTRING(comment, LOCATE('equipe ',comment)+7)) AS equipes,
+GROUP_CONCAT(DATE_FORMAT(activity_date, '%d/%m/%Y')) AS dates
+FROM activity 
+WHERE 
+comment LIKE 'Ajout de %'
+AND MID(comment, LOCATE('(',comment)+1, 8) REGEXP '[0-9]+'
+GROUP BY 
+MID(comment, LOCATE('(',comment)+1, 8),
+SUBSTRING(SUBSTRING_INDEX(comment, '(', -1), 1, LENGTH(SUBSTRING_INDEX(comment, '(', -1))-1)
+HAVING COUNT(*) > 1");
 $indicatorWrongMatchTime = new Indicator(
         'Horaires de match incorrects', "SELECT m.code_match, edom.nom_equipe AS equipe_dom, eext.nom_equipe AS equipe_ext, ELT(WEEKDAY(m.date_reception)+2, 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi') AS jour_match, REPLACE(m.heure_reception, 'h', ':') AS heure_match, c.jour AS jour_creneau, c.heure AS heure_creneau
 FROM matches m
@@ -205,6 +218,7 @@ $results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
 $results[] = $indicatorDuplicateMatchCode->getResult();
 $results[] = $indicatorWrongMatchTime->getResult();
+$results[] = $indicatorSuspectTransfert->getResult();
 $indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
