@@ -219,7 +219,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                         },
                         {
                             text: 'Phase Finale',
-                            hidden: true,
+                            //hidden: true,
                             href: 'coupe_kf.php',
                             hrefTarget: '_self'
                         }
