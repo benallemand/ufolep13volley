@@ -53,8 +53,17 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
                     var currentLat = geo.getLatitude();
                     var currentLong = geo.getLongitude();
                     var currentLoc = currentLat + ',' + currentLong;
-                    var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
-                    window.open('http://maps.apple.com?daddr=' + gps + '&saddr=' + currentLoc);
+                    if (Ext.os.is.iOS) {
+                        var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
+                        window.open('http://maps.apple.com?daddr=' + gps + '&saddr=' + currentLoc);
+                    }
+                    else if (Ext.os.is.Android) {
+                        window.open('geo:' + currentLoc);
+                    }
+                    else {
+                        var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
+                        window.open('http://www.google.com/maps/dir/' + gps + '/' + currentLoc);
+                    }
                 },
                 locationerror: function (geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
                     if (bTimeout) {
