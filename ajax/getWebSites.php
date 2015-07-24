@@ -1,5 +1,9 @@
 <?php
 
 require_once "../includes/fonctions_inc.php";
-echo getWebSites();
-
+if(filter_input(INPUT_GET, 'callback') !== FALSE) {
+    echo filter_input(INPUT_GET, 'callback') . "(" . getWebSites() . ")";
+}
+else {
+    echo getWebSites();
+}
