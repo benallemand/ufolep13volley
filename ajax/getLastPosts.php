@@ -29,6 +29,9 @@ foreach ($items as $item) {
     }
 }
 
-
-echo json_encode($json['items']);
-?>
+if(filter_input(INPUT_GET, 'callback') !== FALSE) {
+    echo filter_input(INPUT_GET, 'callback') . "(" . json_encode($json['items']) . ")";
+}
+else {
+    echo json_encode($json['items']);
+}

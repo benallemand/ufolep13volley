@@ -3,5 +3,9 @@
 require_once "../includes/fonctions_inc.php";
 
 
-echo getLastResults();
-?>
+if(filter_input(INPUT_GET, 'callback') !== FALSE) {
+    echo filter_input(INPUT_GET, 'callback') . "(" . getLastResults() . ")";
+}
+else {
+    echo getLastResults();
+}
