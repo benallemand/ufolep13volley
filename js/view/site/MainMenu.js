@@ -269,6 +269,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     text: 'Règlements',
                     menu: [
                         {
+                            text: 'FIVB',
+                            href: 'http://www.fivb.org/EN/Refereeing-Rules/documents/FINAL_2015_FR_V5_modifs_accepted%20(2).pdf',
+                            hrefTarget: '_blank'
+                        },
+                        {
                             text: 'Général',
                             href: 'infos_utiles/Media/ReglementGeneral.pdf',
                             hrefTarget: '_blank'
