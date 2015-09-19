@@ -119,6 +119,10 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             ]
                         }
                     ]
+                },
+                {
+                    text: '4x4 Mixte (A VENIR)',
+                    disabled: true
                 }
             ]
         },
