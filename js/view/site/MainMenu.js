@@ -55,27 +55,6 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             text: 'Division 7',
                             href: 'champ_masc.php?d=7',
                             hrefTarget: '_self'
-                        },
-                        {
-                            text: 'Play Off',
-                            hidden: true,
-                            menu: [
-                                {
-                                    text: 'Poule 1',
-                                    href: 'playoff_masc.php?d=1',
-                                    hrefTarget: '_self'
-                                },
-                                {
-                                    text: 'Poule 2',
-                                    href: 'playoff_masc.php?d=2',
-                                    hrefTarget: '_self'
-                                },
-                                {
-                                    text: 'Poule 3',
-                                    href: 'playoff_masc.php?d=3',
-                                    hrefTarget: '_self'
-                                }
-                            ]
                         }
                     ]
                 },
@@ -91,38 +70,19 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             text: 'Division 2',
                             href: 'champ_fem.php?d=2',
                             hrefTarget: '_self'
-                        },
-                        {
-                            text: 'Division 3',
-                            href: 'champ_fem.php?d=3',
-                            hrefTarget: '_self'
-                        },
-                        {
-                            text: 'Play Off',
-                            hidden: true,
-                            menu: [
-                                {
-                                    text: 'Poule 1',
-                                    href: 'playoff_fem.php?d=1',
-                                    hrefTarget: '_self'
-                                },
-                                {
-                                    text: 'Poule 2',
-                                    href: 'playoff_fem.php?d=2',
-                                    hrefTarget: '_self'
-                                },
-                                {
-                                    text: 'Poule 3',
-                                    href: 'playoff_fem.php?d=3',
-                                    hrefTarget: '_self'
-                                }
-                            ]
                         }
                     ]
                 },
                 {
                     text: '4x4 Mixte (A VENIR)',
-                    disabled: true
+                    menu: [
+                        {
+                            disabled: true,
+                            text: 'Division 1',
+                            href: 'champ_mixte.php?d=1',
+                            hrefTarget: '_self'
+                        }
+                    ]
                 }
             ]
         },
