@@ -1,0 +1,13 @@
+DELETE FROM activity where activity_date < '2015-09-01';
+DELETE FROM classements;
+DELETE FROM competitions;
+INSERT INTO competitions SET code_competition = 'f', libelle = 'Championnat Féminin', id_compet_maitre = 'f';
+INSERT INTO competitions SET code_competition = 'm', libelle = 'Championnat Masculin', id_compet_maitre = 'm';
+INSERT INTO competitions SET code_competition = 'mo', libelle = 'Championnat Mixte', id_compet_maitre = 'mo';
+INSERT INTO competitions SET code_competition = 'i', libelle = 'Coupe Isoardi', id_compet_maitre = 'm';
+INSERT INTO competitions SET code_competition = 'k', libelle = 'Coupe Khoury Hanna', id_compet_maitre = 'kh';
+INSERT INTO competitions SET code_competition = 'if', libelle = 'Coupe Isoardi - Phase Finales', id_compet_maitre = 'm';
+INSERT INTO competitions SET code_competition = 'kf', libelle = 'Coupe Khoury Hanna - Phase Finales', id_compet_maitre = 'kh';
+DELETE FROM dates_limite;
+DELETE FROM journees;
+DELETE FROM matches;
