@@ -11,3 +11,4 @@ INSERT INTO competitions SET code_competition = 'kf', libelle = 'Coupe Khoury Ha
 DELETE FROM dates_limite;
 DELETE FROM journees;
 DELETE FROM matches;
+update joueurs set est_actif = 0;
