@@ -1977,7 +1977,7 @@ function getTeamSheet($idTeam) {
         FROM equipes e
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
-        JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
+        LEFT JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
