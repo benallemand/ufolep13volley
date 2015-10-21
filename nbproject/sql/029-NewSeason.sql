@@ -12,3 +12,4 @@ DELETE FROM dates_limite;
 DELETE FROM journees;
 DELETE FROM matches;
 update joueurs set est_actif = 0;
+delete from equipes where code_competition = 'kh';
