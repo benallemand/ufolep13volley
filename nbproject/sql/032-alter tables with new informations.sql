@@ -120,6 +120,10 @@ INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES
 INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES ('f', 'Les Zachariettes', 30, 83);
 INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES ('f', 'Pink PERIER', 7, 79);
 INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES ('f', 'VCSM2015', 36, 85);
+SET FOREIGN_KEY_CHECKS=0;
+INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES ('f', 'VCME F', 35, 0);
+INSERT INTO equipes(code_competition, nom_equipe, id_club, id_imp_equipe) VALUES ('mo', 'Marignane Mi', 0, 0);
+SET FOREIGN_KEY_CHECKS=1;
 
 UPDATE equipes e
 JOIN imp_equipe ie ON ie.id = e.id_imp_equipe
