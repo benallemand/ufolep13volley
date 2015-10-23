@@ -82,9 +82,13 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     text: '4x4 Mixte (A VENIR)',
                     menu: [
                         {
-                            disabled: true,
                             text: 'Division 1',
                             href: 'champ_mixte.php?d=1',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 2',
+                            href: 'champ_mixte.php?d=2',
                             hrefTarget: '_self'
                         }
                     ]
