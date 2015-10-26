@@ -372,6 +372,11 @@ function getLastResults() {
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         switch ($data['code_competition']) {
+            case 'mo':
+                $data['url'] = 'champ_mixte.php?d=' . $data['division'];
+                $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
+                $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
+                break;
             case 'm':
                 $data['url'] = 'champ_masc.php?d=' . $data['division'];
                 $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
@@ -2658,6 +2663,14 @@ function getAlerts() {
             'expected_action' => 'showHelpAddPlayer'
         );
     }
+    if (!hasEnoughMen($sessionIdEquipe)) {
+        $results[] = array(
+            'owner' => $sessionLogin,
+            'issue' => "Pas assez de garçons dans l'équipe",
+            'criticity' => 'error',
+            'expected_action' => 'showHelpAddPlayer'
+        );
+    }
     if (!hasLeader($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
@@ -2768,6 +2781,7 @@ function hasEnoughPlayers($sessionIdEquipe) {
         case 'pf':
             $minCount = 6;
             break;
+        case 'mo':
         case 'f':
         case 't':
         case 'ff':
@@ -2838,6 +2852,51 @@ function hasEnoughWomen($sessionIdEquipe) {
         case 'kh':
         case 'kf':
             $minCount = 2;
+            break;
+        case 'mo':
+            $minCount = 1;
+            break;
+        default:
+            break;
+    }
+    if (intval($results[0]['cnt']) < $minCount) {
+        return false;
+    }
+    return true;
+}
+
+function hasEnoughMen($sessionIdEquipe) {
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        COUNT(*) AS cnt, 
+        e.code_competition
+        FROM joueur_equipe je 
+        JOIN equipes e ON e.id_equipe = je.id_equipe
+        JOIN joueurs j ON j.id = je.id_joueur
+        WHERE 
+        je.id_equipe = $sessionIdEquipe
+        AND j.sexe = 'M'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    $minCount = 0;
+    switch ($results[0]['code_competition']) {
+        case 'm':
+        case 'c':
+        case 'cf':
+        case 'pf':
+        case 'f':
+        case 't':
+        case 'ff':
+        case 'kh':
+        case 'kf':
+            $minCount = 0;
+            break;
+        case 'mo':
+            $minCount = 1;
             break;
         default:
             break;
