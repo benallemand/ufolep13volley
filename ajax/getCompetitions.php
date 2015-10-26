@@ -1,5 +1,8 @@
 <?php
 
 require_once "../includes/fonctions_inc.php";
-
-echo getCompetitions();
+if (filter_input(INPUT_GET, 'callback') !== FALSE) {
+    echo filter_input(INPUT_GET, 'callback') . "(" . getCompetitions() . ")";
+} else {
+    echo getCompetitions();
+}

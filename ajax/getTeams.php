@@ -2,5 +2,8 @@
 
 require_once "../includes/fonctions_inc.php";
 
-echo getTeams();
-
+if (filter_input(INPUT_GET, 'callback') !== FALSE) {
+    echo filter_input(INPUT_GET, 'callback') . "(" . getTeams() . ")";
+} else {
+    echo getTeams();
+}
