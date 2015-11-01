@@ -252,23 +252,33 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Féminin',
+                            text: 'Championnat Féminin',
                             href: 'infos_utiles/Media/ReglementFeminin.pdf',
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Masculin',
+                            text: 'Championnat Masculin',
                             href: 'infos_utiles/Media/ReglementMasculin.pdf',
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Koury Hanna',
+                            text: 'Championnat Mixte',
+                            href: 'infos_utiles/Media/ReglementChampionnatMixte.pdf',
+                            hrefTarget: '_blank'
+                        },
+                        {
+                            text: 'Coupe Koury Hanna',
                             href: 'infos_utiles/Media/ReglementKouryHanna.pdf',
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Isoardi',
+                            text: 'Coupe Isoardi',
                             href: 'infos_utiles/Media/ReglementIsoardi.pdf',
+                            hrefTarget: '_blank'
+                        },
+                        {
+                            text: 'Bonus: Feuille de match',
+                            href: 'infos_utiles/Media/FeuilleMatch.pdf',
                             hrefTarget: '_blank'
                         }
                     ]
