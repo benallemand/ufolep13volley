@@ -71,6 +71,10 @@ Ext.application({
                                 action: 'manageTeams'
                             },
                             {
+                                text: 'Gestion des matches',
+                                action: 'manageMatches'
+                            },
+                            {
                                 text: 'Gestion des gymnases',
                                 action: 'manageGymnasiums'
                             },
@@ -465,8 +469,7 @@ Ext.application({
                 'classements',
                 'competitions',
                 'dates_limite',
-                'journees',
-                'matches'
+                'journees'
             ];
             menuAdmin.add({
                 text: 'Indicateurs',

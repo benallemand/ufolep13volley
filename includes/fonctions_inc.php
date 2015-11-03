@@ -1277,7 +1277,12 @@ function getSqlSelectMatches($whereClause, $orderClause) {
 function getMatches($compet, $div) {
     global $db;
     conn_db();
-    $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
+    if(!isset($compet)) {
+        $sql = getSqlSelectMatches("WHERE 1 = 1", "ORDER BY m.code_match");
+    }
+    else {
+        $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
+    }
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -2570,6 +2575,48 @@ function saveTeam() {
         
     } else {
         $sql .= " WHERE id_equipe=" . $inputs['id_equipe'];
+    }
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function saveMatch() {
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id_match'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "matches SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id_match':
+            case 'dirtyFields':
+                continue;
+            case 'id_equipe_dom':
+            case 'id_equipe_ext':
+            case 'journee':
+                $sql .= "$key = $value,";
+                break;
+            case 'date_reception':
+                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id_match'])) {
+        
+    } else {
+        $sql .= " WHERE id_match=" . $inputs['id_match'];
     }
     $req = mysqli_query($db, $sql);
     mysqli_close($db);
