@@ -26,6 +26,10 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             type: 'string'
         },
         {
+            name: 'numero_journee',
+            type: 'int'
+        },
+        {
             name: 'id_equipe_dom',
             type: 'string'
         },

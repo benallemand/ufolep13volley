@@ -47,7 +47,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             {
                 xtype: 'textfield',
                 fieldLabel: 'Journée',
-                name: 'journee',
+                name: 'numero_journee',
                 allowBlank: false
             },
             {

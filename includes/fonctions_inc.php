@@ -128,6 +128,18 @@ function deleteTeams($ids) {
     return true;
 }
 
+function deleteMatches($ids) {
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM matches WHERE id_match IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids) {
     $explodedIds = explode(',', $ids);
     $playersFullNames = array();
@@ -1244,6 +1256,7 @@ function getSqlSelectMatches($whereClause, $orderClause) {
         c.libelle AS libelle_competition,
         m.division,
         CONCAT(j.nommage, ' : ', j.libelle) AS journee,
+        j.numero AS numero_journee,
         m.id_equipe_dom,
         e1.nom_equipe AS equipe_dom,
         m.id_equipe_ext,
@@ -2601,8 +2614,10 @@ function saveMatch() {
                 continue;
             case 'id_equipe_dom':
             case 'id_equipe_ext':
-            case 'journee':
                 $sql .= "$key = $value,";
+                break;
+            case 'numero_journee':
+                $sql .= "journee = $value,";
                 break;
             case 'date_reception':
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
