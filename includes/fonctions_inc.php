@@ -1290,10 +1290,9 @@ function getSqlSelectMatches($whereClause, $orderClause) {
 function getMatches($compet, $div) {
     global $db;
     conn_db();
-    if(!isset($compet)) {
+    if (!isset($compet)) {
         $sql = getSqlSelectMatches("WHERE 1 = 1", "ORDER BY m.code_match");
-    }
-    else {
+    } else {
         $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
     }
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -2634,11 +2633,13 @@ function saveMatch() {
         $sql .= " WHERE id_match=" . $inputs['id_match'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        mysqli_close($db);
+        throw new Exception($message);
     }
-    return true;
+    mysqli_close($db);
+    return;
 }
 
 function getTimeSlots() {
