@@ -79,7 +79,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     ]
                 },
                 {
-                    text: '4x4 Mixte (A VENIR)',
+                    text: '4x4 Mixte',
                     menu: [
                         {
                             text: 'Division 1',
@@ -309,7 +309,7 @@ Il faudra retourner par voie postale :<br/>\
                             buttonText: {
                                 ok: 'Télécharger'
                             },
-                            fn: function (btn) {
+                            fn: function () {
                                 window.open('infos_utiles/Media/DeclarationSinistreApac.pdf', '_blank');
                             }
                         });
