@@ -6,5 +6,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="ext-all" level="application" />
+    <orderEntry type="library" name="ext-locale-fr" level="application" />
   </component>
 </module>
