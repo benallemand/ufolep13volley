@@ -45,4 +45,8 @@ insert into journees (code_competition, division, numero, nommage, libelle) valu
 ('mo', '1', '4', 'Journee 4', 'du 23 au 27 Novembre'),
 ('mo', '1', '5', 'Journee 5', 'Du 30 au 4 décembre'),
 ('mo', '1', '6', 'Journee 6', 'Du 7 au 11 Decembre'),
-('mo', '1', '7', 'Journee 7', 'Du 14 au 18 Décembre');
+('mo', '1', '7', 'Journee 7', 'Du 14 au 18 Décembre'),
+('mo', '1', '8', 'Journee 8', 'Du 4 au 8 Janvier'),
+('mo', '1', '9', 'Journee 9', 'Du 11 au 15 Janvier'),
+('mo', '1', '10', 'Journee 10', 'Du 18 au 22 Janvier'),
+('mo', '1', '11', 'Journee 11', 'Du 25 au 29 Janvier');
