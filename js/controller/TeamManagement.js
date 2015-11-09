@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.controller.TeamManagement', {
     extend: 'Ext.app.Controller',
-    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences', 'TimeSlots', 'Gymnasiums', 'Teams', 'Days', 'Alerts', 'Activity'],
-    models: ['Club', 'Team', 'Player', 'Preference', 'TimeSlot', 'Gymnasium', 'Day', 'Alert', 'Activity'],
+    stores: ['Clubs', 'MyTeam', 'Players', 'MyPlayers', 'MyPreferences', 'TimeSlots', 'Gymnasiums', 'Teams', 'WeekDays', 'Alerts', 'Activity'],
+    models: ['Club', 'Team', 'Player', 'Preference', 'TimeSlot', 'Gymnasium', 'WeekDay', 'Alert', 'Activity'],
     views: ['team.DetailsEdit', 'team.ModifyPassword', 'team.PlayersManage', 'team.TimeSlotsManage', 'team.PlayerAddToMyTeam', 'team.SetMyTeamCaptain', 'team.SetMyTeamLeader', 'team.SetMyTeamViceLeader', 'player.Edit', 'timeslot.Edit', 'team.EditPreferences', 'activity.Grid', 'activity.Window'],
     refs: [
         {
@@ -197,7 +197,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         this.getSelectPlayerImage().setSrc(records[0].get('path_photo'));
         this.getSelectPlayerSubmitButton().focus(false, 100);
     },
-    getAlertResolution: function (column, action, view, rowIndex, colIndex, item, e) {
+    getAlertResolution: function (column, action, view, rowIndex) {
         var record = this.getAlertsStore().getAt(rowIndex);
         switch (record.get('expected_action')) {
             case 'showHelpSelectLeader':
@@ -358,7 +358,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var me = this;
         var form = this.getTeamDetailsForm();
         this.getMyTeamStore().load({
-            callback: function (records, operation, success) {
+            callback: function (records) {
                 form.getForm().loadRecord(records[0]);
                 me.getConnectedTeamNameToolbarText().setText(records[0].get('team_full_name'));
             }
@@ -377,7 +377,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
-                success: function (form, action) {
+                success: function () {
                     me.loadTeamDetails();
                     me.getTeamDetailsEditWindow().close();
                 },
@@ -394,7 +394,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var storeMyPlayers = this.getMyPlayersStore();
         if (form.isValid()) {
             form.submit({
-                success: function (form, action) {
+                success: function () {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
                     thisController.loadTeamDetails();
@@ -413,7 +413,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var storeMyPlayers = this.getMyPlayersStore();
         if (form.isValid()) {
             form.submit({
-                success: function (form, action) {
+                success: function () {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
                     thisController.loadTeamDetails();
@@ -432,7 +432,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var storeMyPlayers = this.getMyPlayersStore();
         if (form.isValid()) {
             form.submit({
-                success: function (form, action) {
+                success: function () {
                     thisController.getAlertsStore().load();
                     thisController.loadTeamDetails();
                     storeMyPlayers.load();
@@ -460,7 +460,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var storeMyPlayers = this.getMyPlayersStore();
         if (form.isValid()) {
             form.submit({
-                success: function (form, action) {
+                success: function () {
                     storeMyPlayers.load();
                     thisController.getAlertsStore().load();
                     thisController.loadTeamDetails();
@@ -486,7 +486,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         Ext.widget('teamdetailsedit');
         var form = this.getTeamDetailsEditForm();
         this.getMyTeamStore().load({
-            callback: function (records, operation, success) {
+            callback: function (records) {
                 form.getForm().loadRecord(records[0]);
             }
         });

@@ -75,6 +75,10 @@ Ext.application({
                                 action: 'manageMatches'
                             },
                             {
+                                text: 'Gestion des journées',
+                                action: 'manageDays'
+                            },
+                            {
                                 text: 'Gestion des gymnases',
                                 action: 'manageGymnasiums'
                             },
@@ -267,7 +271,7 @@ Ext.application({
                                 writeAllFields: true
                             },
                             listeners: {
-                                exception: function (proxy, response, operation) {
+                                exception: function (proxy, response) {
                                     var responseJson = Ext.decode(response.responseText);
                                     Ext.MessageBox.show({
                                         title: 'Erreur',
@@ -311,7 +315,7 @@ Ext.application({
                                         xtype: 'textfield',
                                         fieldLabel: 'Recherche',
                                         listeners: {
-                                            change: function (textfield, newValue, oldValue) {
+                                            change: function (textfield, newValue) {
                                                 var store = textfield.up('grid').getStore();
                                                 store.load({
                                                     params: {
@@ -502,7 +506,7 @@ Ext.application({
                         }
                     });
                     storeIndicators.load({
-                        callback: function (records, operation, success) {
+                        callback: function (records) {
                             Ext.each(records, function (record) {
                                 var detailsData = record.get('details');
                                 if (!detailsData) {
@@ -579,7 +583,7 @@ Ext.application({
                     params: {
                         GET_COLUMNS: true
                     },
-                    callback: function (records, operation, success) {
+                    callback: function (records) {
                         menuAdmin.add(getAdminButton(tableName, records));
                     }
                 });

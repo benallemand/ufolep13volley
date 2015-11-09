@@ -49,7 +49,7 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
                 xtype: 'combo',
                 name: 'jour',
                 fieldLabel: 'Jour',
-                store: 'Days',
+                store: 'WeekDays',
                 queryMode: 'local',
                 displayField: 'name',
                 valueField: 'name',
