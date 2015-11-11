@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/037-update commission set photo.sql" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/infos_utiles/index.html" afterPath="$PROJECT_DIR$/infos_utiles/index.html" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,23 +32,24 @@
         <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
       </PATH_ELEMENT>
     </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="MySQL - ufolep_13volley@clustermysql05.hosteur.com" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-    </PATH>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="037-update commission set photo.sql" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/nbproject/sql/037-update commission set photo.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.023909986">
+              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,7 +59,6 @@
       <list>
         <option value="$PROJECT_DIR$/index.php" />
         <option value="$PROJECT_DIR$/js/view/site/MainMenu.js" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/215623a2-f798-40cc-84cf-74df731177f7/console.sql" />
         <option value="$PROJECT_DIR$/js/view/day/AdminGrid.js" />
         <option value="$PROJECT_DIR$/js/view/day/Edit.js" />
         <option value="$PROJECT_DIR$/js/store/AdminDays.js" />
@@ -84,6 +85,8 @@
         <option value="$PROJECT_DIR$/js/model/LimitDate.js" />
         <option value="$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql" />
         <option value="$PROJECT_DIR$/infos_utiles/index.html" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/215623a2-f798-40cc-84cf-74df731177f7/console.sql" />
+        <option value="$PROJECT_DIR$/nbproject/sql/037-update commission set photo.sql" />
       </list>
     </option>
   </component>
@@ -158,7 +161,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="infos_utiles" />
+              <option name="myItemId" value="includes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -180,6 +183,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="js.buildTools.gulp.node_interpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="C:\Program Files\nodejs\node_modules\gulp" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/SQL Dialects" value="MySQL" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -319,20 +323,34 @@
       <option name="project" value="LOCAL" />
       <updated>1447231461253</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add some useful informations for new championship">
+      <created>1447231751284</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1447231751284</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="1176" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5025707" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29146692" sideWeight="0.4974293" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20758355" sideWeight="0.4871448" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27570695" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27420902" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -345,6 +363,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -368,70 +387,14 @@
     <MESSAGE value="modify contacts" />
     <MESSAGE value="manage limit dates" />
     <MESSAGE value="remove unused column division from dates_limite" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove unused column division from dates_limite" />
+    <MESSAGE value="add some useful informations for new championship" />
+    <option name="LAST_COMMIT_MESSAGE" value="add some useful informations for new championship" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ajax/getLastPosts.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.819788">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="24" selection-start-line="0" selection-start-column="24" selection-end-line="0" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/encodings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainPanel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/ufolep13volley.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.1912409">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/.name">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="dbDummy://dbtable:/950e1976/215623a2-f798-40cc-84cf-74df731177f7/ufolep_13volley.matches">
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -453,13 +416,6 @@
       </provider>
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/8750ab17-6283-47d5-99de-7924c32623b0/console.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/215623a2-f798-40cc-84cf-74df731177f7/console.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -732,10 +688,158 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/administration.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="519" column="48" selection-start-line="519" selection-start-column="48" selection-end-line="519" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/002-Remove obsolete columns in player table.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/8750ab17-6283-47d5-99de-7924c32623b0/console_1.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.027642276">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44359756">
+          <caret line="236" column="33" selection-start-line="236" selection-start-column="33" selection-end-line="236" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/commission.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/site/CommissionPanel.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.9127989">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/store/Commission.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/commission.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/950e1976/215623a2-f798-40cc-84cf-74df731177f7/ufolep_13volley.activity">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/950e1976/215623a2-f798-40cc-84cf-74df731177f7/ufolep_13volley.commission">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="uml://DATABASE/215623a2-f798-40cc-84cf-74df731177f7">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>DATABASE</ID>
+          <OriginalElement>215623a2-f798-40cc-84cf-74df731177f7</OriginalElement>
+          <nodes>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_equipe_division</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.registry</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_import_fichier</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_classement</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_utilisateur</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_joueur_equipe</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.dates_limite</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.classements</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.equipes</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.competitions</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.journees</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.users_profiles</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_division</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.photos</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.profiles</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_equipe</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.activity</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.joueurs</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_journee</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_competition</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.comptes_acces</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_association_gymnase</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.gymnase</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_association</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.commission</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.creneau</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.joueur_equipe</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_activite</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_joueur</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.matches</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.clubs</node>
+            <node x="" y="">215623a2-f798-40cc-84cf-74df731177f7.TABLE:ufolep_13volley.imp_gymnase</node>
+          </nodes>
+          <notes />
+          <edges />
+          <settings layout="Hierarchic Group" zoom="0.5695182942879706" x="685.2271383114753" y="2273.269015405911" />
+          <SelectedNodes />
+          <Categories>
+            <Category>Key columns</Category>
+            <Category>Columns</Category>
+          </Categories>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34674922">
-          <caret line="2241" column="27" selection-start-line="2241" selection-start-column="27" selection-end-line="2241" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.49837664">
+          <caret line="2156" column="197" selection-start-line="2156" selection-start-column="197" selection-end-line="2156" selection-end-column="197" />
           <folding>
             <marker date="1447229606170" expanded="true" signature="1676:1740" placeholder="SELECT COUNT..comptes_acces..." />
             <marker date="1447229606170" expanded="true" signature="2874:2917" placeholder="DELETE FROM ..." />
@@ -843,42 +947,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/administration.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="519" column="48" selection-start-line="519" selection-start-column="48" selection-end-line="519" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/002-Remove obsolete columns in player table.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/8750ab17-6283-47d5-99de-7924c32623b0/console_1.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.027642276">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/215623a2-f798-40cc-84cf-74df731177f7/console.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="65" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/037-update commission set photo.sql">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44359756">
-          <caret line="236" column="33" selection-start-line="236" selection-start-column="33" selection-end-line="236" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.023909986">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding />
         </state>
       </provider>
