@@ -79,6 +79,10 @@ Ext.application({
                                 action: 'manageDays'
                             },
                             {
+                                text: 'Gestion des dates limites',
+                                action: 'manageLimitDates'
+                            },
+                            {
                                 text: 'Gestion des gymnases',
                                 action: 'manageGymnasiums'
                             },
@@ -471,9 +475,7 @@ Ext.application({
             var menuAdmin = Ext.ComponentQuery.query('panel[title=Navigation]')[0];
             var tableNames = [
                 'classements',
-                'competitions',
-                'dates_limite',
-                'journees'
+                'competitions'
             ];
             menuAdmin.add({
                 text: 'Indicateurs',

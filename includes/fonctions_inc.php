@@ -163,6 +163,19 @@ function deleteDays($ids)
     return true;
 }
 
+function deleteLimitDates($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM dates_limite WHERE id_date IN($ids)";
+    $req = mysqli_query($db, $sql);
+    mysqli_close($db);
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids)
 {
     $explodedIds = explode(',', $ids);
@@ -1339,6 +1352,25 @@ function getDays()
         j.libelle
         FROM journees j
         JOIN competitions c ON c.code_competition = j.code_competition";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
+function getLimitDates()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+        d.id_date,
+        d.code_competition,
+        c.libelle AS libelle_competition,
+        d.date_limite
+        FROM dates_limite d
+        JOIN competitions c ON c.code_competition = d.code_competition";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -2756,6 +2788,43 @@ function saveDay()
 
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        mysqli_close($db);
+        throw new Exception($message);
+    }
+    mysqli_close($db);
+    return;
+}
+
+function saveLimitDate()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id_date'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "dates_limite SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id_date':
+            case 'dirtyFields':
+                continue;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id_date'])) {
+
+    } else {
+        $sql .= " WHERE id_date = " . $inputs['id_date'];
     }
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {

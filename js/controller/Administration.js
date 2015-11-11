@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Competitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays'],
-    models: ['Player', 'Club', 'Team', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
+    stores: ['Players', 'Clubs', 'Teams', 'Competitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates'],
+    models: ['Player', 'Club', 'Team', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
     refs: [
         {
             ref: 'ImagePlayer',
@@ -39,6 +39,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'manageDaysGrid',
             selector: 'daysgrid'
+        },
+        {
+            ref: 'manageLimitDatesGrid',
+            selector: 'limitdatesgrid'
         },
         {
             ref: 'mainPanel',
@@ -89,6 +93,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'dayedit form'
         },
         {
+            ref: 'formPanelEditLimitDate',
+            selector: 'limitdateedit form'
+        },
+        {
             ref: 'windowSelectClub',
             selector: 'clubselect'
         },
@@ -133,197 +141,219 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'dayedit'
         },
         {
+            ref: 'windowEditLimitDate',
+            selector: 'limitdateedit'
+        },
+        {
             ref: 'displayFilteredCount',
             selector: 'displayfield[action=displayFilteredCount]'
         }
     ],
     init: function () {
         this.control(
-                {
-                    'checkbox[action=filterPlayersWith2TeamsSameCompetition]': {
-                        change: this.filterPlayersWith2TeamsSameCompetition
-                    },
-                    'checkbox[action=filterPlayersWithoutLicence]': {
-                        change: this.filterPlayersWithoutLicence
-                    },
-                    'checkbox[action=filterPlayersWithoutClub]': {
-                        change: this.filterPlayersWithoutClub
-                    },
-                    'checkbox[action=filterInactivePlayers]': {
-                        change: this.filterInactivePlayers
-                    },
-                    'button[action=addPlayer]': {
-                        click: this.addPlayer
-                    },
-                    'button[action=editPlayer]': {
-                        click: this.editPlayer
-                    },
-                    'button[action=addProfile]': {
-                        click: this.addProfile
-                    },
-                    'button[action=editProfile]': {
-                        click: this.editProfile
-                    },
-                    'usersgrid button[action=add]': {
-                        click: this.addUser
-                    },
-                    'gymnasiumsgrid button[action=add]': {
-                        click: this.addGymnasium
-                    },
-                    'clubsgrid button[action=add]': {
-                        click: this.addClub
-                    },
-                    'teamsgrid button[action=add]': {
-                        click: this.addTeam
-                    },
-                    'matchesgrid button[action=add]': {
-                        click: this.addMatch
-                    },
-                    'daysgrid button[action=add]': {
-                        click: this.addDay
-                    },
-                    'usersgrid button[action=edit]': {
-                        click: this.editUser
-                    },
-                    'gymnasiumsgrid button[action=edit]': {
-                        click: this.editGymnasium
-                    },
-                    'clubsgrid button[action=edit]': {
-                        click: this.editClub
-                    },
-                    'teamsgrid button[action=edit]': {
-                        click: this.editTeam
-                    },
-                    'matchesgrid button[action=edit]': {
-                        click: this.editMatch
-                    },
-                    'daysgrid button[action=edit]': {
-                        click: this.editDay
-                    },
-                    'usersgrid button[action=delete]': {
-                        click: this.deleteUsers
-                    },
-                    'gymnasiumsgrid button[action=delete]': {
-                        click: this.deleteGymnasiums
-                    },
-                    'clubsgrid button[action=delete]': {
-                        click: this.deleteClubs
-                    },
-                    'teamsgrid button[action=delete]': {
-                        click: this.deleteTeams
-                    },
-                    'matchesgrid button[action=delete]': {
-                        click: this.deleteMatches
-                    },
-                    'daysgrid button[action=delete]': {
-                        click: this.deleteDays
-                    },
-                    'playersgrid': {
-                        itemdblclick: this.editPlayer
-                    },
-                    'profilesgrid': {
-                        itemdblclick: this.editProfile
-                    },
-                    'usersgrid': {
-                        itemdblclick: this.editUser
-                    },
-                    'gymnasiumsgrid': {
-                        itemdblclick: this.editGymnasium
-                    },
-                    'clubsgrid': {
-                        itemdblclick: this.editClub
-                    },
-                    'teamsgrid': {
-                        itemdblclick: this.editTeam
-                    },
-                    'matchesgrid': {
-                        itemdblclick: this.editMatch
-                    },
-                    'daysgrid': {
-                        itemdblclick: this.editDay
-                    },
-                    'playeredit button[action=save]': {
-                        click: this.updatePlayer
-                    },
-                    'profileedit button[action=save]': {
-                        click: this.updateProfile
-                    },
-                    'useredit button[action=save]': {
-                        click: this.updateUser
-                    },
-                    'gymnasiumedit button[action=save]': {
-                        click: this.updateGymnasium
-                    },
-                    'clubedit button[action=save]': {
-                        click: this.updateClub
-                    },
-                    'teamedit button[action=save]': {
-                        click: this.updateTeam
-                    },
-                    'matchedit button[action=save]': {
-                        click: this.updateMatch
-                    },
-                    'dayedit button[action=save]': {
-                        click: this.updateDay
-                    },
-                    'button[action=displayActivity]': {
-                        click: this.showActivityGrid
-                    },
-                    'button[action=managePlayers]': {
-                        click: this.showPlayersGrid
-                    },
-                    'button[action=manageProfiles]': {
-                        click: this.showProfilesGrid
-                    },
-                    'button[action=manageUsers]': {
-                        click: this.showUsersGrid
-                    },
-                    'button[action=manageGymnasiums]': {
-                        click: this.showGymnasiumsGrid
-                    },
-                    'button[action=manageClubs]': {
-                        click: this.showClubsGrid
-                    },
-                    'button[action=manageTeams]': {
-                        click: this.showTeamsGrid
-                    },
-                    'button[action=manageMatches]': {
-                        click: this.showMatchesGrid
-                    },
-                    'button[action=manageDays]': {
-                        click: this.showDaysGrid
-                    },
-                    'button[action=displayWeekSchedule]': {
-                        click: this.showWeekScheduleGrid
-                    },
-                    'button[action=showClubSelect]': {
-                        click: this.showClubSelect
-                    },
-                    'button[action=showProfileSelect]': {
-                        click: this.showProfileSelect
-                    },
-                    'button[action=showTeamSelect]': {
-                        click: this.showTeamSelect
-                    },
-                    'clubselect button[action=save]': {
-                        click: this.linkPlayerToClub
-                    },
-                    'profileselect button[action=save]': {
-                        click: this.linkUsersToProfile
-                    },
-                    'teamselect button[action=save]': {
-                        click: this.linkPlayerToTeam
-                    },
-                    'playersgrid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
-                        change: this.searchPlayer
-                    },
-                    'button[action=showCheckLicence]': {
-                        click: this.showCheckLicence
-                    },
-                    'playersgrid button[action=delete]': {
-                        click: this.deletePlayers
-                    }
+            {
+                'checkbox[action=filterPlayersWith2TeamsSameCompetition]': {
+                    change: this.filterPlayersWith2TeamsSameCompetition
+                },
+                'checkbox[action=filterPlayersWithoutLicence]': {
+                    change: this.filterPlayersWithoutLicence
+                },
+                'checkbox[action=filterPlayersWithoutClub]': {
+                    change: this.filterPlayersWithoutClub
+                },
+                'checkbox[action=filterInactivePlayers]': {
+                    change: this.filterInactivePlayers
+                },
+                'button[action=addPlayer]': {
+                    click: this.addPlayer
+                },
+                'button[action=editPlayer]': {
+                    click: this.editPlayer
+                },
+                'button[action=addProfile]': {
+                    click: this.addProfile
+                },
+                'button[action=editProfile]': {
+                    click: this.editProfile
+                },
+                'usersgrid button[action=add]': {
+                    click: this.addUser
+                },
+                'gymnasiumsgrid button[action=add]': {
+                    click: this.addGymnasium
+                },
+                'clubsgrid button[action=add]': {
+                    click: this.addClub
+                },
+                'teamsgrid button[action=add]': {
+                    click: this.addTeam
+                },
+                'matchesgrid button[action=add]': {
+                    click: this.addMatch
+                },
+                'daysgrid button[action=add]': {
+                    click: this.addDay
+                },
+                'limitdatesgrid button[action=add]': {
+                    click: this.addLimitDate
+                },
+                'usersgrid button[action=edit]': {
+                    click: this.editUser
+                },
+                'gymnasiumsgrid button[action=edit]': {
+                    click: this.editGymnasium
+                },
+                'clubsgrid button[action=edit]': {
+                    click: this.editClub
+                },
+                'teamsgrid button[action=edit]': {
+                    click: this.editTeam
+                },
+                'matchesgrid button[action=edit]': {
+                    click: this.editMatch
+                },
+                'daysgrid button[action=edit]': {
+                    click: this.editDay
+                },
+                'limitdatesgrid button[action=edit]': {
+                    click: this.editLimitDate
+                },
+                'usersgrid button[action=delete]': {
+                    click: this.deleteUsers
+                },
+                'gymnasiumsgrid button[action=delete]': {
+                    click: this.deleteGymnasiums
+                },
+                'clubsgrid button[action=delete]': {
+                    click: this.deleteClubs
+                },
+                'teamsgrid button[action=delete]': {
+                    click: this.deleteTeams
+                },
+                'matchesgrid button[action=delete]': {
+                    click: this.deleteMatches
+                },
+                'daysgrid button[action=delete]': {
+                    click: this.deleteDays
+                },
+                'limitdatesgrid button[action=delete]': {
+                    click: this.deleteLimitDates
+                },
+                'playersgrid': {
+                    itemdblclick: this.editPlayer
+                },
+                'profilesgrid': {
+                    itemdblclick: this.editProfile
+                },
+                'usersgrid': {
+                    itemdblclick: this.editUser
+                },
+                'gymnasiumsgrid': {
+                    itemdblclick: this.editGymnasium
+                },
+                'clubsgrid': {
+                    itemdblclick: this.editClub
+                },
+                'teamsgrid': {
+                    itemdblclick: this.editTeam
+                },
+                'matchesgrid': {
+                    itemdblclick: this.editMatch
+                },
+                'daysgrid': {
+                    itemdblclick: this.editDay
+                },
+                'limitdatesgrid': {
+                    itemdblclick: this.editLimitDate
+                },
+                'playeredit button[action=save]': {
+                    click: this.updatePlayer
+                },
+                'profileedit button[action=save]': {
+                    click: this.updateProfile
+                },
+                'useredit button[action=save]': {
+                    click: this.updateUser
+                },
+                'gymnasiumedit button[action=save]': {
+                    click: this.updateGymnasium
+                },
+                'clubedit button[action=save]': {
+                    click: this.updateClub
+                },
+                'teamedit button[action=save]': {
+                    click: this.updateTeam
+                },
+                'matchedit button[action=save]': {
+                    click: this.updateMatch
+                },
+                'dayedit button[action=save]': {
+                    click: this.updateDay
+                },
+                'limitdateedit button[action=save]': {
+                    click: this.updateLimitDate
+                },
+                'button[action=displayActivity]': {
+                    click: this.showActivityGrid
+                },
+                'button[action=managePlayers]': {
+                    click: this.showPlayersGrid
+                },
+                'button[action=manageProfiles]': {
+                    click: this.showProfilesGrid
+                },
+                'button[action=manageUsers]': {
+                    click: this.showUsersGrid
+                },
+                'button[action=manageGymnasiums]': {
+                    click: this.showGymnasiumsGrid
+                },
+                'button[action=manageClubs]': {
+                    click: this.showClubsGrid
+                },
+                'button[action=manageTeams]': {
+                    click: this.showTeamsGrid
+                },
+                'button[action=manageMatches]': {
+                    click: this.showMatchesGrid
+                },
+                'button[action=manageDays]': {
+                    click: this.showDaysGrid
+                },
+                'button[action=manageLimitDates]': {
+                    click: this.showLimitDatesGrid
+                },
+                'button[action=displayWeekSchedule]': {
+                    click: this.showWeekScheduleGrid
+                },
+                'button[action=showClubSelect]': {
+                    click: this.showClubSelect
+                },
+                'button[action=showProfileSelect]': {
+                    click: this.showProfileSelect
+                },
+                'button[action=showTeamSelect]': {
+                    click: this.showTeamSelect
+                },
+                'clubselect button[action=save]': {
+                    click: this.linkPlayerToClub
+                },
+                'profileselect button[action=save]': {
+                    click: this.linkUsersToProfile
+                },
+                'teamselect button[action=save]': {
+                    click: this.linkPlayerToTeam
+                },
+                'playersgrid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
+                    change: this.searchPlayer
+                },
+                'button[action=showCheckLicence]': {
+                    click: this.showCheckLicence
+                },
+                'playersgrid button[action=delete]': {
+                    click: this.deletePlayers
                 }
+            }
         );
     },
     filterPlayersWithoutClub: function (checkbox, newValue) {
@@ -335,11 +365,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.clearFilter(true);
         store.filter(
-                {
-                    filterFn: function (item) {
-                        return ((item.get('teams_list').length > 0) && (item.get('id_club') === 0));
-                    }
+            {
+                filterFn: function (item) {
+                    return ((item.get('teams_list').length > 0) && (item.get('id_club') === 0));
                 }
+            }
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
@@ -352,11 +382,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.clearFilter(true);
         store.filter(
-                {
-                    filterFn: function (item) {
-                        return ((item.get('teams_list').length > 0) && (item.get('num_licence').length === 0));
-                    }
+            {
+                filterFn: function (item) {
+                    return ((item.get('teams_list').length > 0) && (item.get('num_licence').length === 0));
                 }
+            }
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
@@ -369,16 +399,16 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.clearFilter(true);
         store.filter(
-                {
-                    filterFn: function (item) {
-                        var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
-                        var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
-                        var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
-                        var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
-                        
-                        return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
-                    }
+            {
+                filterFn: function (item) {
+                    var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
+                    var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
+                    var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
+                    var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
+
+                    return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
                 }
+            }
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
@@ -391,11 +421,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.clearFilter(true);
         store.filter(
-                {
-                    filterFn: function (item) {
-                        return ((item.get('num_licence').length > 0) && (item.get('est_actif') === false) && (item.get('teams_list').length > 0));
-                    }
+            {
+                filterFn: function (item) {
+                    return ((item.get('num_licence').length > 0) && (item.get('est_actif') === false) && (item.get('teams_list').length > 0));
                 }
+            }
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
@@ -404,26 +434,26 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var store = this.getPlayersStore();
         store.clearFilter(true);
         store.filter(
-                {
-                    filterFn: function (item) {
-                        var queribleFields = ['nom', 'prenom', 'num_licence', 'club', 'teams_list'];
-                        var found = false;
-                        Ext.each(searchTerms, function (searchTerm) {
-                            var regExp = new RegExp(searchTerm, "i");
-                            Ext.each(queribleFields, function (queribleField) {
-                                if (!item.get(queribleField)) {
-                                    return true;
-                                }
-                                if (regExp.test(item.get(queribleField))) {
-                                    found = true;
-                                    return false;
-                                }
-                            });
-                            return !found;
+            {
+                filterFn: function (item) {
+                    var queribleFields = ['nom', 'prenom', 'num_licence', 'club', 'teams_list'];
+                    var found = false;
+                    Ext.each(searchTerms, function (searchTerm) {
+                        var regExp = new RegExp(searchTerm, "i");
+                        Ext.each(queribleFields, function (queribleField) {
+                            if (!item.get(queribleField)) {
+                                return true;
+                            }
+                            if (regExp.test(item.get(queribleField))) {
+                                found = true;
+                                return false;
+                            }
                         });
-                        return found;
-                    }
+                        return !found;
+                    });
+                    return found;
                 }
+            }
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
@@ -494,6 +524,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('dayedit');
         this.getFormPanelEditDay().loadRecord(record);
     },
+    editLimitDate: function () {
+        var record = this.getManageLimitDatesGrid().getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        Ext.widget('limitdateedit');
+        this.getFormPanelEditLimitDate().loadRecord(record);
+    },
     addPlayer: function () {
         Ext.widget('playeredit');
         this.getImagePlayer().hide();
@@ -519,6 +557,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addDay: function () {
         Ext.widget('dayedit');
+    },
+    addLimitDate: function () {
+        Ext.widget('limitdateedit');
     },
     deleteUsers: function () {
         var me = this;
@@ -701,6 +742,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         me.getAdminDaysStore().load();
+                    }
+                });
+            }
+        });
+    },
+    deleteLimitDates: function () {
+        var me = this;
+        var records = this.getManageLimitDatesGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id_date'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteLimitDates.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        me.getLimitDatesStore().load();
                     }
                 });
             }
@@ -929,6 +1001,30 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             });
         }
     },
+    updateLimitDate: function () {
+        var thisController = this;
+        var form = this.getFormPanelEditLimitDate().getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getLimitDatesStore().load();
+                    thisController.getWindowEditLimitDate().close();
+                    thisController.getManageLimitDatesGrid().getSelectionModel().deselectAll();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
     showActivityGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'activitygrid'
@@ -986,6 +1082,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showDaysGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'daysgrid'
+        });
+        this.getMainPanel().setActiveTab(tab);
+    },
+    showLimitDatesGrid: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'limitdatesgrid'
         });
         this.getMainPanel().setActiveTab(tab);
     },
