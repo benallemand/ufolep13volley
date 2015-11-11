@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.ids" afterPath="$PROJECT_DIR$/.idea/dataSources.ids" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/infos_utiles/index.html" afterPath="$PROJECT_DIR$/infos_utiles/index.html" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -74,7 +72,6 @@
         <option value="$PROJECT_DIR$/ajax/modifierMatch.php" />
         <option value="$PROJECT_DIR$/js/controller/TeamManagement.js" />
         <option value="$PROJECT_DIR$/infos_utiles/css/index.css" />
-        <option value="$PROJECT_DIR$/infos_utiles/index.html" />
         <option value="$PROJECT_DIR$/ajax/deleteLimitDates.php" />
         <option value="$PROJECT_DIR$/ajax/getLimitDates.php" />
         <option value="$PROJECT_DIR$/ajax/saveLimitDate.php" />
@@ -86,6 +83,7 @@
         <option value="$PROJECT_DIR$/js/view/limitdate/Edit.js" />
         <option value="$PROJECT_DIR$/js/model/LimitDate.js" />
         <option value="$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql" />
+        <option value="$PROJECT_DIR$/infos_utiles/index.html" />
       </list>
     </option>
   </component>
@@ -147,6 +145,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infos_utiles" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -301,7 +313,13 @@
       <option name="project" value="LOCAL" />
       <updated>1447229983862</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="remove unused column division from dates_limite">
+      <created>1447231461253</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1447231461253</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -349,7 +367,8 @@
     <MESSAGE value="add days management" />
     <MESSAGE value="modify contacts" />
     <MESSAGE value="manage limit dates" />
-    <option name="LAST_COMMIT_MESSAGE" value="manage limit dates" />
+    <MESSAGE value="remove unused column division from dates_limite" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove unused column division from dates_limite" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -604,14 +623,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39676112">
-          <caret line="251" column="38" selection-start-line="251" selection-start-column="38" selection-end-line="251" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/deleteDays.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.9230769">
@@ -860,6 +871,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44359756">
+          <caret line="236" column="33" selection-start-line="236" selection-start-column="33" selection-end-line="236" selection-end-column="33" />
           <folding />
         </state>
       </provider>
