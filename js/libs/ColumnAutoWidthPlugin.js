@@ -133,7 +133,7 @@ Ext.define('Ext.ux.ColumnAutoWidthPlugin', {
         Ext.batchLayouts(function(){
             
             me.grid.headerCt.el.addCls( squishCls );
-            var tableResizers = me.getTableResizers()
+            var tableResizers = me.getTableResizers();
             // set the table resizers to auto
             Ext.each( tableResizers , function(el) {
                 el = Ext.fly(el).addCls( squishCls );
