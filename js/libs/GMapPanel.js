@@ -37,7 +37,7 @@ Ext.define('Ext.ux.GMapPanel', {
     },
     
     createMap: function(center, marker) {
-        options = Ext.apply({}, this.mapOptions);
+        var options = Ext.apply({}, this.mapOptions);
         options = Ext.applyIf(options, {
             zoom: 14,
             center: center,
