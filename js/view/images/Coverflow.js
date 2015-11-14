@@ -70,7 +70,7 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
      * @cfg {String} tpl
      * Template used to render the component.
      */
-    tpl: '<div class="coverflow"/>' +
+    tpl: '<div class="coverflow">' +
             '<tpl for=".">' +
             '<div class="coverflow-item">' +
             '<img class="coverflow-image" src="{src}"/>' +
@@ -411,7 +411,8 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
         var alpha = this.alpha + (100 - this.alpha) * (1 - mod);
 
         var M = [];
-        M[0] = [], M[1] = [];
+        M[0] = [];
+        M[1] = [];
         M[0][0] = 1;
         M[0][1] = mod * (side == 'right' ? 0.05 : -0.05);
         M[1][0] = mod * (side == 'right' ? -0.2 : 0.2);
@@ -419,12 +420,14 @@ Ext.define('Ufolep13Volley.view.images.Coverflow', {
 
         if (me._isFunnyBrowser()) {
             var scale = 1 / (1 + mod * (this.selectedItemScale - 1));
-            M[0][0] *= scale, M[0][1] *= scale, M[1][0] *= scale, M[1][1] *= scale;
+            M[0][0] *= scale;
+            M[0][1] *= scale;
+            M[1][0] *= scale;
+            M[1][1] *= scale;
 
             var filter =
                     "progid:DXImageTransform.Microsoft.Matrix(M11=" + M[0][0] + ", M12=" + M[0][1] + ", M21=" + M[1][0] + ", M22=" + M[1][1] + ", sizingMethod='auto expand')"
                     + " progid:DXImageTransform.Microsoft.Alpha(opacity=" + alpha + ")";
-            ;
 
             // do not apply the filter if it's the same!
             if (me.getNode(i).style['filter'] !== filter) {
