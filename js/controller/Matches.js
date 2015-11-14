@@ -42,7 +42,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
     editMatch: function(grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
-        afficheFormulaire = function() {
+        var afficheFormulaire = function() {
             Ext.create('Ext.window.Window', {
                 title: 'Modifier un match',
                 height: 600,
