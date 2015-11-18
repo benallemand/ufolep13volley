@@ -994,7 +994,7 @@ function addPenalty($compet, $id_equipe)
     $penalite = $data['penalite'];
     $division = $data['division'];
     $penalite++;
-    $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $sqlmaj = 'UPDATE classements SET penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req2 = mysqli_query($db, $sqlmaj);
     if ($req2 === FALSE) {
         return false;
@@ -1024,7 +1024,7 @@ function removePenalty($compet, $id_equipe)
     if ($penalite < 0) {
         $penalite = 0;
     }
-    $sqlmaj = 'UPDATE classements set penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
+    $sqlmaj = 'UPDATE classements SET penalite = \'' . $penalite . '\' WHERE id_equipe = \'' . $id_equipe . '\' AND code_competition = \'' . $compet . '\'';
     $req2 = mysqli_query($db, $sqlmaj);
     if ($req2 === FALSE) {
         return false;
@@ -2737,6 +2737,10 @@ function saveMatch()
                 break;
             case 'date_reception':
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
+                break;
+            case 'certif':
+                $val = ($value === 'on') ? 1 : 0;
+                $sql .= "$key = $val,";
                 break;
             default:
                 $sql .= "$key = '$value',";
