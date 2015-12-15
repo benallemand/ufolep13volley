@@ -141,7 +141,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
             ]
         });
         this.getFormPanel().load({
-            success: function (form, result, data) {
+            success: function (form, result) {
                 form.setValues(result.data);
             }
         });

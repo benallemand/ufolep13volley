@@ -68,7 +68,7 @@ function createUser($login, $email, $idTeam)
     $password = randomPassword();
     $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', email = '$email', password = '$password'";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -88,7 +88,7 @@ function deleteUsers($ids)
     conn_db();
     $sql = "DELETE FROM comptes_acces WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -104,7 +104,7 @@ function deleteGymnasiums($ids)
     conn_db();
     $sql = "DELETE FROM gymnase WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -117,7 +117,7 @@ function deleteClubs($ids)
     conn_db();
     $sql = "DELETE FROM clubs WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -130,7 +130,7 @@ function deleteTeams($ids)
     conn_db();
     $sql = "DELETE FROM equipes WHERE id_equipe IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -143,7 +143,7 @@ function deleteMatches($ids)
     conn_db();
     $sql = "DELETE FROM matches WHERE id_match IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -156,7 +156,7 @@ function deleteDays($ids)
     conn_db();
     $sql = "DELETE FROM journees WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -169,7 +169,7 @@ function deleteLimitDates($ids)
     conn_db();
     $sql = "DELETE FROM dates_limite WHERE id_date IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -187,7 +187,7 @@ function deletePlayers($ids)
     conn_db();
     $sql = "DELETE FROM joueurs WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -208,7 +208,7 @@ function activatePlayers($ids)
     conn_db();
     $sql = "UPDATE joueurs SET est_actif = 1 WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -231,7 +231,7 @@ function login()
     $login = filter_input(INPUT_POST, 'login');
     $password = filter_input(INPUT_POST, 'password');
     if (($login === NULL) || ($password === NULL)) {
-        mysqli_close($db);
+        disconn_db();
         echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Veuillez remplir les champs de connexion'
@@ -245,7 +245,7 @@ function login()
         WHERE ca.login = '$login' LIMIT 1";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     if (mysqli_num_rows($req) <= 0) {
-        mysqli_close($db);
+        disconn_db();
         echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Login incorrect'
@@ -254,7 +254,7 @@ function login()
     }
     $data = mysqli_fetch_assoc($req);
     if ($data['password'] != $password) {
-        mysqli_close($db);
+        disconn_db();
         echo json_encode(utf8_encode_mix(array(
             'success' => false,
             'message' => 'Mot de passe invalide'
@@ -266,7 +266,7 @@ function login()
     $_SESSION['password'] = $data['password'];
     $_SESSION['id_user'] = $data['id_user'];
     $_SESSION['profile_name'] = $data['profile_name'];
-    mysqli_close($db);
+    disconn_db();
     echo json_encode(utf8_encode_mix(array(
         'success' => true,
         'message' => 'Connexion OK'
@@ -637,7 +637,7 @@ function getConnectedUser()
 function sendMailSubmitResult($id1, $id2, $date)
 {
     $matchDate = DateTime::createFromFormat('Y-m-d', $date);
-    $headers = 'From: "Laurent Gorlier"<laurent.gorlier@ufolep13volley.org>' . "\n";
+    $headers =  'From: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Cc: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Bcc: benallemand@gmail.com' . "\n";
@@ -1000,7 +1000,7 @@ function addPenalty($compet, $id_equipe)
         return false;
     }
     computeRank($id_equipe, $compet, $division);
-    mysqli_close($db);
+    disconn_db();
     addActivity("Une penalite a ete infligee a l'equipe " . getTeamName($id_equipe));
     return true;
 }
@@ -1030,7 +1030,7 @@ function removePenalty($compet, $id_equipe)
         return false;
     }
     computeRank($id_equipe, $compet, $division);
-    mysqli_close($db);
+    disconn_db();
     addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
     return true;
 }
@@ -1049,7 +1049,7 @@ function removeTeamFromCompetition($compet, $id_equipe)
     if ($req2 === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("L'equipe " . getTeamName($id_equipe) . " a ete supprimee de la competition " . getTournamentName($compet));
     return true;
 }
@@ -1063,7 +1063,7 @@ function certifyMatch($code_match)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("Le match $code_match a ete certifie");
     return true;
 }
@@ -1135,7 +1135,7 @@ function modifyMatch()
     }
     computeRank($id_equipe_dom, $compet, $division);
     computeRank($id_equipe_ext, $compet, $division);
-    mysqli_close($db);
+    disconn_db();
     addActivity("Le match $code_match a ete modifie");
     return true;
 }
@@ -1147,7 +1147,7 @@ function addActivity($comment)
     $sessionIdUser = $_SESSION['id_user'];
     $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
     mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     return;
 }
 
@@ -1179,7 +1179,7 @@ function modifyMyTeam()
         . "id_club=$id_club "
         . "WHERE id_equipe=$id_equipe";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -1214,7 +1214,7 @@ function modifyMyPassword()
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("Mot de passe modifie");
     return true;
 }
@@ -1228,7 +1228,7 @@ function removeMatch($code_match)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("Le match $code_match a ete supprime");
     return true;
 }
@@ -1272,7 +1272,7 @@ function setSubmitResultDelay($code_match, $valeur)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     return true;
 }
 
@@ -1487,7 +1487,7 @@ function saveMyPreferences()
         $sql = "INSERT INTO registry SET registry_value = '" . $inputs['is_remind_matches'] . "', registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -1689,7 +1689,7 @@ function updateMyTeamCaptain($idPlayer)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau capitaine : " . getPlayerFullName($idPlayer));
     return true;
 }
@@ -1718,7 +1718,7 @@ function updateMyTeamViceLeader($idPlayer)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau suppleant : " . getPlayerFullName($idPlayer));
     return true;
 }
@@ -1747,7 +1747,7 @@ function updateMyTeamLeader($idPlayer)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("L'equipe " . getTeamName($idTeam) . " a un nouveau responsable : " . getPlayerFullName($idPlayer));
     return true;
 }
@@ -1810,7 +1810,7 @@ function getPlayersIdClub($idPlayer)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['id_club'];
 }
 
@@ -1823,7 +1823,7 @@ function addPlayerToTeam($idPlayer, $idTeam)
     }
     $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -1844,7 +1844,7 @@ function getPlayerFullName($idPlayer)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['player_full_name'];
 }
 
@@ -1861,7 +1861,7 @@ function getUserLogin($idUser)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['login'];
 }
 
@@ -1881,7 +1881,7 @@ function getTeamName($idTeam)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['team_name'];
 }
 
@@ -1898,7 +1898,7 @@ function getTournamentName($tournamentCode)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['tournament_name'];
 }
 
@@ -1915,7 +1915,7 @@ function getClubName($idClub)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['club_name'];
 }
 
@@ -1932,7 +1932,7 @@ function getProfileName($idProfile)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['profile_name'];
 }
 
@@ -1950,7 +1950,7 @@ function addPlayersToClub($idPlayers, $idClub)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     foreach (explode(',', $idPlayers) as $idPlayer) {
         addActivity(getPlayerFullName($idPlayer) . " a ete ajoute au club " . getClubName($idClub));
     }
@@ -1992,7 +1992,7 @@ function addProfileToUsers($idProfile, $idUsers)
         if ($req === FALSE) {
             return false;
         }
-        mysqli_close($db);
+        disconn_db();
         addActivity(getUserLogin($idUser) . " a obtenu le profil " . getProfileName($idProfile));
     }
     return true;
@@ -2011,7 +2011,7 @@ function getIdClubFromIdTeam($idTeam)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    mysqli_close($db);
+    disconn_db();
     return $results[0]['id_club'];
 }
 
@@ -2051,7 +2051,7 @@ function removePlayerFromMyTeam($idPlayer)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity(getPlayerFullName($idPlayer) . " a ete supprime de l'equipe " . getTeamName($idTeam));
     return true;
 }
@@ -2071,7 +2071,7 @@ function removeTimeSlot($id)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     addActivity("Un créneau a été supprimé");
     return true;
 }
@@ -2128,7 +2128,7 @@ function insertPhoto($uploadfile, &$idPhoto)
         return false;
     }
     $idPhoto = mysqli_insert_id($db);
-    mysqli_close($db);
+    disconn_db();
     return true;
 }
 
@@ -2141,7 +2141,7 @@ function linkPlayerToPhoto($idPlayer, $idPhoto)
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     return true;
 }
 
@@ -2275,7 +2275,7 @@ function savePlayer()
         return false;
     }
     $newId = mysqli_insert_id($db);
-    mysqli_close($db);
+    disconn_db();
     if (empty($inputs['id'])) {
         if (!empty($inputs['id_team'])) {
             if ($newId > 0) {
@@ -2346,7 +2346,7 @@ function saveTimeSlot()
     if ($req === FALSE) {
         return false;
     }
-    mysqli_close($db);
+    disconn_db();
     $teamName = getTeamName($inputs['id_equipe']);
     if (empty($inputs['id'])) {
         $comment = "Creation d'un nouveau creneau pour l'équipe $teamName";
@@ -2392,7 +2392,7 @@ function saveProfile()
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -2559,7 +2559,7 @@ function saveUser()
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -2626,7 +2626,7 @@ function saveGymnasium()
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -2663,7 +2663,7 @@ function saveClub()
         $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
+    disconn_db();
     if ($req === FALSE) {
         return false;
     }
@@ -2705,11 +2705,13 @@ function saveTeam()
         $sql .= " WHERE id_equipe=" . $inputs['id_equipe'];
     }
     $req = mysqli_query($db, $sql);
-    mysqli_close($db);
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
     }
-    return true;
+    disconn_db();
+    return;
 }
 
 function saveMatch()
@@ -2756,10 +2758,10 @@ function saveMatch()
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         $message = mysqli_error($db);
-        mysqli_close($db);
+        disconn_db();
         throw new Exception($message);
     }
-    mysqli_close($db);
+    disconn_db();
     return;
 }
 
@@ -2796,10 +2798,10 @@ function saveDay()
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         $message = mysqli_error($db);
-        mysqli_close($db);
+        disconn_db();
         throw new Exception($message);
     }
-    mysqli_close($db);
+    disconn_db();
     return;
 }
 
@@ -2833,10 +2835,10 @@ function saveLimitDate()
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         $message = mysqli_error($db);
-        mysqli_close($db);
+        disconn_db();
         throw new Exception($message);
     }
-    mysqli_close($db);
+    disconn_db();
     return;
 }
 

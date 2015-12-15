@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.view.team.GridAlerts', {
     store: 'Alerts',
     autoScroll: true,
     viewConfig: {
-        getRowClass: function (record, rowIndex, rowParams, store) {
+        getRowClass: function (record) {
             if (record.get('criticity') === 'error') {
                 return 'grid-red';
             }

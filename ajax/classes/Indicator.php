@@ -20,7 +20,7 @@ class Indicator {
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        mysqli_close($db);
+        disconn_db();
         return $results;
     }
 

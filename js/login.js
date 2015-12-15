@@ -75,7 +75,7 @@ Ext.application({
                                         var form = this.up('form').getForm();
                                         if (form.isValid()) {
                                             form.submit({
-                                                success: function(form, action) {
+                                                success: function () {
                                                     location.reload();
                                                 },
                                                 failure: function(form, action) {

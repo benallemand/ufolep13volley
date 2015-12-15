@@ -162,7 +162,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     displayField: 'equipe',
                     valueField: 'equipe',
                     listeners: {
-                        change: function (combo, newVal, oldVal) {
+                        change: function (combo, newVal) {
                             var gridMatches = Ext.ComponentQuery.query('grid[title=Matches]')[0];
                             if (newVal === null) {
                                 gridMatches.getStore().clearFilter();

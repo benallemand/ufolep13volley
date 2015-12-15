@@ -61,7 +61,7 @@ Ext.define('Ufolep13Volley.controller.Menu', {
                         lng: long,
                         title: record.get('nom'),
                         listeners: {
-                            click: function (e) {
+                            click: function () {
                                 var markerInsance = this;
                                 var infowindow = new google.maps.InfoWindow({
                                     content: '<h3>Adresse : </h3>' + record.get('adresse') + '<br>' +

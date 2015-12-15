@@ -13,14 +13,14 @@ Ext.define('Ufolep13Volley.view.mobile.SearchTeam', {
                 if (newVal === '') {
                     var filtersAux = [];
                     var store = Ext.getStore('Phonebooks');
-                    Ext.Array.each(store.getFilters(), function(element, pos, array) {
+                    Ext.Array.each(store.getFilters(), function (element) {
                         if (element.getProperty() === 'nom_equipe') {
                             return true;
                         }
                         filtersAux.push(element);
                     });
                     store.clearFilter();
-                    Ext.Array.each(filtersAux, function(element, pos, array) {
+                    Ext.Array.each(filtersAux, function (element) {
                         store.filter(element.getProperty(), element.getValue());
                     });
                 }

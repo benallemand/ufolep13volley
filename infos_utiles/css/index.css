@@ -3,8 +3,7 @@
 	z-index: 1;
 	width: 939px;
 	min-height: 417.5281690140839px;
-	background-image: none;
-	background-color: #FFFFFF;
+	background: #FFFFFF none;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -32,17 +31,15 @@
 ._u133.f3s_top
 {
 	width: 87px;
-	background-image: url("../images/u133-sprite.png");
 	overflow: hidden;
 	height: 12px;
-	background-position: left top;
+	background: url("../images/u133-sprite.png") left top;
 }
 
 ._u133.f3s_mid
 {
-	background-image: url("../images/u133-sprite.png");
 	overflow: visible;
-	background-position: -87px top;
+	background: url("../images/u133-sprite.png") -87px top;
 	width: 87px;
 	height: 633px;
 }
@@ -50,10 +47,9 @@
 ._u133.f3s_bot
 {
 	width: 87px;
-	background-image: url("../images/u133-sprite.png");
 	overflow: visible;
 	height: 10px;
-	background-position: -174px top;
+	background: url("../images/u133-sprite.png") -174px top;
 }
 
 #pu123-4

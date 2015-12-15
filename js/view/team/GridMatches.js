@@ -19,7 +19,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
                         metaData.tdAttr = 'data-qtip="Match non renseigné de + de 10 jours!"';
-                        return '<span style="background-color:VioletRed;color:black">' + value + '</span>';
+                        return '<span style="background-color:#C71585;color:black">' + value + '</span>';
                     }
                     if (record.get('retard') === 2) {
                         metaData.tdAttr = 'data-qtip="Match non renseigné de + de 15 jours!"';

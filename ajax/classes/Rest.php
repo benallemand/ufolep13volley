@@ -84,7 +84,6 @@ class Rest {
 
     function saveData() {
         global $db;
-        $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
@@ -136,7 +135,6 @@ class Rest {
 
     function deleteData() {
         global $db;
-        $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
@@ -164,7 +162,6 @@ class Rest {
 
     function addData() {
         global $db;
-        $message = '';
         $dataJson = file_get_contents('php://input');
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
@@ -176,7 +173,6 @@ class Rest {
             )));
         }
         $sql = "INSERT INTO " . $this->fileName . " (";
-        $columns = json_decode($this->getColumns(), true);
         foreach ($dataArray as $key => $value) {
             if ($key === $primaryKey) {
                 continue;

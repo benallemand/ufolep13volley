@@ -16,7 +16,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Main', {
     login: function() {
         var form = this.getFormPanel();
         form.submit({
-            success: function(form, action) {
+            success: function () {
                 location.reload();
             },
             failure: function(form, action) {

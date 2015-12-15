@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
         store: 'MyPlayers',
         autoScroll: true,
         viewConfig: {
-            getRowClass: function (record, rowIndex, rowParams, store) {
+            getRowClass: function (record) {
                 if (record.get('est_actif') === false) {
                     return 'grid-red';
                 }

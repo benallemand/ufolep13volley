@@ -10,7 +10,7 @@ Ext.define('Ufolep13Volley.store.MyTeam', Sencha.storeCompatibility({
                 root: 'results'
             },
             listeners: {
-                exception: function(proxy, response, operation) {
+                exception: function (proxy, response) {
                     var responseJson = Ext.decode(response.responseText);
                     Ext.MessageBox.show({
                         title: 'Erreur',

@@ -6,7 +6,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
     selType: 'checkboxmodel',
     store: 'Players',
     viewConfig: {
-        getRowClass: function (record, rowIndex, rowParams, store) {
+        getRowClass: function (record) {
             if (record.get('est_actif') === false) {
                 return 'grid-red';
             }

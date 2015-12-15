@@ -54,7 +54,7 @@ Ext.define('Ufolep13Volley.view.team.ModifyPassword', {
                     var form = button.up('form').getForm();
                     if (form.isValid()) {
                         form.submit({
-                            success: function(form, action) {
+                            success: function () {
                                 window.location.reload();
                             },
                             failure: function(form, action) {

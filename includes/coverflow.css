@@ -6,8 +6,8 @@ div.coverflow-wrapper{
 }
 div.coverflow{
 	position: relative;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 }
 div.coverflow-item{
 	position: absolute;

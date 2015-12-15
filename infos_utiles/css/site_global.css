@@ -230,38 +230,32 @@ a.nontext /* used to override default properties of 'a' tag */
 
 .f9s_top_left, .f9s_bot_left /* 9-slice frame, left corner slice */
 {
-	background-repeat: no-repeat;
-	background-position: left;
+	background: no-repeat left;
 }
 
 .f9s_top_right, .f9s_bot_right /* 9-slice frame, right corner slice */
 {
-	background-repeat: no-repeat;
-	background-position: right;
+	background: no-repeat right;
 }
 
 .f9s_top_mid, .f9s_bot_mid /* 9-slice frame, top/bottom horizontal slice */
 {
-	background-repeat: repeat-x;
-	background-position: 0px 0px;
+	background: repeat-x 0px 0px;
 }
 
 .f9s_mid_left /* 9-slice frame, left vertical slice */
 {
-	background-repeat: repeat-y;
-	background-position: left;
+	background: repeat-y left;
 }
 
 .f9s_mid_right /* 9-slice frame, right vertical slice */
 {
-	background-repeat: repeat-y;
-	background-position: right;
+	background: repeat-y right;
 }
 
 .f9s_center /* 9-slice frame, center slice */
 {
-	background-repeat: repeat;
-	background-position: 0px 0px;
+	background: repeat 0px 0px;
 }
 
 .popup_anchor /* anchors an abspos popup */

@@ -14,7 +14,7 @@ Ext.application({
             }
         });
         var phonebooksStore = this.getPhonebooksStore();
-        phonebooksStore.load(function (store, records) {
+        phonebooksStore.load(function () {
             var competitions = Ext.Array.sort(phonebooksStore.collect('libelle_competition'));
             Ext.each(competitions, function (competition) {
                 var panelCompetition = Ext.create('Ext.panel.Panel', {
