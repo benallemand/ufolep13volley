@@ -97,7 +97,6 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Coupes',
-            hidden: true,
             scale: 'large',
             icon: 'images/cup.png',
             menu: [
@@ -155,13 +154,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
-                            text: 'Poule 11',
-                            href: 'coupe.php?d=11',
-                            hrefTarget: '_self'
-                        },
-                        {
                             text: 'Phase Finale',
-                            //hidden: true,
+                            hidden: true,
                             href: 'coupe_pf.php',
                             hrefTarget: '_self'
                         }
@@ -191,8 +185,13 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
+                            text: 'Poule 5',
+                            href: 'coupe_kh.php?d=5',
+                            hrefTarget: '_self'
+                        },
+                        {
                             text: 'Phase Finale',
-                            //hidden: true,
+                            hidden: true,
                             href: 'coupe_kf.php',
                             hrefTarget: '_self'
                         }
