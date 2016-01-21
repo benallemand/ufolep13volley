@@ -71,12 +71,16 @@ Ext.application({
                                 action: 'manageTeams'
                             },
                             {
-                                text: 'Gestion des matches',
-                                action: 'manageMatches'
-                            },
-                            {
                                 text: 'Gestion des journées',
                                 action: 'manageDays'
+                            },
+                            {
+                                text: 'Gestion des divisions/poules',
+                                action: 'manageRanks'
+                            },
+                            {
+                                text: 'Gestion des matches',
+                                action: 'manageMatches'
                             },
                             {
                                 text: 'Gestion des dates limites',
@@ -474,7 +478,6 @@ Ext.application({
         var initMenuAdmin = function () {
             var menuAdmin = Ext.ComponentQuery.query('panel[title=Navigation]')[0];
             var tableNames = [
-                'classements',
                 'competitions'
             ];
             menuAdmin.add({

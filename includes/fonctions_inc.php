@@ -150,6 +150,19 @@ function deleteMatches($ids)
     return true;
 }
 
+function deleteRanks($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM classements WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deleteDays($ids)
 {
     global $db;
@@ -637,7 +650,7 @@ function getConnectedUser()
 function sendMailSubmitResult($id1, $id2, $date)
 {
     $matchDate = DateTime::createFromFormat('Y-m-d', $date);
-    $headers =  'From: laurent.gorlier@ufolep13volley.org' . "\n";
+    $headers = 'From: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Cc: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Bcc: benallemand@gmail.com' . "\n";
@@ -963,6 +976,28 @@ function getRank($compet, $div)
         $data['matches_lost_by_forfeit_count'] = getMatchesLostByForfeitCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
         $rang++;
+    }
+    return json_encode(utf8_encode_mix($results));
+}
+
+function getRanks()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+      cl.id,
+      cl.code_competition,
+      co.libelle AS nom_competition,
+      cl.division,
+      cl.id_equipe,
+      e.nom_equipe
+      FROM classements cl
+      JOIN competitions co ON co.code_competition = cl.code_competition
+      JOIN equipes e ON e.id_equipe = cl.id_equipe";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
     }
     return json_encode(utf8_encode_mix($results));
 }
@@ -2754,6 +2789,46 @@ function saveMatch()
 
     } else {
         $sql .= " WHERE id_match=" . $inputs['id_match'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}
+
+function saveRank()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO ";
+    } else {
+        $sql = "UPDATE ";
+    }
+    $sql .= "classements SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+            case 'dirtyFields':
+                continue;
+            case 'id_equipe':
+                $sql .= "$key = $value,";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {

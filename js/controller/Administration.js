@@ -1,8 +1,58 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'Competitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates'],
-    models: ['Player', 'Club', 'Team', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid'],
+    stores: ['Players',
+        'Clubs',
+        'Teams',
+        'Competitions',
+        'Profiles',
+        'Users',
+        'Gymnasiums',
+        'Activity',
+        'WeekSchedule',
+        'AdminMatches',
+        'AdminDays',
+        'LimitDates',
+        'AdminRanks'],
+    models: ['Player',
+        'Club',
+        'Team',
+        'Competition',
+        'Profile',
+        'User',
+        'Gymnasium',
+        'Activity',
+        'WeekSchedule',
+        'Match',
+        'WeekDay',
+        'Day',
+        'LimitDate',
+        'Rank'
+    ],
+    views: ['player.Grid',
+        'player.Edit',
+        'club.Select',
+        'team.Select',
+        'team.Grid',
+        'team.Edit',
+        'match.AdminGrid',
+        'match.Edit',
+        'day.AdminGrid',
+        'day.Edit',
+        'limitdate.Grid',
+        'limitdate.Edit',
+        'profile.Grid',
+        'profile.Edit',
+        'profile.Select',
+        'user.Grid',
+        'user.Edit',
+        'gymnasium.Grid',
+        'gymnasium.Edit',
+        'club.Grid',
+        'club.Edit',
+        'activity.Grid',
+        'timeslot.WeekScheduleGrid',
+        'rank.AdminGrid',
+        'rank.Edit'],
     refs: [
         {
             ref: 'ImagePlayer',
@@ -35,6 +85,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'manageMatchesGrid',
             selector: 'matchesgrid'
+        },
+        {
+            ref: 'manageRanksGrid',
+            selector: 'rankgrid'
         },
         {
             ref: 'manageDaysGrid',
@@ -89,6 +143,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             selector: 'matchedit form'
         },
         {
+            ref: 'formPanelEditRank',
+            selector: 'rankedit form'
+        },
+        {
             ref: 'formPanelEditDay',
             selector: 'dayedit form'
         },
@@ -135,6 +193,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         {
             ref: 'windowEditMatch',
             selector: 'matchedit'
+        },
+        {
+            ref: 'windowEditRank',
+            selector: 'rankedit'
         },
         {
             ref: 'windowEditDay',
@@ -191,6 +253,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'matchesgrid button[action=add]': {
                     click: this.addMatch
                 },
+                'rankgrid button[action=add]': {
+                    click: this.addRank
+                },
                 'daysgrid button[action=add]': {
                     click: this.addDay
                 },
@@ -233,6 +298,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'matchesgrid button[action=delete]': {
                     click: this.deleteMatches
                 },
+                'rankgrid button[action=delete]': {
+                    click: this.deleteRanks
+                },
                 'daysgrid button[action=delete]': {
                     click: this.deleteDays
                 },
@@ -260,6 +328,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'matchesgrid': {
                     itemdblclick: this.editMatch
                 },
+                'rankgrid': {
+                    itemdblclick: this.editRank
+                },
                 'daysgrid': {
                     itemdblclick: this.editDay
                 },
@@ -286,6 +357,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'matchedit button[action=save]': {
                     click: this.updateMatch
+                },
+                'rankedit button[action=save]': {
+                    click: this.updateRank
                 },
                 'dayedit button[action=save]': {
                     click: this.updateDay
@@ -316,6 +390,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=manageMatches]': {
                     click: this.showMatchesGrid
+                },
+                'button[action=manageRanks]': {
+                    click: this.showRanksGrid
                 },
                 'button[action=manageDays]': {
                     click: this.showDaysGrid
@@ -516,6 +593,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('matchedit');
         this.getFormPanelEditMatch().loadRecord(record);
     },
+    editRank: function () {
+        var record = this.getManageRanksGrid().getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        Ext.widget('rankedit');
+        this.getFormPanelEditRank().loadRecord(record);
+    },
     editDay: function () {
         var record = this.getManageDaysGrid().getSelectionModel().getSelection()[0];
         if (!record) {
@@ -554,6 +639,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addMatch: function () {
         Ext.widget('matchedit');
+    },
+    addRank: function () {
+        Ext.widget('rankedit');
     },
     addDay: function () {
         Ext.widget('dayedit');
@@ -711,6 +799,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         me.getAdminMatchesStore().load();
+                    }
+                });
+            }
+        });
+    },
+    deleteRanks: function () {
+        var me = this;
+        var records = this.getManageRanksGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteRanks.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        me.getAdminRanksStore().load();
                     }
                 });
             }
@@ -977,6 +1096,30 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             });
         }
     },
+    updateRank: function () {
+        var thisController = this;
+        var form = this.getFormPanelEditRank().getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getAdminRanksStore().load();
+                    thisController.getWindowEditRank().close();
+                    thisController.getManageRanksGrid().getSelectionModel().deselectAll();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
     updateDay: function () {
         var thisController = this;
         var form = this.getFormPanelEditDay().getForm();
@@ -1076,6 +1219,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showMatchesGrid: function () {
         var tab = this.getMainPanel().add({
             xtype: 'matchesgrid'
+        });
+        this.getMainPanel().setActiveTab(tab);
+    },
+    showRanksGrid: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'rankgrid'
         });
         this.getMainPanel().setActiveTab(tab);
     },
