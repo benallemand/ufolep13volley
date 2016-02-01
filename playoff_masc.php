@@ -6,6 +6,11 @@ $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
 }
+$requires = array();
+$controllers = array();
+$controllers[] = "'GymnasiumsMap'";
+$controllers[] = "'Matches'";
+$controllers[] = "'Classement'";
 ?>
 
 <!DOCTYPE HTML>
@@ -28,6 +33,10 @@ if ($div == "") {
             var connectedUser = '<?php echo getConnectedUser(); ?>';
             var title = "Play Off <?php echo $div; ?> - Championnat Masculin";
             var limitDateLabel = "Date limite des matches : <?php getLimitDate("po"); ?>";
+        </script>
+        <script type="text/javascript">
+            var requires = [<?php echo implode(',', $requires); ?>];
+            var controllers = [<?php echo implode(',', $controllers); ?>];
         </script>
         <script type="text/javascript" src="js/championship.js"></script>
     </HEAD>

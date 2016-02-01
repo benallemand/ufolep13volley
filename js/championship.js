@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel',  'site.LimitDatePanel', 'site.ChampionshipPanel', 'rank.Grid', 'match.Grid'],
-    controllers: ['Matches', 'Classement'],
+    controllers: controllers,
     stores: ['Matches', 'Classement'],
     name: 'Ufolep13Volley',
     appFolder: 'js',

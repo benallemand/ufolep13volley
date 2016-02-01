@@ -1,11 +1,11 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel'],
-    controllers: ['Login'],
+    controllers: controllers,
     stores: [],
     name: 'Ufolep13Volley',
     appFolder: 'js',
-    launch: function() {
+    launch: function () {
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {
@@ -71,14 +71,14 @@ Ext.application({
                                 {
                                     text: 'Connexion',
                                     preventDefault: false,
-                                    handler: function() {
+                                    handler: function () {
                                         var form = this.up('form').getForm();
                                         if (form.isValid()) {
                                             form.submit({
                                                 success: function () {
                                                     location.reload();
                                                 },
-                                                failure: function(form, action) {
+                                                failure: function (form, action) {
                                                     Ext.Msg.alert('Erreur', action.result ? action.result.message : 'No response');
                                                 }
                                             });

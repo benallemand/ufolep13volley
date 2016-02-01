@@ -1,4 +1,9 @@
-<?php include("includes/fonctions_inc.php"); ?>
+<?php
+include("includes/fonctions_inc.php");
+$requires = array();
+$controllers = array();
+$controllers[] = "'GymnasiumsMap'";
+?>
 
 <!DOCTYPE HTML>
 
@@ -17,6 +22,10 @@
         <script type="text/javascript">
             var connectedUser = '<?php echo getConnectedUser(); ?>';
             var title = "Commission Départementale";
+        </script>
+        <script type="text/javascript">
+            var requires = [<?php echo implode(',', $requires); ?>];
+            var controllers = [<?php echo implode(',', $controllers); ?>];
         </script>
         <script type="text/javascript" src="js/commission.js"></script>
     </HEAD>
