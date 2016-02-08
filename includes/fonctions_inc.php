@@ -280,10 +280,7 @@ function login()
     $_SESSION['id_user'] = $data['id_user'];
     $_SESSION['profile_name'] = $data['profile_name'];
     disconn_db();
-    echo json_encode(utf8_encode_mix(array(
-        'success' => true,
-        'message' => 'Connexion OK'
-    )));
+    header("Location: " . $_SERVER['HTTP_REFERER']);
     return;
 }
 

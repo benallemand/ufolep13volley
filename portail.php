@@ -2,7 +2,6 @@
 include("includes/fonctions_inc.php");
 $requires = array();
 $controllers = array();
-session_start();
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     if (isAdmin()) {
         die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
@@ -36,7 +35,7 @@ if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
     <script type="text/javascript">
         var connectedUser = '<?php echo getConnectedUser(); ?>';
-        var title = "Portail Equipes";
+        var title = "Portail";
     </script>
     <script type="text/javascript">
         var requires = [<?php echo implode(',', $requires); ?>];
