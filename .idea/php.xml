@@ -5,7 +5,7 @@
       <BehatSettings behat_path="$PROJECT_DIR$" />
     </behat_settings>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="5.5.0" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings />

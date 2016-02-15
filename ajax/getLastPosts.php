@@ -29,7 +29,7 @@ foreach ($items as $item) {
     }
 }
 
-if(filter_input(INPUT_GET, 'callback') !== FALSE) {
+if(filter_input(INPUT_GET, 'callback') !== null) {
     echo filter_input(INPUT_GET, 'callback') . "(" . json_encode($json['items']) . ")";
 }
 else {
