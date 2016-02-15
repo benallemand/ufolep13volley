@@ -516,13 +516,13 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                     email = 'isoardi-ufolep13-volley@googlegroups.com';
                                     break;
                                 case 'kh':
-                                    if (division <= 3) {
-                                        email = 'p1a3-khanna-ufolep13-volley@googlegroups.com';
-                                    }
-                                    else if (division <= 6) {
-                                        email = 'p4a6-khanna-ufolep13-volley@googlegroups.com';
-                                    }
-                                    break;
+                                    //if (division <= 3) {
+                                    //    email = 'p1a3-khanna-ufolep13-volley@googlegroups.com';
+                                    //}
+                                    //else if (division <= 6) {
+                                    //    email = 'p4a6-khanna-ufolep13-volley@googlegroups.com';
+                                    //}
+                                    //break;
                                 case 'kf':
                                     email = 'khanna-ufolep13-volley@googlegroups.com';
                                     break;
