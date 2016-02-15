@@ -11,7 +11,8 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                     pack: 'center'
                 },
                 xtype: 'formpanel',
-                url: 'ajax/login.php',
+                standardSubmit: true,
+                url: 'login.php',
                 defaults: {
                     width: 400,
                     margin: 5,

@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.controller.mobile.Main', {
     config: {
         refs: {
             mainPanel: 'navigationview',
-            formPanel: 'formpanel[url=ajax/login.php]',
+            formPanel: 'formpanel[url=login.php]',
             loginButton: 'button[action=login]'
         },
         control: {

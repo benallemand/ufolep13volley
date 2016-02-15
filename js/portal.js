@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'team.GridMatches', 'team.FormDetails', 'team.GridAlerts'],
-    controllers: ['TeamManagement'],
+    controllers: controllers,
     stores: ['MyMatches', 'Alerts'],
     models: ['Match', 'Alert'],
     name: 'Ufolep13Volley',

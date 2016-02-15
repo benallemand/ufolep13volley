@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.PhonebookPanel'],
-    controllers: [],
+    controllers: controllers,
     stores: ['Phonebooks'],
     models: ['Phonebook'],
     name: 'Ufolep13Volley',

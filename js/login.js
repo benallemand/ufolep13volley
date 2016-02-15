@@ -1,11 +1,11 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel'],
-    controllers: ['Login'],
+    controllers: controllers,
     stores: [],
     name: 'Ufolep13Volley',
     appFolder: 'js',
-    launch: function() {
+    launch: function () {
         Ext.create('Ext.container.Viewport', {
             layout: 'fit',
             items: {
@@ -25,64 +25,40 @@ Ext.application({
                         items: {
                             width: '80%',
                             xtype: 'form',
+                            title: 'Connexion',
+                            layout: 'form',
+                            standardSubmit: true,
                             autoEl: {
                                 tag: 'form',
                                 method: 'POST',
-                                action: 'blank.html',
-                                target: 'submitTarget'
+                                action: 'login.php',
+                                target: 'submitButton',
+                                autocomplete: 'on'
                             },
-                            title: 'Connexion',
-                            layout: 'anchor',
-                            defaults: {
-                                anchor: '100%',
-                                margin: 10
-                            },
-                            url: 'ajax/login.php',
                             items: [
                                 {
                                     xtype: 'textfield',
                                     name: 'login',
                                     fieldLabel: 'Login',
-                                    allowBlank: false,
-                                    'inputAttrTpl': [
-                                        'autocomplete="on"'
-                                    ]
+                                    allowBlank: false
                                 },
                                 {
                                     xtype: 'textfield',
                                     name: 'password',
                                     fieldLabel: 'Mot de passe',
                                     inputType: 'password',
-                                    allowBlank: false,
-                                    'inputAttrTpl': [
-                                        'autocomplete="on"'
-                                    ]
+                                    allowBlank: false
                                 },
                                 {
                                     xtype: 'component',
-                                    html: '<iframe id="submitTarget" name="submitTarget" style="display:none"></iframe>'
-                                },
-                                {
-                                    xtype: 'component',
-                                    html: '<input type="submit" id="submitButton" style="display:none">'
+                                    html: '<input type="submit" id="submitButton" formtarget="_self" style="display:none">'
                                 }
                             ],
                             buttons: [
                                 {
                                     text: 'Connexion',
-                                    preventDefault: false,
-                                    handler: function() {
-                                        var form = this.up('form').getForm();
-                                        if (form.isValid()) {
-                                            form.submit({
-                                                success: function () {
-                                                    location.reload();
-                                                },
-                                                failure: function(form, action) {
-                                                    Ext.Msg.alert('Erreur', action.result ? action.result.message : 'No response');
-                                                }
-                                            });
-                                        }
+                                    handler: function () {
+                                        Ext.get('submitButton').dom.click();
                                     }
                                 },
                                 {

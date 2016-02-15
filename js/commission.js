@@ -1,7 +1,7 @@
 Ext.application({
     requires: ['Ext.panel.Panel'],
     views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'site.CommissionPanel'],
-    controllers: [],
+    controllers: controllers,
     stores: ['Commission'],
     models: ['Commission'],
     name: 'Ufolep13Volley',
