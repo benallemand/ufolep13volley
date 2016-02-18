@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/039-Add column has_time_constraint in creneau table.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/fonctions_inc.php" afterPath="$PROJECT_DIR$/includes/fonctions_inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/model/TimeSlot.js" afterPath="$PROJECT_DIR$/js/model/TimeSlot.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" afterPath="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/timeslot/Edit.js" afterPath="$PROJECT_DIR$/js/view/timeslot/Edit.js" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -104,7 +100,123 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="fonctions_inc.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.33246416">
+              <caret line="2370" column="20" selection-start-line="2370" selection-start-column="20" selection-end-line="2370" selection-end-column="20" />
+              <folding>
+                <marker date="1455798032026" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
+                <marker date="1455798032026" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
+                <marker date="1455798032026" expanded="true" signature="7792:9153" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455798032026" expanded="true" signature="10086:11416" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455798032026" expanded="true" signature="11745:11911" placeholder="SELECT DISTI... equipes" />
+                <marker date="1455798032026" expanded="true" signature="12243:13656" placeholder="SELECT DISTI... activity" />
+                <marker date="1455798032026" expanded="true" signature="16337:16431" placeholder="SELECT * FRO... matches" />
+                <marker date="1455798032026" expanded="true" signature="16969:17107" placeholder="SELECT j.ema... joueurs" />
+                <marker date="1455798032026" expanded="true" signature="17389:17460" placeholder="SELECT date_... dates_limite" />
+                <marker date="1455798032026" expanded="true" signature="17737:17813" placeholder="SELECT id_co... competitions" />
+                <marker date="1455798032026" expanded="true" signature="18115:18859" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="22710:22888" placeholder="SELECT REPLA... registry" />
+                <marker date="1455798032026" expanded="true" signature="25465:26106" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="28004:28144" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="28344:28484" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="28684:28800" placeholder="SELECT penal... classements" />
+                <marker date="1455798032026" expanded="true" signature="29039:29203" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="29405:29569" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="29771:29935" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="30137:30301" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="30503:30655" placeholder="SELECT SUM(s... matches" />
+                <marker date="1455798032026" expanded="true" signature="30890:31042" placeholder="SELECT SUM(s... matches" />
+                <marker date="1455798032026" expanded="true" signature="33497:34098" placeholder="UPDATE class... " />
+                <marker date="1455798032026" expanded="true" signature="34341:34487" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="34687:34833" placeholder="SELECT COUNT... matches" />
+                <marker date="1455798032026" expanded="true" signature="36498:36788" placeholder="SELECT cl.id... classements" />
+                <marker date="1455798032026" expanded="true" signature="37404:37529" placeholder="SELECT penal... classements" />
+                <marker date="1455798032026" expanded="true" signature="37829:37968" placeholder="UPDATE class... " />
+                <marker date="1455798032026" expanded="true" signature="38328:38453" placeholder="SELECT penal... classements" />
+                <marker date="1455798032026" expanded="true" signature="38807:38946" placeholder="UPDATE class... " />
+                <marker date="1455798032026" expanded="true" signature="39320:39427" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="39532:39728" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="40066:40138" placeholder="UPDATE match... " />
+                <marker date="1455798032026" expanded="true" signature="42114:42923" placeholder="UPDATE match... " />
+                <marker date="1455798032026" expanded="true" signature="43970:44043" placeholder="UPDATE equip... " />
+                <marker date="1455798032026" expanded="true" signature="44158:44236" placeholder="UPDATE equip... " />
+                <marker date="1455798032026" expanded="true" signature="45051:45139" placeholder="UPDATE compt... " />
+                <marker date="1455798032026" expanded="true" signature="45406:45468" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="46873:46941" placeholder="UPDATE match... " />
+                <marker date="1455798032026" expanded="true" signature="47143:48343" placeholder="SELECT m.id_... matches" />
+                <marker date="1455798032026" expanded="true" signature="49245:49505" placeholder="SELECT j.id,... journees" />
+                <marker date="1455798032026" expanded="true" signature="49836:50052" placeholder="SELECT d.id_... dates_limite" />
+                <marker date="1455798032026" expanded="true" signature="51153:52526" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455798032026" expanded="true" signature="53011:53145" placeholder="SELECT r.reg... registry" />
+                <marker date="1455798032026" expanded="true" signature="53816:53955" placeholder="UPDATE regis... " />
+                <marker date="1455798032026" expanded="true" signature="53987:54126" placeholder="INSERT INTO registry... " />
+                <marker date="1455798032026" expanded="true" signature="54344:54408" placeholder="SELECT COUNT... registry" />
+                <marker date="1455798032026" expanded="true" signature="54966:55807" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="57384:58115" placeholder="SELECT CONCA... joueurs" />
+                <marker date="1455798032026" expanded="true" signature="58444:58473" placeholder="SELECT id, n... profiles" />
+                <marker date="1455798032026" expanded="true" signature="58844:59026" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="59340:59426" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="60034:60092" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="60204:60286" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="60846:60908" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="61020:61106" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="61662:61719" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="61831:61912" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="62929:63004" placeholder="SELECT e.id_... equipes" />
+                <marker date="1455798032026" expanded="true" signature="63347:63408" placeholder="SELECT j.id_... joueurs" />
+                <marker date="1455798032026" expanded="true" signature="64225:64360" placeholder="SELECT CONCA... joueurs" />
+                <marker date="1455798032026" expanded="true" signature="64717:64803" placeholder="SELECT ca.lo... comptes_acces" />
+                <marker date="1455798032026" expanded="true" signature="65209:65340" placeholder="SELECT CONCA... equipes" />
+                <marker date="1455798032026" expanded="true" signature="65701:65827" placeholder="SELECT c.lib... competitions" />
+                <marker date="1455798032026" expanded="true" signature="66173:66252" placeholder="SELECT c.nom... clubs" />
+                <marker date="1455798032026" expanded="true" signature="66605:66691" placeholder="SELECT p.nam... profiles" />
+                <marker date="1455798032026" expanded="true" signature="67156:67217" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="67583:67642" placeholder="SELECT COUNT... users_profiles" />
+                <marker date="1455798032026" expanded="true" signature="68742:68820" placeholder="SELECT e.id_... equipes" />
+                <marker date="1455798032026" expanded="true" signature="69784:69854" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="70273:70304" placeholder="DELETE FROM " />
+                <marker date="1455798032026" expanded="true" signature="70691:71705" placeholder="SELECT c.nom... equipes" />
+                <marker date="1455798032026" expanded="true" signature="72117:72166" placeholder="INSERT INTO photos... " />
+                <marker date="1455798032026" expanded="true" signature="72428:72482" placeholder="UPDATE joueu... " />
+                <marker date="1455798032026" expanded="true" signature="73968:74040" placeholder="SELECT COUNT... joueurs" />
+                <marker date="1455798032026" expanded="true" signature="74416:74473" placeholder="SELECT COUNT... profiles" />
+                <marker date="1455798032026" expanded="true" signature="81189:81594" placeholder="SELECT ca.id... comptes_acces" />
+                <marker date="1455798032026" expanded="true" signature="81927:82393" placeholder="SELECT CONCA... creneau" />
+                <marker date="1455798032026" expanded="true" signature="82724:82950" placeholder="SELECT id, n... gymnase" />
+                <marker date="1455798032026" expanded="true" signature="83276:83348" placeholder="SELECT id, n... clubs" />
+                <marker date="1455798032026" expanded="true" signature="83681:83819" placeholder="SELECT id, c... competitions" />
+                <marker date="1455798032026" expanded="true" signature="93515:94082" placeholder="SELECT c.id,... creneau" />
+                <marker date="1455798032026" expanded="true" signature="94647:95096" placeholder="SELECT DATE_... activity" />
+                <marker date="1455798032026" expanded="true" signature="99017:99212" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="99600:99774" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="100572:100766" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="101152:101422" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="102290:102560" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="103333:103429" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="103814:103915" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="104297:104394" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="104777:104831" placeholder="SELECT COUNT... creneau" />
+                <marker date="1455798032026" expanded="true" signature="105230:105583" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455798032026" expanded="true" signature="105966:106299" placeholder="SELECT COUNT... joueur_equipe" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="PUSH_AUTO_UPDATE" value="true" />
@@ -253,6 +365,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -550,7 +676,13 @@
       <option name="project" value="LOCAL" />
       <updated>1455532637565</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="add has_time_constraint field in timeslot">
+      <created>1455793148524</created>
+      <option name="number" value="00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1455793148524</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -576,6 +708,7 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23187633" sideWeight="0.5011765" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26915708" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32535884" sideWeight="0.5025707" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2228145" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27272728" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -587,7 +720,6 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27272728" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -629,7 +761,8 @@
     <MESSAGE value="add useful informations" />
     <MESSAGE value="replace email for sending KH matches" />
     <MESSAGE value="fix callback management for jsonp usage" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix callback management for jsonp usage" />
+    <MESSAGE value="add has_time_constraint field in timeslot" />
+    <option name="LAST_COMMIT_MESSAGE" value="add has_time_constraint field in timeslot" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1014,113 +1147,113 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.065590315">
-          <caret line="1336" column="20" selection-start-line="1336" selection-start-column="20" selection-end-line="1336" selection-end-column="20" />
+        <state vertical-scroll-proportion="-0.33246416">
+          <caret line="2370" column="20" selection-start-line="2370" selection-start-column="20" selection-end-line="2370" selection-end-column="20" />
           <folding>
-            <marker date="1455790093304" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
-            <marker date="1455790093304" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
-            <marker date="1455790093304" expanded="true" signature="7792:9153" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455790093304" expanded="true" signature="10086:11416" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455790093304" expanded="true" signature="11745:11911" placeholder="SELECT DISTI... equipes" />
-            <marker date="1455790093304" expanded="true" signature="12243:13656" placeholder="SELECT DISTI... activity" />
-            <marker date="1455790093304" expanded="true" signature="16337:16431" placeholder="SELECT * FRO... matches" />
-            <marker date="1455790093304" expanded="true" signature="16969:17107" placeholder="SELECT j.ema... joueurs" />
-            <marker date="1455790093304" expanded="true" signature="17389:17460" placeholder="SELECT date_... dates_limite" />
-            <marker date="1455790093304" expanded="true" signature="17737:17813" placeholder="SELECT id_co... competitions" />
-            <marker date="1455790093304" expanded="true" signature="18115:18859" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="22710:22888" placeholder="SELECT REPLA... registry" />
-            <marker date="1455790093304" expanded="true" signature="25465:26106" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="28004:28144" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="28344:28484" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="28684:28800" placeholder="SELECT penal... classements" />
-            <marker date="1455790093304" expanded="true" signature="29039:29203" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="29405:29569" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="29771:29935" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="30137:30301" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="30503:30655" placeholder="SELECT SUM(s... matches" />
-            <marker date="1455790093304" expanded="true" signature="30890:31042" placeholder="SELECT SUM(s... matches" />
-            <marker date="1455790093304" expanded="true" signature="33497:34098" placeholder="UPDATE class... " />
-            <marker date="1455790093304" expanded="true" signature="34341:34487" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="34687:34833" placeholder="SELECT COUNT... matches" />
-            <marker date="1455790093304" expanded="true" signature="36498:36788" placeholder="SELECT cl.id... classements" />
-            <marker date="1455790093304" expanded="true" signature="37404:37529" placeholder="SELECT penal... classements" />
-            <marker date="1455790093304" expanded="true" signature="37829:37968" placeholder="UPDATE class... " />
-            <marker date="1455790093304" expanded="true" signature="38328:38453" placeholder="SELECT penal... classements" />
-            <marker date="1455790093304" expanded="true" signature="38807:38946" placeholder="UPDATE class... " />
-            <marker date="1455790093304" expanded="true" signature="39320:39427" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="39532:39728" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="40066:40138" placeholder="UPDATE match... " />
-            <marker date="1455790093304" expanded="true" signature="42114:42923" placeholder="UPDATE match... " />
-            <marker date="1455790093304" expanded="true" signature="43970:44043" placeholder="UPDATE equip... " />
-            <marker date="1455790093304" expanded="true" signature="44158:44236" placeholder="UPDATE equip... " />
-            <marker date="1455790093304" expanded="true" signature="45051:45139" placeholder="UPDATE compt... " />
-            <marker date="1455790093304" expanded="true" signature="45406:45468" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="46873:46941" placeholder="UPDATE match... " />
-            <marker date="1455790093304" expanded="true" signature="47143:48343" placeholder="SELECT m.id_... matches" />
-            <marker date="1455790093304" expanded="true" signature="49245:49505" placeholder="SELECT j.id,... journees" />
-            <marker date="1455790093304" expanded="true" signature="49836:50052" placeholder="SELECT d.id_... dates_limite" />
-            <marker date="1455790093304" expanded="true" signature="51153:52526" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455790093304" expanded="true" signature="53011:53145" placeholder="SELECT r.reg... registry" />
-            <marker date="1455790093304" expanded="true" signature="53816:53955" placeholder="UPDATE regis... " />
-            <marker date="1455790093304" expanded="true" signature="53987:54126" placeholder="INSERT INTO registry... " />
-            <marker date="1455790093304" expanded="true" signature="54344:54408" placeholder="SELECT COUNT... registry" />
-            <marker date="1455790093304" expanded="true" signature="54966:55807" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="57384:58115" placeholder="SELECT CONCA... joueurs" />
-            <marker date="1455790093304" expanded="true" signature="58444:58473" placeholder="SELECT id, n... profiles" />
-            <marker date="1455790093304" expanded="true" signature="58844:59026" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="59340:59426" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="60034:60092" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="60204:60286" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="60846:60908" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="61020:61106" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="61662:61719" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="61831:61912" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="62929:63004" placeholder="SELECT e.id_... equipes" />
-            <marker date="1455790093304" expanded="true" signature="63347:63408" placeholder="SELECT j.id_... joueurs" />
-            <marker date="1455790093304" expanded="true" signature="64225:64360" placeholder="SELECT CONCA... joueurs" />
-            <marker date="1455790093304" expanded="true" signature="64717:64803" placeholder="SELECT ca.lo... comptes_acces" />
-            <marker date="1455790093304" expanded="true" signature="65209:65340" placeholder="SELECT CONCA... equipes" />
-            <marker date="1455790093304" expanded="true" signature="65701:65827" placeholder="SELECT c.lib... competitions" />
-            <marker date="1455790093304" expanded="true" signature="66173:66252" placeholder="SELECT c.nom... clubs" />
-            <marker date="1455790093304" expanded="true" signature="66605:66691" placeholder="SELECT p.nam... profiles" />
-            <marker date="1455790093304" expanded="true" signature="67156:67217" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="67583:67642" placeholder="SELECT COUNT... users_profiles" />
-            <marker date="1455790093304" expanded="true" signature="68742:68820" placeholder="SELECT e.id_... equipes" />
-            <marker date="1455790093304" expanded="true" signature="69784:69854" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="70273:70304" placeholder="DELETE FROM " />
-            <marker date="1455790093304" expanded="true" signature="70691:71705" placeholder="SELECT c.nom... equipes" />
-            <marker date="1455790093304" expanded="true" signature="72117:72166" placeholder="INSERT INTO photos... " />
-            <marker date="1455790093304" expanded="true" signature="72428:72482" placeholder="UPDATE joueu... " />
-            <marker date="1455790093304" expanded="true" signature="73968:74040" placeholder="SELECT COUNT... joueurs" />
-            <marker date="1455790093304" expanded="true" signature="74416:74473" placeholder="SELECT COUNT... profiles" />
-            <marker date="1455790093304" expanded="true" signature="80954:81359" placeholder="SELECT ca.id... comptes_acces" />
-            <marker date="1455790093304" expanded="true" signature="81692:82158" placeholder="SELECT CONCA... creneau" />
-            <marker date="1455790093304" expanded="true" signature="82489:82715" placeholder="SELECT id, n... gymnase" />
-            <marker date="1455790093304" expanded="true" signature="83041:83113" placeholder="SELECT id, n... clubs" />
-            <marker date="1455790093304" expanded="true" signature="83446:83584" placeholder="SELECT id, c... competitions" />
-            <marker date="1455790093304" expanded="true" signature="93280:93847" placeholder="SELECT c.id,... creneau" />
-            <marker date="1455790093304" expanded="true" signature="94412:94861" placeholder="SELECT DATE_... activity" />
-            <marker date="1455790093304" expanded="true" signature="98782:98977" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="99365:99539" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="100337:100531" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="100917:101187" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="102055:102325" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="103098:103194" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="103579:103680" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="104062:104159" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="104542:104596" placeholder="SELECT COUNT... creneau" />
-            <marker date="1455790093304" expanded="true" signature="104995:105348" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455790093304" expanded="true" signature="105731:106064" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
+            <marker date="1455798032026" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
+            <marker date="1455798032026" expanded="true" signature="7792:9153" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455798032026" expanded="true" signature="10086:11416" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455798032026" expanded="true" signature="11745:11911" placeholder="SELECT DISTI... equipes" />
+            <marker date="1455798032026" expanded="true" signature="12243:13656" placeholder="SELECT DISTI... activity" />
+            <marker date="1455798032026" expanded="true" signature="16337:16431" placeholder="SELECT * FRO... matches" />
+            <marker date="1455798032026" expanded="true" signature="16969:17107" placeholder="SELECT j.ema... joueurs" />
+            <marker date="1455798032026" expanded="true" signature="17389:17460" placeholder="SELECT date_... dates_limite" />
+            <marker date="1455798032026" expanded="true" signature="17737:17813" placeholder="SELECT id_co... competitions" />
+            <marker date="1455798032026" expanded="true" signature="18115:18859" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="22710:22888" placeholder="SELECT REPLA... registry" />
+            <marker date="1455798032026" expanded="true" signature="25465:26106" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="28004:28144" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="28344:28484" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="28684:28800" placeholder="SELECT penal... classements" />
+            <marker date="1455798032026" expanded="true" signature="29039:29203" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="29405:29569" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="29771:29935" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="30137:30301" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="30503:30655" placeholder="SELECT SUM(s... matches" />
+            <marker date="1455798032026" expanded="true" signature="30890:31042" placeholder="SELECT SUM(s... matches" />
+            <marker date="1455798032026" expanded="true" signature="33497:34098" placeholder="UPDATE class... " />
+            <marker date="1455798032026" expanded="true" signature="34341:34487" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="34687:34833" placeholder="SELECT COUNT... matches" />
+            <marker date="1455798032026" expanded="true" signature="36498:36788" placeholder="SELECT cl.id... classements" />
+            <marker date="1455798032026" expanded="true" signature="37404:37529" placeholder="SELECT penal... classements" />
+            <marker date="1455798032026" expanded="true" signature="37829:37968" placeholder="UPDATE class... " />
+            <marker date="1455798032026" expanded="true" signature="38328:38453" placeholder="SELECT penal... classements" />
+            <marker date="1455798032026" expanded="true" signature="38807:38946" placeholder="UPDATE class... " />
+            <marker date="1455798032026" expanded="true" signature="39320:39427" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="39532:39728" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="40066:40138" placeholder="UPDATE match... " />
+            <marker date="1455798032026" expanded="true" signature="42114:42923" placeholder="UPDATE match... " />
+            <marker date="1455798032026" expanded="true" signature="43970:44043" placeholder="UPDATE equip... " />
+            <marker date="1455798032026" expanded="true" signature="44158:44236" placeholder="UPDATE equip... " />
+            <marker date="1455798032026" expanded="true" signature="45051:45139" placeholder="UPDATE compt... " />
+            <marker date="1455798032026" expanded="true" signature="45406:45468" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="46873:46941" placeholder="UPDATE match... " />
+            <marker date="1455798032026" expanded="true" signature="47143:48343" placeholder="SELECT m.id_... matches" />
+            <marker date="1455798032026" expanded="true" signature="49245:49505" placeholder="SELECT j.id,... journees" />
+            <marker date="1455798032026" expanded="true" signature="49836:50052" placeholder="SELECT d.id_... dates_limite" />
+            <marker date="1455798032026" expanded="true" signature="51153:52526" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455798032026" expanded="true" signature="53011:53145" placeholder="SELECT r.reg... registry" />
+            <marker date="1455798032026" expanded="true" signature="53816:53955" placeholder="UPDATE regis... " />
+            <marker date="1455798032026" expanded="true" signature="53987:54126" placeholder="INSERT INTO registry... " />
+            <marker date="1455798032026" expanded="true" signature="54344:54408" placeholder="SELECT COUNT... registry" />
+            <marker date="1455798032026" expanded="true" signature="54966:55807" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="57384:58115" placeholder="SELECT CONCA... joueurs" />
+            <marker date="1455798032026" expanded="true" signature="58444:58473" placeholder="SELECT id, n... profiles" />
+            <marker date="1455798032026" expanded="true" signature="58844:59026" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="59340:59426" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="60034:60092" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="60204:60286" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="60846:60908" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="61020:61106" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="61662:61719" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="61831:61912" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="62929:63004" placeholder="SELECT e.id_... equipes" />
+            <marker date="1455798032026" expanded="true" signature="63347:63408" placeholder="SELECT j.id_... joueurs" />
+            <marker date="1455798032026" expanded="true" signature="64225:64360" placeholder="SELECT CONCA... joueurs" />
+            <marker date="1455798032026" expanded="true" signature="64717:64803" placeholder="SELECT ca.lo... comptes_acces" />
+            <marker date="1455798032026" expanded="true" signature="65209:65340" placeholder="SELECT CONCA... equipes" />
+            <marker date="1455798032026" expanded="true" signature="65701:65827" placeholder="SELECT c.lib... competitions" />
+            <marker date="1455798032026" expanded="true" signature="66173:66252" placeholder="SELECT c.nom... clubs" />
+            <marker date="1455798032026" expanded="true" signature="66605:66691" placeholder="SELECT p.nam... profiles" />
+            <marker date="1455798032026" expanded="true" signature="67156:67217" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="67583:67642" placeholder="SELECT COUNT... users_profiles" />
+            <marker date="1455798032026" expanded="true" signature="68742:68820" placeholder="SELECT e.id_... equipes" />
+            <marker date="1455798032026" expanded="true" signature="69784:69854" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="70273:70304" placeholder="DELETE FROM " />
+            <marker date="1455798032026" expanded="true" signature="70691:71705" placeholder="SELECT c.nom... equipes" />
+            <marker date="1455798032026" expanded="true" signature="72117:72166" placeholder="INSERT INTO photos... " />
+            <marker date="1455798032026" expanded="true" signature="72428:72482" placeholder="UPDATE joueu... " />
+            <marker date="1455798032026" expanded="true" signature="73968:74040" placeholder="SELECT COUNT... joueurs" />
+            <marker date="1455798032026" expanded="true" signature="74416:74473" placeholder="SELECT COUNT... profiles" />
+            <marker date="1455798032026" expanded="true" signature="81189:81594" placeholder="SELECT ca.id... comptes_acces" />
+            <marker date="1455798032026" expanded="true" signature="81927:82393" placeholder="SELECT CONCA... creneau" />
+            <marker date="1455798032026" expanded="true" signature="82724:82950" placeholder="SELECT id, n... gymnase" />
+            <marker date="1455798032026" expanded="true" signature="83276:83348" placeholder="SELECT id, n... clubs" />
+            <marker date="1455798032026" expanded="true" signature="83681:83819" placeholder="SELECT id, c... competitions" />
+            <marker date="1455798032026" expanded="true" signature="93515:94082" placeholder="SELECT c.id,... creneau" />
+            <marker date="1455798032026" expanded="true" signature="94647:95096" placeholder="SELECT DATE_... activity" />
+            <marker date="1455798032026" expanded="true" signature="99017:99212" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="99600:99774" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="100572:100766" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="101152:101422" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="102290:102560" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="103333:103429" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="103814:103915" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="104297:104394" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="104777:104831" placeholder="SELECT COUNT... creneau" />
+            <marker date="1455798032026" expanded="true" signature="105230:105583" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455798032026" expanded="true" signature="105966:106299" placeholder="SELECT COUNT... joueur_equipe" />
           </folding>
         </state>
       </provider>
