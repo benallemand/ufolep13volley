@@ -16,6 +16,13 @@ Ext.define('Ufolep13Volley.model.TimeSlot', Sencha.modelCompatibility({
         'jour',
         'heure',
         'team_full_name',
-        'gymnasium_full_name'
+        'gymnasium_full_name',
+        {
+            name: 'has_time_constraint',
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
+        }
     ]
 }));

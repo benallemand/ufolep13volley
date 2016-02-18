@@ -27,6 +27,16 @@ Ext.define('Ufolep13Volley.view.team.TimeSlotsManage', {
                     header: 'Heure',
                     dataIndex: 'heure',
                     width: 80
+                },
+                {
+                    header: 'Contrainte horaire',
+                    dataIndex: 'has_time_constraint',
+                    xtype: 'checkcolumn',
+                    listeners: {
+                        beforecheckchange: function () {
+                            return false;
+                        }
+                    }
                 }
             ]
         },

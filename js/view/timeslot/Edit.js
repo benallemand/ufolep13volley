@@ -65,6 +65,13 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
                 increment: 15,
                 allowBlank: false,
                 msgTarget: 'under'
+            },
+            {
+                name: 'has_time_constraint',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Contrainte horaire forte ?',
+                boxLabel: 'Oui',
+                msgTarget: 'under'
             }
         ],
         buttons: [
@@ -76,7 +83,7 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function() {
+                handler: function () {
                     this.up('window').close();
                 }
             }
