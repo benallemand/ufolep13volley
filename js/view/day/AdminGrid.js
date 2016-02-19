@@ -12,10 +12,6 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
                 dataIndex: 'libelle_competition'
             },
             {
-                header: 'Division',
-                dataIndex: 'division'
-            },
-            {
                 header: 'Numéro',
                 dataIndex: 'numero'
             },
