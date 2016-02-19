@@ -7,3 +7,4 @@ SET FOREIGN_KEY_CHECKS=1;
 UPDATE matches m
   JOIN journees j ON m.code_competition = j.code_competition AND m.journee = j.numero
 SET m.id_journee = j.id;
+ALTER TABLE matches DROP COLUMN journee;

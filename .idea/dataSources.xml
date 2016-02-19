@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="892827497">
+  <component name="DataSourceManagerImpl" format="xml" hash="523976953">
     <data-source source="LOCAL" name="MySQL - ufolep_13volley@clustermysql05.hosteur.com" uuid="215623a2-f798-40cc-84cf-74df731177f7">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -14,11 +14,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="MySQL - ufolep_13volley_DEV@clustermysql05.hosteur.com" uuid="fb4a1cda-d5a7-41bb-8d3a-195bb1d370b2">
+    <data-source source="LOCAL" name="MySQL - ufolep dev" uuid="2ba3cebe-98b2-469f-a1db-0d9e897f2edf">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://clustermysql05.hosteur.com:3306/ufolep_13volley_DEV</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/ufolep_13volley</jdbc-url>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />
