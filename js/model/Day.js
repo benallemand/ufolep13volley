@@ -14,10 +14,6 @@ Ext.define('Ufolep13Volley.model.Day', Sencha.modelCompatibility({
             type: 'string'
         },
         {
-            name: 'division',
-            type: 'string'
-        },
-        {
             name: 'numero',
             type: 'int'
         },

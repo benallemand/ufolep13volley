@@ -1378,7 +1378,6 @@ function getDays()
         j.id,
         j.code_competition,
         c.libelle AS libelle_competition,
-        j.division,
         j.numero,
         j.nommage,
         j.libelle
