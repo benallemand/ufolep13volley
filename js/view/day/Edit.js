@@ -33,13 +33,6 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
                 allowBlank: false
             },
             {
-                xtype: 'hidden',
-                fieldLabel: 'Division',
-                name: 'division',
-                allowBlank: false,
-                value: '1'
-            },
-            {
                 xtype: 'numberfield',
                 fieldLabel: 'Numéro',
                 name: 'numero',
