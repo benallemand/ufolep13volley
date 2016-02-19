@@ -4,11 +4,9 @@
     <option name="SCOPE_TYPE" value="2" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="drop column division from journees">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
+    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/041-alter table matches add journees foreign key.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/day/AdminGrid.js" afterPath="$PROJECT_DIR$/js/view/day/AdminGrid.js" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -74,6 +72,24 @@
         <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$GroupNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
+        <option name="myItemId" value="matches" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="MySQL - ufolep_13volley@clustermysql05.hosteur.com" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$GroupNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
         <option name="myItemId" value="journees" />
         <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
       </PATH_ELEMENT>
@@ -85,11 +101,136 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AdminGrid.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/view/day/AdminGrid.js">
+      <file leaf-file-name="saveMatch.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ajax/saveMatch.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4412214">
-              <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+            <state vertical-scroll-proportion="-3.2692308">
+              <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fonctions_inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.653846">
+              <caret line="2772" column="25" selection-start-line="2772" selection-start-column="25" selection-end-line="2772" selection-end-column="25" />
+              <folding>
+                <marker date="1455878417192" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
+                <marker date="1455878417192" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
+                <marker date="1455878417192" expanded="true" signature="7792:9220" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455878417192" expanded="true" signature="10153:11550" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455878417192" expanded="true" signature="11879:12045" placeholder="SELECT DISTI... equipes" />
+                <marker date="1455878417192" expanded="true" signature="12377:13790" placeholder="SELECT DISTI... activity" />
+                <marker date="1455878417192" expanded="true" signature="16471:16565" placeholder="SELECT * FRO... matches" />
+                <marker date="1455878417192" expanded="true" signature="17103:17241" placeholder="SELECT j.ema... joueurs" />
+                <marker date="1455878417192" expanded="true" signature="17523:17594" placeholder="SELECT date_... dates_limite" />
+                <marker date="1455878417192" expanded="true" signature="17871:17947" placeholder="SELECT id_co... competitions" />
+                <marker date="1455878417192" expanded="true" signature="18249:18993" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="22844:23022" placeholder="SELECT REPLA... registry" />
+                <marker date="1455878417192" expanded="true" signature="25599:26240" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="28138:28278" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="28478:28618" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="28818:28934" placeholder="SELECT penal... classements" />
+                <marker date="1455878417192" expanded="true" signature="29173:29337" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="29539:29703" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="29905:30069" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="30271:30435" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="30637:30789" placeholder="SELECT SUM(s... matches" />
+                <marker date="1455878417192" expanded="true" signature="31024:31176" placeholder="SELECT SUM(s... matches" />
+                <marker date="1455878417192" expanded="true" signature="33631:34232" placeholder="UPDATE class... " />
+                <marker date="1455878417192" expanded="true" signature="34475:34621" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="34821:34967" placeholder="SELECT COUNT... matches" />
+                <marker date="1455878417192" expanded="true" signature="36632:36922" placeholder="SELECT cl.id... classements" />
+                <marker date="1455878417192" expanded="true" signature="37538:37663" placeholder="SELECT penal... classements" />
+                <marker date="1455878417192" expanded="true" signature="37963:38102" placeholder="UPDATE class... " />
+                <marker date="1455878417192" expanded="true" signature="38462:38587" placeholder="SELECT penal... classements" />
+                <marker date="1455878417192" expanded="true" signature="38941:39080" placeholder="UPDATE class... " />
+                <marker date="1455878417192" expanded="true" signature="39454:39561" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="39666:39862" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="40200:40272" placeholder="UPDATE match... " />
+                <marker date="1455878417192" expanded="true" signature="42248:43057" placeholder="UPDATE match... " />
+                <marker date="1455878417192" expanded="true" signature="44104:44177" placeholder="UPDATE equip... " />
+                <marker date="1455878417192" expanded="true" signature="44292:44370" placeholder="UPDATE equip... " />
+                <marker date="1455878417192" expanded="true" signature="45185:45273" placeholder="UPDATE compt... " />
+                <marker date="1455878417192" expanded="true" signature="45540:45602" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="47007:47075" placeholder="UPDATE match... " />
+                <marker date="1455878417192" expanded="true" signature="47277:48477" placeholder="SELECT m.id_... matches" />
+                <marker date="1455878417192" expanded="true" signature="49379:49619" placeholder="SELECT j.id,... journees" />
+                <marker date="1455878417192" expanded="true" signature="49950:50166" placeholder="SELECT d.id_... dates_limite" />
+                <marker date="1455878417192" expanded="true" signature="51267:52707" placeholder="SELECT e.cod... equipes" />
+                <marker date="1455878417192" expanded="true" signature="53192:53326" placeholder="SELECT r.reg... registry" />
+                <marker date="1455878417192" expanded="true" signature="53997:54136" placeholder="UPDATE regis... " />
+                <marker date="1455878417192" expanded="true" signature="54168:54307" placeholder="INSERT INTO registry... " />
+                <marker date="1455878417192" expanded="true" signature="54525:54589" placeholder="SELECT COUNT... registry" />
+                <marker date="1455878417192" expanded="true" signature="55147:55988" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="57565:58296" placeholder="SELECT CONCA... joueurs" />
+                <marker date="1455878417192" expanded="true" signature="58625:58654" placeholder="SELECT id, n... profiles" />
+                <marker date="1455878417192" expanded="true" signature="59025:59207" placeholder="SELECT CONCA... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="59521:59607" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="60215:60273" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="60385:60467" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="61027:61089" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="61201:61287" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="61843:61900" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="62012:62093" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="63110:63185" placeholder="SELECT e.id_... equipes" />
+                <marker date="1455878417192" expanded="true" signature="63528:63589" placeholder="SELECT j.id_... joueurs" />
+                <marker date="1455878417192" expanded="true" signature="64406:64541" placeholder="SELECT CONCA... joueurs" />
+                <marker date="1455878417192" expanded="true" signature="64898:64984" placeholder="SELECT ca.lo... comptes_acces" />
+                <marker date="1455878417192" expanded="true" signature="65390:65521" placeholder="SELECT CONCA... equipes" />
+                <marker date="1455878417192" expanded="true" signature="65882:66008" placeholder="SELECT c.lib... competitions" />
+                <marker date="1455878417192" expanded="true" signature="66354:66433" placeholder="SELECT c.nom... clubs" />
+                <marker date="1455878417192" expanded="true" signature="66786:66872" placeholder="SELECT p.nam... profiles" />
+                <marker date="1455878417192" expanded="true" signature="67337:67398" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="67764:67823" placeholder="SELECT COUNT... users_profiles" />
+                <marker date="1455878417192" expanded="true" signature="68923:69001" placeholder="SELECT e.id_... equipes" />
+                <marker date="1455878417192" expanded="true" signature="69965:70035" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="70454:70485" placeholder="DELETE FROM " />
+                <marker date="1455878417192" expanded="true" signature="70872:71886" placeholder="SELECT c.nom... equipes" />
+                <marker date="1455878417192" expanded="true" signature="72298:72347" placeholder="INSERT INTO photos... " />
+                <marker date="1455878417192" expanded="true" signature="72609:72663" placeholder="UPDATE joueu... " />
+                <marker date="1455878417192" expanded="true" signature="74149:74221" placeholder="SELECT COUNT... joueurs" />
+                <marker date="1455878417192" expanded="true" signature="74597:74654" placeholder="SELECT COUNT... profiles" />
+                <marker date="1455878417192" expanded="true" signature="81370:81775" placeholder="SELECT ca.id... comptes_acces" />
+                <marker date="1455878417192" expanded="true" signature="82108:82574" placeholder="SELECT CONCA... creneau" />
+                <marker date="1455878417192" expanded="true" signature="82905:83131" placeholder="SELECT id, n... gymnase" />
+                <marker date="1455878417192" expanded="true" signature="83457:83529" placeholder="SELECT id, n... clubs" />
+                <marker date="1455878417192" expanded="true" signature="83862:84000" placeholder="SELECT id, c... competitions" />
+                <marker date="1455878417192" expanded="true" signature="93696:94263" placeholder="SELECT c.id,... creneau" />
+                <marker date="1455878417192" expanded="true" signature="94828:95277" placeholder="SELECT DATE_... activity" />
+                <marker date="1455878417192" expanded="true" signature="99198:99393" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="99781:99955" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="100753:100947" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="101333:101603" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="102471:102741" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="103514:103610" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="103995:104096" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="104478:104575" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="104958:105012" placeholder="SELECT COUNT... creneau" />
+                <marker date="1455878417192" expanded="true" signature="105411:105764" placeholder="SELECT COUNT... joueur_equipe" />
+                <marker date="1455878417192" expanded="true" signature="106147:106480" placeholder="SELECT COUNT... joueur_equipe" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="041-alter table matches add journees foreign key.sql" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/nbproject/sql/041-alter table matches add journees foreign key.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.051908396">
+              <caret line="2" column="42" selection-start-line="2" selection-start-column="35" selection-end-line="2" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -111,8 +252,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/includes/coverflow.css" />
-        <option value="$PROJECT_DIR$/infos_utiles/css/index.css" />
         <option value="$PROJECT_DIR$/js/view/site/ChampionshipPanel.js" />
         <option value="$PROJECT_DIR$/js/controller/Menu.js" />
         <option value="$PROJECT_DIR$/js/controller/mobile/Teams.js" />
@@ -162,6 +301,8 @@
         <option value="$PROJECT_DIR$/js/model/Day.js" />
         <option value="$PROJECT_DIR$/nbproject/sql/040-Drop column division in journees table.sql" />
         <option value="$PROJECT_DIR$/js/view/day/AdminGrid.js" />
+        <option value="$PROJECT_DIR$/js/view/day/Edit.js" />
+        <option value="$PROJECT_DIR$/nbproject/sql/041-alter table matches add journees foreign key.sql" />
       </list>
     </option>
   </component>
@@ -266,7 +407,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
+              <option name="myItemId" value="nbproject" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -280,11 +421,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
+              <option name="myItemId" value="nbproject" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="view" />
+              <option name="myItemId" value="sql" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -298,15 +439,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="view" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="day" />
+              <option name="myItemId" value="ajax" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -638,7 +771,19 @@
       <option name="project" value="LOCAL" />
       <updated>1455878536609</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="drop column division from journees">
+      <created>1455887491460</created>
+      <option name="number" value="00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1455887491460</updated>
+    </task>
+    <task id="LOCAL-00038" summary="drop column division from journees">
+      <created>1455887662259</created>
+      <option name="number" value="00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1455887662259</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -664,15 +809,16 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24093817" sideWeight="0.7144949" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26889953" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32535884" sideWeight="0.5025707" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2228145" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5167464" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3464115" sideWeight="0.4974293" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24093817" sideWeight="0.28550512" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -681,7 +827,6 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32535884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5167464" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27272728" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -733,48 +878,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/administration.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16262482">
-          <caret line="78" column="52" selection-start-line="78" selection-start-column="41" selection-end-line="78" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/rank/AdminGrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25616437">
-          <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/rank/Edit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.04657534">
-          <caret line="2" column="27" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/saveRank.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12073863">
-          <caret line="5" column="12" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/saveMatch.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12073863">
-          <caret line="5" column="7" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/deleteRanks.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.14488636">
-          <caret line="6" column="22" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.496">
@@ -1053,13 +1156,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21090047">
-          <caret line="1377" column="13" selection-start-line="1377" selection-start-column="13" selection-end-line="1377" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/store/AdminDays.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1088,10 +1184,171 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/day/Edit.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.0641221">
+          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/saveDay.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13513513">
+          <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/view/day/AdminGrid.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4412214">
           <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/saveMatch.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/034-alter matches table and populate days.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.5053435">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/032-alter tables with new informations.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5702306">
+          <caret line="49" column="9" selection-start-line="49" selection-start-column="9" selection-end-line="49" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.653846">
+          <caret line="2772" column="25" selection-start-line="2772" selection-start-column="25" selection-end-line="2772" selection-end-column="25" />
+          <folding>
+            <marker date="1455878417192" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
+            <marker date="1455878417192" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
+            <marker date="1455878417192" expanded="true" signature="7792:9220" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455878417192" expanded="true" signature="10153:11550" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455878417192" expanded="true" signature="11879:12045" placeholder="SELECT DISTI... equipes" />
+            <marker date="1455878417192" expanded="true" signature="12377:13790" placeholder="SELECT DISTI... activity" />
+            <marker date="1455878417192" expanded="true" signature="16471:16565" placeholder="SELECT * FRO... matches" />
+            <marker date="1455878417192" expanded="true" signature="17103:17241" placeholder="SELECT j.ema... joueurs" />
+            <marker date="1455878417192" expanded="true" signature="17523:17594" placeholder="SELECT date_... dates_limite" />
+            <marker date="1455878417192" expanded="true" signature="17871:17947" placeholder="SELECT id_co... competitions" />
+            <marker date="1455878417192" expanded="true" signature="18249:18993" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="22844:23022" placeholder="SELECT REPLA... registry" />
+            <marker date="1455878417192" expanded="true" signature="25599:26240" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="28138:28278" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="28478:28618" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="28818:28934" placeholder="SELECT penal... classements" />
+            <marker date="1455878417192" expanded="true" signature="29173:29337" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="29539:29703" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="29905:30069" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="30271:30435" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="30637:30789" placeholder="SELECT SUM(s... matches" />
+            <marker date="1455878417192" expanded="true" signature="31024:31176" placeholder="SELECT SUM(s... matches" />
+            <marker date="1455878417192" expanded="true" signature="33631:34232" placeholder="UPDATE class... " />
+            <marker date="1455878417192" expanded="true" signature="34475:34621" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="34821:34967" placeholder="SELECT COUNT... matches" />
+            <marker date="1455878417192" expanded="true" signature="36632:36922" placeholder="SELECT cl.id... classements" />
+            <marker date="1455878417192" expanded="true" signature="37538:37663" placeholder="SELECT penal... classements" />
+            <marker date="1455878417192" expanded="true" signature="37963:38102" placeholder="UPDATE class... " />
+            <marker date="1455878417192" expanded="true" signature="38462:38587" placeholder="SELECT penal... classements" />
+            <marker date="1455878417192" expanded="true" signature="38941:39080" placeholder="UPDATE class... " />
+            <marker date="1455878417192" expanded="true" signature="39454:39561" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="39666:39862" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="40200:40272" placeholder="UPDATE match... " />
+            <marker date="1455878417192" expanded="true" signature="42248:43057" placeholder="UPDATE match... " />
+            <marker date="1455878417192" expanded="true" signature="44104:44177" placeholder="UPDATE equip... " />
+            <marker date="1455878417192" expanded="true" signature="44292:44370" placeholder="UPDATE equip... " />
+            <marker date="1455878417192" expanded="true" signature="45185:45273" placeholder="UPDATE compt... " />
+            <marker date="1455878417192" expanded="true" signature="45540:45602" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="47007:47075" placeholder="UPDATE match... " />
+            <marker date="1455878417192" expanded="true" signature="47277:48477" placeholder="SELECT m.id_... matches" />
+            <marker date="1455878417192" expanded="true" signature="49379:49619" placeholder="SELECT j.id,... journees" />
+            <marker date="1455878417192" expanded="true" signature="49950:50166" placeholder="SELECT d.id_... dates_limite" />
+            <marker date="1455878417192" expanded="true" signature="51267:52707" placeholder="SELECT e.cod... equipes" />
+            <marker date="1455878417192" expanded="true" signature="53192:53326" placeholder="SELECT r.reg... registry" />
+            <marker date="1455878417192" expanded="true" signature="53997:54136" placeholder="UPDATE regis... " />
+            <marker date="1455878417192" expanded="true" signature="54168:54307" placeholder="INSERT INTO registry... " />
+            <marker date="1455878417192" expanded="true" signature="54525:54589" placeholder="SELECT COUNT... registry" />
+            <marker date="1455878417192" expanded="true" signature="55147:55988" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="57565:58296" placeholder="SELECT CONCA... joueurs" />
+            <marker date="1455878417192" expanded="true" signature="58625:58654" placeholder="SELECT id, n... profiles" />
+            <marker date="1455878417192" expanded="true" signature="59025:59207" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="59521:59607" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="60215:60273" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="60385:60467" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="61027:61089" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="61201:61287" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="61843:61900" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="62012:62093" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="63110:63185" placeholder="SELECT e.id_... equipes" />
+            <marker date="1455878417192" expanded="true" signature="63528:63589" placeholder="SELECT j.id_... joueurs" />
+            <marker date="1455878417192" expanded="true" signature="64406:64541" placeholder="SELECT CONCA... joueurs" />
+            <marker date="1455878417192" expanded="true" signature="64898:64984" placeholder="SELECT ca.lo... comptes_acces" />
+            <marker date="1455878417192" expanded="true" signature="65390:65521" placeholder="SELECT CONCA... equipes" />
+            <marker date="1455878417192" expanded="true" signature="65882:66008" placeholder="SELECT c.lib... competitions" />
+            <marker date="1455878417192" expanded="true" signature="66354:66433" placeholder="SELECT c.nom... clubs" />
+            <marker date="1455878417192" expanded="true" signature="66786:66872" placeholder="SELECT p.nam... profiles" />
+            <marker date="1455878417192" expanded="true" signature="67337:67398" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="67764:67823" placeholder="SELECT COUNT... users_profiles" />
+            <marker date="1455878417192" expanded="true" signature="68923:69001" placeholder="SELECT e.id_... equipes" />
+            <marker date="1455878417192" expanded="true" signature="69965:70035" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="70454:70485" placeholder="DELETE FROM " />
+            <marker date="1455878417192" expanded="true" signature="70872:71886" placeholder="SELECT c.nom... equipes" />
+            <marker date="1455878417192" expanded="true" signature="72298:72347" placeholder="INSERT INTO photos... " />
+            <marker date="1455878417192" expanded="true" signature="72609:72663" placeholder="UPDATE joueu... " />
+            <marker date="1455878417192" expanded="true" signature="74149:74221" placeholder="SELECT COUNT... joueurs" />
+            <marker date="1455878417192" expanded="true" signature="74597:74654" placeholder="SELECT COUNT... profiles" />
+            <marker date="1455878417192" expanded="true" signature="81370:81775" placeholder="SELECT ca.id... comptes_acces" />
+            <marker date="1455878417192" expanded="true" signature="82108:82574" placeholder="SELECT CONCA... creneau" />
+            <marker date="1455878417192" expanded="true" signature="82905:83131" placeholder="SELECT id, n... gymnase" />
+            <marker date="1455878417192" expanded="true" signature="83457:83529" placeholder="SELECT id, n... clubs" />
+            <marker date="1455878417192" expanded="true" signature="83862:84000" placeholder="SELECT id, c... competitions" />
+            <marker date="1455878417192" expanded="true" signature="93696:94263" placeholder="SELECT c.id,... creneau" />
+            <marker date="1455878417192" expanded="true" signature="94828:95277" placeholder="SELECT DATE_... activity" />
+            <marker date="1455878417192" expanded="true" signature="99198:99393" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="99781:99955" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="100753:100947" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="101333:101603" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="102471:102741" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="103514:103610" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="103995:104096" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="104478:104575" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="104958:105012" placeholder="SELECT COUNT... creneau" />
+            <marker date="1455878417192" expanded="true" signature="105411:105764" placeholder="SELECT COUNT... joueur_equipe" />
+            <marker date="1455878417192" expanded="true" signature="106147:106480" placeholder="SELECT COUNT... joueur_equipe" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/041-alter table matches add journees foreign key.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.051908396">
+          <caret line="2" column="42" selection-start-line="2" selection-start-column="35" selection-end-line="2" selection-end-column="42" />
           <folding />
         </state>
       </provider>
