@@ -45,9 +45,22 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 allowBlank: false
             },
             {
-                xtype: 'textfield',
+                xtype: 'combo',
                 fieldLabel: 'Journée',
-                name: 'numero_journee',
+                name: 'id_journee',
+                tpl: Ext.create('Ext.XTemplate',
+                    '<tpl for=".">',
+                    '<div class="x-boundlist-item">{libelle_competition} - {nommage} ({libelle})</div>',
+                    '</tpl>'
+                ),
+                displayTpl: Ext.create('Ext.XTemplate',
+                    '<tpl for=".">',
+                    '{libelle_competition} - {nommage} ({libelle})',
+                    '</tpl>'
+                ),
+                valueField: 'id',
+                store: 'AdminDays',
+                queryMode: 'local',
                 allowBlank: false
             },
             {

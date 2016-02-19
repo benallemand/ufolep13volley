@@ -424,7 +424,7 @@ function getLastResults()
     m.date_reception
     FROM activity a
     JOIN matches m ON m.code_match = SPLIT_STRING(a.comment, ' ', 3)
-    JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition
+    JOIN journees j ON j.id=m.id_journee
     JOIN competitions c ON c.code_competition =  m.code_competition
     JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
     JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
@@ -1316,8 +1316,8 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.code_competition,
         c.libelle AS libelle_competition,
         m.division,
+        m.id_journee,
         CONCAT(j.nommage, ' : ', j.libelle) AS journee,
-        j.numero AS numero_journee,
         m.id_equipe_dom,
         e1.nom_equipe AS equipe_dom,
         m.id_equipe_ext,
@@ -1345,7 +1345,9 @@ function getSqlSelectMatches($whereClause, $orderClause)
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        JOIN journees j ON j.numero=m.journee AND j.code_competition=m.code_competition $whereClause $orderClause";
+        JOIN journees j ON j.id=m.id_journee
+        $whereClause
+        $orderClause";
 }
 
 function getMatches($compet, $div)
@@ -2768,10 +2770,8 @@ function saveMatch()
                 continue;
             case 'id_equipe_dom':
             case 'id_equipe_ext':
+            case 'id_journee':
                 $sql .= "$key = $value,";
-                break;
-            case 'numero_journee':
-                $sql .= "journee = $value,";
                 break;
             case 'date_reception':
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";

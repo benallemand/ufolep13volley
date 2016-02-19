@@ -33,6 +33,8 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             },
             {
                 header: 'Date',
+                xtype: 'datecolumn',
+                format:'d/m/Y',
                 dataIndex: 'date_reception'
             },
             {
