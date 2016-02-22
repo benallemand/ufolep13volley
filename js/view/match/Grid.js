@@ -97,6 +97,31 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 }
             },
             {
+                header: 'Statut',
+                width: 70,
+                xtype: 'actioncolumn',
+                items: [
+                    {
+                        icon: 'images/certif.gif',
+                        tooltip: 'Feuille de match reçue et certifiée',
+                        getClass: function (value, meta, rec) {
+                            if (rec.get('certif') === false) {
+                                return "x-hidden-display";
+                            }
+                        }
+                    },
+                    {
+                        icon: 'images/warn1.gif',
+                        tooltip: "La feuille de match n'a pas encore été validée par la commission",
+                        getClass: function (value, meta, rec) {
+                            if (rec.get('certif') === true) {
+                                return "x-hidden-display";
+                            }
+                        }
+                    }
+                ]
+            },
+            {
                 header: 'Administration',
                 width: 200,
                 xtype: 'actioncolumn',
