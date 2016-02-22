@@ -17,7 +17,7 @@ $controllers[] = "'GymnasiumsMap'";
         <script src="https://extjs.cachefly.net/ext/gpl/5.1.0/build/ext-all.js"></script>
         <script src="https://extjs.cachefly.net/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"></script>
         <script type="text/javascript" src="js/libs/Commons.js"></script>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3"></script>
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
         <script type="text/javascript">
             var connectedUser = '<?php echo getConnectedUser(); ?>';
