@@ -250,7 +250,6 @@ WHERE
     FROM classements cl
   )"
 );
-
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
