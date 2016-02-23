@@ -232,7 +232,7 @@ $indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
 FROM equipes e
   JOIN competitions c ON c.code_competition = e.code_competition
 WHERE
-  e.id_equipe IN (
+  e.id_equipe NOT IN (
     SELECT ca.id_equipe
     FROM comptes_acces ca
     WHERE ca.id IN (
