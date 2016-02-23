@@ -1451,98 +1451,112 @@
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="407" parent="29" name="code_match">
+      <column id="407" parent="29" name="id_creneau">
+        <mandatory>1</mandatory>
+        <data-type>smallint(10)</data-type>
+      </column>
+      <index id="408" parent="29" name="code_match">
         <columns>code_match</columns>
         <desc-columns></desc-columns>
         <unique>1</unique>
       </index>
-      <index id="408" parent="29" name="fk_matches_journees">
+      <index id="409" parent="29" name="fk_matches_creneau">
+        <columns>id_creneau</columns>
+        <desc-columns></desc-columns>
+      </index>
+      <index id="410" parent="29" name="fk_matches_journees">
         <columns>id_journee</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="409" parent="29" name="code_match">
+      <key id="411" parent="29" name="code_match">
         <columns>code_match</columns>
         <underlying-index>code_match</underlying-index>
       </key>
-      <key id="410" parent="29" name="PRIMARY">
+      <key id="412" parent="29" name="PRIMARY">
         <columns>id_match</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="411" parent="29" name="fk_matches_journees">
+      <foreign-key id="413" parent="29" name="fk_matches_creneau">
+        <columns>id_creneau</columns>
+        <ref-key>~.creneau.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <foreign-key id="414" parent="29" name="fk_matches_journees">
         <columns>id_journee</columns>
         <ref-key>ufolep_13volley.journees(id)</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="412" parent="30" name="id">
+      <column id="415" parent="30" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="413" parent="30" name="path_photo">
+      <column id="416" parent="30" name="path_photo">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <key id="414" parent="30" name="PRIMARY">
+      <key id="417" parent="30" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="415" parent="31" name="id">
+      <column id="418" parent="31" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="416" parent="31" name="name">
+      <column id="419" parent="31" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <key id="417" parent="31" name="PRIMARY">
+      <key id="420" parent="31" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="418" parent="32" name="id">
+      <column id="421" parent="32" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="419" parent="32" name="registry_key">
+      <column id="422" parent="32" name="registry_key">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="420" parent="32" name="registry_value">
+      <column id="423" parent="32" name="registry_value">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <key id="421" parent="32" name="PRIMARY">
+      <key id="424" parent="32" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="422" parent="33" name="id">
+      <column id="425" parent="33" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="423" parent="33" name="user_id">
+      <column id="426" parent="33" name="user_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="424" parent="33" name="profile_id">
+      <column id="427" parent="33" name="profile_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <key id="425" parent="33" name="PRIMARY">
+      <key id="428" parent="33" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <argument id="426" parent="34">
+      <argument id="429" parent="34">
         <direction>RETURN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="427" parent="34" name="str">
+      <argument id="430" parent="34" name="str">
         <direction>IN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="428" parent="34" name="delim">
+      <argument id="431" parent="34" name="delim">
         <direction>IN</direction>
         <data-type>varchar(12)</data-type>
       </argument>
-      <argument id="429" parent="34" name="pos">
+      <argument id="432" parent="34" name="pos">
         <direction>IN</direction>
         <data-type>int(11)</data-type>
       </argument>

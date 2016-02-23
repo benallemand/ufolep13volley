@@ -33,9 +33,9 @@ require_once 'classes/Indicator.php';
 
 $indicatorPossibleDuplicatePlayers = new Indicator(
     'Joueurs potentiellement en doublon', "
-        select concat(prenom, ' ', nom) as Joueur,
-        count(*) as Occurences
-        from joueurs
+        SELECT concat(prenom, ' ', nom) AS Joueur,
+        count(*) AS Occurences
+        FROM joueurs
         GROUP BY concat(prenom, ' ', nom)
         HAVING count(*) > 1
         ORDER BY nom ASC");
@@ -225,6 +225,32 @@ $indicatorMatchesNonRenseignes = new Indicator(
         )
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
+$indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
+    'Equipes actives sans compte responsable équipe', "SELECT
+  e.nom_equipe AS equipe,
+  c.libelle AS competition
+FROM equipes e
+  JOIN competitions c ON c.code_competition = e.code_competition
+WHERE
+  e.id_equipe IN (
+    SELECT ca.id_equipe
+    FROM comptes_acces ca
+    WHERE ca.id IN (
+      SELECT up.user_id
+      FROM users_profiles up
+      WHERE profile_id IN (
+        SELECT p.id
+        FROM profiles p
+        WHERE p.name = 'RESPONSABLE_EQUIPE'
+      )
+    )
+  )
+  AND e.id_equipe IN (
+    SELECT cl.id_equipe
+    FROM classements cl
+  )"
+);
+
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -241,6 +267,7 @@ $results[] = $indicatorDuplicateMatchCode->getResult();
 $results[] = $indicatorWrongMatchTime->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
+$results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
 $indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
 if (!$indicatorName) {
     echo json_encode(utf8_encode_mix(array('results' => $results)));
