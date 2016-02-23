@@ -46,35 +46,31 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
         },
         doMap: function () {
             var controller = this;
-            var geo = Ext.create('Ext.util.Geolocation', {
-                autoUpdate: false,
-                listeners: {
-                    locationupdate: function (geo) {
-                        var currentLat = geo.getLatitude();
-                        var currentLong = geo.getLongitude();
-                        var currentLoc = currentLat + ',' + currentLong;
-                        var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
-                        if (Ext.os.is.iOS) {
+            if (Ext.os.is.iOS) {
+                var geo = Ext.create('Ext.util.Geolocation', {
+                    autoUpdate: false,
+                    listeners: {
+                        locationupdate: function (geo) {
+                            var currentLat = geo.getLatitude();
+                            var currentLong = geo.getLongitude();
+                            var currentLoc = currentLat + ',' + currentLong;
+                            var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
                             window.open('http://maps.apple.com?daddr=' + gps + '&saddr=' + currentLoc);
-                            return;
-                        }
-                        //if (Ext.os.is.Android) {
-                        //    Ext.require('Ext.device.Device');
-                        //    Ext.device.Device.openURL('geo:' + gps);
-                        //    return;
-                        //}
-                        window.open('http://www.google.com/maps/dir/' + gps + '/' + currentLoc);
-                    },
-                    locationerror: function (geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
-                        if (bTimeout) {
-                            alert('Erreur : Temps de reponse trop important.');
-                        } else {
-                            alert('Erreur : ' + message);
+                        },
+                        locationerror: function (geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
+                            if (bTimeout) {
+                                alert('Erreur : Temps de reponse trop important.');
+                            } else {
+                                alert('Erreur : ' + message);
+                            }
                         }
                     }
-                }
-            });
-            geo.updateLocation();
+                });
+                geo.updateLocation();
+                return;
+            }
+            var gps = ((((((controller.getFormPanel().getValues().gymnasiums_list).split('\n'))[0]).split(' ('))[0]).split(' - '))[3];
+            window.open('http://maps.google.com?daddr=' + gps);
         },
         doSelectTeam: function (list, index, item, record) {
             this.getMainPanel().push({
