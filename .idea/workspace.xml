@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/mobile/Teams.js" afterPath="$PROJECT_DIR$/js/controller/mobile/Teams.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/store/WeekSchedule.js" afterPath="$PROJECT_DIR$/js/store/WeekSchedule.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" afterPath="$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,18 +41,7 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="Teams.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controller/mobile/Teams.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5322812">
-              <caret line="61" column="49" selection-start-line="61" selection-start-column="49" selection-end-line="61" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -67,7 +57,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ajax/classes/Indicator.php" />
         <option value="$PROJECT_DIR$/nbproject/sql/038-drop import FK.sql" />
         <option value="$PROJECT_DIR$/js/view/site/MainMenu.js" />
         <option value="$PROJECT_DIR$/js/administration.js" />
@@ -88,7 +77,6 @@
         <option value="$PROJECT_DIR$/nbproject/sql/xxx-Add column has_time_constraint in creneau table.sql" />
         <option value="$PROJECT_DIR$/js/model/TimeSlot.js" />
         <option value="$PROJECT_DIR$/js/view/timeslot/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" />
         <option value="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" />
         <option value="$PROJECT_DIR$/ajax/indicators.php" />
         <option value="$PROJECT_DIR$/webgl-demo.js" />
@@ -114,10 +102,12 @@
         <option value="$PROJECT_DIR$/ajax/getLastCommit.php" />
         <option value="$PROJECT_DIR$/ajax/getLastPosts.php" />
         <option value="$PROJECT_DIR$/ajax/getVolleyballImages.php" />
-        <option value="$PROJECT_DIR$/js/view/match/Grid.js" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/console_2.sql" />
         <option value="$PROJECT_DIR$/index_mobile.php" />
         <option value="$PROJECT_DIR$/js/controller/mobile/Teams.js" />
+        <option value="$PROJECT_DIR$/js/view/match/Grid.js" />
+        <option value="$PROJECT_DIR$/js/store/WeekSchedule.js" />
+        <option value="$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" />
       </list>
     </option>
   </component>
@@ -143,10 +133,10 @@
   <component name="PhpWebServerValidation" deployment_server_id="ded6af07-c3ea-4500-afff-da686d938b93" path_to_validation_script="C:\Users\Ben\Documents\NetBeansProjects\ufolep13volley" selected_validation_type="REMOTE" web_path_to_validation_script="http://localhost:8080/" />
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP 5.4" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="1912" />
+    <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1216" />
+    <option name="height" value="1176" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -199,70 +189,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mobile" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -377,12 +303,6 @@
       <created>1436078698686</created>
       <option name="number" value="Default" />
       <updated>1436078698686</updated>
-    </task>
-    <task id="LOCAL-00001" summary="add phpstorm project">
-      <created>1447018807849</created>
-      <option name="number" value="00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1447018807849</updated>
     </task>
     <task id="LOCAL-00002" summary="add phpstorm project">
       <created>1447018833481</created>
@@ -666,7 +586,19 @@
       <option name="project" value="LOCAL" />
       <updated>1456159401507</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="fix issue with maps on mobile app">
+      <created>1456217240518</created>
+      <option name="number" value="00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1456217240518</updated>
+    </task>
+    <task id="LOCAL-00050" summary="match not certified warning modified">
+      <created>1456220755604</created>
+      <option name="number" value="00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1456220755632</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -687,23 +619,23 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1216" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.6910345" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.69005847" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26889953" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32471263" sideWeight="0.5025707" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2228145" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30363986" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33179724" sideWeight="0.4974293" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3448276" sideWeight="0.4974293" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3235023" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.3089655" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.30994153" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2710728" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -726,7 +658,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="manage limit dates" />
     <MESSAGE value="remove unused column division from dates_limite" />
     <MESSAGE value="add some useful informations for new championship" />
     <MESSAGE value="management team photos update" />
@@ -751,7 +682,8 @@
     <MESSAGE value="migration to sencha touch 2.4" />
     <MESSAGE value="remove obsolete files" />
     <MESSAGE value="fix issue with maps on mobile app" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix issue with maps on mobile app" />
+    <MESSAGE value="match not certified warning modified" />
+    <option name="LAST_COMMIT_MESSAGE" value="match not certified warning modified" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -764,34 +696,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/039-Add column has_time_constraint in creneau table.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.071278825">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/040-Drop column division in journees table.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/day/Edit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0641221">
-          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/saveDay.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13513513">
-          <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/view/day/AdminGrid.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4412214">
@@ -838,20 +742,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="24" column="26" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Match.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/Matches.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -918,13 +808,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/WeekSchedule.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/store/WeekDays.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.12630014">
@@ -972,119 +855,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22323233">
           <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18686868">
-          <caret line="239" column="9" selection-start-line="239" selection-start-column="9" selection-end-line="239" selection-end-column="9" />
-          <folding>
-            <marker date="1455894093121" expanded="true" signature="1676:1740" placeholder="SELECT COUNT... comptes_acces" />
-            <marker date="1455894093121" expanded="true" signature="2869:2912" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="3215:3252" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="3455:3490" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="3693:3737" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="3942:3985" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="4188:4229" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="4431:4469" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="4677:4724" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="5097:5134" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="5632:5682" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="6547:6802" placeholder="SELECT ca.id... comptes_acces" />
-            <marker date="1455894093121" expanded="true" signature="7792:9220" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455894093121" expanded="true" signature="10153:11550" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455894093121" expanded="true" signature="11879:12045" placeholder="SELECT DISTI... equipes" />
-            <marker date="1455894093121" expanded="true" signature="12377:13747" placeholder="SELECT DISTI... activity" />
-            <marker date="1455894093121" expanded="true" signature="16428:16522" placeholder="SELECT * FRO... matches" />
-            <marker date="1455894093121" expanded="true" signature="17060:17198" placeholder="SELECT j.ema... joueurs" />
-            <marker date="1455894093121" expanded="true" signature="17480:17551" placeholder="SELECT date_... dates_limite" />
-            <marker date="1455894093121" expanded="true" signature="17828:17904" placeholder="SELECT id_co... competitions" />
-            <marker date="1455894093121" expanded="true" signature="18206:18950" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="22801:22979" placeholder="SELECT REPLA... registry" />
-            <marker date="1455894093121" expanded="true" signature="25556:26197" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="28095:28235" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="28435:28575" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="28775:28891" placeholder="SELECT penal... classements" />
-            <marker date="1455894093121" expanded="true" signature="29130:29294" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="29496:29660" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="29862:30026" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="30228:30392" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="30594:30746" placeholder="SELECT SUM(s... matches" />
-            <marker date="1455894093121" expanded="true" signature="30981:31133" placeholder="SELECT SUM(s... matches" />
-            <marker date="1455894093121" expanded="true" signature="33588:34189" placeholder="UPDATE class... " />
-            <marker date="1455894093121" expanded="true" signature="34432:34578" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="34778:34924" placeholder="SELECT COUNT... matches" />
-            <marker date="1455894093121" expanded="true" signature="36589:36879" placeholder="SELECT cl.id... classements" />
-            <marker date="1455894093121" expanded="true" signature="37495:37620" placeholder="SELECT penal... classements" />
-            <marker date="1455894093121" expanded="true" signature="37920:38059" placeholder="UPDATE class... " />
-            <marker date="1455894093121" expanded="true" signature="38419:38544" placeholder="SELECT penal... classements" />
-            <marker date="1455894093121" expanded="true" signature="38898:39037" placeholder="UPDATE class... " />
-            <marker date="1455894093121" expanded="true" signature="39411:39518" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="39623:39819" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="40157:40229" placeholder="UPDATE match... " />
-            <marker date="1455894093121" expanded="true" signature="42205:43014" placeholder="UPDATE match... " />
-            <marker date="1455894093121" expanded="true" signature="44061:44134" placeholder="UPDATE equip... " />
-            <marker date="1455894093121" expanded="true" signature="44249:44327" placeholder="UPDATE equip... " />
-            <marker date="1455894093121" expanded="true" signature="45142:45230" placeholder="UPDATE compt... " />
-            <marker date="1455894093121" expanded="true" signature="45497:45559" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="46964:47032" placeholder="UPDATE match... " />
-            <marker date="1455894093121" expanded="true" signature="47234:48393" placeholder="SELECT m.id_... matches" />
-            <marker date="1455894093121" expanded="true" signature="49295:49535" placeholder="SELECT j.id,... journees" />
-            <marker date="1455894093121" expanded="true" signature="49866:50082" placeholder="SELECT d.id_... dates_limite" />
-            <marker date="1455894093121" expanded="true" signature="51183:52623" placeholder="SELECT e.cod... equipes" />
-            <marker date="1455894093121" expanded="true" signature="53108:53242" placeholder="SELECT r.reg... registry" />
-            <marker date="1455894093121" expanded="true" signature="53913:54052" placeholder="UPDATE regis... " />
-            <marker date="1455894093121" expanded="true" signature="54084:54223" placeholder="INSERT INTO registry... " />
-            <marker date="1455894093121" expanded="true" signature="54441:54505" placeholder="SELECT COUNT... registry" />
-            <marker date="1455894093121" expanded="true" signature="55063:55904" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="57481:58212" placeholder="SELECT CONCA... joueurs" />
-            <marker date="1455894093121" expanded="true" signature="58541:58570" placeholder="SELECT id, n... profiles" />
-            <marker date="1455894093121" expanded="true" signature="58941:59123" placeholder="SELECT CONCA... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="59437:59523" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="60131:60189" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="60301:60383" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="60943:61005" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="61117:61203" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="61759:61816" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="61928:62009" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="63026:63101" placeholder="SELECT e.id_... equipes" />
-            <marker date="1455894093121" expanded="true" signature="63444:63505" placeholder="SELECT j.id_... joueurs" />
-            <marker date="1455894093121" expanded="true" signature="64322:64457" placeholder="SELECT CONCA... joueurs" />
-            <marker date="1455894093121" expanded="true" signature="64814:64900" placeholder="SELECT ca.lo... comptes_acces" />
-            <marker date="1455894093121" expanded="true" signature="65306:65437" placeholder="SELECT CONCA... equipes" />
-            <marker date="1455894093121" expanded="true" signature="65798:65924" placeholder="SELECT c.lib... competitions" />
-            <marker date="1455894093121" expanded="true" signature="66270:66349" placeholder="SELECT c.nom... clubs" />
-            <marker date="1455894093121" expanded="true" signature="66702:66788" placeholder="SELECT p.nam... profiles" />
-            <marker date="1455894093121" expanded="true" signature="67253:67314" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="67680:67739" placeholder="SELECT COUNT... users_profiles" />
-            <marker date="1455894093121" expanded="true" signature="68839:68917" placeholder="SELECT e.id_... equipes" />
-            <marker date="1455894093121" expanded="true" signature="69881:69951" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="70370:70401" placeholder="DELETE FROM " />
-            <marker date="1455894093121" expanded="true" signature="70788:71802" placeholder="SELECT c.nom... equipes" />
-            <marker date="1455894093121" expanded="true" signature="72214:72263" placeholder="INSERT INTO photos... " />
-            <marker date="1455894093121" expanded="true" signature="72525:72579" placeholder="UPDATE joueu... " />
-            <marker date="1455894093121" expanded="true" signature="74065:74137" placeholder="SELECT COUNT... joueurs" />
-            <marker date="1455894093121" expanded="true" signature="74513:74570" placeholder="SELECT COUNT... profiles" />
-            <marker date="1455894093121" expanded="true" signature="81286:81691" placeholder="SELECT ca.id... comptes_acces" />
-            <marker date="1455894093121" expanded="true" signature="82024:82490" placeholder="SELECT CONCA... creneau" />
-            <marker date="1455894093121" expanded="true" signature="82821:83047" placeholder="SELECT id, n... gymnase" />
-            <marker date="1455894093121" expanded="true" signature="83373:83445" placeholder="SELECT id, n... clubs" />
-            <marker date="1455894093121" expanded="true" signature="83778:83916" placeholder="SELECT id, c... competitions" />
-            <marker date="1455894093121" expanded="true" signature="93540:94107" placeholder="SELECT c.id,... creneau" />
-            <marker date="1455894093121" expanded="true" signature="94672:95121" placeholder="SELECT DATE_... activity" />
-            <marker date="1455894093121" expanded="true" signature="99042:99237" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="99625:99799" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="100597:100791" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="101177:101447" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="102315:102585" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="103358:103454" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="103839:103940" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="104322:104419" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="104802:104856" placeholder="SELECT COUNT... creneau" />
-            <marker date="1455894093121" expanded="true" signature="105255:105608" placeholder="SELECT COUNT... joueur_equipe" />
-            <marker date="1455894093121" expanded="true" signature="105991:106324" placeholder="SELECT COUNT... joueur_equipe" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1171,20 +942,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/match/Grid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.89786583">
-          <caret line="104" column="50" selection-start-line="104" selection-start-column="50" selection-end-line="104" selection-end-column="50" />
-          <folding>
-            <marker date="1456152857448" expanded="true" signature="691:727" placeholder="..." />
-            <marker date="1456152857448" expanded="true" signature="968:1000" placeholder="..." />
-            <marker date="1456152857448" expanded="true" signature="1469:1502" placeholder="..." />
-            <marker date="1456152857448" expanded="true" signature="2073:2113" placeholder="..." />
-            <marker date="1456152857448" expanded="true" signature="2982:3022" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/console.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.8333334">
@@ -1251,8 +1008,103 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controller/mobile/Teams.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5322812">
+        <state vertical-scroll-proportion="0.53304595">
           <caret line="61" column="49" selection-start-line="61" selection-start-column="49" selection-end-line="61" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35396826">
+          <caret line="56" column="12" selection-start-line="56" selection-start-column="12" selection-end-line="56" selection-end-column="12" />
+          <folding>
+            <marker date="1455813601750" expanded="true" signature="1000:1189" placeholder="select conca... joueurs" />
+            <marker date="1455813601750" expanded="true" signature="1277:1750" placeholder="SELECT SUBST... activity" />
+            <marker date="1455813601750" expanded="true" signature="1833:2514" placeholder="SELECT m.cod... matches" />
+            <marker date="1455813601750" expanded="true" signature="2594:3106" placeholder="SELECT m.cod... matches" />
+            <marker date="1455813601750" expanded="true" signature="3013:3083" placeholder="SELECT code_... matches" />
+            <marker date="1455813601750" expanded="true" signature="3199:3839" placeholder="SELECT CONCA... joueur_equipe" />
+            <marker date="1455813601750" expanded="true" signature="3926:4050" placeholder="SELECT id_jo... joueur_equipe" />
+            <marker date="1455813601750" expanded="true" signature="4124:5205" placeholder="SELECT e.nom... equipes" />
+            <marker date="1455813601750" expanded="true" signature="5304:5651" placeholder="SELECT DISTI... joueurs" />
+            <marker date="1455813601750" expanded="true" signature="5743:6073" placeholder="SELECT DISTI... joueurs" />
+            <marker date="1455813601750" expanded="true" signature="6132:6598" placeholder="SELECT DATE_... activity" />
+            <marker date="1455813601750" expanded="true" signature="6653:7002" placeholder="SELECT e.nom... equipes" />
+            <marker date="1455813601750" expanded="true" signature="7076:7364" placeholder="SELECT e1.no... matches" />
+            <marker date="1455813601750" expanded="true" signature="7438:7998" placeholder="SELECT e.nom... equipes" />
+            <marker date="1455813601750" expanded="true" signature="8077:8215" placeholder="SELECT num_l... joueurs" />
+            <marker date="1455813601750" expanded="true" signature="8284:9084" placeholder="SELECT m.cod... matches" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/model/Match.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.757622">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/store/Matches.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.103658535">
+          <caret line="4" column="30" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/model/WeekSchedule.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0777439">
+          <caret line="3" column="18" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/match/Grid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28506097">
+          <caret line="11" column="5" selection-start-line="5" selection-start-column="20" selection-end-line="11" selection-end-column="5" />
+          <folding>
+            <marker date="1456220731215" expanded="true" signature="691:727" placeholder="..." />
+            <marker date="1456220731215" expanded="true" signature="968:1000" placeholder="..." />
+            <marker date="1456220731215" expanded="true" signature="1469:1502" placeholder="..." />
+            <marker date="1456220731215" expanded="true" signature="2073:2113" placeholder="..." />
+            <marker date="1456220731215" expanded="true" signature="2982:3022" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28506097">
+          <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/store/WeekSchedule.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.103658535">
+          <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44592345">
+          <caret line="2933" column="27" selection-start-line="2933" selection-start-column="27" selection-end-line="2933" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getMatches.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.16190477">
+          <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
           <folding />
         </state>
       </provider>
