@@ -64,8 +64,6 @@ ALTER TABLE journees DROP PRIMARY KEY;
 ALTER TABLE journees ADD PRIMARY KEY (id);
 
 -- add index
-DROP INDEX id ON joueurs;
-CREATE INDEX id ON joueurs (id);
 DROP INDEX id ON activity;
 CREATE INDEX id ON activity (id);
 DROP INDEX id ON classements;
