@@ -18,7 +18,7 @@ class Rest {
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        return json_encode(utf8_encode_mix($results));
+        return json_encode($results);
     }
 
     function getPrimaryKey() {
@@ -77,9 +77,9 @@ class Rest {
         while ($data = mysqli_fetch_assoc($req2)) {
             $results2[] = $data;
         }
-        return json_encode(utf8_encode_mix(array(
+        return json_encode(array(
             'results' => $results,
-            'totalCount' => $results2[0]['total'])));
+            'totalCount' => $results2[0]['total']));
     }
 
     function saveData() {
@@ -88,11 +88,11 @@ class Rest {
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(utf8_encode_mix(array(
+            return json_encode(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            )));
+            ));
         }
         $sql = "UPDATE " . $this->fileName . " SET ";
         $columns = json_decode($this->getColumns(), true);
@@ -126,11 +126,11 @@ class Rest {
         } else {
             $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(utf8_encode_mix(array(
+        return json_encode(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        )));
+        ));
     }
 
     function deleteData() {
@@ -139,11 +139,11 @@ class Rest {
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(utf8_encode_mix(array(
+            return json_encode(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            )));
+            ));
         }
         $sql = "DELETE FROM " . $this->fileName;
         $sql .= " WHERE $primaryKey=\"" . $dataArray[$primaryKey] . "\";";
@@ -153,11 +153,11 @@ class Rest {
         } else {
             $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(utf8_encode_mix(array(
+        return json_encode(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        )));
+        ));
     }
 
     function addData() {
@@ -166,11 +166,11 @@ class Rest {
         $dataArray = json_decode($dataJson, true);
         $primaryKey = $this->getPrimaryKey();
         if ($primaryKey === null) {
-            return json_encode(utf8_encode_mix(array(
+            return json_encode(array(
                 'success' => false,
                 'message' => 'Pas de cle primaire sur cette table',
                 'data' => $dataJson
-            )));
+            ));
         }
         $sql = "INSERT INTO " . $this->fileName . " (";
         foreach ($dataArray as $key => $value) {
@@ -212,30 +212,30 @@ class Rest {
         } else {
             $message = "Erreur SQL : $sql : " . mysqli_error($db);
         }
-        return json_encode(utf8_encode_mix(array(
+        return json_encode(array(
             'success' => $success,
             'message' => $message,
             'data' => $dataJson
-        )));
+        ));
     }
 
     function parseRequest() {
         conn_db();
         if (!isAdmin()) {
             if ($this->fileName === 'comptes_acces') {
-                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
-                echo json_encode(utf8_encode_mix(array(
+                $message = "Vous n'avez pas les droits suffisants pour executer cette action";
+                echo json_encode(array(
                     'success' => false,
                     'message' => $message
-                )));
+                ));
                 exit;
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-                $message = utf8_encode("Vous n'avez pas les droits suffisants pour executer cette action");
-                echo json_encode(utf8_encode_mix(array(
+                $message = "Vous n'avez pas les droits suffisants pour executer cette action";
+                echo json_encode(array(
                     'success' => false,
                     'message' => $message
-                )));
+                ));
                 exit;
             }
         }

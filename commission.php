@@ -10,7 +10,7 @@ $controllers[] = "'GymnasiumsMap'";
 <HTML>
 
     <HEAD>
-        <TITLE>Commission Départementale - UFOLEP 13 VOLLEY</TITLE>
+        <TITLE>Commission DÃ©partementale - UFOLEP 13 VOLLEY</TITLE>
         <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <link rel="shortcut icon" href="favicon.ico" /><LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="https://extjs.cachefly.net/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css" rel="stylesheet" />
@@ -21,7 +21,7 @@ $controllers[] = "'GymnasiumsMap'";
         <script type="text/javascript" src="js/libs/GMapPanel.js"></script>
         <script type="text/javascript">
             var connectedUser = '<?php echo getConnectedUser(); ?>';
-            var title = "Commission Départementale";
+            var title = "Commission DÃ©partementale";
         </script>
         <script type="text/javascript">
             var requires = [<?php echo implode(',', $requires); ?>];

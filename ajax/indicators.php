@@ -73,13 +73,13 @@ WHERE
     AND m.certif+0 = 0
 ");
 $indicatorDuplicateMatchCode = new Indicator(
-    'Code match dupliqués', "SELECT
+    'Code match dupliquÃ©s', "SELECT
 m.code_match,
 c.libelle AS competition,
 m.division,
 edom.nom_equipe AS domicile,
 eext.nom_equipe AS exterieur,
-CONCAT(DATE_FORMAT(m.date_reception, '%d/%m/%Y'), ' à ', m.heure_reception) AS reception_le
+CONCAT(DATE_FORMAT(m.date_reception, '%d/%m/%Y'), ' Ã  ', m.heure_reception) AS reception_le
 FROM matches m
 JOIN competitions c ON c.code_competition = m.code_competition
 JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
@@ -89,7 +89,7 @@ WHERE m.code_match IN
 ORDER BY m.code_match"
 );
 $indicatorPlayersWithoutLicence = new Indicator(
-    'Joueurs sans numéro de licence', "SELECT
+    'Joueurs sans numÃ©ro de licence', "SELECT
         CONCAT(j.nom, ' ', j.prenom) AS joueur, 
         c.nom AS club,
         CONCAT(e.nom_equipe, ' (', comp.libelle, ')') AS equipe,
@@ -104,7 +104,7 @@ $indicatorPlayersWithoutLicence = new Indicator(
         WHERE j.num_licence = ''
         ORDER BY equipe ASC");
 $indicatorDoublonsJoueursEquipes = new Indicator(
-    'Doublons dans une équipe', "SELECT id_joueur, id_equipe, COUNT(*) AS cnt FROM joueur_equipe
+    'Doublons dans une Ã©quipe', "SELECT id_joueur, id_equipe, COUNT(*) AS cnt FROM joueur_equipe
         GROUP BY id_joueur, id_equipe
         HAVING cnt > 1");
 $indicatorEquipesEngageesChampionnat = new Indicator(
@@ -132,7 +132,7 @@ $indicatorEquipesEngageesChampionnat = new Indicator(
         GROUP BY id
         ORDER BY e.code_competition, c.division, e.id_equipe");
 $indicatorPlayersWithTeamButNoClub = new Indicator(
-    'Joueurs avec équipe mais sans club', "SELECT DISTINCT
+    'Joueurs avec Ã©quipe mais sans club', "SELECT DISTINCT
         j.prenom, 
         j.nom, 
         CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
@@ -154,7 +154,7 @@ $indicatorNotValidatedPlayers = new Indicator(
         WHERE j.est_actif+0 = 0
         ORDER BY j.id ASC");
 $indicatorActivity = new Indicator(
-    'Evènements', "SELECT
+    'EvÃ¨nements', "SELECT
         DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, 
         e.nom_equipe, 
         c.libelle AS competition, 
@@ -178,13 +178,13 @@ $indicatorComptes = new Indicator(
             LEFT JOIN profiles p ON p.id = up.profile_id
             ORDER BY e.nom_equipe");
 $indicatorMatchesDupliques = new Indicator(
-    'Matches dupliqués', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
+    'Matches dupliquÃ©s', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         GROUP BY m.id_equipe_dom, m.id_equipe_ext, m.code_competition
         HAVING COUNT(*) > 1");
 $indicatorEquipesSansClub = new Indicator(
-    'Club non renseigné', "SELECT
+    'Club non renseignÃ©', "SELECT
             e.nom_equipe,
             comp.libelle,
             c.division
@@ -199,7 +199,7 @@ $indicatorEquipesSansClub = new Indicator(
             ORDER BY e.code_competition, c.division, e.id_equipe"
 );
 $indicatorLicencesDupliquees = new Indicator(
-    'Licences dupliquées', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs
+    'Licences dupliquÃ©es', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs
          GROUP BY num_licence
          HAVING COUNT(*) > 1 AND num_licence != ''"
 );
@@ -226,7 +226,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
 );
 $indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
-    'Equipes actives sans compte responsable équipe', "SELECT
+    'Equipes actives sans compte responsable Ã©quipe', "SELECT
   e.nom_equipe AS equipe,
   c.libelle AS competition
 FROM equipes e
@@ -268,9 +268,9 @@ $results[] = $indicatorWrongMatchTime->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
-$indicatorName = utf8_decode(filter_input(INPUT_GET, 'indicator'));
+$indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
-    echo json_encode(utf8_encode_mix(array('results' => $results)));
+    echo json_encode(array('results' => array_filter($results)));
     exit();
 }
 foreach ($results as $result) {

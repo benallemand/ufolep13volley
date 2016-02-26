@@ -5,26 +5,12 @@ session_start();
 
 function accentedToNonAccented($str)
 {
-    $unwanted_array = array('?' => 'S', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
-        'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
-        'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
-        'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-        'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
+    $unwanted_array = array('?' => 'S', 'Ã€' => 'A', 'Ã' => 'A', 'Ã‚' => 'A', 'Ãƒ' => 'A', 'Ã„' => 'A', 'Ã…' => 'A', 'Ã†' => 'A', 'Ã‡' => 'C', 'Ãˆ' => 'E', 'Ã‰' => 'E',
+        'ÃŠ' => 'E', 'Ã‹' => 'E', 'ÃŒ' => 'I', 'Ã' => 'I', 'ÃŽ' => 'I', 'Ã' => 'I', 'Ã‘' => 'N', 'Ã’' => 'O', 'Ã“' => 'O', 'Ã”' => 'O', 'Ã•' => 'O', 'Ã–' => 'O', 'Ã˜' => 'O', 'Ã™' => 'U',
+        'Ãš' => 'U', 'Ã›' => 'U', 'Ãœ' => 'U', 'Ã' => 'Y', 'Ãž' => 'B', 'ÃŸ' => 'Ss', 'Ã ' => 'a', 'Ã¡' => 'a', 'Ã¢' => 'a', 'Ã£' => 'a', 'Ã¤' => 'a', 'Ã¥' => 'a', 'Ã¦' => 'a', 'Ã§' => 'c',
+        'Ã¨' => 'e', 'Ã©' => 'e', 'Ãª' => 'e', 'Ã«' => 'e', 'Ã¬' => 'i', 'Ã­' => 'i', 'Ã®' => 'i', 'Ã¯' => 'i', 'Ã°' => 'o', 'Ã±' => 'n', 'Ã²' => 'o', 'Ã³' => 'o', 'Ã´' => 'o', 'Ãµ' => 'o',
+        'Ã¶' => 'o', 'Ã¸' => 'o', 'Ã¹' => 'u', 'Ãº' => 'u', 'Ã»' => 'u', 'Ã½' => 'y', 'Ã¾' => 'b', 'Ã¿' => 'y');
     return strtr($str, $unwanted_array);
-}
-
-function utf8_encode_mix($input, $encode_keys = false)
-{
-    if (is_array($input)) {
-        $result = array();
-        foreach ($input as $k => $v) {
-            $key = ($encode_keys) ? utf8_encode($k) : $k;
-            $result[$key] = utf8_encode_mix($v, $encode_keys);
-        }
-    } else {
-        $result = utf8_encode($input);
-    }
-    return $result;
 }
 
 function randomPassword()
@@ -245,10 +231,10 @@ function login()
     $password = filter_input(INPUT_POST, 'password');
     if (($login === NULL) || ($password === NULL)) {
         disconn_db();
-        echo json_encode(utf8_encode_mix(array(
+        echo json_encode(array(
             'success' => false,
             'message' => 'Veuillez remplir les champs de connexion'
-        )));
+        ));
         return;
     }
     $password = addslashes($password);
@@ -259,19 +245,19 @@ function login()
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     if (mysqli_num_rows($req) <= 0) {
         disconn_db();
-        echo json_encode(utf8_encode_mix(array(
+        echo json_encode(array(
             'success' => false,
             'message' => 'Login incorrect'
-        )));
+        ));
         return;
     }
     $data = mysqli_fetch_assoc($req);
     if ($data['password'] != $password) {
         disconn_db();
-        echo json_encode(utf8_encode_mix(array(
+        echo json_encode(array(
             'success' => false,
             'message' => 'Mot de passe invalide'
-        )));
+        ));
         return;
     }
     $_SESSION['id_equipe'] = $data['id_equipe'];
@@ -300,7 +286,7 @@ function getQuickDetails($idEquipe)
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR '\n') AS gymnasiums_list,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' Ã  ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR '\n') AS gymnasiums_list,
         e.web_site,
         p.path_photo
         FROM equipes e
@@ -321,12 +307,12 @@ function getQuickDetails($idEquipe)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix(
+    return json_encode(
         array(
             'success' => true,
             'data' => $results[0]
         )
-    ));
+    );
 }
 
 function getTournaments()
@@ -342,7 +328,7 @@ function getTournaments()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getTeams()
@@ -361,7 +347,7 @@ function getTeams()
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' Ã  ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
         FROM equipes e
@@ -381,7 +367,7 @@ function getTeams()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getWebSites()
@@ -398,7 +384,7 @@ function getWebSites()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getLastResults()
@@ -477,7 +463,7 @@ function getLastResults()
         }
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function isAdmin()
@@ -626,7 +612,7 @@ function getPlayersFromTeam($id_equipe)
             }
         }
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getConnectedUser()
@@ -654,20 +640,20 @@ function sendMailSubmitResult($id1, $id2, $date)
     $headers .= 'Content-Type: text/html; charset="iso-8859-1"' . "\n";
     $headers .= 'Content-Transfer-Encoding: 8bit';
 
-    $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
-    $message = $message . 'Aux équipes de ' . getTeamName($id1) . ' et ' . getTeamName($id2) . '<BR>';
-    $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
-    $message = $message . 'Pour résumer, sur le site, 10 jours après la date indiquée pour le match (qui peut être en rouge si le match a été reportée), il doit y avoir un résultat affiché.<BR><BR>';
-    $message = $message . 'Pour votre match du <b>' . $matchDate->format('d/m/Y') . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
-    $message = $message . '- soit le résultat soit indiqué<BR>';
-    $message = $message . '- soit une autre date de match soit affichée (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
-    $message = $message . 'Je vous rappelle que les deux équipes doivent veiller à ce que cette règle soit suivie ; les deux pourraient donc être pénalisées.<BR><BR>';
+    $message = '<html><head><title>Saisie Internet des rÃ©sultats</title></head><body>';
+    $message = $message . 'Aux Ã©quipes de ' . getTeamName($id1) . ' et ' . getTeamName($id2) . '<BR>';
+    $message = $message . 'Comme vous avez dÃ» le lire sur le rÃ¨glement, la saisie des informations sur le site internet doit Ãªtre rigoureuse (pour le suivi de la commission Volley et pour l\'intÃ©rÃªt qu\'y portent les joueurs)<BR><BR>';
+    $message = $message . 'Pour rÃ©sumer, sur le site, 10 jours aprÃ¨s la date indiquÃ©e pour le match (qui peut Ãªtre en rouge si le match a Ã©tÃ© reportÃ©e), il doit y avoir un rÃ©sultat affichÃ©.<BR><BR>';
+    $message = $message . 'Pour votre match du <b>' . $matchDate->format('d/m/Y') . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un dÃ©lai supplÃ©mentaire de 5 jours pour que :<BR>';
+    $message = $message . '- soit le rÃ©sultat soit indiquÃ©<BR>';
+    $message = $message . '- soit une autre date de match soit affichÃ©e (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
+    $message = $message . 'Je vous rappelle que les deux Ã©quipes doivent veiller Ã  ce que cette rÃ¨gle soit suivie ; les deux pourraient donc Ãªtre pÃ©nalisÃ©es.<BR><BR>';
     $message = $message . 'Cordialement<BR><BR>Laurent Gorlier<BR>Responsable des classements<BR>';
     $message = $message . '</body></html>';
 
     $dest = getTeamEmail($id1) . "," . getTeamEmail($id2);
 
-    return mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
+    return mail($dest, "[Ufolep 13 Volley] Saisie Internet des rÃ©sultats", $message, $headers);
 }
 
 function getIdsTeamRequestingNextMatches()
@@ -784,13 +770,13 @@ function sendMailPlayersWithoutLicenceNumber()
         $emails = array_unique($emails);
         foreach ($emails as $email) {
             $body = "Bonjour,\r\n"
-                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numéro de licence renseigné sur le site de l'UFOLEP 13 VOLLEY.\r\n"
-                . "Merci de mettre à jour ce numéro de licence dès que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche équipe.\r\n"
-                . "La liste des joueurs concernés est en pièce jointe.\r\n"
+                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numÃ©ro de licence renseignÃ© sur le site de l'UFOLEP 13 VOLLEY.\r\n"
+                . "Merci de mettre Ã  jour ce numÃ©ro de licence dÃ¨s que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche Ã©quipe.\r\n"
+                . "La liste des joueurs concernÃ©s est en piÃ¨ce jointe.\r\n"
                 . "Sportivement,\r\n"
                 . "L'UFOLEP";
             $to = $email;
-            $subject = "[UFOLEP13VOLLEY]Joueurs sans numéro de licence";
+            $subject = "[UFOLEP13VOLLEY]Joueurs sans numÃ©ro de licence";
             $from = "laurent.gorlier@ufolep13volley.org";
             if (sendCsvMail($results, $body, $to, $subject, $from) === FALSE) {
                 return false;
@@ -974,7 +960,7 @@ function getRank($compet, $div)
         $results[] = $data;
         $rang++;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getRanks()
@@ -996,7 +982,7 @@ function getRanks()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getTeamRank($competition, $league, $idTeam)
@@ -1369,7 +1355,7 @@ function getMatches($compet, $div)
             setSubmitResultDelay($data['code_match'], 0);
         }
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getDays()
@@ -1390,7 +1376,7 @@ function getDays()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getLimitDates()
@@ -1409,7 +1395,7 @@ function getLimitDates()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getMyMatches()
@@ -1429,7 +1415,7 @@ function getMyMatches()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getMyTeam()
@@ -1455,7 +1441,7 @@ function getMyTeam()
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' Ã  ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
         FROM equipes e
@@ -1476,7 +1462,7 @@ function getMyTeam()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getMyPreferences()
@@ -1497,7 +1483,7 @@ function getMyPreferences()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function saveMyPreferences()
@@ -1615,7 +1601,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
             }
         }
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getPlayers()
@@ -1652,7 +1638,7 @@ GROUP BY full_name";
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getProfiles()
@@ -1665,7 +1651,7 @@ function getProfiles()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getTeamsListForCaptain($playerId)
@@ -1902,7 +1888,7 @@ function getTeamName($idTeam)
 {
     global $db;
     if ($idTeam === 0) {
-        return 'Non renseigné';
+        return 'Non renseignÃ©';
     }
     conn_db();
     $sql = "SELECT 
@@ -2105,7 +2091,7 @@ function removeTimeSlot($id)
         return false;
     }
     disconn_db();
-    addActivity("Un créneau a été supprimé");
+    addActivity("Un crÃ©neau a Ã©tÃ© supprimÃ©");
     return true;
 }
 
@@ -2148,7 +2134,7 @@ function getTeamSheet($idTeam)
     if (count($results) === 0) {
         return false;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function insertPhoto($uploadfile, &$idPhoto)
@@ -2387,9 +2373,9 @@ function saveTimeSlot()
     disconn_db();
     $teamName = getTeamName($inputs['id_equipe']);
     if (empty($inputs['id'])) {
-        $comment = "Creation d'un nouveau creneau pour l'équipe $teamName";
+        $comment = "Creation d'un nouveau creneau pour l'Ã©quipe $teamName";
     } else {
-        $comment = "Modification d'un creneau existant pour l'équipe $teamName";
+        $comment = "Modification d'un creneau existant pour l'Ã©quipe $teamName";
     }
     addActivity($comment);
     return true;
@@ -2468,7 +2454,7 @@ function getUsers()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getWeekSchedule()
@@ -2491,7 +2477,7 @@ function getWeekSchedule()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getGymnasiums()
@@ -2513,7 +2499,7 @@ function getGymnasiums()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getClubs()
@@ -2530,7 +2516,7 @@ function getClubs()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getCompetitions()
@@ -2549,7 +2535,7 @@ function getCompetitions()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function saveUser()
@@ -2947,7 +2933,7 @@ function getTimeSlots()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getActivity()
@@ -2976,24 +2962,24 @@ function getActivity()
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function getAlerts()
 {
     $results = array();
     if (isAdmin()) {
-        return json_encode(utf8_encode_mix($results));
+        return json_encode($results);
     }
     if (!isTeamLeader()) {
-        return json_encode(utf8_encode_mix($results));
+        return json_encode($results);
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
     $sessionLogin = $_SESSION['login'];
     if (!hasEnoughPlayers($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Pas assez de joueurs dans l'équipe",
+            'issue' => "Pas assez de joueurs dans l'Ã©quipe",
             'criticity' => 'error',
             'expected_action' => 'showHelpAddPlayer'
         );
@@ -3001,7 +2987,7 @@ function getAlerts()
     if (!hasEnoughWomen($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Pas assez de filles dans l'équipe",
+            'issue' => "Pas assez de filles dans l'Ã©quipe",
             'criticity' => 'error',
             'expected_action' => 'showHelpAddPlayer'
         );
@@ -3009,7 +2995,7 @@ function getAlerts()
     if (!hasEnoughMen($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Pas assez de garçons dans l'équipe",
+            'issue' => "Pas assez de garÃ§ons dans l'Ã©quipe",
             'criticity' => 'error',
             'expected_action' => 'showHelpAddPlayer'
         );
@@ -3017,7 +3003,7 @@ function getAlerts()
     if (!hasLeader($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Responsable d'équipe non défini",
+            'issue' => "Responsable d'Ã©quipe non dÃ©fini",
             'criticity' => 'error',
             'expected_action' => 'showHelpSelectLeader'
         );
@@ -3025,7 +3011,7 @@ function getAlerts()
     if (!hasViceLeader($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Responsable suppléant d'équipe non défini",
+            'issue' => "Responsable supplÃ©ant d'Ã©quipe non dÃ©fini",
             'criticity' => 'warning',
             'expected_action' => 'showHelpSelectViceLeader'
         );
@@ -3033,7 +3019,7 @@ function getAlerts()
     if (!hasCaptain($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Capitaine d'équipe non défini",
+            'issue' => "Capitaine d'Ã©quipe non dÃ©fini",
             'criticity' => 'error',
             'expected_action' => 'showHelpSelectCaptain'
         );
@@ -3041,7 +3027,7 @@ function getAlerts()
     if (!hasTimeSlot($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Pas de gymnase de réception",
+            'issue' => "Pas de gymnase de rÃ©ception",
             'criticity' => 'info',
             'expected_action' => 'showHelpSelectTimeSlot'
         );
@@ -3049,7 +3035,7 @@ function getAlerts()
     if (!hasAnyPhone($sessionIdEquipe)) {
         $results[] = array(
             'owner' => $sessionLogin,
-            'issue' => "Pas de numéro de téléphone",
+            'issue' => "Pas de numÃ©ro de tÃ©lÃ©phone",
             'criticity' => 'error',
             'expected_action' => 'showHelpAddPhoneNumber'
         );
@@ -3078,7 +3064,7 @@ function getAlerts()
             'expected_action' => 'showHelpPlayersWithoutLicenceNumber'
         );
     }
-    return json_encode(utf8_encode_mix($results));
+    return json_encode($results);
 }
 
 function hasNotLicencedPlayers($sessionIdEquipe)

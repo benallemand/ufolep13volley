@@ -6,53 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.ids" afterPath="$PROJECT_DIR$/.idea/dataSources.ids" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/administration.js" afterPath="$PROJECT_DIR$/js/administration.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Administration.js" afterPath="$PROJECT_DIR$/js/controller/Administration.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Classement.js" afterPath="$PROJECT_DIR$/js/controller/Classement.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Matches.js" afterPath="$PROJECT_DIR$/js/controller/Matches.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Menu.js" afterPath="$PROJECT_DIR$/js/controller/Menu.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/TeamManagement.js" afterPath="$PROJECT_DIR$/js/controller/TeamManagement.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/portal.js" afterPath="$PROJECT_DIR$/js/portal.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/activity/Grid.js" afterPath="$PROJECT_DIR$/js/view/activity/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/activity/Window.js" afterPath="$PROJECT_DIR$/js/view/activity/Window.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/club/Grid.js" afterPath="$PROJECT_DIR$/js/view/club/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/club/Select.js" afterPath="$PROJECT_DIR$/js/view/club/Select.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/day/AdminGrid.js" afterPath="$PROJECT_DIR$/js/view/day/AdminGrid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/day/Edit.js" afterPath="$PROJECT_DIR$/js/view/day/Edit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/gymnasium/Grid.js" afterPath="$PROJECT_DIR$/js/view/gymnasium/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/limitdate/Grid.js" afterPath="$PROJECT_DIR$/js/view/limitdate/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/match/AdminGrid.js" afterPath="$PROJECT_DIR$/js/view/match/AdminGrid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/match/Edit.js" afterPath="$PROJECT_DIR$/js/view/match/Edit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/match/Grid.js" afterPath="$PROJECT_DIR$/js/view/match/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/match/LastResultsGrid.js" afterPath="$PROJECT_DIR$/js/view/match/LastResultsGrid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/mobile/Main.js" afterPath="$PROJECT_DIR$/js/view/mobile/Main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/player/Edit.js" afterPath="$PROJECT_DIR$/js/view/player/Edit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/player/Grid.js" afterPath="$PROJECT_DIR$/js/view/player/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/profile/Grid.js" afterPath="$PROJECT_DIR$/js/view/profile/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/profile/Select.js" afterPath="$PROJECT_DIR$/js/view/profile/Select.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/rank/AdminGrid.js" afterPath="$PROJECT_DIR$/js/view/rank/AdminGrid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/rank/Grid.js" afterPath="$PROJECT_DIR$/js/view/rank/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/site/CommissionPanel.js" afterPath="$PROJECT_DIR$/js/view/site/CommissionPanel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/site/MainMenu.js" afterPath="$PROJECT_DIR$/js/view/site/MainMenu.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/DetailsEdit.js" afterPath="$PROJECT_DIR$/js/view/team/DetailsEdit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/Edit.js" afterPath="$PROJECT_DIR$/js/view/team/Edit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/EditPreferences.js" afterPath="$PROJECT_DIR$/js/view/team/EditPreferences.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/FormDetails.js" afterPath="$PROJECT_DIR$/js/view/team/FormDetails.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/Grid.js" afterPath="$PROJECT_DIR$/js/view/team/Grid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/GridAlerts.js" afterPath="$PROJECT_DIR$/js/view/team/GridAlerts.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/GridMatches.js" afterPath="$PROJECT_DIR$/js/view/team/GridMatches.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/ModifyPassword.js" afterPath="$PROJECT_DIR$/js/view/team/ModifyPassword.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/PlayerAddToMyTeam.js" afterPath="$PROJECT_DIR$/js/view/team/PlayerAddToMyTeam.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/PlayersManage.js" afterPath="$PROJECT_DIR$/js/view/team/PlayersManage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/Select.js" afterPath="$PROJECT_DIR$/js/view/team/Select.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js" afterPath="$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" afterPath="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/timeslot/Edit.js" afterPath="$PROJECT_DIR$/js/view/timeslot/Edit.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/user/Grid.js" afterPath="$PROJECT_DIR$/js/view/user/Grid.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/classes/Indicator.php" afterPath="$PROJECT_DIR$/ajax/classes/Indicator.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/classes/Rest.php" afterPath="$PROJECT_DIR$/ajax/classes/Rest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/getAnnuaires.php" afterPath="$PROJECT_DIR$/ajax/getAnnuaires.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/indicators.php" afterPath="$PROJECT_DIR$/ajax/indicators.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/champ_fem.php" afterPath="$PROJECT_DIR$/champ_fem.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/champ_masc.php" afterPath="$PROJECT_DIR$/champ_masc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/champ_mixte.php" afterPath="$PROJECT_DIR$/champ_mixte.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commission.php" afterPath="$PROJECT_DIR$/commission.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/coupe.php" afterPath="$PROJECT_DIR$/coupe.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/coupe_kf.php" afterPath="$PROJECT_DIR$/coupe_kf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/coupe_kh.php" afterPath="$PROJECT_DIR$/coupe_kh.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/coupe_pf.php" afterPath="$PROJECT_DIR$/coupe_pf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/fonctions_inc.php" afterPath="$PROJECT_DIR$/includes/fonctions_inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/playoff_fem.php" afterPath="$PROJECT_DIR$/playoff_fem.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/playoff_masc.php" afterPath="$PROJECT_DIR$/playoff_masc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/teamSheetPdf.php" afterPath="$PROJECT_DIR$/teamSheetPdf.php" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -109,98 +80,98 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SetMyTeamCaptain.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamCaptain.js">
+      <file leaf-file-name="coupe_pf.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/coupe_pf.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SetMyTeamLeader.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamLeader.js">
+      <file leaf-file-name="coupe_kh.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/coupe_kh.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SetMyTeamViceLeader.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js">
+      <file leaf-file-name="coupe_kf.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/coupe_kf.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TimeSlotsManage.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/team/TimeSlotsManage.js">
+      <file leaf-file-name="coupe.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/coupe.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WebSitesGrid.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/team/WebSitesGrid.js">
+      <file leaf-file-name="commission.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/commission.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Edit.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/timeslot/Edit.js">
+      <file leaf-file-name="champ_mixte.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/champ_mixte.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WeekScheduleGrid.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js">
+      <file leaf-file-name="champ_masc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/champ_masc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Edit.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/user/Edit.js">
+      <file leaf-file-name="champ_fem.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/champ_fem.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Grid.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/view/user/Grid.js">
+      <file leaf-file-name="annuaire.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/annuaire.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="accueil.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/accueil.js">
+      <file leaf-file-name="admin.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/admin.php">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -225,57 +196,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/view/match/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/match/LastResultsGrid.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/LastResults.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Main.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/MyPlayers.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Players.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Portal.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/SearchTeam.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/SearchTournament.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Teams.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Tournaments.js" />
-        <option value="$PROJECT_DIR$/js/view/player/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/player/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/profile/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/profile/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/profile/Select.js" />
-        <option value="$PROJECT_DIR$/js/view/rank/AdminGrid.js" />
-        <option value="$PROJECT_DIR$/js/view/rank/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/rank/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/site/Banner.js" />
-        <option value="$PROJECT_DIR$/js/view/site/ChampionshipPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/CommissionPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/HeaderPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/LimitDatePanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/MainMenu.js" />
-        <option value="$PROJECT_DIR$/js/view/site/MainPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/MatchesPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/PhonebookPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/TeamDetailsPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/TitlePanel.js" />
-        <option value="$PROJECT_DIR$/js/view/site/UsefulInformationsPanel.js" />
-        <option value="$PROJECT_DIR$/js/view/team/DetailsEdit.js" />
-        <option value="$PROJECT_DIR$/js/view/team/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/team/EditPreferences.js" />
-        <option value="$PROJECT_DIR$/js/view/team/FormDetails.js" />
-        <option value="$PROJECT_DIR$/js/view/team/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/team/GridAlerts.js" />
-        <option value="$PROJECT_DIR$/js/view/team/GridMatches.js" />
-        <option value="$PROJECT_DIR$/js/view/team/ModifyPassword.js" />
-        <option value="$PROJECT_DIR$/js/view/team/PlayerAddToMyTeam.js" />
-        <option value="$PROJECT_DIR$/js/view/team/PlayersManage.js" />
-        <option value="$PROJECT_DIR$/js/view/team/Select.js" />
-        <option value="$PROJECT_DIR$/js/view/team/SetMyTeamCaptain.js" />
-        <option value="$PROJECT_DIR$/js/view/team/SetMyTeamLeader.js" />
-        <option value="$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js" />
-        <option value="$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" />
-        <option value="$PROJECT_DIR$/js/view/team/WebSitesGrid.js" />
-        <option value="$PROJECT_DIR$/js/view/timeslot/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" />
-        <option value="$PROJECT_DIR$/js/view/user/Edit.js" />
-        <option value="$PROJECT_DIR$/js/view/user/Grid.js" />
+        <option value="$PROJECT_DIR$/ajax/saveDay.php" />
+        <option value="$PROJECT_DIR$/ajax/saveGymnasium.php" />
+        <option value="$PROJECT_DIR$/ajax/saveLimitDate.php" />
+        <option value="$PROJECT_DIR$/ajax/saveMatch.php" />
+        <option value="$PROJECT_DIR$/ajax/saveMyPreferences.php" />
+        <option value="$PROJECT_DIR$/ajax/savePlayer.php" />
+        <option value="$PROJECT_DIR$/ajax/saveProfile.php" />
+        <option value="$PROJECT_DIR$/ajax/saveRank.php" />
+        <option value="$PROJECT_DIR$/ajax/saveTeam.php" />
+        <option value="$PROJECT_DIR$/ajax/saveTimeSlot.php" />
+        <option value="$PROJECT_DIR$/ajax/saveUser.php" />
+        <option value="$PROJECT_DIR$/ajax/sendMailPlayersWithoutLicenceNumber.php" />
+        <option value="$PROJECT_DIR$/ajax/supprimerEquipeCompetition.php" />
+        <option value="$PROJECT_DIR$/ajax/supprimerMatch.php" />
+        <option value="$PROJECT_DIR$/ajax/updateMyTeamCaptain.php" />
+        <option value="$PROJECT_DIR$/ajax/updateMyTeamLeader.php" />
+        <option value="$PROJECT_DIR$/ajax/updateMyTeamViceLeader.php" />
+        <option value="$PROJECT_DIR$/ajax/classes/Indicator.php" />
+        <option value="$PROJECT_DIR$/ajax/classes/Rest.php" />
+        <option value="$PROJECT_DIR$/includes/db_inc.php" />
+        <option value="$PROJECT_DIR$/includes/fonctions_inc.php" />
+        <option value="$PROJECT_DIR$/libs/Unirest.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/fpdf.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/courier.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/courierb.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/courierbi.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/courieri.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/helvetica.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/helveticab.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/helveticabi.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/helveticai.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/symbol.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/times.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/timesb.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/timesbi.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/timesi.php" />
+        <option value="$PROJECT_DIR$/libs/Fpdf/font/zapfdingbats.php" />
+        <option value="$PROJECT_DIR$/libs/Unirest/HttpMethod.php" />
+        <option value="$PROJECT_DIR$/libs/Unirest/HttpResponse.php" />
+        <option value="$PROJECT_DIR$/libs/Unirest/Unirest.php" />
+        <option value="$PROJECT_DIR$/teamSheetPdf.php" />
+        <option value="$PROJECT_DIR$/playoff_masc.php" />
+        <option value="$PROJECT_DIR$/playoff_fem.php" />
+        <option value="$PROJECT_DIR$/coupe_pf.php" />
+        <option value="$PROJECT_DIR$/coupe_kh.php" />
+        <option value="$PROJECT_DIR$/coupe_kf.php" />
+        <option value="$PROJECT_DIR$/coupe.php" />
+        <option value="$PROJECT_DIR$/commission.php" />
+        <option value="$PROJECT_DIR$/champ_mixte.php" />
+        <option value="$PROJECT_DIR$/champ_masc.php" />
+        <option value="$PROJECT_DIR$/champ_fem.php" />
       </list>
     </option>
   </component>
@@ -366,6 +337,34 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ajax" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -481,12 +480,6 @@
       <created>1436078698686</created>
       <option name="number" value="Default" />
       <updated>1436078698686</updated>
-    </task>
-    <task id="LOCAL-00008" summary="remove unused column division from dates_limite">
-      <created>1447231461253</created>
-      <option name="number" value="00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1447231461253</updated>
     </task>
     <task id="LOCAL-00009" summary="add some useful informations for new championship">
       <created>1447231751284</created>
@@ -776,7 +769,13 @@
       <option name="project" value="LOCAL" />
       <updated>1456421595707</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="convert to UTF 8">
+      <created>1456479933144</created>
+      <option name="number" value="00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1456479933144</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -806,13 +805,13 @@
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3043062" sideWeight="0.37793177" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32248804" sideWeight="0.49301985" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32854405" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32822967" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.69050896" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2228145" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30363986" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3033493" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.30949107" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2710728" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2708134" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -836,7 +835,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="allow admin to uncertify match" />
     <MESSAGE value="idea integration" />
     <MESSAGE value="drop fk" />
     <MESSAGE value="show cups" />
@@ -861,11 +859,12 @@
     <MESSAGE value="add foreign keys" />
     <MESSAGE value="create initial user for local test db" />
     <MESSAGE value="fix index creation" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix index creation" />
+    <MESSAGE value="convert to UTF 8" />
+    <option name="LAST_COMMIT_MESSAGE" value="convert to UTF 8" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="54" />
+      <option name="time" value="57" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="getLastResults.php">
@@ -874,18 +873,68 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/view/match/LastResultsGrid.js">
+    <entry file="file://$PROJECT_DIR$/ajax/getImageFromText.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getGymnasiums.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getDays.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getCompetitions.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getClubs.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getClassement.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getAnnuaires.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1456479645152" expanded="true" signature="1246:1274" placeholder="..." />
-            <marker date="1456479645152" expanded="true" signature="2255:2283" placeholder="..." />
+            <marker date="1456480555276" expanded="true" signature="104:154" placeholder="SELECT DISTI... classements" />
+            <marker date="1456480555276" expanded="true" signature="366:453" placeholder="SELECT libel... competitions" />
+            <marker date="1456480555276" expanded="true" signature="702:799" placeholder="SELECT DISTI... classements" />
+            <marker date="1456480555276" expanded="true" signature="1291:1523" placeholder="SELECT equip... classements" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/LastResults.js">
+    <entry file="file://$PROJECT_DIR$/ajax/getAlerts.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -893,7 +942,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/Main.js">
+    <entry file="file://$PROJECT_DIR$/ajax/getActivity.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -901,7 +950,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/MyPlayers.js">
+    <entry file="file://$PROJECT_DIR$/ajax/equipes.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -909,7 +958,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/Players.js">
+    <entry file="file://$PROJECT_DIR$/ajax/details_equipes.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -917,7 +966,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/Portal.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteUsers.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -925,7 +974,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/SearchTeam.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteTeams.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -933,7 +982,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/SearchTournament.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteRanks.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -941,7 +990,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/Teams.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deletePlayers.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -949,7 +998,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/mobile/Tournaments.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteMatches.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -957,7 +1006,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/player/Edit.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteLimitDates.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -965,7 +1014,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/player/Grid.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteGymnasiums.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -973,7 +1022,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/profile/Edit.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteDays.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -981,7 +1030,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/profile/Grid.js">
+    <entry file="file://$PROJECT_DIR$/ajax/deleteClubs.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -989,7 +1038,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/profile/Select.js">
+    <entry file="file://$PROJECT_DIR$/ajax/dates_limite.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -997,7 +1046,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/rank/AdminGrid.js">
+    <entry file="file://$PROJECT_DIR$/ajax/createUser.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1005,7 +1054,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/rank/Edit.js">
+    <entry file="file://$PROJECT_DIR$/ajax/comptes_acces.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1013,7 +1062,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/rank/Grid.js">
+    <entry file="file://$PROJECT_DIR$/ajax/competitions.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1021,7 +1070,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/Banner.js">
+    <entry file="file://$PROJECT_DIR$/ajax/commission.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1029,7 +1078,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/ChampionshipPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/classements.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1037,7 +1086,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/CommissionPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/checkLicence.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1045,7 +1094,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/HeaderPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/certifierMatch.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1053,7 +1102,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/LimitDatePanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/addProfileToUsers.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1061,17 +1110,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1456479722485" expanded="true" signature="8686:8702" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/addPlayerToMyTeam.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1079,7 +1118,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MatchesPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/addPlayersToTeam.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1087,7 +1126,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/PhonebookPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/addPlayersToClub.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1095,7 +1134,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/TeamDetailsPanel.js">
+    <entry file="file://$PROJECT_DIR$/ajax/activatePlayers.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1103,7 +1142,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/TitlePanel.js">
+    <entry file="file://$PROJECT_DIR$/teamSheetPdf.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1111,7 +1150,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/UsefulInformationsPanel.js">
+    <entry file="file://$PROJECT_DIR$/portail.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1119,15 +1158,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/DetailsEdit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/Edit.js">
+    <entry file="file://$PROJECT_DIR$/playoff_masc.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1135,7 +1166,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/EditPreferences.js">
+    <entry file="file://$PROJECT_DIR$/playoff_fem.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1143,7 +1174,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/FormDetails.js">
+    <entry file="file://$PROJECT_DIR$/login.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1151,7 +1182,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/Grid.js">
+    <entry file="file://$PROJECT_DIR$/index_mobile.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1159,7 +1190,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/GridAlerts.js">
+    <entry file="file://$PROJECT_DIR$/index_infos_utiles.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1167,21 +1198,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/GridMatches.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1456479773710" expanded="true" signature="703:739" placeholder="..." />
-            <marker date="1456479773710" expanded="true" signature="980:1012" placeholder="..." />
-            <marker date="1456479773710" expanded="true" signature="1616:1649" placeholder="..." />
-            <marker date="1456479773710" expanded="true" signature="2300:2340" placeholder="..." />
-            <marker date="1456479773710" expanded="true" signature="3450:3490" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/ModifyPassword.js">
+    <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1189,7 +1206,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/PlayerAddToMyTeam.js">
+    <entry file="file://$PROJECT_DIR$/coupe_pf.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1197,7 +1214,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/PlayersManage.js">
+    <entry file="file://$PROJECT_DIR$/coupe_kh.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1205,7 +1222,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/Select.js">
+    <entry file="file://$PROJECT_DIR$/coupe_kf.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1213,7 +1230,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamCaptain.js">
+    <entry file="file://$PROJECT_DIR$/coupe.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1221,7 +1238,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamLeader.js">
+    <entry file="file://$PROJECT_DIR$/commission.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1229,7 +1246,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js">
+    <entry file="file://$PROJECT_DIR$/champ_mixte.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1237,7 +1254,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/TimeSlotsManage.js">
+    <entry file="file://$PROJECT_DIR$/champ_masc.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1245,7 +1262,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/WebSitesGrid.js">
+    <entry file="file://$PROJECT_DIR$/champ_fem.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1253,7 +1270,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/timeslot/Edit.js">
+    <entry file="file://$PROJECT_DIR$/annuaire.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1261,31 +1278,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/user/Edit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/user/Grid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/accueil.js">
+    <entry file="file://$PROJECT_DIR$/admin.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />

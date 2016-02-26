@@ -1,7 +1,7 @@
 <?php
 include("includes/fonctions_inc.php");
 
-// On récupère l'ID de la division 
+// On rÃ©cupÃ¨re l'ID de la division 
 $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
@@ -18,7 +18,7 @@ $controllers[] = "'Classement'";
 <HTML>
 
 <HEAD>
-    <TITLE>Championnat Féminin - UFOLEP 13 VOLLEY</TITLE>
+    <TITLE>Championnat FÃ©minin - UFOLEP 13 VOLLEY</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <link rel="shortcut icon" href="favicon.ico"/>
     <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
@@ -34,7 +34,7 @@ $controllers[] = "'Classement'";
         var competition = 'f';
         var division = '<?php echo $div; ?>';
         var connectedUser = '<?php echo getConnectedUser(); ?>';
-        var title = "Division <?php echo $div; ?> - Championnat Féminin";
+        var title = "Division <?php echo $div; ?> - Championnat FÃ©minin";
         var limitDateLabel = "Date limite des matches : <?php getLimitDate("f"); ?>";
     </script>
     <script type="text/javascript">

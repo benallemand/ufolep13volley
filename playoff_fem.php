@@ -1,7 +1,7 @@
 <?php
 include("includes/fonctions_inc.php");
 
-// On récupère l'ID de la division 
+// On rÃ©cupÃ¨re l'ID de la division 
 $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
@@ -31,7 +31,7 @@ $controllers[] = "'Classement'";
             var competition = 'px';
             var division = '<?php echo $div; ?>';
             var connectedUser = '<?php echo getConnectedUser(); ?>';
-            var title = "Play Off <?php echo $div; ?> - Championnat Féminin";
+            var title = "Play Off <?php echo $div; ?> - Championnat FÃ©minin";
             var limitDateLabel = "Date limite des matches : <?php getLimitDate("px"); ?>";
         </script>
         <script type="text/javascript">

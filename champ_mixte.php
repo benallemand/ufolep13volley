@@ -1,7 +1,7 @@
 <?php
 include("includes/fonctions_inc.php");
 
-// On récupère l'ID de la division 
+// On rÃ©cupÃ¨re l'ID de la division 
 $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
