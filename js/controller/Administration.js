@@ -447,7 +447,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
             {
                 filterFn: function (item) {
-                    return ((item.get('teams_list').length > 0) && (item.get('id_club') === 0));
+                    return ((item.get('teams_list') !== null) && (item.get('id_club') === 0));
                 }
             }
         );
@@ -464,7 +464,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
             {
                 filterFn: function (item) {
-                    return ((item.get('teams_list').length > 0) && (item.get('num_licence').length === 0));
+                    return ((item.get('teams_list') !== null) && (item.get('num_licence').length === 0));
                 }
             }
         );
@@ -481,12 +481,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
             {
                 filterFn: function (item) {
-                    var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
-                    var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
-                    var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
-                    var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
-
-                    return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
+                    if (item.get('teams_list') !== null) {
+                        var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
+                        var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
+                        var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
+                        var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
+                        return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
+                    }
+                    return false;
                 }
             }
         );
@@ -503,7 +505,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         store.filter(
             {
                 filterFn: function (item) {
-                    return ((item.get('num_licence').length > 0) && (item.get('est_actif') === false) && (item.get('teams_list').length > 0));
+                    return ((item.get('num_licence') !== null) && (item.get('est_actif') === false) && (item.get('teams_list') !== null));
                 }
             }
         );
