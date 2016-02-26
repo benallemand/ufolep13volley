@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Administration.js" afterPath="$PROJECT_DIR$/js/controller/Administration.js" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -81,18 +79,7 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="Administration.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controller/Administration.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.583691">
-              <caret line="485" column="38" selection-start-line="485" selection-start-column="38" selection-end-line="485" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -108,7 +95,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ajax/saveTimeSlot.php" />
         <option value="$PROJECT_DIR$/ajax/saveUser.php" />
         <option value="$PROJECT_DIR$/ajax/sendMailPlayersWithoutLicenceNumber.php" />
         <option value="$PROJECT_DIR$/ajax/supprimerEquipeCompetition.php" />
@@ -159,6 +145,7 @@
         <option value="$PROJECT_DIR$/includes/fonctions_inc.php" />
         <option value="$PROJECT_DIR$/.htaccess" />
         <option value="$PROJECT_DIR$/js/controller/Administration.js" />
+        <option value="$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql" />
       </list>
     </option>
   </component>
@@ -240,16 +227,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ufolep13volley" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -364,18 +341,6 @@
       <created>1436078698686</created>
       <option name="number" value="Default" />
       <updated>1436078698686</updated>
-    </task>
-    <task id="LOCAL-00013" summary="misc fix">
-      <created>1447531785395</created>
-      <option name="number" value="00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1447531785395</updated>
-    </task>
-    <task id="LOCAL-00014" summary="misc fix">
-      <created>1447531823096</created>
-      <option name="number" value="00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1447531823096</updated>
     </task>
     <task id="LOCAL-00015" summary="misc fix">
       <created>1447531837992</created>
@@ -659,7 +624,19 @@
       <option name="project" value="LOCAL" />
       <updated>1456501780744</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="fix issues with convert to UTF 8">
+      <created>1456501798797</created>
+      <option name="number" value="00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1456501798797</updated>
+    </task>
+    <task id="LOCAL-00063" summary="add foreign key for timeslot to matches">
+      <created>1456501965197</created>
+      <option name="number" value="00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1456501965197</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -719,8 +696,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="show cups" />
-    <MESSAGE value="add useful informations" />
     <MESSAGE value="replace email for sending KH matches" />
     <MESSAGE value="fix callback management for jsonp usage" />
     <MESSAGE value="add has_time_constraint field in timeslot" />
@@ -744,7 +719,9 @@
     <MESSAGE value="convert to UTF 8 and CRLF" />
     <MESSAGE value="add razPoints in order to start a new season" />
     <MESSAGE value="convert to UTF 8" />
-    <option name="LAST_COMMIT_MESSAGE" value="convert to UTF 8" />
+    <MESSAGE value="fix issues with convert to UTF 8" />
+    <MESSAGE value="add foreign key for timeslot to matches" />
+    <option name="LAST_COMMIT_MESSAGE" value="add foreign key for timeslot to matches" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -757,14 +734,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ajax/deleteGymnasiums.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/deleteDays.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1317,6 +1286,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.583691">
           <caret line="485" column="38" selection-start-line="485" selection-start-column="38" selection-end-line="485" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="19" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
           <folding />
         </state>
       </provider>
