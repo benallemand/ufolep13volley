@@ -42,13 +42,13 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 align: 'center'
             },
             {
-                header: 'Joués',
+                header: 'JouÃ©s',
                 width: 100,
                 dataIndex: 'joues',
                 align: 'center'
             },
             {
-                header: 'Gagnés',
+                header: 'GagnÃ©s',
                 width: 100,
                 dataIndex: 'gagnes',
                 align: 'center'
@@ -110,7 +110,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 align: 'center'
             },
             {
-                header: 'Pénalités',
+                header: 'PÃ©nalitÃ©s',
                 width: 100,
                 dataIndex: 'penalites',
                 align: 'center'
@@ -124,21 +124,21 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 items: [
                     {
                         icon: 'images/moins.png',
-                        tooltip: 'Ajouter un point de pénalité',
+                        tooltip: 'Ajouter un point de pÃ©nalitÃ©',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemaddpenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/plus.png',
-                        tooltip: 'Enlever un point de pénalité',
+                        tooltip: 'Enlever un point de pÃ©nalitÃ©',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemremovepenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
                         icon: 'images/delete.gif',
-                        tooltip: 'Supprimer cette équipe de la compétition',
+                        tooltip: 'Supprimer cette Ã©quipe de la compÃ©tition',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
                         }
@@ -156,7 +156,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 {
                     xtype: 'combo',
                     width: 400,
-                    fieldLabel: 'Filtre sur équipe',
+                    fieldLabel: 'Filtre sur Ã©quipe',
                     store: 'Classement',
                     queryMode: 'local',
                     displayField: 'equipe',
@@ -184,7 +184,7 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                     width: 120,
                     text: 'Voir tout',
                     handler: function () {
-                        var comboFiltre = Ext.ComponentQuery.query('combo[fieldLabel=Filtre sur équipe]')[0];
+                        var comboFiltre = Ext.ComponentQuery.query('combo[fieldLabel=Filtre sur Ã©quipe]')[0];
                         comboFiltre.clearValue();
                     }
                 }

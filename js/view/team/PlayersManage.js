@@ -29,7 +29,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     }
                 },
                 {
-                    header: 'Prénom',
+                    header: 'PrÃ©nom',
                     dataIndex: 'prenom',
                     tdCls: 'x-style-cell'
                 },
@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     tdCls: 'x-style-cell'
                 },
                 {
-                    header: 'Numéro de licence',
+                    header: 'NumÃ©ro de licence',
                     dataIndex: 'num_licence'
                 },
                 {
@@ -63,7 +63,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     }
                 },
                 {
-                    header: 'Suppléant',
+                    header: 'SupplÃ©ant',
                     dataIndex: 'is_vice_leader',
                     xtype: 'checkcolumn',
                     listeners: {
@@ -108,7 +108,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     },
                     {
                         xtype: 'button',
-                        text: "Modifier le suppléant",
+                        text: "Modifier le supplÃ©ant",
                         action: 'modifyViceLeader'
                     }
                 ]
@@ -119,7 +119,7 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                 items: [
                     {
                         xtype: 'tbtext',
-                        text: "Les joueurs sur fond rose n'ont pas été vérifiés par la Commission.",
+                        text: "Les joueurs sur fond rose n'ont pas Ã©tÃ© vÃ©rifiÃ©s par la Commission.",
                         style: {
                             background: 'pink !important'
                         }

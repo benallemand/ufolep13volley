@@ -1287,7 +1287,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 if (Ext.String.endsWith(resultMessage, currentYear) || Ext.String.endsWith(resultMessage, nextYear)) {
                     Ext.Msg.show({
                         title: 'Infos licence',
-                        message: 'Trouvé : ' + displayMessage.trim() + ', Voulez vous activer le joueur ?',
+                        message: 'TrouvÃ© : ' + displayMessage.trim() + ', Voulez vous activer le joueur ?',
                         buttons: Ext.Msg.YESNO,
                         icon: Ext.Msg.QUESTION,
                         fn: function (btn) {

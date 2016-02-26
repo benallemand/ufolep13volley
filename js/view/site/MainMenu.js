@@ -59,7 +59,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     ]
                 },
                 {
-                    text: 'Féminin',
+                    text: 'FÃ©minin',
                     menu: [
                         {
                             text: 'Division 1',
@@ -238,7 +238,7 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     hrefTarget: '_self'
                 },
                 {
-                    text: 'Règlements',
+                    text: 'RÃ¨glements',
                     menu: [
                         {
                             text: 'FIVB',
@@ -246,12 +246,12 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Général',
+                            text: 'GÃ©nÃ©ral',
                             href: 'infos_utiles/Media/ReglementGeneral.pdf',
                             hrefTarget: '_blank'
                         },
                         {
-                            text: 'Championnat Féminin',
+                            text: 'Championnat FÃ©minin',
                             href: 'infos_utiles/Media/ReglementFeminin.pdf',
                             hrefTarget: '_blank'
                         },
@@ -283,30 +283,30 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     ]
                 },
                 {
-                    text: 'Déclaration de sinistre',
+                    text: 'DÃ©claration de sinistre',
                     handler: function () {
                         Ext.Msg.show({
-                            title: 'Déclaration de sinistre',
-                            msg: "Le document téléchargé doit être transmis à :<br/>\
-Fédération des A. I. L, Service Apac, 192 rue Horace Bertin, 13005 Marseille<br/>\
-La responsable Apac est : Céline Pouillot<br/>\
+                            title: 'DÃ©claration de sinistre',
+                            msg: "Le document tÃ©lÃ©chargÃ© doit Ãªtre transmis Ã  :<br/>\
+FÃ©dÃ©ration des A. I. L, Service Apac, 192 rue Horace Bertin, 13005 Marseille<br/>\
+La responsable Apac est : CÃ©line Pouillot<br/>\
 04 91 24 31 47 ou 61<br/>\
 Pour votre information, le service APAC est ouvert :<br/>\
-Du lundi au vendredi de 10h à 12h et de 14h30 à 17h<br/>\
+Du lundi au vendredi de 10h Ã  12h et de 14h30 Ã  17h<br/>\
 - Sur place avec ou sans rendez-vous : 192 Rue Horace Bertin 13005 Marseille<br/>\
-- Par tél. 04.91.24.31.47<br/>\
+- Par tÃ©l. 04.91.24.31.47<br/>\
 - Par mail<br/>\
-Déléguée APAC Céline POUILLOT celine.pouillot@laligue13.fr<br/>\
-Secrétariat APAC Aurore RACLOT apac@laligue13.fr <br/>\
+DÃ©lÃ©guÃ©e APAC CÃ©line POUILLOT celine.pouillot@laligue13.fr<br/>\
+SecrÃ©tariat APAC Aurore RACLOT apac@laligue13.fr <br/>\
 Il faudra retourner par voie postale :<br/>\
-- La déclaration de sinistre dûment remplie et signée<br/>\
-- Le certificat médical original de constatation de blessure<br/>\
-- La copie de la licence en cours du joueur blessé<br/>\
+- La dÃ©claration de sinistre dÃ»ment remplie et signÃ©e<br/>\
+- Le certificat mÃ©dical original de constatation de blessure<br/>\
+- La copie de la licence en cours du joueur blessÃ©<br/>\
 - La copie de la feuille de match",
                             buttons: Ext.Msg.OK,
                             icon: Ext.Msg.INFO,
                             buttonText: {
-                                ok: 'Télécharger'
+                                ok: 'TÃ©lÃ©charger'
                             },
                             fn: function () {
                                 window.open('infos_utiles/Media/DeclarationSinistreApac.pdf', '_blank');
@@ -356,12 +356,12 @@ Il faudra retourner par voie postale :<br/>\
                     }
                 },
                 {
-                    text: "Ma page (Responsable d'équipe uniquement)",
+                    text: "Ma page (Responsable d'Ã©quipe uniquement)",
                     href: 'portail.php',
                     hrefTarget: '_self'
                 },
                 {
-                    text: 'Se déconnecter',
+                    text: 'Se dÃ©connecter',
                     scale: 'large',
                     icon: 'images/unlock.png',
                     href: "ajax/logout.php",

@@ -56,7 +56,7 @@ Ext.define('Ufolep13Volley.view.team.PlayerAddToMyTeam', {
                     'Joueur Introuvable ?',
                     {
                         xtype: 'button',
-                        text: 'Créer un joueur',
+                        text: 'CrÃ©er un joueur',
                         action: 'createPlayer'
                     }
                 ]

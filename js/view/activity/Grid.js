@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.activity.Grid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.activitygrid',
-    title: 'Activité',
+    title: 'ActivitÃ©',
     autoScroll: true,
     store: 'Activity',
     columns: {

@@ -18,7 +18,7 @@ Ext.define('Ufolep13Volley.view.team.GridAlerts', {
     columns: {
         items: [
             {
-                header: 'Problème',
+                header: 'ProblÃ¨me',
                 width: 400,
                 dataIndex: 'issue',
                 tdCls: 'x-style-cell'

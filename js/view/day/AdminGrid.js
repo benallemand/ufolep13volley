@@ -1,18 +1,18 @@
 Ext.define('Ufolep13Volley.view.day.AdminGrid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.daysgrid',
-    title: 'Gestion des Journées',
+    title: 'Gestion des JournÃ©es',
     autoScroll: true,
     selType: 'checkboxmodel',
     store: 'AdminDays',
     columns: {
         items: [
             {
-                header: 'Compétition',
+                header: 'CompÃ©tition',
                 dataIndex: 'libelle_competition'
             },
             {
-                header: 'Numéro',
+                header: 'NumÃ©ro',
                 dataIndex: 'numero'
             },
             {
@@ -20,7 +20,7 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
                 dataIndex: 'nommage'
             },
             {
-                header: 'Libellé',
+                header: 'LibellÃ©',
                 dataIndex: 'libelle'
             }
         ]
@@ -35,11 +35,11 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer une journée',
+                    text: 'CrÃ©er une journÃ©e',
                     action: 'add'
                 },
                 {
-                    text: 'Editer journée',
+                    text: 'Editer journÃ©e',
                     action: 'edit'
                 },
                 {

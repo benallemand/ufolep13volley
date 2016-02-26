@@ -1,15 +1,15 @@
 Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.LastResultsGrid',
-    title: 'Derniers résultats',
+    title: 'Derniers rÃ©sultats',
     columns: [
         {
-            header: 'Compétition',
+            header: 'CompÃ©tition',
             dataIndex: 'competition',
             width: 250
         },
         {
-            header: 'Journée',
+            header: 'JournÃ©e',
             dataIndex: 'division_journee',
             width: 200,
             renderer: function(val, meta, record) {
@@ -48,7 +48,7 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
             width: 20
         },
         {
-            header: 'Extérieur',
+            header: 'ExtÃ©rieur',
             dataIndex: 'equipe_exterieur',
             width: 180,
             renderer: function(val, meta, record) {

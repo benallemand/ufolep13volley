@@ -18,7 +18,7 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                 width: 300
             },
             {
-                header: 'Compétition',
+                header: 'CompÃ©tition',
                 dataIndex: 'libelle_competition',
                 width: 300
             }
@@ -34,11 +34,11 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer une équipe',
+                    text: 'CrÃ©er une Ã©quipe',
                     action: 'add'
                 },
                 {
-                    text: 'Editer équipe',
+                    text: 'Editer Ã©quipe',
                     action: 'edit'
                 },
                 {

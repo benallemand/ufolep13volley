@@ -211,27 +211,27 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                 break;
             case 'showHelpSelectTimeSlot':
                 this.showManageTimeSlots();
-                Ext.Msg.alert('Ajout de créneau de gymnase', "Merci d'indiquer les créneaux auxquels vous pouvez recevoir les matches.");
+                Ext.Msg.alert('Ajout de crÃ©neau de gymnase', "Merci d'indiquer les crÃ©neaux auxquels vous pouvez recevoir les matches.");
                 break;
             case 'showHelpAddPhoneNumber':
                 this.showManagePlayers();
-                Ext.Msg.alert('Numéro de téléphone', 'Editer le capitaine ou le suppléant, et ajouter au moins un numéro de téléphone.');
+                Ext.Msg.alert('NumÃ©ro de tÃ©lÃ©phone', 'Editer le capitaine ou le supplÃ©ant, et ajouter au moins un numÃ©ro de tÃ©lÃ©phone.');
                 break;
             case 'showHelpAddEmail':
                 this.showManagePlayers();
-                Ext.Msg.alert('Adresse email', 'Editer le capitaine ou le suppléant, et ajouter au moins une adresse email.');
+                Ext.Msg.alert('Adresse email', 'Editer le capitaine ou le supplÃ©ant, et ajouter au moins une adresse email.');
                 break;
             case 'showHelpAddPlayer':
                 this.showManagePlayers();
-                Ext.Msg.alert('Ajout de joueur', "Cliquer sur 'Ajouter un joueur' pour sélectionner l'un des joueurs connus du système. Si ce joueur n'existe pas, cliquer sur 'Créer un joueur'. Les joueurs n'apparaissent pas immédiatement sur la fiche équipe, ils doivent être activés par les responsables UFOLEP.");
+                Ext.Msg.alert('Ajout de joueur', "Cliquer sur 'Ajouter un joueur' pour sÃ©lectionner l'un des joueurs connus du systÃ¨me. Si ce joueur n'existe pas, cliquer sur 'CrÃ©er un joueur'. Les joueurs n'apparaissent pas immÃ©diatement sur la fiche Ã©quipe, ils doivent Ãªtre activÃ©s par les responsables UFOLEP.");
                 break;
             case 'showHelpInactivePlayers':
                 this.showManagePlayers();
-                Ext.Msg.alert('Joueurs inactifs', "Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche équipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vérifier la validité de ces joueurs. Si le délai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concerné.");
+                Ext.Msg.alert('Joueurs inactifs', "Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche Ã©quipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vÃ©rifier la validitÃ© de ces joueurs. Si le dÃ©lai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concernÃ©.");
                 break;
             case 'showHelpPlayersWithoutLicenceNumber':
                 this.showManagePlayers();
-                Ext.Msg.alert('Joueurs sans licence', "Certains joueurs n'ont pas encore leur numéro de licence. Ils ne peuvent être vérifiés par la commission que lorsqu'ils auront leur numéro de licence. Merci de renseigner ce numéro dès que vous l'aurez récupéré.");
+                Ext.Msg.alert('Joueurs sans licence', "Certains joueurs n'ont pas encore leur numÃ©ro de licence. Ils ne peuvent Ãªtre vÃ©rifiÃ©s par la commission que lorsqu'ils auront leur numÃ©ro de licence. Merci de renseigner ce numÃ©ro dÃ¨s que vous l'aurez rÃ©cupÃ©rÃ©.");
                 break;
         }
     },
@@ -504,7 +504,7 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         var storeMyPlayers = gridMyPlayers.getStore();
         Ext.Msg.show({
             title: 'Retirer un joueur',
-            msg: 'Voulez-vous retirer ' + currentRecord.get('prenom') + ' ' + currentRecord.get('nom') + ' de votre équipe ?',
+            msg: 'Voulez-vous retirer ' + currentRecord.get('prenom') + ' ' + currentRecord.get('nom') + ' de votre Ã©quipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {
@@ -535,8 +535,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
         }
         var storeTimeSlots = gridTimeSlots.getStore();
         Ext.Msg.show({
-            title: 'Retirer un créneau',
-            msg: 'Voulez-vous retirer ce créneau de gymnase pour votre équipe ?',
+            title: 'Retirer un crÃ©neau',
+            msg: 'Voulez-vous retirer ce crÃ©neau de gymnase pour votre Ã©quipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {

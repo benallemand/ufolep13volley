@@ -1,6 +1,6 @@
 Ext.define('Ufolep13Volley.view.team.FormDetails', {
     extend: 'Ext.form.Panel',
-    title: 'Détails',
+    title: 'DÃ©tails',
     alias: 'widget.formTeamDetails',
     layout: 'anchor',
     autoScroll: true,
@@ -33,7 +33,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'displayfield',
-            fieldLabel: 'Téléphone 1',
+            fieldLabel: 'TÃ©lÃ©phone 1',
             name: 'telephone_1',
             renderer: function(val) {
                 if (val.length === 0) {
@@ -44,7 +44,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'displayfield',
-            fieldLabel: 'Téléphone 2',
+            fieldLabel: 'TÃ©lÃ©phone 2',
             name: 'telephone_2',
             renderer: function(val) {
                 if (val.length === 0) {
@@ -66,7 +66,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
         },
         {
             xtype: 'textarea',
-            fieldLabel: 'Créneaux',
+            fieldLabel: 'CrÃ©neaux',
             readOnly: true,
             name: 'gymnasiums_list',
             renderer: function(val) {

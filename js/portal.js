@@ -35,7 +35,7 @@ Ext.application({
                                         action: 'showManagePlayers'
                                     },
                                     {
-                                        text: 'Gestion des gymnases/créneaux',
+                                        text: 'Gestion des gymnases/crÃ©neaux',
                                         scale: 'large',
                                         icon: 'images/volleyballcourt.jpg',
                                         action: 'showTimeSlotsManage'
@@ -64,7 +64,7 @@ Ext.application({
                                         icon: 'images/lock.png'
                                     },
                                     {
-                                        text: 'Préférences',
+                                        text: 'PrÃ©fÃ©rences',
                                         scale: 'large',
                                         icon: 'images/preferences.png',
                                         action: 'editPreferences'

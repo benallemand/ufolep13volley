@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.team.TimeSlotsManage', {
     extend: 'Ext.window.Window',
     alias: 'widget.timeslotsmanage',
-    title: 'Gestion des créneaux',
+    title: 'Gestion des crÃ©neaux',
     height: 600,
     width: 800,
     modal: true,
@@ -47,17 +47,17 @@ Ext.define('Ufolep13Volley.view.team.TimeSlotsManage', {
                 items: [
                     {
                         xtype: 'button',
-                        text: 'Ajouter un créneau',
+                        text: 'Ajouter un crÃ©neau',
                         action: 'createTimeSlot'
                     },
                     {
                         xtype: 'button',
-                        text: 'Retirer un créneau',
+                        text: 'Retirer un crÃ©neau',
                         action: 'removeTimeSlot'
                     },
                     {
                         xtype: 'button',
-                        text: 'Editer un créneau',
+                        text: 'Editer un crÃ©neau',
                         action: 'editTimeSlot'
                     }
                 ]

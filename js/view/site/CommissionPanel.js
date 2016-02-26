@@ -21,7 +21,7 @@ Ext.define('Ufolep13Volley.view.site.CommissionPanel', {
                 xtype: 'dataview',
                 autoScroll: true,
                 tpl: new Ext.XTemplate(
-                    '<H2 align="center">Les personnes membres de la CTSD 13 Volley-Ball ainsi que les personnes qui aident le font à titre de bénévolat.</H2>',
+                    '<H2 align="center">Les personnes membres de la CTSD 13 Volley-Ball ainsi que les personnes qui aident le font Ã  titre de bÃ©nÃ©volat.</H2>',
                     '<div id="commission">',
                     '<h1>Membres CTSD</h1>',
                     '<table>',

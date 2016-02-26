@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'code_match'
             },
             {
-                header: 'Compétition',
+                header: 'CompÃ©tition',
                 dataIndex: 'libelle_competition'
             },
             {
@@ -20,7 +20,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'division'
             },
             {
-                header: 'Journée',
+                header: 'JournÃ©e',
                 dataIndex: 'journee'
             },
             {
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'equipe_dom'
             },
             {
-                header: 'Extérieur',
+                header: 'ExtÃ©rieur',
                 dataIndex: 'equipe_ext'
             },
             {
@@ -53,7 +53,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer un match',
+                    text: 'CrÃ©er un match',
                     action: 'add'
                 },
                 {

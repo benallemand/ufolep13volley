@@ -20,7 +20,7 @@ Ext.define('Ufolep13Volley.view.profile.Grid', {
             dock: 'top',
             items: [
                 {
-                    text: 'Créer',
+                    text: 'CrÃ©er',
                     action: 'addProfile'
                 },
                 {

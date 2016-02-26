@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.controller.Menu', {
         if (Ext.is.Phone) {
             Ext.Msg.show({
                 title: 'Mobile?',
-                msg: 'Accéder à la version mobile?',
+                msg: 'AccÃ©der Ã  la version mobile?',
                 buttons: Ext.Msg.YESNO,
                 icon: Ext.Msg.QUESTION,
                 fn: function (btn) {

@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 name: 'prenom',
-                fieldLabel: 'Prénom',
+                fieldLabel: 'PrÃ©nom',
                 allowBlank: false,
                 msgTarget: 'under'
             },
@@ -51,7 +51,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 name: 'num_licence',
-                fieldLabel: 'Numéro de licence',
+                fieldLabel: 'NumÃ©ro de licence',
                 minLength: 8,
                 maxLength: 8,
                 msgTarget: 'under'
@@ -65,7 +65,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                     fields: ['abbr', 'name'],
                     data: [
                         {"abbr": "M", "name": "Masculin"},
-                        {"abbr": "F", "name": "Féminin"}
+                        {"abbr": "F", "name": "FÃ©minin"}
                     ]
                 }),
                 queryMode: 'local',
@@ -76,13 +76,13 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 name: 'departement_affiliation',
-                fieldLabel: "Département d'affiliation",
+                fieldLabel: "DÃ©partement d'affiliation",
                 xtype: 'combo',
                 allowBlank: false,
                 store: Ext.create('Ext.data.Store', {
                     fields: [{name: 'abbr', type: 'int'}, 'name'],
                     data: [
-                        {"abbr": 13, "name": "Bouches du Rhône"},
+                        {"abbr": 13, "name": "Bouches du RhÃ´ne"},
                         {"abbr": 84, "name": "Vaucluse"},
                         {"abbr": 83, "name": "Var"},
                         {"abbr": 0, "name": "Autres"}
@@ -108,7 +108,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 items: [
                     {
                         xtype: 'label',
-                        text: "A modifier uniquement si le joueur vient d'un autre club (prêt, changement de club)",
+                        text: "A modifier uniquement si le joueur vient d'un autre club (prÃªt, changement de club)",
                         anchor: '100%'
                     },
                     {
@@ -127,7 +127,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             {
                 name: 'show_photo',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Diffusion photo autorisée ?',
+                fieldLabel: 'Diffusion photo autorisÃ©e ?',
                 boxLabel: 'Oui',
                 msgTarget: 'under'
             },
@@ -135,7 +135,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'photo',
                 xtype: 'filefield',
                 fieldLabel: 'Photo',
-                buttonText: 'Sélection Photo...',
+                buttonText: 'SÃ©lection Photo...',
                 msgTarget: 'under'
             },
             {
@@ -158,7 +158,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 xtype: 'fieldset',
-                title: 'Détails',
+                title: 'DÃ©tails',
                 layout: 'anchor',
                 defaults: {
                     xtype: 'textfield',
@@ -167,7 +167,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 items: [
                     {
                         name: 'telephone',
-                        fieldLabel: 'Numéro de téléphone',
+                        fieldLabel: 'NumÃ©ro de tÃ©lÃ©phone',
                         msgTarget: 'under'
                     },
                     {
@@ -177,7 +177,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                     },
                     {
                         name: 'telephone2',
-                        fieldLabel: 'Numéro de téléphone secondaire',
+                        fieldLabel: 'NumÃ©ro de tÃ©lÃ©phone secondaire',
                         msgTarget: 'under'
                     },
                     {

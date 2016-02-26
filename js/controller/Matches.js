@@ -123,7 +123,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                         {
                                             xtype: 'button',
                                             margin: 10,
-                                            text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
+                                            text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez Ã  sauver)',
                                             handler: function() {
                                                 this.up('form').getForm().setValues([
                                                     {
@@ -232,7 +232,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                         {
                                             xtype: 'button',
                                             margin: 10,
-                                            text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
+                                            text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez Ã  sauver)',
                                             handler: function() {
                                                 this.up('form').getForm().setValues([
                                                     {
@@ -370,7 +370,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
             title: 'Suppression',
-            msg: 'Cette opération entrainera irrémédiablement la suppression de ce match ! Êtes-vous sur de vouloir continuer ?',
+            msg: 'Cette opÃ©ration entrainera irrÃ©mÃ©diablement la suppression de ce match ! ÃŠtes-vous sur de vouloir continuer ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function(btn) {

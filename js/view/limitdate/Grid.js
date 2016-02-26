@@ -8,7 +8,7 @@ Ext.define('Ufolep13Volley.view.limitdate.Grid', {
     columns: {
         items: [
             {
-                header: 'Compétition',
+                header: 'CompÃ©tition',
                 dataIndex: 'libelle_competition'
             },
             {
@@ -27,7 +27,7 @@ Ext.define('Ufolep13Volley.view.limitdate.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer une date limite',
+                    text: 'CrÃ©er une date limite',
                     action: 'add'
                 },
                 {

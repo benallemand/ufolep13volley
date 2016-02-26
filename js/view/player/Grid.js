@@ -30,7 +30,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 dataIndex: 'sexe'
             },
             {
-                header: 'Numéro de licence',
+                header: 'NumÃ©ro de licence',
                 dataIndex: 'num_licence'
             },
             {
@@ -65,19 +65,19 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Vérifier une licence...',
+                    text: 'VÃ©rifier une licence...',
                     action: 'showCheckLicence'
                 },
                 {
-                    text: 'Associer à un club',
+                    text: 'Associer Ã  un club',
                     action: 'showClubSelect'
                 },
                 {
-                    text: 'Associer à une équipe',
+                    text: 'Associer Ã  une Ã©quipe',
                     action: 'showTeamSelect'
                 },
                 {
-                    text: 'Créer un joueur',
+                    text: 'CrÃ©er un joueur',
                     action: 'addPlayer'
                 },
                 {
@@ -122,7 +122,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 },
                 {
                     xtype: 'checkbox',
-                    boxLabel: 'Joueurs dans 2 équipes',
+                    boxLabel: 'Joueurs dans 2 Ã©quipes',
                     action: 'filterPlayersWith2TeamsSameCompetition'
                 },
                 '->',

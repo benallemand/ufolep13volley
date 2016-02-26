@@ -48,7 +48,7 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                         action: 'getPhonebook'
                     },
                     {
-                        text: 'Résultats',
+                        text: 'RÃ©sultats',
                         icon: 'images/cup.png',
                         action: 'getLastResults'
                     }

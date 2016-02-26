@@ -18,8 +18,8 @@ Ext.define('Ufolep13Volley.controller.Classement', {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
-            title: 'Pénalité',
-            msg: 'Voulez-vous ajouter un point de pénalité à cette équipe ?',
+            title: 'PÃ©nalitÃ©',
+            msg: 'Voulez-vous ajouter un point de pÃ©nalitÃ© Ã  cette Ã©quipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function(btn) {
@@ -45,8 +45,8 @@ Ext.define('Ufolep13Volley.controller.Classement', {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
-            title: 'Pénalité',
-            msg: 'Voulez-vous enlever un point de pénalité à cette équipe ?',
+            title: 'PÃ©nalitÃ©',
+            msg: 'Voulez-vous enlever un point de pÃ©nalitÃ© Ã  cette Ã©quipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function(btn) {
@@ -73,7 +73,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
             title: 'Suppression',
-            msg: 'Cette opération entrainera la suppression de cette équipe de cette compétition ! Êtes-vous sur ?',
+            msg: 'Cette opÃ©ration entrainera la suppression de cette Ã©quipe de cette compÃ©tition ! ÃŠtes-vous sur ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
             fn: function(btn) {

@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.timeslot.Edit', {
     extend: 'Ext.window.Window',
     alias: 'widget.timeslotedit',
-    title: 'Créneau',
+    title: 'CrÃ©neau',
     layout: 'fit',
     modal: true,
     width: 700,
