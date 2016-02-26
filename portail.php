@@ -22,7 +22,7 @@ if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
 
 <HEAD>
     <TITLE>Authentification Portail - UFOLEP 13 VOLLEY</TITLE>
-    <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="favicon.ico"/>
     <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
     <link

@@ -663,7 +663,7 @@ function sendMailSubmitResult($id1, $id2, $date)
     $headers .= 'Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Cc: laurent.gorlier@ufolep13volley.org' . "\n";
     $headers .= 'Bcc: benallemand@gmail.com' . "\n";
-    $headers .= 'Content-Type: text/html; charset="iso-8859-1"' . "\n";
+    $headers .= 'Content-Type: text/html; charset="utf-8"' . "\n";
     $headers .= 'Content-Transfer-Encoding: 8bit';
 
     $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
@@ -723,7 +723,7 @@ function sendCsvMail($csvData, $body, $to = 'youraddress@example.com', $subject 
     );
     $attachment = chunk_split(base64_encode(createCsvString($csvData)));
     $body = "--$multipartSep\r\n"
-        . "Content-Type: text/plain; charset=ISO-8859-1; format=flowed\r\n"
+        . "Content-Type: text/plain; charset=utf-8; format=flowed\r\n"
         . "Content-Transfer-Encoding: 7bit\r\n"
         . "\r\n"
         . "$body\r\n"
