@@ -149,6 +149,32 @@ function deleteRanks($ids)
     return true;
 }
 
+function razPoints($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE classements
+     SET points = 0,
+     joues = 0,
+     gagnes = 0,
+     perdus = 0,
+     sets_pour = 0,
+     sets_contre = 0,
+     difference = 0,
+     coeff_sets = 0,
+     points_pour = 0,
+     points_contre = 0,
+     coeff_points = 0,
+     penalite = 0
+    WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deleteDays($ids)
 {
     global $db;

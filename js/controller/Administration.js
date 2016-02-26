@@ -301,6 +301,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'rankgrid button[action=delete]': {
                     click: this.deleteRanks
                 },
+                'rankgrid button[action=razPoints]': {
+                    click: this.razPoints
+                },
                 'daysgrid button[action=delete]': {
                     click: this.deleteDays
                 },
@@ -825,6 +828,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 });
                 Ext.Ajax.request({
                     url: 'ajax/deleteRanks.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        me.getAdminRanksStore().load();
+                    }
+                });
+            }
+        });
+    },
+    razPoints: function () {
+        var me = this;
+        var records = this.getManageRanksGrid().getSelectionModel().getSelection();
+        if (!records) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Remise à zéro?',
+            msg: 'Etes-vous certain de vouloir effectuer une remise à zéro des points de cette/ces équipe(s)?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/razPoints.php',
                     params: {
                         ids: ids.join(',')
                     },

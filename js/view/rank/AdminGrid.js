@@ -41,6 +41,10 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                },
+                {
+                    text: 'Remise à zéro des points',
+                    action: 'razPoints'
                 }
             ]
         }
