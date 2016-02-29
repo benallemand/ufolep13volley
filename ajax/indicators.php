@@ -54,32 +54,13 @@ GROUP BY
 MID(comment, LOCATE('(',comment)+1, 8),
 SUBSTRING(SUBSTRING_INDEX(comment, '(', -1), 1, LENGTH(SUBSTRING_INDEX(comment, '(', -1))-1)
 HAVING COUNT(*) > 1");
-$indicatorWrongMatchTime = new Indicator(
-    'Horaires de match incorrects', "SELECT
-m.code_match,
-edom.nom_equipe AS equipe_dom,
-eext.nom_equipe AS equipe_ext,
-ELT(WEEKDAY(m.date_reception)+2, 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi') AS jour_match,
-REPLACE(m.heure_reception, 'h', ':') AS heure_match,
-c.jour AS jour_creneau,
-c.heure AS heure_creneau
-FROM matches m
-JOIN creneau c ON c.id_equipe = m.id_equipe_dom
-JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
-JOIN equipes eext ON eext.id_equipe = m.id_equipe_ext
-WHERE 
-    REPLACE(m.heure_reception, 'h', ':') != c.heure
-    AND ELT(WEEKDAY(m.date_reception)+2, 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi') = c.jour
-    AND m.certif+0 = 0
-");
 $indicatorDuplicateMatchCode = new Indicator(
     'Code match dupliqués', "SELECT
 m.code_match,
 c.libelle AS competition,
 m.division,
 edom.nom_equipe AS domicile,
-eext.nom_equipe AS exterieur,
-CONCAT(DATE_FORMAT(m.date_reception, '%d/%m/%Y'), ' à ', m.heure_reception) AS reception_le
+eext.nom_equipe AS exterieur
 FROM matches m
 JOIN competitions c ON c.code_competition = m.code_competition
 JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
@@ -279,7 +260,6 @@ $results[] = $indicatorComptes->getResult();
 $results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
 $results[] = $indicatorDuplicateMatchCode->getResult();
-$results[] = $indicatorWrongMatchTime->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
