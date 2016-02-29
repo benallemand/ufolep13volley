@@ -1,4 +1,3 @@
--- TODO run in PROD
 SET FOREIGN_KEY_CHECKS = 0;
 ALTER TABLE matches DROP FOREIGN KEY fk_matches_creneau;
 ALTER TABLE matches DROP COLUMN id_creneau;
@@ -18,4 +17,3 @@ UPDATE matches m
 SET m.id_creneau = cr.id, m.heure_reception = ''
 WHERE m.certif + 0 > 0;
 SET FOREIGN_KEY_CHECKS = 1;
--- ALTER TABLE matches DROP COLUMN heure_reception;
