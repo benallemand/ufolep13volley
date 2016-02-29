@@ -250,6 +250,21 @@ WHERE
     FROM classements cl
   )"
 );
+$indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
+    'Matches non certifiés dont la date ne correspond pas à un créneau', "SELECT m.code_match
+    FROM matches m
+      LEFT JOIN creneau cr ON
+                             cr.id_equipe = m.id_equipe_dom AND
+                             cr.jour = ELT(WEEKDAY(m.date_reception) + 2,
+                                           'Dimanche',
+                                           'Lundi',
+                                           'Mardi',
+                                           'Mercredi',
+                                           'Jeudi',
+                                           'Vendredi',
+                                           'Samedi')
+    WHERE cr.id IS NULL AND m.certif + 0 = 0"
+);
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -268,6 +283,7 @@ $results[] = $indicatorWrongMatchTime->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
+$results[] = $indicatorPendingMatchesWithWrongTimeSlot->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
