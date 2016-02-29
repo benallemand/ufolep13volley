@@ -114,6 +114,9 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         icon: 'images/warn1.gif',
                         tooltip: "La feuille de match n'a pas encore été validée par la commission. Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match",
                         getClass: function (value, meta, rec) {
+                            if (rec.get('date_reception') > new Date()) {
+                                return "x-hidden-display";
+                            }
                             if (rec.get('certif') === true) {
                                 return "x-hidden-display";
                             }
