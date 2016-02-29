@@ -2,6 +2,7 @@
 include("includes/fonctions_inc.php");
 $requires = array();
 $controllers = array();
+$controllers[] = "'GymnasiumsMap'";
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     if (isAdmin()) {
         die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');
@@ -9,7 +10,6 @@ if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     if (!isTeamLeader()) {
         die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
     }
-    $controllers[] = "'GymnasiumsMap'";
     $controllers[] = "'TeamManagement'";
 } else {
     $controllers[] = "'Login'";
