@@ -48,7 +48,12 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
-                    return value;
+                    var today = new Date();
+                    today.setHours(0,0,0,0)
+                    if (record.get('date_reception') < today) {
+                        return value;
+                    }
+                    return '<a href="annuaire.php?id=' + record.get('id_equipe_dom') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                 }
             },
             {
@@ -69,7 +74,12 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
-                    return value;
+                    var today = new Date();
+                    today.setHours(0,0,0,0)
+                    if (record.get('date_reception') < today) {
+                        return value;
+                    }
+                    return '<a href="annuaire.php?id=' + record.get('id_equipe_ext') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                 }
             },
             {
