@@ -1346,7 +1346,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_4_ext,
         m.set_5_dom,
         m.set_5_ext,
-        m.heure_reception,
+        IF(m.heure_reception = '', cr.heure, m.heure_reception) AS heure_reception,
         m.date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
@@ -1358,6 +1358,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         JOIN journees j ON j.id=m.id_journee
+        LEFT JOIN creneau cr ON cr.id = m.id_creneau
         $whereClause
         $orderClause";
 }
