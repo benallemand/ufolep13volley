@@ -18,11 +18,11 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 dataIndex: 'code_match',
                 renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
-                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 10 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseignÃ© de + de 10 jours!"';
                         return '<span style="background-color:#C71585;color:black">' + value + '</span>';
                     }
                     if (record.get('retard') === 2) {
-                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 15 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseignÃ© de + de 15 jours!"';
                         return '<span style="background-color:Red;color:black">' + value + '</span>';
                     }
                     return value;
@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 dataIndex: 'date_reception',
                 renderer: function (value, metaData, record) {
                     if (record.get('report') === true) {
-                        metaData.tdAttr = 'data-qtip="Match reporté"';
+                        metaData.tdAttr = 'data-qtip="Match reportÃ©"';
                         return '<span style="background-color:Gold;color:black">' + Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception') + '</span>';
                     }
                     return Ext.Date.format(value, 'd/m/Y');
@@ -83,7 +83,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 ]
             },
             {
-                header: 'Détails de sets',
+                header: 'DÃ©tails de sets',
                 dataIndex: 'set_1_dom',
                 width: 300,
                 renderer: function (val, meta, rec) {
@@ -113,7 +113,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 items: [
                     {
                         icon: 'images/certif.gif',
-                        tooltip: 'Feuille de match reçue et certifiée',
+                        tooltip: 'Feuille de match reÃ§ue et certifiÃ©e',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === false) {
                                 return "x-hidden-display";
@@ -154,7 +154,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                     {
                                                         xtype: 'button',
                                                         margin: 10,
-                                                        text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
+                                                        text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez Ã  sauver)',
                                                         handler: function () {
                                                             this.up('form').getForm().setValues([
                                                                 {
@@ -211,7 +211,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                     {
                                                         xtype: 'button',
                                                         margin: 10,
-                                                        text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
+                                                        text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez Ã  sauver)',
                                                         handler: function () {
                                                             this.up('form').getForm().setValues([
                                                                 {
@@ -532,7 +532,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                             var link = "mailto:" + email + "?" + Ext.Object.toQueryString({
                                 subject: "Match " + rec.get('code_match') + " : " + rec.get('equipe_dom') + " contre " + rec.get('equipe_ext'),
                                 body: "Bonjour,\n\
-Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.\n\
+Veuillez trouver ci-joint les fiches Ã©quipes ainsi que la feuille de match.\n\
 Bien cordialement"
                             });
                             window.open(link, '_blank');

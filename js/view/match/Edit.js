@@ -46,7 +46,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             },
             {
                 xtype: 'combo',
-                fieldLabel: 'Journée',
+                fieldLabel: 'JournÃ©e',
                 name: 'id_journee',
                 tpl: Ext.create('Ext.XTemplate',
                     '<tpl for=".">',
@@ -75,7 +75,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             },
             {
                 xtype: 'combo',
-                fieldLabel: 'Extérieur',
+                fieldLabel: 'ExtÃ©rieur',
                 name: 'id_equipe_ext',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
@@ -98,7 +98,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             {
                 name: 'certif',
                 xtype: 'checkboxfield',
-                fieldLabel: 'Certifié ?',
+                fieldLabel: 'CertifiÃ© ?',
                 boxLabel: 'Oui',
                 msgTarget: 'under',
                 uncheckedValue: 'off'

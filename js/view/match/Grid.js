@@ -18,11 +18,11 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 dataIndex: 'code_match',
                 renderer: function (value, metaData, record) {
                     if (record.get('retard') === 1) {
-                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 10 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseignÃ© de + de 10 jours!"';
                         return '<span style="background-color:#C71585;color:black">' + value + '</span>';
                     }
                     if (record.get('retard') === 2) {
-                        metaData.tdAttr = 'data-qtip="Match non renseigné de + de 15 jours!"';
+                        metaData.tdAttr = 'data-qtip="Match non renseignÃ© de + de 15 jours!"';
                         return '<span style="background-color:Red;color:black">' + value + '</span>';
                     }
                     return value;
@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 dataIndex: 'date_reception',
                 renderer: function (value, metaData, record) {
                     if (record.get('report') === true) {
-                        metaData.tdAttr = 'data-qtip="Match reporté"';
+                        metaData.tdAttr = 'data-qtip="Match reportÃ©"';
                         return '<span style="background-color:Gold;color:black">' + Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception') + '</span>';
                     }
                     return Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception');
@@ -47,6 +47,11 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 renderer: function (value, metaData, record) {
                     if (record.get('score_equipe_dom') > record.get('score_equipe_ext')) {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
+                    }
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0)
+                    if (record.get('date_reception') >= today) {
+                        return '<a href="annuaire.php?id=' + record.get('id_equipe_dom') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                     }
                     return value;
                 }
@@ -62,12 +67,17 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 }
             },
             {
-                header: 'Equipe Extérieur',
+                header: 'Equipe ExtÃ©rieur',
                 width: 180,
                 dataIndex: 'equipe_ext',
                 renderer: function (value, metaData, record) {
                     if (record.get('score_equipe_ext') > record.get('score_equipe_dom')) {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
+                    }
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0)
+                    if (record.get('date_reception') >= today) {
+                        return '<a href="annuaire.php?id=' + record.get('id_equipe_ext') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                     }
                     return value;
                 }
@@ -103,7 +113,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 items: [
                     {
                         icon: 'images/certif.gif',
-                        tooltip: 'Feuille de match reçue et certifiée',
+                        tooltip: 'Feuille de match reÃ§ue et certifiÃ©e',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === false) {
                                 return "x-hidden-display";
@@ -112,8 +122,13 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     },
                     {
                         icon: 'images/warn1.gif',
-                        tooltip: "La feuille de match n'a pas encore été validée par la commission. Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match",
+                        tooltip: "La feuille de match n'a pas encore Ã©tÃ© validÃ©e par la commission. Merci au responsable de l'Ã©quipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match",
                         getClass: function (value, meta, rec) {
+                            var today = new Date();
+                            today.setHours(0, 0, 0, 0)
+                            if (rec.get('date_reception') >= today) {
+                                return "x-hidden-display";
+                            }
                             if (rec.get('certif') === true) {
                                 return "x-hidden-display";
                             }
@@ -130,7 +145,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 items: [
                     {
                         icon: 'images/certified.png',
-                        tooltip: 'Certifier avoir reçu la feuille de ce match',
+                        tooltip: 'Certifier avoir reÃ§u la feuille de ce match',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
                                 return "x-hidden-display";

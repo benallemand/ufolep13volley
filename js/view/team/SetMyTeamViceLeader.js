@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.team.SetMyTeamViceLeader', {
     extend: 'Ext.window.Window',
     alias: 'widget.setmyteamviceleader',
     autoShow: true,
-    title: "Modifier le Suppléant",
+    title: "Modifier le SupplÃ©ant",
     height: 500,
     width: 500,
     modal: true,

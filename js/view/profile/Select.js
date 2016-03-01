@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.profile.Select', {
     extend: 'Ext.window.Window',
     alias: 'widget.profileselect',
-    title: 'Associer à un profil',
+    title: 'Associer Ã  un profil',
     height: 500,
     width: 500,
     modal: true,

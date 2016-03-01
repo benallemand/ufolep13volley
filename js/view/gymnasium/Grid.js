@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer un gymnase',
+                    text: 'CrÃ©er un gymnase',
                     action: 'add'
                 },
                 {

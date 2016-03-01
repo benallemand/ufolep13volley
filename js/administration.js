@@ -47,7 +47,7 @@ Ext.application({
                         },
                         items: [
                             {
-                                text: 'Activité',
+                                text: 'ActivitÃ©',
                                 action: 'displayActivity'
                             },
                             {
@@ -67,11 +67,11 @@ Ext.application({
                                 action: 'manageClubs'
                             },
                             {
-                                text: 'Gestion des équipes',
+                                text: 'Gestion des Ã©quipes',
                                 action: 'manageTeams'
                             },
                             {
-                                text: 'Gestion des journées',
+                                text: 'Gestion des journÃ©es',
                                 action: 'manageDays'
                             },
                             {
@@ -446,8 +446,8 @@ Ext.application({
                                 dock: 'bottom',
                                 store: store,
                                 displayInfo: true,
-                                displayMsg: 'Affichage des éléments {0} - {1} sur {2}',
-                                emptyMsg: "Rien à afficher"
+                                displayMsg: 'Affichage des Ã©lÃ©ments {0} - {1} sur {2}',
+                                emptyMsg: "Rien Ã  afficher"
                             }
                         ]
                     });
@@ -546,10 +546,10 @@ Ext.application({
                                                 {
                                                     xtype: 'button',
                                                     margin: 10,
-                                                    text: 'Détails',
+                                                    text: 'DÃ©tails',
                                                     handler: function () {
                                                         Ext.create('Ext.window.Window', {
-                                                            title: 'Détails',
+                                                            title: 'DÃ©tails',
                                                             height: 500,
                                                             width: 700,
                                                             maximizable: true,

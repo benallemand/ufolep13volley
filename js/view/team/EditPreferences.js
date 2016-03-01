@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.team.EditPreferences', {
     extend: 'Ext.window.Window',
     alias: 'widget.editpreferences',
-    title: "Préférences",
+    title: "PrÃ©fÃ©rences",
     height: 400,
     width: 700,
     modal: true,

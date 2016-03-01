@@ -26,9 +26,6 @@ class Indicator {
 
     function getResult() {
         $results = $this->execSqlGetDetails();
-        if (count($results) === 0) {
-            return null;
-        }
         return array(
             'fieldLabel' => $this->fieldLabel,
             'value' => count($results),

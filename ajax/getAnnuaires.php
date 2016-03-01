@@ -37,5 +37,5 @@ while ($data = mysqli_fetch_assoc($req)) {
         }
     }
 }
-echo json_encode(utf8_encode_mix($results));
+echo json_encode($results);
 

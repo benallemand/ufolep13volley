@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.day.Edit', {
     extend: 'Ext.window.Window',
     alias: 'widget.dayedit',
-    title: "Modification de la journée",
+    title: "Modification de la journÃ©e",
     height: 400,
     width: 700,
     modal: true,
@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
             },
             {
                 xtype: 'numberfield',
-                fieldLabel: 'Numéro',
+                fieldLabel: 'NumÃ©ro',
                 name: 'numero',
                 allowBlank: false,
                 minValue: 0
@@ -47,7 +47,7 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
             },
             {
                 xtype: 'textfield',
-                fieldLabel: 'Libellé',
+                fieldLabel: 'LibellÃ©',
                 name: 'libelle',
                 allowBlank: false
             }

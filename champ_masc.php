@@ -1,7 +1,7 @@
 <?php
 include("includes/fonctions_inc.php");
 
-// On récupère l'ID de la division 
+// On rÃ©cupÃ¨re l'ID de la division 
 $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
@@ -19,7 +19,7 @@ $controllers[] = "'Classement'";
 
 <HEAD>
     <TITLE>Championnat Masculin - UFOLEP 13 VOLLEY</TITLE>
-    <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="favicon.ico"/>
     <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
     <link

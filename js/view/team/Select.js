@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.team.Select', {
     extend: 'Ext.window.Window',
     alias: 'widget.teamselect',
-    title: 'Associer à une équipe',
+    title: 'Associer Ã  une Ã©quipe',
     height: 200,
     width: 750,
     modal: true,

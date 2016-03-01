@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.team.DetailsEdit', {
     extend: 'Ext.window.Window',
     alias: 'widget.teamdetailsedit',
-    title: "Modification de l'équipe",
+    title: "Modification de l'Ã©quipe",
     height: 400,
     width: 700,
     modal: true,

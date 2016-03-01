@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.club.Select', {
     extend: 'Ext.window.Window',
     alias: 'widget.clubselect',
-    title: 'Associer à un club',
+    title: 'Associer Ã  un club',
     height: 500,
     width: 500,
     modal: true,

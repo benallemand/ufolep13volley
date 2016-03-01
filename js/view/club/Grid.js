@@ -24,7 +24,7 @@ Ext.define('Ufolep13Volley.view.club.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer un club',
+                    text: 'CrÃ©er un club',
                     action: 'add'
                 },
                 {

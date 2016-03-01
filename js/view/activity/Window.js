@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.activity.Window', {
     extend: 'Ext.window.Window',
     alias: 'widget.activitywindow',
-    title: 'Activité',
+    title: 'ActivitÃ©',
     layout: 'fit',
     modal: true,
     width: 700,

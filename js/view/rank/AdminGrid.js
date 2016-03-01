@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
                 dataIndex: 'nom_equipe'
             },
             {
-                header: 'Comp�tition',
+                header: 'Compétition',
                 dataIndex: 'nom_competition'
             },
             {
@@ -31,7 +31,7 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Cr�er',
+                    text: 'Créer',
                     action: 'add'
                 },
                 {
@@ -41,6 +41,10 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                },
+                {
+                    text: 'Remise à zéro des points',
+                    action: 'razPoints'
                 }
             ]
         }

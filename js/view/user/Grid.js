@@ -40,7 +40,7 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
             dock: 'top',
             items: [
                 {
-                    text: 'Créer',
+                    text: 'CrÃ©er',
                     action: 'add'
                 },
                 {
@@ -48,7 +48,7 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                     action: 'edit'
                 },
                 {
-                    text: 'Associer à un profil',
+                    text: 'Associer Ã  un profil',
                     action: 'showProfileSelect'
                 },
                 {
