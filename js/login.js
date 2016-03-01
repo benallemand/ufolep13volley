@@ -56,16 +56,18 @@ Ext.application({
                             ],
                             buttons: [
                                 {
+                                    text: 'Inscription',
+                                    action: 'showUserRegistration',
+                                    style: "background-color:green;background-image:none"
+                                },
+                                '->',
+                                {
                                     text: 'Connexion',
                                     handler: function () {
                                         Ext.get('submitButton').dom.click();
                                     }
-                                },
-                                {
-                                    text: 'Inscription',
-                                    action: 'showUserRegistration',
-                                    style: "background-color:green;background-image:none"
                                 }
+
                             ]
                         }
                     }
