@@ -2,8 +2,6 @@
 
 $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
 switch ($serverName) {
-    case 'localhost':
-        break;
     default:
         require_once '../includes/db_inc.php';
         require_once '../libs/Unirest.php';

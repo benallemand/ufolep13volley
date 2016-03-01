@@ -2,8 +2,6 @@
 
 $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
 switch ($serverName) {
-    case 'localhost':
-        break;
     default:
         header('Content-Type: application/json');
         $feed = new DOMDocument();
