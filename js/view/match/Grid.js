@@ -49,11 +49,11 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
                     var today = new Date();
-                    today.setHours(0,0,0,0)
-                    if (record.get('date_reception') < today) {
-                        return value;
+                    today.setHours(0, 0, 0, 0)
+                    if (record.get('date_reception') >= today) {
+                        return '<a href="annuaire.php?id=' + record.get('id_equipe_dom') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                     }
-                    return '<a href="annuaire.php?id=' + record.get('id_equipe_dom') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
+                    return value;
                 }
             },
             {
@@ -75,11 +75,11 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         return '<span style="background-color:GreenYellow;color:black">' + value + '</span>';
                     }
                     var today = new Date();
-                    today.setHours(0,0,0,0)
-                    if (record.get('date_reception') < today) {
-                        return value;
+                    today.setHours(0, 0, 0, 0)
+                    if (record.get('date_reception') >= today) {
+                        return '<a href="annuaire.php?id=' + record.get('id_equipe_ext') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
                     }
-                    return '<a href="annuaire.php?id=' + record.get('id_equipe_ext') + '&c=' + record.get('code_competition') + '" target="blank">' + value + '</a>';
+                    return value;
                 }
             },
             {
@@ -124,7 +124,9 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         icon: 'images/warn1.gif',
                         tooltip: "La feuille de match n'a pas encore été validée par la commission. Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match",
                         getClass: function (value, meta, rec) {
-                            if (rec.get('date_reception') > new Date()) {
+                            var today = new Date();
+                            today.setHours(0, 0, 0, 0)
+                            if (rec.get('date_reception') >= today) {
                                 return "x-hidden-display";
                             }
                             if (rec.get('certif') === true) {
