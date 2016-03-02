@@ -1155,22 +1155,22 @@ function modifyMatch()
         $forfait_ext = 0;
     }
     $sql = "UPDATE matches SET "
-        . "score_equipe_dom = '$score_equipe_dom', "
-        . "score_equipe_ext = '$score_equipe_ext', "
-        . "set_1_dom = '$set_1_dom', "
-        . "set_1_ext = '$set_1_ext', "
-        . "set_2_dom = '$set_2_dom', "
-        . "set_2_ext = '$set_2_ext', "
-        . "set_3_dom = '$set_3_dom', "
-        . "set_3_ext = '$set_3_ext', "
-        . "set_4_dom = '$set_4_dom', "
-        . "set_4_ext = '$set_4_ext', "
-        . "set_5_dom = '$set_5_dom', "
-        . "set_5_ext = '$set_5_ext', "
-        . "forfait_dom = '$forfait_dom', "
-        . "forfait_ext = '$forfait_ext', "
-        . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
-        . "heure_reception = '$heure_reception', "
+    . "score_equipe_dom = '$score_equipe_dom', "
+    . "score_equipe_ext = '$score_equipe_ext', "
+    . "set_1_dom = '$set_1_dom', "
+    . "set_1_ext = '$set_1_ext', "
+    . "set_2_dom = '$set_2_dom', "
+    . "set_2_ext = '$set_2_ext', "
+    . "set_3_dom = '$set_3_dom', "
+    . "set_3_ext = '$set_3_ext', "
+    . "set_4_dom = '$set_4_dom', "
+    . "set_4_ext = '$set_4_ext', "
+    . "set_5_dom = '$set_5_dom', "
+    . "set_5_ext = '$set_5_ext', "
+    . "forfait_dom = '$forfait_dom', "
+    . "forfait_ext = '$forfait_ext', "
+    . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
+    . ($heure_reception == NULL) ? "heure_reception = '', " : "heure_reception = '$heure_reception', "
         . "report = '$report' "
         . "WHERE code_match = '$code_match'";
     $req = mysqli_query($db, $sql);
@@ -1358,7 +1358,14 @@ function getSqlSelectMatches($whereClause, $orderClause)
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         JOIN journees j ON j.id=m.id_journee
-        LEFT JOIN creneau cr ON cr.id = m.id_creneau
+        LEFT JOIN creneau cr ON cr.id_equipe = e1.id_equipe AND cr.jour = ELT(WEEKDAY(m.date_reception) + 2,
+                                  'Dimanche',
+                                  'Lundi',
+                                  'Mardi',
+                                  'Mercredi',
+                                  'Jeudi',
+                                  'Vendredi',
+                                  'Samedi')
         $whereClause
         $orderClause";
 }

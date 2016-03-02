@@ -90,12 +90,6 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 allowBlank: false
             },
             {
-                xtype: 'textfield',
-                fieldLabel: 'Heure',
-                name: 'heure_reception',
-                allowBlank: false
-            },
-            {
                 name: 'certif',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Certifié ?',
