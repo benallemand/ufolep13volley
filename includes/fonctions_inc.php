@@ -1322,7 +1322,7 @@ function setSubmitResultDelay($code_match, $valeur)
 
 function getSqlSelectMatches($whereClause, $orderClause)
 {
-    return "SELECT 
+    return "SELECT DISTINCT
         m.id_match,
         m.code_match,
         m.code_competition,
