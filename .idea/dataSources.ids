@@ -1462,171 +1462,158 @@
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="415" parent="29" name="id_creneau">
-        <data-type>smallint(10)</data-type>
-      </column>
-      <index id="416" parent="29" name="code_match">
+      <index id="415" parent="29" name="code_match">
         <columns>code_match</columns>
         <desc-columns></desc-columns>
         <unique>1</unique>
       </index>
-      <index id="417" parent="29" name="fk_matches_creneau">
-        <columns>id_creneau</columns>
-        <desc-columns></desc-columns>
-      </index>
-      <index id="418" parent="29" name="fk_matches_equipesdom">
+      <index id="416" parent="29" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="419" parent="29" name="fk_matches_equipesext">
+      <index id="417" parent="29" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="420" parent="29" name="fk_matches_journees">
+      <index id="418" parent="29" name="fk_matches_journees">
         <columns>id_journee</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="421" parent="29" name="id_match">
+      <index id="419" parent="29" name="id_match">
         <columns>id_match</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="422" parent="29" name="code_match">
+      <key id="420" parent="29" name="code_match">
         <columns>code_match</columns>
         <underlying-index>code_match</underlying-index>
       </key>
-      <key id="423" parent="29" name="PRIMARY">
+      <key id="421" parent="29" name="PRIMARY">
         <columns>id_match</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="424" parent="29" name="fk_matches_creneau">
-        <columns>id_creneau</columns>
-        <ref-key>~.creneau.PRIMARY</ref-key>
-        <cascade-update-rule>restrict</cascade-update-rule>
-        <cascade-delete-rule>restrict</cascade-delete-rule>
-      </foreign-key>
-      <foreign-key id="425" parent="29" name="fk_matches_equipesdom">
+      <foreign-key id="422" parent="29" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="426" parent="29" name="fk_matches_equipesext">
+      <foreign-key id="423" parent="29" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="427" parent="29" name="fk_matches_journees">
+      <foreign-key id="424" parent="29" name="fk_matches_journees">
         <columns>id_journee</columns>
         <ref-key>~.journees.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="428" parent="30" name="id">
+      <column id="425" parent="30" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="429" parent="30" name="path_photo">
+      <column id="426" parent="30" name="path_photo">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <index id="430" parent="30" name="id">
+      <index id="427" parent="30" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="431" parent="30" name="PRIMARY">
+      <key id="428" parent="30" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="432" parent="31" name="id">
+      <column id="429" parent="31" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="433" parent="31" name="name">
+      <column id="430" parent="31" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="434" parent="31" name="id">
+      <index id="431" parent="31" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="435" parent="31" name="PRIMARY">
+      <key id="432" parent="31" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="436" parent="32" name="id">
+      <column id="433" parent="32" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="437" parent="32" name="registry_key">
+      <column id="434" parent="32" name="registry_key">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="438" parent="32" name="registry_value">
+      <column id="435" parent="32" name="registry_value">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="439" parent="32" name="id">
+      <index id="436" parent="32" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="440" parent="32" name="PRIMARY">
+      <key id="437" parent="32" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="441" parent="33" name="id">
+      <column id="438" parent="33" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="442" parent="33" name="user_id">
+      <column id="439" parent="33" name="user_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="443" parent="33" name="profile_id">
+      <column id="440" parent="33" name="profile_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="444" parent="33" name="fk_users_profiles_profile">
+      <index id="441" parent="33" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="445" parent="33" name="fk_users_profiles_user">
+      <index id="442" parent="33" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="446" parent="33" name="id">
+      <index id="443" parent="33" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="447" parent="33" name="PRIMARY">
+      <key id="444" parent="33" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="448" parent="33" name="fk_users_profiles_profile">
+      <foreign-key id="445" parent="33" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <ref-key>~.profiles.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="449" parent="33" name="fk_users_profiles_user">
+      <foreign-key id="446" parent="33" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <ref-key>~.comptes_acces.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <argument id="450" parent="34">
+      <argument id="447" parent="34">
         <direction>RETURN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="451" parent="34" name="str">
+      <argument id="448" parent="34" name="str">
         <direction>IN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="452" parent="34" name="delim">
+      <argument id="449" parent="34" name="delim">
         <direction>IN</direction>
         <data-type>varchar(12)</data-type>
       </argument>
-      <argument id="453" parent="34" name="pos">
+      <argument id="450" parent="34" name="pos">
         <direction>IN</direction>
         <data-type>int(11)</data-type>
       </argument>
@@ -2284,171 +2271,158 @@
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="176" parent="15" name="id_creneau">
-        <data-type>smallint(10)</data-type>
-      </column>
-      <index id="177" parent="15" name="code_match">
+      <index id="176" parent="15" name="code_match">
         <columns>code_match</columns>
         <desc-columns></desc-columns>
         <unique>1</unique>
       </index>
-      <index id="178" parent="15" name="fk_matches_creneau">
-        <columns>id_creneau</columns>
-        <desc-columns></desc-columns>
-      </index>
-      <index id="179" parent="15" name="fk_matches_equipesdom">
+      <index id="177" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="180" parent="15" name="fk_matches_equipesext">
+      <index id="178" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="181" parent="15" name="fk_matches_journees">
+      <index id="179" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="182" parent="15" name="id_match">
+      <index id="180" parent="15" name="id_match">
         <columns>id_match</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="183" parent="15" name="code_match">
+      <key id="181" parent="15" name="code_match">
         <columns>code_match</columns>
         <underlying-index>code_match</underlying-index>
       </key>
-      <key id="184" parent="15" name="PRIMARY">
+      <key id="182" parent="15" name="PRIMARY">
         <columns>id_match</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="185" parent="15" name="fk_matches_creneau">
-        <columns>id_creneau</columns>
-        <ref-key>~.creneau.PRIMARY</ref-key>
-        <cascade-update-rule>restrict</cascade-update-rule>
-        <cascade-delete-rule>restrict</cascade-delete-rule>
-      </foreign-key>
-      <foreign-key id="186" parent="15" name="fk_matches_equipesdom">
+      <foreign-key id="183" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="187" parent="15" name="fk_matches_equipesext">
+      <foreign-key id="184" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="188" parent="15" name="fk_matches_journees">
+      <foreign-key id="185" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <ref-key>~.journees.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="189" parent="16" name="id">
+      <column id="186" parent="16" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="190" parent="16" name="path_photo">
+      <column id="187" parent="16" name="path_photo">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <index id="191" parent="16" name="id">
+      <index id="188" parent="16" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="192" parent="16" name="PRIMARY">
+      <key id="189" parent="16" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="193" parent="17" name="id">
+      <column id="190" parent="17" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="194" parent="17" name="name">
+      <column id="191" parent="17" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="195" parent="17" name="id">
+      <index id="192" parent="17" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="196" parent="17" name="PRIMARY">
+      <key id="193" parent="17" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="197" parent="18" name="id">
+      <column id="194" parent="18" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="198" parent="18" name="registry_key">
+      <column id="195" parent="18" name="registry_key">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="199" parent="18" name="registry_value">
+      <column id="196" parent="18" name="registry_value">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="200" parent="18" name="id">
+      <index id="197" parent="18" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="201" parent="18" name="PRIMARY">
+      <key id="198" parent="18" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="202" parent="19" name="id">
+      <column id="199" parent="19" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="203" parent="19" name="user_id">
+      <column id="200" parent="19" name="user_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="204" parent="19" name="profile_id">
+      <column id="201" parent="19" name="profile_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="205" parent="19" name="fk_users_profiles_profile">
+      <index id="202" parent="19" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="206" parent="19" name="fk_users_profiles_user">
+      <index id="203" parent="19" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="207" parent="19" name="id">
+      <index id="204" parent="19" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="208" parent="19" name="PRIMARY">
+      <key id="205" parent="19" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="209" parent="19" name="fk_users_profiles_profile">
+      <foreign-key id="206" parent="19" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <ref-key>~.profiles.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="210" parent="19" name="fk_users_profiles_user">
+      <foreign-key id="207" parent="19" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <ref-key>~.comptes_acces.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <argument id="211" parent="20">
+      <argument id="208" parent="20">
         <direction>RETURN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="212" parent="20" name="str">
+      <argument id="209" parent="20" name="str">
         <direction>IN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="213" parent="20" name="delim">
+      <argument id="210" parent="20" name="delim">
         <direction>IN</direction>
         <data-type>varchar(12)</data-type>
       </argument>
-      <argument id="214" parent="20" name="pos">
+      <argument id="211" parent="20" name="pos">
         <direction>IN</direction>
         <data-type>int(11)</data-type>
       </argument>

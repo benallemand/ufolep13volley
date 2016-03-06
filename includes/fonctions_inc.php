@@ -1170,7 +1170,7 @@ function modifyMatch()
     . "forfait_dom = '$forfait_dom', "
     . "forfait_ext = '$forfait_ext', "
     . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
-    . ($heure_reception == NULL) ? "heure_reception = '', " : "heure_reception = '$heure_reception', "
+    . (($heure_reception == NULL) ? "heure_reception = '', " : "heure_reception = '$heure_reception', ")
         . "report = '$report' "
         . "WHERE code_match = '$code_match'";
     $req = mysqli_query($db, $sql);
