@@ -1277,49 +1277,6 @@ function removeMatch($code_match)
     return true;
 }
 
-function checkNotifyUpdateReport($data)
-{
-    $computedDate = DateTime::createFromFormat('Y-m-d', $data['date_reception']);
-    $currentDate = new DateTime();
-    $tenDays = DateInterval::createFromDateString('+10 day');
-    $fifteenDays = DateInterval::createFromDateString('+15 day');
-    $computedDate->add($fifteenDays);
-    if ($currentDate > $computedDate) {
-        if (intval($data['retard']) == 2) {
-            return true;
-        }
-        if (!setSubmitResultDelay($data['code_match'], 2)) {
-            return false;
-        }
-        return sendMailSubmitResult($data['id_equipe_dom'], $data['id_equipe_ext'], $data['date_reception']);
-    }
-    $computedDate->sub($fifteenDays);
-    $computedDate->add($tenDays);
-    if ($currentDate > $computedDate) {
-        if (intval($data['retard']) == 1) {
-            return true;
-        }
-        if (!setSubmitResultDelay($data['code_match'], 1)) {
-            return false;
-        }
-        return sendMailSubmitResult($data['id_equipe_dom'], $data['id_equipe_ext'], $data['date_reception']);
-    }
-    return setSubmitResultDelay($data['code_match'], 0);
-}
-
-function setSubmitResultDelay($code_match, $valeur)
-{
-    global $db;
-    conn_db();
-    $sql = "UPDATE matches SET retard = $valeur WHERE code_match = '$code_match'";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    disconn_db();
-    return true;
-}
-
 function getSqlSelectMatches($whereClause, $orderClause)
 {
     return "SELECT DISTINCT
@@ -1351,8 +1308,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,
-        m.report+0 AS report,
-        m.retard+0 AS retard
+        m.report+0 AS report
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
@@ -1383,11 +1339,6 @@ function getMatches($compet, $div)
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
-        if ((intval($data['score_equipe_dom']) == 0) && (intval($data['score_equipe_ext']) == 0)) {
-            checkNotifyUpdateReport($data);
-        } else {
-            setSubmitResultDelay($data['code_match'], 0);
-        }
     }
     return json_encode($results);
 }

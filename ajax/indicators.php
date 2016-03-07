@@ -204,7 +204,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         OR
         ((m.set_1_dom+m.set_1_ext>0) AND (m.score_equipe_dom+m.score_equipe_ext+0=0))
         )
-        AND m.date_reception < CURDATE() - INTERVAL 10 DAY"
+        AND m.date_reception < CURDATE() - INTERVAL 5 DAY"
 );
 $indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
     'Equipes actives sans compte responsable équipe', "SELECT
