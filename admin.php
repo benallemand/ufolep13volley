@@ -9,7 +9,7 @@ if (!isAdmin()) {
 
 <HTML>
     <HEAD>
-        <TITLE>Administration - UFOLEP 13 VOLLEY</TITLE>
+        <TITLE>Portail Administration - UFOLEP 13 VOLLEY</TITLE>
         <META http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="shortcut icon" href="favicon.ico" />
         <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen" />
