@@ -311,12 +311,6 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                                 readOnly: true
                                             },
                                             {
-                                                xtype: 'textfield',
-                                                fieldLabel: 'Heure',
-                                                name: 'heure_reception',
-                                                readOnly: true
-                                            },
-                                            {
                                                 xtype: 'container',
                                                 layout: 'hbox',
                                                 items: [
