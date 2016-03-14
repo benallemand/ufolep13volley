@@ -16,6 +16,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             margins: 10
         },
         url: 'ajax/saveMatch.php',
+        viewModel: true,
         items: [
             {
                 xtype: 'hidden',
@@ -31,6 +32,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             {
                 xtype: 'combo',
                 fieldLabel: 'Competition',
+                reference: 'competition',
+                publishes: 'value',
                 name: 'code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
@@ -61,7 +64,15 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 valueField: 'id',
                 store: 'AdminDays',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                bind: {
+                    visible: '{competition.value}',
+                    filters: {
+                        property: 'code_competition',
+                        value: '{competition.value}',
+                        exactMatch: true
+                    }
+                }
             },
             {
                 xtype: 'combo',
@@ -71,7 +82,15 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 valueField: 'id_equipe',
                 store: 'Teams',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                bind: {
+                    visible: '{competition.value}',
+                    filters: {
+                        property: 'code_competition',
+                        value: '{competition.value}',
+                        exactMatch: true
+                    }
+                }
             },
             {
                 xtype: 'combo',
@@ -81,7 +100,15 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 valueField: 'id_equipe',
                 store: 'Teams',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                bind: {
+                    visible: '{competition.value}',
+                    filters: {
+                        property: 'code_competition',
+                        value: '{competition.value}',
+                        exactMatch: true
+                    }
+                }
             },
             {
                 xtype: 'datefield',
