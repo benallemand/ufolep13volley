@@ -656,32 +656,6 @@ function getConnectedUser()
     return "";
 }
 
-function sendMailSubmitResult($id1, $id2, $date)
-{
-    $matchDate = DateTime::createFromFormat('Y-m-d', $date);
-    $headers = 'From: laurent.gorlier@ufolep13volley.org' . "\n";
-    $headers .= 'Reply-To: laurent.gorlier@ufolep13volley.org' . "\n";
-    $headers .= 'Cc: laurent.gorlier@ufolep13volley.org' . "\n";
-    $headers .= 'Bcc: benallemand@gmail.com' . "\n";
-    $headers .= 'Content-Type: text/html; charset="utf-8"' . "\n";
-    $headers .= 'Content-Transfer-Encoding: 8bit';
-
-    $message = '<html><head><title>Saisie Internet des résultats</title></head><body>';
-    $message = $message . 'Aux équipes de ' . getTeamName($id1) . ' et ' . getTeamName($id2) . '<BR>';
-    $message = $message . 'Comme vous avez dû le lire sur le règlement, la saisie des informations sur le site internet doit être rigoureuse (pour le suivi de la commission Volley et pour l\'intérêt qu\'y portent les joueurs)<BR><BR>';
-    $message = $message . 'Pour résumer, sur le site, 10 jours après la date indiquée pour le match (qui peut être en rouge si le match a été reportée), il doit y avoir un résultat affiché.<BR><BR>';
-    $message = $message . 'Pour votre match du <b>' . $matchDate->format('d/m/Y') . '</b> cela n\'est pas le cas. Puisqu\'il s\'agit d\'un premier message d\'alerte, nous vous donnons un délai supplémentaire de 5 jours pour que :<BR>';
-    $message = $message . '- soit le résultat soit indiqué<BR>';
-    $message = $message . '- soit une autre date de match soit affichée (pour cela il faut me la communiquer en tant que responsable des classements)<BR><BR>';
-    $message = $message . 'Je vous rappelle que les deux équipes doivent veiller à ce que cette règle soit suivie ; les deux pourraient donc être pénalisées.<BR><BR>';
-    $message = $message . 'Cordialement<BR><BR>Laurent Gorlier<BR>Responsable des classements<BR>';
-    $message = $message . '</body></html>';
-
-    $dest = getTeamEmail($id1) . "," . getTeamEmail($id2);
-
-    return mail($dest, "[Ufolep 13 Volley] Saisie Internet des résultats", $message, $headers);
-}
-
 function getIdsTeamRequestingNextMatches()
 {
     global $db;
@@ -763,53 +737,6 @@ function sendMailNewUser($email, $login, $password, $idTeam)
     $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
     $from = "laurent.gorlier@ufolep13volley.org";
     return sendMail($body, $to, $subject, $from);
-}
-
-function sendMailPlayersWithoutLicenceNumber()
-{
-    global $db;
-    conn_db();
-    $sql = "SELECT 
-        CONCAT(j.nom, ' ', j.prenom) AS joueur, 
-        c.nom AS club,
-        CONCAT(e.nom_equipe, ' (', comp.libelle, ')') AS equipe,
-        jresp.email AS responsable
-        FROM joueur_equipe je 
-        JOIN joueurs j ON j.id = je.id_joueur
-        JOIN equipes e ON e.id_equipe = je.id_equipe
-        JOIN joueur_equipe jeresp ON jeresp.id_equipe = e.id_equipe AND jeresp.is_leader+0 > 0
-        JOIN joueurs jresp ON jresp.id = jeresp.id_joueur
-        JOIN competitions comp ON comp.code_competition = e.code_competition
-        JOIN clubs c ON c.id = j.id_club
-        WHERE j.num_licence = ''
-        ORDER BY equipe ASC";
-    $req = mysqli_query($db, $sql);
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    if (count($results) > 0) {
-        $emails = array();
-        foreach ($results as $record) {
-            $emails[] = $record['responsable'];
-        }
-        $emails = array_unique($emails);
-        foreach ($emails as $email) {
-            $body = "Bonjour,\r\n"
-                . "Vous recevez cet email car au moins un de vos joueurs n'a pas encore son numéro de licence renseigné sur le site de l'UFOLEP 13 VOLLEY.\r\n"
-                . "Merci de mettre à jour ce numéro de licence dès que vous le connaissez, afin que l'UFOLEP puisse activer votre joueur sur la fiche équipe.\r\n"
-                . "La liste des joueurs concernés est en pièce jointe.\r\n"
-                . "Sportivement,\r\n"
-                . "L'UFOLEP";
-            $to = $email;
-            $subject = "[UFOLEP13VOLLEY]Joueurs sans numéro de licence";
-            $from = "laurent.gorlier@ufolep13volley.org";
-            if (sendCsvMail($results, $body, $to, $subject, $from) === FALSE) {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 function computeRank($id_equipe, $compet, $division)
@@ -1131,7 +1058,6 @@ function modifyMatch()
     $code_match = filter_input(INPUT_POST, 'code_match');
     $compet = filter_input(INPUT_POST, 'code_competition');
     $division = filter_input(INPUT_POST, 'division');
-    $heure_reception = filter_input(INPUT_POST, 'heure_reception');
     $date_reception = filter_input(INPUT_POST, 'date_reception');
     $date_originale = filter_input(INPUT_POST, 'date_originale');
     $id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
@@ -1155,22 +1081,21 @@ function modifyMatch()
         $forfait_ext = 0;
     }
     $sql = "UPDATE matches SET "
-    . "score_equipe_dom = '$score_equipe_dom', "
-    . "score_equipe_ext = '$score_equipe_ext', "
-    . "set_1_dom = '$set_1_dom', "
-    . "set_1_ext = '$set_1_ext', "
-    . "set_2_dom = '$set_2_dom', "
-    . "set_2_ext = '$set_2_ext', "
-    . "set_3_dom = '$set_3_dom', "
-    . "set_3_ext = '$set_3_ext', "
-    . "set_4_dom = '$set_4_dom', "
-    . "set_4_ext = '$set_4_ext', "
-    . "set_5_dom = '$set_5_dom', "
-    . "set_5_ext = '$set_5_ext', "
-    . "forfait_dom = '$forfait_dom', "
-    . "forfait_ext = '$forfait_ext', "
-    . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
-    . (($heure_reception == NULL) ? "heure_reception = '', " : "heure_reception = '$heure_reception', ")
+        . "score_equipe_dom = '$score_equipe_dom', "
+        . "score_equipe_ext = '$score_equipe_ext', "
+        . "set_1_dom = '$set_1_dom', "
+        . "set_1_ext = '$set_1_ext', "
+        . "set_2_dom = '$set_2_dom', "
+        . "set_2_ext = '$set_2_ext', "
+        . "set_3_dom = '$set_3_dom', "
+        . "set_3_ext = '$set_3_ext', "
+        . "set_4_dom = '$set_4_dom', "
+        . "set_4_ext = '$set_4_ext', "
+        . "set_5_dom = '$set_5_dom', "
+        . "set_5_ext = '$set_5_ext', "
+        . "forfait_dom = '$forfait_dom', "
+        . "forfait_ext = '$forfait_ext', "
+        . "date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), "
         . "report = '$report' "
         . "WHERE code_match = '$code_match'";
     $req = mysqli_query($db, $sql);
@@ -1303,7 +1228,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_4_ext,
         m.set_5_dom,
         m.set_5_ext,
-        IF(m.heure_reception = '', cr.heure, m.heure_reception) AS heure_reception,
+        cr.heure AS heure_reception,
         m.date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
