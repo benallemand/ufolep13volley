@@ -5,8 +5,56 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/000-Updates autoincrements.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/001-Add column show_photo in player table.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/002-Remove obsolete columns in player table.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/003-Add column is_vice_captain in player table.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/004-Add table registry.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/005-Add table users_profiles.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/006-Add table profiles.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/007-Alter column login in comptes_acces.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/008-joueur_equipe add and modify columns.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/009-add responsable_equipe profile to all user accounts.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/010-update ufoladmin account.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/011-Add email column in compte_acces.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/012-Drop obsolete tables.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/013-NormalizePlayersNames.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/014-DeactivateAllPlayers.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/015-UpdateActivityModifyDate.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/016-Add table photos.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/017-alter table joueur_equipe add id.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/018-clear tables for new season.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/019-alter table classements add id.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/020-clear male points for new season.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/021-delete unused teams.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/022-cleanup joueur_equipe.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/023-alter table equipes add website photo.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/024-drop table details_equipes.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/025-create function to split strings.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/026-khouryHannaUpdate.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/027-8eFinaleIsoardi.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/028-QuartFinaleKH.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/029-NewSeason.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/030-add column is_email_sent.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/031-create import tables.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/032-alter tables with new informations.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/033-populate divisions.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/034-alter matches table and populate days.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/035-alter matches table add unique constraint.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/036-alter dates_limite table remove column division.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/037-update commission set photo.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/038-drop import FK.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/039-Add column has_time_constraint in creneau table.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/040-Drop column division in journees table.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/041-alter table matches add journees foreign key.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/043-drop import tables.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/044-add missing FK.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/045-add missing user.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/046-drop column heure_reception.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/047-alter table matches modify id_creneau allow 0 value.sql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nbproject/sql/048-alter table matches drop column id_creneau.sql" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin.php" afterPath="$PROJECT_DIR$/admin.php" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,32 +92,18 @@
         <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
       </PATH_ELEMENT>
     </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="MySQL - ufolep dev" />
-        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" />
-        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$GroupNode" />
-      </PATH_ELEMENT>
-    </PATH>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="admin.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/admin.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38163266">
-              <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+            <state vertical-scroll-proportion="0.5218094">
+              <caret line="19" column="52" selection-start-line="19" selection-start-column="52" selection-end-line="19" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -193,10 +227,10 @@
   <component name="PhpWebServerValidation" deployment_server_id="ded6af07-c3ea-4500-afff-da686d938b93" path_to_validation_script="C:\Users\Ben\Documents\NetBeansProjects\ufolep13volley" selected_validation_type="REMOTE" web_path_to_validation_script="http://localhost:8080/" />
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="210" />
-    <option name="y" value="154" />
-    <option name="width" value="1149" />
-    <option name="height" value="813" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1616" />
+    <option name="height" value="1176" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -272,6 +306,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -292,8 +328,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -341,6 +375,9 @@
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="">
+      <method />
+    </configuration>
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner />
       <method />
@@ -376,6 +413,18 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
     <configuration default="false" name="local" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" document_root="$PROJECT_DIR$" port="8080">
       <method />
     </configuration>
@@ -404,12 +453,6 @@
       <created>1436078698686</created>
       <option name="number" value="Default" />
       <updated>1436078698686</updated>
-    </task>
-    <task id="LOCAL-00033" summary="add has_time_constraint field in timeslot">
-      <created>1455798056855</created>
-      <option name="number" value="00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1455798056855</updated>
     </task>
     <task id="LOCAL-00034" summary="add has_time_constraint field in timeslot">
       <created>1455799987927</created>
@@ -699,7 +742,13 @@
       <option name="project" value="LOCAL" />
       <updated>1457478572260</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="test deploy with jenkins">
+      <created>1457479630478</created>
+      <option name="number" value="00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1457479630478</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -720,15 +769,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="210" y="154" width="1149" height="813" extended-state="0" />
+    <frame x="-8" y="-8" width="1616" height="1176" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17814508" sideWeight="0.80330884" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2525707" sideWeight="0.794948" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26845017" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4379085" sideWeight="0.5030257" order="14" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16868512" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2" sideWeight="0.75113463" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17814508" sideWeight="0.19669117" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20115681" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35474592" sideWeight="0.75113463" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2525707" sideWeight="0.205052" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -824,21 +873,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/admin.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/coupe_kf.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.5">
-          <caret line="13" column="64" selection-start-line="13" selection-start-column="64" selection-end-line="13" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/coupe_kh.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.961538">
@@ -986,13 +1020,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/046-drop column heure_reception.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/getVolleyballImages.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.17369093">
@@ -1084,31 +1111,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/047-alter table matches modify id_creneau allow 0 value.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="29" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/042-alter table matches add creneau foreign key.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.04927536">
-          <caret line="2" column="32" selection-start-line="0" selection-start-column="0" selection-end-line="18" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/modifierMonMatch.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.120056495">
           <caret line="5" column="14" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/048-alter table matches drop column id_creneau.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.06809079">
-          <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
         </state>
       </provider>
     </entry>
@@ -1147,13 +1153,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nbproject/sql/034-alter matches table and populate days.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33224756">
-          <caret line="18" column="34" selection-start-line="18" selection-start-column="34" selection-end-line="18" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.37674418">
@@ -1165,7 +1164,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22835945">
           <caret line="1280" column="1" selection-start-line="1280" selection-start-column="1" selection-end-line="1280" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1178,8 +1176,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/admin.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38163266">
-          <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+        <state vertical-scroll-proportion="0.5218094">
+          <caret line="19" column="52" selection-start-line="19" selection-start-column="52" selection-end-line="19" selection-end-column="52" />
           <folding />
         </state>
       </provider>

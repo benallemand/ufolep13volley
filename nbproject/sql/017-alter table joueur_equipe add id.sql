@@ -1,1 +1,0 @@
-ALTER TABLE joueur_equipe ADD id smallint(10) PRIMARY KEY AUTO_INCREMENT;

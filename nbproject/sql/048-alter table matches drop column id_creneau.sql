@@ -1,4 +1,0 @@
-SET FOREIGN_KEY_CHECKS = 0;
-ALTER TABLE matches DROP FOREIGN KEY fk_matches_creneau;
-ALTER TABLE matches DROP COLUMN id_creneau;
-SET FOREIGN_KEY_CHECKS = 1;

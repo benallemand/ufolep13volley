@@ -1,1 +1,0 @@
-ALTER TABLE activity MODIFY activity_date DATETIME;
