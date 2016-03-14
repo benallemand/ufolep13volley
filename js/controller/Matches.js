@@ -99,11 +99,6 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                             format: 'd/m/Y'
                         },
                         {
-                            xtype: 'textfield',
-                            fieldLabel: 'Heure',
-                            name: 'heure_reception'
-                        },
-                        {
                             xtype: 'container',
                             layout: 'hbox',
                             items: [
