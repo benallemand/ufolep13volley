@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="2134234418">
+  <component name="DataSourceManagerImpl" format="xml" hash="784373493">
     <data-source source="LOCAL" name="MySQL - ufolep dev" uuid="2ba3cebe-98b2-469f-a1db-0d9e897f2edf">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://clustermysql05.hosteur.com:3306/ufolep_13volley_DEV</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/ufolep_13volley</jdbc-url>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />
