@@ -17,10 +17,10 @@ $controllers[] = "'GymnasiumsMap'";
     <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
     <LINK href="includes/coverflow.css" rel="stylesheet" type="text/css" media="screen"/>
     <link
-        href="https://extjs.cachefly.net/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
+        href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>
-    <script src="https://extjs.cachefly.net/ext/gpl/5.1.0/build/ext-all.js" type="text/javascript"></script>
-    <script src="https://extjs.cachefly.net/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"
+    <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/ext-all.js" type="text/javascript"></script>
+    <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="js/libs/Commons.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3"></script>
