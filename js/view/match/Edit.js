@@ -114,7 +114,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 xtype: 'datefield',
                 fieldLabel: 'Date',
                 name: 'date_reception',
-                allowBlank: false
+                allowBlank: false,
+                startDay: 1
             },
             {
                 name: 'certif',

@@ -96,7 +96,8 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                             xtype: 'datefield',
                             fieldLabel: 'Date',
                             name: 'date_reception',
-                            format: 'd/m/Y'
+                            format: 'd/m/Y',
+                            startDay: 1
                         },
                         {
                             xtype: 'container',

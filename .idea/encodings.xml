@@ -85,7 +85,6 @@
     <file url="file://$PROJECT_DIR$/ajax/saveTeam.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/saveTimeSlot.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/saveUser.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/sendMailPlayersWithoutLicenceNumber.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/supprimerEquipeCompetition.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/supprimerMatch.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/updateMyTeamCaptain.php" charset="UTF-8" />
