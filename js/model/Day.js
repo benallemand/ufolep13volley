@@ -24,6 +24,11 @@ Ext.define('Ufolep13Volley.model.Day', Sencha.modelCompatibility({
         {
             name: 'libelle',
             type: 'string'
+        },
+        {
+            name: 'start_date',
+            type: 'date',
+            dateFormat: 'd/m/Y'
         }
     ]
 }));

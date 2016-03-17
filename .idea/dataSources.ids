@@ -489,285 +489,288 @@
         <mandatory>1</mandatory>
         <data-type>varchar(50)</data-type>
       </column>
-      <index id="142" parent="14" name="id">
+      <column id="142" parent="14" name="start_date">
+        <data-type>date</data-type>
+      </column>
+      <index id="143" parent="14" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="143" parent="14" name="PRIMARY">
+      <key id="144" parent="14" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="144" parent="15" name="id_match">
+      <column id="145" parent="15" name="id_match">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="145" parent="15" name="code_match">
+      <column id="146" parent="15" name="code_match">
         <mandatory>1</mandatory>
         <data-type>varchar(10)</data-type>
       </column>
-      <column id="146" parent="15" name="code_competition">
+      <column id="147" parent="15" name="code_competition">
         <mandatory>1</mandatory>
         <data-type>varchar(2)</data-type>
       </column>
-      <column id="147" parent="15" name="division">
+      <column id="148" parent="15" name="division">
         <mandatory>1</mandatory>
         <data-type>varchar(2)</data-type>
       </column>
-      <column id="148" parent="15" name="id_equipe_dom">
+      <column id="149" parent="15" name="id_equipe_dom">
         <mandatory>1</mandatory>
         <data-type>smallint(3)</data-type>
       </column>
-      <column id="149" parent="15" name="id_equipe_ext">
+      <column id="150" parent="15" name="id_equipe_ext">
         <mandatory>1</mandatory>
         <data-type>smallint(3)</data-type>
       </column>
-      <column id="150" parent="15" name="score_equipe_dom">
+      <column id="151" parent="15" name="score_equipe_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="151" parent="15" name="score_equipe_ext">
+      <column id="152" parent="15" name="score_equipe_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="152" parent="15" name="set_1_dom">
+      <column id="153" parent="15" name="set_1_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="153" parent="15" name="set_1_ext">
+      <column id="154" parent="15" name="set_1_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="154" parent="15" name="set_2_dom">
+      <column id="155" parent="15" name="set_2_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="155" parent="15" name="set_2_ext">
+      <column id="156" parent="15" name="set_2_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="156" parent="15" name="set_3_dom">
+      <column id="157" parent="15" name="set_3_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="157" parent="15" name="set_3_ext">
+      <column id="158" parent="15" name="set_3_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="158" parent="15" name="set_4_dom">
+      <column id="159" parent="15" name="set_4_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="159" parent="15" name="set_4_ext">
+      <column id="160" parent="15" name="set_4_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="160" parent="15" name="set_5_dom">
+      <column id="161" parent="15" name="set_5_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="161" parent="15" name="set_5_ext">
+      <column id="162" parent="15" name="set_5_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="162" parent="15" name="heure_reception">
+      <column id="163" parent="15" name="heure_reception">
         <mandatory>1</mandatory>
         <data-type>varchar(5)</data-type>
       </column>
-      <column id="163" parent="15" name="date_reception">
+      <column id="164" parent="15" name="date_reception">
         <mandatory>1</mandatory>
         <data-type>date</data-type>
       </column>
-      <column id="164" parent="15" name="gagnea5_dom">
+      <column id="165" parent="15" name="gagnea5_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="165" parent="15" name="gagnea5_ext">
+      <column id="166" parent="15" name="gagnea5_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="166" parent="15" name="forfait_dom">
+      <column id="167" parent="15" name="forfait_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="167" parent="15" name="forfait_ext">
+      <column id="168" parent="15" name="forfait_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="168" parent="15" name="certif">
+      <column id="169" parent="15" name="certif">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="169" parent="15" name="report">
+      <column id="170" parent="15" name="report">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="170" parent="15" name="retard">
+      <column id="171" parent="15" name="retard">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="171" parent="15" name="id_journee">
+      <column id="172" parent="15" name="id_journee">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="172" parent="15" name="code_match">
+      <index id="173" parent="15" name="code_match">
         <columns>code_match</columns>
         <desc-columns></desc-columns>
         <unique>1</unique>
       </index>
-      <index id="173" parent="15" name="fk_matches_equipesdom">
+      <index id="174" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="174" parent="15" name="fk_matches_equipesext">
+      <index id="175" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="175" parent="15" name="fk_matches_journees">
+      <index id="176" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="176" parent="15" name="id_match">
+      <index id="177" parent="15" name="id_match">
         <columns>id_match</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="177" parent="15" name="code_match">
+      <key id="178" parent="15" name="code_match">
         <columns>code_match</columns>
         <underlying-index>code_match</underlying-index>
       </key>
-      <key id="178" parent="15" name="PRIMARY">
+      <key id="179" parent="15" name="PRIMARY">
         <columns>id_match</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="179" parent="15" name="fk_matches_equipesdom">
+      <foreign-key id="180" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="180" parent="15" name="fk_matches_equipesext">
+      <foreign-key id="181" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="181" parent="15" name="fk_matches_journees">
+      <foreign-key id="182" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <ref-key>~.journees.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="182" parent="16" name="id">
+      <column id="183" parent="16" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="183" parent="16" name="path_photo">
+      <column id="184" parent="16" name="path_photo">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <index id="184" parent="16" name="id">
+      <index id="185" parent="16" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="185" parent="16" name="PRIMARY">
+      <key id="186" parent="16" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="186" parent="17" name="id">
+      <column id="187" parent="17" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="187" parent="17" name="name">
+      <column id="188" parent="17" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="188" parent="17" name="id">
+      <index id="189" parent="17" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="189" parent="17" name="PRIMARY">
+      <key id="190" parent="17" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="190" parent="18" name="id">
+      <column id="191" parent="18" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="191" parent="18" name="registry_key">
+      <column id="192" parent="18" name="registry_key">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="192" parent="18" name="registry_value">
+      <column id="193" parent="18" name="registry_value">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="193" parent="18" name="id">
+      <index id="194" parent="18" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="194" parent="18" name="PRIMARY">
+      <key id="195" parent="18" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="195" parent="19" name="id">
+      <column id="196" parent="19" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="196" parent="19" name="user_id">
+      <column id="197" parent="19" name="user_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="197" parent="19" name="profile_id">
+      <column id="198" parent="19" name="profile_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="198" parent="19" name="fk_users_profiles_profile">
+      <index id="199" parent="19" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="199" parent="19" name="fk_users_profiles_user">
+      <index id="200" parent="19" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="200" parent="19" name="id">
+      <index id="201" parent="19" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="201" parent="19" name="PRIMARY">
+      <key id="202" parent="19" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <argument id="202" parent="20">
+      <argument id="203" parent="20">
         <direction>RETURN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="203" parent="20" name="str">
+      <argument id="204" parent="20" name="str">
         <direction>IN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="204" parent="20" name="delim">
+      <argument id="205" parent="20" name="delim">
         <direction>IN</direction>
         <data-type>varchar(12)</data-type>
       </argument>
-      <argument id="205" parent="20" name="pos">
+      <argument id="206" parent="20" name="pos">
         <direction>IN</direction>
         <data-type>int(11)</data-type>
       </argument>
@@ -1378,205 +1381,201 @@
         <data-type>tinyint(2)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="166" parent="15" name="heure_reception">
-        <mandatory>1</mandatory>
-        <data-type>varchar(5)</data-type>
-      </column>
-      <column id="167" parent="15" name="date_reception">
+      <column id="166" parent="15" name="date_reception">
         <mandatory>1</mandatory>
         <data-type>date</data-type>
       </column>
-      <column id="168" parent="15" name="gagnea5_dom">
+      <column id="167" parent="15" name="gagnea5_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="169" parent="15" name="gagnea5_ext">
+      <column id="168" parent="15" name="gagnea5_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="170" parent="15" name="forfait_dom">
+      <column id="169" parent="15" name="forfait_dom">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="171" parent="15" name="forfait_ext">
+      <column id="170" parent="15" name="forfait_ext">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="172" parent="15" name="certif">
+      <column id="171" parent="15" name="certif">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="173" parent="15" name="report">
+      <column id="172" parent="15" name="report">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="174" parent="15" name="retard">
+      <column id="173" parent="15" name="retard">
         <mandatory>1</mandatory>
         <data-type>tinyint(1)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="175" parent="15" name="id_journee">
+      <column id="174" parent="15" name="id_journee">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="176" parent="15" name="code_match">
+      <index id="175" parent="15" name="code_match">
         <columns>code_match</columns>
         <desc-columns></desc-columns>
         <unique>1</unique>
       </index>
-      <index id="177" parent="15" name="fk_matches_equipesdom">
+      <index id="176" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="178" parent="15" name="fk_matches_equipesext">
+      <index id="177" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="179" parent="15" name="fk_matches_journees">
+      <index id="178" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="180" parent="15" name="id_match">
+      <index id="179" parent="15" name="id_match">
         <columns>id_match</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="181" parent="15" name="code_match">
+      <key id="180" parent="15" name="code_match">
         <columns>code_match</columns>
         <underlying-index>code_match</underlying-index>
       </key>
-      <key id="182" parent="15" name="PRIMARY">
+      <key id="181" parent="15" name="PRIMARY">
         <columns>id_match</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="183" parent="15" name="fk_matches_equipesdom">
+      <foreign-key id="182" parent="15" name="fk_matches_equipesdom">
         <columns>id_equipe_dom</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="184" parent="15" name="fk_matches_equipesext">
+      <foreign-key id="183" parent="15" name="fk_matches_equipesext">
         <columns>id_equipe_ext</columns>
         <ref-key>~.equipes.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="185" parent="15" name="fk_matches_journees">
+      <foreign-key id="184" parent="15" name="fk_matches_journees">
         <columns>id_journee</columns>
         <ref-key>~.journees.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="186" parent="16" name="id">
+      <column id="185" parent="16" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="187" parent="16" name="path_photo">
+      <column id="186" parent="16" name="path_photo">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <index id="188" parent="16" name="id">
+      <index id="187" parent="16" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="189" parent="16" name="PRIMARY">
+      <key id="188" parent="16" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="190" parent="17" name="id">
+      <column id="189" parent="17" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="191" parent="17" name="name">
+      <column id="190" parent="17" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="192" parent="17" name="id">
+      <index id="191" parent="17" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="193" parent="17" name="PRIMARY">
+      <key id="192" parent="17" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="194" parent="18" name="id">
+      <column id="193" parent="18" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="195" parent="18" name="registry_key">
+      <column id="194" parent="18" name="registry_key">
         <mandatory>1</mandatory>
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="196" parent="18" name="registry_value">
+      <column id="195" parent="18" name="registry_value">
         <mandatory>1</mandatory>
         <data-type>varchar(200)</data-type>
       </column>
-      <index id="197" parent="18" name="id">
+      <index id="196" parent="18" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="198" parent="18" name="PRIMARY">
+      <key id="197" parent="18" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="199" parent="19" name="id">
+      <column id="198" parent="19" name="id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="200" parent="19" name="user_id">
+      <column id="199" parent="19" name="user_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <column id="201" parent="19" name="profile_id">
+      <column id="200" parent="19" name="profile_id">
         <mandatory>1</mandatory>
         <data-type>smallint(10)</data-type>
       </column>
-      <index id="202" parent="19" name="fk_users_profiles_profile">
+      <index id="201" parent="19" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="203" parent="19" name="fk_users_profiles_user">
+      <index id="202" parent="19" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="204" parent="19" name="id">
+      <index id="203" parent="19" name="id">
         <columns>id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="205" parent="19" name="PRIMARY">
+      <key id="204" parent="19" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="206" parent="19" name="fk_users_profiles_profile">
+      <foreign-key id="205" parent="19" name="fk_users_profiles_profile">
         <columns>profile_id</columns>
         <ref-key>~.profiles.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="207" parent="19" name="fk_users_profiles_user">
+      <foreign-key id="206" parent="19" name="fk_users_profiles_user">
         <columns>user_id</columns>
         <ref-key>~.comptes_acces.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <argument id="208" parent="20">
+      <argument id="207" parent="20">
         <direction>RETURN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="209" parent="20" name="str">
+      <argument id="208" parent="20" name="str">
         <direction>IN</direction>
         <data-type>varchar(255)</data-type>
       </argument>
-      <argument id="210" parent="20" name="delim">
+      <argument id="209" parent="20" name="delim">
         <direction>IN</direction>
         <data-type>varchar(12)</data-type>
       </argument>
-      <argument id="211" parent="20" name="pos">
+      <argument id="210" parent="20" name="pos">
         <direction>IN</direction>
         <data-type>int(11)</data-type>
       </argument>

@@ -46,10 +46,12 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
                 allowBlank: false
             },
             {
-                xtype: 'textfield',
-                fieldLabel: 'Libellé',
-                name: 'libelle',
-                allowBlank: false
+                xtype: 'datefield',
+                fieldLabel: 'Premier jour de la semaine',
+                name: 'start_date',
+                allowBlank: false,
+                startDay: 1,
+                format: 'd/m/Y'
             }
         ],
         buttons: [
