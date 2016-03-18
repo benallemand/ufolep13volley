@@ -39,18 +39,18 @@ $postData = '__VIEWSTATE=' . rawurlencode($viewstate)
         . '&' . $nameUsername . '=' . $valUsername
         . '&' . $namePassword . '=' . $valPassword
         . '&' . $nameLoginBtn . '=' . $valLoginBtn;
-curl_setOpt($ch, CURLOPT_POST, TRUE);
+curl_setopt($ch, CURLOPT_POST, TRUE);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 curl_setopt($ch, CURLOPT_URL, $urlLogin);
 curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFile);
 $data = curl_exec($ch);
 
-curl_setOpt($ch, CURLOPT_POST, FALSE);
+curl_setopt($ch, CURLOPT_POST, FALSE);
 curl_setopt($ch, CURLOPT_URL, $urlSecuredPage);
 curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
 $data = curl_exec($ch);
 
-curl_setOpt($ch, CURLOPT_POST, FALSE);
+curl_setopt($ch, CURLOPT_POST, FALSE);
 curl_setopt($ch, CURLOPT_URL, $urlSearchPage);
 curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
 $data = curl_exec($ch);
@@ -66,7 +66,7 @@ $postData = '__VIEWSTATE=' . rawurlencode($viewstate)
         . '&ctl00$ContentBody$txtRechercheNom='
         . '&ctl00$ContentBody$txtRecherchePrenom='
         . '&ctl00$ContentBody$txtRechercheNumLicence=' . $licenceNumber;
-curl_setOpt($ch, CURLOPT_POST, TRUE);
+curl_setopt($ch, CURLOPT_POST, TRUE);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 curl_setopt($ch, CURLOPT_URL, $urlSearchPage);
 curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
