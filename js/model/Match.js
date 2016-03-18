@@ -135,7 +135,7 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             type: 'int',
             calculate: function (data) {
                 var today = new Date();
-                today.setHours(0, 0, 0, 0)
+                today.setHours(0, 0, 0, 0);
                 if (data.date_reception >= today) {
                     return 0;
                 }
