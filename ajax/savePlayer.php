@@ -1,10 +1,18 @@
-
 <?php
 
 require_once "../includes/fonctions_inc.php";
-ini_set('upload_max_filesize', '1M');
-$success = savePlayer();
+try {
+    ini_set('upload_max_filesize', '1M');
+    savePlayer();
+} catch (Exception $ex) {
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Erreur durant la modification: ' . $ex->getMessage()
+    ));
+    return;
+}
 echo json_encode(array(
-    'success' => $success,
-    'message' => $success ? 'Modification OK' : 'Erreur durant la modification'
+    'success' => true,
+    'message' => 'Modification OK'
 ));
+return;

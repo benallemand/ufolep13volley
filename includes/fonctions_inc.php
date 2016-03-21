@@ -9,7 +9,8 @@ function accentedToNonAccented($str)
         'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
         'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
         'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-        'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
+        'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y',
+        '-' => '', ' ' => '');
     return strtr($str, $unwanted_array);
 }
 
@@ -1563,7 +1564,9 @@ GROUP BY full_name";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
+        $data['path_photo'] = accentedToNonAccented($data['path_photo']);
         $results[] = $data;
+
     }
     return json_encode($results);
 }
@@ -2071,11 +2074,13 @@ function insertPhoto($uploadfile, &$idPhoto)
     $sql = "INSERT INTO photos SET path_photo = '$uploadfile'";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
     }
     $idPhoto = mysqli_insert_id($db);
     disconn_db();
-    return true;
+    return;
 }
 
 function linkPlayerToPhoto($idPlayer, $idPhoto)
@@ -2085,10 +2090,12 @@ function linkPlayerToPhoto($idPlayer, $idPhoto)
     $sql = "UPDATE joueurs j SET j.id_photo = $idPhoto WHERE id = $idPlayer";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
     }
     disconn_db();
-    return true;
+    return;
 }
 
 function savePhoto($inputs, $newId = 0)
@@ -2096,31 +2103,26 @@ function savePhoto($inputs, $newId = 0)
     $lastName = $inputs['nom'];
     $firstName = $inputs['prenom'];
     if (empty($_FILES['photo']['name'])) {
-        return true;
+        return;
     }
     $uploaddir = '../players_pics/';
     $iteration = 1;
-    $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . $iteration . '.jpg');
+    $uploadfile = "$uploaddir$lastName$firstName$iteration.jpg";
     while (file_exists($uploadfile)) {
         $iteration++;
-        $uploadfile = accentedToNonAccented($uploaddir . str_replace(array('-', ' '), '', mb_strtolower($lastName)) . str_replace(array('-', ' '), '', mb_strtolower($firstName)) . $iteration . '.jpg');
+        $uploadfile = "$uploaddir$lastName$firstName$iteration.jpg";
     }
     $idPhoto = 0;
-    if (!insertPhoto(substr($uploadfile, 3), $idPhoto)) {
-        return false;
-    }
+    insertPhoto(substr($uploadfile, 3), $idPhoto);
     $idPlayer = $inputs['id'];
     if (empty($inputs['id'])) {
         $idPlayer = $newId;
     }
-    if (!linkPlayerToPhoto($idPlayer, $idPhoto)) {
-        return false;
-    }
-    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
+    linkPlayerToPhoto($idPlayer, $idPhoto);
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], accentedToNonAccented($uploadfile))) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
-        return true;
     }
-    return false;
+    return;
 }
 
 function isPlayerExists($licenceNumber)
@@ -2180,7 +2182,7 @@ function savePlayer()
     );
     if (empty($inputs['id'])) {
         if (isPlayerExists($inputs['num_licence'])) {
-            return false;
+            throw new Exception("Un joueur avec le même numéro de licence existe déjà !");
         }
     }
     conn_db();
@@ -2218,7 +2220,9 @@ function savePlayer()
     }
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
     }
     $newId = mysqli_insert_id($db);
     disconn_db();
@@ -2226,7 +2230,7 @@ function savePlayer()
         if (!empty($inputs['id_team'])) {
             if ($newId > 0) {
                 if (!addPlayerToMyTeam($newId)) {
-                    return false;
+                    throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
                 }
             }
         }
@@ -2249,7 +2253,7 @@ function savePlayer()
             }
         }
     }
-    return savePhoto($inputs, $newId);
+    savePhoto($inputs, $newId);
 }
 
 function saveTimeSlot()
