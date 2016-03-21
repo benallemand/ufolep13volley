@@ -477,9 +477,7 @@ Ext.application({
         };
         var initMenuAdmin = function () {
             var menuAdmin = Ext.ComponentQuery.query('panel[title=Navigation]')[0];
-            var tableNames = [
-                'competitions'
-            ];
+            var tableNames = [];
             menuAdmin.add({
                 text: 'Indicateurs',
                 handler: function () {
