@@ -429,9 +429,111 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'playersgrid button[action=delete]': {
                     click: this.deletePlayers
+                },
+                'button[action=displayIndicators]': {
+                    click: this.displayIndicators
                 }
             }
         );
+    },
+    displayIndicators: function () {
+        var mainPanel = Ext.ComponentQuery.query('tabpanel[title=Panneau Principal]')[0];
+        mainPanel.setAutoScroll(true);
+        var tab = mainPanel.add({
+            title: 'Indicateurs',
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            autoScroll: true,
+            items: []
+        });
+        mainPanel.setActiveTab(tab);
+        var storeIndicators = Ext.create('Ext.data.Store', {
+            fields: [
+                'fieldLabel',
+                'value',
+                'details'
+            ],
+            proxy: {
+                type: 'rest',
+                url: 'ajax/indicators.php',
+                reader: {
+                    type: 'json',
+                    root: 'results'
+                }
+            }
+        });
+        storeIndicators.load({
+            callback: function (records) {
+                Ext.each(records, function (record) {
+                    var detailsData = record.get('details');
+                    if (!detailsData) {
+                        return;
+                    }
+                    var fields = [];
+                    var columns = [];
+                    for (var k in detailsData[0]) {
+                        fields.push(k);
+                        columns.push({
+                            header: k,
+                            dataIndex: k,
+                            flex: 1
+                        });
+                    }
+                    var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
+                    if (record.get('value') === 0) {
+                        return;
+                    }
+                    indicatorPanel.add(
+                        {
+                            layout: 'hbox',
+                            items: [
+                                {
+                                    xtype: 'displayfield',
+                                    margin: 10,
+                                    fieldLabel: record.get('fieldLabel'),
+                                    labelWidth: 250,
+                                    value: record.get('value'),
+                                    width: 300
+                                },
+                                {
+                                    xtype: 'button',
+                                    margin: 10,
+                                    text: 'Détails',
+                                    handler: function () {
+                                        Ext.create('Ext.window.Window', {
+                                            title: 'Détails',
+                                            height: 500,
+                                            width: 700,
+                                            maximizable: true,
+                                            layout: 'fit',
+                                            items: {
+                                                xtype: 'grid',
+                                                autoScroll: true,
+                                                store: Ext.create('Ext.data.Store', {
+                                                    fields: fields,
+                                                    data: {
+                                                        'items': detailsData
+                                                    },
+                                                    proxy: {
+                                                        type: 'memory',
+                                                        reader: {
+                                                            type: 'json',
+                                                            root: 'items'
+                                                        }
+                                                    }
+                                                }),
+                                                columns: columns
+                                            }
+                                        }).show();
+                                    }
+                                }
+                            ]
+                        });
+                });
+            }
+        });
     },
     filterPlayersWithoutClub: function (checkbox, newValue) {
         var store = this.getPlayersStore();
