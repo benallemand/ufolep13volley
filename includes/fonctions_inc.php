@@ -223,27 +223,6 @@ function deletePlayers($ids)
     return true;
 }
 
-function activatePlayers($ids)
-{
-    $explodedIds = explode(',', $ids);
-    $playersFullNames = array();
-    foreach ($explodedIds as $id) {
-        $playersFullNames[] = getPlayerFullName($id);
-    }
-    global $db;
-    conn_db();
-    $sql = "UPDATE joueurs SET est_actif = 1 WHERE id IN($ids)";
-    $req = mysqli_query($db, $sql);
-    disconn_db();
-    if ($req === FALSE) {
-        return false;
-    }
-    foreach ($playersFullNames as $playerFullName) {
-        addActivity("Activation du joueur : $playerFullName");
-    }
-    return true;
-}
-
 function logout()
 {
     session_destroy();
