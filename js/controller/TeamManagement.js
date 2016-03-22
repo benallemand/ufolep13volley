@@ -193,8 +193,8 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
                     }
                 });
     },
-    setPlayerImage: function (combo, records) {
-        this.getSelectPlayerImage().setSrc(records[0].get('path_photo'));
+    setPlayerImage: function (combo, record) {
+        this.getSelectPlayerImage().setSrc(record.get('path_photo'));
         this.getSelectPlayerSubmitButton().focus(false, 100);
     },
     getAlertResolution: function (column, action, view, rowIndex) {
