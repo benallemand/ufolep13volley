@@ -30,21 +30,21 @@ Ext.application({
                                 items: [
                                     {
                                         text: 'Gestion des joueurs/joueuses',
-                                        scale: 'large',
-                                        icon: 'images/man.png',
+                                        scale: 'small',
+                                        icon: 'images/svg/sportsman.svg',
                                         action: 'showManagePlayers'
                                     },
                                     {
                                         text: 'Gestion des gymnases/créneaux',
-                                        scale: 'large',
-                                        icon: 'images/volleyballcourt.jpg',
+                                        scale: 'small',
+                                        icon: 'images/svg/volleyball_court.svg',
                                         action: 'showTimeSlotsManage'
                                     },
                                     {
                                         text: 'Fiche Equipe',
                                         href: 'teamSheetPdf.php',
-                                        scale: 'large',
-                                        icon: 'images/pdf.png'
+                                        scale: 'small',
+                                        icon: 'images/svg/pdf.svg'
                                     }
                                 ]
                             },
@@ -55,24 +55,24 @@ Ext.application({
                                 items: [
                                     {
                                         text: 'Modifier les informations',
-                                        scale: 'large',
-                                        icon: 'images/modify.png'
+                                        scale: 'small',
+                                        icon: 'images/svg/modify.svg'
                                     },
                                     {
                                         text: 'Changer de mot de passe',
-                                        scale: 'large',
-                                        icon: 'images/lock.png'
+                                        scale: 'small',
+                                        icon: 'images/svg/lock.svg'
                                     },
                                     {
                                         text: 'Préférences',
-                                        scale: 'large',
-                                        icon: 'images/preferences.png',
+                                        scale: 'small',
+                                        icon: 'images/svg/preferences.svg',
                                         action: 'editPreferences'
                                     },
                                     {
                                         text: 'Historique',
-                                        scale: 'large',
-                                        icon: 'images/ic_history_24px.svg',
+                                        scale: 'small',
+                                        icon: 'images/svg/history.svg',
                                         action: 'showHistory'
                                     }
                                 ]

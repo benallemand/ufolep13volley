@@ -8,15 +8,15 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         '->',
         {
             text: 'Accueil',
-            scale: 'large',
-            icon: 'images/home.png',
+            scale: 'small',
+            icon: 'images/svg/home.svg',
             href: 'index.php',
             hrefTarget: '_self'
         },
         {
             text: 'Championnats',
-            scale: 'large',
-            icon: 'images/volleyball.png',
+            scale: 'small',
+            icon: 'images/svg/volleyball.svg',
             menu: [
                 {
                     text: 'Masculin (Mixte)',
@@ -97,8 +97,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Coupes',
-            scale: 'large',
-            icon: 'images/cup.png',
+            scale: 'small',
+            icon: 'images/svg/cup.svg',
             menu: [
                 {
                     text: 'Isoardi',
@@ -201,8 +201,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Informations',
-            scale: 'large',
-            icon: 'images/info30x30.png',
+            scale: 'small',
+            icon: 'images/svg/info.svg',
             menu: [
                 {
                     text: 'Annuaire',
@@ -329,22 +329,22 @@ Il faudra retourner par voie postale :<br/>\
         },
         {
             text: 'Forum',
-            scale: 'large',
-            icon: 'images/forum.png',
+            scale: 'small',
+            icon: 'images/svg/forum.svg',
             href: "http://ufolep13volley.forumzen.com",
             hrefTarget: '_blank'
         },
         {
             text: 'Version Mobile',
-            scale: 'large',
-            icon: 'images/mobile.png',
+            scale: 'small',
+            icon: 'images/svg/mobile.svg',
             href: 'index_mobile.php',
             hrefTarget: '_self'
         },
         {
             text: 'Mon Compte',
-            scale: 'large',
-            icon: 'images/account.png',
+            scale: 'small',
+            icon: 'images/svg/user.svg',
             hidden: connectedUser === '',
             menu: [
                 {
@@ -362,8 +362,8 @@ Il faudra retourner par voie postale :<br/>\
                 },
                 {
                     text: 'Se déconnecter',
-                    scale: 'large',
-                    icon: 'images/unlock.png',
+                    scale: 'small',
+                    icon: 'images/svg/logout.svg',
                     href: "ajax/logout.php",
                     hrefTarget: '_self'
                 }
@@ -371,8 +371,8 @@ Il faudra retourner par voie postale :<br/>\
         },
         {
             text: 'Connexion',
-            scale: 'large',
-            icon: 'images/lock.png',
+            scale: 'small',
+            icon: 'images/svg/login.svg',
             href: "portail.php",
             hrefTarget: '_self',
             hidden: connectedUser !== ''

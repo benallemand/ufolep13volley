@@ -21,23 +21,6 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
                             break;
                     }
                 }
-//                var UrlExists = function (url)
-//                {
-//                    var http = new XMLHttpRequest();
-//                    http.open('HEAD', url, false);
-//                    http.send();
-//                    return http.status !== 404;
-//                };
-//                if (!UrlExists(val)) {
-//                    switch (rec.get('sexe')) {
-//                        case 'M':
-//                            return 'images/MaleMissingPhoto.png';
-//                        case 'F':
-//                            return 'images/FemaleMissingPhoto.png';
-//                        default:
-//                            break;
-//                    }
-//                }
                 return val;
             }
         },

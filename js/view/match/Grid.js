@@ -156,7 +156,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     },
                     {
-                        icon: 'images/modif.gif',
+                        icon: 'images/svg/modify.svg',
                         tooltip: 'Modifier le score du match',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemeditbuttonclick', grid, rowIndex);

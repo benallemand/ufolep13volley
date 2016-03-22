@@ -14,22 +14,22 @@ Ext.define('Ufolep13Volley.view.mobile.Portal', {
                 items: [
                     {
                         text: '',
-                        icon: 'images/phonebook.png',
+                        icon: 'images/mobile/phonebook.png',
                         action: 'getPhonebook'
                     },
                     {
                         text: '',
-                        icon: 'images/cup.png',
+                        icon: 'images/mobile/cup.png',
                         action: 'getLastResults'
                     },
                     {
                         text: '',
-                        icon: 'images/man.png',
+                        icon: 'images/mobile/man.png',
                         action: 'getMyPlayers'
                     },
                     {
                         text: '',
-                        icon: 'images/unlock.png',
+                        icon: 'images/mobile/unlock.png',
                         action: 'disconnect'
                     }
                 ]

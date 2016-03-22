@@ -22,7 +22,7 @@ Ext.application({
                             '->',
                             {
                                 xtype: 'button',
-                                scale: 'large',
+                                scale: 'small',
                                 text: "RETOUR A L'ACCUEIL",
                                 handler: function () {
                                     window.open('.', '_self', false);

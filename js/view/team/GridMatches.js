@@ -121,7 +121,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         }
                     },
                     {
-                        icon: 'images/modif.gif',
+                        icon: 'images/svg/modify.svg',
                         tooltip: 'Modifier le score',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
@@ -473,7 +473,7 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                         }
                     },
                     {
-                        icon: 'images/email-icon.png',
+                        icon: 'images/svg/email.svg',
                         tooltip: 'Envoi par email de la feuille de match',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {

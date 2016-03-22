@@ -93,17 +93,17 @@ Ext.define('Ufolep13Volley.controller.mobile.Teams', {
                                     {
                                         text: 'Appel',
                                         action: 'call',
-                                        icon: 'images/phone.png'
+                                        icon: 'images/mobile/phone.png'
                                     },
                                     {
                                         text: 'Carte',
                                         action: 'map',
-                                        icon: 'images/map.png'
+                                        icon: 'images/mobile/map.png'
                                     },
                                     {
                                         text: 'Joueurs',
                                         action: 'viewPlayers',
-                                        icon: 'images/man.png'
+                                        icon: 'images/mobile/man.png'
                                     }
                                 ]
                             },

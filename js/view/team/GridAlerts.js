@@ -29,7 +29,7 @@ Ext.define('Ufolep13Volley.view.team.GridAlerts', {
                 xtype: 'actioncolumn',
                 items: [
                     {
-                        icon: 'images/info.png',
+                        icon: 'images/svg/info.svg',
                         handler: function (view, rowIndex, colIndex, item, e) {
                             this.fireEvent('itemclick', this, 'info', view, rowIndex, colIndex, item, e);
                         }

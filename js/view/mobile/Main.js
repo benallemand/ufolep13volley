@@ -44,12 +44,12 @@ Ext.define('Ufolep13Volley.view.mobile.Main', {
                 items: [
                     {
                         text: 'Annuaire',
-                        icon: 'images/phonebook.png',
+                        icon: 'images/mobile/phonebook.png',
                         action: 'getPhonebook'
                     },
                     {
                         text: 'Résultats',
-                        icon: 'images/cup.png',
+                        icon: 'images/mobile/cup.png',
                         action: 'getLastResults'
                     }
                 ]
