@@ -28,30 +28,27 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
             items: [
                 {
                     region: 'west',
-                    layout: 'center',
+                    width: 300,
+                    margin: 20,
                     border: false,
-                    items: {
-                        layout: {
-                            type: 'vbox',
-                            align: 'center'
+                    layout: 'border',
+                    items: [
+                        {
+                            flex: 2,
+                            region: 'north',
+                            xtype: 'banner'
                         },
-                        border: false,
-                        xtype: 'panel',
-                        items: [
-                            {
-                                height: 30,
-                                xtype: 'banner'
-                            },
-                            {
-                                height: 30,
-                                xtype: 'image',
-                                src: './images/JeuAvantEnjeu.jpg'
-                            }
-                        ]
-                    }
+                        {
+                            flex: 1,
+                            region: 'center',
+                            xtype: 'image',
+                            src: './images/JeuAvantEnjeu.jpg'
+                        }
+                    ]
                 },
                 {
                     region: 'center',
+                    flex: 1,
                     xtype: 'coverflow',
                     store: 'Images'
                 }
@@ -69,7 +66,7 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                 '->',
                 {
                     xtype: 'tbtext',
-                    text: 'UFOLEP 13 VOLLEY (c) 2014-2015',
+                    text: 'UFOLEP 13 VOLLEY (c) 2015-2016',
                     style: {
                         color: '#0099CC',
                         fontWeight: 'bold'
