@@ -427,9 +427,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'playersgrid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
                     change: this.searchPlayer
                 },
-                'button[action=showCheckLicence]': {
-                    click: this.showCheckLicence
-                },
                 'playersgrid button[action=delete]': {
                     click: this.deletePlayers
                 }
@@ -1288,69 +1285,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('clubselect');
         this.getFormPanelSelectClub().getForm().setValues({
             id_players: idPlayers.join(',')
-        });
-    },
-    showCheckLicence: function () {
-        var me = this;
-        var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
-        if (records[0].get('est_actif')) {
-            Ext.Msg.alert('Infos licence', 'Joueur actif');
-            return;
-        }
-        var licence = '0' + records[0].get('departement_affiliation') + '_' + records[0].get('num_licence');
-
-        Ext.Ajax.request({
-            url: 'ajax/checkLicence.php',
-            params: {
-                licence_number: licence
-            },
-            success: function (response) {
-                var el = document.createElement('div');
-                el.innerHTML = response.responseText;
-                var infos = el.getElementsByTagName('td');
-                var displayMessage = "";
-                Ext.each(infos, function (info, index) {
-                    if (index === 6) {
-                        return false;
-                    }
-                    displayMessage = displayMessage + info.innerHTML.trim() + ' ';
-                });
-                var resultMessage = displayMessage.trim();
-                var dt = new Date();
-                var currentYear = Ext.Date.format(dt, 'Y');
-                dt = Ext.Date.add(dt, Ext.Date.YEAR, 1);
-                var nextYear = Ext.Date.format(dt, 'Y');
-                if (Ext.String.endsWith(resultMessage, currentYear) || Ext.String.endsWith(resultMessage, nextYear)) {
-                    Ext.Msg.show({
-                        title: 'Infos licence',
-                        message: 'Trouvé : ' + displayMessage.trim() + ', Voulez vous activer le joueur ?',
-                        buttons: Ext.Msg.YESNO,
-                        icon: Ext.Msg.QUESTION,
-                        fn: function (btn) {
-                            if (btn !== 'yes') {
-                                return;
-                            }
-                            var ids = [];
-                            Ext.each(records, function (record) {
-                                ids.push(record.get('id'));
-                            });
-                            Ext.Ajax.request({
-                                url: 'ajax/activatePlayers.php',
-                                params: {
-                                    ids: ids.join(',')
-                                },
-                                success: function () {
-                                    me.getPlayersStore().load();
-                                }
-                            });
-                        }
-                    });
-                }
-                else {
-                    Ext.Msg.alert('Infos licence', displayMessage.trim());
-                }
-
-            }
         });
     },
     showProfileSelect: function () {

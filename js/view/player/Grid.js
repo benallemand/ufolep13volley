@@ -65,10 +65,6 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Vérifier une licence...',
-                    action: 'showCheckLicence'
-                },
-                {
                     text: 'Associer à un club',
                     action: 'showClubSelect'
                 },
