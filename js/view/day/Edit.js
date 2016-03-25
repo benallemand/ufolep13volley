@@ -51,6 +51,7 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
                 name: 'start_date',
                 allowBlank: false,
                 startDay: 1,
+                disabledDays: [2,3,4,5,6,0],
                 format: 'd/m/Y'
             }
         ],
