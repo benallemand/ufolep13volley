@@ -12,6 +12,7 @@ if (!isAdmin()) {
     <TITLE>Administration UFOLEP 13 VOLLEY</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="favicon.ico"/>
+    <link href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
     <link
         href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>
