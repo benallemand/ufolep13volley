@@ -1201,10 +1201,12 @@ function getSqlSelectMatches($whereClause, $orderClause)
         c.libelle AS libelle_competition,
         m.division,
         m.id_journee,
-        CONCAT(j.nommage, ' : ', 'Semaine du ', DATE_FORMAT(j.start_date, '%W %d %M'), ' au ',
-             IF(DAYOFWEEK(j.start_date) = 2,
-                DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 4 DAY), '%W %d %M %Y'),
-                DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 3 DAY), '%W %d %M %Y'))) AS journee,
+        CONCAT(j.nommage, 
+          ' : ', 
+          'Semaine du ', 
+          DATE_FORMAT(j.start_date, '%W %d %M'), 
+          ' au ',
+          DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 4 DAY), '%W %d %M %Y')) AS journee,
         m.id_equipe_dom,
         e1.nom_equipe AS equipe_dom,
         m.id_equipe_ext,
@@ -1271,11 +1273,11 @@ function getDays()
       c.libelle                                                                  AS libelle_competition,
       j.numero,
       j.nommage,
-      CONCAT('Semaine du ', DATE_FORMAT(j.start_date, '%W %d %M'), ' au ',
-             IF(DAYOFWEEK(j.start_date) = 2,
-                DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 4 DAY), '%W %d %M %Y'),
-                DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 3 DAY), '%W %d %M %Y'))) AS libelle,
-      DATE_FORMAT(j.start_date, '%d/%m/%Y')                                      AS start_date
+      CONCAT('Semaine du ', 
+        DATE_FORMAT(j.start_date, '%W %d %M'), 
+        ' au ',
+        DATE_FORMAT(ADDDATE(j.start_date, INTERVAL 4 DAY), '%W %d %M %Y')) AS libelle,
+      DATE_FORMAT(j.start_date, '%d/%m/%Y') AS start_date
     FROM journees j
       JOIN competitions c ON c.code_competition = j.code_competition";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
