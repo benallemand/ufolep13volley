@@ -1,3 +1,18 @@
+@font-face {
+    font-family: kr_all_sport;
+    src: url('../images/fonts/kr_all_sport.ttf');
+}
+
+@font-face {
+    font-family: sport_4_ever;
+    src: url('../images/fonts/sport_4_ever.ttf');
+}
+
+@font-face {
+    font-family: sports_tfb;
+    src: url('../images/fonts/sports_tfb.ttf');
+}
+
 body {
 }
 
@@ -11,8 +26,9 @@ body {
     font-variant: small-caps;
     font-weight: bold;
 }
+
 #infos_mobile {
-/*    font-size: 24px;*/
+    /*    font-size: 24px;*/
     margin: 10px;
     text-align: center;
     color: #0099CC;
@@ -26,7 +42,7 @@ body {
     color: #0099CC;
     text-align: center;
     font-weight: bold;
-    font-family: 'Ultra', sans-serif;   
+    font-family: 'Ultra', sans-serif;
     font-size: 36px;
     line-height: 42px;
     text-shadow: 0 3px #CCCCCC;
@@ -36,9 +52,9 @@ body {
     color: #0099CC;
     text-align: center;
     font-weight: bold;
-    font-family: 'Ultra', sans-serif;   
-/*    font-size: 36px;
-    line-height: 42px;*/
+    font-family: 'Ultra', sans-serif;
+    /*    font-size: 36px;
+        line-height: 42px;*/
     text-shadow: 0 3px #CCCCCC;
 }
 
@@ -51,6 +67,7 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+
 #commission h1 {
     background-color: #f7f7f7;
     font-size: 14px;
@@ -61,11 +78,13 @@ body {
     text-indent: 10px;
     margin: 0;
 }
+
 #commission li {
     list-style-image: url(../images/puce.gif);
     margin-left: 50px;
     line-height: 150%;
 }
+
 #commission .details {
     width: 470px;
     font-family: Arial, Helvetica, sans-serif;
@@ -75,6 +94,7 @@ body {
     margin-left: 10px;
     margin-top: 20px;
 }
+
 #commission .photo {
     float: right;
     font-family: Arial, Helvetica, sans-serif;
@@ -85,9 +105,11 @@ body {
     margin-right: 350px;
     margin-top: 20px;
 }
+
 #commission .fonction {
     font-weight: bold;
 }
+
 #commission .membre {
     border: 1px solid #FFFFFF;
 }
@@ -104,9 +126,11 @@ body {
 .grid-red .x-style-cell {
     background: pink;
 }
+
 .grid-orange .x-style-cell {
     background: gold !important;
 }
+
 .grid-green .x-style-cell {
     background: greenyellow !important;
 }

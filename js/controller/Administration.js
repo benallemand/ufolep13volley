@@ -100,7 +100,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         },
         {
             ref: 'mainPanel',
-            selector: 'panel[title=Panneau Principal]'
+            selector: 'tabpanel'
         },
         {
             ref: 'formPanelSelectClub',
@@ -437,7 +437,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         );
     },
     displayIndicators: function () {
-        var mainPanel = Ext.ComponentQuery.query('tabpanel[title=Panneau Principal]')[0];
+        var mainPanel = this.getMainPanel();
         mainPanel.setAutoScroll(true);
         var tab = mainPanel.add({
             title: 'Indicateurs',
