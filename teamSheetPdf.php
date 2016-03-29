@@ -1,6 +1,7 @@
 <?php
 
-function toWellFormatted($string) {
+function toWellFormatted($string)
+{
     return iconv('UTF-8', 'windows-1252', $string);
 }
 

@@ -123,21 +123,21 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 hidden: true,
                 items: [
                     {
-                        icon: 'images/moins.png',
+                        icon: 'images/svg/thumb_down.svg',
                         tooltip: 'Ajouter un point de pénalité',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemaddpenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
-                        icon: 'images/plus.png',
+                        icon: 'images/svg/thumb_up.svg',
                         tooltip: 'Enlever un point de pénalité',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemremovepenaltybuttonclick', grid, rowIndex);
                         }
                     },
                     {
-                        icon: 'images/delete.gif',
+                        icon: 'images/svg/delete.svg',
                         tooltip: 'Supprimer cette équipe de la compétition',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);

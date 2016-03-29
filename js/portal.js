@@ -30,21 +30,21 @@ Ext.application({
                                 items: [
                                     {
                                         text: 'Gestion des joueurs/joueuses',
-                                        scale: 'small',
-                                        icon: 'images/svg/sportsman.svg',
+                                        scale: 'medium',
+                                        glyph: 'xe90b@icomoon',
                                         action: 'showManagePlayers'
                                     },
                                     {
                                         text: 'Gestion des gymnases/créneaux',
-                                        scale: 'small',
-                                        icon: 'images/svg/volleyball_court.svg',
+                                        scale: 'medium',
+                                        glyph: 'xe90d@icomoon',
                                         action: 'showTimeSlotsManage'
                                     },
                                     {
                                         text: 'Fiche Equipe',
                                         href: 'teamSheetPdf.php',
-                                        scale: 'small',
-                                        icon: 'images/svg/pdf.svg'
+                                        glyph: 'xf1c1@FontAwesome',
+                                        scale: 'medium'
                                     }
                                 ]
                             },
@@ -55,24 +55,24 @@ Ext.application({
                                 items: [
                                     {
                                         text: 'Modifier les informations',
-                                        scale: 'small',
-                                        icon: 'images/svg/modify.svg'
+                                        glyph: 'xf044@FontAwesome',
+                                        scale: 'medium'
                                     },
                                     {
                                         text: 'Changer de mot de passe',
-                                        scale: 'small',
-                                        icon: 'images/svg/lock.svg'
+                                        glyph: 'xf084@FontAwesome',
+                                        scale: 'medium'
                                     },
                                     {
                                         text: 'Préférences',
-                                        scale: 'small',
-                                        icon: 'images/svg/preferences.svg',
+                                        glyph: 'xf013@FontAwesome',
+                                        scale: 'medium',
                                         action: 'editPreferences'
                                     },
                                     {
                                         text: 'Historique',
-                                        scale: 'small',
-                                        icon: 'images/svg/history.svg',
+                                        glyph: 'xf1da@FontAwesome',
+                                        scale: 'medium',
                                         action: 'showHistory'
                                     }
                                 ]

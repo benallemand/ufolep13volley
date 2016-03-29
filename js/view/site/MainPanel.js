@@ -81,9 +81,9 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                 '->',
                 {
                     xtype: 'button',
-                    icon: 'images/svg/email.svg',
+                    glyph: 'xf003@FontAwesome',
                     text: 'Contact',
-                    scale: 'small',
+                    scale: 'medium',
                     href: 'mailto:benallemand@gmail.com'
                 }
             ]

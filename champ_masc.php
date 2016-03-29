@@ -21,7 +21,9 @@ $controllers[] = "'Classement'";
     <TITLE>Championnat Masculin - UFOLEP 13 VOLLEY</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="favicon.ico"/>
-    <LINK href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="includes/main.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <link href="images/fonts/icomoon/style.css" rel="stylesheet" type="text/css" media="screen"/>
     <link
         href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>

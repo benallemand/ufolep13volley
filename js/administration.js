@@ -19,10 +19,11 @@ Ext.application({
                     {
                         xtype: 'toolbar',
                         dock: 'top',
+                        defaultButtonUI: 'default',
                         items: [
                             {
                                 text: "RETOUR A L'ACCUEIL",
-                                scale: 'small',
+                                scale: 'medium',
                                 glyph: 'xf015@FontAwesome',
                                 handler: function () {
                                     window.open('.', '_self', false);
@@ -33,6 +34,7 @@ Ext.application({
                     {
                         xtype: 'toolbar',
                         dock: 'left',
+                        defaultButtonUI: 'default',
                         defaults: {
                             textAlign: 'left'
                         },
@@ -44,7 +46,7 @@ Ext.application({
                             },
                             {
                                 text: 'Gestion des joueurs',
-                                glyph: '0108@sport_4_ever',
+                                glyph: 'xe90a@icomoon',
                                 action: 'managePlayers'
                             },
                             {
@@ -59,12 +61,12 @@ Ext.application({
                             },
                             {
                                 text: 'Gestion des clubs',
-                                glyph: 'xf247@FontAwesome',
+                                glyph: 'xe900@icomoon',
                                 action: 'manageClubs'
                             },
                             {
                                 text: 'Gestion des équipes',
-                                glyph: 'xf248@FontAwesome',
+                                glyph: 'xe905@icomoon',
                                 action: 'manageTeams'
                             },
                             {
@@ -79,7 +81,7 @@ Ext.application({
                             },
                             {
                                 text: 'Gestion des matches',
-                                glyph: '0123@sports_tfb',
+                                glyph: 'xe909@icomoon',
                                 action: 'manageMatches'
                             },
                             {
@@ -89,7 +91,7 @@ Ext.application({
                             },
                             {
                                 text: 'Gestion des gymnases',
-                                glyph: '0063@sport_4_ever',
+                                glyph: 'xe90d@icomoon',
                                 action: 'manageGymnasiums'
                             },
                             {

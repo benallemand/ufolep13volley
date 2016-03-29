@@ -5,18 +5,17 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
     enableOverflow: true,
     border: false,
     items: [
-        '->',
         {
             text: 'Accueil',
-            scale: 'small',
-            icon: 'images/svg/home.svg',
+            scale: 'medium',
+            glyph: 'xf015@FontAwesome',
             href: 'index.php',
             hrefTarget: '_self'
         },
         {
             text: 'Championnats',
-            scale: 'small',
-            icon: 'images/svg/volleyball.svg',
+            scale: 'medium',
+            glyph: 'xe907@icomoon',
             menu: [
                 {
                     text: 'Masculin (Mixte)',
@@ -97,8 +96,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Coupes',
-            scale: 'small',
-            icon: 'images/svg/cup.svg',
+            scale: 'medium',
+            glyph: 'xe906@icomoon',
             menu: [
                 {
                     text: 'Isoardi',
@@ -201,8 +200,8 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
         },
         {
             text: 'Informations',
-            scale: 'small',
-            icon: 'images/svg/info.svg',
+            scale: 'medium',
+            glyph: 'xf05a@FontAwesome',
             menu: [
                 {
                     text: 'Annuaire',
@@ -329,22 +328,23 @@ Il faudra retourner par voie postale :<br/>\
         },
         {
             text: 'Forum',
-            scale: 'small',
-            icon: 'images/svg/forum.svg',
+            scale: 'medium',
+            glyph: 'xf1d7@FontAwesome',
             href: "http://ufolep13volley.forumzen.com",
             hrefTarget: '_blank'
         },
         {
             text: 'Version Mobile',
-            scale: 'small',
-            icon: 'images/svg/mobile.svg',
+            scale: 'medium',
+            glyph: 'xf10b@FontAwesome',
             href: 'index_mobile.php',
             hrefTarget: '_self'
         },
+        '->',
         {
             text: 'Mon Compte',
-            scale: 'small',
-            icon: 'images/svg/user.svg',
+            scale: 'medium',
+            glyph: 'xf007@FontAwesome',
             hidden: connectedUser === '',
             menu: [
                 {
@@ -362,8 +362,8 @@ Il faudra retourner par voie postale :<br/>\
                 },
                 {
                     text: 'Se déconnecter',
-                    scale: 'small',
-                    icon: 'images/svg/logout.svg',
+                    scale: 'medium',
+                    glyph: 'xf08b@FontAwesome',
                     href: "ajax/logout.php",
                     hrefTarget: '_self'
                 }
@@ -371,12 +371,11 @@ Il faudra retourner par voie postale :<br/>\
         },
         {
             text: 'Connexion',
-            scale: 'small',
-            icon: 'images/svg/login.svg',
+            scale: 'medium',
+            glyph: 'xf090@FontAwesome',
             href: "portail.php",
             hrefTarget: '_self',
             hidden: connectedUser !== ''
-        },
-        '->'
+        }
     ]
 });

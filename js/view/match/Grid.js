@@ -112,7 +112,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 xtype: 'actioncolumn',
                 items: [
                     {
-                        icon: 'images/certif.gif',
+                        icon: 'images/svg/validated.svg',
                         tooltip: 'Feuille de match reçue et certifiée',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === false) {
@@ -121,7 +121,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     },
                     {
-                        icon: 'images/warn1.gif',
+                        icon: 'images/svg/warning.svg',
                         tooltip: "La feuille de match n'a pas encore été validée par la commission. Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match",
                         getClass: function (value, meta, rec) {
                             var today = new Date();
@@ -144,7 +144,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                 hidden: true,
                 items: [
                     {
-                        icon: 'images/certified.png',
+                        icon: 'images/svg/validate.svg',
                         tooltip: 'Certifier avoir reçu la feuille de ce match',
                         getClass: function (value, meta, rec) {
                             if (rec.get('certif') === true) {
@@ -156,14 +156,14 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     },
                     {
-                        icon: 'images/svg/modify.svg',
+                        icon: 'images/svg/edit.svg',
                         tooltip: 'Modifier le score du match',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemeditbuttonclick', grid, rowIndex);
                         }
                     },
                     {
-                        icon: 'images/delete.gif',
+                        icon: 'images/svg/delete.svg',
                         tooltip: 'Supprimer ce match',
                         handler: function (grid, rowIndex) {
                             this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
@@ -178,7 +178,7 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
         dock: 'top',
         items: [
             {
-                icon: 'images/facebook.jpg',
+                glyph: 'xf082@FontAwesome',
                 text: 'PARTAGER !',
                 tooltip: 'Partager',
                 href: 'http://www.facebook.com/sharer/sharer.php?u=' + window.location.href,
