@@ -3024,7 +3024,6 @@ function hasEnoughPlayers($sessionIdEquipe)
         case 'm':
         case 'c':
         case 'cf':
-        case 'pf':
             $minCount = 6;
             break;
         case 'mo':
@@ -3089,7 +3088,6 @@ function hasEnoughWomen($sessionIdEquipe)
         case 'm':
         case 'c':
         case 'cf':
-        case 'pf':
             $minCount = 0;
             break;
         case 'f':
@@ -3136,7 +3134,6 @@ function hasEnoughMen($sessionIdEquipe)
         case 'm':
         case 'c':
         case 'cf':
-        case 'pf':
         case 'f':
         case 't':
         case 'ff':
