@@ -2,6 +2,7 @@ Ext.define('Ufolep13Volley.model.Team', Sencha.modelCompatibility({
     extend: 'Ext.data.Model',
     fields: [
         {name: 'id_equipe', type: 'int'},
+        'parent_code_competition',
         'code_competition',
         'libelle_competition',
         'nom_equipe',

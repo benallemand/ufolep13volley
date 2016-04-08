@@ -4,6 +4,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'Clubs',
         'Teams',
         'Competitions',
+        'ParentCompetitions',
         'Profiles',
         'Users',
         'Gymnasiums',
@@ -743,6 +744,13 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addMatch: function () {
         Ext.widget('matchedit');
+        var record = this.getManageMatchesGrid().getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        this.getFormPanelEditMatch().loadRecord(record);
+        this.getFormPanelEditMatch().getForm().findField('id_match').setValue("");
+        this.getFormPanelEditMatch().getForm().findField('code_match').setValue("");
     },
     addRank: function () {
         Ext.widget('rankedit');
@@ -1220,7 +1228,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
-                success: function () {
+                success: function (form, action) {
+                    Ext.Msg.alert('Modification OK', action.result.message);
                     thisController.getAdminMatchesStore().load();
                     thisController.getWindowEditMatch().close();
                     thisController.getManageMatchesGrid().getSelectionModel().deselectAll();

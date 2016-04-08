@@ -14,6 +14,10 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             type: 'string'
         },
         {
+            name: 'parent_code_competition',
+            type: 'string'
+        },
+        {
             name: 'libelle_competition',
             type: 'string'
         },

@@ -31,6 +31,18 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             },
             {
                 xtype: 'combo',
+                fieldLabel: 'Competition parente',
+                reference: 'parent_competition',
+                publishes: 'value',
+                name: 'parent_code_competition',
+                displayField: 'libelle',
+                valueField: 'code_competition',
+                store: 'ParentCompetitions',
+                queryMode: 'local',
+                allowBlank: false
+            },
+            {
+                xtype: 'combo',
                 fieldLabel: 'Competition',
                 reference: 'competition',
                 publishes: 'value',
@@ -39,7 +51,15 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 valueField: 'code_competition',
                 store: 'Competitions',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                bind: {
+                    visible: '{parent_competition.value}',
+                    filters: {
+                        property: 'id_compet_maitre',
+                        value: '{parent_competition.value}',
+                        exactMatch: true
+                    }
+                }
             },
             {
                 xtype: 'textfield',
@@ -87,7 +107,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     visible: '{competition.value}',
                     filters: {
                         property: 'code_competition',
-                        value: '{competition.value}',
+                        value: '{parent_competition.value}',
                         exactMatch: true
                     }
                 }
@@ -105,7 +125,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     visible: '{competition.value}',
                     filters: {
                         property: 'code_competition',
-                        value: '{competition.value}',
+                        value: '{parent_competition.value}',
                         exactMatch: true
                     }
                 }

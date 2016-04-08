@@ -1198,6 +1198,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.id_match,
         m.code_match,
         m.code_competition,
+        c.id_compet_maitre AS parent_code_competition,
         c.libelle AS libelle_competition,
         m.division,
         m.id_journee,
@@ -2665,6 +2666,7 @@ function saveMatch()
         switch ($key) {
             case 'id_match':
             case 'dirtyFields':
+            case 'parent_code_competition':
                 continue;
             case 'id_equipe_dom':
             case 'id_equipe_ext':
