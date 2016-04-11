@@ -29,6 +29,13 @@ Ext.define('Ufolep13Volley.model.Day', Sencha.modelCompatibility({
             name: 'start_date',
             type: 'date',
             dateFormat: 'd/m/Y'
+        },
+        {
+            name: 'display_combo',
+            type: 'string',
+            convert: function (val, rec) {
+                return rec.get('libelle_competition') + ' - ' + rec.get('nommage') + ' (' + rec.get('libelle') + ')';
+            }
         }
     ]
 }));

@@ -376,6 +376,48 @@ function getTeams()
     return json_encode($results);
 }
 
+function getRankTeams()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        cl.code_competition, 
+        cl.division,
+        comp.libelle AS libelle_competition,
+        cl.division,
+        e.nom_equipe, 
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
+        e.id_club,
+        c.nom AS club,
+        e.id_equipe,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone AS telephone_1,
+        jsupp.telephone AS telephone_2,
+        jresp.email,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        e.web_site,
+        p.path_photo
+        FROM classements cl
+        JOIN equipes e ON e.id_equipe = cl.id_equipe
+        LEFT JOIN photos p ON p.id = e.id_photo
+        JOIN clubs c ON c.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=cl.code_competition
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
+        GROUP BY team_full_name
+        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getWebSites()
 {
     global $db;

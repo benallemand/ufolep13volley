@@ -63,24 +63,70 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             },
             {
                 xtype: 'textfield',
+                reference: 'division',
+                publishes: 'value',
                 fieldLabel: 'Division',
                 name: 'division',
-                allowBlank: false
+                allowBlank: false,
+                bind: {
+                    visible: '{competition.value}'
+                }
+            },
+            {
+                xtype: 'combo',
+                fieldLabel: 'Domicile',
+                name: 'id_equipe_dom',
+                displayField: 'team_full_name',
+                valueField: 'id_equipe',
+                store: 'RankTeams',
+                queryMode: 'local',
+                allowBlank: false,
+                bind: {
+                    visible: '{division.value}',
+                    filters: [
+                        {
+                            property: 'code_competition',
+                            value: '{competition.value}',
+                            exactMatch: true
+                        },
+                        {
+                            property: 'division',
+                            value: '{division.value}',
+                            exactMatch: true
+                        }
+                    ]
+                }
+            },
+            {
+                xtype: 'combo',
+                fieldLabel: 'Extérieur',
+                name: 'id_equipe_ext',
+                displayField: 'team_full_name',
+                valueField: 'id_equipe',
+                store: 'RankTeams',
+                queryMode: 'local',
+                allowBlank: false,
+                bind: {
+                    visible: '{division.value}',
+                    filters: [
+                        {
+                            property: 'code_competition',
+                            value: '{competition.value}',
+                            exactMatch: true
+                        },
+                        {
+                            property: 'division',
+                            value: '{division.value}',
+                            exactMatch: true
+                        }
+                    ]
+                }
             },
             {
                 xtype: 'combo',
                 fieldLabel: 'Journée',
                 name: 'id_journee',
-                tpl: Ext.create('Ext.XTemplate',
-                    '<tpl for=".">',
-                    '<div class="x-boundlist-item">{libelle_competition} - {nommage} ({libelle})</div>',
-                    '</tpl>'
-                ),
-                displayTpl: Ext.create('Ext.XTemplate',
-                    '<tpl for=".">',
-                    '{libelle_competition} - {nommage} ({libelle})',
-                    '</tpl>'
-                ),
+                displayField: 'display_combo',
                 valueField: 'id',
                 store: 'AdminDays',
                 queryMode: 'local',
@@ -90,42 +136,6 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     filters: {
                         property: 'code_competition',
                         value: '{competition.value}',
-                        exactMatch: true
-                    }
-                }
-            },
-            {
-                xtype: 'combo',
-                fieldLabel: 'Domicile',
-                name: 'id_equipe_dom',
-                displayField: 'team_full_name',
-                valueField: 'id_equipe',
-                store: 'Teams',
-                queryMode: 'local',
-                allowBlank: false,
-                bind: {
-                    visible: '{competition.value}',
-                    filters: {
-                        property: 'code_competition',
-                        value: '{parent_competition.value}',
-                        exactMatch: true
-                    }
-                }
-            },
-            {
-                xtype: 'combo',
-                fieldLabel: 'Extérieur',
-                name: 'id_equipe_ext',
-                displayField: 'team_full_name',
-                valueField: 'id_equipe',
-                store: 'Teams',
-                queryMode: 'local',
-                allowBlank: false,
-                bind: {
-                    visible: '{competition.value}',
-                    filters: {
-                        property: 'code_competition',
-                        value: '{parent_competition.value}',
                         exactMatch: true
                     }
                 }
