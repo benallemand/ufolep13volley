@@ -13,25 +13,25 @@ Ext.define('Ufolep13Volley.model.Commission', Sencha.modelCompatibility({
         {
             name: 'nom_prenom_display',
             convert: function (val, record) {
-                return "<img src=\'ajax/getImageFromText.php?text=\"" + btoa(record.data.prenom + ' ' + record.data.nom) + "\"\'/>";
+                return "<img src=\'ajax/getImageFromText.php?text=\"" + Ext.util.Base64.encode(record.data.prenom + ' ' + record.data.nom) + "\"\'/>";
             }
         },
         {
             name: 'telephone1_display',
             convert: function (val, record) {
-                return "<img src=\'ajax/getImageFromText.php?text=\"" + btoa(record.data.telephone1) + "\"\'/>";
+                return "<img src=\'ajax/getImageFromText.php?text=\"" + Ext.util.Base64.encode(record.data.telephone1) + "\"\'/>";
             }
         },
         {
             name: 'telephone2_display',
             convert: function (val, record) {
-                return "<img src=\'ajax/getImageFromText.php?text=\"" + btoa(record.data.telephone2) + "\"\'/>";
+                return "<img src=\'ajax/getImageFromText.php?text=\"" + Ext.util.Base64.encode(record.data.telephone2) + "\"\'/>";
             }
         },
         {
             name: 'email_display',
             convert: function (val, record) {
-                return "<img src=\'ajax/getImageFromText.php?text=\"" + btoa(record.data.email) + "\"\'/>";
+                return "<img src=\'ajax/getImageFromText.php?text=\"" + Ext.util.Base64.encode(record.data.email) + "\"\'/>";
             }
         }
     ]

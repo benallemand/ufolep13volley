@@ -4,11 +4,5 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="ext-all" level="application" />
-    <orderEntry type="library" name="ext-locale-fr" level="application" />
-    <orderEntry type="library" name="ExtJS GPL-4.2" level="application" />
-    <orderEntry type="library" name="ext-all" level="application" />
-    <orderEntry type="library" name="ext-locale-fr" level="application" />
-    <orderEntry type="library" name="sencha-touch-all" level="application" />
   </component>
 </module>

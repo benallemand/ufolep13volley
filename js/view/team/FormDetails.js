@@ -17,7 +17,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                 if (val.length === 0) {
                     return 'Pas de valeur';
                 }
-                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+                return "<img src='ajax/getImageFromText.php?text=" + Ext.util.Base64.encode(val) + "'/>";
             }
         },
         {
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                 if (val.length === 0) {
                     return 'Pas de valeur';
                 }
-                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+                return "<img src='ajax/getImageFromText.php?text=" + Ext.util.Base64.encode(val) + "'/>";
             }
         },
         {
@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                 if (val.length === 0) {
                     return 'Pas de valeur';
                 }
-                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+                return "<img src='ajax/getImageFromText.php?text=" + Ext.util.Base64.encode(val) + "'/>";
             }
         },
         {
@@ -50,7 +50,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                 if (val.length === 0) {
                     return 'Pas de valeur';
                 }
-                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+                return "<img src='ajax/getImageFromText.php?text=" + Ext.util.Base64.encode(val) + "'/>";
             }
         },
         {
@@ -61,7 +61,7 @@ Ext.define('Ufolep13Volley.view.team.FormDetails', {
                 if (val.length === 0) {
                     return 'Pas de valeur';
                 }
-                return "<img src='ajax/getImageFromText.php?text=" + btoa(val) + "'/>";
+                return "<img src='ajax/getImageFromText.php?text=" + Ext.util.Base64.encode(val) + "'/>";
             }
         },
         {

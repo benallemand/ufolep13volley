@@ -2,21 +2,15 @@
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" defaultCharsetForPropertiesFiles="windows-1252">
     <file url="file://$PROJECT_DIR$/admin.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/activatePlayers.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/addPlayerToMyTeam.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/addPlayersToClub.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/addPlayersToTeam.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/addProfileToUsers.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/certifierMatch.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/checkLicence.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/classements.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/classes/Indicator.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/classes/Rest.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/commission.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/competitions.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/comptes_acces.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/createUser.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/dates_limite.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteClubs.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteDays.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteGymnasiums.php" charset="UTF-8" />
@@ -26,7 +20,6 @@
     <file url="file://$PROJECT_DIR$/ajax/deleteRanks.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteTeams.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteUsers.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/details_equipes.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/equipes.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getActivity.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getAlerts.php" charset="UTF-8" />
@@ -52,6 +45,7 @@
     <file url="file://$PROJECT_DIR$/ajax/getPlayersFromTeam.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getProfiles.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getQuickDetails.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ajax/getRankTeams.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getRanks.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getSessionRights.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getTeams.php" charset="UTF-8" />
@@ -62,9 +56,7 @@
     <file url="file://$PROJECT_DIR$/ajax/getWebSites.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getWeekSchedule.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/indicators.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/journees.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/logout.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ajax/matches.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/modifierMatch.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/modifierMonEquipe.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/modifierMonMatch.php" charset="UTF-8" />
@@ -96,9 +88,9 @@
     <file url="file://$PROJECT_DIR$/champ_mixte.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/commission.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/coupe.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/coupe_cf.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/coupe_kf.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/coupe_kh.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/coupe_pf.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/includes/fonctions_inc.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/index.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/index_infos_utiles.php" charset="UTF-8" />
@@ -146,6 +138,7 @@
     <file url="file://$PROJECT_DIR$/js/model/Preference.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Profile.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Rank.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/js/model/RankTeam.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Team.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/TimeSlot.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Tournament.js" charset="UTF-8" />
@@ -173,9 +166,11 @@
     <file url="file://$PROJECT_DIR$/js/store/MyPlayers.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/MyPreferences.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/MyTeam.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/js/store/ParentCompetitions.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Phonebooks.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Players.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Profiles.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/js/store/RankTeams.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/TeamPlayers.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Teams.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/TimeSlots.js" charset="UTF-8" />
