@@ -47,6 +47,25 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
                     action: 'delete'
                 }
             ]
+        },
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
         }
     ]
 });

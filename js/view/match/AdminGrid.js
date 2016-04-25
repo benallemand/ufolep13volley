@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             {
                 header: 'Date',
                 xtype: 'datecolumn',
-                format:'d/m/Y',
+                format: 'd/m/Y',
                 dataIndex: 'date_reception'
             },
             {
@@ -63,6 +63,25 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                }
+            ]
+        },
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
                 }
             ]
         }

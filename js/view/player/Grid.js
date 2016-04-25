@@ -99,6 +99,18 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     fieldLabel: 'Recherche'
                 },
                 {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        },
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES +',
+                {
                     xtype: 'tbseparator'
                 },
                 {
@@ -120,12 +132,6 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'checkbox',
                     boxLabel: 'Joueurs dans 2 équipes',
                     action: 'filterPlayersWith2TeamsSameCompetition'
-                },
-                '->',
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
                 }
             ]
         }

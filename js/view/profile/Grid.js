@@ -19,6 +19,10 @@ Ext.define('Ufolep13Volley.view.profile.Grid', {
             xtype: 'toolbar',
             dock: 'top',
             items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
                 {
                     text: 'Créer',
                     action: 'addProfile'
@@ -26,6 +30,25 @@ Ext.define('Ufolep13Volley.view.profile.Grid', {
                 {
                     text: 'Editer',
                     action: 'editProfile'
+                }
+            ]
+        },
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
                 }
             ]
         }

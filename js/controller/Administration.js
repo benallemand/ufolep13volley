@@ -427,14 +427,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'teamselect button[action=save]': {
                     click: this.linkPlayerToTeam
                 },
-                'playersgrid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
-                    change: this.searchPlayer
-                },
                 'playersgrid button[action=delete]': {
                     click: this.deletePlayers
                 },
                 'button[action=displayIndicators]': {
                     click: this.displayIndicators
+                },
+                'grid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
+                    change: this.searchInGrid
                 }
             }
         );
@@ -613,14 +613,25 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         );
         this.getDisplayFilteredCount().setValue(store.getCount());
     },
-    searchPlayer: function (textfield, searchText) {
+    searchInGrid: function (textfield, searchText) {
         var searchTerms = searchText.split(',');
-        var store = this.getPlayersStore();
+        var store = textfield.up('grid').getStore();
         store.clearFilter(true);
+        var model = store.first();
+        if (!model) {
+            this.getDisplayFilteredCount().setValue(store.getCount());
+            return;
+        }
         store.filter(
             {
                 filterFn: function (item) {
-                    var queribleFields = ['nom', 'prenom', 'num_licence', 'club', 'teams_list'];
+                    var fields = model.getFields();
+                    var queribleFields = [];
+                    Ext.each(fields, function (field) {
+                        if (field.getType() === 'string' || field.getType() === 'auto') {
+                            Ext.Array.push(queribleFields, field.getName());
+                        }
+                    });
                     var found = false;
                     Ext.each(searchTerms, function (searchTerm) {
                         var regExp = new RegExp(searchTerm, "i");
