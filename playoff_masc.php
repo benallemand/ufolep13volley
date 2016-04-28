@@ -1,7 +1,6 @@
 <?php
 include("includes/fonctions_inc.php");
-
-// On récupère l'ID de la division 
+// On récupère l'ID de la division
 $div = (isset($_GET["d"])) ? $_GET["d"] : "";
 if ($div == "") {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
@@ -12,11 +11,8 @@ $controllers[] = "'GymnasiumsMap'";
 $controllers[] = "'Matches'";
 $controllers[] = "'Classement'";
 ?>
-
-<!DOCTYPE HTML>
-
+<!DOCTYPE html>
 <HTML>
-
 <HEAD>
     <TITLE>Play Off - UFOLEP 13 VOLLEY</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -26,7 +22,6 @@ $controllers[] = "'Classement'";
     <link
         href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>
-
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/ext-all.js" type="text/javascript"></script>
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"></script>
     <script type="text/javascript" src="js/libs/Commons.js"></script>

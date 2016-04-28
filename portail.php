@@ -15,11 +15,8 @@ if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     $controllers[] = "'Login'";
 }
 ?>
-
-<!DOCTYPE HTML>
-
+<!DOCTYPE html>
 <HTML>
-
 <HEAD>
     <TITLE>Authentification Portail - UFOLEP 13 VOLLEY</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -30,7 +27,6 @@ if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     <link
         href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>
-
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/ext-all.js" type="text/javascript"></script>
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"></script>
     <script type="text/javascript" src="js/libs/Commons.js"></script>

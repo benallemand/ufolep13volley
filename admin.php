@@ -4,9 +4,7 @@ if (!isAdmin()) {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
 }
 ?>
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
+<!DOCTYPE html>
 <HTML>
 <HEAD>
     <TITLE>Administration UFOLEP 13 VOLLEY</TITLE>
@@ -18,7 +16,6 @@ if (!isAdmin()) {
     <link
         href="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all-debug.css"
         rel="stylesheet"/>
-    
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/ext-all.js" type="text/javascript"></script>
     <script src="https://cdn.sencha.com/ext/gpl/5.1.0/build/packages/ext-locale/build/ext-locale-fr.js"
             type="text/javascript"></script>

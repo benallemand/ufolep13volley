@@ -1,5 +1,5 @@
 <?php include("includes/fonctions_inc.php"); ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html manifest="" lang="en-US">
 <head>
     <meta charset="windows-1252">
