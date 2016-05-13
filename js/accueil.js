@@ -1,6 +1,6 @@
 Ext.application({
     requires: [],
-    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'match.LastResultsGrid', 'forum.LastPostsGrid', 'team.WebSitesGrid', 'images.Coverflow'],
+    views: ['site.Banner', 'site.MainMenu', 'site.MainPanel', 'site.HeaderPanel', 'site.TitlePanel', 'match.LastResultsGrid', 'forum.LastPostsGrid', 'team.WebSitesGrid'],
     controllers: controllers,
     stores: ['LastResults', 'LastPosts', 'WebSites', 'Images'],
     models: ['LastResult', 'LastPost', 'WebSite', 'Image'],

@@ -119,3 +119,14 @@ body {
 .grid-green .x-style-cell {
     background: greenyellow !important;
 }
+
+.swiper-container {
+    width: 100%;
+    height: 150px;
+}
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 200px;
+    height: 120px;
+}

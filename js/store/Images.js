@@ -10,5 +10,5 @@ Ext.define('Ufolep13Volley.store.Images', Sencha.storeCompatibility({
                 root: 'photo'
             }
         },
-        autoLoad: true}
+        autoLoad: false}
 }));

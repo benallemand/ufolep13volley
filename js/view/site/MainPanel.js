@@ -46,11 +46,40 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                         }
                     ]
                 },
-                {
+                Ext.isIE9m ? null : {
                     region: 'center',
                     flex: 1,
-                    xtype: 'coverflow',
-                    store: 'Images'
+                    xtype: 'panel',
+                    html: "<div id='my-slideshow'><div class='swiper-container'><div class='swiper-wrapper'/></div></div></div>",
+                    listeners: {
+                        render: function () {
+                            var mySwiper = new Swiper('.swiper-container', {
+                                effect: 'coverflow',
+                                grabCursor: true,
+                                centeredSlides: true,
+                                slidesPerView: 4,
+                                coverflow: {
+                                    rotate: 50,
+                                    stretch: 0,
+                                    depth: 100,
+                                    modifier: 1,
+                                    slideShadows: true
+                                },
+                                autoplay: 1500,
+                                autoplayDisableOnInteraction: false
+                            });
+                            mySwiper.stopAutoplay();
+                            mySwiper.removeAllSlides();
+                            var storeImages = Ext.data.StoreManager.lookup('Images');
+                            storeImages.load(function (records) {
+                                Ext.each(records, function (record) {
+                                    mySwiper.appendSlide("<div class='swiper-slide' style='background-image:url(" + record.get('src') + ")'></div>");
+                                });
+                                mySwiper.update();
+                                mySwiper.startAutoplay();
+                            });
+                        }
+                    }
                 }
             ]
         },
