@@ -323,6 +323,11 @@ Il faudra retourner par voie postale :<br/>\
                     handler: function () {
                         window.open('mailto:benallemand@gmail.com');
                     }
+                },
+                {
+                    text: "Site de l'UFOLEP 13",
+                    href: 'http://ufolep13.org/',
+                    hrefTarget: '_blank'
                 }
             ]
         },
