@@ -4,17 +4,51 @@ Ext.define('Ufolep13Volley.controller.Classement', {
     models: ['Classement'],
     views: [],
     refs: [],
-    init: function() {
+    init: function () {
         this.control(
-                {
-                    'grid[title=Classement]': {
-                        itemaddpenaltybuttonclick: this.addPenalty,
-                        itemremovepenaltybuttonclick: this.removePenalty,
-                        itemdeletebuttonclick: this.deleteTeam
-                    }
-                });
+            {
+                'grid[title=Classement]': {
+                    itemaddpenaltybuttonclick: this.addPenalty,
+                    itemremovepenaltybuttonclick: this.removePenalty,
+                    itemdeletebuttonclick: this.deleteTeam,
+                    added: this.addAdminColumns
+                }
+            });
     },
-    addPenalty: function(grid, rowIndex) {
+    addAdminColumns: function (grid) {
+        var gridView = grid;
+        var column = Ext.create('Ext.grid.column.Action', {
+                header: 'Administration',
+                width: 200,
+                items: [
+                    {
+                        icon: 'images/svg/thumb_down.svg',
+                        tooltip: 'Ajouter un point de pénalité',
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemaddpenaltybuttonclick', grid, rowIndex);
+                        }
+                    },
+                    {
+                        icon: 'images/svg/thumb_up.svg',
+                        tooltip: 'Enlever un point de pénalité',
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemremovepenaltybuttonclick', grid, rowIndex);
+                        }
+                    },
+                    {
+                        icon: 'images/svg/delete.svg',
+                        tooltip: 'Supprimer cette équipe de la compétition',
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
+                        }
+                    }
+                ]
+            }
+        );
+        gridView.headerCt.insert(gridView.columns.length, column);
+        gridView.getView().refresh();
+    },
+    addPenalty: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
@@ -22,7 +56,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
             msg: 'Voulez-vous ajouter un point de pénalité à cette équipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/penalite.php',
@@ -31,7 +65,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
                             compet: rec.get('code_competition'),
                             equipe: rec.get('id_equipe')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             var responseJson = Ext.decode(response.responseText);
                             Ext.Msg.alert('Info', responseJson.message);
                             me.getClassementStore().load();
@@ -41,7 +75,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
             }
         });
     },
-    removePenalty: function(grid, rowIndex) {
+    removePenalty: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
@@ -49,7 +83,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
             msg: 'Voulez-vous enlever un point de pénalité à cette équipe ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/penalite.php',
@@ -58,7 +92,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
                             compet: rec.get('code_competition'),
                             equipe: rec.get('id_equipe')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             var responseJson = Ext.decode(response.responseText);
                             Ext.Msg.alert('Info', responseJson.message);
                             me.getClassementStore().load();
@@ -68,7 +102,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
             }
         });
     },
-    deleteTeam: function(grid, rowIndex) {
+    deleteTeam: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
@@ -76,7 +110,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
             msg: 'Cette opération entrainera la suppression de cette équipe de cette compétition ! Êtes-vous sur ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/supprimerEquipeCompetition.php',
@@ -84,7 +118,7 @@ Ext.define('Ufolep13Volley.controller.Classement', {
                             compet: rec.get('code_competition'),
                             equipe: rec.get('id_equipe')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             var responseJson = Ext.decode(response.responseText);
                             Ext.Msg.alert('Info', responseJson.message);
                             me.getClassementStore().load();

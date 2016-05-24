@@ -4,17 +4,56 @@ Ext.define('Ufolep13Volley.controller.Matches', {
     models: ['Match'],
     views: [],
     refs: [],
-    init: function() {
+    init: function () {
         this.control(
-                {
-                    'grid[title=Matches]': {
-                        itemcertifybuttonclick: this.certifyMatch,
-                        itemeditbuttonclick: this.editMatch,
-                        itemdeletebuttonclick: this.deleteMatch
-                    }
-                });
+            {
+                'grid[title=Matches]': {
+                    itemcertifybuttonclick: this.certifyMatch,
+                    itemeditbuttonclick: this.editMatch,
+                    itemdeletebuttonclick: this.deleteMatch,
+                    added: this.addAdminColumns
+                }
+            });
     },
-    certifyMatch: function(grid, rowIndex) {
+    addAdminColumns: function (grid) {
+        var gridView = grid;
+        var column = Ext.create('Ext.grid.column.Action',
+            {
+                header: 'Administration',
+                width: 200,
+                items: [
+                    {
+                        icon: 'images/svg/validate.svg',
+                        tooltip: 'Certifier avoir reçu la feuille de ce match',
+                        getClass: function (value, meta, rec) {
+                            if (rec.get('certif') === true) {
+                                return "x-hidden-display";
+                            }
+                        },
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemcertifybuttonclick', grid, rowIndex);
+                        }
+                    },
+                    {
+                        icon: 'images/svg/edit.svg',
+                        tooltip: 'Modifier le score du match',
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemeditbuttonclick', grid, rowIndex);
+                        }
+                    },
+                    {
+                        icon: 'images/svg/delete.svg',
+                        tooltip: 'Supprimer ce match',
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
+                        }
+                    }
+                ]
+            });
+        gridView.headerCt.insert(gridView.columns.length, column);
+        gridView.getView().refresh();
+    },
+    certifyMatch: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
@@ -22,14 +61,14 @@ Ext.define('Ufolep13Volley.controller.Matches', {
             msg: 'Certifier le match ' + rec.get('code_match') + ' ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/certifierMatch.php',
                         params: {
                             code_match: rec.get('code_match')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             var responseJson = Ext.decode(response.responseText);
                             Ext.Msg.alert('Info', responseJson.message);
                             me.getMatchesStore().load();
@@ -39,10 +78,10 @@ Ext.define('Ufolep13Volley.controller.Matches', {
             }
         });
     },
-    editMatch: function(grid, rowIndex) {
+    editMatch: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
-        var afficheFormulaire = function() {
+        var afficheFormulaire = function () {
             Ext.create('Ext.window.Window', {
                 title: 'Modifier un match',
                 height: 600,
@@ -120,7 +159,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                             xtype: 'button',
                                             margin: 10,
                                             text: 'Equipe ' + rec.get('equipe_ext') + ' forfait (pensez à sauver)',
-                                            handler: function() {
+                                            handler: function () {
                                                 this.up('form').getForm().setValues([
                                                     {
                                                         id: 'score_equipe_dom',
@@ -229,7 +268,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                                             xtype: 'button',
                                             margin: 10,
                                             text: 'Equipe ' + rec.get('equipe_dom') + ' forfait (pensez à sauver)',
-                                            handler: function() {
+                                            handler: function () {
                                                 this.up('form').getForm().setValues([
                                                     {
                                                         id: 'score_equipe_dom',
@@ -328,7 +367,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                     buttons: [
                         {
                             text: 'Annuler',
-                            handler: function() {
+                            handler: function () {
                                 this.up('window').close();
                             }
                         },
@@ -336,17 +375,17 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                             text: 'Sauver',
                             formBind: true,
                             disabled: true,
-                            handler: function() {
+                            handler: function () {
                                 var button = this;
                                 var form = button.up('form').getForm();
                                 if (form.isValid()) {
                                     form.submit({
-                                        success: function(form, action) {
+                                        success: function (form, action) {
                                             Ext.Msg.alert('Modification OK', action.result.message);
                                             button.up('window').close();
                                             me.getMatchesStore().load();
                                         },
-                                        failure: function(form, action) {
+                                        failure: function (form, action) {
                                             Ext.Msg.alert('Erreur', action.result.message);
                                         }
                                     });
@@ -361,7 +400,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
         afficheFormulaire();
 
     },
-    deleteMatch: function(grid, rowIndex) {
+    deleteMatch: function (grid, rowIndex) {
         var me = this;
         var rec = grid.getStore().getAt(rowIndex);
         Ext.Msg.show({
@@ -369,14 +408,14 @@ Ext.define('Ufolep13Volley.controller.Matches', {
             msg: 'Cette opération entrainera irrémédiablement la suppression de ce match ! Êtes-vous sur de vouloir continuer ?',
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
-            fn: function(btn) {
+            fn: function (btn) {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/supprimerMatch.php',
                         params: {
                             code_match: rec.get('code_match')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             var responseJson = Ext.decode(response.responseText);
                             Ext.Msg.alert('Info', responseJson.message);
                             me.getMatchesStore().load();

@@ -8,8 +8,10 @@ if ($div == "") {
 $requires = array();
 $controllers = array();
 $controllers[] = "'GymnasiumsMap'";
-$controllers[] = "'Matches'";
-$controllers[] = "'Classement'";
+if (isAdmin()) {
+    $controllers[] = "'Matches'";
+    $controllers[] = "'Classement'";
+}
 ?>
 <!DOCTYPE html>
 <HTML>

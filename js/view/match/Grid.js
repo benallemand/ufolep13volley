@@ -135,41 +135,6 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     }
                 ]
-            },
-            {
-                header: 'Administration',
-                width: 200,
-                xtype: 'actioncolumn',
-                hideable: false,
-                hidden: true,
-                items: [
-                    {
-                        icon: 'images/svg/validate.svg',
-                        tooltip: 'Certifier avoir reçu la feuille de ce match',
-                        getClass: function (value, meta, rec) {
-                            if (rec.get('certif') === true) {
-                                return "x-hidden-display";
-                            }
-                        },
-                        handler: function (grid, rowIndex) {
-                            this.up('grid').fireEvent('itemcertifybuttonclick', grid, rowIndex);
-                        }
-                    },
-                    {
-                        icon: 'images/svg/edit.svg',
-                        tooltip: 'Modifier le score du match',
-                        handler: function (grid, rowIndex) {
-                            this.up('grid').fireEvent('itemeditbuttonclick', grid, rowIndex);
-                        }
-                    },
-                    {
-                        icon: 'images/svg/delete.svg',
-                        tooltip: 'Supprimer ce match',
-                        handler: function (grid, rowIndex) {
-                            this.up('grid').fireEvent('itemdeletebuttonclick', grid, rowIndex);
-                        }
-                    }
-                ]
             }
         ]
     },
