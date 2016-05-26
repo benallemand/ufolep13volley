@@ -325,10 +325,10 @@ function getTournaments()
 {
     global $db;
     conn_db();
-    $sql = "SELECT id, code_competition, libelle 
-        FROM competitions 
-        WHERE code_competition IN (SELECT DISTINCT code_competition FROM matches) 
-        ORDER BY libelle ASC";
+    $sql = "SELECT c.id, c.code_competition, c.libelle 
+        FROM competitions c 
+        WHERE c.code_competition IN (SELECT DISTINCT code_competition FROM classements) 
+        ORDER BY c.libelle ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -2466,6 +2466,24 @@ function getClubs()
         nom
         FROM clubs
         ORDER BY nom";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
+function getAnnuaires()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+ cl.id_equipe, e.nom_equipe, cl.code_competition, c.libelle AS libelle_competition, LPAD(cl.division, 2, '0') AS division
+ FROM classements cl
+ JOIN equipes e ON e.id_equipe = cl.id_equipe
+ JOIN competitions c ON c.code_competition = cl.code_competition
+ ORDER BY cl.code_competition, LPAD(cl.division, 2, '0'), e.nom_equipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

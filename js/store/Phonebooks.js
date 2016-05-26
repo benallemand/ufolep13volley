@@ -8,12 +8,12 @@ Ext.define('Ufolep13Volley.store.Phonebooks', Sencha.storeCompatibility({
         },
         sorters: 'nom_equipe',
         grouper: {
-            groupFn: function(record) {
+            groupFn: function (record) {
                 var nommageDivision = 'Division';
                 if (record.get('libelle_competition').indexOf('Coupe') >= 0) {
                     nommageDivision = 'Poule';
                 }
-                return nommageDivision + ' ' + record.get('division');
+                return record.get('libelle_competition') + ' - ' + nommageDivision + ' ' + record.get('division');
             }
         },
         autoLoad: false
