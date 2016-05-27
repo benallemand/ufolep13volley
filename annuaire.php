@@ -26,10 +26,8 @@ $controllers[] = "'GymnasiumsMap'";
         var title = "Annuaire Equipes";
         <?php
         $idTeam = filter_input(INPUT_GET, 'id');
-        $competition = filter_input(INPUT_GET, 'c');
-        if (($idTeam !== NULL) || ($competition !== NULL)) {
+        if ($idTeam !== NULL) {
             echo "var idTeam = $idTeam;";
-            echo "var competition = '$competition';";
         }
         ?>
     </script>

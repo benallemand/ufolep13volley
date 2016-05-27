@@ -75,11 +75,7 @@ Ext.application({
                                 dataIndex: 'nom_equipe',
                                 flex: 1,
                                 renderer: function (value, meta, record) {
-                                    var competition = record.get('code_competition');
-                                    if (competition === 'c') {
-                                        competition = 'm';
-                                    }
-                                    return Ext.String.format("<a href='annuaire.php?id={0}&c={1}' target='_self'>{2}</a>", record.get('id_equipe'), competition, record.get('nom_equipe'));
+                                    return Ext.String.format("<a href='annuaire.php?id={0}' target='_self'>{1}</a>", record.get('id_equipe'), record.get('nom_equipe'));
                                 }
                             }
                         ]
