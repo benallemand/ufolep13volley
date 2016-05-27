@@ -488,7 +488,7 @@ function getLastResults()
                 break;
             case 'kf':
             case 'cf':
-                $data['url'] = "cup.php&c=$code_competition";
+                $data['url'] = "cup.php?c=$code_competition";
                 break;
             default :
                 break;
