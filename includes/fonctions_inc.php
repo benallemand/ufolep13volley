@@ -472,39 +472,23 @@ function getLastResults()
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
-        switch ($data['code_competition']) {
+        $code_competition = $data['code_competition'];
+        switch ($code_competition) {
             case 'mo':
-                $data['url'] = 'champ_mixte.php?d=' . $data['division'];
-                $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
-                $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
-                break;
             case 'm':
-                $data['url'] = 'champ_masc.php?d=' . $data['division'];
-                $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
-                $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
-                break;
             case 'f':
-                $data['url'] = 'champ_fem.php?d=' . $data['division'];
+            case 'kh':
+            case 'c':
+            case 'po':
+            case 'px':
+                $division = $data['division'];
+                $data['url'] = "championship.php?d=$division&c=$code_competition";
                 $data['rang_dom'] = getTeamRank($data['code_competition'], $data['division'], $data['id_dom']);
                 $data['rang_ext'] = getTeamRank($data['code_competition'], $data['division'], $data['id_ext']);
-                break;
-            case 'kh':
-                $data['url'] = 'coupe_kh.php?d=' . $data['division'];
                 break;
             case 'kf':
-                $data['url'] = 'coupe_kf.php';
-                break;
             case 'cf':
-                $data['url'] = 'coupe_cf.php';
-                break;
-            case 'c':
-                $data['url'] = 'coupe.php?d=' . $data['division'];
-                break;
-            case 'po':
-                $data['url'] = 'playoff_masc.php?d=' . $data['division'];
-                break;
-            case 'px':
-                $data['url'] = 'playoff_fem.php?d=' . $data['division'];
+                $data['url'] = "cup.php&c=$code_competition";
                 break;
             default :
                 break;
@@ -2509,6 +2493,26 @@ function getCompetitions()
         $results[] = $data;
     }
     return json_encode($results);
+}
+
+function getCompetition($code_competition)
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        id,
+        code_competition,
+        libelle,
+        id_compet_maitre
+        FROM competitions
+        WHERE code_competition = '$code_competition'
+        ORDER BY libelle";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return $results[0];
 }
 
 function saveUser()

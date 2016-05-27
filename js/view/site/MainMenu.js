@@ -22,37 +22,37 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     menu: [
                         {
                             text: 'Division 1',
-                            href: 'champ_masc.php?d=1',
+                            href: 'championship.php?d=1&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 2',
-                            href: 'champ_masc.php?d=2',
+                            href: 'championship.php?d=2&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 3',
-                            href: 'champ_masc.php?d=3',
+                            href: 'championship.php?d=3&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 4',
-                            href: 'champ_masc.php?d=4',
+                            href: 'championship.php?d=4&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 5',
-                            href: 'champ_masc.php?d=5',
+                            href: 'championship.php?d=5&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 6',
-                            href: 'champ_masc.php?d=6',
+                            href: 'championship.php?d=6&c=m',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 7',
-                            href: 'champ_masc.php?d=7',
+                            href: 'championship.php?d=7&c=m',
                             hrefTarget: '_self'
                         }
                     ]
@@ -62,17 +62,17 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     menu: [
                         {
                             text: 'Division 1',
-                            href: 'champ_fem.php?d=1',
+                            href: 'championship.php?d=1&c=f',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 2',
-                            href: 'champ_fem.php?d=2',
+                            href: 'championship.php?d=2&c=f',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 3',
-                            href: 'champ_fem.php?d=3',
+                            href: 'championship.php?d=3&c=f',
                             hrefTarget: '_self'
                         }
                     ]
@@ -82,12 +82,12 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     menu: [
                         {
                             text: 'Division 1',
-                            href: 'champ_mixte.php?d=1',
+                            href: 'championship.php?d=1&c=mo',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Division 2',
-                            href: 'champ_mixte.php?d=2',
+                            href: 'championship.php?d=2&c=mo',
                             hrefTarget: '_self'
                         }
                     ]
@@ -104,58 +104,58 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     menu: [
                         {
                             text: 'Poule 1',
-                            href: 'coupe.php?d=1',
+                            href: 'championship.php?d=1&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 2',
-                            href: 'coupe.php?d=2',
+                            href: 'championship.php?d=2&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 3',
-                            href: 'coupe.php?d=3',
+                            href: 'championship.php?d=3&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 4',
-                            href: 'coupe.php?d=4',
+                            href: 'championship.php?d=4&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 5',
-                            href: 'coupe.php?d=5',
+                            href: 'championship.php?d=5&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 6',
-                            href: 'coupe.php?d=6',
+                            href: 'championship.php?d=6&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 7',
-                            href: 'coupe.php?d=7',
+                            href: 'championship.php?d=7&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 8',
-                            href: 'coupe.php?d=8',
+                            href: 'championship.php?d=8&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 9',
-                            href: 'coupe.php?d=9',
+                            href: 'championship.php?d=9&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 10',
-                            href: 'coupe.php?d=10',
+                            href: 'championship.php?d=10&c=c',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Phase Finale',
                             hidden: false,
-                            href: 'coupe_cf.php',
+                            href: 'cup.php?c=cf',
                             hrefTarget: '_self'
                         }
                     ]
@@ -165,33 +165,33 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                     menu: [
                         {
                             text: 'Poule 1',
-                            href: 'coupe_kh.php?d=1',
+                            href: 'championship.php?d=1&c=kh',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 2',
-                            href: 'coupe_kh.php?d=2',
+                            href: 'championship.php?d=2&c=kh',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 3',
-                            href: 'coupe_kh.php?d=3',
+                            href: 'championship.php?d=3&c=kh',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 4',
-                            href: 'coupe_kh.php?d=4',
+                            href: 'championship.php?d=4&c=kh',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Poule 5',
-                            href: 'coupe_kh.php?d=5',
+                            href: 'championship.php?d=5&c=kh',
                             hrefTarget: '_self'
                         },
                         {
                             text: 'Phase Finale',
                             hidden: false,
-                            href: 'coupe_kf.php',
+                            href: 'cup.php?c=kf',
                             hrefTarget: '_self'
                         }
                     ]
