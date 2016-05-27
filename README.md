@@ -1,8 +1,6 @@
 This project is intended to manage volleyball championship.
 
-Some folders/files have been ignored in GIT : 
-
-/nbproject/sql/*clustermysql05_hosteur_com.sql --> contains sql dump of actual database data
+1 file has been ignored in GIT : 
 /includes/db_inc.php --> contains :
 
     <?php
@@ -23,7 +21,6 @@ Some folders/files have been ignored in GIT :
         mysqli_close($db);
     }
 
-/nbproject/private/
 /players_pics/ --> contains photos of players
 /teams_pics/ --> contains photos of teams
 
