@@ -4,6 +4,7 @@ $division = filter_input(INPUT_GET, 'd');
 $code_competition = filter_input(INPUT_GET, 'c');
 if (empty($division) || empty($code_competition)) {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
+    // dummy update
 }
 $requires = array();
 $controllers = array();
