@@ -50,7 +50,7 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                     region: 'center',
                     flex: 1,
                     xtype: 'panel',
-                    html: "<div id='my-slideshow'><div class='swiper-container'><div class='swiper-wrapper'/></div></div></div>",
+                    html: "<div id='my-slideshow'><div class='swiper-container'><div class='swiper-wrapper'></div></div></div>",
                     listeners: {
                         render: function () {
                             var mySwiper = new Swiper('.swiper-container', {
@@ -66,7 +66,8 @@ Ext.define('Ufolep13Volley.view.site.MainPanel', {
                                     slideShadows: true
                                 },
                                 autoplay: 1500,
-                                autoplayDisableOnInteraction: false
+                                autoplayDisableOnInteraction: false,
+                                lazyLoading: true
                             });
                             mySwiper.stopAutoplay();
                             mySwiper.removeAllSlides();
