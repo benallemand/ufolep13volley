@@ -6,6 +6,31 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
     autoScroll: true,
     viewConfig: {
         getRowClass: function (record, rowIndex, rowParams, store) {
+            if (record.get('joues') == 0) {
+                return '';
+            }
+            var is_same_rank = false;
+            var record_same_rank = null;
+            store.each(function (current_record) {
+                if (current_record.get('points') != record.get('points')) {
+                    is_same_rank = false;
+                    return;
+                }
+                if (current_record.get('joues') != record.get('joues')) {
+                    is_same_rank = false;
+                    return;
+                }
+                if (current_record.get('diff') != record.get('diff')) {
+                    is_same_rank = false;
+                    return;
+                }
+                is_same_rank = true;
+                record_same_rank = current_record;
+                return false;
+            });
+            if (is_same_rank) {
+                return 'grid-orange';
+            }
             var total = store.getCount();
             var rang = record.get('rang');
             if (rang >= total - 1) {
