@@ -1177,6 +1177,22 @@ function modifyMyTeam()
             addActivity($comment);
         }
     }
+    if (!empty($_FILES['file_photo']['name'])) {
+        require_once '../ajax/classes/Files.php';
+        $fileManager = new Files();
+        $fileManager->uploadAndInsertFileInDb('file_photo', $idFile);
+        conn_db();
+        $sql = "UPDATE equipes SET 
+            id_photo = $idFile 
+            WHERE id_equipe = $id_equipe";
+        $req = mysqli_query($db, $sql);
+        disconn_db();
+        if ($req === FALSE) {
+            return false;
+        }
+        $comment = "Nouvelle photo pour l'équipe";
+        addActivity($comment);
+    }
     return true;
 }
 

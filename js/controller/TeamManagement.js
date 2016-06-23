@@ -103,95 +103,98 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
     ],
     init: function () {
         this.control(
-                {
-                    'playeraddtomyteam combo[name=id_joueur]': {
-                        select: this.setPlayerImage
-                    },
-                    'button[action=showTimeSlotsManage]': {
-                        click: this.showManageTimeSlots
-                    },
-                    'button[action=showManagePlayers]': {
-                        click: this.showManagePlayers
-                    },
-                    'button[text=Modifier les informations]': {
-                        click: this.showTeamDetailsEdit
-                    },
-                    'button[text=Changer de mot de passe]': {
-                        click: this.showModifyPassword
-                    },
-                    'button[text=Ajouter un joueur]': {
-                        click: this.showAddPlayerToMyTeam
-                    },
-                    'playeraddtomyteam button[action=save]': {
-                        click: this.saveAddPlayerToMyTeam
-                    },
-                    "button[action=modifyCaptain]": {
-                        click: this.showSetMyTeamCaptain
-                    },
-                    "button[action=modifyLeader]": {
-                        click: this.showSetMyTeamLeader
-                    },
-                    "button[action=modifyViceLeader]": {
-                        click: this.showSetMyTeamViceLeader
-                    },
-                    'setmyteamcaptain button[action=save]': {
-                        click: this.saveSetMyTeamCaptain
-                    },
-                    'setmyteamleader button[action=save]': {
-                        click: this.saveSetMyTeamLeader
-                    },
-                    'setmyteamviceleader button[action=save]': {
-                        click: this.saveSetMyTeamViceLeader
-                    },
-                    'formTeamDetails': {
-                        render: this.loadTeamDetails
-                    },
-                    "teamdetailsedit button[action=save]": {
-                        click: this.saveTeamDetails
-                    },
-                    'button[action=createPlayer]': {
-                        click: this.createPlayer
-                    },
-                    'button[action=createTimeSlot]': {
-                        click: this.createTimeSlot
-                    },
-                    'playersmanage grid': {
-                        itemdblclick: this.editPlayer
-                    },
-                    'timeslotsmanage grid': {
-                        itemdblclick: this.editTimeSlot
-                    },
-                    'button[action=editPlayer]': {
-                        click: this.editPlayer
-                    },
-                    'button[action=editTimeSlot]': {
-                        click: this.editTimeSlot
-                    },
-                    'playeredit button[action=save]': {
-                        click: this.savePlayer
-                    },
-                    'timeslotedit button[action=save]': {
-                        click: this.saveTimeSlot
-                    },
-                    'button[action=editPreferences]': {
-                        click: this.showEditPreferences
-                    },
-                    'editpreferences button[action=save]': {
-                        click: this.savePreferences
-                    },
-                    "button[action=removePlayerFromMyTeam]": {
-                        click: this.removePlayerFromMyTeam
-                    },
-                    "button[action=removeTimeSlot]": {
-                        click: this.removeTimeSlot
-                    },
-                    "gridAlerts actioncolumn": {
-                        itemclick: this.getAlertResolution
-                    },
-                    "button[action=showHistory]": {
-                        click: this.showHistory
-                    }
-                });
+            {
+                'playeraddtomyteam combo[name=id_joueur]': {
+                    select: this.setPlayerImage
+                },
+                'button[action=showTimeSlotsManage]': {
+                    click: this.showManageTimeSlots
+                },
+                'button[action=showManagePlayers]': {
+                    click: this.showManagePlayers
+                },
+                'button[text=Modifier les informations]': {
+                    click: this.showTeamDetailsEdit
+                },
+                'button[text=Changer de mot de passe]': {
+                    click: this.showModifyPassword
+                },
+                'button[text=Ajouter un joueur]': {
+                    click: this.showAddPlayerToMyTeam
+                },
+                'playeraddtomyteam button[action=save]': {
+                    click: this.saveAddPlayerToMyTeam
+                },
+                "button[action=modifyCaptain]": {
+                    click: this.showSetMyTeamCaptain
+                },
+                "button[action=modifyLeader]": {
+                    click: this.showSetMyTeamLeader
+                },
+                "button[action=modifyViceLeader]": {
+                    click: this.showSetMyTeamViceLeader
+                },
+                'setmyteamcaptain button[action=save]': {
+                    click: this.saveSetMyTeamCaptain
+                },
+                'setmyteamleader button[action=save]': {
+                    click: this.saveSetMyTeamLeader
+                },
+                'setmyteamviceleader button[action=save]': {
+                    click: this.saveSetMyTeamViceLeader
+                },
+                'formTeamDetails': {
+                    render: this.loadTeamDetails
+                },
+                'image[id=teamPicture]': {
+                    render: this.loadTeamPicture
+                },
+                "teamdetailsedit button[action=save]": {
+                    click: this.saveTeamDetails
+                },
+                'button[action=createPlayer]': {
+                    click: this.createPlayer
+                },
+                'button[action=createTimeSlot]': {
+                    click: this.createTimeSlot
+                },
+                'playersmanage grid': {
+                    itemdblclick: this.editPlayer
+                },
+                'timeslotsmanage grid': {
+                    itemdblclick: this.editTimeSlot
+                },
+                'button[action=editPlayer]': {
+                    click: this.editPlayer
+                },
+                'button[action=editTimeSlot]': {
+                    click: this.editTimeSlot
+                },
+                'playeredit button[action=save]': {
+                    click: this.savePlayer
+                },
+                'timeslotedit button[action=save]': {
+                    click: this.saveTimeSlot
+                },
+                'button[action=editPreferences]': {
+                    click: this.showEditPreferences
+                },
+                'editpreferences button[action=save]': {
+                    click: this.savePreferences
+                },
+                "button[action=removePlayerFromMyTeam]": {
+                    click: this.removePlayerFromMyTeam
+                },
+                "button[action=removeTimeSlot]": {
+                    click: this.removeTimeSlot
+                },
+                "gridAlerts actioncolumn": {
+                    itemclick: this.getAlertResolution
+                },
+                "button[action=showHistory]": {
+                    click: this.showHistory
+                }
+            });
     },
     setPlayerImage: function (combo, record) {
         this.getSelectPlayerImage().setSrc(record.get('path_photo'));
@@ -361,6 +364,14 @@ Ext.define('Ufolep13Volley.controller.TeamManagement', {
             callback: function (records) {
                 form.getForm().loadRecord(records[0]);
                 me.getConnectedTeamNameToolbarText().setText(records[0].get('team_full_name'));
+            }
+        });
+    },
+    loadTeamPicture: function (image) {
+        var me = this;
+        this.getMyTeamStore().load({
+            callback: function (records) {
+                image.setSrc(records[0].get('path_photo'));
             }
         });
     },

@@ -8,29 +8,27 @@ Ext.define('Ufolep13Volley.view.site.TeamDetailsPanel', {
     items: [
         {
             region: 'north',
-            split: true,
             xtype: 'headerPanel'
         },
         {
             region: 'center',
-            layout: 'hbox',
-            autoScroll: true,
-            defaults: {
-                border: false
-            },
+            layout: 'border',
             items: [
                 {
                     region: 'center',
-                    flex: 1,
-                    height: 800,
+                    flex: 2,
                     xtype: 'formTeamDetails'
                 },
                 {
                     region: 'east',
-                    width: 400,
-                    xtype: 'image',
-                    id: 'teamPicture',
-                    src: ''
+                    flex: 1,
+                    title: 'Photo',
+                    layout: 'fit',
+                    items: {
+                        xtype: 'image',
+                        id: 'teamPicture',
+                        src: ''
+                    }
                 }
             ]
         }

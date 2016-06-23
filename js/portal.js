@@ -87,6 +87,15 @@ Ext.application({
                             },
                             {
                                 xtype: 'formTeamDetails'
+                            },
+                            {
+                                title: 'Photo',
+                                layout: 'fit',
+                                items: {
+                                    xtype: 'image',
+                                    id: 'teamPicture',
+                                    src: ''
+                                }
                             }
                         ]
                     }

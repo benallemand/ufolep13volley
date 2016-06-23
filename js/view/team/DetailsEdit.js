@@ -35,12 +35,18 @@ Ext.define('Ufolep13Volley.view.team.DetailsEdit', {
                 xtype: 'textfield',
                 fieldLabel: 'Site web',
                 name: 'web_site'
+            },
+            {
+                xtype: 'filefield',
+                name: 'file_photo',
+                fieldLabel: 'Photo, logo',
+                allowBlank: true
             }
         ],
         buttons: [
             {
                 text: 'Annuler',
-                handler: function() {
+                handler: function () {
                     this.up('window').close();
                 }
             },
