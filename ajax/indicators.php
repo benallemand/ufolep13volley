@@ -54,6 +54,7 @@ GROUP BY
 MID(comment, LOCATE('(',comment)+1, 8),
 SUBSTRING(SUBSTRING_INDEX(comment, '(', -1), 1, LENGTH(SUBSTRING_INDEX(comment, '(', -1))-1)
 HAVING COUNT(*) > 1");
+
 $indicatorDuplicateMatchCode = new Indicator(
     'Code match dupliqués', "SELECT
 m.code_match,
@@ -69,6 +70,7 @@ WHERE m.code_match IN
 (SELECT code_match FROM matches GROUP BY code_match HAVING COUNT(*) > 1)
 ORDER BY m.code_match"
 );
+
 $indicatorPlayersWithoutLicence = new Indicator(
     'Joueurs sans numéro de licence', "SELECT
         CONCAT(j.nom, ' ', j.prenom) AS joueur, 
@@ -84,10 +86,12 @@ $indicatorPlayersWithoutLicence = new Indicator(
         JOIN clubs c ON c.id = j.id_club
         WHERE j.num_licence = ''
         ORDER BY equipe ASC");
+
 $indicatorDoublonsJoueursEquipes = new Indicator(
     'Doublons dans une équipe', "SELECT id_joueur, id_equipe, COUNT(*) AS cnt FROM joueur_equipe
         GROUP BY id_joueur, id_equipe
         HAVING cnt > 1");
+
 $indicatorEquipesEngageesChampionnat = new Indicator(
     'Equipes', "SELECT e.nom_equipe,
         '' AS my_trim,
@@ -112,6 +116,7 @@ $indicatorEquipesEngageesChampionnat = new Indicator(
         WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
         GROUP BY id
         ORDER BY e.code_competition, c.division, e.id_equipe");
+
 $indicatorPlayersWithTeamButNoClub = new Indicator(
     'Joueurs avec équipe mais sans club', "SELECT DISTINCT
         j.prenom, 
@@ -123,6 +128,7 @@ $indicatorPlayersWithTeamButNoClub = new Indicator(
         JOIN equipes e ON e.id_equipe = je.id_equipe
         WHERE j.id_club = 0
         ORDER BY j.id ASC");
+
 $indicatorNotValidatedPlayers = new Indicator(
     'Joueurs en attente de validation', "SELECT DISTINCT
         j.prenom, 
@@ -134,6 +140,7 @@ $indicatorNotValidatedPlayers = new Indicator(
         JOIN clubs c ON c.id = j.id_club
         WHERE j.est_actif+0 = 0
         ORDER BY j.id ASC");
+
 $indicatorActivity = new Indicator(
     'Evènements', "SELECT
         DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date, 
@@ -147,6 +154,7 @@ $indicatorActivity = new Indicator(
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
         LEFT JOIN competitions c ON c.code_competition=e.code_competition
         ORDER BY a.id DESC");
+
 $indicatorComptes = new Indicator(
     'Comptes', "SELECT
             e.nom_equipe, 
@@ -158,12 +166,14 @@ $indicatorComptes = new Indicator(
             LEFT JOIN users_profiles up ON up.user_id = ca.id
             LEFT JOIN profiles p ON p.id = up.profile_id
             ORDER BY e.nom_equipe");
+
 $indicatorMatchesDupliques = new Indicator(
     'Matches dupliqués', "SELECT e1.nom_equipe, e2.nom_equipe, m.code_match, COUNT(*) FROM matches m
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         GROUP BY m.id_equipe_dom, m.id_equipe_ext, m.code_competition
         HAVING COUNT(*) > 1");
+
 $indicatorEquipesSansClub = new Indicator(
     'Club non renseigné', "SELECT
             e.nom_equipe,
@@ -179,11 +189,13 @@ $indicatorEquipesSansClub = new Indicator(
             )
             ORDER BY e.code_competition, c.division, e.id_equipe"
 );
+
 $indicatorLicencesDupliquees = new Indicator(
     'Licences dupliquées', "SELECT num_licence, COUNT(*) AS nb_duplicats FROM joueurs
          GROUP BY num_licence
          HAVING COUNT(*) > 1 AND num_licence != ''"
 );
+
 $indicatorMatchesNonRenseignes = new Indicator(
     'Retards', "SELECT
         m.code_match AS code, 
@@ -206,6 +218,7 @@ $indicatorMatchesNonRenseignes = new Indicator(
         )
         AND m.date_reception < CURDATE() - INTERVAL 5 DAY"
 );
+
 $indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
     'Equipes actives sans compte responsable équipe', "SELECT
   e.nom_equipe AS equipe,
@@ -231,6 +244,7 @@ WHERE
     FROM classements cl
   )"
 );
+
 $indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
     'Matches non certifiés dont la date ne correspond pas à un créneau', "SELECT m.code_match
     FROM matches m
@@ -245,6 +259,39 @@ $indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
                                            'Vendredi',
                                            'Samedi')
     WHERE cr.id IS NULL AND m.certif + 0 = 0"
+);
+
+$indicatorTimeSlotWithConstraint = new Indicator(
+    'Créneaux avec une contrainte horaire forte', "SELECT
+      c2.libelle AS competition,
+      e.nom_equipe AS equipe,
+      c1.nom AS club,
+      g.nom AS gymnase,
+      g.ville,
+      c.jour,
+      c.heure
+    FROM creneau c
+      JOIN gymnase g ON g.id = c.id_gymnase
+      JOIN equipes e ON e.id_equipe = c.id_equipe
+      JOIN clubs c1 ON c1.id = e.id_club
+      JOIN competitions c2 ON c2.code_competition = e.code_competition
+    WHERE has_time_constraint + 0 > 0
+    "
+);
+
+$indicatorTeamLeadersByChamp = new Indicator(
+    'Emails des responsables par compétition', "SELECT
+      GROUP_CONCAT(j.email) AS emails,
+      c.libelle             AS competition
+    FROM joueur_equipe je
+      JOIN joueurs j ON j.id = je.id_joueur
+      JOIN equipes e ON e.id_equipe = je.id_equipe
+      JOIN competitions c ON c.code_competition = e.code_competition
+    WHERE
+      je.is_leader + 0 > 0
+      AND j.email IS NOT NULL
+    GROUP BY c.libelle
+    "
 );
 
 $results = array();
@@ -264,6 +311,8 @@ $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
 $results[] = $indicatorPendingMatchesWithWrongTimeSlot->getResult();
+$results[] = $indicatorTimeSlotWithConstraint->getResult();
+$results[] = $indicatorTeamLeadersByChamp->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
