@@ -7,6 +7,7 @@ if (empty($code_competition)) {
 $requires = array();
 $controllers = array();
 $controllers[] = "'GymnasiumsMap'";
+$controllers[] = "'HallOfFame'";
 if (isAdmin()) {
     $controllers[] = "'Matches'";
 }

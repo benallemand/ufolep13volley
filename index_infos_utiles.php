@@ -3,6 +3,7 @@ include("includes/fonctions_inc.php");
 $requires = array();
 $controllers = array();
 $controllers[] = "'GymnasiumsMap'";
+$controllers[] = "'HallOfFame'";
 ?>
 <!DOCTYPE html>
 <HTML>

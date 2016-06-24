@@ -3,6 +3,7 @@ include("includes/fonctions_inc.php");
 $requires = array();
 $controllers = array();
 $controllers[] = "'GymnasiumsMap'";
+$controllers[] = "'HallOfFame'";
 if (isset($_SESSION['login']) && isset($_SESSION['password'])) {
     if (isAdmin()) {
         die('<META HTTP-equiv="refresh" content=0;URL=admin.php>');

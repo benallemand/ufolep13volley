@@ -204,6 +204,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
             glyph: 'xf05a@FontAwesome',
             menu: [
                 {
+                    text: 'Palmarès',
+                    glyph: 'xe906@icomoon',
+                    action: 'showHallOfFame'
+                },
+                {
                     text: 'Annuaire',
                     href: 'annuaire.php',
                     hrefTarget: '_self'

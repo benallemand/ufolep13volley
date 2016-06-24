@@ -4,6 +4,7 @@ $requires = array();
 $controllers = array();
 $controllers[] = "'Menu'";
 $controllers[] = "'GymnasiumsMap'";
+$controllers[] = "'HallOfFame'";
 ?>
 <!DOCTYPE html>
 <HTML>
