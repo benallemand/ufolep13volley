@@ -10,6 +10,7 @@ Ext.define('Ufolep13Volley.view.grid.HallOfFame', {
             groupHeaderTpl: '{title}'
         }
     ],
+    selType: 'checkboxmodel',
     columns: {
         items: [
             {

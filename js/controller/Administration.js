@@ -466,7 +466,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'timeslot.WeekScheduleGrid',
         'rank.AdminGrid',
         'rank.Edit',
-        'grid.HallOfFame'],
+        'grid.HallOfFame',
+        'window.HallOfFame'
+    ],
     refs: [
         {
             ref: 'ImagePlayer',
@@ -849,7 +851,22 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=displayHallOfFame]': {
                     click: this.displayHallOfFame
-                }
+                },
+                'hall_of_fame_grid': {
+                    added: this.addToolbarHallOfFame
+                },
+                'button[action=addHallOfFame]': {
+                    click: this.addHallOfFame
+                },
+                'button[action=editHallOfFame]': {
+                    click: this.editHallOfFame
+                },
+                'button[action=deleteHallOfFame]': {
+                    click: this.deleteHallOfFame
+                },
+                'hall_of_fame_edit button[action=save]': {
+                    click: this.updateHallOfFame
+                },
             }
         );
     },
@@ -1202,10 +1219,76 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     addLimitDate: function () {
         Ext.widget('limitdateedit');
     },
+    addHallOfFame: function () {
+        Ext.widget('hall_of_fame_edit');
+    },
+    editHallOfFame: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var windowEdit = Ext.widget('hall_of_fame_edit');
+        windowEdit.down('form').loadRecord(record);
+    },
+    deleteHallOfFame: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteHallOfFame.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    updateHallOfFame: function (button) {
+        var thisController = this;
+        var form = button.up('form').getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getStore('HallOfFame').load();
+                    button.up('window').close();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
     deleteUsers: function () {
         var me = this;
         var records = this.getManageUsersGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1236,7 +1319,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteGymnasiums: function () {
         var me = this;
         var records = this.getManageGymnasiumsGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1267,7 +1350,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteClubs: function () {
         var me = this;
         var records = this.getManageClubsGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1298,7 +1381,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteTeams: function () {
         var me = this;
         var records = this.getManageTeamsGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1329,7 +1412,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteMatches: function () {
         var me = this;
         var records = this.getManageMatchesGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1360,7 +1443,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteRanks: function () {
         var me = this;
         var records = this.getManageRanksGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1391,7 +1474,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     razPoints: function () {
         var me = this;
         var records = this.getManageRanksGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1422,7 +1505,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteDays: function () {
         var me = this;
         var records = this.getManageDaysGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1453,7 +1536,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteLimitDates: function () {
         var me = this;
         var records = this.getManageLimitDatesGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1484,7 +1567,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deletePlayers: function () {
         var me = this;
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
-        if (!records) {
+        if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
@@ -1918,4 +2001,47 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
         this.getMainPanel().setActiveTab(tab);
     },
+    addToolbarHallOfFame: function (grid) {
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Ajouter',
+                    action: 'addHallOfFame'
+                },
+                {
+                    text: 'Modifier',
+                    action: 'editHallOfFame'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'deleteHallOfFame'
+                }
+            ]
+        });
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        });
+    }
 });

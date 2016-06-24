@@ -202,6 +202,19 @@ function deleteLimitDates($ids)
     return true;
 }
 
+function deleteHallOfFame($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM hall_of_fame WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids)
 {
     $explodedIds = explode(',', $ids);
@@ -2872,6 +2885,43 @@ function saveDay()
 
     } else {
         $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}
+
+function saveHallOfFame()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO";
+    } else {
+        $sql = "UPDATE";
+    }
+    $sql .= " hall_of_fame SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+            case 'dirtyFields':
+                continue;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+
+    } else {
+        $sql .= " WHERE id = " . $inputs['id'];
     }
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
