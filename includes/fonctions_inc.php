@@ -441,7 +441,7 @@ function getLastResults()
     conn_db();
     $sql = "SELECT DISTINCT 
     c.libelle AS competition, 
-    IF(c.code_competition='f' OR c.code_competition='m', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
+    IF(c.code_competition='f' OR c.code_competition='m' OR c.code_competition='mo', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
     c.code_competition AS code_competition,
     m.division AS division,
     e1.id_equipe AS id_dom,

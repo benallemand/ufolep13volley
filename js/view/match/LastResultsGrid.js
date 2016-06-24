@@ -26,6 +26,7 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
                 switch (record.get('code_competition')) {
                     case 'm':
                     case 'f':
+                    case 'mo':
                         displayValue = displayValue + ' (' + record.get('rang_dom') + ')';
                         break;
                     default :
@@ -56,6 +57,7 @@ Ext.define('Ufolep13Volley.view.match.LastResultsGrid', {
                 switch (record.get('code_competition')) {
                     case 'm':
                     case 'f':
+                    case 'mo':
                         displayValue = displayValue + ' (' + record.get('rang_ext') + ')';
                         break;
                     default :
