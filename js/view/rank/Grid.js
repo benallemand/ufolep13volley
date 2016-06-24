@@ -113,37 +113,38 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
                 width: 100,
                 dataIndex: 'diff',
                 align: 'center'
-            },
-            {
-                header: 'Coeff Sets',
-                width: 100,
-                dataIndex: 'coeff_s',
-                align: 'center'
-            },
-            {
-                header: 'Pts Pour',
-                width: 100,
-                dataIndex: 'points_pour',
-                align: 'center'
-            },
-            {
-                header: 'Pts Contre',
-                width: 100,
-                dataIndex: 'points_contre',
-                align: 'center'
-            },
-            {
-                header: 'Coeff Points',
-                width: 100,
-                dataIndex: 'coeff_p',
-                align: 'center'
-            },
-            {
-                header: 'Pénalités',
-                width: 100,
-                dataIndex: 'penalites',
-                align: 'center'
             }
+            // ,
+            // {
+            //     header: 'Coeff Sets',
+            //     width: 100,
+            //     dataIndex: 'coeff_s',
+            //     align: 'center'
+            // },
+            // {
+            //     header: 'Pts Pour',
+            //     width: 100,
+            //     dataIndex: 'points_pour',
+            //     align: 'center'
+            // },
+            // {
+            //     header: 'Pts Contre',
+            //     width: 100,
+            //     dataIndex: 'points_contre',
+            //     align: 'center'
+            // },
+            // {
+            //     header: 'Coeff Points',
+            //     width: 100,
+            //     dataIndex: 'coeff_p',
+            //     align: 'center'
+            // },
+            // {
+            //     header: 'Pénalités',
+            //     width: 100,
+            //     dataIndex: 'penalites',
+            //     align: 'center'
+            // }
         ]
     },
     dockedItems: [
