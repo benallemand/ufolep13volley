@@ -404,7 +404,8 @@ Ext.define('Ufolep13Volley.overrides.view.Grid', {
 
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players',
+    stores: [
+        'Players',
         'Clubs',
         'Teams',
         'RankTeams',
@@ -418,8 +419,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'AdminMatches',
         'AdminDays',
         'LimitDates',
-        'AdminRanks'],
-    models: ['Player',
+        'AdminRanks',
+        'HallOfFame'
+    ],
+    models: [
+        'Player',
         'Club',
         'Team',
         'RankTeam',
@@ -433,9 +437,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'WeekDay',
         'Day',
         'LimitDate',
-        'Rank'
+        'Rank',
+        'HallOfFame'
     ],
-    views: ['player.Grid',
+    views: [
+        'player.Grid',
         'player.Edit',
         'club.Select',
         'team.Select',
@@ -459,7 +465,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'activity.Grid',
         'timeslot.WeekScheduleGrid',
         'rank.AdminGrid',
-        'rank.Edit'],
+        'rank.Edit',
+        'grid.HallOfFame'],
     refs: [
         {
             ref: 'ImagePlayer',
@@ -839,6 +846,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'grid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
                     change: this.searchInGrid
+                },
+                'button[action=displayHallOfFame]': {
+                    click: this.displayHallOfFame
                 }
             }
         );
@@ -1901,5 +1911,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-    }
+    },
+    displayHallOfFame: function () {
+        var tab = this.getMainPanel().add({
+            xtype: 'hall_of_fame_grid'
+        });
+        this.getMainPanel().setActiveTab(tab);
+    },
 });

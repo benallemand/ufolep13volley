@@ -2435,6 +2435,25 @@ function getWeekSchedule()
     return json_encode($results);
 }
 
+function getHallOfFame()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        id, 
+        title, 
+        team_name,
+        period
+        FROM hall_of_fame
+        ORDER BY period";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getGymnasiums()
 {
     global $db;

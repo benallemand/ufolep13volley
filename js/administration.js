@@ -103,6 +103,11 @@ Ext.application({
                                 text: 'Indicateurs',
                                 glyph: 'xf071@FontAwesome',
                                 action: 'displayIndicators'
+                            },
+                            {
+                                text: 'Palmarès',
+                                glyph: 'xe906@icomoon',
+                                action: 'displayHallOfFame'
                             }
                         ]
                     }
