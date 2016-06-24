@@ -12,6 +12,10 @@ Ext.define('Ufolep13Volley.view.rank.Grid', {
             var is_same_rank = false;
             var record_same_rank = null;
             store.each(function (current_record) {
+                if (current_record.get('id_equipe') == record.get('id_equipe')) {
+                    is_same_rank = false;
+                    return;
+                }
                 if (current_record.get('points') != record.get('points')) {
                     is_same_rank = false;
                     return;
