@@ -19,6 +19,10 @@ function get_latest_repo($user)
 {
     // Get the json from github for the repos
     $json = json_decode(get_json("users/$user/repos"), true);
+    if (isset($json['documentation_url']) && $json['documentation_url'] == "https://developer.github.com/v3/#rate-limiting") {
+        echo "Derniere modification indisponible pour le moment";
+        exit(0);
+    }
 
     // Sort the array returend by pushed_at time
     function compare_pushed_at($b, $a)

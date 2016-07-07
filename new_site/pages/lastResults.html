@@ -1,0 +1,41 @@
+<div class="panel panel-primary" id="lastResults">
+    <div class="panel-heading">
+        <h1 class="panel-title">Derniers résultats</h1>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Compétition</th>
+            <th>Journée</th>
+            <th>Domicile</th>
+            <th></th>
+            <th></th>
+            <th>Extérieur</th>
+            <th>S1</th>
+            <th>S2</th>
+            <th>S3</th>
+            <th>S4</th>
+            <th>S5</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in lastResults">
+            <td>{{ x.competition | uppercase }}</td>
+            <td>{{ x.division_journee }}</td>
+            <td>{{ x.equipe_domicile }}</td>
+            <td>{{ x.score_equipe_dom }}</td>
+            <td>{{ x.score_equipe_ext }}</td>
+            <td>{{ x.equipe_exterieur }}</td>
+            <td>{{ x.set1 }}</td>
+            <td>{{ x.set2 }}</td>
+            <td>{{ x.set3 }}</td>
+            <td>{{ x.set4 }}</td>
+            <td>{{ x.set5 }}</td>
+            <td>{{ x.date_reception | parseDate | date:'dd/MM/yyyy'}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>

@@ -1,0 +1,20 @@
+<div class="panel panel-primary" id="hallOfFame">
+    <div class="panel-heading"><h1 class="panel-title">Palmarès</h1>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Année</th>
+            <th>Titre</th>
+            <th>Equipe</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in hallOfFame">
+            <td>{{ x.period }}</td>
+            <td>{{ x.title }}</td>
+            <td>{{ x.team_name }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,20 @@
+<div class="panel panel-primary" id="webSites">
+    <div class="panel-heading"><h1 class="panel-title">Sites web des clubs</h1>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Club</th>
+            <th>Site</th>
+            <th>Lien</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in webSites">
+            <td>{{ x.nom_club | uppercase }}</td>
+            <td>{{ x.web_site }}</td>
+            <td><a class="btn btn-info" role="button" href="{{ x.web_site }}" target="_blank">Lien</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

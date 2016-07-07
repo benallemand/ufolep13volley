@@ -1,0 +1,24 @@
+<div class="panel panel-primary" id="gymnasiums">
+    <div class="panel-heading"><h1 class="panel-title">Gymnases</h1>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Ville</th>
+            <th>Nom</th>
+            <th>Adresse</th>
+            <th>Localisation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in gymnasiums">
+            <td>{{ x.ville }}</td>
+            <td>{{ x.nom }}</td>
+            <td>{{ x.adresse }}</td>
+            <td><a class="btn btn-info" role="button"
+                   href="http://www.google.com/maps/place/{{ x.gps }}"
+                   target="_blank">Lien</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

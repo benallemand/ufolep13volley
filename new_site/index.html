@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<!-- define angular app -->
+<html ng-app="scotchApp">
+<head>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="../libs/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+    <script src="script.js"></script>
+</head>
+<body ng-controller="mainController">
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"> <img alt="Brand" src="../images/Ufolep13Volley2.jpg" style="height:100%"></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span> Accueil</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        Championnats
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Masculin (Mixte)</li>
+                        <li><a href="#">Division 1</a></li>
+                        <li><a href="#">Division 2</a></li>
+                        <li><a href="#">Division 3</a></li>
+                        <li><a href="#">Division 4</a></li>
+                        <li><a href="#">Division 5</a></li>
+                        <li><a href="#">Division 6</a></li>
+                        <li><a href="#">Division 7</a></li>
+                        <li class="dropdown-header">Féminin</li>
+                        <li><a href="#">Division 1</a></li>
+                        <li><a href="#">Division 2</a></li>
+                        <li><a href="#">Division 3</a></li>
+                        <li class="dropdown-header">4x4 Mixte</li>
+                        <li><a href="#">Division 1</a></li>
+                        <li><a href="#">Division 2</a></li>
+                    </ul>
+                </li>
+                <li><a href="#lastResults"><span class="glyphicon glyphicon-fire"></span> Derniers résultats</a></li>
+                <li><a href="#lastPosts"><span class="glyphicon glyphicon-envelope"></span> Derniers posts</a></li>
+                <li><a href="#webSites"><span class="glyphicon glyphicon-globe"></span> Sites web des clubs</a></li>
+                <li><a href="#hallOfFame"><span class="glyphicon glyphicon-usd"></span> Palmarès</a></li>
+                <li><a href="#gymnasiums"><span class="glyphicon glyphicon-map-marker"></span> Gymnases</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div id="main">
+    <div ng-view></div>
+
+</div>
+<footer class="text-center">
+    <p>UFOLEP 13 VOLLEY (c) 2015-2016</p>
+    <div ng-bind-html="lastCommit | sanitize"></div>
+</footer>
+</body>
+</html>
