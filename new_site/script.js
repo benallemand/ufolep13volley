@@ -27,6 +27,10 @@ scotchApp.config(function ($routeProvider) {
         .when('/gymnasiums', {
             templateUrl: 'pages/gymnasiums.html',
             controller: 'gymnasiumsController'
+        })
+        .when('/championship/:competition/:division', {
+            templateUrl: 'pages/championship.html',
+            controller: 'championshipsController'
         });
 });
 
@@ -47,6 +51,26 @@ scotchApp.controller('lastResultsController', function ($scope, $http) {
             $scope.lastResults = response.data;
         });
 });
+
+scotchApp.controller('championshipsController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $http.get("../ajax/getClassement.php", {
+        params: {
+            competition: $routeParams.competition,
+            division: $routeParams.division
+        }
+    }).then(function (response) {
+        $scope.rankings = response.data;
+    });
+
+    $http.get("../ajax/getMatches.php", {
+        params: {
+            competition: $routeParams.competition,
+            division: $routeParams.division
+        }
+    }).then(function (response) {
+        $scope.matches = response.data;
+    });
+}]);
 
 scotchApp.controller('lastPostsController', function ($scope, $http) {
     $http.get("../ajax/getLastPosts.php")
@@ -79,7 +103,7 @@ scotchApp.controller('volleyballImagesController', function ($scope, $http) {
     $http.get("../ajax/getVolleyballImages.php")
         .then(function (response) {
             $scope.volleyballImages = [];
-            for(var i=0;i<20;i++) {
+            for (var i = 0; i < 20; i++) {
                 response.data.photo[i]["index"] = i;
                 $scope.volleyballImages.push(response.data.photo[i]);
             }
