@@ -30,7 +30,7 @@
 </div>
 <div ng-controller="volleyballImagesController">
     <div style="height: 150px">
-        <uib-carousel active="0" interval="1000" no-wrap="false">
+        <uib-carousel active="0" interval="3000" no-wrap="false">
             <uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
                        index="volleyballImage.index">
                 <img ng-src="https://farm{{volleyballImage.farm}}.staticflickr.com/{{volleyballImage.server}}/{{volleyballImage.id}}_{{volleyballImage.secret}}.jpg"
