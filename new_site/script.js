@@ -47,6 +47,9 @@ scotchApp.config(function ($routeProvider) {
         .when('/phonebook/:id', {
             templateUrl: 'pages/phonebook.html',
             controller: 'phonebookController'
+        })
+        .when('/accident', {
+            templateUrl: 'pages/accident.html'
         });
 });
 
