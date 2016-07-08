@@ -1,0 +1,67 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1>Commission départementale</h1>
+        <h2>Les personnes membres de la CTSD 13 Volley-Ball ainsi que les personnes qui aident le font à titre de
+            bénévolat. </h2>
+    </div>
+    <div class="panel-body">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Membres CTSD</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Rôle</th>
+                        <th>Téléphone 1</th>
+                        <th>Téléphone 2</th>
+                        <th>Email</th>
+                        <th>Photo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="x in commission | filter:{type:'membre'}:true">
+                        <td>{{ x.prenom }} {{ x.nom }}</td>
+                        <td>{{ x.fonction }}</td>
+                        <td>{{ x.telephone1 }}</td>
+                        <td>{{ x.telephone2 }}</td>
+                        <td>{{ x.email }}</td>
+                        <td><img src="../../{{ x.photo }}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Supports</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Rôle</th>
+                        <th>Téléphone 1</th>
+                        <th>Téléphone 2</th>
+                        <th>Email</th>
+                        <th>Photo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="x in commission | filter:{type:'support'}:true">
+                        <td>{{ x.prenom }} {{ x.nom }}</td>
+                        <td>{{ x.fonction }}</td>
+                        <td>{{ x.telephone1 }}</td>
+                        <td>{{ x.telephone2 }}</td>
+                        <td>{{ x.email }}</td>
+                        <td><img src="../../{{ x.photo }}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

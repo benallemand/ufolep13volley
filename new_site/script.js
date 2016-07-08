@@ -50,6 +50,10 @@ scotchApp.config(function ($routeProvider) {
         })
         .when('/accident', {
             templateUrl: 'pages/accident.html'
+        })
+        .when('/commission', {
+            templateUrl: 'pages/commission.html',
+            controller: 'commissionController'
         });
 });
 
@@ -75,6 +79,13 @@ scotchApp.controller('phonebooksController', function ($scope, $http) {
     $http.get("../ajax/getRanks.php")
         .then(function (response) {
             $scope.ranks = response.data;
+        });
+});
+
+scotchApp.controller('commissionController', function ($scope, $http) {
+    $http.get("../ajax/commission.php")
+        .then(function (response) {
+            $scope.commission = response.data.results;
         });
 });
 
