@@ -30,20 +30,61 @@ scotchApp.config(function ($routeProvider) {
         })
         .when('/championship/:competition/:division', {
             templateUrl: 'pages/championship.html',
-            controller: 'championshipsController'
+            controller: 'championshipController'
+        })
+        .when('/cup/:competition/:division', {
+            templateUrl: 'pages/cup.html',
+            controller: 'championshipController'
+        })
+        .when('/matches/:competition', {
+            templateUrl: 'pages/matches.html',
+            controller: 'cupController'
+        })
+        .when('/phonebooks', {
+            templateUrl: 'pages/phonebooks.html',
+            controller: 'phonebooksController'
+        })
+        .when('/phonebook/:id', {
+            templateUrl: 'pages/phonebook.html',
+            controller: 'phonebookController'
         });
 });
 
 // create the controller and inject Angular's $scope
 scotchApp.controller('mainController', function ($scope, $http) {
     // create a message to display in our view
-    $scope.message = 'Everyone come and see how good I look!';
     $http.get("../ajax/getLastCommit.php")
         .then(function (response) {
             $scope.lastCommit = response.data;
         });
 
 });
+
+scotchApp.controller('phonebooksController', function ($scope, $http) {
+    $http.get("../ajax/getCompetitions.php")
+        .then(function (response) {
+            $scope.competitions = response.data;
+        });
+    $http.get("../ajax/getDivisions.php")
+        .then(function (response) {
+            $scope.divisions = response.data;
+        });
+    $http.get("../ajax/getRanks.php")
+        .then(function (response) {
+            $scope.ranks = response.data;
+        });
+});
+
+scotchApp.controller('phonebookController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $http.get("../ajax/getTeam.php", {
+        params: {
+            id: $routeParams.id
+        }
+    })
+        .then(function (response) {
+            $scope.team = response.data;
+        });
+}]);
 
 scotchApp.controller('lastResultsController', function ($scope, $http) {
     $http.get("../ajax/getLastResults.php")
@@ -52,7 +93,7 @@ scotchApp.controller('lastResultsController', function ($scope, $http) {
         });
 });
 
-scotchApp.controller('championshipsController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
     $http.get("../ajax/getClassement.php", {
         params: {
             competition: $routeParams.competition,
@@ -66,6 +107,17 @@ scotchApp.controller('championshipsController', ['$scope', '$routeParams', '$htt
         params: {
             competition: $routeParams.competition,
             division: $routeParams.division
+        }
+    }).then(function (response) {
+        $scope.matches = response.data;
+    });
+}]);
+
+scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $http.get("../ajax/getMatches.php", {
+        params: {
+            competition: $routeParams.competition,
+            division: 1
         }
     }).then(function (response) {
         $scope.matches = response.data;
@@ -121,58 +173,3 @@ scotchApp.filter('parseDate', function () {
         return new Date(input);
     };
 });
-
-// scotchApp.controller('CarouselDemoCtrl', function ($scope) {
-//     var slides = $scope.slides = [];
-//     var currIndex = 0;
-//
-//     $scope.addSlide = function () {
-//         var newWidth = 600 + slides.length + 1;
-//         slides.push({
-//             image: 'http://lorempixel.com/' + newWidth + '/300',
-//             text: ['Nice image', 'Awesome photograph', 'That is so cool', 'I love that'][slides.length % 4],
-//             id: currIndex++
-//         });
-//     };
-//
-//     $scope.randomize = function () {
-//         var indexes = generateIndexesArray();
-//         assignNewIndexesToSlides(indexes);
-//     };
-//
-//     for (var i = 0; i < 4; i++) {
-//         $scope.addSlide();
-//     }
-//
-//     // Randomize logic below
-//
-//     function assignNewIndexesToSlides(indexes) {
-//         for (var i = 0, l = slides.length; i < l; i++) {
-//             slides[i].id = indexes.pop();
-//         }
-//     }
-//
-//     function generateIndexesArray() {
-//         var indexes = [];
-//         for (var i = 0; i < currIndex; ++i) {
-//             indexes[i] = i;
-//         }
-//         return shuffle(indexes);
-//     }
-//
-//     // http://stackoverflow.com/questions/962802#962890
-//     function shuffle(array) {
-//         var tmp, current, top = array.length;
-//
-//         if (top) {
-//             while (--top) {
-//                 current = Math.floor(Math.random() * (top + 1));
-//                 tmp = array[current];
-//                 array[current] = array[top];
-//                 array[top] = tmp;
-//             }
-//         }
-//
-//         return array;
-//     }
-// });

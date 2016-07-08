@@ -1,0 +1,30 @@
+<div class="panel panel-primary" id="phonebooks">
+    <div class="panel-heading"><h1 class="panel-title">Annuaire</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-2"
+             ng-repeat="competition in competitions | filter:{ code_competition: '!kf' } | filter:{ code_competition: '!cf' }">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1>{{competition.libelle}}</h1>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-bordered"
+                           ng-repeat="division in divisions | filter:{ code_competition: competition.code_competition }:true | orderBy:'division'">
+                        <thead>
+                        <tr>
+                            <th>Division {{division.division}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="rank in ranks | filter:{ code_competition: division.code_competition }:true | filter:{ division: division.division }:true | orderBy:['division','nom_equipe']">
+                            <td><a href="#phonebook/{{ rank.id_equipe }}">{{ rank.nom_equipe }}</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

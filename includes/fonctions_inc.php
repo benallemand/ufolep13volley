@@ -389,6 +389,46 @@ function getTeams()
     return json_encode($results);
 }
 
+function getTeam($id)
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+        e.code_competition, 
+        comp.libelle AS libelle_competition, 
+        e.nom_equipe, 
+        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
+        e.id_club,
+        c.nom AS club,
+        e.id_equipe,
+        CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+        jresp.telephone AS telephone_1,
+        jsupp.telephone AS telephone_2,
+        jresp.email,
+        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        e.web_site,
+        p.path_photo
+        FROM equipes e
+        LEFT JOIN photos p ON p.id = e.id_photo
+        JOIN clubs c ON c.id=e.id_club
+        JOIN competitions comp ON comp.code_competition=e.code_competition
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
+        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
+        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
+        WHERE e.id_equipe = $id
+        GROUP BY team_full_name
+        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results[0]);
+}
+
 function getRankTeams()
 {
     global $db;
@@ -950,12 +990,28 @@ function getRanks()
       cl.id,
       cl.code_competition,
       co.libelle AS nom_competition,
-      cl.division,
+      LPAD(cl.division, 2, '0') AS division,
       cl.id_equipe,
       e.nom_equipe
       FROM classements cl
       JOIN competitions co ON co.code_competition = cl.code_competition
       JOIN equipes e ON e.id_equipe = cl.id_equipe";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
+function getDivisions()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+        DISTINCT LPAD(c.division, 2, '0') AS division,
+        c.code_competition
+      FROM classements c";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
