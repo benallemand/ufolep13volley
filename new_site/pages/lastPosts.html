@@ -8,7 +8,7 @@
             <th>Sujet</th>
             <th>Catégorie</th>
             <th>Auteur</th>
-            <!--<th>Message</th>-->
+            <th>Message</th>
             <th>Lien</th>
             <th>Date</th>
         </tr>
@@ -19,7 +19,7 @@
             <td>{{ x.category }}</td>
             <td>{{ x.creator }}</td>
             <td>
-            <div ng-bind-html="x.description | sanitize"></div>
+                <div ng-bind-html="x.description | sanitize"></div>
             </td>
             <td><a class="btn btn-info" role="button" href="{{ x.guid }}" target="_blank">Lien</a></td>
             <td>{{ x.pubdate | parseDate | date:'dd/MM/yyyy'}}</td>
