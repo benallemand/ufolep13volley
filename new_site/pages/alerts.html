@@ -1,0 +1,20 @@
+<div class="panel panel-primary" id="alerts">
+    <div class="panel-heading"><h1 class="panel-title">Alertes</h1>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Problème</th>
+            <th>Correction</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in alerts">
+            <td ng-class="x.criticity == 'error' ? 'alert alert-danger' : (x.criticity == 'warning' ? 'alert alert-warning' : (x.criticity == 'info' ? 'alert alert-info' : ''))">
+                {{ x.issue }}
+            </td>
+            <td>{{ x.expected_action }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

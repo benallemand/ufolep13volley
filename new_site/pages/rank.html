@@ -1,0 +1,32 @@
+<div class="panel panel-primary" id="ranking">
+    <div class="panel-heading"><h1 class="panel-title">Classement</h1>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Equipe</th>
+            <th>Points</th>
+            <th>Joués</th>
+            <th>Gagnés</th>
+            <th>Perdus</th>
+            <th>Sets pour</th>
+            <th>Sets contre</th>
+            <th>Différence</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="x in rankings">
+            <td>{{ x.rang }}</td>
+            <td>{{ x.equipe }} TODO couleur</td>
+            <td>{{ x.points }}</td>
+            <td>{{ x.joues }}</td>
+            <td>{{ x.gagnes }}</td>
+            <td>{{ x.perdus }}</td>
+            <td>{{ x.sets_pour }}</td>
+            <td>{{ x.sets_contre }}</td>
+            <td>{{ x.diff }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

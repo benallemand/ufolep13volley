@@ -54,17 +54,40 @@ scotchApp.config(function ($routeProvider) {
         .when('/commission', {
             templateUrl: 'pages/commission.html',
             controller: 'commissionController'
+        })
+        .when('/login', {
+            templateUrl: 'pages/login.html'
+        })
+        .when('/myPage', {
+            templateUrl: 'pages/my_page.html',
+            controller: 'myPageController'
+        })
+        .when('/adminPage', {
+            templateUrl: '../admin.php'
         });
 });
 
-// create the controller and inject Angular's $scope
 scotchApp.controller('mainController', function ($scope, $http) {
-    // create a message to display in our view
     $http.get("../ajax/getLastCommit.php")
         .then(function (response) {
             $scope.lastCommit = response.data;
         });
 
+});
+
+scotchApp.controller('myPageController', function ($scope, $http) {
+    $http.get("../ajax/getMesMatches.php")
+        .then(function (response) {
+            $scope.matches = response.data;
+        });
+    $http.get("../ajax/getAlerts.php")
+        .then(function (response) {
+            $scope.alerts = response.data;
+        });
+    $http.get("../ajax/getMonEquipe.php")
+        .then(function (response) {
+            $scope.team = response.data[0];
+        });
 });
 
 scotchApp.controller('phonebooksController', function ($scope, $http) {
