@@ -17,8 +17,13 @@
         </thead>
         <tbody>
         <tr ng-repeat="x in rankings">
-            <td>{{ x.rang }}</td>
-            <td>{{ x.equipe }} TODO couleur</td>
+            <td>
+                {{ x.rang }}
+            </td>
+            <td class="{{x.exact_deuce == '1' ? 'warning' : ''}}"
+                title="{{x.exact_deuce == '1' ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
+                {{ x.equipe }}
+            </td>
             <td>{{ x.points }}</td>
             <td>{{ x.joues }}</td>
             <td>{{ x.gagnes }}</td>

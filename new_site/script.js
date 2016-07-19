@@ -64,6 +64,14 @@ scotchApp.config(function ($routeProvider) {
         })
         .when('/adminPage', {
             templateUrl: '../admin.php'
+        })
+        .when('/myHistory', {
+            templateUrl: 'pages/history.html',
+            controller: 'myHistoryController'
+        })
+        .when('/myPlayers', {
+            templateUrl: 'pages/players.html',
+            controller: 'myPlayersController'
         });
 });
 
@@ -73,6 +81,20 @@ scotchApp.controller('mainController', function ($scope, $http) {
             $scope.lastCommit = response.data;
         });
 
+});
+
+scotchApp.controller('myPlayersController', function ($scope, $http) {
+    $http.get("../ajax/getMyPlayers.php")
+        .then(function (response) {
+            $scope.players = response.data;
+        });
+});
+
+scotchApp.controller('myHistoryController', function ($scope, $http) {
+    $http.get("../ajax/getActivity.php")
+        .then(function (response) {
+            $scope.activities = response.data;
+        });
 });
 
 scotchApp.controller('myPageController', function ($scope, $http) {
@@ -138,6 +160,27 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         }
     }).then(function (response) {
         $scope.rankings = response.data;
+        var teams = $scope.rankings;
+        for (var currentTeamIndex = 0; currentTeamIndex < teams.length; currentTeamIndex++) {
+            if (teams[currentTeamIndex]["joues"] == "0") {
+                $scope.rankings[currentTeamIndex]["exact_deuce"] = "0";
+                continue;
+            }
+            $scope.rankings[currentTeamIndex]["exact_deuce"] = "0";
+            for (var compareTeamIndex = 0; compareTeamIndex < teams.length; compareTeamIndex++) {
+                if (teams[compareTeamIndex]["id_equipe"] == teams[currentTeamIndex]["id_equipe"]) {
+                    continue;
+                }
+                if (teams[compareTeamIndex]["joues"] != teams[currentTeamIndex]["joues"]) {
+                    continue;
+                }
+                if (teams[compareTeamIndex]["diff"] != teams[currentTeamIndex]["diff"]) {
+                    continue;
+                }
+                $scope.rankings[currentTeamIndex]["exact_deuce"] = "1";
+                break;
+            }
+        }
     });
 
     $http.get("../ajax/getMatches.php", {

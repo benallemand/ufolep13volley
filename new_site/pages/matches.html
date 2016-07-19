@@ -1,7 +1,7 @@
 <div class="panel panel-primary" id="matches">
     <div class="panel-heading"><h1 class="panel-title">Matches</h1>
     </div>
-    <table class="table table-striped table-bordered">
+    <table class="table table-bordered">
         <thead>
         <tr>
             <th>Code</th>
@@ -14,16 +14,21 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="x in matches">
-            <td>{{ x.code_match }}</td>
+        <tr ng-repeat="x in matches | filter:search">
+            <td class="{{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
+                title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
+                {{ x.code_match }}
+            </td>
             <td>{{ x.date_reception }}</td>
-            <td>{{ x.equipe_dom }}</td>
+            <td class="{{x.score_equipe_dom == '3' ? 'success' : ''}}">{{ x.equipe_dom }}</td>
             <td>{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</td>
-            <td>{{ x.equipe_ext }}</td>
+            <td class="{{x.score_equipe_ext == '3' ? 'success' : ''}}">{{ x.equipe_ext }}</td>
             <td>{{ x.set_1_dom }}/{{ x.set_1_ext }} - {{ x.set_2_dom }}/{{ x.set_2_ext }} - {{ x.set_3_dom }}/{{
                 x.set_3_ext }} - {{ x.set_4_dom }}/{{ x.set_4_ext }} - {{ x.set_5_dom }}/{{ x.set_5_ext }}
             </td>
-            <td>TODO</td>
+            <td title="{{x.certif == '1' ? 'Feuille de match reçue et certifiée' : 'La feuille de match n\'a pas encore été validée par la commission. Merci au responsable de l\'équipe victorieuse de s\'assurer qu\'il a fait parvenir la feuille de match'}}">
+                <span class="{{x.certif == '1' ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-warning-sign'}}"></span>
+            </td>
         </tr>
         </tbody>
     </table>
