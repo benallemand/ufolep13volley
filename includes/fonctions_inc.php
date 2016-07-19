@@ -1342,7 +1342,14 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,
-        m.report+0 AS report
+        m.report+0 AS report,
+        (
+          CASE WHEN (m.score_equipe_dom + m.score_equipe_ext > 0) THEN 0
+          WHEN m.date_reception >= curdate() THEN 0
+          WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 10 DAY) THEN 2
+          WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 5 DAY) THEN 1
+          END
+        ) AS retard
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom

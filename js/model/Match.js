@@ -136,25 +136,7 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
         },
         {
             name: 'retard',
-            type: 'int',
-            calculate: function (data) {
-                var today = new Date();
-                today.setHours(0, 0, 0, 0);
-                if (data.date_reception >= today) {
-                    return 0;
-                }
-                if (data.score_equipe_dom + data.score_equipe_ext > 0) {
-                    return 0;
-                }
-                var diff_date_in_days = Math.round((today - data.date_reception) / (1000*60*60*24));
-                if(diff_date_in_days >= 10) {
-                    return 2;
-                }
-                if(diff_date_in_days >= 5) {
-                    return 1;
-                }
-                return 0;
-            }
+            type: 'int'
         }
 
     ]
