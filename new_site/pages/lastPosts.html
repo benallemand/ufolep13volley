@@ -1,28 +1,20 @@
-<div class="panel panel-primary" id="lastPosts">
+<div class="panel panel-primary" ng-repeat="(key, value) in lastPosts  | groupBy: 'category'">
     <div class="panel-heading">
-        <h1 class="panel-title">Derniers posts</h1>
+        <h1 class="panel-title">{{ key }}</h1>
     </div>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
             <th>Sujet</th>
-            <th>Catégorie</th>
             <th>Auteur</th>
-            <th>Message</th>
-            <th>Lien</th>
             <th>Date</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="x in lastPosts">
-            <td>{{ x.title | uppercase }}</td>
-            <td>{{ x.category }}</td>
-            <td>{{ x.creator }}</td>
-            <td>
-                <div ng-bind-html="x.description | sanitize"></div>
-            </td>
-            <td><a class="btn btn-info" role="button" href="{{ x.guid }}" target="_blank">Lien</a></td>
-            <td>{{ x.pubdate | parseDate | date:'dd/MM/yyyy'}}</td>
+        <tr ng-repeat="post in value">
+            <td><a href="{{ post.guid }}" target="_blank">{{ post.title }}</a></td>
+            <td>{{ post.creator }}</td>
+            <td>{{ post.pubdate | parseDate | date:'dd/MM/yyyy'}}</td>
         </tr>
         </tbody>
     </table>
