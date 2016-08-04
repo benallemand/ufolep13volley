@@ -674,7 +674,7 @@ function getPlayersFromTeam($id_equipe)
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
             $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
-            if (file_exists("../" . $results[$index]['path_photo']) === FALSE) {
+            if (($results[$index]['path_photo'] == '') || (file_exists("../" . $results[$index]['path_photo']) === FALSE)) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
@@ -1278,7 +1278,17 @@ function modifyMyPassword()
         return false;
     }
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $password = filter_input(INPUT_POST, 'password');
+    $password = filter_input(INPUT_POST, 'new_password');
+    $passwordAgain = filter_input(INPUT_POST, 'new_password_again');
+    if (!isset($password)) {
+        return false;
+    }
+    if (!isset($passwordAgain)) {
+        return false;
+    }
+    if ($password !== $passwordAgain) {
+        return false;
+    }
     $sql = "UPDATE comptes_acces SET 
       password='$password'
       WHERE id_equipe=$sessionIdEquipe";
@@ -1606,7 +1616,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
             $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
-            if (file_exists($rootPath . $results[$index]['path_photo']) === FALSE) {
+            if (($results[$index]['path_photo'] == '') || (file_exists($rootPath . $results[$index]['path_photo']) === FALSE)) {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
@@ -2363,7 +2373,7 @@ function saveTimeSlot()
     global $db;
     $inputs = array(
         'id' => filter_input(INPUT_POST, 'id'),
-        'id_equipe' => filter_input(INPUT_POST, 'id_equipe'),
+        'id_equipe' => isTeamLeader() ? $_SESSION['id_equipe'] : filter_input(INPUT_POST, 'id_equipe'),
         'id_gymnase' => filter_input(INPUT_POST, 'id_gymnase'),
         'jour' => filter_input(INPUT_POST, 'jour'),
         'heure' => filter_input(INPUT_POST, 'heure'),

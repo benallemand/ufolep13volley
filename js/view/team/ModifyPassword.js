@@ -20,18 +20,18 @@ Ext.define('Ufolep13Volley.view.team.ModifyPassword', {
                 xtype: 'textfield',
                 inputType: 'password',
                 fieldLabel: 'Mot de passe',
-                name: 'password',
+                name: 'new_password',
                 allowBlank: false
             },
             {
                 xtype: 'textfield',
                 inputType: 'password',
                 fieldLabel: 'Mot de passe (vérification)',
-                name: 'password2',
+                name: 'new_password_again',
                 allowBlank: false,
                 validator: function(val) {
                     var formPanelPassword = Ext.ComponentQuery.query('form[url=ajax/modifierMonMotDePasse.php]')[0];
-                    if (val !== formPanelPassword.getForm().findField('password').getValue()) {
+                    if (val !== formPanelPassword.getForm().findField('new_password').getValue()) {
                         return 'Merci de saisir 2 fois le même mot de passe !';
                     }
                     return true;
