@@ -14,12 +14,7 @@ session_start();
                 <?php echo $userName; ?> - <?php echo $team->team_full_name; ?>
                 <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu">
-                <li><a href="#myPage"><span class="glyphicon glyphicon-user"></span> Ma page</a></li>
-                <li><a href="../ajax/logout.php"><span class="glyphicon glyphicon-log-out"></span>
-                        Déconnexion</a>
-                </li>
-            </ul>
+            <ul class="dropdown-menu" ng-include src="'navs/my_page.html'"></ul>
         </li>
         <?php
     } else {
@@ -34,7 +29,7 @@ session_start();
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="../admin.php"><span class="glyphicon glyphicon-user"></span> Ma page</a></li>
+                    <li><a href="../admin.php"><span class="glyphicon glyphicon-home"></span> Ma page d'accueil</a></li>
                     <li><a href="../ajax/logout.php"><span class="glyphicon glyphicon-log-out"></span>
                             Déconnexion</a>
                     </li>

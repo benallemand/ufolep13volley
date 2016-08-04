@@ -70,8 +70,20 @@ scotchApp.config(function ($routeProvider) {
             controller: 'myHistoryController'
         })
         .when('/myPlayers', {
-            templateUrl: 'pages/players.html',
+            templateUrl: 'pages/my_players.html',
             controller: 'myPlayersController'
+        })
+        .when('/myTimeslots', {
+            templateUrl: 'pages/my_timeslots.html',
+            controller: 'myTimeslotsController'
+        })
+        .when('/myPassword', {
+            templateUrl: 'pages/my_password.html',
+            controller: 'myPasswordController'
+        })
+        .when('/myPreferences', {
+            templateUrl: 'pages/my_preferences.html',
+            controller: 'myPreferencesController'
         });
 });
 
@@ -83,12 +95,253 @@ scotchApp.controller('mainController', function ($scope, $http) {
 
 });
 
-scotchApp.controller('myPlayersController', function ($scope, $http) {
+scotchApp.controller('myPreferencesController', function ($scope, $http) {
+    $http.get("../ajax/getMyPreferences.php")
+        .then(function (response) {
+            $scope.preferences = response.data[0];
+        });
+    $scope.saveMyPreferences = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/saveMyPreferences.php',
+            data: $.param($scope.preferences),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+});
+
+scotchApp.controller('myTimeslotsController', function ($scope, $http) {
+    $http.get("../ajax/getTimeSlots.php")
+        .then(function (response) {
+            $scope.timeslots = response.data;
+        });
+    $http.get("../ajax/getGymnasiums.php")
+        .then(function (response) {
+            $scope.gymnasiums = response.data;
+        });
+    $scope.removeTimeSlot = function (id) {
+        $http({
+            method: 'POST',
+            url: '../ajax/removeTimeSlot.php',
+            data: $.param({
+                id: id
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.addTimeSlot = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/saveTimeSlot.php',
+            data: $.param($scope.newTimeslot),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+});
+
+scotchApp.controller('myPasswordController', function ($scope, $http) {
+    $scope.modifierMonMotDePasse = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/modifierMonMotDePasse.php',
+            data: $.param($scope.new_password_model),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+});
+
+scotchApp.controller('myPlayersController', ['$scope', '$http', 'multipartForm', function ($scope, $http, multipartForm) {
     $http.get("../ajax/getMyPlayers.php")
         .then(function (response) {
             $scope.players = response.data;
         });
-});
+    $http.get("../ajax/getPlayers.php")
+        .then(function (response) {
+            $scope.all_players = response.data;
+        });
+    $http.get("../ajax/getClubs.php")
+        .then(function (response) {
+            $scope.all_clubs = response.data;
+        });
+    $scope.addPlayerToTeam = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/addPlayerToMyTeam.php',
+            data: $.param($scope.existingPlayer),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.addNewPlayer = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/savePlayer.php',
+            data: $.param($scope.newPlayer),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.formatPlayerLabel = function (model) {
+        if ($scope.all_players) {
+            for (var i = 0; i < $scope.all_players.length; i++) {
+                if (model === $scope.all_players[i].id) {
+                    return $scope.all_players[i].full_name;
+                }
+            }
+        }
+    };
+    $scope.formatClubLabel = function (model) {
+        if ($scope.all_clubs) {
+            for (var i = 0; i < $scope.all_clubs.length; i++) {
+                if (model === $scope.all_clubs[i].id) {
+                    return $scope.all_clubs[i].nom;
+                }
+            }
+        }
+    };
+    $scope.removePlayerFromMyTeam = function (id) {
+        $http({
+            method: 'POST',
+            url: '../ajax/removePlayerFromMyTeam.php',
+            data: $.param({
+                id: id
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.updateMyTeamCaptain = function (id) {
+        $http({
+            method: 'POST',
+            url: '../ajax/updateMyTeamCaptain.php',
+            data: $.param({
+                id_joueur: id
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.updateMyTeamLeader = function (id) {
+        $http({
+            method: 'POST',
+            url: '../ajax/updateMyTeamLeader.php',
+            data: $.param({
+                id_joueur: id
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.updateMyTeamViceLeader = function (id) {
+        $http({
+            method: 'POST',
+            url: '../ajax/updateMyTeamViceLeader.php',
+            data: $.param({
+                id_joueur: id
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.newPlayer = {};
+    $scope.Submit = function () {
+        var uploadUrl = '../ajax/savePlayer.php';
+        multipartForm.post(uploadUrl, $scope.newPlayer);
+    }
+
+}]);
+
+scotchApp.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function () {
+                scope.$apply(function () {
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    }
+}]);
+
+scotchApp.service('multipartForm', ['$http', function ($http) {
+    this.post = function (uploadUrl, data) {
+        var fd = new FormData();
+        for (var key in data) {
+            fd.append(key, data[key]);
+        }
+        $http.post(uploadUrl, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            alert("Erreur: " + response.data.message);
+        });
+    }
+}]);
 
 scotchApp.controller('myHistoryController', function ($scope, $http) {
     $http.get("../ajax/getActivity.php")
@@ -105,6 +358,46 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     $http.get("../ajax/getAlerts.php")
         .then(function (response) {
             $scope.alerts = response.data;
+            for (var currentAlertIndex = 0; currentAlertIndex < $scope.alerts.length; currentAlertIndex++) {
+                switch ($scope.alerts[currentAlertIndex]["expected_action"]) {
+                    case 'showHelpSelectLeader':
+                        $scope.alerts[currentAlertIndex]["title"] = "Responsable d'équipe non défini";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, et de désigner un responsable d'équipe";
+                        break;
+                    case 'showHelpSelectViceLeader':
+                        $scope.alerts[currentAlertIndex]["title"] = "Responsable d'équipe suppléant non défini";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, et de désigner un suppléant au responsable d'équipe (cette action est optionnelle).";
+                        break;
+                    case 'showHelpSelectCaptain':
+                        $scope.alerts[currentAlertIndex]["title"] = "Capitaine non défini";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, et de désigner le capitaine de l'équipe.";
+                        break;
+                    case 'showHelpSelectTimeSlot':
+                        $scope.alerts[currentAlertIndex]["title"] = "Ajout de créneau de gymnase";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des gymnases, et d'indiquer les créneaux auxquels vous pouvez recevoir les matches.";
+                        break;
+                    case 'showHelpAddPhoneNumber':
+                        $scope.alerts[currentAlertIndex]["title"] = "Numéro de téléphone";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, éditer le responsable ou le suppléant, et ajouter au moins un numéro de téléphone.";
+                        break;
+                    case 'showHelpAddEmail':
+                        $scope.alerts[currentAlertIndex]["title"] = "Adresse email";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, éditer le responsable ou le suppléant, et ajouter au moins une adresse email.";
+                        break;
+                    case 'showHelpAddPlayer':
+                        $scope.alerts[currentAlertIndex]["title"] = "Ajout de joueur";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs, cliquer sur 'Ajouter un joueur' pour sélectionner l'un des joueurs connus du système. Si ce joueur n'existe pas, cliquer sur 'Créer un joueur'. Les joueurs n'apparaissent pas immédiatement sur la fiche équipe, ils doivent être activés par les responsables UFOLEP.";
+                        break;
+                    case 'showHelpInactivePlayers':
+                        $scope.alerts[currentAlertIndex]["title"] = "Joueurs inactifs";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs. Les joueurs en rouge sont inactifs. Ils n'apparaitront sur la fiche équipe qu'une fois actifs. Pour ce faire, les responsables UFOLEP doivent vérifier la validité de ces joueurs. Si le délai de prise en compte vous semble long, merci de relancer le responsable UFOLEP du championnat/division/coupe/poule concerné.";
+                        break;
+                    case 'showHelpPlayersWithoutLicenceNumber':
+                        $scope.alerts[currentAlertIndex]["title"] = "Joueurs sans licence";
+                        $scope.alerts[currentAlertIndex]["content"] = "Merci de vous rendre dans le menu de gestion des joueurs. Certains joueurs n'ont pas encore leur numéro de licence. Ils ne peuvent être vérifiés par la commission que lorsqu'ils auront leur numéro de licence. Merci de renseigner ce numéro dès que vous l'aurez récupéré.";
+                        break;
+                }
+            }
         });
     $http.get("../ajax/getMonEquipe.php")
         .then(function (response) {
