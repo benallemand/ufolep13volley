@@ -73,6 +73,10 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/my_players.html',
             controller: 'myPlayersController'
         })
+        .when('/myTeam', {
+            templateUrl: 'pages/my_team.html',
+            controller: 'myTeamController'
+        })
         .when('/myTimeslots', {
             templateUrl: 'pages/my_timeslots.html',
             controller: 'myTimeslotsController'
@@ -203,20 +207,6 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', 'multipartForm',
             $scope.myTxt = "Erreur: " + response.data.message;
         });
     };
-    $scope.addNewPlayer = function () {
-        $http({
-            method: 'POST',
-            url: '../ajax/savePlayer.php',
-            data: $.param($scope.newPlayer),
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
-            $scope.myTxt = "Erreur: " + response.data.message;
-        });
-    };
     $scope.formatPlayerLabel = function (model) {
         if ($scope.all_players) {
             for (var i = 0; i < $scope.all_players.length; i++) {
@@ -299,11 +289,37 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', 'multipartForm',
             $scope.myTxt = "Erreur: " + response.data.message;
         });
     };
-
     $scope.newPlayer = {};
     $scope.Submit = function () {
         var uploadUrl = '../ajax/savePlayer.php';
         multipartForm.post(uploadUrl, $scope.newPlayer);
+    }
+}]);
+
+scotchApp.controller('myTeamController', ['$scope', '$http', 'multipartForm', function ($scope, $http, multipartForm) {
+    $http.get("../ajax/getMonEquipe.php")
+        .then(function (response) {
+            $scope.team = response.data[0];
+            $scope.modify_my_team.web_site = $scope.team.web_site;
+            $scope.modify_my_team.id_club = $scope.team.id_club;
+        });
+    $http.get("../ajax/getClubs.php")
+        .then(function (response) {
+            $scope.all_clubs = response.data;
+        });
+    $scope.formatClubLabel = function (model) {
+        if ($scope.all_clubs) {
+            for (var i = 0; i < $scope.all_clubs.length; i++) {
+                if (model === $scope.all_clubs[i].id) {
+                    return $scope.all_clubs[i].nom;
+                }
+            }
+        }
+    };
+    $scope.modify_my_team = {};
+    $scope.Submit = function () {
+        var uploadUrl = '../ajax/saveTeam.php';
+        multipartForm.post(uploadUrl, $scope.modify_my_team);
     }
 
 }]);

@@ -2210,6 +2210,21 @@ function linkPlayerToPhoto($idPlayer, $idPhoto)
     return;
 }
 
+function linkTeamToPhoto($idTeam, $idPhoto)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE equipes e SET e.id_photo = $idPhoto WHERE id_equipe = $idTeam";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}
+
 function savePhoto($inputs, $newId = 0)
 {
     $lastName = $inputs['nom'];
@@ -2233,6 +2248,23 @@ function savePhoto($inputs, $newId = 0)
     linkPlayerToPhoto($idPlayer, $idPhoto);
     if (move_uploaded_file($_FILES['photo']['tmp_name'], accentedToNonAccented($uploadfile))) {
         addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
+    }
+    return;
+}
+
+function saveTeamPhoto($idTeam)
+{
+    $team = getTeam($idTeam);
+    if (empty($_FILES['photo']['name'])) {
+        return;
+    }
+    $uploaddir = '../teams_pics/';
+    $uploadfile = "$uploaddir$idTeam.jpg";
+    $idPhoto = 0;
+    insertPhoto(substr($uploadfile, 3), $idPhoto);
+    linkTeamToPhoto($idTeam, $idPhoto);
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
+        addActivity("Une nouvelle photo a ete transmise pour l'équipe " . json_decode($team)->team_full_name);
     }
     return;
 }
@@ -2797,12 +2829,10 @@ function saveClub()
 function saveTeam()
 {
     global $db;
-    $inputs = array(
-        'id_equipe' => filter_input(INPUT_POST, 'id_equipe'),
-        'code_competition' => filter_input(INPUT_POST, 'code_competition'),
-        'nom_equipe' => filter_input(INPUT_POST, 'nom_equipe'),
-        'id_club' => filter_input(INPUT_POST, 'id_club')
-    );
+    $inputs = filter_input_array(INPUT_POST);
+    if (isTeamLeader()) {
+        $inputs['id_equipe'] = $_SESSION['id_equipe'];
+    }
     conn_db();
     if (empty($inputs['id_equipe'])) {
         $sql = "INSERT INTO";
@@ -2835,6 +2865,9 @@ function saveTeam()
         throw new Exception($message);
     }
     disconn_db();
+    if (!empty($inputs['id_equipe'])) {
+        saveTeamPhoto($inputs['id_equipe']);
+    }
     return;
 }
 
