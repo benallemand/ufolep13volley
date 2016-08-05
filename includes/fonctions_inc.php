@@ -2843,6 +2843,7 @@ function saveTeam()
     foreach ($inputs as $key => $value) {
         switch ($key) {
             case 'id_equipe':
+            case 'dirtyFields':
                 continue;
             case 'id_club':
                 $sql .= "$key = $value,";
