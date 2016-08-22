@@ -480,6 +480,9 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 if (teams[compareTeamIndex]["id_equipe"] == teams[currentTeamIndex]["id_equipe"]) {
                     continue;
                 }
+                if (teams[compareTeamIndex]["points"] != teams[currentTeamIndex]["points"]) {
+                    continue;
+                }
                 if (teams[compareTeamIndex]["joues"] != teams[currentTeamIndex]["joues"]) {
                     continue;
                 }
