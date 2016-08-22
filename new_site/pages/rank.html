@@ -13,6 +13,7 @@
             <th>Sets pour</th>
             <th>Sets contre</th>
             <th>Différence</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -24,7 +25,7 @@
                 title="{{x.exact_deuce == '1' ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
                 <a href="#phonebook/{{ x.id_equipe }}">{{ x.equipe }}</a>
             </td>
-            <td>{{ x.points }}</td>
+            <td title="{{x.penalites != '0' ? x.penalites + ' point(s) de pénalité'  : ''}}">{{ x.points }}{{x.penalites != '0' ? '*' : ''}}</td>
             <td>{{ x.joues }}</td>
             <td>{{ x.gagnes }}</td>
             <td title="{{x.matches_lost_by_forfeit_count != '0' ? x.matches_lost_by_forfeit_count + ' par forfait'  : ''}}">
@@ -33,6 +34,7 @@
             <td>{{ x.sets_pour }}</td>
             <td>{{ x.sets_contre }}</td>
             <td>{{ x.diff }}</td>
+            <td ng-include src="'actions/rank.php'"></td>
         </tr>
         </tbody>
     </table>

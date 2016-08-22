@@ -506,6 +506,44 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     }).then(function (response) {
         $scope.matches = response.data;
     });
+
+    $scope.removePenalty = function (id_equipe, competition) {
+        $http({
+            method: 'POST',
+            url: '../ajax/penalite.php',
+            data: $.param({
+                type: 'suppression',
+                compet: competition,
+                equipe: id_equipe
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.addPenalty = function (id_equipe, competition) {
+        $http({
+            method: 'POST',
+            url: '../ajax/penalite.php',
+            data: $.param({
+                type: 'ajout',
+                compet: competition,
+                equipe: id_equipe
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
 }]);
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
