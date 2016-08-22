@@ -20,14 +20,16 @@
             <td>
                 {{ x.rang }}
             </td>
-            <td class="{{x.exact_deuce == '1' ? 'warning' : ''}}"
+            <td class="{{x.exact_deuce == '1' ? 'warning' : ''}} {{x.is_promotion == '1' ? 'success' : ''}} {{x.is_relegation == '1' ? 'danger' : ''}}"
                 title="{{x.exact_deuce == '1' ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
-                {{ x.equipe }}
+                <a href="#phonebook/{{ x.id_equipe }}">{{ x.equipe }}</a>
             </td>
             <td>{{ x.points }}</td>
             <td>{{ x.joues }}</td>
             <td>{{ x.gagnes }}</td>
-            <td>{{ x.perdus }}</td>
+            <td title="{{x.matches_lost_by_forfeit_count != '0' ? x.matches_lost_by_forfeit_count + ' par forfait'  : ''}}">
+                {{ x.perdus }}{{x.matches_lost_by_forfeit_count != '0' ? '*' : ''}}
+            </td>
             <td>{{ x.sets_pour }}</td>
             <td>{{ x.sets_contre }}</td>
             <td>{{ x.diff }}</td>
