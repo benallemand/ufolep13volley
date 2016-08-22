@@ -926,60 +926,47 @@ function computeRank($id_equipe, $compet, $division)
     mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
 }
 
-function getMatchesLostByForfeitCount($idTeam, $codeCompetition)
-{
-    global $db;
-    $forfait_dom = 0;
-    $forfait_ext = 0;
-    $sql = "SELECT COUNT(*) 
-      FROM matches 
-      WHERE id_equipe_dom = $idTeam AND code_competition = '$codeCompetition' AND forfait_dom = 1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $forfait_dom = $data[0];
-    }
-    $sql = "SELECT COUNT(*) 
-        FROM matches 
-        WHERE id_equipe_ext = $idTeam AND code_competition = '$codeCompetition' AND forfait_ext = 1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $forfait_ext = $data[0];
-    }
-    return $forfait_ext + $forfait_dom;
-}
-
 function getRank($compet, $div)
 {
     global $db;
     conn_db();
-    $sql = "SELECT 
-        c.id_equipe AS id_equipe,
-        c.code_competition AS code_competition,
-        e.nom_equipe AS equipe,
-        c.points AS points,
-        c.joues AS joues,
-        c.gagnes AS gagnes,
-        c.perdus AS perdus,
-        c.sets_pour AS sets_pour,
-        c.sets_contre AS sets_contre,
-        c.difference AS diff,
-        c.coeff_sets AS coeff_s,
-        c.points_pour AS points_pour,
-        c.points_contre AS points_contre,
-        c.coeff_points AS coeff_p,
-        c.penalite AS penalites
-    FROM classements c
-    JOIN equipes e ON e.id_equipe = c.id_equipe
-    WHERE c.code_competition = '$compet' AND c.division = '$div' 
-    ORDER BY points DESC, difference DESC, coeff_points DESC";
+    $sql = "SELECT
+  @r := @r + 1 AS rang,
+  z.*
+FROM (
+       SELECT
+         c.id_equipe        AS id_equipe,
+         c.code_competition AS code_competition,
+         e.nom_equipe       AS equipe,
+         c.points           AS points,
+         c.joues            AS joues,
+         c.gagnes           AS gagnes,
+         c.perdus           AS perdus,
+         c.sets_pour        AS sets_pour,
+         c.sets_contre      AS sets_contre,
+         c.difference       AS diff,
+         c.coeff_sets       AS coeff_s,
+         c.points_pour      AS points_pour,
+         c.points_contre    AS points_contre,
+         c.coeff_points     AS coeff_p,
+         c.penalite         AS penalites,
+         COUNT(m_forfait_dom.forfait_dom) + COUNT(m_forfait_ext.forfait_ext) AS matches_lost_by_forfeit_count
+       FROM classements c
+         JOIN equipes e ON e.id_equipe = c.id_equipe
+         LEFT JOIN matches m_forfait_dom
+           ON m_forfait_dom.id_equipe_dom = e.id_equipe AND m_forfait_dom.code_competition = c.code_competition AND
+              m_forfait_dom.forfait_dom = 1
+         LEFT JOIN matches m_forfait_ext
+           ON m_forfait_ext.id_equipe_ext = e.id_equipe AND m_forfait_ext.code_competition = c.code_competition AND
+              m_forfait_ext.forfait_ext = 1
+       WHERE c.code_competition = '$compet' AND c.division = '$div'
+       GROUP BY e.id_equipe
+       ORDER BY points DESC, difference DESC, coeff_points DESC
+     ) z, (SELECT @r := 0) y";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
-    $rang = 1;
     while ($data = mysqli_fetch_assoc($req)) {
-        $data['rang'] = $rang;
-        $data['matches_lost_by_forfeit_count'] = getMatchesLostByForfeitCount($data['id_equipe'], $data['code_competition']);
         $results[] = $data;
-        $rang++;
     }
     return json_encode($results);
 }
