@@ -555,6 +555,40 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
+    $scope.validateMatch = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/certifierMatch.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.invalidateMatch = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/invalidateMatch.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
 }]);
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {

@@ -15,7 +15,13 @@
     <script src="script.js"></script>
 </head>
 <body ng-controller="mainController">
-<div ng-include src="'navs/main.html'"></div>
+<div class="container-fluid text-center">
+    <a href="#/">
+        <img alt="Ufolep" src="../images/Ufolep13Volley2.jpg" style="max-height:150px;">
+    </a>
+</div>
+<div ng-include src="'navs/main.html'">
+</div>
 <div id="main">
     <div ng-view></div>
 </div>

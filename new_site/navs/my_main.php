@@ -11,6 +11,7 @@ session_start();
         <li class="dropdown">
             <a class="dropdown-toggle" role="button" data-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-user"></span>
                 <?php echo $userName; ?> - <?php echo $team->team_full_name; ?>
                 <span class="caret"></span>
             </a>
@@ -25,6 +26,7 @@ session_start();
             <li class="dropdown">
                 <a class="dropdown-toggle" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
+                    <span class="glyphicon glyphicon-user"></span>
                     <?php echo $userName; ?> - <?php echo $team; ?>
                     <span class="caret"></span>
                 </a>
