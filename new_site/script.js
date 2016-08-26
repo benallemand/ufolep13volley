@@ -62,6 +62,10 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/my_page.html',
             controller: 'myPageController'
         })
+        .when('/myClub', {
+            templateUrl: 'pages/my_club.html',
+            controller: 'myClubController'
+        })
         .when('/adminPage', {
             templateUrl: '../admin.php'
         })
@@ -418,6 +422,13 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     $http.get("../ajax/getMonEquipe.php")
         .then(function (response) {
             $scope.team = response.data[0];
+        });
+});
+
+scotchApp.controller('myClubController', function ($scope, $http) {
+    $http.get("../ajax/getMyClubMatches.php")
+        .then(function (response) {
+            $scope.matches = response.data;
         });
 });
 

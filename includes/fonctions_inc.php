@@ -1445,6 +1445,28 @@ function getMyMatches()
     return json_encode($results);
 }
 
+function getMyClubMatches()
+{
+    global $db;
+    conn_db();
+    if (isAdmin()) {
+        return false;
+    }
+    if (!isTeamLeader()) {
+        return false;
+    }
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $myTeam = json_decode(getTeam($sessionIdEquipe));
+    $idClub = $myTeam->id_club;
+    $sql = getSqlSelectMatches("WHERE m.id_equipe_dom IN (SELECT id_equipe FROM equipes WHERE id_club = $idClub) OR m.id_equipe_ext IN (SELECT id_equipe FROM equipes WHERE id_club = $idClub)", "ORDER BY m.date_reception, m.code_match");
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getMyTeam()
 {
     global $db;
