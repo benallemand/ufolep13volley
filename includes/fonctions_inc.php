@@ -1113,6 +1113,20 @@ function certifyMatch($code_match)
     return true;
 }
 
+function invalidateMatch($code_match)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE matches SET certif = 0 WHERE code_match = '$code_match'";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    disconn_db();
+    addActivity("La certification du match $code_match a ete annulee");
+    return true;
+}
+
 function modifyMatch()
 {
     global $db;
