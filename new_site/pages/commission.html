@@ -23,6 +23,7 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="x in commission | filter:{type:'membre'}:true">
+                        <!-- TODO atob et boa -->
                         <td>{{ x.prenom }} {{ x.nom }}</td>
                         <td>{{ x.fonction }}</td>
                         <td>{{ x.telephone1 }}</td>
