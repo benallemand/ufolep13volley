@@ -775,157 +775,6 @@ function sendMailNewUser($email, $login, $password, $idTeam)
     return sendMail($body, $to, $subject, $from);
 }
 
-function computeRank($id_equipe, $compet, $division)
-{
-    global $db;
-    conn_db();
-    $pts_mar_dom = 0;
-    $pts_mar_ext = 0;
-    $pts_enc_dom = 0;
-    $pts_enc_ext = 0;
-    //$pts_marques = 0;
-    //$pts_encaisses = 0;
-    $sets_mar_dom = 0;
-    $sets_mar_ext = 0;
-    $sets_enc_dom = 0;
-    $sets_enc_ext = 0;
-    //$sets_marques = 0;
-    //$sets_encaisses = 0;
-    //$coeff_sets = 0;
-    //$coeff_points = 0;
-    $match_gag_dom = 0;
-    $match_gag_ext = 0;
-    $match_per_dom = 0;
-    $match_per_ext = 0;
-    //$match_gagnes = 0;
-    //$match_perdus = 0;
-    //$match_joues = 0;
-    //$points = 0;
-    //$forfait = 0;
-    $forfait_dom = 0;
-    $forfait_ext = 0;
-    $penalite = 0;
-    $sql = "SELECT COUNT(*) 
-      FROM matches 
-      WHERE id_equipe_dom = $id_equipe AND code_competition = '$compet' AND forfait_dom = 1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $forfait_dom = $data[0];
-    }
-    $sql = "SELECT COUNT(*) 
-      FROM matches 
-      WHERE id_equipe_ext = $id_equipe AND code_competition = '$compet' AND forfait_ext = 1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $forfait_ext = $data[0];
-    }
-    $sql = "SELECT penalite 
-      FROM classements 
-      WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    if (mysqli_num_rows($req) == 1) {
-        $data = mysqli_fetch_assoc($req);
-        $penalite = $data['penalite'];
-    }
-    $sql = "SELECT COUNT(*) 
-      FROM matches M 
-      WHERE M.id_equipe_dom = $id_equipe AND code_competition = '$compet' AND M.score_equipe_dom > M.score_equipe_ext";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $match_gag_dom = $data[0];
-    }
-    $sql = "SELECT COUNT(*) 
-      FROM matches M 
-      WHERE M.id_equipe_dom = $id_equipe AND code_competition = '$compet' AND M.score_equipe_dom < M.score_equipe_ext";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $match_per_dom = $data[0];
-    }
-    $sql = "SELECT COUNT(*) 
-      FROM matches M 
-      WHERE M.id_equipe_ext = $id_equipe AND code_competition = '$compet' AND M.score_equipe_dom < M.score_equipe_ext";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $match_gag_ext = $data[0];
-    }
-    $sql = "SELECT COUNT(*) 
-      FROM matches M 
-      WHERE M.id_equipe_ext = $id_equipe AND code_competition = '$compet' AND M.score_equipe_dom > M.score_equipe_ext";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $match_per_ext = $data[0];
-    }
-    $sql = "SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) 
-      FROM matches 
-      WHERE id_equipe_dom = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $sets_mar_dom = $data[0];
-        $sets_enc_dom = $data[1];
-    }
-    $sql = "SELECT SUM(score_equipe_dom), SUM(score_equipe_ext) 
-      FROM matches 
-      WHERE id_equipe_ext = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $sets_enc_ext = $data[0];
-        $sets_mar_ext = $data[1];
-    }
-    $sql = "SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) 
-      FROM matches 
-      WHERE id_equipe_dom = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $pts_mar_dom = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
-        $pts_enc_dom = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
-    }
-    $sql = "SELECT SUM(set_1_dom), SUM(set_2_dom), SUM(set_3_dom), SUM(set_4_dom), SUM(set_5_dom), SUM(set_1_ext), SUM(set_2_ext), SUM(set_3_ext), SUM(set_4_ext), SUM(set_5_ext) 
-        FROM matches 
-        WHERE id_equipe_ext = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $pts_enc_ext = $data[0] + $data[1] + $data[2] + $data[3] + $data[4];
-        $pts_mar_ext = $data[5] + $data[6] + $data[7] + $data[8] + $data[9];
-    }
-    $match_gagnes = $match_gag_dom + $match_gag_ext;
-    $match_perdus = $match_per_dom + $match_per_ext;
-    $match_joues = $match_gagnes + $match_perdus;
-    $sets_marques = $sets_mar_dom + $sets_mar_ext;
-    $sets_encaisses = $sets_enc_dom + $sets_enc_ext;
-    $difference = $sets_marques - $sets_encaisses;
-    $forfait = $forfait_dom + $forfait_ext;
-    //$points = 3 * $match_gagnes + $match_perdus - $forfait - $penalite;
-    //$pts_marques = $pts_mar_dom + $pts_mar_ext;
-    //$pts_encaisses = $pts_enc_dom + $pts_enc_ext;
-    $points = 3 * $match_gagnes + $match_perdus - $forfait - $penalite;
-    $pts_marques = $pts_mar_dom + $pts_mar_ext;
-    $pts_encaisses = $pts_enc_dom + $pts_enc_ext;
-    if ($pts_encaisses != 0) {
-        $coeff_points = ($pts_marques / $pts_encaisses);
-    } else {
-        $coeff_points = $pts_marques;
-    }
-    if ($sets_encaisses != 0) {
-        $coeff_sets = ($sets_marques / $sets_encaisses);
-    } else {
-        $coeff_sets = $sets_marques;
-    }
-    $sqlmaj = "UPDATE classements SET 
-        points = $points, 
-        joues = $match_joues, 
-        gagnes = $match_gagnes,
-        perdus = $match_perdus, 
-        sets_pour = $sets_marques, 
-        sets_contre = $sets_encaisses,
-        coeff_sets = $coeff_sets, 
-        points_pour = $pts_marques, 
-        points_contre = $pts_encaisses,
-        coeff_points = $coeff_points, 
-        difference = $difference
-      WHERE id_equipe = $id_equipe AND division = '$division' AND code_competition = '$compet'";
-    mysqli_query($db, $sqlmaj) or die('Erreur SQL !<br>' . $sqlmaj . '<br>' . mysqli_error($db));
-}
-
 function getRank($compet, $div)
 {
     global $db;
@@ -935,33 +784,55 @@ function getRank($compet, $div)
   z.*
 FROM (
        SELECT
-         c.id_equipe        AS id_equipe,
-         c.code_competition AS code_competition,
-         e.nom_equipe       AS equipe,
-         c.points           AS points,
-         c.joues            AS joues,
-         c.gagnes           AS gagnes,
-         c.perdus           AS perdus,
-         c.sets_pour        AS sets_pour,
-         c.sets_contre      AS sets_contre,
-         c.difference       AS diff,
-         c.coeff_sets       AS coeff_s,
-         c.points_pour      AS points_pour,
-         c.points_contre    AS points_contre,
-         c.coeff_points     AS coeff_p,
-         c.penalite         AS penalites,
-         COUNT(m_forfait_dom.forfait_dom) + COUNT(m_forfait_ext.forfait_ext) AS matches_lost_by_forfeit_count
-       FROM classements c
+         e.id_equipe,
+         m.code_competition,
+         e.nom_equipe                      AS equipe,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+           THEN 3
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+           THEN 3
+                               ELSE 0 END) +
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0
+           THEN 1
+                               ELSE 0 END)
+         - c.penalite                      AS points,
+         COUNT(m.id_match)                 AS joues,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+           THEN 1
+                               ELSE 0 END) AS gagnes,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+           THEN 1
+                               ELSE 0 END) AS perdus,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+           THEN m.score_equipe_dom
+             ELSE m.score_equipe_ext END)  AS sets_pour,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+           THEN m.score_equipe_ext
+             ELSE m.score_equipe_dom END)  AS sets_contre,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+           THEN m.score_equipe_dom
+             ELSE m.score_equipe_ext END) - SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+           THEN m.score_equipe_ext
+                                                ELSE m.score_equipe_dom END)         AS diff,
+         c.penalite                        AS penalites,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
+           THEN 1
+                               ELSE 0 END) AS matches_lost_by_forfeit_count
+       FROM
+         classements c
          JOIN equipes e ON e.id_equipe = c.id_equipe
-         LEFT JOIN matches m_forfait_dom
-           ON m_forfait_dom.id_equipe_dom = e.id_equipe AND m_forfait_dom.code_competition = c.code_competition AND
-              m_forfait_dom.forfait_dom = 1
-         LEFT JOIN matches m_forfait_ext
-           ON m_forfait_ext.id_equipe_ext = e.id_equipe AND m_forfait_ext.code_competition = c.code_competition AND
-              m_forfait_ext.forfait_ext = 1
+         LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
        WHERE c.code_competition = '$compet' AND c.division = '$div'
        GROUP BY e.id_equipe
-       ORDER BY points DESC, difference DESC, coeff_points DESC
+       ORDER BY points DESC, diff DESC
      ) z, (SELECT @r := 0) y";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -1041,7 +912,6 @@ function addPenalty($compet, $id_equipe)
     if ($req2 === FALSE) {
         return false;
     }
-    computeRank($id_equipe, $compet, $division);
     disconn_db();
     addActivity("Une penalite a ete infligee a l'equipe " . getTeamName($id_equipe));
     return true;
@@ -1071,7 +941,6 @@ function removePenalty($compet, $id_equipe)
     if ($req2 === FALSE) {
         return false;
     }
-    computeRank($id_equipe, $compet, $division);
     disconn_db();
     addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
     return true;
@@ -1190,8 +1059,6 @@ function modifyMatch()
     if ($req === FALSE) {
         return false;
     }
-    computeRank($id_equipe_dom, $compet, $division);
-    computeRank($id_equipe_ext, $compet, $division);
     disconn_db();
     addActivity("Le match $code_match a ete modifie");
     return true;
@@ -1349,7 +1216,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_5_dom,
         m.set_5_ext,
         cr.heure AS heure_reception,
-        m.date_reception,
+        DATE_FORMAT(m.date_reception, '%W %d %M %Y') AS date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,
@@ -2895,6 +2762,35 @@ function saveTeam()
     return;
 }
 
+/**
+ * if admin ok, if team leader check its team is dom or ext
+ * @param $idMatch
+ * @return bool
+ */
+function isMatchUpdateAllowed($idMatch)
+{
+    if (isAdmin()) {
+        return true;
+    }
+    if (!isTeamLeader()) {
+        return false;
+    }
+    $myMatches = json_decode(getMyMatches());
+    foreach ($myMatches as $myMatch) {
+        if ($myMatch->id_match == $idMatch) {
+            if ($myMatch->certif == '1') {
+                return false;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * TODO add forfait and report fields
+ * @throws Exception
+ */
 function saveMatch()
 {
     global $db;
@@ -2903,6 +2799,9 @@ function saveMatch()
     if (empty($inputs['id_match'])) {
         $sql = "INSERT INTO";
     } else {
+        if (!isMatchUpdateAllowed($inputs['id_match'])) {
+            throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
+        }
         $sql = "UPDATE";
     }
     $sql .= " matches SET ";
@@ -2916,6 +2815,18 @@ function saveMatch()
             case 'id_equipe_ext':
             case 'id_journee':
                 $sql .= "$key = $value,";
+                break;
+            case 'set_1_dom':
+            case 'set_1_ext':
+            case 'set_2_dom':
+            case 'set_2_ext':
+            case 'set_3_dom':
+            case 'set_3_ext':
+            case 'set_4_dom':
+            case 'set_4_ext':
+            case 'set_5_dom':
+            case 'set_5_ext':
+                $sql .= empty($value) ? "$key = 0," : "$key = $value,";
                 break;
             case 'date_reception':
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
