@@ -157,18 +157,7 @@ function razPoints($ids)
     global $db;
     conn_db();
     $sql = "UPDATE classements
-     SET points = 0,
-     joues = 0,
-     gagnes = 0,
-     perdus = 0,
-     sets_pour = 0,
-     sets_contre = 0,
-     difference = 0,
-     coeff_sets = 0,
-     points_pour = 0,
-     points_contre = 0,
-     coeff_points = 0,
-     penalite = 0
+     SET penalite = 0
     WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
     disconn_db();
@@ -439,7 +428,6 @@ function getRankTeams()
         cl.code_competition, 
         cl.division,
         comp.libelle AS libelle_competition,
-        cl.division,
         e.nom_equipe, 
         CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')') AS team_full_name,
         e.id_club,
