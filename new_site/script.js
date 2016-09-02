@@ -589,6 +589,45 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
+    $scope.formatMatchLabel = function (model) {
+        if ($scope.matches) {
+            for (var i = 0; i < $scope.matches.length; i++) {
+                if (model === $scope.matches[i].id_match) {
+                    $scope.modify_match.score_equipe_dom = parseInt($scope.matches[i].score_equipe_dom);
+                    $scope.modify_match.score_equipe_ext = parseInt($scope.matches[i].score_equipe_ext);
+                    $scope.modify_match.set_1_dom = parseInt($scope.matches[i].set_1_dom);
+                    $scope.modify_match.set_2_dom = parseInt($scope.matches[i].set_2_dom);
+                    $scope.modify_match.set_3_dom = parseInt($scope.matches[i].set_3_dom);
+                    $scope.modify_match.set_4_dom = parseInt($scope.matches[i].set_4_dom);
+                    $scope.modify_match.set_5_dom = parseInt($scope.matches[i].set_5_dom);
+                    $scope.modify_match.set_1_ext = parseInt($scope.matches[i].set_1_ext);
+                    $scope.modify_match.set_2_ext = parseInt($scope.matches[i].set_2_ext);
+                    $scope.modify_match.set_3_ext = parseInt($scope.matches[i].set_3_ext);
+                    $scope.modify_match.set_4_ext = parseInt($scope.matches[i].set_4_ext);
+                    $scope.modify_match.set_5_ext = parseInt($scope.matches[i].set_5_ext);
+                    return $scope.matches[i].code_match;
+                }
+            }
+        }
+    };
+
+    $scope.saveMatch = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/saveMatch.php',
+            data: $.param($scope.modify_match),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.modify_match = {};
+
 }]);
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
