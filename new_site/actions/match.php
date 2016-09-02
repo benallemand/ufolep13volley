@@ -13,21 +13,6 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-remove"></span>
         </button>
     </form>
-    <form ng-hide="x.certif=='1'" style="display: inline-block" ng-submit="modifyMatch(x.id_match)">
-        <button title="Modifier le match" type="submit" class="btn btn-sm btn-warning">
-            <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-    </form>
-    <?php
-}
-if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
-    ?>
-    <form ng-hide="x.certif=='1'" style="display: inline-block" ng-submit="modifyMatch(x.id_match)">
-        <button title="Modifier le match" type="submit" class="btn btn-sm btn-warning">
-            <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-    </form>
     <?php
 }
 ?>
-<!-- TODO create modifyMatch -->
