@@ -589,6 +589,11 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
+    /**
+     * TODO add format and save Match to myPageController
+     * @param model
+     * @returns {*}
+     */
     $scope.formatMatchLabel = function (model) {
         if ($scope.matches) {
             for (var i = 0; i < $scope.matches.length; i++) {
