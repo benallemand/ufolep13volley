@@ -2441,6 +2441,7 @@ function getHallOfFame()
         id, 
         title, 
         team_name,
+        league,
         period
         FROM hall_of_fame
         ORDER BY period";

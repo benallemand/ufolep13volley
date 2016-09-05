@@ -5,14 +5,15 @@
         <thead>
         <tr>
             <th>Année</th>
+            <th>Catégorie</th>
             <th>Titre</th>
             <th>Equipe</th>
-            <!-- TODO ajouter catégorie: 4x4, 6x6...-->
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="x in hallOfFame">
             <td>{{ x.period }}</td>
+            <td>{{ x.league }}</td>
             <td>{{ x.title }}</td>
             <td>{{ x.team_name }}</td>
         </tr>

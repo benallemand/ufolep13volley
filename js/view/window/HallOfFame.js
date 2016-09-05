@@ -39,6 +39,12 @@ Ext.define('Ufolep13Volley.view.window.HallOfFame', {
                 fieldLabel: 'Année',
                 name: 'period',
                 allowBlank: false
+            },
+            {
+                xtype: 'textfield',
+                fieldLabel: 'Catégorie',
+                name: 'league',
+                allowBlank: false
             }
         ],
         buttons: [

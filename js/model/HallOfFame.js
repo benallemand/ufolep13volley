@@ -7,6 +7,7 @@ Ext.define('Ufolep13Volley.model.HallOfFame', Sencha.modelCompatibility({
         },
         'title',
         'team_name',
-        'period'
+        'period',
+        'league'
     ]
 }));

@@ -27,6 +27,11 @@ Ext.define('Ufolep13Volley.view.grid.HallOfFame', {
                 header: 'Année',
                 dataIndex: 'period',
                 flex: 1
+            },
+            {
+                header: 'Catégorie',
+                dataIndex: 'league',
+                flex: 1
             }
         ]
     }
