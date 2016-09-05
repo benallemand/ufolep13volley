@@ -2798,6 +2798,8 @@ function saveMatch()
             case 'id_match':
             case 'dirtyFields':
             case 'parent_code_competition':
+            case 'equipe_dom':
+            case 'equipe_ext':
                 continue;
             case 'id_equipe_dom':
             case 'id_equipe_ext':
@@ -2821,6 +2823,11 @@ function saveMatch()
                 break;
             case 'certif':
                 $val = ($value === 'on') ? 1 : 0;
+                $sql .= "$key = $val,";
+                break;
+            case 'forfait_dom':
+            case 'forfait_ext':
+                $val = ($value === 'true') ? 1 : 0;
                 $sql .= "$key = $val,";
                 break;
             default:

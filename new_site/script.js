@@ -423,6 +423,83 @@ scotchApp.controller('myPageController', function ($scope, $http) {
         .then(function (response) {
             $scope.team = response.data[0];
         });
+
+    $scope.formatMatchLabel = function (model) {
+        if ($scope.matches) {
+            for (var i = 0; i < $scope.matches.length; i++) {
+                if (model === $scope.matches[i].id_match) {
+                    $scope.modify_match.score_equipe_dom = parseInt($scope.matches[i].score_equipe_dom);
+                    $scope.modify_match.score_equipe_ext = parseInt($scope.matches[i].score_equipe_ext);
+                    $scope.modify_match.set_1_dom = parseInt($scope.matches[i].set_1_dom);
+                    $scope.modify_match.set_2_dom = parseInt($scope.matches[i].set_2_dom);
+                    $scope.modify_match.set_3_dom = parseInt($scope.matches[i].set_3_dom);
+                    $scope.modify_match.set_4_dom = parseInt($scope.matches[i].set_4_dom);
+                    $scope.modify_match.set_5_dom = parseInt($scope.matches[i].set_5_dom);
+                    $scope.modify_match.set_1_ext = parseInt($scope.matches[i].set_1_ext);
+                    $scope.modify_match.set_2_ext = parseInt($scope.matches[i].set_2_ext);
+                    $scope.modify_match.set_3_ext = parseInt($scope.matches[i].set_3_ext);
+                    $scope.modify_match.set_4_ext = parseInt($scope.matches[i].set_4_ext);
+                    $scope.modify_match.set_5_ext = parseInt($scope.matches[i].set_5_ext);
+                    $scope.modify_match.equipe_dom = $scope.matches[i].equipe_dom;
+                    $scope.modify_match.equipe_ext = $scope.matches[i].equipe_ext;
+                    $scope.modify_match.forfait_dom = $scope.matches[i].forfait_dom == '1';
+                    $scope.modify_match.forfait_ext = $scope.matches[i].forfait_ext == '1';
+                    return $scope.matches[i].code_match;
+                }
+            }
+        }
+    };
+
+    $scope.makeForfait = function (modify_match) {
+        if(modify_match.forfait_dom && modify_match.forfait_ext) {
+            return;
+        }
+        if(modify_match.forfait_dom) {
+            modify_match.score_equipe_dom = 0;
+            modify_match.score_equipe_ext = 3;
+            modify_match.set_1_dom = 0;
+            modify_match.set_2_dom = 0;
+            modify_match.set_3_dom = 0;
+            modify_match.set_4_dom = 0;
+            modify_match.set_5_dom = 0;
+            modify_match.set_1_ext = 25;
+            modify_match.set_2_ext = 25;
+            modify_match.set_3_ext = 25;
+            modify_match.set_4_ext = 0;
+            modify_match.set_5_ext = 0;
+        }
+        if(modify_match.forfait_ext) {
+            modify_match.score_equipe_dom = 3;
+            modify_match.score_equipe_ext = 0;
+            modify_match.set_1_dom = 25;
+            modify_match.set_2_dom = 25;
+            modify_match.set_3_dom = 25;
+            modify_match.set_4_dom = 0;
+            modify_match.set_5_dom = 0;
+            modify_match.set_1_ext = 0;
+            modify_match.set_2_ext = 0;
+            modify_match.set_3_ext = 0;
+            modify_match.set_4_ext = 0;
+            modify_match.set_5_ext = 0;
+        }
+    };
+
+    $scope.saveMatch = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/saveMatch.php',
+            data: $.param($scope.modify_match),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.modify_match = {};
 });
 
 scotchApp.controller('myClubController', function ($scope, $http) {
@@ -451,6 +528,15 @@ scotchApp.controller('commissionController', function ($scope, $http) {
     $http.get("../ajax/commission.php")
         .then(function (response) {
             $scope.commission = response.data.results;
+            var commission_team = $scope.commission;
+            var commission_team_count = commission_team.length;
+            for (var currentIndex = 0; currentIndex < commission_team_count; currentIndex++) {
+                $scope.commission[currentIndex]["prenom_base64"] = window.btoa($scope.commission[currentIndex]["prenom"]);
+                $scope.commission[currentIndex]["nom_base64"] = window.btoa($scope.commission[currentIndex]["nom"]);
+                $scope.commission[currentIndex]["telephone1_base64"] = window.btoa($scope.commission[currentIndex]["telephone1"]);
+                $scope.commission[currentIndex]["telephone2_base64"] = window.btoa($scope.commission[currentIndex]["telephone2"]);
+                $scope.commission[currentIndex]["email_base64"] = window.btoa($scope.commission[currentIndex]["email"]);
+            }
         });
 });
 
@@ -462,6 +548,10 @@ scotchApp.controller('phonebookController', ['$scope', '$routeParams', '$http', 
     })
         .then(function (response) {
             $scope.team = response.data;
+            $scope.team["responsable_base64"] = window.btoa($scope.team["responsable"]);
+            $scope.team["telephone_1_base64"] = window.btoa($scope.team["telephone_1"]);
+            $scope.team["telephone_2_base64"] = window.btoa($scope.team["telephone_2"]);
+            $scope.team["email_base64"] = window.btoa($scope.team["email"]);
         });
 }]);
 
@@ -589,11 +679,6 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
-    /**
-     * TODO add format and save Match to myPageController
-     * @param model
-     * @returns {*}
-     */
     $scope.formatMatchLabel = function (model) {
         if ($scope.matches) {
             for (var i = 0; i < $scope.matches.length; i++) {
@@ -610,6 +695,10 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                     $scope.modify_match.set_3_ext = parseInt($scope.matches[i].set_3_ext);
                     $scope.modify_match.set_4_ext = parseInt($scope.matches[i].set_4_ext);
                     $scope.modify_match.set_5_ext = parseInt($scope.matches[i].set_5_ext);
+                    $scope.modify_match.equipe_dom = $scope.matches[i].equipe_dom;
+                    $scope.modify_match.equipe_ext = $scope.matches[i].equipe_ext;
+                    $scope.modify_match.forfait_dom = $scope.matches[i].forfait_dom == '1';
+                    $scope.modify_match.forfait_ext = $scope.matches[i].forfait_ext == '1';
                     return $scope.matches[i].code_match;
                 }
             }
@@ -644,6 +733,83 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     }).then(function (response) {
         $scope.matches = response.data;
     });
+
+    $scope.validateMatch = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/certifierMatch.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.invalidateMatch = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/invalidateMatch.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.formatMatchLabel = function (model) {
+        if ($scope.matches) {
+            for (var i = 0; i < $scope.matches.length; i++) {
+                if (model === $scope.matches[i].id_match) {
+                    $scope.modify_match.score_equipe_dom = parseInt($scope.matches[i].score_equipe_dom);
+                    $scope.modify_match.score_equipe_ext = parseInt($scope.matches[i].score_equipe_ext);
+                    $scope.modify_match.set_1_dom = parseInt($scope.matches[i].set_1_dom);
+                    $scope.modify_match.set_2_dom = parseInt($scope.matches[i].set_2_dom);
+                    $scope.modify_match.set_3_dom = parseInt($scope.matches[i].set_3_dom);
+                    $scope.modify_match.set_4_dom = parseInt($scope.matches[i].set_4_dom);
+                    $scope.modify_match.set_5_dom = parseInt($scope.matches[i].set_5_dom);
+                    $scope.modify_match.set_1_ext = parseInt($scope.matches[i].set_1_ext);
+                    $scope.modify_match.set_2_ext = parseInt($scope.matches[i].set_2_ext);
+                    $scope.modify_match.set_3_ext = parseInt($scope.matches[i].set_3_ext);
+                    $scope.modify_match.set_4_ext = parseInt($scope.matches[i].set_4_ext);
+                    $scope.modify_match.set_5_ext = parseInt($scope.matches[i].set_5_ext);
+                    $scope.modify_match.equipe_dom = $scope.matches[i].equipe_dom;
+                    $scope.modify_match.equipe_ext = $scope.matches[i].equipe_ext;
+                    $scope.modify_match.forfait_dom = $scope.matches[i].forfait_dom == '1';
+                    $scope.modify_match.forfait_ext = $scope.matches[i].forfait_ext == '1';
+                    return $scope.matches[i].code_match;
+                }
+            }
+        }
+    };
+
+    $scope.saveMatch = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/saveMatch.php',
+            data: $.param($scope.modify_match),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.modify_match = {};
 }]);
 
 scotchApp.controller('lastPostsController', function ($scope, $http) {

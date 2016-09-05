@@ -10,14 +10,25 @@
                        class="form-control"
                        typeahead-input-formatter="formatMatchLabel($model)"
                 />
+                <span class="label label-default">{{modify_match.equipe_dom}} - {{modify_match.equipe_ext}}</span>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label" for="score_equipe_dom">Score Domicile</label>
+            <label class="col-sm-2 control-label" for="forfait_dom">{{modify_match.equipe_dom}} forfait ?</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="checkbox" id="forfait_dom"
+                       ng-model="modify_match.forfait_dom" ng-change="makeForfait(modify_match)"></div>
+            <label class="col-sm-2 control-label" for="forfait_ext">{{modify_match.equipe_ext}} forfait ?</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="checkbox" id="forfait_ext"
+                       ng-model="modify_match.forfait_ext" ng-change="makeForfait(modify_match)"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="score_equipe_dom">Score {{modify_match.equipe_dom}}</label>
             <div class="col-sm-2">
                 <input class="form-control" type="number" id="score_equipe_dom"
                        ng-model="modify_match.score_equipe_dom"></div>
-            <label class="col-sm-2 control-label" for="score_equipe_ext">Score Extérieur</label>
+            <label class="col-sm-2 control-label" for="score_equipe_ext">Score {{modify_match.equipe_ext}}</label>
             <div class="col-sm-2">
                 <input class="form-control" type="number" id="score_equipe_ext"
                        ng-model="modify_match.score_equipe_ext"></div>
