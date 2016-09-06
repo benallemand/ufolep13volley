@@ -2453,6 +2453,75 @@ function getHallOfFame()
     return json_encode($results);
 }
 
+function getHallOfFameDisplay()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+  hof.period,
+  CASE WHEN hof.title LIKE '%Division%'
+    THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+  ELSE '' END                 AS division,
+  CASE WHEN hof.title LIKE '%mi-saison%'
+    THEN 2
+  ELSE 1 END                  AS demi_saison,
+  hof_champion.team_name      AS champion,
+  hof_vice_champion.team_name AS vice_champion,
+  hof.league
+FROM hall_of_fame hof
+  JOIN hall_of_fame hof_champion ON
+                                   hof_champion.league = hof.league AND
+                                   hof_champion.period = hof.period AND
+                                   (CASE WHEN hof_champion.title LIKE '%Division%'
+                                     THEN SUBSTRING_INDEX(hof_champion.title, 'Division ', -1)
+                                    ELSE '' END) = (CASE WHEN hof.title LIKE '%Division%'
+                                     THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+                                                    ELSE '' END) AND
+                                   (CASE WHEN hof_champion.title LIKE '%mi-saison%'
+                                     THEN 2
+                                    ELSE 1 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
+                                     THEN 2
+                                                   ELSE 1 END) AND
+                                   (hof_champion.title NOT LIKE '%Vice%' OR
+                                    hof_champion.title NOT LIKE '%Finaliste%')
+  JOIN hall_of_fame hof_vice_champion ON
+                                        hof_vice_champion.league = hof.league AND
+                                        hof_vice_champion.period = hof.period AND
+                                        (CASE WHEN hof_vice_champion.title LIKE '%Division%'
+                                          THEN SUBSTRING_INDEX(hof_vice_champion.title, 'Division ', -1)
+                                         ELSE '' END) = (CASE WHEN hof.title LIKE '%Division%'
+                                          THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+                                                         ELSE '' END) AND
+                                        (CASE WHEN hof_vice_champion.title LIKE '%mi-saison%'
+                                          THEN 2
+                                         ELSE 1 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
+                                          THEN 2
+                                                        ELSE 1 END) AND
+                                        (hof_vice_champion.title LIKE '%Vice%' OR
+                                         hof_vice_champion.title LIKE '%Finaliste%')
+GROUP BY
+  hof.league,
+  CASE WHEN hof.title LIKE '%Division%'
+    THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+  ELSE '' END,
+  CASE WHEN hof.title LIKE '%mi-saison%'
+    THEN 2
+  ELSE 1 END
+ORDER BY hof.league,
+  CASE WHEN hof.title LIKE '%mi-saison%'
+    THEN 2
+  ELSE 1 END,
+  CASE WHEN hof.title LIKE '%Division%'
+    THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+  ELSE '' END";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getGymnasiums()
 {
     global $db;

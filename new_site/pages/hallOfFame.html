@@ -1,21 +1,27 @@
 <div class="panel panel-primary" id="hallOfFame">
     <div class="panel-heading"><h1 class="panel-title">Palmarès</h1>
     </div>
-    <table class="table table-striped table-bordered">
+    <label>Recherche: <input ng-model="search.$"></label>
+    <table class="table table-striped table-bordered" ng-repeat="(key, value) in hallOfFame | groupBy:'league'">
         <thead>
         <tr>
+            <th colspan="5">{{ key }}</th>
+        </tr>
+        <tr>
             <th>Année</th>
-            <th>Catégorie</th>
-            <th>Titre</th>
-            <th>Equipe</th>
+            <th>Division</th>
+            <th>Demi saison</th>
+            <th>Champion</th>
+            <th>Vice-champion</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="x in hallOfFame">
+        <tr ng-repeat="x in value | filter:search | orderBy:['division','demi_saison']">
             <td>{{ x.period }}</td>
-            <td>{{ x.league }}</td>
-            <td>{{ x.title }}</td>
-            <td>{{ x.team_name }}</td>
+            <td>{{ x.division }}</td>
+            <td>{{ x.demi_saison }}</td>
+            <td>{{ x.champion }}</td>
+            <td>{{ x.vice_champion }}</td>
         </tr>
         </tbody>
     </table>

@@ -827,7 +827,7 @@ scotchApp.controller('webSitesController', function ($scope, $http) {
         });
 });
 scotchApp.controller('hallOfFameController', function ($scope, $http) {
-    $http.get("../ajax/getHallOfFame.php")
+    $http.get("../ajax/getHallOfFameDisplay.php")
         .then(function (response) {
             $scope.hallOfFame = response.data;
         });
