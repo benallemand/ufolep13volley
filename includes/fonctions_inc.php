@@ -2846,7 +2846,7 @@ function isMatchUpdateAllowed($idMatch)
 }
 
 /**
- * TODO add forfait and report fields
+ * TODO add report fields
  * @throws Exception
  */
 function saveMatch()
