@@ -2463,8 +2463,8 @@ function getHallOfFameDisplay()
     THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
   ELSE '' END                 AS division,
   CASE WHEN hof.title LIKE '%mi-saison%'
-    THEN 2
-  ELSE 1 END                  AS demi_saison,
+    THEN 1
+  ELSE 2 END                  AS demi_saison,
   hof_champion.team_name      AS champion,
   hof_vice_champion.team_name AS vice_champion,
   hof.league
@@ -2478,10 +2478,10 @@ FROM hall_of_fame hof
                                      THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
                                                     ELSE '' END) AND
                                    (CASE WHEN hof_champion.title LIKE '%mi-saison%'
-                                     THEN 2
-                                    ELSE 1 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
-                                     THEN 2
-                                                   ELSE 1 END) AND
+                                     THEN 1
+                                    ELSE 2 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
+                                     THEN 1
+                                                   ELSE 2 END) AND
                                    (hof_champion.title NOT LIKE '%Vice%' OR
                                     hof_champion.title NOT LIKE '%Finaliste%')
   JOIN hall_of_fame hof_vice_champion ON
@@ -2493,10 +2493,10 @@ FROM hall_of_fame hof
                                           THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
                                                          ELSE '' END) AND
                                         (CASE WHEN hof_vice_champion.title LIKE '%mi-saison%'
-                                          THEN 2
-                                         ELSE 1 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
-                                          THEN 2
-                                                        ELSE 1 END) AND
+                                          THEN 1
+                                         ELSE 2 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
+                                          THEN 1
+                                                        ELSE 2 END) AND
                                         (hof_vice_champion.title LIKE '%Vice%' OR
                                          hof_vice_champion.title LIKE '%Finaliste%')
 GROUP BY
@@ -2505,12 +2505,12 @@ GROUP BY
     THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
   ELSE '' END,
   CASE WHEN hof.title LIKE '%mi-saison%'
-    THEN 2
-  ELSE 1 END
+    THEN 1
+  ELSE 2 END
 ORDER BY hof.league,
   CASE WHEN hof.title LIKE '%mi-saison%'
-    THEN 2
-  ELSE 1 END,
+    THEN 1
+  ELSE 2 END,
   CASE WHEN hof.title LIKE '%Division%'
     THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
   ELSE '' END";
