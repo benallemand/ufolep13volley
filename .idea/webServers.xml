@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="db1c658f-e2bf-4591-a1b3-63220b31c0af" name="ufolep" url="http://www.ufolep13volley.org">
-        <fileTransfer host="www.ufolep13volley.org" port="21" password="dfdcdfc5dfc6dfc6dfcfdfd3" username="ufolep13">
+      <webServer id="db1c658f-e2bf-4591-a1b3-63220b31c0af" name="ufolep" url="http://FTP.ufolep13volley.org">
+        <fileTransfer host="FTP.ufolep13volley.org" port="21" rootFolder="/httpdocs">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
           </advancedOptions>
