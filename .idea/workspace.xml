@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controller/Menu.js" afterPath="$PROJECT_DIR$/js/controller/Menu.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/view/site/MainMenu.js" afterPath="$PROJECT_DIR$/js/view/site/MainMenu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/new_site/pages/my_players.html" afterPath="$PROJECT_DIR$/new_site/pages/my_players.html" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,30 +41,7 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Menu.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controller/Menu.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="34" column="14" selection-start-line="34" selection-start-column="14" selection-end-line="34" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainMenu.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="360" column="8" selection-start-line="360" selection-start-column="8" selection-end-line="360" selection-end-column="8" />
-              <folding>
-                <marker date="1476514975788" expanded="true" signature="9066:9082" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -110,7 +83,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/images/svg/login.svg" />
         <option value="$PROJECT_DIR$/images/svg/pdf.svg" />
         <option value="$PROJECT_DIR$/images/svg/user.svg" />
         <option value="$PROJECT_DIR$/images/svg/volleyball.svg" />
@@ -161,6 +133,7 @@
         <option value="$PROJECT_DIR$/includes/fonctions_inc.php" />
         <option value="$PROJECT_DIR$/js/controller/Menu.js" />
         <option value="$PROJECT_DIR$/js/view/site/MainMenu.js" />
+        <option value="$PROJECT_DIR$/new_site/pages/my_players.html" />
       </list>
     </option>
   </component>
@@ -290,6 +263,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="new_site" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="new_site" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -446,14 +451,7 @@
       <workItem from="1461327291779" duration="1504000" />
       <workItem from="1475917058625" duration="3221000" />
       <workItem from="1476205559840" duration="598000" />
-      <workItem from="1476514257171" duration="860000" />
-    </task>
-    <task id="LOCAL-00069" summary="team link when match has not been played yet">
-      <created>1456760290168</created>
-      <option name="number" value="00069" />
-      <option name="presentableId" value="LOCAL-00069" />
-      <option name="project" value="LOCAL" />
-      <updated>1456760290168</updated>
+      <workItem from="1476514257171" duration="1617000" />
     </task>
     <task id="LOCAL-00070" summary="remove obsolete indicator">
       <created>1456760490772</created>
@@ -791,7 +789,14 @@
       <option name="project" value="LOCAL" />
       <updated>1475917652430</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="new site redirection when using mobile version">
+      <created>1476515137399</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1476515137399</updated>
+    </task>
+    <option name="localTasksCounter" value="119" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -803,7 +808,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="109662000" />
+    <option name="totallyTimeSpent" value="110419000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -818,7 +823,7 @@
     <frame x="1592" y="49" width="1936" height="1096" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41029412" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41017655" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19654842" sideWeight="0.40681234" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25233644" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2502596" sideWeight="0.5931877" order="8" side_tool="false" content_ui="tabs" />
@@ -900,7 +905,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <confirmMoveToFailedCommit value="1" />
-    <MESSAGE value="Add start_date in journees table" />
     <MESSAGE value="update readme for init db" />
     <MESSAGE value="reformat" />
     <MESSAGE value="fix warnings" />
@@ -925,7 +929,8 @@
     <MESSAGE value="add external link to UFOLEP 13" />
     <MESSAGE value="fix issue with cup link" />
     <MESSAGE value="update project" />
-    <option name="LAST_COMMIT_MESSAGE" value="update project" />
+    <MESSAGE value="new site redirection when using mobile version" />
+    <option name="LAST_COMMIT_MESSAGE" value="new site redirection when using mobile version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1253,13 +1258,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="1204" column="20" selection-start-line="1204" selection-start-column="20" selection-end-line="1204" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ajax/getMatches.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -1306,21 +1304,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="365" column="16" selection-start-line="365" selection-start-column="16" selection-end-line="365" selection-end-column="16" />
+          <folding>
+            <marker date="1476514975788" expanded="true" signature="9066:9082" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/controller/Menu.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
+        <state relative-caret-position="541">
           <caret line="34" column="14" selection-start-line="34" selection-start-column="14" selection-end-line="34" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
+    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="360" column="8" selection-start-line="360" selection-start-column="8" selection-end-line="360" selection-end-column="8" />
-          <folding>
-            <marker date="1476514975788" expanded="true" signature="9066:9082" ph="..." />
-          </folding>
+        <state relative-caret-position="-75">
+          <caret line="2848" column="3" selection-start-line="2848" selection-start-column="3" selection-end-line="2848" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/pages/my_players.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="27" column="48" selection-start-line="27" selection-start-column="48" selection-end-line="27" selection-end-column="48" />
+          <folding />
         </state>
       </provider>
     </entry>

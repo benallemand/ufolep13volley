@@ -25,6 +25,7 @@
             <td ng-class="x.is_leader == '1' ? 'alert alert-success' : ''"></td>
             <td ng-class="x.is_vice_leader == '1' ? 'alert alert-success' : ''"></td>
             <td>
+                <!--TODO Add edit player ability-->
                 <form ng-submit="removePlayerFromMyTeam(x.id)">
                     <button type="submit" class="btn btn-sm btn-danger">
                         <span class="glyphicon glyphicon-remove"></span> Enlever de mon équipe
