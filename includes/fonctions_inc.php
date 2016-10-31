@@ -1204,7 +1204,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_5_dom,
         m.set_5_ext,
         cr.heure AS heure_reception,
-        DATE_FORMAT(m.date_reception, '%W %d %M %Y') AS date_reception,
+        DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,
