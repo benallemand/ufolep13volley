@@ -786,7 +786,16 @@ FROM (
            THEN 1
                                ELSE 0 END)
          - c.penalite                      AS points,
-         COUNT(m.id_match)                 AS joues,
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+           THEN 1
+                               ELSE 0 END) +
+         SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+           THEN 1
+             ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+           THEN 1
+                               ELSE 0 END)                 AS joues,
          SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
            THEN 1
              ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
@@ -1204,7 +1213,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_5_dom,
         m.set_5_ext,
         cr.heure AS heure_reception,
-        DATE_FORMAT(m.date_reception, '%W %d %M %Y') AS date_reception,
+        DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.certif+0 AS certif,
