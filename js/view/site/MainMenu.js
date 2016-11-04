@@ -352,7 +352,7 @@ Il faudra retourner par voie postale :<br/>\
             text: 'Version Mobile',
             scale: 'medium',
             glyph: 'xf10b@FontAwesome',
-            href: '/new_site/',
+            href: 'new_site/',
             hrefTarget: '_self'
         },
         '->',

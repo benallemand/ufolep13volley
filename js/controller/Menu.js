@@ -32,7 +32,7 @@ Ext.define('Ufolep13Volley.controller.Menu', {
     },
     proposeMobileVersion: function () {
         if (Ext.is.Phone) {
-            window.location = '/new_site/';
+            window.location = 'new_site/';
         }
     }
 });
