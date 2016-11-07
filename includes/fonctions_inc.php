@@ -1535,6 +1535,7 @@ function getPlayers()
 {
     global $db;
     conn_db();
+    // TODO Filter teams in competition.
     $sql = "SELECT
     CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
     j.prenom, 
