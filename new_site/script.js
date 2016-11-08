@@ -304,6 +304,10 @@ scotchApp.controller('myTeamController', ['$scope', '$http', 'multipartForm', fu
     $http.get("../ajax/getMonEquipe.php")
         .then(function (response) {
             $scope.team = response.data[0];
+            $scope.team["responsable_base64"] = window.btoa($scope.team["responsable"]);
+            $scope.team["telephone_1_base64"] = window.btoa($scope.team["telephone_1"]);
+            $scope.team["telephone_2_base64"] = window.btoa($scope.team["telephone_2"]);
+            $scope.team["email_base64"] = window.btoa($scope.team["email"]);
             $scope.modify_my_team.web_site = $scope.team.web_site;
             $scope.modify_my_team.id_club = $scope.team.id_club;
         });
@@ -422,8 +426,11 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     $http.get("../ajax/getMonEquipe.php")
         .then(function (response) {
             $scope.team = response.data[0];
+            $scope.team["responsable_base64"] = window.btoa($scope.team["responsable"]);
+            $scope.team["telephone_1_base64"] = window.btoa($scope.team["telephone_1"]);
+            $scope.team["telephone_2_base64"] = window.btoa($scope.team["telephone_2"]);
+            $scope.team["email_base64"] = window.btoa($scope.team["email"]);
         });
-
     $scope.formatMatchLabel = function (model) {
         if ($scope.matches) {
             for (var i = 0; i < $scope.matches.length; i++) {

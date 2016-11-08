@@ -23,13 +23,13 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="x in commission | filter:{type:'membre'}:true">
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
-                                src="../../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
+                                src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
                         <td>{{ x.fonction }}</td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
-                        <td><img src="../../{{ x.photo }}" height="150px"></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
+                        <td><img src="../{{ x.photo }}" height="150px"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -53,13 +53,13 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="x in commission | filter:{type:'support'}:true">
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
-                                src="../../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
+                                src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
                         <td>{{ x.fonction }}</td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
-                        <td><img src="../../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
-                        <td><img src="../../{{ x.photo }}" height="150px"></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
+                        <td><img src="../{{ x.photo }}" height="150px"></td>
                     </tr>
                     </tbody>
                 </table>

@@ -17,7 +17,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="x in players | filter:search">
-            <td><img height="100px" src="/{{ x.path_photo }}"/></td>
+            <td><img height="100px" src="../{{ x.path_photo }}"/></td>
             <td ng-class="x.est_actif == '1' ? '' : 'alert alert-danger'">{{ x.prenom }}</td>
             <td ng-class="x.est_actif == '1' ? '' : 'alert alert-danger'">{{ x.nom }}</td>
             <td>{{ x.num_licence }}</td>
