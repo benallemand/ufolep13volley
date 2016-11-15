@@ -135,6 +135,7 @@ $indicatorNotValidatedPlayers = new Indicator(
         JOIN joueur_equipe je ON je.id_joueur = j.id
         JOIN clubs c ON c.id = j.id_club
         WHERE j.est_actif+0 = 0
+        AND je.id_equipe IN (SELECT id_equipe FROM classements)
         ORDER BY j.id ASC");
 
 $indicatorActivity = new Indicator(
