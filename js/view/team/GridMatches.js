@@ -492,6 +492,9 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                                 case 'm':
                                     email = 'd' + division + 'm-6x6-ufolep13-volley@googlegroups.com';
                                     break;
+                                case 'mo':
+                                    email = 'd' + division + 'mi-4x4-ufolep13-volley@googlegroups.com';
+                                    break;
                                 case 'c':
                                     if (division <= 3) {
                                         email = 'p1a3-isoardi-ufolep13-volley@googlegroups.com';
