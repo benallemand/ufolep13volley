@@ -85,12 +85,8 @@ $indicatorPlayersWithoutLicence = new Indicator(
         JOIN competitions comp ON comp.code_competition = e.code_competition
         JOIN clubs c ON c.id = j.id_club
         WHERE j.num_licence = ''
+        AND e.id_equipe IN (SELECT id_equipe FROM classements)
         ORDER BY equipe ASC");
-
-$indicatorDoublonsJoueursEquipes = new Indicator(
-    'Doublons dans une équipe', "SELECT id_joueur, id_equipe, COUNT(*) AS cnt FROM joueur_equipe
-        GROUP BY id_joueur, id_equipe
-        HAVING cnt > 1");
 
 $indicatorEquipesEngageesChampionnat = new Indicator(
     'Equipes', "SELECT e.nom_equipe,
@@ -305,7 +301,6 @@ $results[] = $indicatorMatchesNonRenseignes->getResult();
 $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
-$results[] = $indicatorDoublonsJoueursEquipes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
 $results[] = $indicatorDuplicateMatchCode->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
