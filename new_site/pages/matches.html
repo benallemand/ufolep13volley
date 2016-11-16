@@ -11,6 +11,7 @@
             <th>Equipe extérieur</th>
             <th>Sets</th>
             <th>Statut</th>
+            <!-- TODO add status column -->
             <th>Actions</th>
         </tr>
         </thead>
@@ -32,6 +33,7 @@
                 title="{{x.certif == '1' ? 'Feuille de match reçue et certifiée' : 'La feuille de match n\'a pas encore été validée par la commission. Merci au responsable de l\'équipe victorieuse de s\'assurer qu\'il a fait parvenir la feuille de match'}}">
                 <span class="{{x.certif == '1' ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-warning-sign'}}"></span>
             </td>
+            <!-- TODO add status column -->
             <td class="text-center" ng-include src="'actions/match.php'"></td>
         </tr>
         </tbody>
