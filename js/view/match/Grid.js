@@ -135,6 +135,39 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                         }
                     }
                 ]
+            },
+            {
+                header: 'Informations',
+                dataIndex: 'status',
+                renderer: function (val) {
+                    var return_string = '';
+                    var status_splitted = val.split('|');
+                    for (var i = 0; i < status_splitted.length; i++) {
+                        switch (status_splitted[i]) {
+                            case 'M':
+                                break;
+                            case 'FD':
+                                return_string = return_string + "Forfait de l'équipe recevante\n"
+                                break;
+                            case 'FE':
+                                return_string = return_string + "Forfait de l'équipe reçue\n"
+                                break;
+                            case 'RA':
+                                return_string = return_string + "Report demandé\n"
+                                break;
+                            case 'RV':
+                                return_string = return_string + "Report validé\n"
+                                break;
+                            case 'SR':
+                                return_string = return_string + "Feuilles de match reçues\n"
+                                break;
+                            case 'C':
+                                return_string = return_string + "Feuilles de match validées\n"
+                                break;
+                        }
+                    }
+                    return return_string;
+                }
             }
         ]
     },

@@ -137,7 +137,10 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
         {
             name: 'retard',
             type: 'int'
+        },
+        {
+            name: 'status',
+            type: 'string'
         }
-
     ]
 }));

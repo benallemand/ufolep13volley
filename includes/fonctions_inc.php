@@ -1224,7 +1224,14 @@ function getSqlSelectMatches($whereClause, $orderClause)
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 10 DAY) THEN 2
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 5 DAY) THEN 1
           END
-        ) AS retard
+        ) AS retard,
+        CONCAT(
+            'M',
+            IF(m.forfait_dom + 0 > 0, '|FD', ''),
+            IF(m.forfait_ext + 0 > 0, '|FE', ''),
+            IF(m.report + 0 > 0, '|RV', ''),
+            IF(m.certif + 0 > 0, '|C', '')
+        ) AS status
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
