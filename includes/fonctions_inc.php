@@ -1564,10 +1564,9 @@ function getPlayers()
     GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list
 FROM joueurs j 
 LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
-LEFT JOIN equipes e ON e.id_equipe=je.id_equipe
+LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
 LEFT JOIN clubs c ON c.id = j.id_club
 LEFT JOIN photos p ON p.id = j.id_photo
-WHERE e.id_equipe IN (SELECT id_equipe FROM classements)
 GROUP BY full_name";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
