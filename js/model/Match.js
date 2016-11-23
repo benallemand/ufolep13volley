@@ -121,6 +121,13 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             }
         },
         {
+            name: 'sheet_received',
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
+        },
+        {
             name: 'certif',
             type: 'bool',
             convert: function (val) {

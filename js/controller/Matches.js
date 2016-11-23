@@ -8,6 +8,7 @@ Ext.define('Ufolep13Volley.controller.Matches', {
         this.control(
             {
                 'grid[title=Matches]': {
+                    item_declare_sheet_received_button_click: this.declareSheetReceived,
                     itemcertifybuttonclick: this.certifyMatch,
                     itemeditbuttonclick: this.editMatch,
                     itemdeletebuttonclick: this.deleteMatch,
@@ -23,9 +24,27 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                 width: 200,
                 items: [
                     {
-                        icon: 'images/svg/validate.svg',
+                        icon: 'images/svg/email.svg',
                         tooltip: 'Certifier avoir reçu la feuille de ce match',
                         getClass: function (value, meta, rec) {
+                            if (rec.get('sheet_received') === true) {
+                                return "x-hidden-display";
+                            }
+                            if (rec.get('certif') === true) {
+                                return "x-hidden-display";
+                            }
+                        },
+                        handler: function (grid, rowIndex) {
+                            this.up('grid').fireEvent('item_declare_sheet_received_button_click', grid, rowIndex);
+                        }
+                    },
+                    {
+                        icon: 'images/svg/validate.svg',
+                        tooltip: 'Valider la feuille de ce match',
+                        getClass: function (value, meta, rec) {
+                            if (rec.get('sheet_received') === false) {
+                                return "x-hidden-display";
+                            }
                             if (rec.get('certif') === true) {
                                 return "x-hidden-display";
                             }
@@ -65,6 +84,31 @@ Ext.define('Ufolep13Volley.controller.Matches', {
                 if (btn === 'ok') {
                     Ext.Ajax.request({
                         url: 'ajax/certifierMatch.php',
+                        params: {
+                            code_match: rec.get('code_match')
+                        },
+                        success: function (response) {
+                            var responseJson = Ext.decode(response.responseText);
+                            Ext.Msg.alert('Info', responseJson.message);
+                            me.getMatchesStore().load();
+                        }
+                    });
+                }
+            }
+        });
+    },
+    declareSheetReceived: function (grid, rowIndex) {
+        var me = this;
+        var rec = grid.getStore().getAt(rowIndex);
+        Ext.Msg.show({
+            title: 'Feuille de match reçue',
+            msg: 'Accuser réception de la feuille du match ' + rec.get('code_match') + ' ?',
+            buttons: Ext.Msg.OKCANCEL,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn === 'ok') {
+                    Ext.Ajax.request({
+                        url: 'ajax/declareSheetReceived.php',
                         params: {
                             code_match: rec.get('code_match')
                         },

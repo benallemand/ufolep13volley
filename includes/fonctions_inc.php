@@ -979,6 +979,20 @@ function certifyMatch($code_match)
     return true;
 }
 
+function declareSheetReceived($code_match)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = '$code_match'";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    disconn_db();
+    addActivity("La feuille du match $code_match a ete reçue");
+    return true;
+}
+
 function invalidateMatch($code_match)
 {
     global $db;
@@ -1216,6 +1230,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
+        m.sheet_received+0 AS sheet_received,
         m.certif+0 AS certif,
         m.report+0 AS report,
         (
@@ -1230,6 +1245,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
             IF(m.forfait_dom + 0 > 0, '|FD', ''),
             IF(m.forfait_ext + 0 > 0, '|FE', ''),
             IF(m.report + 0 > 0, '|RV', ''),
+            IF(m.sheet_received + 0 > 0, '|SR', ''),
             IF(m.certif + 0 > 0, '|C', '')
         ) AS status
         FROM matches m 
@@ -2909,6 +2925,7 @@ function saveMatch()
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
                 break;
             case 'certif':
+            case 'sheet_received':
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";
                 break;

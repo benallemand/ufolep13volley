@@ -669,6 +669,23 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
+    $scope.declareSheetReceived = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/declareSheetReceived.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
     $scope.invalidateMatch = function (code_match) {
         $http({
             method: 'POST',
@@ -745,6 +762,23 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
         $http({
             method: 'POST',
             url: '../ajax/certifierMatch.php',
+            data: $.param({
+                code_match: code_match
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
+    $scope.declareSheetReceived = function (code_match) {
+        $http({
+            method: 'POST',
+            url: '../ajax/declareSheetReceived.php',
             data: $.param({
                 code_match: code_match
             }),
