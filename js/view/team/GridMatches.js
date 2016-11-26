@@ -548,6 +548,10 @@ Bien cordialement"
                         }
                     }
                 ]
+            },
+            {
+                header: 'Commentaires',
+                dataIndex: 'note'
             }
         ]
     }

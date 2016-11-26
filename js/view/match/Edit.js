@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
     extend: 'Ext.window.Window',
     alias: 'widget.matchedit',
     title: "Modification du match",
-    height: 400,
+    height: 500,
     width: 700,
     modal: true,
     layout: 'fit',
@@ -17,6 +17,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
         },
         url: 'ajax/saveMatch.php',
         viewModel: true,
+        autoScroll: true,
         items: [
             {
                 xtype: 'hidden',
@@ -162,6 +163,11 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 boxLabel: 'Oui',
                 msgTarget: 'under',
                 uncheckedValue: 'off'
+            },
+            {
+                name: 'note',
+                xtype: 'textarea',
+                fieldLabel: 'Commentaire'
             }
         ],
         buttons: [

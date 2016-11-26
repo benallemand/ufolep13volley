@@ -1231,6 +1231,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.sheet_received+0 AS sheet_received,
+        m.note,
         m.certif+0 AS certif,
         m.report+0 AS report,
         (

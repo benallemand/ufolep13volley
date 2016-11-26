@@ -194,6 +194,10 @@ Ext.define('Ufolep13Volley.view.match.Grid', {
                     }
                     return return_string;
                 }
+            },
+            {
+                header: 'Commentaires',
+                dataIndex: 'note'
             }
         ]
     },
