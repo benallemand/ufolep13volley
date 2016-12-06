@@ -34,6 +34,12 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 dataIndex: 'num_licence'
             },
             {
+                header: "Date d'homologation",
+                dataIndex: 'date_homologation',
+                xtype: 'datecolumn',
+                format: 'd/m/Y'
+            },
+            {
                 header: 'Club',
                 dataIndex: 'club',
                 flex: 1

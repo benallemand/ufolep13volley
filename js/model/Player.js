@@ -8,6 +8,11 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
         'email',
         'num_licence',
         {
+            name: 'date_homologation',
+            type: 'date',
+            dateFormat: 'd/m/Y'
+        },
+        {
             name: 'path_photo',
             type: 'string',
             convert: function (val, rec) {

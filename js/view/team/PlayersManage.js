@@ -43,6 +43,12 @@ Ext.define('Ufolep13Volley.view.team.PlayersManage', {
                     dataIndex: 'num_licence'
                 },
                 {
+                    header: "Date d'homologation",
+                    dataIndex: 'date_homologation',
+                    xtype: 'datecolumn',
+                    format: 'd/m/Y'
+                },
+                {
                     header: 'Capitaine',
                     dataIndex: 'is_captain',
                     xtype: 'checkcolumn',

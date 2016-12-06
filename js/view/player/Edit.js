@@ -57,6 +57,14 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 msgTarget: 'under'
             },
             {
+                xtype: 'displayfield',
+                name: 'date_homologation',
+                fieldLabel: "Date d'homologation",
+                renderer: function(value) {
+                    return Ext.Date.format(value, 'd/m/Y');
+                }
+            },
+            {
                 xtype: 'combo',
                 name: 'sexe',
                 fieldLabel: 'Sexe',

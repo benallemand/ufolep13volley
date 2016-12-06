@@ -649,7 +649,8 @@ function getPlayersFromTeam($id_equipe)
         je.is_vice_leader+0 AS is_vice_leader, 
         je.is_leader+0 AS is_leader, 
         j.id, 
-        j.show_photo+0 AS show_photo 
+        j.show_photo+0 AS show_photo,
+        DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         LEFT JOIN photos p ON p.id = j.id_photo
@@ -1509,7 +1510,8 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         je.is_vice_leader+0 AS is_vice_leader, 
         je.is_leader+0 AS is_leader, 
         j.id, 
-        j.show_photo+0 AS show_photo 
+        j.show_photo+0 AS show_photo,
+        DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation 
         FROM joueur_equipe je
         LEFT JOIN joueurs j ON j.id=je.id_joueur
         LEFT JOIN photos p ON p.id = j.id_photo
@@ -1578,7 +1580,8 @@ function getPlayers()
     j.est_responsable_club+0 AS est_responsable_club, 
     j.show_photo+0 AS show_photo,
     j.id, 
-    GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list
+    GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list,
+    DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation
 FROM joueurs j 
 LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
 LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
