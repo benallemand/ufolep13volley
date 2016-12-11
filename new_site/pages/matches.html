@@ -1,3 +1,19 @@
+<link href="https://addtocalendar.com/atc/1.5/atc-style-button-icon.css" rel="stylesheet" type="text/css">
+<link href="https://addtocalendar.com/atc/1.5/atc-style-menu-wb.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">(function () {
+    if (window.addtocalendar)if (typeof window.addtocalendar.start == "function")return;
+    if (window.ifaddtocalendar == undefined) {
+        window.ifaddtocalendar = 1;
+        var d = document, s = d.createElement('script'), g = 'getElementsByTagName';
+        s.type = 'text/javascript';
+        s.charset = 'UTF-8';
+        s.async = true;
+        s.src = ('https:' == window.location.protocol ? 'https' : 'http') + '://addtocalendar.com/atc/1.5/atc.min.js';
+        var h = d[g]('body')[0];
+        h.appendChild(s);
+    }
+})();
+</script>
 <div class="panel panel-primary" id="matches">
     <div class="panel-heading"><h1 class="panel-title">Matches</h1>
     </div>
@@ -22,7 +38,24 @@
                 title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
                 {{ x.code_match }}
             </td>
-            <td class="text-center">{{ x.date_reception }} - {{ x.heure_reception }}</td>
+            <td class="text-center">
+                {{ x.date_reception }} - {{ x.heure_reception }}
+                <span class="addtocalendar atc-style-button-icon atc-style-menu-wb">
+                    <a class="atcb-link">
+                        <img src="/images/add_to_calendar.png" width="16"/>
+                    </a>
+                    <var class="atc_event">
+                        <var class="atc_date_start">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
+                        <var class="atc_date_end">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
+                        <var class="atc_timezone">Europe/Paris</var>
+                        <var class="atc_title">{{ x.equipe_dom }} contre {{ x.equipe_ext }}</var>
+                        <var class="atc_description">Compétition Ufolep 13 Volley</var>
+                        <var class="atc_location">http://www.ufolep13volley.org/new_site/#/phonebook/{{x.id_equipe_dom}}</var>
+                        <var class="atc_organizer">Ufolep 13 Volley</var>
+                        <var class="atc_organizer_email">laurent.gorlier@ufolep13volley.org</var>
+                    </var>
+                </span>
+            </td>
             <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">{{ x.equipe_dom }}</td>
             <td class="text-center">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</td>
             <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">{{ x.equipe_ext }}</td>
@@ -36,7 +69,7 @@
             </td>
             <td class="text-center">{{ x.note }}</td>
             <!-- TODO add status column -->
-            <td class="text-center" ng-include src="'actions/match.php'"></td>
+            <td class="text-center" ng-include="'actions/match.php'"></td>
         </tr>
         </tbody>
     </table>
