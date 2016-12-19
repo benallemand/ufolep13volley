@@ -299,7 +299,8 @@ function getQuickDetails($idEquipe)
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR '\n') AS gymnasiums_list,
         e.web_site,
         p.path_photo
-        FROM equipes e
+        FROM classements cl
+        JOIN equipes e ON e.id_equipe = cl.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
@@ -360,7 +361,8 @@ function getTeams()
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
-        FROM equipes e
+        FROM classements cl
+        JOIN equipes e ON e.id_equipe = cl.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
@@ -399,7 +401,8 @@ function getTeam($id)
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
-        FROM equipes e
+        FROM classements cl
+        JOIN equipes e ON e.id_equipe = cl.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
@@ -1397,7 +1400,8 @@ function getMyTeam()
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
-        FROM equipes e
+        FROM classements cl
+        JOIN equipes e ON e.id_equipe = cl.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
