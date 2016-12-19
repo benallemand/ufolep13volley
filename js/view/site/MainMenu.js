@@ -51,6 +51,16 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             hrefTarget: '_self'
                         },
                         {
+                            text: 'Division 5 Play off',
+                            href: 'championship.php?d=5o&c=m',
+                            hrefTarget: '_self'
+                        },
+                        {
+                            text: 'Division 5 Play down',
+                            href: 'championship.php?d=5d&c=m',
+                            hrefTarget: '_self'
+                        },
+                        {
                             text: 'Division 6',
                             href: 'championship.php?d=6&c=m',
                             hrefTarget: '_self'
