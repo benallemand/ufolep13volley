@@ -17,8 +17,10 @@
 <div class="panel panel-primary" id="matches">
     <div class="panel-heading"><h1 class="panel-title">Matches</h1>
     </div>
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-bordered" ng-repeat="match in matches | unique:'journee'">
+        <tr class="info">
+            <th colspan="9">{{match.journee}}</th>
+        </tr>
         <tr>
             <th>Code</th>
             <th>Date</th>
@@ -31,14 +33,12 @@
             <!-- TODO add status column -->
             <th>Actions</th>
         </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="x in matches | filter:search">
-            <td class="text-center {{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
+        <tr ng-repeat="x in matches | filter:{ journee: match.journee }:true | filter:search">
+            <td class="{{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
                 title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
                 {{ x.code_match }}
             </td>
-            <td class="text-center">
+            <td class="">
                 {{ x.date_reception }} - {{ x.heure_reception }}
                 <span class="addtocalendar atc-style-button-icon atc-style-menu-wb">
                     <a class="atcb-link">
@@ -59,7 +59,8 @@
             <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">{{ x.equipe_dom }}</td>
             <td class="text-center">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</td>
             <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">{{ x.equipe_ext }}</td>
-            <td class="text-center">{{ x.set_1_dom }}/{{ x.set_1_ext }} - {{ x.set_2_dom }}/{{ x.set_2_ext }} - {{
+            <td class="">{{ x.set_1_dom }}/{{ x.set_1_ext }} - {{ x.set_2_dom }}/{{ x.set_2_ext }} -
+                {{
                 x.set_3_dom }}/{{
                 x.set_3_ext }} - {{ x.set_4_dom }}/{{ x.set_4_ext }} - {{ x.set_5_dom }}/{{ x.set_5_ext }}
             </td>
@@ -71,6 +72,5 @@
             <!-- TODO add status column -->
             <td class="text-center" ng-include="'actions/match.php'"></td>
         </tr>
-        </tbody>
     </table>
 </div>
