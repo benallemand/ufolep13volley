@@ -47,6 +47,9 @@ function get_commits($repo, $user)
 
 $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
 switch ($serverName) {
+    case 'localhost':
+        echo '';
+        break;
     default:
         $login = "benallemand";
         $latestRepo = get_latest_repo($login);
