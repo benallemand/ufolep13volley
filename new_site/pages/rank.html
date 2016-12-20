@@ -13,7 +13,9 @@
             <th>Sets pour</th>
             <th>Sets contre</th>
             <th>Différence</th>
+            <th>Reports</th>
             <th>Actions</th>
+
         </tr>
         </thead>
         <tbody>
@@ -34,6 +36,7 @@
             <td>{{ x.sets_pour }}</td>
             <td>{{ x.sets_contre }}</td>
             <td>{{ x.diff }}</td>
+            <td>{{ x.report_count }}</td>
             <td ng-include src="'actions/rank.php'"></td>
         </tr>
         </tbody>

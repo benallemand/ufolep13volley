@@ -652,6 +652,41 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         });
     };
 
+    $scope.DecrementReportCount = function (id_equipe, competition) {
+        $http({
+            method: 'POST',
+            url: '../ajax/decrementReportCount.php',
+            data: $.param({
+                compet: competition,
+                equipe: id_equipe
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.IncrementReportCount = function (id_equipe, competition) {
+        $http({
+            method: 'POST',
+            url: '../ajax/incrementReportCount.php',
+            data: $.param({
+                compet: competition,
+                equipe: id_equipe
+            }),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                window.location.reload();
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+
     $scope.validateMatch = function (code_match) {
         $http({
             method: 'POST',

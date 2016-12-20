@@ -826,7 +826,8 @@ FROM (
            THEN 1
              ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
            THEN 1
-                               ELSE 0 END) AS matches_lost_by_forfeit_count
+                               ELSE 0 END) AS matches_lost_by_forfeit_count,
+          c.report_count
        FROM
          classements c
          JOIN equipes e ON e.id_equipe = c.id_equipe
@@ -944,6 +945,34 @@ function removePenalty($compet, $id_equipe)
     }
     disconn_db();
     addActivity("Une penalite a ete annulee pour l'equipe " . getTeamName($id_equipe));
+    return true;
+}
+
+function incrementReportCount($compet, $id_equipe)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE classements SET report_count = report_count + 1 WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    disconn_db();
+    addActivity("Un report a ete comptabilise pour l'equipe " . getTeamName($id_equipe));
+    return true;
+}
+
+function decrementReportCount($compet, $id_equipe)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE classements SET report_count = report_count - 1 WHERE id_equipe = $id_equipe AND code_competition = '$compet' AND report_count > 0";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        return false;
+    }
+    disconn_db();
+    addActivity("Un report a ete retire pour l'equipe " . getTeamName($id_equipe));
     return true;
 }
 
