@@ -906,7 +906,7 @@ function addPenalty($compet, $id_equipe)
     }
     $data = mysqli_fetch_assoc($req);
     $penalite = $data['penalite'];
-    $division = $data['division'];
+    //$division = $data['division'];
     $penalite++;
     $sqlmaj = "UPDATE classements SET penalite = $penalite WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
     $req2 = mysqli_query($db, $sqlmaj);
@@ -932,7 +932,7 @@ function removePenalty($compet, $id_equipe)
     }
     $data = mysqli_fetch_assoc($req);
     $penalite = $data['penalite'];
-    $division = $data['division'];
+    //$division = $data['division'];
     $penalite--;
     if ($penalite < 0) {
         $penalite = 0;
@@ -1028,12 +1028,12 @@ function modifyMatch()
     $set_4_ext = filter_input(INPUT_POST, 'set_4_ext');
     $set_5_ext = filter_input(INPUT_POST, 'set_5_ext');
     $code_match = filter_input(INPUT_POST, 'code_match');
-    $compet = filter_input(INPUT_POST, 'code_competition');
-    $division = filter_input(INPUT_POST, 'division');
+    //$compet = filter_input(INPUT_POST, 'code_competition');
+    //$division = filter_input(INPUT_POST, 'division');
     $date_reception = filter_input(INPUT_POST, 'date_reception');
     $date_originale = filter_input(INPUT_POST, 'date_originale');
-    $id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
-    $id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
+    //$id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
+    //$id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
     $report = 0;
     if ($date_originale !== null) {
         if ($date_originale !== $date_reception) {
@@ -2888,7 +2888,6 @@ function isMatchUpdateAllowed($idMatch)
 }
 
 /**
- * TODO add report fields
  * @throws Exception
  */
 function saveMatch()
