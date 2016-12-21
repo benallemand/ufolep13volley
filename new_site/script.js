@@ -100,7 +100,9 @@ scotchApp.controller('mainController', function ($scope, $http) {
         .then(function (response) {
             $scope.lastCommit = response.data;
         });
-
+    $scope.today = new Date();
+    $scope.limit_date_for_report = new Date();
+    $scope.limit_date_for_report.setDate($scope.today.getDate() + 2);
 });
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
@@ -458,10 +460,10 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     };
 
     $scope.makeForfait = function (modify_match) {
-        if(modify_match.forfait_dom && modify_match.forfait_ext) {
+        if (modify_match.forfait_dom && modify_match.forfait_ext) {
             return;
         }
-        if(modify_match.forfait_dom) {
+        if (modify_match.forfait_dom) {
             modify_match.score_equipe_dom = 0;
             modify_match.score_equipe_ext = 3;
             modify_match.set_1_dom = 0;
@@ -475,7 +477,7 @@ scotchApp.controller('myPageController', function ($scope, $http) {
             modify_match.set_4_ext = 0;
             modify_match.set_5_ext = 0;
         }
-        if(modify_match.forfait_ext) {
+        if (modify_match.forfait_ext) {
             modify_match.score_equipe_dom = 3;
             modify_match.score_equipe_ext = 0;
             modify_match.set_1_dom = 25;
