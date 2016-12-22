@@ -8,7 +8,7 @@
                 <input id="code_match" type="text" ng-model="modify_match.id_match"
                        uib-typeahead="existing_match.id_match as existing_match.code_match for existing_match in matches | filter:$viewValue | limitTo:8"
                        class="form-control"
-                       typeahead-input-formatter="formatMatchLabel($model)"
+                       typeahead-input-formatter="initModifyMatchFields($model, matches)"
                 />
                 <span class="label label-default">{{modify_match.equipe_dom}} - {{modify_match.equipe_ext}}</span>
             </div>
