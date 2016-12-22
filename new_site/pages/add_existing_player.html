@@ -1,0 +1,17 @@
+<div class="panel panel-primary" id="add_existing_player">
+    <div class="panel-heading"><h1 class="panel-title">Ajouter un joueur existant</h1>
+    </div>
+    <form role="form" ng-submit="addPlayerToTeam()">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="existing_player">Joueur</label>
+            <div class="col-sm-10">
+                <input id="existing_player" type="text" ng-model="existingPlayer.id_joueur"
+                       uib-typeahead="existing_player.id as existing_player.full_name for existing_player in all_players | filter:$viewValue | limitTo:8"
+                       class="form-control"
+                       typeahead-input-formatter="formatPlayerLabel($model, all_players)"
+                />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-default">Sauver</button>
+    </form>
+</div>

@@ -4,12 +4,12 @@
     </div>
     <form class="form-horizontal" role="form">
         <div class="form-group">
-            <label class="col-sm-2 control-label" for="club">Club</label>
+            <label class="col-sm-2 control-label">Club</label>
             <div class="col-sm-10">
-                <input id="club" type="text" ng-model="modify_my_team.id_club"
+                <input type="text" ng-model="modify_my_team.id_club"
                        uib-typeahead="existing_club.id as existing_club.nom for existing_club in all_clubs | filter:$viewValue | limitTo:8"
                        class="form-control"
-                       typeahead-input-formatter="formatClubLabel($model)"
+                       typeahead-input-formatter="formatClubLabel($model, all_clubs)"
                 />
             </div>
         </div>

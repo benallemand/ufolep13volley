@@ -1261,7 +1261,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.set_5_ext,
         cr.heure AS heure_reception,
         DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
-        m.date_reception AS date_reception_raw,
+        UNIX_TIMESTAMP(m.date_reception)*1000 AS date_reception_raw,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.sheet_received+0 AS sheet_received,
