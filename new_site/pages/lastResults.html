@@ -2,40 +2,39 @@
     <div class="panel-heading">
         <h1 class="panel-title">Derniers résultats</h1>
     </div>
-
-    <table class="table table-striped table-bordered">
-        <thead>
+    <table class="table table-bordered" ng-repeat="x in lastResults | unique:'competition'">
+        <tr class="warning">
+            <th>{{ x.competition | uppercase }}</th>
+        </tr>
         <tr>
-            <th>Compétition</th>
-            <th>Journée</th>
-            <th>Domicile</th>
-            <th></th>
-            <th></th>
-            <th>Extérieur</th>
-            <th>S1</th>
-            <th>S2</th>
-            <th>S3</th>
-            <th>S4</th>
-            <th>S5</th>
-            <th>Date</th>
+            <td>
+                <table class="table"
+                       ng-repeat="y in lastResults | filter:{ competition: x.competition }:true | unique:'division_journee'">
+                    <tr class="info">
+                        <th>{{ y.division_journee }}</th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Domicile</th>
+                        <th></th>
+                        <th></th>
+                        <th>Extérieur</th>
+                        <th colspan="5">Score</th>
+                    </tr>
+                    <tr ng-repeat="z in lastResults | filter:{ competition: y.competition }:true | filter:{ division_journee: y.division_journee }:true">
+                        <td>{{ z.date_reception | parseDate | date:'dd/MM/yyyy'}}</td>
+                        <td ng-class="z.score_equipe_dom == '3' ? 'success' : ''">{{ z.equipe_domicile }}</td>
+                        <td>{{ z.score_equipe_dom }}</td>
+                        <td>{{ z.score_equipe_ext }}</td>
+                        <td ng-class="z.score_equipe_ext == '3' ? 'success' : ''">{{ z.equipe_exterieur }}</td>
+                        <td ng-if="z.set1 != '0-0'">{{ z.set1 }}</td>
+                        <td ng-if="z.set2 != '0-0'">{{ z.set2 }}</td>
+                        <td ng-if="z.set3 != '0-0'">{{ z.set3 }}</td>
+                        <td ng-if="z.set4 != '0-0'">{{ z.set4 }}</td>
+                        <td ng-if="z.set5 != '0-0'">{{ z.set5 }}</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="x in lastResults">
-            <td>{{ x.competition | uppercase }}</td>
-            <td>{{ x.division_journee }}</td>
-            <td>{{ x.equipe_domicile }}</td>
-            <td>{{ x.score_equipe_dom }}</td>
-            <td>{{ x.score_equipe_ext }}</td>
-            <td>{{ x.equipe_exterieur }}</td>
-            <td>{{ x.set1 }}</td>
-            <td>{{ x.set2 }}</td>
-            <td>{{ x.set3 }}</td>
-            <td>{{ x.set4 }}</td>
-            <td>{{ x.set5 }}</td>
-            <td>{{ x.date_reception | parseDate | date:'dd/MM/yyyy'}}</td>
-        </tr>
-        </tbody>
     </table>
-
 </div>
