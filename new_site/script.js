@@ -166,6 +166,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
             }
         }
     };
+
     $scope.initModifyPlayerFields = function (model, players) {
         if (players) {
             for (var i = 0; i < players.length; i++) {
@@ -202,6 +203,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
             $scope.myTxt = "Erreur: " + response.data.message;
         });
     };
+
 }]);
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
