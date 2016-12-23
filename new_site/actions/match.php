@@ -23,17 +23,52 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-remove"></span>
         </button>
     </form>
+    <form ng-if="x.report_status != 'NOT_ASKED' && x.report_status != 'REFUSED_BY_ADMIN' && x.report_status != 'REFUSED_BY_DOM' && x.report_status != 'REFUSED_BY_EXT'"
+          style="display: inline-block" ng-submit="refuseReport(x.code_match)">
+        <button title="Refuser le report du match" type="submit" class="btn btn-sm btn-danger">
+            Refuser le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
     <?php
 }
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
-<!--    <form ng-if="x.date_reception_raw >= limit_date_for_report"-->
-<!--          style="display: inline-block" ng-submit="askForReport(x.code_match)">-->
-<!--        <button title="Demander le report du match" type="submit" class="btn btn-sm btn-success">-->
-<!--            Demander le report du match-->
-<!--            <span class="glyphicon glyphicon-time"></span>-->
-<!--        </button>-->
-<!--    </form>-->
+    <form ng-if="x.date_reception_raw >= limit_date_for_report && x.report_status == 'NOT_ASKED'"
+          style="display: inline-block" ng-submit="askForReport(x.code_match)">
+        <button title="Demander le report du match" type="submit" class="btn btn-sm btn-success">
+            Demander le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+    <form ng-if="x.report_status == 'ASKED_BY_DOM' && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="refuseReport(x.code_match)">
+        <button title="Refuser le report du match" type="submit" class="btn btn-sm btn-danger">
+            Refuser le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+    <form ng-if="x.report_status == 'ASKED_BY_DOM' && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="acceptReport(x.code_match)">
+        <button title="Accepter le report du match" type="submit" class="btn btn-sm btn-success">
+            Accepter le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+    <form ng-if="x.report_status == 'ASKED_BY_EXT' && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="refuseReport(x.code_match)">
+        <button title="Refuser le report du match" type="submit" class="btn btn-sm btn-danger">
+            Refuser le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+    <form ng-if="x.report_status == 'ASKED_BY_EXT' && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="acceptReport(x.code_match)">
+        <button title="Accepter le report du match" type="submit" class="btn btn-sm btn-success">
+            Accepter le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
     <?php
 }
 ?>
