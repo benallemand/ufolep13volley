@@ -1,4 +1,7 @@
 <?php
+header("Location: ./new_site/");
+die();
+
 include("includes/fonctions_inc.php");
 $requires = array();
 $controllers = array();
