@@ -544,6 +544,106 @@ function getLastResults()
     return json_encode($results);
 }
 
+
+function askForReport($code_match, $reason)
+{
+    global $db;
+    conn_db();
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    if (isTeamDomForMatch($sessionIdEquipe, $code_match)) {
+        $sql = "UPDATE matches SET report_status = 'ASKED_BY_DOM' WHERE code_match = '$code_match'";
+    } else {
+        $sql = "UPDATE matches SET report_status = 'ASKED_BY_EXT' WHERE code_match = '$code_match'";
+    }
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    addActivity("Report demandé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
+    sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
+    return true;
+}
+
+function refuseReport($code_match)
+{
+    global $db;
+    conn_db();
+    if (isTeamLeader()) {
+        $sessionIdEquipe = $_SESSION['id_equipe'];
+        if (isTeamDomForMatch($sessionIdEquipe, $code_match)) {
+            $sql = "UPDATE matches SET report_status = 'REFUSED_BY_DOM' WHERE code_match = '$code_match'";
+        } else {
+            $sql = "UPDATE matches SET report_status = 'REFUSED_BY_EXT' WHERE code_match = '$code_match'";
+        }
+        $req = mysqli_query($db, $sql);
+        disconn_db();
+        if ($req === FALSE) {
+            return false;
+        }
+        addActivity("Report refusé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
+        sendMailRefuseReport($code_match, $sessionIdEquipe);
+    }
+    if (isAdmin()) {
+        $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";
+        $req = mysqli_query($db, $sql);
+        disconn_db();
+        if ($req === FALSE) {
+            return false;
+        }
+        addActivity("Report refusé par la commission pour le match $code_match");
+        sendMailRefuseReportAdmin($code_match);
+    }
+    return true;
+}
+
+function acceptReport($code_match)
+{
+    global $db;
+    conn_db();
+    if (isTeamLeader()) {
+        $sessionIdEquipe = $_SESSION['id_equipe'];
+        if (isTeamDomForMatch($sessionIdEquipe, $code_match)) {
+            $sql = "UPDATE matches SET report_status = 'ACCEPTED_BY_DOM' WHERE code_match = '$code_match'";
+        } else {
+            $sql = "UPDATE matches SET report_status = 'ACCEPTED_BY_EXT' WHERE code_match = '$code_match'";
+        }
+        $req = mysqli_query($db, $sql);
+        disconn_db();
+        if ($req === FALSE) {
+            return false;
+        }
+        addActivity("Report accepté par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
+        sendMailAcceptReport($code_match, $sessionIdEquipe);
+    }
+    if (isAdmin()) {
+        $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";
+        $req = mysqli_query($db, $sql);
+        disconn_db();
+        if ($req === FALSE) {
+            return false;
+        }
+        addActivity("Report refusé par la commission pour le match $code_match");
+        sendMailRefuseReportAdmin($code_match);
+    }
+    return true;
+}
+
+function isTeamDomForMatch($id_team, $code_match)
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT * FROM matches 
+        WHERE id_equipe_dom=$id_team 
+        AND code_match='$code_match'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return count($results) > 0;
+}
+
 function isAdmin()
 {
     return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
@@ -598,7 +698,10 @@ function getTeamEmail($id)
     conn_db();
     $sql = "SELECT j.email 
         FROM joueurs j 
-        JOIN joueur_equipe je ON je.id_equipe = $id AND je.id_joueur = j.id AND je.is_leader+0 > 0";
+        JOIN joueur_equipe je ON 
+                                je.id_equipe = $id 
+                                AND je.id_joueur = j.id 
+                                AND je.is_leader+0 > 0";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_assoc($req)) {
         return $data['email'];
@@ -747,7 +850,13 @@ function sendMail($body, $to = 'youraddress@example.com', $subject = 'Test email
         "Bcc: benallemand@gmail.com",
         "Content-Type: text/plain"
     );
-    return @mail($to, $subject, $body, implode("\r\n", $headers));
+    $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+    switch ($serverName) {
+        case 'localhost':
+            return true;
+        default:
+            return @mail($to, $subject, $body, implode("\r\n", $headers));
+    }
 }
 
 function sendMailNewUser($email, $login, $password, $idTeam)
@@ -765,6 +874,110 @@ function sendMailNewUser($email, $login, $password, $idTeam)
     $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
     $from = "laurent.gorlier@ufolep13volley.org";
     return sendMail($body, $to, $subject, $from);
+}
+
+function sendMailAskForReport($code_match, $reason, $id_team)
+{
+    $askingTeamName = getTeamName($id_team);
+    $body = "Bonjour,\r\n"
+        . "Un report pour le match $code_match a été demandé par l'équipe $askingTeamName.\r\n"
+        . "\r\n"
+        . "La raison avancée est la suivante: $reason.\r\n"
+        . "\r\n"
+        . "- L'équipe adverse peut refuser le report: dans ce cas l'équipe demandeuse doit se présenter le jour du match, ou déclarer forfait.\r\n"
+        . "\r\n"
+        . "- L'équipe adverse peut accepter le report: dans ce cas l'équipe adverse fixe une nouvelle date pour jouer le match.\r\n"
+        . "\r\n"
+        . "- Enfin, la CTSD peut également refuser le report (délais trop court, limite de report atteinte, raison non suffisante...).\r\n"
+        . "\r\n"
+        . "\r\n"
+        . "Bien cordialement, l'UFOLEP";
+    $teams_emails = getTeamsEmailsFromMatch($code_match);
+    $to = implode(',', $teams_emails);
+    $subject = "[UFOLEP13VOLLEY]Demande de report de $askingTeamName pour le match $code_match";
+    $from = "no-reply@ufolep13volley.org";
+    return sendMail($body, $to, $subject, $from);
+}
+
+function sendMailRefuseReport($code_match, $id_team)
+{
+    $refusingTeamName = getTeamName($id_team);
+    $body = "Bonjour,\r\n"
+        . "Un report pour le match $code_match a été refusé par l'équipe $refusingTeamName.\r\n"
+        . "\r\n"
+        . "- L'équipe à l'origine du report doit se présenter le jour du match, ou déclarer forfait.\r\n"
+        . "\r\n"
+        . "\r\n"
+        . "Bien cordialement, l'UFOLEP";
+    $teams_emails = getTeamsEmailsFromMatch($code_match);
+    $to = implode(',', $teams_emails);
+    $subject = "[UFOLEP13VOLLEY]Refus de report de $refusingTeamName pour le match $code_match";
+    $from = "no-reply@ufolep13volley.org";
+    return sendMail($body, $to, $subject, $from);
+}
+
+function sendMailAcceptReport($code_match, $id_team)
+{
+    $acceptingTeamName = getTeamName($id_team);
+    $body = "Bonjour,\r\n"
+        . "Un report pour le match $code_match a été accepté par l'équipe $acceptingTeamName.\r\n"
+        . "\r\n"
+        . "- $acceptingTeamName doit déterminer une nouvelle date pour la réception du match $code_match.\r\n"
+        . "\r\n"
+        . "- Si l'équipe adverse ne peut pas jouer à cette nouvelle date, elle sera déclarée forfait.\r\n"
+        . "\r\n"
+        . "Bien cordialement, l'UFOLEP";
+    $teams_emails = getTeamsEmailsFromMatch($code_match);
+    $to = implode(',', $teams_emails);
+    $subject = "[UFOLEP13VOLLEY] report accepté par $acceptingTeamName pour le match $code_match";
+    $from = "no-reply@ufolep13volley.org";
+    return sendMail($body, $to, $subject, $from);
+}
+
+function sendMailRefuseReportAdmin($code_match)
+{
+    $body = "Bonjour,\r\n"
+        . "Un report pour le match $code_match a été refusé par la commission.\r\n"
+        . "\r\n"
+        . "- L'équipe à l'origine du report doit se présenter le jour du match, ou déclarer forfait.\r\n"
+        . "\r\n"
+        . "\r\n"
+        . "Bien cordialement, l'UFOLEP";
+    $teams_emails = getTeamsEmailsFromMatch($code_match);
+    $to = implode(',', $teams_emails);
+    $subject = "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match";
+    $from = "no-reply@ufolep13volley.org";
+    return sendMail($body, $to, $subject, $from);
+}
+
+function getTeamsEmailsFromMatch($code_match)
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+      m.id_equipe_dom,
+      m.id_equipe_ext,
+      m.code_competition
+      FROM matches m
+      WHERE m.code_match = '$code_match'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    $data = mysqli_fetch_assoc($req);
+    $emailDom = getTeamEmail($data['id_equipe_dom']);
+    $emailExt = getTeamEmail($data['id_equipe_ext']);
+    $emailReport = '';
+    switch ($data['code_competition']) {
+        case 'm':
+            $emailReport = 'report-6x6-mmx@googlegroups.com';
+            break;
+        case 'f':
+            $emailReport = 'report-4x4-fem@googlegroups.com';
+            break;
+        case 'mo':
+            $emailReport = 'report-4x4-mxt@googlegroups.com';
+            break;
+    }
+    return array($emailDom, $emailExt, $emailReport);
 }
 
 function getRank($compet, $div)
@@ -1268,6 +1481,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.note,
         m.certif+0 AS certif,
         m.report+0 AS report,
+        m.report_status,
         (
           CASE WHEN (m.score_equipe_dom + m.score_equipe_ext > 0) THEN 0
           WHEN m.date_reception >= curdate() THEN 0
