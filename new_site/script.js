@@ -32,10 +32,6 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/championship.html',
             controller: 'championshipController'
         })
-        .when('/cup/:competition/:division', {
-            templateUrl: 'pages/cup.html',
-            controller: 'championshipController'
-        })
         .when('/matches/:competition', {
             templateUrl: 'pages/matches.html',
             controller: 'cupController'
@@ -672,6 +668,20 @@ scotchApp.controller('lastResultsController', function ($scope, $http) {
 });
 
 scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $scope.code_competition = $routeParams.competition;
+    $scope.division = $routeParams.division;
+    $http.get("../ajax/getCompetitions.php")
+        .then(function (response) {
+            $scope.competitions = response.data;
+            var competitions = $scope.competitions;
+            var competitions_count = competitions.length;
+            for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
+                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                    $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
+                    return;
+                }
+            }
+        });
     $http.get("../ajax/getClassement.php", {
         params: {
             competition: $routeParams.competition,
@@ -866,6 +876,19 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
 }]);
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $scope.code_competition = $routeParams.competition;
+    $http.get("../ajax/getCompetitions.php")
+        .then(function (response) {
+            $scope.competitions = response.data;
+            var competitions = $scope.competitions;
+            var competitions_count = competitions.length;
+            for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
+                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                    $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
+                    return;
+                }
+            }
+        });
     $http.get("../ajax/getMatches.php", {
         params: {
             competition: $routeParams.competition,
