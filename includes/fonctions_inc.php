@@ -1273,15 +1273,8 @@ function modifyMatch()
     //$compet = filter_input(INPUT_POST, 'code_competition');
     //$division = filter_input(INPUT_POST, 'division');
     $date_reception = filter_input(INPUT_POST, 'date_reception');
-    $date_originale = filter_input(INPUT_POST, 'date_originale');
     //$id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
     //$id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
-    $report = 0;
-    if ($date_originale !== null) {
-        if ($date_originale !== $date_reception) {
-            $report = 1;
-        }
-    }
     $total_sets_dom = $set_1_dom + $set_2_dom + $set_3_dom;
     $total_sets_ext = $set_1_ext + $set_2_ext + $set_3_ext;
     if ($total_sets_dom == 0 && $total_sets_ext == 75) {
@@ -1309,8 +1302,7 @@ function modifyMatch()
     set_5_ext = $set_5_ext, 
     forfait_dom = $forfait_dom, 
     forfait_ext = $forfait_ext, 
-    date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y')), 
-    report = $report 
+    date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y'))
     WHERE code_match = '$code_match'";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
@@ -1480,7 +1472,6 @@ function getSqlSelectMatches($whereClause, $orderClause)
         m.sheet_received+0 AS sheet_received,
         m.note,
         m.certif+0 AS certif,
-        m.report+0 AS report,
         m.report_status,
         (
           CASE WHEN (m.score_equipe_dom + m.score_equipe_ext > 0) THEN 0
@@ -1488,15 +1479,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 10 DAY) THEN 2
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 5 DAY) THEN 1
           END
-        ) AS retard,
-        CONCAT(
-            'M',
-            IF(m.forfait_dom + 0 > 0, '|FD', ''),
-            IF(m.forfait_ext + 0 > 0, '|FE', ''),
-            IF(m.report + 0 > 0, '|RV', ''),
-            IF(m.sheet_received + 0 > 0, '|SR', ''),
-            IF(m.certif + 0 > 0, '|C', '')
-        ) AS status
+        ) AS retard
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom

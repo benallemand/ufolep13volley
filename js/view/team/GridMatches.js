@@ -38,10 +38,6 @@ Ext.define('Ufolep13Volley.view.team.GridMatches', {
                 width: 100,
                 dataIndex: 'date_reception',
                 renderer: function (value, metaData, record) {
-                    if (record.get('report') === true) {
-                        metaData.tdAttr = 'data-qtip="Match reporté"';
-                        return '<span style="background-color:Gold;color:black">' + Ext.Date.format(value, 'l d/m/Y') + ' ' + record.get('heure_reception') + '</span>';
-                    }
                     return Ext.Date.format(value, 'd/m/Y');
                 }
             },
