@@ -55,9 +55,21 @@
                     </var>
                 </span>
             </td>
-            <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">{{ x.equipe_dom }}</td>
-            <td class="text-center">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</td>
-            <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">{{ x.equipe_ext }}</td>
+            <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
+                <span>{{ x.equipe_dom }}</span>
+                <span ng-if="x.forfait_ext ==  '1'"
+                      class="glyphicon glyphicon-asterisk text-success"
+                      title="Par forfait"></span>
+            </td>
+            <td class="text-center">
+                <span ng-if="x.score_equipe_dom == '3' || x.score_equipe_ext == '3'">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</span>
+            </td>
+            <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
+                <span>{{ x.equipe_ext }}</span>
+                <span ng-if="x.forfait_dom ==  '1'"
+                      class="glyphicon glyphicon-asterisk text-success"
+                      title="Par forfait"></span>
+            </td>
             <td class="">
                 <span ng-if="x.set_1_dom != '0' && x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>
                 <span ng-if="x.set_2_dom != '0' && x.set_2_ext != '0'">{{ x.set_2_dom }}/{{ x.set_2_ext }} </span>
@@ -71,7 +83,7 @@
                       class="glyphicon glyphicon-ok text-success"></span>
                 <span ng-if="x.certif == '0' && x.sheet_received == '1'"
                       title="La feuille de match n'a pas encore été validée par la commission"
-                      class="glyphicon glyphicon-warning-sign text-warning"></span>
+                      class=""></span>
                 <span ng-if="x.sheet_received == '0' && (x.date_reception_raw < today)"
                       title="Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match"
                       class="glyphicon glyphicon-exclamation-sign text-danger"></span>
