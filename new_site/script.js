@@ -32,10 +32,6 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/championship.html',
             controller: 'championshipController'
         })
-        .when('/cup/:competition/:division', {
-            templateUrl: 'pages/cup.html',
-            controller: 'championshipController'
-        })
         .when('/matches/:competition', {
             templateUrl: 'pages/matches.html',
             controller: 'cupController'
@@ -432,7 +428,7 @@ scotchApp.service('multipartForm', ['$http', function ($http) {
                 window.location.reload();
                 return;
             }
-            alert("Erreur: " + response.data.message);
+            bootbox.alert("Erreur: " + response.data.message);
         });
     }
 }]);
@@ -537,67 +533,77 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     };
 
     $scope.askForReport = function (code_match) {
-        var reason = prompt("Merci d'indiquer la raison de votre demande de report", "Ecrire ici la raison");
-        if (reason != null) {
-            $http({
-                method: 'POST',
-                url: '../ajax/askForReport.php',
-                data: $.param({
-                    code_match: code_match,
-                    reason: reason
-                }),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).then(function (response) {
-                if (response.data.success) {
-                    alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition");
-                    window.location.reload();
-                    return;
+        bootbox.prompt(
+            "Merci d'indiquer la raison de votre demande de report",
+            function (reason) {
+                if (reason != null) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/askForReport.php',
+                        data: $.param({
+                            code_match: code_match,
+                            reason: reason
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition");
+                            window.location.reload();
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
                 }
-                $scope.myTxt = "Erreur: " + response.data.message;
             });
-        }
     };
 
     $scope.refuseReport = function (code_match) {
-        var confirm_refuse_report = confirm("Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?");
-        if (confirm_refuse_report == true) {
-            $http({
-                method: 'POST',
-                url: '../ajax/refuseReport.php',
-                data: $.param({
-                    code_match: code_match
-                }),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).then(function (response) {
-                if (response.data.success) {
-                    alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
-                    window.location.reload();
-                    return;
+        bootbox.confirm(
+            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
+            function (confirm_refuse_report) {
+                if (confirm_refuse_report == true) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/refuseReport.php',
+                        data: $.param({
+                            code_match: code_match
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
+                            window.location.reload();
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
                 }
-                $scope.myTxt = "Erreur: " + response.data.message;
-            });
-        }
+            }
+        );
     };
 
     $scope.acceptReport = function (code_match) {
-        var confirm_accept_report = confirm("Vous allez accepter la demande de report, vous devrez donc communiquer une nouvelle date pour jouer le match. Êtes vous sûr de vouloir continuer ?");
-        if (confirm_accept_report == true) {
-            $http({
-                method: 'POST',
-                url: '../ajax/acceptReport.php',
-                data: $.param({
-                    code_match: code_match
-                }),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).then(function (response) {
-                if (response.data.success) {
-                    alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.");
-                    window.location.reload();
-                    return;
+        bootbox.confirm(
+            "Vous allez accepter la demande de report, vous devrez donc communiquer une nouvelle date pour jouer le match. Êtes vous sûr de vouloir continuer ?",
+            function (confirm_accept_report) {
+                if (confirm_accept_report == true) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/acceptReport.php',
+                        data: $.param({
+                            code_match: code_match
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.");
+                            window.location.reload();
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
                 }
-                $scope.myTxt = "Erreur: " + response.data.message;
             });
-        }
     };
 });
 
@@ -662,6 +668,20 @@ scotchApp.controller('lastResultsController', function ($scope, $http) {
 });
 
 scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $scope.code_competition = $routeParams.competition;
+    $scope.division = $routeParams.division;
+    $http.get("../ajax/getCompetitions.php")
+        .then(function (response) {
+            $scope.competitions = response.data;
+            var competitions = $scope.competitions;
+            var competitions_count = competitions.length;
+            for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
+                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                    $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
+                    return;
+                }
+            }
+        });
     $http.get("../ajax/getClassement.php", {
         params: {
             competition: $routeParams.competition,
@@ -708,24 +728,27 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     });
 
     $scope.refuseReport = function (code_match) {
-        var confirm_refuse_report = confirm("Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?");
-        if (confirm_refuse_report == true) {
-            $http({
-                method: 'POST',
-                url: '../ajax/refuseReport.php',
-                data: $.param({
-                    code_match: code_match
-                }),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).then(function (response) {
-                if (response.data.success) {
-                    alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
-                    window.location.reload();
-                    return;
+        bootbox.confirm(
+            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
+            function (confirm_refuse_report) {
+                if (confirm_refuse_report == true) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/refuseReport.php',
+                        data: $.param({
+                            code_match: code_match
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
+                            window.location.reload();
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
                 }
-                $scope.myTxt = "Erreur: " + response.data.message;
             });
-        }
     };
 
     $scope.removePenalty = function (id_equipe, competition) {
@@ -853,6 +876,19 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
 }]);
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+    $scope.code_competition = $routeParams.competition;
+    $http.get("../ajax/getCompetitions.php")
+        .then(function (response) {
+            $scope.competitions = response.data;
+            var competitions = $scope.competitions;
+            var competitions_count = competitions.length;
+            for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
+                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                    $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
+                    return;
+                }
+            }
+        });
     $http.get("../ajax/getMatches.php", {
         params: {
             competition: $routeParams.competition,
