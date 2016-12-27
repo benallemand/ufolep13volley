@@ -59,14 +59,23 @@
             <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">{{ x.equipe_dom }}</td>
             <td class="text-center">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</td>
             <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">{{ x.equipe_ext }}</td>
-            <td class="">{{ x.set_1_dom }}/{{ x.set_1_ext }} - {{ x.set_2_dom }}/{{ x.set_2_ext }} -
-                {{
-                x.set_3_dom }}/{{
-                x.set_3_ext }} - {{ x.set_4_dom }}/{{ x.set_4_ext }} - {{ x.set_5_dom }}/{{ x.set_5_ext }}
+            <td class="">
+                <span ng-if="x.set_1_dom != '0' && x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>
+                <span ng-if="x.set_2_dom != '0' && x.set_2_ext != '0'">{{ x.set_2_dom }}/{{ x.set_2_ext }} </span>
+                <span ng-if="x.set_3_dom != '0' && x.set_3_ext != '0'">{{ x.set_3_dom }}/{{ x.set_3_ext }} </span>
+                <span ng-if="x.set_4_dom != '0' && x.set_4_ext != '0'">{{ x.set_4_dom }}/{{ x.set_4_ext }} </span>
+                <span ng-if="x.set_5_dom != '0' && x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
             </td>
-            <td class="text-center"
-                title="{{x.certif == '1' ? 'Feuille de match reçue et certifiée' : 'La feuille de match n\'a pas encore été validée par la commission. Merci au responsable de l\'équipe victorieuse de s\'assurer qu\'il a fait parvenir la feuille de match'}}">
-                <span class="{{x.certif == '1' ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-warning-sign'}}"></span>
+            <td class="text-center">
+                <span ng-if="x.certif == '1'"
+                      title="Feuille de match reçue et certifiée"
+                      class="glyphicon glyphicon-ok text-success"></span>
+                <span ng-if="x.certif == '0' && x.sheet_received == '1'"
+                      title="La feuille de match n'a pas encore été validée par la commission"
+                      class="glyphicon glyphicon-warning-sign text-warning"></span>
+                <span ng-if="x.sheet_received == '0' && (x.date_reception_raw < today)"
+                      title="Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match"
+                      class="glyphicon glyphicon-exclamation-sign text-danger"></span>
             </td>
             <td class="text-center">
                 {{ x.note }}
