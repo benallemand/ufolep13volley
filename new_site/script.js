@@ -54,6 +54,10 @@ scotchApp.config(function ($routeProvider) {
         .when('/login', {
             templateUrl: 'pages/login.html'
         })
+        .when('/register', {
+            templateUrl: 'pages/add_new_user.html',
+            controller: 'registerController'
+        })
         .when('/myPage', {
             templateUrl: 'pages/my_page.html',
             controller: 'myPageController'
@@ -437,6 +441,41 @@ scotchApp.controller('myHistoryController', function ($scope, $http) {
     $http.get("../ajax/getActivity.php")
         .then(function (response) {
             $scope.activities = response.data;
+        });
+});
+
+scotchApp.controller('registerController', function ($scope, $http) {
+    $scope.newUser = {};
+    $scope.add_new_user = function () {
+        $http({
+            method: 'POST',
+            url: '../ajax/createUser.php',
+            data: $.param($scope.newUser),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (response) {
+            if (response.data.success) {
+                bootbox.alert("Votre compte est maintenant créé, veuillez vous connecter avec les identifiants reçus par email." +
+                    " Si vous êtes responsable d'équipe veuillez demander à votre responsable de division les permissions nécessaires.",
+                    function () {
+                        window.location = '/';
+                    });
+                return;
+            }
+            $scope.myTxt = "Erreur: " + response.data.message;
+        });
+    };
+    $scope.formatTeamLabel = function (model, teams) {
+        if (teams) {
+            for (var i = 0; i < teams.length; i++) {
+                if (model === teams[i].id_equipe) {
+                    return teams[i].team_full_name;
+                }
+            }
+        }
+    };
+    $http.get("../ajax/getTeams.php")
+        .then(function (response) {
+            $scope.teams = response.data;
         });
 });
 

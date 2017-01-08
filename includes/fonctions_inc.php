@@ -1317,8 +1317,12 @@ function addActivity($comment)
 {
     global $db;
     conn_db();
-    $sessionIdUser = $_SESSION['id_user'];
-    $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
+    if (!empty($_SESSION['id_user'])) {
+        $sessionIdUser = $_SESSION['id_user'];
+        $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
+    } else {
+        $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
+    }
     mysqli_query($db, $sql);
     disconn_db();
     return;
