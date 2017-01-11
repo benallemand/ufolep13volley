@@ -717,6 +717,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
                 if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
                     $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
+                    $scope.limit_date = competitions[currentCompetitionIndex]['limit_date'];
                     return;
                 }
             }
