@@ -2856,11 +2856,13 @@ function getCompetitions()
     global $db;
     conn_db();
     $sql = "SELECT 
-        id,
-        code_competition,
-        libelle,
-        id_compet_maitre
-        FROM competitions
+        c.id,
+        c.code_competition,
+        c.libelle,
+        c.id_compet_maitre,
+        d.date_limite AS limit_date
+        FROM competitions c
+        LEFT JOIN dates_limite d ON d.code_competition = c.code_competition
         ORDER BY libelle";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
