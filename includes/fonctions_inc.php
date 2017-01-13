@@ -1483,7 +1483,22 @@ function getSqlSelectMatches($whereClause, $orderClause)
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 10 DAY) THEN 2
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 5 DAY) THEN 1
           END
-        ) AS retard
+        ) AS retard,
+        (
+        CASE  WHEN (m.code_competition = 'm') THEN CONCAT('d', CONVERT(m.division, UNSIGNED INTEGER), m.code_competition, '-6x6-ufolep13-volley@googlegroups.com')
+              WHEN (m.code_competition = 'f') THEN CONCAT('d', CONVERT(m.division, UNSIGNED INTEGER), m.code_competition, '-4x4-ufolep13-volley@googlegroups.com')
+              WHEN (m.code_competition = 'mo') THEN CONCAT('d', CONVERT(m.division, UNSIGNED INTEGER), 'mi', '-4x4-ufolep13-volley@googlegroups.com')
+              WHEN (m.code_competition = 'c' AND CONVERT(m.division, UNSIGNED INTEGER) IN (1,2,3))  THEN 'p1a3-isoardi-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'c' AND CONVERT(m.division, UNSIGNED INTEGER) IN (4,5,6))  THEN 'p4a6-isoardi-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'c' AND CONVERT(m.division, UNSIGNED INTEGER) IN (7,8,9))  THEN 'p7a9-isoardi-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'c' AND CONVERT(m.division, UNSIGNED INTEGER) IN (10,11))  THEN 'p10et11-isoardi-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'cf')  THEN 'isoardi-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'kh')  THEN 'khanna-ufolep13-volley@googlegroups.com'
+              WHEN (m.code_competition = 'kf')  THEN 'khanna-ufolep13-volley@googlegroups.com'
+              END
+        ) AS email_send_sheets,
+        CONCAT('Match ', m.code_match, ' : ', e1.nom_equipe, ' contre ', e2.nom_equipe) AS email_send_sheets_subject,
+        'Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.' AS email_send_sheets_body
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
