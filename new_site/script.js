@@ -204,6 +204,39 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
         });
     };
 
+    $scope.makeForfait = function (modify_match) {
+        if (modify_match.forfait_dom && modify_match.forfait_ext) {
+            return;
+        }
+        if (modify_match.forfait_dom) {
+            modify_match.score_equipe_dom = 0;
+            modify_match.score_equipe_ext = 3;
+            modify_match.set_1_dom = 0;
+            modify_match.set_2_dom = 0;
+            modify_match.set_3_dom = 0;
+            modify_match.set_4_dom = 0;
+            modify_match.set_5_dom = 0;
+            modify_match.set_1_ext = 25;
+            modify_match.set_2_ext = 25;
+            modify_match.set_3_ext = 25;
+            modify_match.set_4_ext = 0;
+            modify_match.set_5_ext = 0;
+        }
+        if (modify_match.forfait_ext) {
+            modify_match.score_equipe_dom = 3;
+            modify_match.score_equipe_ext = 0;
+            modify_match.set_1_dom = 25;
+            modify_match.set_2_dom = 25;
+            modify_match.set_3_dom = 25;
+            modify_match.set_4_dom = 0;
+            modify_match.set_5_dom = 0;
+            modify_match.set_1_ext = 0;
+            modify_match.set_2_ext = 0;
+            modify_match.set_3_ext = 0;
+            modify_match.set_4_ext = 0;
+            modify_match.set_5_ext = 0;
+        }
+    };
 }]);
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
@@ -536,40 +569,6 @@ scotchApp.controller('myPageController', function ($scope, $http) {
             $scope.team["telephone_2_base64"] = window.btoa($scope.team["telephone_2"]);
             $scope.team["email_base64"] = window.btoa($scope.team["email"]);
         });
-
-    $scope.makeForfait = function (modify_match) {
-        if (modify_match.forfait_dom && modify_match.forfait_ext) {
-            return;
-        }
-        if (modify_match.forfait_dom) {
-            modify_match.score_equipe_dom = 0;
-            modify_match.score_equipe_ext = 3;
-            modify_match.set_1_dom = 0;
-            modify_match.set_2_dom = 0;
-            modify_match.set_3_dom = 0;
-            modify_match.set_4_dom = 0;
-            modify_match.set_5_dom = 0;
-            modify_match.set_1_ext = 25;
-            modify_match.set_2_ext = 25;
-            modify_match.set_3_ext = 25;
-            modify_match.set_4_ext = 0;
-            modify_match.set_5_ext = 0;
-        }
-        if (modify_match.forfait_ext) {
-            modify_match.score_equipe_dom = 3;
-            modify_match.score_equipe_ext = 0;
-            modify_match.set_1_dom = 25;
-            modify_match.set_2_dom = 25;
-            modify_match.set_3_dom = 25;
-            modify_match.set_4_dom = 0;
-            modify_match.set_5_dom = 0;
-            modify_match.set_1_ext = 0;
-            modify_match.set_2_ext = 0;
-            modify_match.set_3_ext = 0;
-            modify_match.set_4_ext = 0;
-            modify_match.set_5_ext = 0;
-        }
-    };
 
     $scope.askForReport = function (code_match) {
         bootbox.prompt(
