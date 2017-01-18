@@ -71,11 +71,11 @@
                       title="Par forfait"></span>
             </td>
             <td class="">
-                <span ng-if="x.set_1_dom != '0' && x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>
-                <span ng-if="x.set_2_dom != '0' && x.set_2_ext != '0'">{{ x.set_2_dom }}/{{ x.set_2_ext }} </span>
-                <span ng-if="x.set_3_dom != '0' && x.set_3_ext != '0'">{{ x.set_3_dom }}/{{ x.set_3_ext }} </span>
-                <span ng-if="x.set_4_dom != '0' && x.set_4_ext != '0'">{{ x.set_4_dom }}/{{ x.set_4_ext }} </span>
-                <span ng-if="x.set_5_dom != '0' && x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
+                <span ng-if="x.set_1_dom != '0' || x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>
+                <span ng-if="x.set_2_dom != '0' || x.set_2_ext != '0'">{{ x.set_2_dom }}/{{ x.set_2_ext }} </span>
+                <span ng-if="x.set_3_dom != '0' || x.set_3_ext != '0'">{{ x.set_3_dom }}/{{ x.set_3_ext }} </span>
+                <span ng-if="x.set_4_dom != '0' || x.set_4_ext != '0'">{{ x.set_4_dom }}/{{ x.set_4_ext }} </span>
+                <span ng-if="x.set_5_dom != '0' || x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
             </td>
             <td class="text-center">
                 <span ng-if="x.certif == '1'"
