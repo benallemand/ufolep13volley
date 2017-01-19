@@ -872,7 +872,7 @@ function sendMailNewUser($email, $login, $password, $idTeam)
         . "L'UFOLEP";
     $to = $email;
     $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
-    $from = "laurent.gorlier@ufolep13volley.org";
+    $from = "no-reply@ufolep13volley.org";
     return sendMail($body, $to, $subject, $from);
 }
 
