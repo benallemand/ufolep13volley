@@ -34,8 +34,19 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
 }
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
-    <form ng-if="x.date_reception_raw >= limit_date_for_report
+    <!--    <form ng-if="x.date_reception_raw >= limit_date_for_report
         && x.report_status == 'NOT_ASKED'
+        && (x.id_equipe_dom == <?php /*echo $_SESSION['id_equipe'] */ ?> || x.id_equipe_ext == <?php /*echo $_SESSION['id_equipe'] */ ?>)"
+          style="display: inline-block" ng-submit="askForReport(x.code_match)">
+        <button title="Demander le report du match" type="submit" class="btn btn-sm btn-success">
+            Demander le report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+-->
+    <form ng-if="x.report_status == 'NOT_ASKED'
+        && x.certif=='0'
+        && x.sheet_received=='0'
         && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)"
           style="display: inline-block" ng-submit="askForReport(x.code_match)">
         <button title="Demander le report du match" type="submit" class="btn btn-sm btn-success">

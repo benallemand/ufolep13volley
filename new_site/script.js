@@ -101,8 +101,8 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
             $scope.lastCommit = response.data;
         });
     $scope.today = new Date();
-    $scope.limit_date_for_report = new Date();
-    $scope.limit_date_for_report.setDate($scope.today.getDate() + 2);
+    // $scope.limit_date_for_report = new Date();
+    // $scope.limit_date_for_report.setDate($scope.today.getDate() + 2);
 
     $scope.modify_match = {};
     $scope.modify_player = {};
