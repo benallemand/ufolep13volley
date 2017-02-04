@@ -37,7 +37,8 @@
                 title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
                 {{ x.code_match }}
             </td>
-            <td class="">
+            <td class="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'warning':''}}"
+                title="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'Match reporté':''}}">
                 {{ x.date_reception }} - {{ x.heure_reception }}
                 <span class="addtocalendar atc-style-button-icon atc-style-menu-wb">
                     <a class="atcb-link">
