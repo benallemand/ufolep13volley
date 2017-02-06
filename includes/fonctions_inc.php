@@ -976,6 +976,9 @@ function getTeamsEmailsFromMatch($code_match)
         case 'mo':
             $emailReport = 'report-4x4-mxt@googlegroups.com';
             break;
+        case 'kh':
+            $emailReport = 'report-4x4-ckh@googlegroups.com';
+            break;
     }
     return array($emailDom, $emailExt, $emailReport);
 }
