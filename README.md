@@ -1,6 +1,6 @@
 This project is intended to manage volleyball championship.
 
-1 file has been ignored in GIT : 
+Files has been ignored in GIT : 
 /includes/db_inc.php --> contains :
 
     <?php
@@ -20,6 +20,21 @@ This project is intended to manage volleyball championship.
         global $db;
         mysqli_close($db);
     }
+
+/classes/Configuration.php contains:
+
+    <?php
+    
+    class Configuration
+    {
+        const MAIL_HOST = 'smtp.gmail.com';
+        const MAIL_SMTPAUTH = true;
+        const MAIL_USERNAME = '<email address>';
+        const MAIL_PASSWORD = '<password>';
+        const MAIL_SMTPSECURE = 'tls';
+        const MAIL_PORT = 587;
+    }
+
 
 /players_pics/ --> contains photos of players
 /teams_pics/ --> contains photos of teams

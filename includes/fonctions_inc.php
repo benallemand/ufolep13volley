@@ -62,7 +62,9 @@ function createUser($login, $email, $idTeam)
         return false;
     }
     addActivity("Creation du compte $login pour l'equipe " . getTeamName($idTeam));
-    sendMailNewUser($email, $login, $password, $idTeam);
+    require_once '../classes/Emails.php';
+    $emailManager = new Emails();
+    $emailManager->sendMailNewUser($email, $login, $password, $idTeam);
     return true;
 }
 
@@ -561,7 +563,9 @@ function askForReport($code_match, $reason)
         return false;
     }
     addActivity("Report demandé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-    sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
+    require_once '../classes/Emails.php';
+    $emailManager = new Emails();
+    $emailManager->sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
     return true;
 }
 
@@ -582,7 +586,9 @@ function refuseReport($code_match)
             return false;
         }
         addActivity("Report refusé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-        sendMailRefuseReport($code_match, $sessionIdEquipe);
+        require_once '../classes/Emails.php';
+        $emailManager = new Emails();
+        $emailManager->sendMailRefuseReport($code_match, $sessionIdEquipe);
     }
     if (isAdmin()) {
         $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";
@@ -592,7 +598,9 @@ function refuseReport($code_match)
             return false;
         }
         addActivity("Report refusé par la commission pour le match $code_match");
-        sendMailRefuseReportAdmin($code_match);
+        require_once '../classes/Emails.php';
+        $emailManager = new Emails();
+        $emailManager->sendMailRefuseReportAdmin($code_match);
     }
     return true;
 }
@@ -614,7 +622,9 @@ function acceptReport($code_match)
             return false;
         }
         addActivity("Report accepté par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-        sendMailAcceptReport($code_match, $sessionIdEquipe);
+        require_once '../classes/Emails.php';
+        $emailManager = new Emails();
+        $emailManager->sendMailAcceptReport($code_match, $sessionIdEquipe);
     }
     if (isAdmin()) {
         $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";
@@ -624,7 +634,9 @@ function acceptReport($code_match)
             return false;
         }
         addActivity("Report refusé par la commission pour le match $code_match");
-        sendMailRefuseReportAdmin($code_match);
+        require_once '../classes/Emails.php';
+        $emailManager = new Emails();
+        $emailManager->sendMailRefuseReportAdmin($code_match);
     }
     return true;
 }
@@ -840,114 +852,6 @@ function createCsvString($data)
     }
     rewind($fp);
     return stream_get_contents($fp);
-}
-
-function sendMail($body, $to = 'youraddress@example.com', $subject = 'Test email with attachment', $from = 'webmaster@example.com')
-{
-    $headers = array(
-        "From: $from",
-        "Reply-To: $from",
-        "Bcc: benallemand@gmail.com",
-        "Content-Type: text/plain"
-    );
-    $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
-    switch ($serverName) {
-        case 'localhost':
-            return true;
-        default:
-            return @mail($to, $subject, $body, implode("\r\n", $headers));
-    }
-}
-
-function sendMailNewUser($email, $login, $password, $idTeam)
-{
-    $body = "Bonjour,\r\n"
-        . "Voici vos Informations de connexion au site http://www.ufolep13volley.org :\r\n"
-        . "Identifiant : $login\r\n"
-        . "Mot de passe : $password\r\n"
-        . "Equipe de rattachement : " . getTeamName($idTeam) . "\r\n"
-        . "\r\n"
-        . "\r\n"
-        . "\r\n"
-        . "L'UFOLEP";
-    $to = $email;
-    $subject = "[UFOLEP13VOLLEY]Identifiants de connexion";
-    $from = "no-reply@ufolep13volley.org";
-    return sendMail($body, $to, $subject, $from);
-}
-
-function sendMailAskForReport($code_match, $reason, $id_team)
-{
-    $askingTeamName = getTeamName($id_team);
-    $body = "Bonjour,\r\n"
-        . "Un report pour le match $code_match a été demandé par l'équipe $askingTeamName.\r\n"
-        . "\r\n"
-        . "La raison avancée est la suivante: $reason.\r\n"
-        . "\r\n"
-        . "- L'équipe adverse peut refuser le report: dans ce cas l'équipe demandeuse doit se présenter le jour du match, ou déclarer forfait.\r\n"
-        . "\r\n"
-        . "- L'équipe adverse peut accepter le report: dans ce cas l'équipe adverse fixe une nouvelle date pour jouer le match.\r\n"
-        . "\r\n"
-        . "- Enfin, la CTSD peut également refuser le report (délais trop court, limite de report atteinte, raison non suffisante...).\r\n"
-        . "\r\n"
-        . "\r\n"
-        . "Bien cordialement, l'UFOLEP";
-    $teams_emails = getTeamsEmailsFromMatch($code_match);
-    $to = implode(',', $teams_emails);
-    $subject = "[UFOLEP13VOLLEY]Demande de report de $askingTeamName pour le match $code_match";
-    $from = "no-reply@ufolep13volley.org";
-    return sendMail($body, $to, $subject, $from);
-}
-
-function sendMailRefuseReport($code_match, $id_team)
-{
-    $refusingTeamName = getTeamName($id_team);
-    $body = "Bonjour,\r\n"
-        . "Un report pour le match $code_match a été refusé par l'équipe $refusingTeamName.\r\n"
-        . "\r\n"
-        . "- L'équipe à l'origine du report doit se présenter le jour du match, ou déclarer forfait.\r\n"
-        . "\r\n"
-        . "\r\n"
-        . "Bien cordialement, l'UFOLEP";
-    $teams_emails = getTeamsEmailsFromMatch($code_match);
-    $to = implode(',', $teams_emails);
-    $subject = "[UFOLEP13VOLLEY]Refus de report de $refusingTeamName pour le match $code_match";
-    $from = "no-reply@ufolep13volley.org";
-    return sendMail($body, $to, $subject, $from);
-}
-
-function sendMailAcceptReport($code_match, $id_team)
-{
-    $acceptingTeamName = getTeamName($id_team);
-    $body = "Bonjour,\r\n"
-        . "Un report pour le match $code_match a été accepté par l'équipe $acceptingTeamName.\r\n"
-        . "\r\n"
-        . "- $acceptingTeamName doit déterminer une nouvelle date pour la réception du match $code_match.\r\n"
-        . "\r\n"
-        . "- Si l'équipe adverse ne peut pas jouer à cette nouvelle date, elle sera déclarée forfait.\r\n"
-        . "\r\n"
-        . "Bien cordialement, l'UFOLEP";
-    $teams_emails = getTeamsEmailsFromMatch($code_match);
-    $to = implode(',', $teams_emails);
-    $subject = "[UFOLEP13VOLLEY] report accepté par $acceptingTeamName pour le match $code_match";
-    $from = "no-reply@ufolep13volley.org";
-    return sendMail($body, $to, $subject, $from);
-}
-
-function sendMailRefuseReportAdmin($code_match)
-{
-    $body = "Bonjour,\r\n"
-        . "Un report pour le match $code_match a été refusé par la commission.\r\n"
-        . "\r\n"
-        . "- L'équipe à l'origine du report doit se présenter le jour du match, ou déclarer forfait.\r\n"
-        . "\r\n"
-        . "\r\n"
-        . "Bien cordialement, l'UFOLEP";
-    $teams_emails = getTeamsEmailsFromMatch($code_match);
-    $to = implode(',', $teams_emails);
-    $subject = "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match";
-    $from = "no-reply@ufolep13volley.org";
-    return sendMail($body, $to, $subject, $from);
 }
 
 function getTeamsEmailsFromMatch($code_match)
