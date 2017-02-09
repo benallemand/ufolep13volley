@@ -93,7 +93,7 @@ class Emails
         $teams_emails = getTeamsEmailsFromMatch($code_match);
         $to = implode(';', $teams_emails);
 
-        $message = file_get_contents('../templates/emails/sendMailRefuseReport.fr.html');
+        $message = file_get_contents('../templates/emails/sendMailAcceptReport.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
