@@ -585,8 +585,10 @@ scotchApp.controller('myPageController', function ($scope, $http) {
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
                         if (response.data.success) {
-                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition");
-                            window.location.reload();
+                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
                             return;
                         }
                         $scope.myTxt = "Erreur: " + response.data.message;
@@ -609,8 +611,10 @@ scotchApp.controller('myPageController', function ($scope, $http) {
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
                         if (response.data.success) {
-                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
-                            window.location.reload();
+                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
                             return;
                         }
                         $scope.myTxt = "Erreur: " + response.data.message;
@@ -634,8 +638,37 @@ scotchApp.controller('myPageController', function ($scope, $http) {
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
                         if (response.data.success) {
-                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.");
-                            window.location.reload();
+                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.",
+                                function () {
+                                    window.location.reload();
+                                });
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
+                }
+            });
+    };
+
+    $scope.giveReportDate = function (code_match) {
+        bootbox.prompt(
+            "Merci d'indiquer la date de report (format: JJ/MM/AAAA)",
+            function (report_date) {
+                if (report_date != null) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/giveReportDate.php',
+                        data: $.param({
+                            code_match: code_match,
+                            report_date: report_date
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("La nouvelle date a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
                             return;
                         }
                         $scope.myTxt = "Erreur: " + response.data.message;
@@ -780,8 +813,10 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
                         if (response.data.success) {
-                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition");
-                            window.location.reload();
+                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
                             return;
                         }
                         $scope.myTxt = "Erreur: " + response.data.message;

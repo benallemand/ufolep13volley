@@ -569,6 +569,24 @@ function askForReport($code_match, $reason)
     return true;
 }
 
+function giveReportDate($code_match, $report_date)
+{
+    global $db;
+    conn_db();
+    $sessionIdEquipe = $_SESSION['id_equipe'];
+    $sql = "UPDATE matches SET date_reception = DATE(STR_TO_DATE('$report_date', '%d/%m/%Y')) WHERE code_match = '$code_match'";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    addActivity("Date de report transmise par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
+    require_once '../classes/Emails.php';
+    $emailManager = new Emails();
+    $emailManager->sendMailGiveReportDate($code_match, $report_date, $sessionIdEquipe);
+    return true;
+}
+
 function refuseReport($code_match)
 {
     global $db;

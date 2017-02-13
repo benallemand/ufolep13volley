@@ -82,6 +82,20 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
             <span class="glyphicon glyphicon-time"></span>
         </button>
     </form>
+    <form ng-if="x.report_status == 'ACCEPTED_BY_DOM' && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="giveReportDate(x.code_match)">
+        <button title="Indiquer la date de report du match" type="submit" class="btn btn-sm btn-info">
+            Indiquer la date de report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
+    <form ng-if="x.report_status == 'ACCEPTED_BY_EXT' && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>"
+          style="display: inline-block" ng-submit="giveReportDate(x.code_match)">
+        <button title="Indiquer la date de report du match" type="submit" class="btn btn-sm btn-info">
+            Indiquer la date de report du match
+            <span class="glyphicon glyphicon-time"></span>
+        </button>
+    </form>
     <div ng-if="today >= x.date_reception_raw
     && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
     && x.certif == '0'">

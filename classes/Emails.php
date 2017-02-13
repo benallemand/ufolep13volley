@@ -9,41 +9,47 @@ class Emails
 
     public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
     {
-        $mail = new PHPMailer();
-        $mail->CharSet = "UTF-8";
-        $mail->isSMTP();
-        $mail->Host = Configuration::MAIL_HOST;
-        $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
-        $mail->Username = Configuration::MAIL_USERNAME;
-        $mail->Password = Configuration::MAIL_PASSWORD;
-        $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
-        $mail->Port = Configuration::MAIL_PORT;
-        $mail->setFrom($from);
-        foreach (explode(';', $to) as $toAddress) {
-            $mail->addAddress($toAddress);
-        }
-        if ($cc !== null) {
-            foreach (explode(';', $cc) as $ccAddress) {
-                $mail->addCC($ccAddress);
-            }
-        }
-        if ($bcc !== null) {
-            foreach (explode(';', $bcc) as $bccAddress) {
-                $mail->addBCC($bccAddress);
-            }
-        }
-        $mail->addBCC("benallemand@gmail.com");
-        if (is_array($attachments)) {
-            foreach ($attachments as $fileName => $stringAttachment) {
-                $mail->addStringAttachment($stringAttachment, $fileName, 'base64', 'text/plain');
-            }
-        }
-        $mail->WordWrap = 50;
-        $mail->Subject = $subject;
-        $mail->Body = $mail->msgHTML($body);
-        if (!$mail->send()) {
-            print_r($mail->ErrorInfo);
-            throw new Exception("Send email error : " . $mail->ErrorInfo);
+        $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+        switch ($serverName) {
+            case 'localhost':
+                return;
+            default:
+                $mail = new PHPMailer();
+                $mail->CharSet = "UTF-8";
+                $mail->isSMTP();
+                $mail->Host = Configuration::MAIL_HOST;
+                $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
+                $mail->Username = Configuration::MAIL_USERNAME;
+                $mail->Password = Configuration::MAIL_PASSWORD;
+                $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
+                $mail->Port = Configuration::MAIL_PORT;
+                $mail->setFrom($from);
+                foreach (explode(';', $to) as $toAddress) {
+                    $mail->addAddress($toAddress);
+                }
+                if ($cc !== null) {
+                    foreach (explode(';', $cc) as $ccAddress) {
+                        $mail->addCC($ccAddress);
+                    }
+                }
+                if ($bcc !== null) {
+                    foreach (explode(';', $bcc) as $bccAddress) {
+                        $mail->addBCC($bccAddress);
+                    }
+                }
+                $mail->addBCC("benallemand@gmail.com");
+                if (is_array($attachments)) {
+                    foreach ($attachments as $fileName => $stringAttachment) {
+                        $mail->addStringAttachment($stringAttachment, $fileName, 'base64', 'text/plain');
+                    }
+                }
+                $mail->WordWrap = 50;
+                $mail->Subject = $subject;
+                $mail->Body = $mail->msgHTML($body);
+                if (!$mail->send()) {
+                    print_r($mail->ErrorInfo);
+                    throw new Exception("Send email error : " . $mail->ErrorInfo);
+                }
         }
     }
 
@@ -72,6 +78,20 @@ class Emails
         $message = str_replace('%team_name%', $teamName, $message);
 
         $this->sendEmail("[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+    }
+
+    public function sendMailGiveReportDate($code_match, $report_date, $id_team)
+    {
+        $teamName = getTeamName($id_team);
+        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $to = implode(';', $teams_emails);
+
+        $message = file_get_contents('../templates/emails/sendMailGiveReportDate.fr.html');
+        $message = str_replace('%code_match%', $code_match, $message);
+        $message = str_replace('%report_date%', $report_date, $message);
+        $message = str_replace('%team_name%', $teamName, $message);
+
+        $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
     public function sendMailRefuseReport($code_match, $id_team)
