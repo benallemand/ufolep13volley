@@ -883,7 +883,6 @@ function getTeamsEmailsFromMatch($code_match)
       FROM matches m
       WHERE m.code_match = '$code_match'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
     $data = mysqli_fetch_assoc($req);
     $emailDom = getTeamEmail($data['id_equipe_dom']);
     $emailExt = getTeamEmail($data['id_equipe_ext']);
@@ -2285,11 +2284,42 @@ function insertPhoto($uploadfile, &$idPhoto)
     return;
 }
 
+function insertFile($uploadfile, &$idFile)
+{
+    global $db;
+    conn_db();
+    $sql = "INSERT INTO files SET path_file = '$uploadfile'";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    $idFile = mysqli_insert_id($db);
+    disconn_db();
+    return;
+}
+
 function linkPlayerToPhoto($idPlayer, $idPhoto)
 {
     global $db;
     conn_db();
     $sql = "UPDATE joueurs j SET j.id_photo = $idPhoto WHERE id = $idPlayer";
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}
+
+function linkMatchToFile($idMatch, $idFile)
+{
+    global $db;
+    conn_db();
+    $sql = "INSERT INTO matches_files SET id_file = $idFile, id_match = $idMatch";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         $message = mysqli_error($db);
@@ -2312,6 +2342,38 @@ function linkTeamToPhoto($idTeam, $idPhoto)
         throw new Exception($message);
     }
     disconn_db();
+    return;
+}
+
+function saveMatchFiles($match)
+{
+    $uploaddir = '../match_files/';
+    $code_match = $match['code_match'];
+    $file_iteration = array('file1', 'file2', 'file3', 'file4');
+    $mark_sheet_received = false;
+    foreach ($file_iteration as $current_file_iteration) {
+        if (empty($_FILES[$current_file_iteration]['name'])) {
+            continue;
+        }
+        $mark_sheet_received = true;
+        $iteration = 1;
+        $extension = pathinfo($_FILES[$current_file_iteration]['name'], PATHINFO_EXTENSION);
+        $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
+        while (file_exists($uploadfile)) {
+            $iteration++;
+            $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
+        }
+        $id_file = 0;
+        insertFile(substr($uploadfile, 3), $id_file);
+        $id_match = $match['id_match'];
+        linkMatchToFile($id_match, $id_file);
+        if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], accentedToNonAccented($uploadfile))) {
+            addActivity("Un nouveau fichier a ete transmis pour le match $code_match.");
+        }
+    }
+    if ($mark_sheet_received) {
+        declareSheetReceived($code_match);
+    }
     return;
 }
 
@@ -3099,6 +3161,8 @@ function saveMatch()
             case 'set_4_ext':
             case 'set_5_dom':
             case 'set_5_ext':
+            case 'score_equipe_dom':
+            case 'score_equipe_ext':
                 $sql .= empty($value) ? "$key = 0," : "$key = $value,";
                 break;
             case 'date_reception':
@@ -3132,6 +3196,10 @@ function saveMatch()
         throw new Exception($message);
     }
     disconn_db();
+    if (empty($inputs['id_match'])) {
+        return;
+    }
+    saveMatchFiles($inputs);
     return;
 }
 

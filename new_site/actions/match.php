@@ -3,6 +3,11 @@ session_start();
 require_once '../../includes/fonctions_inc.php';
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
+    <a ng-if="x.sheet_received=='1'"
+       href="../ajax/downloadMatchFiles.php?id={{x.id_match}}" role="button" class="btn btn-sm btn-primary">
+        <span class="glyphicon glyphicon-download-alt"></span>
+        Télécharger les fichiers attachés
+    </a>
     <form ng-if="x.certif=='0' && x.sheet_received=='0' && x.date_reception_raw < today"
           style="display: inline-block" ng-submit="declareSheetReceived(x.code_match)">
         <button title="Accuser réception des feuilles de match" type="submit" class="btn btn-sm btn-success">
@@ -44,6 +49,11 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
         </button>
     </form>
 -->
+    <a ng-if="x.sheet_received=='1'"
+       href="../ajax/downloadMatchFiles.php?id={{x.id_match}}" role="button" class="btn btn-sm btn-primary">
+        <span class="glyphicon glyphicon-download-alt"></span>
+        Télécharger les fichiers attachés
+    </a>
     <form ng-if="x.report_status == 'NOT_ASKED'
         && x.certif=='0'
         && x.sheet_received=='0'
@@ -109,6 +119,17 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
            target="_blank">
             Envoyer les feuilles de match
             <span class="glyphicon glyphicon-send"></span>
+        </a>
+    </div>
+    <div ng-if="today >= x.date_reception_raw
+    && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
+    && x.certif == '0'">
+        <a title="Modifier le match"
+           class="btn btn-sm btn-warning"
+           ng-click="editMatch(x.code_match)"
+        >
+            Modifier
+            <span class="glyphicon glyphicon-edit"></span>
         </a>
     </div>
     <?php
