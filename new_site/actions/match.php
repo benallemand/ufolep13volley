@@ -3,7 +3,8 @@ session_start();
 require_once '../../includes/fonctions_inc.php';
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
-    <a ng-if="x.sheet_received=='1'"
+    <a ng-if="x.sheet_received=='1'
+    && x.is_file_attached=='1'"
        href="../ajax/downloadMatchFiles.php?id={{x.id_match}}" role="button" class="btn btn-sm btn-primary">
         <span class="glyphicon glyphicon-download-alt"></span>
         Télécharger les fichiers attachés
@@ -49,7 +50,9 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
         </button>
     </form>
 -->
-    <a ng-if="x.sheet_received=='1'"
+    <a ng-if="x.sheet_received=='1'
+    && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
+    && x.is_file_attached=='1'"
        href="../ajax/downloadMatchFiles.php?id={{x.id_match}}" role="button" class="btn btn-sm btn-primary">
         <span class="glyphicon glyphicon-download-alt"></span>
         Télécharger les fichiers attachés

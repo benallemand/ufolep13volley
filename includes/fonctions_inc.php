@@ -1422,7 +1422,8 @@ function getSqlSelectMatches($whereClause, $orderClause)
               END
         ) AS email_send_sheets,
         CONCAT('Match ', m.code_match, ' : ', e1.nom_equipe, ' contre ', e2.nom_equipe) AS email_send_sheets_subject,
-        'Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.' AS email_send_sheets_body
+        'Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.' AS email_send_sheets_body,
+        IF(mf.id_file IS NOT NULL, '1', '0') AS is_file_attached
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
@@ -1436,6 +1437,7 @@ function getSqlSelectMatches($whereClause, $orderClause)
                                   'Jeudi',
                                   'Vendredi',
                                   'Samedi')
+        LEFT JOIN matches_files mf ON mf.id_match = m.id_match
         $whereClause
         $orderClause";
 }
