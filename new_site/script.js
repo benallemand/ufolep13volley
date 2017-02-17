@@ -162,6 +162,10 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                     $scope.modify_match.forfait_dom = matches[i].forfait_dom == '1';
                     $scope.modify_match.forfait_ext = matches[i].forfait_ext == '1';
                     $scope.modify_match.code_match = matches[i].code_match;
+                    if (matches[i].note) {
+                        $scope.modify_match.note = matches[i].note;
+                    }
+                    $scope.modify_match.id_match = parseInt(matches[i].id_match);
                     return matches[i].code_match;
                 }
             }

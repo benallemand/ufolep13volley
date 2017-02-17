@@ -3,7 +3,7 @@ session_start();
 require_once '../../includes/fonctions_inc.php';
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
-    <div ng-include src="'pages/match.html'"></div>
+    <div ng-include src="'pages/match_admin.html'"></div>
     <?php
 } else if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
