@@ -190,8 +190,9 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
         }
     };
 
-    $scope.editMatch = function (code_match) {
+    $scope.editMatch = function (model, matches) {
         document.getElementById('modify_match').scrollIntoView(true);
+        $scope.initModifyMatchFields(model, matches);
     };
 
     $scope.saveMatch = function () {

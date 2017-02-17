@@ -1,21 +1,11 @@
 <div class="panel panel-primary" id="modify_match" xmlns="http://www.w3.org/1999/html">
-    <div class="panel-heading"><h1 class="panel-title">Modification d'un match</h1>
+    <div class="panel-heading">
+        <h1 class="panel-title">Modification d'un match</h1>
     </div>
-    <small id="editMatchHelp" class="form-text text-muted">
-        Veuillez tout d'abord sélectionner le code du match à modifier
-    </small>
+    <div class="jumbotron">
+        <h2 class="text-center">{{modify_match.code_match}} : {{modify_match.equipe_dom}} contre {{modify_match.equipe_ext}}</h2>
+    </div>
     <form class="form-horizontal" role="form">
-        <div class="form-group">
-            <label class="col-sm-2 control-label" for="code_match">Code match</label>
-            <div class="col-sm-2">
-                <input id="code_match" type="text" ng-model="modify_match.id_match"
-                       uib-typeahead="existing_match.id_match as existing_match.code_match for existing_match in matches | filter:$viewValue | limitTo:8"
-                       class="form-control"
-                       typeahead-input-formatter="initModifyMatchFields($model, matches)"
-                />
-                <span class="label label-default">{{modify_match.equipe_dom}} - {{modify_match.equipe_ext}}</span>
-            </div>
-        </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">{{modify_match.equipe_dom}} forfait ?</label>
             <div class="col-sm-2">

@@ -36,6 +36,16 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-time"></span>
         </button>
     </form>
+    <div ng-if="today >= x.date_reception_raw
+    && x.certif == '0'">
+        <a title="Modifier le match"
+           class="btn btn-sm btn-warning"
+           ng-click="editMatch(x.id_match, matches)"
+        >
+            Modifier
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </div>
     <?php
 }
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
@@ -129,7 +139,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     && x.certif == '0'">
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
-           ng-click="editMatch(x.code_match)"
+           ng-click="editMatch(x.id_match, matches)"
         >
             Modifier
             <span class="glyphicon glyphicon-edit"></span>
