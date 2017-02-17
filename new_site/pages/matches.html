@@ -98,6 +98,9 @@
                 <span ng-if="x.report_status == 'REFUSED_BY_DOM'">Report refusé par {{ x.equipe_dom }}</span>
                 <span ng-if="x.report_status == 'REFUSED_BY_EXT'">Report refusé par {{ x.equipe_ext }}</span>
                 <span ng-if="x.report_status == 'REFUSED_BY_ADMIN'">Report refusé par la commission</span>
+
+                <span ng-if="x.sheet_received == '1'">Feuilles de match reçues</span>
+
             </td>
             <td class="text-center" ng-include="'actions/match.php'"></td>
         </tr>

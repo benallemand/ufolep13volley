@@ -1,6 +1,9 @@
-<div class="panel panel-primary" id="modify_match">
+<div class="panel panel-primary" id="modify_match" xmlns="http://www.w3.org/1999/html">
     <div class="panel-heading"><h1 class="panel-title">Modification d'un match</h1>
     </div>
+    <small id="editMatchHelp" class="form-text text-muted">
+        Veuillez tout d'abord sélectionner le code du match à modifier
+    </small>
     <form class="form-horizontal" role="form">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="code_match">Code match</label>
@@ -14,11 +17,11 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label" for="forfait_dom">{{modify_match.equipe_dom}} forfait ?</label>
+            <label class="col-sm-2 control-label">{{modify_match.equipe_dom}} forfait ?</label>
             <div class="col-sm-2">
                 <input class="form-control" type="checkbox" id="forfait_dom"
                        ng-model="modify_match.forfait_dom" ng-change="makeForfait(modify_match)"></div>
-            <label class="col-sm-2 control-label" for="forfait_ext">{{modify_match.equipe_ext}} forfait ?</label>
+            <label class="col-sm-2 control-label">{{modify_match.equipe_ext}} forfait ?</label>
             <div class="col-sm-2">
                 <input class="form-control" type="checkbox" id="forfait_ext"
                        ng-model="modify_match.forfait_ext" ng-change="makeForfait(modify_match)"></div>
@@ -72,6 +75,41 @@
             <label class="col-sm-2 control-label" for="set_5_ext"></label>
             <div class="col-sm-2">
                 <input class="form-control" type="number" id="set_5_ext" ng-model="modify_match.set_5_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file1">Feuilles de match (1/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file1" aria-describedby="fileHelp"
+                       file-model="modify_match.file1">
+                <small id="fileHelp" class="form-text text-muted">
+                    Pour rappel, il est nécessaire de fournir
+                    <br/>- Les scans de la feuille de score recto verso(résultat et détail des sets)
+                    <br/>- Les 2 fiches équipes.
+                    <br/>Formats acceptés: ZIP, PDF, JPG (taille raisonnable, merci de ne pas dépasser 3 Mo)
+                    <br/>Les champs suivants sont optionnels (uniquement si plus d'1 fichier doit être joint à ce match)
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file2">Feuilles de match (2/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file2" aria-describedby="fileHelp"
+                       file-model="modify_match.file2">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file3">Feuilles de match (3/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file3" aria-describedby="fileHelp"
+                       file-model="modify_match.file3">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file4">Feuilles de match (4/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file4" aria-describedby="fileHelp"
+                       file-model="modify_match.file4">
+            </div>
         </div>
         <button type="submit" class="btn btn-default" ng-click="saveMatch()">Sauver</button>
     </form>

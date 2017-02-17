@@ -161,6 +161,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                     $scope.modify_match.equipe_ext = matches[i].equipe_ext;
                     $scope.modify_match.forfait_dom = matches[i].forfait_dom == '1';
                     $scope.modify_match.forfait_ext = matches[i].forfait_ext == '1';
+                    $scope.modify_match.code_match = matches[i].code_match;
                     return matches[i].code_match;
                 }
             }
@@ -189,19 +190,13 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
         }
     };
 
+    $scope.editMatch = function (code_match) {
+        document.getElementById('modify_match').scrollIntoView(true);
+    };
+
     $scope.saveMatch = function () {
-        $http({
-            method: 'POST',
-            url: '../ajax/saveMatch.php',
-            data: $.param($scope.modify_match),
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
-            $scope.myTxt = "Erreur: " + response.data.message;
-        });
+        var uploadUrl = '../ajax/saveMatch.php';
+        multipartForm.post(uploadUrl, $scope.modify_match);
     };
 
     $scope.makeForfait = function (modify_match) {
