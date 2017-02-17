@@ -1,0 +1,117 @@
+<div class="panel panel-primary" id="modify_match" xmlns="http://www.w3.org/1999/html">
+    <div class="panel-heading">
+        <h1 class="panel-title">Modification d'un match - Compte administrateur</h1>
+    </div>
+    <div class="jumbotron">
+        <h2 class="text-center">{{modify_match.code_match}} : {{modify_match.equipe_dom}} contre
+            {{modify_match.equipe_ext}}</h2>
+    </div>
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{modify_match.equipe_dom}} forfait ?</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="checkbox" id="forfait_dom"
+                       ng-model="modify_match.forfait_dom" ng-change="makeForfait(modify_match)"></div>
+            <label class="col-sm-2 control-label">{{modify_match.equipe_ext}} forfait ?</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="checkbox" id="forfait_ext"
+                       ng-model="modify_match.forfait_ext" ng-change="makeForfait(modify_match)"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="score_equipe_dom">Score {{modify_match.equipe_dom}}</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="score_equipe_dom"
+                       ng-model="modify_match.score_equipe_dom"></div>
+            <label class="col-sm-2 control-label" for="score_equipe_ext">Score {{modify_match.equipe_ext}}</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="score_equipe_ext"
+                       ng-model="modify_match.score_equipe_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="set_1_dom">Set 1</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_1_dom" ng-model="modify_match.set_1_dom"></div>
+            <label class="col-sm-2 control-label" for="set_1_ext"></label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_1_ext" ng-model="modify_match.set_1_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="set_2_dom">Set 2</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_2_dom" ng-model="modify_match.set_2_dom"></div>
+            <label class="col-sm-2 control-label" for="set_2_ext"></label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_2_ext" ng-model="modify_match.set_2_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="set_3_dom">Set 3</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_3_dom" ng-model="modify_match.set_3_dom"></div>
+            <label class="col-sm-2 control-label" for="set_3_ext"></label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_3_ext" ng-model="modify_match.set_3_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="set_4_dom">Set 4</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_4_dom" ng-model="modify_match.set_4_dom"></div>
+            <label class="col-sm-2 control-label" for="set_4_ext"></label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_4_ext" ng-model="modify_match.set_4_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="set_5_dom">Set 5</label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_5_dom" ng-model="modify_match.set_5_dom"></div>
+            <label class="col-sm-2 control-label" for="set_5_ext"></label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" id="set_5_ext" ng-model="modify_match.set_5_ext"></div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file1">Feuilles de match (1/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file1" aria-describedby="fileHelp"
+                       file-model="modify_match.file1">
+                <small id="fileHelp" class="form-text text-muted">
+                    Pour rappel, il est nécessaire de fournir
+                    <br/>- Les scans de la feuille de score recto verso(résultat et détail des sets)
+                    <br/>- Les 2 fiches équipes.
+                    <br/>Formats acceptés: ZIP, PDF, JPG (taille raisonnable, merci de ne pas dépasser 3 Mo)
+                    <br/>Les champs suivants sont optionnels (uniquement si plus d'1 fichier doit être joint à ce match)
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file2">Feuilles de match (2/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file2" aria-describedby="fileHelp"
+                       file-model="modify_match.file2">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file3">Feuilles de match (3/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file3" aria-describedby="fileHelp"
+                       file-model="modify_match.file3">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="id_file4">Feuilles de match (4/4)</label>
+            <div class="col-sm-10">
+                <input class="form-control-file" type="file" id="id_file4" aria-describedby="fileHelp"
+                       file-model="modify_match.file4">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="note">Commentaires</label>
+            <div class="col-sm-10">
+                <textarea ng-model="modify_match.note" id="note"></textarea>
+            </div>
+        </div>
+</div>
+<button type="submit" class="btn btn-default" ng-click="saveMatch()">Sauver</button>
+</form>
+</div>
+<div class="alert alert-danger" role="alert" ng-hide="(myTxt+ '').length <= 0">
+    {{myTxt}}
+</div>
