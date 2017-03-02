@@ -914,7 +914,7 @@ function getRank($compet, $div)
 FROM (
        SELECT
          e.id_equipe,
-         m.code_competition,
+         '$compet' AS code_competition,
          e.nom_equipe                      AS equipe,
          SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
            THEN 3
