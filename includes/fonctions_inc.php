@@ -2777,6 +2777,7 @@ FROM hall_of_fame hof
                                          hof_vice_champion.title LIKE '%Finaliste%')
 GROUP BY
   hof.league,
+  hof.period,
   CASE WHEN hof.title LIKE '%Division%'
     THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
   ELSE '' END,
