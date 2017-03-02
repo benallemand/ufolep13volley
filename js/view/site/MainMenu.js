@@ -298,6 +298,11 @@ Ext.define('Ufolep13Volley.view.site.MainMenu', {
                             text: 'Bonus: Feuille de match',
                             href: 'infos_utiles/Media/FeuilleMatch.pdf',
                             hrefTarget: '_blank'
+                        },
+                        {
+                            text: 'Bonus: Feuille de match sur une page',
+                            href: 'infos_utiles/Media/FeuilleMatch1page.pdf',
+                            hrefTarget: '_blank'
                         }
                     ]
                 },
