@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.window.HallOfFame', {
     extend: 'Ext.window.Window',
     alias: 'widget.hall_of_fame_edit',
-    title: "Edition de Palamrès",
+    title: "Edition de Palmarès",
     height: 400,
     width: 700,
     modal: true,
