@@ -9,17 +9,17 @@
         </tr>
         <tr>
             <th>Année</th>
-            <th>Division</th>
             <th>Demi saison</th>
+            <th>Division</th>
             <th>Champion</th>
             <th>Vice-champion</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="x in value | filter:search | orderBy:['division','demi_saison']">
+        <tr ng-repeat="x in value | filter:search | orderBy:['-period','-demi_saison','division']">
             <td>{{ x.period }}</td>
-            <td>{{ x.division }}</td>
             <td>{{ x.demi_saison }}</td>
+            <td>{{ x.division }}</td>
             <td>{{ x.champion }}</td>
             <td>{{ x.vice_champion }}</td>
         </tr>
