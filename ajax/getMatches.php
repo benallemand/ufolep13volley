@@ -1,7 +1,27 @@
 <?php
 
-require_once "../includes/fonctions_inc.php";
-
-$compet = filter_input(INPUT_GET, 'competition');
-$div = filter_input(INPUT_GET, 'division');
-echo getMatches($compet, $div);
+try {
+    $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
+    switch ($requestMethod) {
+        case 'GET':
+            break;
+        default:
+            throw new Exception("Request not allowed");
+    }
+    require_once '../classes/MatchManager.php';
+    $manager = new MatchManager();
+    $compet = filter_input(INPUT_GET, 'competition');
+    $div = filter_input(INPUT_GET, 'division');
+    if (!isset($compet)) {
+        $query = "1 = 1 ORDER BY m.code_match";
+    } else {
+        $query = "m.code_competition = '$compet' AND m.division = '$div' ORDER BY m.date_reception, m.code_match";
+    }
+    echo json_encode($manager->getMatches($query));
+    exit();
+} catch (Exception $exc) {
+    echo json_encode(array(
+        "success" => false,
+        "msg" => $exc->getMessage()
+    ));
+}

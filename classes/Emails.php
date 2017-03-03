@@ -117,7 +117,7 @@ class Emails
         $message = str_replace('%code_match%', $code_match, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Report acceptÈ par $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Report accept√© par $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
     public function sendMailRefuseReportAdmin($code_match)

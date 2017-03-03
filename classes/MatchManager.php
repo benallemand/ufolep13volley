@@ -72,7 +72,7 @@ class MatchManager extends Generic
               END
         ) AS email_send_sheets,
         CONCAT('Match ', m.code_match, ' : ', e1.nom_equipe, ' contre ', e2.nom_equipe) AS email_send_sheets_subject,
-        'Veuillez trouver ci-joint les fiches équipes ainsi que la feuille de match.' AS email_send_sheets_body
+        'Veuillez trouver ci-joint les fiches Ã©quipes ainsi que la feuille de match.' AS email_send_sheets_body
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
@@ -159,7 +159,7 @@ class MatchManager extends Generic
             throw new Exception("Error during zip file creation !");
         }
         if (count($match_files) === 0) {
-            throw new Exception("Pas de fichier attaché (Attention, ceux envoyés par email ne sont pas téléchargeables) !");
+            throw new Exception("Pas de fichier attachÃ© (Attention, ceux envoyÃ©s par email ne sont pas tÃ©lÃ©chargeables) !");
         }
         foreach ($match_files as $match_file) {
             $zip->addFile("../" . $match_file['path_file'], basename($match_file['path_file']));

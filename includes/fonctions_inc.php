@@ -1442,23 +1442,6 @@ function getSqlSelectMatches($whereClause, $orderClause)
         $orderClause";
 }
 
-function getMatches($compet, $div)
-{
-    global $db;
-    conn_db();
-    if (!isset($compet)) {
-        $sql = getSqlSelectMatches("WHERE 1 = 1", "ORDER BY m.code_match");
-    } else {
-        $sql = getSqlSelectMatches("WHERE m.code_competition = '$compet' AND m.division = '$div'", "ORDER BY m.date_reception, m.code_match");
-    }
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
-}
-
 function getDays()
 {
     global $db;
