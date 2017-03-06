@@ -786,40 +786,40 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'limitdateedit button[action=save]': {
                     click: this.updateLimitDate
                 },
-                'button[action=displayActivity]': {
+                'menuitem[action=displayActivity]': {
                     click: this.showActivityGrid
                 },
-                'button[action=managePlayers]': {
+                'menuitem[action=managePlayers]': {
                     click: this.showPlayersGrid
                 },
-                'button[action=manageProfiles]': {
+                'menuitem[action=manageProfiles]': {
                     click: this.showProfilesGrid
                 },
-                'button[action=manageUsers]': {
+                'menuitem[action=manageUsers]': {
                     click: this.showUsersGrid
                 },
-                'button[action=manageGymnasiums]': {
+                'menuitem[action=manageGymnasiums]': {
                     click: this.showGymnasiumsGrid
                 },
-                'button[action=manageClubs]': {
+                'menuitem[action=manageClubs]': {
                     click: this.showClubsGrid
                 },
-                'button[action=manageTeams]': {
+                'menuitem[action=manageTeams]': {
                     click: this.showTeamsGrid
                 },
-                'button[action=manageMatches]': {
+                'menuitem[action=manageMatches]': {
                     click: this.showMatchesGrid
                 },
-                'button[action=manageRanks]': {
+                'menuitem[action=manageRanks]': {
                     click: this.showRanksGrid
                 },
-                'button[action=manageDays]': {
+                'menuitem[action=manageDays]': {
                     click: this.showDaysGrid
                 },
-                'button[action=manageLimitDates]': {
+                'menuitem[action=manageLimitDates]': {
                     click: this.showLimitDatesGrid
                 },
-                'button[action=displayWeekSchedule]': {
+                'menuitem[action=displayWeekSchedule]': {
                     click: this.showWeekScheduleGrid
                 },
                 'button[action=showClubSelect]': {
@@ -843,13 +843,13 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'playersgrid button[action=delete]': {
                     click: this.deletePlayers
                 },
-                'button[action=displayIndicators]': {
+                'menuitem[action=displayIndicators]': {
                     click: this.displayIndicators
                 },
                 'grid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
                     change: this.searchInGrid
                 },
-                'button[action=displayHallOfFame]': {
+                'menuitem[action=displayHallOfFame]': {
                     click: this.displayHallOfFame
                 },
                 'hall_of_fame_grid': {
@@ -1843,77 +1843,50 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             });
         }
     },
-    showActivityGrid: function () {
+    showAdministrationGrid: function (xtype_name) {
+        if (Ext.ComponentQuery.query(xtype_name).length > 0) {
+            return;
+        }
         var tab = this.getMainPanel().add({
-            xtype: 'activitygrid'
+            xtype: xtype_name
         });
         this.getMainPanel().setActiveTab(tab);
+    },
+    showActivityGrid: function () {
+        this.showAdministrationGrid('activitygrid');
     },
     showPlayersGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'playersgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('playersgrid');
     },
     showProfilesGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'profilesgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('profilesgrid');
     },
     showUsersGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'usersgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('usersgrid');
     },
     showWeekScheduleGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'weekschedulegrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('weekschedulegrid');
     },
     showGymnasiumsGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'gymnasiumsgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('gymnasiumsgrid');
     },
     showClubsGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'clubsgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('clubsgrid');
     },
     showTeamsGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'teamsgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('teamsgrid');
     },
     showMatchesGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'matchesgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('matchesgrid');
     },
     showRanksGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'rankgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('rankgrid');
     },
     showDaysGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'daysgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('daysgrid');
     },
     showLimitDatesGrid: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'limitdatesgrid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('limitdatesgrid');
     },
     showClubSelect: function () {
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
@@ -2003,10 +1976,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
     },
     displayHallOfFame: function () {
-        var tab = this.getMainPanel().add({
-            xtype: 'hall_of_fame_grid'
-        });
-        this.getMainPanel().setActiveTab(tab);
+        this.showAdministrationGrid('hall_of_fame_grid');
     },
     addToolbarHallOfFame: function (grid) {
         grid.addDocked({

@@ -28,86 +28,83 @@ Ext.application({
                                 handler: function () {
                                     window.open('.', '_self', false);
                                 }
-                            }
-                        ]
-                    },
-                    {
-                        xtype: 'toolbar',
-                        dock: 'left',
-                        defaultButtonUI: 'default',
-                        defaults: {
-                            textAlign: 'left'
-                        },
-                        items: [
-                            {
-                                text: 'Activité',
-                                glyph: 'xf1da@FontAwesome',
-                                action: 'displayActivity'
                             },
                             {
-                                text: 'Gestion des joueurs',
-                                glyph: 'xe90a@icomoon',
-                                action: 'managePlayers'
-                            },
-                            {
-                                text: 'Gestion des profils',
-                                glyph: 'xf084@FontAwesome',
-                                action: 'manageProfiles'
-                            },
-                            {
-                                text: 'Gestion des utilisateurs',
-                                glyph: 'xf0c0@FontAwesome',
-                                action: 'manageUsers'
-                            },
-                            {
-                                text: 'Gestion des clubs',
-                                glyph: 'xe900@icomoon',
-                                action: 'manageClubs'
-                            },
-                            {
-                                text: 'Gestion des équipes',
-                                glyph: 'xe905@icomoon',
-                                action: 'manageTeams'
-                            },
-                            {
-                                text: 'Gestion des journées',
-                                glyph: 'xf073@FontAwesome',
-                                action: 'manageDays'
-                            },
-                            {
-                                text: 'Gestion des divisions/poules',
-                                glyph: 'xf201@FontAwesome',
-                                action: 'manageRanks'
-                            },
-                            {
-                                text: 'Gestion des matches',
-                                glyph: 'xe909@icomoon',
-                                action: 'manageMatches'
-                            },
-                            {
-                                text: 'Gestion des dates limites',
-                                glyph: 'xf273@FontAwesome',
-                                action: 'manageLimitDates'
-                            },
-                            {
-                                text: 'Gestion des gymnases',
-                                glyph: 'xe90d@icomoon',
-                                action: 'manageGymnasiums'
-                            },
-                            {
-                                text: 'Planning de la semaine',
-                                glyph: 'xf073@FontAwesome',
-                                action: 'displayWeekSchedule'
-                            },
-                            {
-                                text: 'Indicateurs',
-                                glyph: 'xf071@FontAwesome',
-                                action: 'displayIndicators'
-                            },
-                            {
-                                text: 'Palmarès',
-                                glyph: 'xe906@icomoon',
-                                action: 'displayHallOfFame'
+                                xtype: 'button',
+                                text: 'Menu',
+                                scale: 'medium',
+                                menu: [
+                                    {
+                                        text: 'Activité',
+                                        glyph: 'xf1da@FontAwesome',
+                                        action: 'displayActivity'
+                                    },
+                                    {
+                                        text: 'Gestion des joueurs',
+                                        glyph: 'xe90a@icomoon',
+                                        action: 'managePlayers'
+                                    },
+                                    {
+                                        text: 'Gestion des profils',
+                                        glyph: 'xf084@FontAwesome',
+                                        action: 'manageProfiles'
+                                    },
+                                    {
+                                        text: 'Gestion des utilisateurs',
+                                        glyph: 'xf0c0@FontAwesome',
+                                        action: 'manageUsers'
+                                    },
+                                    {
+                                        text: 'Gestion des clubs',
+                                        glyph: 'xe900@icomoon',
+                                        action: 'manageClubs'
+                                    },
+                                    {
+                                        text: 'Gestion des équipes',
+                                        glyph: 'xe905@icomoon',
+                                        action: 'manageTeams'
+                                    },
+                                    {
+                                        text: 'Gestion des journées',
+                                        glyph: 'xf073@FontAwesome',
+                                        action: 'manageDays'
+                                    },
+                                    {
+                                        text: 'Gestion des divisions/poules',
+                                        glyph: 'xf201@FontAwesome',
+                                        action: 'manageRanks'
+                                    },
+                                    {
+                                        text: 'Gestion des matches',
+                                        glyph: 'xe909@icomoon',
+                                        action: 'manageMatches'
+                                    },
+                                    {
+                                        text: 'Gestion des dates limites',
+                                        glyph: 'xf273@FontAwesome',
+                                        action: 'manageLimitDates'
+                                    },
+                                    {
+                                        text: 'Gestion des gymnases',
+                                        glyph: 'xe90d@icomoon',
+                                        action: 'manageGymnasiums'
+                                    },
+                                    {
+                                        text: 'Planning de la semaine',
+                                        glyph: 'xf073@FontAwesome',
+                                        action: 'displayWeekSchedule'
+                                    },
+                                    {
+                                        text: 'Indicateurs',
+                                        glyph: 'xf071@FontAwesome',
+                                        action: 'displayIndicators'
+                                    },
+                                    {
+                                        text: 'Palmarès',
+                                        glyph: 'xe906@icomoon',
+                                        action: 'displayHallOfFame'
+                                    }
+                                ]
                             }
                         ]
                     }
