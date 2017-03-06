@@ -1,6 +1,30 @@
 <?php
 
-require_once "../includes/fonctions_inc.php";
-
-echo getMyMatches();
-
+try {
+    $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
+    switch ($requestMethod) {
+        case 'GET':
+            break;
+        default:
+            throw new Exception("Request not allowed");
+    }
+    require_once '../classes/MatchManager.php';
+    $manager = new MatchManager();
+    $userDetails = $manager->getCurrentUserDetails();
+    $profile = $userDetails['profile_name'];
+    $id_team = $userDetails['id_equipe'];
+    switch ($profile) {
+        case 'RESPONSABLE_EQUIPE':
+            $query = "m.id_equipe_dom = $id_team OR m.id_equipe_ext = $id_team ORDER BY m.date_reception, m.code_match";
+            break;
+        default:
+            throw new Exception("Get my matches allowed only for RESPONSABLE_EQUIPE !");
+    }
+    echo json_encode($manager->getMatches($query));
+    exit();
+} catch (Exception $exc) {
+    echo json_encode(array(
+        "success" => false,
+        "msg" => $exc->getMessage()
+    ));
+}

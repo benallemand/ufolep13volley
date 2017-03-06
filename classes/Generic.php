@@ -10,7 +10,8 @@ require_once 'Database.php';
 
 class Generic
 {
-    protected function getCurrentUserDetails() {
+    public function getCurrentUserDetails()
+    {
         if (!(isset($_SESSION['login']))) {
             session_start();
         }
