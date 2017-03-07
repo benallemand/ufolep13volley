@@ -30,7 +30,8 @@ Ext.define('Ufolep13Volley.view.limitdate.Edit', {
                 valueField: 'code_competition',
                 store: 'Competitions',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                forceSelection: true
             },
             {
                 xtype: 'textfield',

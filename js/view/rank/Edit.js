@@ -30,7 +30,8 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
                 valueField: 'code_competition',
                 store: 'Competitions',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                forceSelection: true
             },
             {
                 xtype: 'textfield',
@@ -46,7 +47,8 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
                 valueField: 'id_equipe',
                 store: 'Teams',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                forceSelection: true
             }
         ],
         buttons: [

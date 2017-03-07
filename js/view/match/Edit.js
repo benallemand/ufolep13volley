@@ -40,7 +40,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 valueField: 'code_competition',
                 store: 'ParentCompetitions',
                 queryMode: 'local',
-                allowBlank: false
+                allowBlank: false,
+                forceSelection: true
             },
             {
                 xtype: 'combo',
@@ -60,7 +61,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                         value: '{parent_competition.value}',
                         exactMatch: true
                     }
-                }
+                },
+                forceSelection: true
             },
             {
                 xtype: 'textfield',
@@ -96,7 +98,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                             exactMatch: true
                         }
                     ]
-                }
+                },
+                forceSelection: true
             },
             {
                 xtype: 'combo',
@@ -121,7 +124,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                             exactMatch: true
                         }
                     ]
-                }
+                },
+                forceSelection: true
             },
             {
                 xtype: 'combo',
@@ -139,7 +143,8 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                         value: '{competition.value}',
                         exactMatch: true
                     }
-                }
+                },
+                forceSelection: true
             },
             {
                 xtype: 'datefield',

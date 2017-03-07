@@ -128,7 +128,8 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                         displayField: 'nom',
                         valueField: 'id',
                         msgTarget: 'under',
-                        anchor: '100%'
+                        anchor: '100%',
+                        forceSelection: true
                     }
                 ]
             },

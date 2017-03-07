@@ -29,7 +29,8 @@ Ext.define('Ufolep13Volley.view.team.DetailsEdit', {
                 displayField: 'nom',
                 valueField: 'id',
                 store: 'Clubs',
-                queryMode: 'local'
+                queryMode: 'local',
+                forceSelection: true
             },
             {
                 xtype: 'textfield',

@@ -32,7 +32,8 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
                 valueField: 'id_equipe',
                 store: 'Teams',
                 queryMode: 'local',
-                msgTarget: 'under'
+                msgTarget: 'under',
+                forceSelection: true
             },
             {
                 xtype: 'combo',
@@ -43,7 +44,8 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
                 displayField: 'full_name',
                 valueField: 'id',
                 allowBlank: false,
-                msgTarget: 'under'
+                msgTarget: 'under',
+                forceSelection: true
             },
             {
                 xtype: 'combo',
@@ -54,7 +56,8 @@ Ext.define('Ufolep13Volley.view.timeslot.Edit', {
                 displayField: 'name',
                 valueField: 'name',
                 allowBlank: false,
-                msgTarget: 'under'
+                msgTarget: 'under',
+                forceSelection: true
             },
             {
                 xtype: 'timefield',
