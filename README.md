@@ -36,9 +36,14 @@ Files has been ignored in GIT :
     }
 
 
-/players_pics/ --> contains photos of players
-/teams_pics/ --> contains photos of teams
+- /players_pics/ --> contains photos of players
+- /teams_pics/ --> contains photos of teams
+- /match_files/ --> contains match sheets
 
-Used code is PHP/MySQL for server side, Javascript/Sencha ExtJS/Sencha Touch for client side.
+Used code is 
+
+- PHP/MySQL for server side
+- Sencha for admin client side.
+- AngularJS for client side.
 
 Any contribution is welcome :)
