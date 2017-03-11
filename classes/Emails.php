@@ -11,8 +11,6 @@ class Emails
     {
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
-            case 'localhost':
-                return;
             default:
                 $mail = new PHPMailer();
                 $mail->CharSet = "UTF-8";
@@ -47,7 +45,6 @@ class Emails
                 $mail->Subject = $subject;
                 $mail->Body = $mail->msgHTML($body);
                 if (!$mail->send()) {
-                    print_r($mail->ErrorInfo);
                     throw new Exception("Send email error : " . $mail->ErrorInfo);
                 }
         }

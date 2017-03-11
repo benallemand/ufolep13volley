@@ -49,7 +49,7 @@ function createUser($login, $email, $idTeam)
     global $db;
     conn_db();
     if (isUserExists($login)) {
-        return false;
+        throw new Exception("Account already exists ! !");
     }
     if ($idTeam === NULL) {
         $idTeam = 0;
@@ -59,13 +59,13 @@ function createUser($login, $email, $idTeam)
     $req = mysqli_query($db, $sql);
     disconn_db();
     if ($req === FALSE) {
-        return false;
+        throw new Exception("Unable to create new account in database !");
     }
     addActivity("Creation du compte $login pour l'equipe " . getTeamName($idTeam));
     require_once '../classes/Emails.php';
     $emailManager = new Emails();
     $emailManager->sendMailNewUser($email, $login, $password, $idTeam);
-    return true;
+    return;
 }
 
 function deleteUsers($ids)
