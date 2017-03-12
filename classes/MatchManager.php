@@ -207,4 +207,175 @@ class MatchManager extends Generic
                 throw new Exception("User role not allowed to download !");
         }
     }
+
+    private function isMatchUpdateAllowed($id_match)
+    {
+        $userDetails = $this->getCurrentUserDetails();
+        $profile = $userDetails['profile_name'];
+        $id_team = $userDetails['id_equipe'];
+        $match = $this->getMatch($id_match);
+        switch ($profile) {
+            case 'ADMINISTRATEUR':
+                return true;
+            case 'RESPONSABLE_EQUIPE':
+                if (
+                    ($id_team != $match['id_equipe_dom'])
+                    &&
+                    ($id_team != $match['id_equipe_ext'])
+                ) {
+                    return false;
+                }
+                if ($match['certif'] == '1') {
+                    return false;
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public function saveMatch()
+    {
+        $db = Database::openDbConnection();
+        $inputs = filter_input_array(INPUT_POST);
+        if (empty($inputs['id_match'])) {
+            $sql = "INSERT INTO";
+        } else {
+            if (!$this->isMatchUpdateAllowed($inputs['id_match'])) {
+                throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
+            }
+            $sql = "UPDATE";
+        }
+        $sql .= " matches SET ";
+        foreach ($inputs as $key => $value) {
+            switch ($key) {
+                case 'id_match':
+                case 'dirtyFields':
+                case 'parent_code_competition':
+                case 'equipe_dom':
+                case 'equipe_ext':
+                    continue;
+                case 'id_equipe_dom':
+                case 'id_equipe_ext':
+                case 'id_journee':
+                    $sql .= "$key = $value,";
+                    break;
+                case 'set_1_dom':
+                case 'set_1_ext':
+                case 'set_2_dom':
+                case 'set_2_ext':
+                case 'set_3_dom':
+                case 'set_3_ext':
+                case 'set_4_dom':
+                case 'set_4_ext':
+                case 'set_5_dom':
+                case 'set_5_ext':
+                case 'score_equipe_dom':
+                case 'score_equipe_ext':
+                    $sql .= empty($value) ? "$key = 0," : "$key = $value,";
+                    break;
+                case 'date_reception':
+                    $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
+                    break;
+                case 'certif':
+                case 'sheet_received':
+                    $val = ($value === 'on') ? 1 : 0;
+                    $sql .= "$key = $val,";
+                    break;
+                case 'forfait_dom':
+                case 'forfait_ext':
+                    $val = ($value === 'true') ? 1 : 0;
+                    $sql .= "$key = $val,";
+                    break;
+                default:
+                    $sql .= "$key = '$value',";
+                    break;
+            }
+        }
+        $sql = trim($sql, ',');
+        if (empty($inputs['id_match'])) {
+
+        } else {
+            $sql .= " WHERE id_match=" . $inputs['id_match'];
+        }
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            $message = mysqli_error($db);
+            throw new Exception($message);
+        }
+        if (empty($inputs['id_match'])) {
+            return;
+        }
+        $this->saveMatchFiles($inputs);
+        return;
+    }
+
+    private function saveMatchFiles($match)
+    {
+        $uploaddir = '../match_files/';
+        $code_match = $match['code_match'];
+        $file_iteration = array('file1', 'file2', 'file3', 'file4');
+        $mark_sheet_received = false;
+        foreach ($file_iteration as $current_file_iteration) {
+            if (empty($_FILES[$current_file_iteration]['name'])) {
+                continue;
+            }
+            $mark_sheet_received = true;
+            $iteration = 1;
+            $extension = pathinfo($_FILES[$current_file_iteration]['name'], PATHINFO_EXTENSION);
+            $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
+            while (file_exists($uploadfile)) {
+                $iteration++;
+                $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
+            }
+            $id_file = 0;
+            $this->insertFile(substr($uploadfile, 3), $id_file);
+            $id_match = $match['id_match'];
+            $this->linkMatchToFile($id_match, $id_file);
+            if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], $this->accentedToNonAccented($uploadfile))) {
+                $this->addActivity("Un nouveau fichier a ete transmis pour le match $code_match.");
+            }
+        }
+        if ($mark_sheet_received) {
+            $this->declareSheetReceived($code_match);
+        }
+        return;
+    }
+
+    private function insertFile($uploadfile, &$idFile)
+    {
+        $db = Database::openDbConnection();
+        $sql = "INSERT INTO files SET path_file = '$uploadfile'";
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            $message = mysqli_error($db);
+            disconn_db();
+            throw new Exception($message);
+        }
+        $idFile = mysqli_insert_id($db);
+    }
+
+    private function linkMatchToFile($idMatch, $idFile)
+    {
+        $db = Database::openDbConnection();
+        $sql = "INSERT INTO matches_files SET id_file = $idFile, id_match = $idMatch";
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            $message = mysqli_error($db);
+            throw new Exception($message);
+        }
+    }
+
+    public function declareSheetReceived($code_match)
+    {
+        $db = Database::openDbConnection();
+        $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = '$code_match'";
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            return false;
+        }
+        $this->addActivity("La feuille du match $code_match a ete reçue");
+        return true;
+    }
+
 }

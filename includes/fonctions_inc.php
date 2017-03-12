@@ -1149,20 +1149,6 @@ function certifyMatch($code_match)
     return true;
 }
 
-function declareSheetReceived($code_match)
-{
-    global $db;
-    conn_db();
-    $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = '$code_match'";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    disconn_db();
-    addActivity("La feuille du match $code_match a ete reçue");
-    return true;
-}
-
 function invalidateMatch($code_match)
 {
     global $db;
@@ -2145,42 +2131,11 @@ function insertPhoto($uploadfile, &$idPhoto)
     return;
 }
 
-function insertFile($uploadfile, &$idFile)
-{
-    global $db;
-    conn_db();
-    $sql = "INSERT INTO files SET path_file = '$uploadfile'";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        $message = mysqli_error($db);
-        disconn_db();
-        throw new Exception($message);
-    }
-    $idFile = mysqli_insert_id($db);
-    disconn_db();
-    return;
-}
-
 function linkPlayerToPhoto($idPlayer, $idPhoto)
 {
     global $db;
     conn_db();
     $sql = "UPDATE joueurs j SET j.id_photo = $idPhoto WHERE id = $idPlayer";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        $message = mysqli_error($db);
-        disconn_db();
-        throw new Exception($message);
-    }
-    disconn_db();
-    return;
-}
-
-function linkMatchToFile($idMatch, $idFile)
-{
-    global $db;
-    conn_db();
-    $sql = "INSERT INTO matches_files SET id_file = $idFile, id_match = $idMatch";
     $req = mysqli_query($db, $sql);
     if ($req === FALSE) {
         $message = mysqli_error($db);
@@ -2203,38 +2158,6 @@ function linkTeamToPhoto($idTeam, $idPhoto)
         throw new Exception($message);
     }
     disconn_db();
-    return;
-}
-
-function saveMatchFiles($match)
-{
-    $uploaddir = '../match_files/';
-    $code_match = $match['code_match'];
-    $file_iteration = array('file1', 'file2', 'file3', 'file4');
-    $mark_sheet_received = false;
-    foreach ($file_iteration as $current_file_iteration) {
-        if (empty($_FILES[$current_file_iteration]['name'])) {
-            continue;
-        }
-        $mark_sheet_received = true;
-        $iteration = 1;
-        $extension = pathinfo($_FILES[$current_file_iteration]['name'], PATHINFO_EXTENSION);
-        $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
-        while (file_exists($uploadfile)) {
-            $iteration++;
-            $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
-        }
-        $id_file = 0;
-        insertFile(substr($uploadfile, 3), $id_file);
-        $id_match = $match['id_match'];
-        linkMatchToFile($id_match, $id_file);
-        if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], accentedToNonAccented($uploadfile))) {
-            addActivity("Un nouveau fichier a ete transmis pour le match $code_match.");
-        }
-    }
-    if ($mark_sheet_received) {
-        declareSheetReceived($code_match);
-    }
     return;
 }
 
@@ -2955,113 +2878,6 @@ function saveTeam()
     if (!empty($inputs['id_equipe'])) {
         saveTeamPhoto($inputs['id_equipe']);
     }
-    return;
-}
-
-/**
- * if admin ok, if team leader check its team is dom or ext
- * @param $idMatch
- * @return bool
- */
-function isMatchUpdateAllowed($idMatch)
-{
-    if (isAdmin()) {
-        return true;
-    }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $myMatches = json_decode(getMyMatches());
-    foreach ($myMatches as $myMatch) {
-        if ($myMatch->id_match == $idMatch) {
-            if ($myMatch->certif == '1') {
-                return false;
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * @throws Exception
- */
-function saveMatch()
-{
-    global $db;
-    $inputs = filter_input_array(INPUT_POST);
-    conn_db();
-    if (empty($inputs['id_match'])) {
-        $sql = "INSERT INTO";
-    } else {
-        if (!isMatchUpdateAllowed($inputs['id_match'])) {
-            throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
-        }
-        $sql = "UPDATE";
-    }
-    $sql .= " matches SET ";
-    foreach ($inputs as $key => $value) {
-        switch ($key) {
-            case 'id_match':
-            case 'dirtyFields':
-            case 'parent_code_competition':
-            case 'equipe_dom':
-            case 'equipe_ext':
-                continue;
-            case 'id_equipe_dom':
-            case 'id_equipe_ext':
-            case 'id_journee':
-                $sql .= "$key = $value,";
-                break;
-            case 'set_1_dom':
-            case 'set_1_ext':
-            case 'set_2_dom':
-            case 'set_2_ext':
-            case 'set_3_dom':
-            case 'set_3_ext':
-            case 'set_4_dom':
-            case 'set_4_ext':
-            case 'set_5_dom':
-            case 'set_5_ext':
-            case 'score_equipe_dom':
-            case 'score_equipe_ext':
-                $sql .= empty($value) ? "$key = 0," : "$key = $value,";
-                break;
-            case 'date_reception':
-                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%y')),";
-                break;
-            case 'certif':
-            case 'sheet_received':
-                $val = ($value === 'on') ? 1 : 0;
-                $sql .= "$key = $val,";
-                break;
-            case 'forfait_dom':
-            case 'forfait_ext':
-                $val = ($value === 'true') ? 1 : 0;
-                $sql .= "$key = $val,";
-                break;
-            default:
-                $sql .= "$key = '$value',";
-                break;
-        }
-    }
-    $sql = trim($sql, ',');
-    if (empty($inputs['id_match'])) {
-
-    } else {
-        $sql .= " WHERE id_match=" . $inputs['id_match'];
-    }
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        $message = mysqli_error($db);
-        disconn_db();
-        throw new Exception($message);
-    }
-    disconn_db();
-    if (empty($inputs['id_match'])) {
-        return;
-    }
-    saveMatchFiles($inputs);
     return;
 }
 

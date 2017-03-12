@@ -1,11 +1,25 @@
-
 <?php
 
-require_once "../includes/fonctions_inc.php";
-
-$code_match = filter_input(INPUT_POST, 'code_match');
-$success = declareSheetReceived($code_match);
+try {
+    $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
+    switch ($requestMethod) {
+        case 'POST':
+            break;
+        default:
+            throw new Exception("Request not allowed");
+    }
+    require_once '../classes/MatchManager.php';
+    $code_match = filter_input(INPUT_POST, 'code_match');
+    $manager = new MatchManager();
+    $manager->declareSheetReceived($code_match);
+} catch (Exception $ex) {
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Erreur durant la modification: ' . $ex->getMessage()
+    ));
+    return;
+}
 echo json_encode(array(
-    'success' => $success,
-    'message' => $success ? 'Modification OK' : 'Erreur durant la modification'
+    'success' => true,
+    'message' => 'Modification OK'
 ));
