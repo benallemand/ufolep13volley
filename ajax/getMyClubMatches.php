@@ -19,7 +19,7 @@ try {
     $id_club = $team_details['id_club'];
     switch ($profile) {
         case 'RESPONSABLE_EQUIPE':
-            $query = "m.id_equipe_dom IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club) OR m.id_equipe_ext IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club) ORDER BY m.date_reception, m.code_match";
+            $query = "m.id_equipe_dom IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club) OR m.id_equipe_ext IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club) ORDER BY j.nommage, m.date_reception, m.code_match";
             break;
         default:
             throw new Exception("Get my club matches allowed only for RESPONSABLE_EQUIPE !");

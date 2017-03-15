@@ -15,7 +15,7 @@ try {
     $id_team = $userDetails['id_equipe'];
     switch ($profile) {
         case 'RESPONSABLE_EQUIPE':
-            $query = "m.id_equipe_dom = $id_team OR m.id_equipe_ext = $id_team ORDER BY m.date_reception, m.code_match";
+            $query = "m.id_equipe_dom = $id_team OR m.id_equipe_ext = $id_team ORDER BY j.nommage, m.date_reception, m.code_match";
             break;
         default:
             throw new Exception("Get my matches allowed only for RESPONSABLE_EQUIPE !");
