@@ -63,7 +63,7 @@ class TeamManager extends Generic
     {
         $results = $this->getTeams("e.id_equipe = $id");
         if (count($results) !== 1) {
-            throw new Exception("Error while retrieving data");
+            throw new Exception("Error while retrieving team data");
         }
         return $results[0];
     }

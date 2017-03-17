@@ -134,7 +134,7 @@ class MatchManager extends Generic
     {
         $results = $this->getMatches("m.id_match = $id_match");
         if (count($results) !== 1) {
-            throw new Exception("Error while retrieving data");
+            throw new Exception("Error while retrieving match data");
         }
         return $results[0];
     }

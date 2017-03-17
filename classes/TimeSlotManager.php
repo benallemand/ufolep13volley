@@ -44,7 +44,7 @@ class TimeSlotManager extends Generic
     {
         $results = $this->getTimeSlots("c.id = $id");
         if (count($results) !== 1) {
-            throw new Exception("Error while retrieving data");
+            throw new Exception("Error while retrieving timeslot data");
         }
         return $results[0];
     }
