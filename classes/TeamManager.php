@@ -61,9 +61,8 @@ class TeamManager extends Generic
 
     public function getTeam($id)
     {
-        $id_team = intval($id);
-        $results = $this->getTeams("e.id_equipe = $id_team");
-        if (count($results) !== 1) {
+        $results = $this->getTeams("e.id_equipe = $id");
+        if (count($results) < 1) {
             throw new Exception("Error while retrieving team data");
         }
         return $results[0];
