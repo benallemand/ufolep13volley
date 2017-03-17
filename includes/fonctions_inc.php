@@ -1298,40 +1298,6 @@ function modifyMyTeam()
     return true;
 }
 
-function modifyMyPassword()
-{
-    global $db;
-    conn_db();
-    if (isAdmin()) {
-        return false;
-    }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    $password = filter_input(INPUT_POST, 'new_password');
-    $passwordAgain = filter_input(INPUT_POST, 'new_password_again');
-    if (!isset($password)) {
-        return false;
-    }
-    if (!isset($passwordAgain)) {
-        return false;
-    }
-    if ($password !== $passwordAgain) {
-        return false;
-    }
-    $sql = "UPDATE comptes_acces SET 
-      password='$password'
-      WHERE id_equipe=$sessionIdEquipe";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    disconn_db();
-    addActivity("Mot de passe modifie");
-    return true;
-}
-
 function removeMatch($code_match)
 {
     global $db;
@@ -1436,70 +1402,6 @@ function getMyTeam()
         $results[] = $data;
     }
     return json_encode($results);
-}
-
-function getMyPreferences()
-{
-    global $db;
-    conn_db();
-    if (isAdmin()) {
-        return false;
-    }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "SELECT r.registry_value AS is_remind_matches FROM registry r
-        WHERE r.registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
-}
-
-function saveMyPreferences()
-{
-    global $db;
-    conn_db();
-    if (isAdmin()) {
-        return false;
-    }
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    $inputs = array(
-        'is_remind_matches' => filter_input(INPUT_POST, 'is_remind_matches')
-    );
-    if (isRegistryKeyPresent("users.$sessionIdEquipe.is_remind_matches")) {
-        $sql = "UPDATE registry SET registry_value = '" . $inputs['is_remind_matches'] . "' WHERE registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
-    } else {
-        $sql = "INSERT INTO registry SET registry_value = '" . $inputs['is_remind_matches'] . "', registry_key = 'users.$sessionIdEquipe.is_remind_matches'";
-    }
-    $req = mysqli_query($db, $sql);
-    disconn_db();
-    if ($req === FALSE) {
-        return false;
-    }
-    return true;
-}
-
-function isRegistryKeyPresent($key)
-{
-    global $db;
-    conn_db();
-    $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = '$key'";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    if (intval($results[0]['cnt']) === 0) {
-        return false;
-    }
-    return true;
 }
 
 function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = false)
@@ -3036,67 +2938,6 @@ function saveLimitDate()
     }
     disconn_db();
     return;
-}
-
-function getTimeSlots()
-{
-    $isTeamLeader = isTeamLeader();
-    global $db;
-    conn_db();
-    $sql = "SELECT 
-        c.id, 
-        c.id_gymnase, 
-        c.id_equipe, 
-        c.jour, 
-        c.heure, 
-        CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnasium_full_name, 
-        CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')') AS team_full_name,
-        c.has_time_constraint+0 AS has_time_constraint
-        FROM creneau c
-        JOIN gymnase g ON g.id = c.id_gymnase
-        JOIN equipes e ON e.id_equipe = c.id_equipe
-        JOIN clubs cl ON cl.id = e.id_club
-        JOIN competitions comp ON comp.code_competition = e.code_competition";
-    if ($isTeamLeader) {
-        $sessionIdEquipe = $_SESSION['id_equipe'];
-        $sql .= " WHERE c.id_equipe = $sessionIdEquipe";
-    }
-    $sql .= " ORDER BY team_full_name, gymnasium_full_name";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
-}
-
-function getActivity()
-{
-    $isTeamLeader = isTeamLeader();
-    global $db;
-    conn_db();
-    $sql = "SELECT 
-        DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
-        e.nom_equipe, 
-        c.libelle AS competition, 
-        a.comment AS description, 
-        ca.login AS utilisateur, 
-        ca.email AS email_utilisateur 
-        FROM activity a
-        LEFT JOIN comptes_acces ca ON ca.id=a.user_id
-        LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
-        LEFT JOIN competitions c ON c.code_competition=e.code_competition";
-    if ($isTeamLeader) {
-        $sessionIdEquipe = $_SESSION['id_equipe'];
-        $sql .= " WHERE e.id_equipe = $sessionIdEquipe";
-    }
-    $sql .= " ORDER BY a.activity_date DESC";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
 }
 
 function getAlerts()

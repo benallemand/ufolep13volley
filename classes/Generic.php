@@ -36,12 +36,39 @@ class Generic
 
     protected function accentedToNonAccented($str)
     {
-        $unwanted_array = array('?' => 'S', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
-            'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
-            'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
-            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-            'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y',
+        $unwanted_array = array('?' => 'S', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'A', 'ï¿½' => 'C', 'ï¿½' => 'E', 'ï¿½' => 'E',
+            'ï¿½' => 'E', 'ï¿½' => 'E', 'ï¿½' => 'I', 'ï¿½' => 'I', 'ï¿½' => 'I', 'ï¿½' => 'I', 'ï¿½' => 'N', 'ï¿½' => 'O', 'ï¿½' => 'O', 'ï¿½' => 'O', 'ï¿½' => 'O', 'ï¿½' => 'O', 'ï¿½' => 'O', 'ï¿½' => 'U',
+            'ï¿½' => 'U', 'ï¿½' => 'U', 'ï¿½' => 'U', 'ï¿½' => 'Y', 'ï¿½' => 'B', 'ï¿½' => 'Ss', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'a', 'ï¿½' => 'c',
+            'ï¿½' => 'e', 'ï¿½' => 'e', 'ï¿½' => 'e', 'ï¿½' => 'e', 'ï¿½' => 'i', 'ï¿½' => 'i', 'ï¿½' => 'i', 'ï¿½' => 'i', 'ï¿½' => 'o', 'ï¿½' => 'n', 'ï¿½' => 'o', 'ï¿½' => 'o', 'ï¿½' => 'o', 'ï¿½' => 'o',
+            'ï¿½' => 'o', 'ï¿½' => 'o', 'ï¿½' => 'u', 'ï¿½' => 'u', 'ï¿½' => 'u', 'ï¿½' => 'y', 'ï¿½' => 'b', 'ï¿½' => 'y',
             '-' => '', ' ' => '');
         return strtr($str, $unwanted_array);
+    }
+
+    public function getActivity($id_team)
+    {
+        $userDetails = $this->getCurrentUserDetails();
+        $db = Database::openDbConnection();
+        $sql = "SELECT 
+                DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
+                e.nom_equipe, 
+                c.libelle AS competition, 
+                a.comment AS description, 
+                ca.login AS utilisateur, 
+                ca.email AS email_utilisateur 
+            FROM activity a
+            LEFT JOIN comptes_acces ca ON ca.id=a.user_id
+            LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
+            LEFT JOIN competitions c ON c.code_competition=e.code_competition";
+        if (!empty($id_team)) {
+            $sql .= " WHERE e.id_equipe = $id_team";
+        }
+        $sql .= " ORDER BY a.activity_date DESC";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return $results;
     }
 }
