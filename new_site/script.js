@@ -87,7 +87,7 @@ var Base64 = {
         }
         return t
     }
-}
+};
 
 // create the module and name it scotchApp
 var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter']);
@@ -250,8 +250,8 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                     $scope.modify_match.set_5_ext = parseInt(matches[i].set_5_ext);
                     $scope.modify_match.equipe_dom = matches[i].equipe_dom;
                     $scope.modify_match.equipe_ext = matches[i].equipe_ext;
-                    $scope.modify_match.forfait_dom = matches[i].forfait_dom == '1';
-                    $scope.modify_match.forfait_ext = matches[i].forfait_ext == '1';
+                    $scope.modify_match.forfait_dom = matches[i].forfait_dom === '1';
+                    $scope.modify_match.forfait_ext = matches[i].forfait_ext === '1';
                     $scope.modify_match.code_match = matches[i].code_match;
                     if (matches[i].note) {
                         $scope.modify_match.note = matches[i].note;
@@ -274,7 +274,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                     $scope.modify_player.sexe = players[i].sexe;
                     $scope.modify_player.departement_affiliation = players[i].departement_affiliation;
                     $scope.modify_player.id_club = players[i].id_club;
-                    $scope.modify_player.show_photo = players[i].show_photo == "1" ? 'on' : 'off';
+                    $scope.modify_player.show_photo = players[i].show_photo === "1" ? 'on' : 'off';
                     $scope.modify_player.telephone = players[i].telephone;
                     $scope.modify_player.email = players[i].email;
                     $scope.modify_player.telephone2 = players[i].telephone2;
@@ -328,6 +328,114 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
             modify_match.set_5_ext = 0;
         }
     };
+
+    $scope.askForReport = function (code_match) {
+        bootbox.prompt(
+            "Merci d'indiquer la raison de votre demande de report",
+            function (reason) {
+                if (reason !== null) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/askForReport.php',
+                        data: $.param({
+                            code_match: code_match,
+                            reason: reason
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
+                }
+            });
+    };
+
+    $scope.refuseReport = function (code_match) {
+        bootbox.confirm(
+            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
+            function (confirm_refuse_report) {
+                if (confirm_refuse_report === true) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/refuseReport.php',
+                        data: $.param({
+                            code_match: code_match
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre refus a été transmis à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
+                }
+            }
+        );
+    };
+
+    $scope.acceptReport = function (code_match) {
+        bootbox.confirm(
+            "Vous allez accepter la demande de report, vous devrez donc communiquer une nouvelle date pour jouer le match. Êtes vous sûr de vouloir continuer ?",
+            function (confirm_accept_report) {
+                if (confirm_accept_report === true) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/acceptReport.php',
+                        data: $.param({
+                            code_match: code_match
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.",
+                                function () {
+                                    window.location.reload();
+                                });
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
+                }
+            });
+    };
+
+    $scope.giveReportDate = function (code_match) {
+        bootbox.prompt(
+            "Merci d'indiquer la date de report (format: JJ/MM/AAAA)",
+            function (report_date) {
+                if (report_date !== null) {
+                    $http({
+                        method: 'POST',
+                        url: '../ajax/giveReportDate.php',
+                        data: $.param({
+                            code_match: code_match,
+                            report_date: report_date
+                        }),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function (response) {
+                        if (response.data.success) {
+                            bootbox.alert("La nouvelle date a été transmise à l'équipe adverse et au responsable de compétition",
+                                function () {
+                                    window.location.reload();
+                                });
+                            return;
+                        }
+                        $scope.myTxt = "Erreur: " + response.data.message;
+                    });
+                }
+            });
+    };
+
 }]);
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
@@ -660,113 +768,6 @@ scotchApp.controller('myPageController', function ($scope, $http) {
             $scope.team["telephone_2_base64"] = Base64.encode($scope.team["telephone_2"]);
             $scope.team["email_base64"] = Base64.encode($scope.team["email"]);
         });
-
-    $scope.askForReport = function (code_match) {
-        bootbox.prompt(
-            "Merci d'indiquer la raison de votre demande de report",
-            function (reason) {
-                if (reason != null) {
-                    $http({
-                        method: 'POST',
-                        url: '../ajax/askForReport.php',
-                        data: $.param({
-                            code_match: code_match,
-                            reason: reason
-                        }),
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                    }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
-                        $scope.myTxt = "Erreur: " + response.data.message;
-                    });
-                }
-            });
-    };
-
-    $scope.refuseReport = function (code_match) {
-        bootbox.confirm(
-            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
-            function (confirm_refuse_report) {
-                if (confirm_refuse_report == true) {
-                    $http({
-                        method: 'POST',
-                        url: '../ajax/refuseReport.php',
-                        data: $.param({
-                            code_match: code_match
-                        }),
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                    }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
-                        $scope.myTxt = "Erreur: " + response.data.message;
-                    });
-                }
-            }
-        );
-    };
-
-    $scope.acceptReport = function (code_match) {
-        bootbox.confirm(
-            "Vous allez accepter la demande de report, vous devrez donc communiquer une nouvelle date pour jouer le match. Êtes vous sûr de vouloir continuer ?",
-            function (confirm_accept_report) {
-                if (confirm_accept_report == true) {
-                    $http({
-                        method: 'POST',
-                        url: '../ajax/acceptReport.php',
-                        data: $.param({
-                            code_match: code_match
-                        }),
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                    }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
-                        $scope.myTxt = "Erreur: " + response.data.message;
-                    });
-                }
-            });
-    };
-
-    $scope.giveReportDate = function (code_match) {
-        bootbox.prompt(
-            "Merci d'indiquer la date de report (format: JJ/MM/AAAA)",
-            function (report_date) {
-                if (report_date != null) {
-                    $http({
-                        method: 'POST',
-                        url: '../ajax/giveReportDate.php',
-                        data: $.param({
-                            code_match: code_match,
-                            report_date: report_date
-                        }),
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                    }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("La nouvelle date a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
-                        $scope.myTxt = "Erreur: " + response.data.message;
-                    });
-                }
-            });
-    };
 });
 
 scotchApp.controller('myClubController', function ($scope, $http) {
@@ -836,9 +837,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         .then(function (response) {
             $scope.competitions = response.data;
             var competitions = $scope.competitions;
-            var competitions_count = competitions.length;
             for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
-                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                if (competitions[currentCompetitionIndex]['code_competition'] === $scope.code_competition) {
                     $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
                     $scope.limit_date = competitions[currentCompetitionIndex]['limit_date'];
                     return;
@@ -855,24 +855,24 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         var teams = $scope.rankings;
         var teams_count = teams.length;
         for (var currentTeamIndex = 0; currentTeamIndex < teams.length; currentTeamIndex++) {
-            $scope.rankings[currentTeamIndex]["is_promotion"] = ((teams[currentTeamIndex]["rang"] == "1") || (teams[currentTeamIndex]["rang"] == "2")) ? "1" : "0";
-            $scope.rankings[currentTeamIndex]["is_relegation"] = ((teams[currentTeamIndex]["rang"] == teams_count.toString()) || (teams[currentTeamIndex]["rang"] == (teams_count - 1).toString())) ? "1" : "0";
-            if (teams[currentTeamIndex]["joues"] == "0") {
+            $scope.rankings[currentTeamIndex]["is_promotion"] = ((teams[currentTeamIndex]["rang"] === "1") || (teams[currentTeamIndex]["rang"] === "2")) ? "1" : "0";
+            $scope.rankings[currentTeamIndex]["is_relegation"] = ((teams[currentTeamIndex]["rang"] === teams_count.toString()) || (teams[currentTeamIndex]["rang"] === (teams_count - 1).toString())) ? "1" : "0";
+            if (teams[currentTeamIndex]["joues"] === "0") {
                 $scope.rankings[currentTeamIndex]["exact_deuce"] = "0";
                 continue;
             }
             $scope.rankings[currentTeamIndex]["exact_deuce"] = "0";
             for (var compareTeamIndex = 0; compareTeamIndex < teams.length; compareTeamIndex++) {
-                if (teams[compareTeamIndex]["id_equipe"] == teams[currentTeamIndex]["id_equipe"]) {
+                if (teams[compareTeamIndex]["id_equipe"] === teams[currentTeamIndex]["id_equipe"]) {
                     continue;
                 }
-                if (teams[compareTeamIndex]["points"] != teams[currentTeamIndex]["points"]) {
+                if (teams[compareTeamIndex]["points"] !== teams[currentTeamIndex]["points"]) {
                     continue;
                 }
-                if (teams[compareTeamIndex]["joues"] != teams[currentTeamIndex]["joues"]) {
+                if (teams[compareTeamIndex]["joues"] !== teams[currentTeamIndex]["joues"]) {
                     continue;
                 }
-                if (teams[compareTeamIndex]["diff"] != teams[currentTeamIndex]["diff"]) {
+                if (teams[compareTeamIndex]["diff"] !== teams[currentTeamIndex]["diff"]) {
                     continue;
                 }
                 $scope.rankings[currentTeamIndex]["exact_deuce"] = "1";
@@ -889,32 +889,6 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     }).then(function (response) {
         $scope.matches = response.data;
     });
-
-    $scope.refuseReport = function (code_match) {
-        bootbox.confirm(
-            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
-            function (confirm_refuse_report) {
-                if (confirm_refuse_report == true) {
-                    $http({
-                        method: 'POST',
-                        url: '../ajax/refuseReport.php',
-                        data: $.param({
-                            code_match: code_match
-                        }),
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                    }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre refus a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
-                        $scope.myTxt = "Erreur: " + response.data.message;
-                    });
-                }
-            });
-    };
 
     $scope.removePenalty = function (id_equipe, competition) {
         $http({
@@ -1046,9 +1020,8 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
         .then(function (response) {
             $scope.competitions = response.data;
             var competitions = $scope.competitions;
-            var competitions_count = competitions.length;
             for (var currentCompetitionIndex = 0; currentCompetitionIndex < competitions.length; currentCompetitionIndex++) {
-                if (competitions[currentCompetitionIndex]['code_competition'] == $scope.code_competition) {
+                if (competitions[currentCompetitionIndex]['code_competition'] === $scope.code_competition) {
                     $scope.libelle_competition = competitions[currentCompetitionIndex]['libelle'];
                     return;
                 }
@@ -1146,7 +1119,7 @@ scotchApp.controller('volleyballImagesController', function ($scope, $http) {
     $http.get("../ajax/getVolleyballImages.php")
         .then(function (response) {
             $scope.volleyballImages = [];
-            for (var i = 0; i < 20; i++) {
+            for (var i in response.data.photo) {
                 response.data.photo[i]["index"] = i;
                 $scope.volleyballImages.push(response.data.photo[i]);
             }
