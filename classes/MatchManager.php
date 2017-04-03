@@ -338,6 +338,9 @@ class MatchManager extends Generic
         }
         if ($mark_sheet_received) {
             $this->declareSheetReceived($code_match);
+            require_once '../classes/Emails.php';
+            $emailManager = new Emails();
+            $emailManager->sendMailSheetReceived($code_match);
         }
         return;
     }

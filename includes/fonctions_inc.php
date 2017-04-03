@@ -872,7 +872,7 @@ function createCsvString($data)
     return stream_get_contents($fp);
 }
 
-function getTeamsEmailsFromMatch($code_match)
+function getTeamsEmailsFromMatchReport($code_match)
 {
     global $db;
     conn_db();
@@ -902,6 +902,45 @@ function getTeamsEmailsFromMatch($code_match)
             break;
     }
     return array($emailDom, $emailExt, $emailReport);
+}
+
+function getTeamsEmailsFromMatch($code_match)
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT
+      m.id_equipe_dom,
+      m.id_equipe_ext,
+      m.code_competition,
+      LEFT(m.division, 1) AS division
+      FROM matches m
+      WHERE m.code_match = '$code_match'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $data = mysqli_fetch_assoc($req);
+    $emailDom = getTeamEmail($data['id_equipe_dom']);
+    $emailExt = getTeamEmail($data['id_equipe_ext']);
+    $emailCtsd = '';
+    $division = $data['division'];
+    switch ($data['code_competition']) {
+        case 'm':
+            $emailCtsd = 'd'.$division.'m-6x6-ufolep13-volley@googlegroups.com';
+            break;
+        case 'f':
+            $emailCtsd = 'd'.$division.'f-4x4-ufolep13-volley@googlegroups.com';
+            break;
+        case 'mo':
+            $emailCtsd = 'd'.$division.'mi-4x4-ufolep13-volley@googlegroups.com';
+            break;
+        case 'kh':
+        case 'kf':
+            $emailCtsd = 'khanna-ufolep13-volley@googlegroups.com';
+            break;
+        case 'c':
+        case 'cf':
+            $emailCtsd = 'isoardi-ufolep13-volley';
+            break;
+    }
+    return array($emailDom, $emailExt, $emailCtsd);
 }
 
 function getRank($compet, $div)

@@ -66,7 +66,7 @@ class Emails
     public function sendMailAskForReport($code_match, $reason, $id_team)
     {
         $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAskForReport.fr.html');
@@ -80,7 +80,7 @@ class Emails
     public function sendMailGiveReportDate($code_match, $report_date, $id_team)
     {
         $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailGiveReportDate.fr.html');
@@ -94,7 +94,7 @@ class Emails
     public function sendMailRefuseReport($code_match, $id_team)
     {
         $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReport.fr.html');
@@ -107,7 +107,7 @@ class Emails
     public function sendMailAcceptReport($code_match, $id_team)
     {
         $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAcceptReport.fr.html');
@@ -119,12 +119,23 @@ class Emails
 
     public function sendMailRefuseReportAdmin($code_match)
     {
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReportAdmin.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
         $this->sendEmail("[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+    }
+
+    public function sendMailSheetReceived($code_match)
+    {
+        $teams_emails = getTeamsEmailsFromMatch($code_match);
+        $to = implode(';', $teams_emails);
+
+        $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
+        $message = str_replace('%code_match%', $code_match, $message);
+
+        $this->sendEmail("[UFOLEP13VOLLEY]Feuilles du match $code_match reçues", $message, 'no-reply@ufolep13volley.org', $to);
     }
 }
