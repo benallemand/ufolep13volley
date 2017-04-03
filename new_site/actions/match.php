@@ -49,8 +49,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-time"></span>
         </button>
     </form>
-    <div ng-if="today >= x.date_reception_raw
-        && x.certif != '1'">
+    <div ng-if="x.certif != '1'">
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
            ng-click="editMatch(x.id_match, matches)">
