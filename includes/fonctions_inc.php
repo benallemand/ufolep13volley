@@ -504,8 +504,9 @@ function getLastResults()
     CONCAT(m.set_4_dom, '-', set_4_ext) AS set4, 
     CONCAT(m.set_5_dom, '-', set_5_ext) AS set5, 
     m.date_reception
-    FROM activity a
-    JOIN matches m ON m.code_match = SPLIT_STRING(a.comment, ' ', 3)
+    FROM matches m
+    LEFT JOIN activity a_modif ON (a_modif.comment LIKE 'Le match % a ete modifie' AND SPLIT_STRING(a_modif.comment, ' ', 3) = m.code_match)
+    LEFT JOIN activity a_sheet_received ON (a_sheet_received.comment LIKE 'La feuille du match % a ete reçue' AND SPLIT_STRING(a_sheet_received.comment, ' ', 5) = m.code_match)
     JOIN journees j ON j.id=m.id_journee
     JOIN competitions c ON c.code_competition =  m.code_competition
     JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
@@ -514,10 +515,9 @@ function getLastResults()
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
     AND (m.date_reception <= CURDATE())
     AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
-    AND (a.comment LIKE 'Le match % a ete modifie')
-    AND (a.activity_date >= m.date_reception)
+    AND (a_modif.activity_date >= m.date_reception OR a_sheet_received.activity_date >= m.date_reception)
     )
-    ORDER BY c.libelle ASC, m.division ASC, j.nommage ASC, a.activity_date DESC";
+    ORDER BY c.libelle ASC, m.division ASC, j.nommage ASC, m.date_reception DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
