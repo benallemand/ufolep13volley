@@ -515,6 +515,7 @@ function getLastResults()
     AND (m.date_reception <= CURDATE())
     AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
     AND (a.comment LIKE 'Le match % a ete modifie')
+    AND (a.activity_date >= m.date_reception)
     )
     ORDER BY c.libelle ASC, m.division ASC, j.nommage ASC, a.activity_date DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));

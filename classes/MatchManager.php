@@ -307,6 +307,8 @@ class MatchManager extends Generic
             return;
         }
         $this->saveMatchFiles($inputs);
+        $code_match = $inputs['code_match'];
+        $this->addActivity("Le match $code_match a ete modifie");
         return;
     }
 
