@@ -32,21 +32,22 @@
                         <td class="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'warning':''}}"
                             title="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'Match reporté':''}}">
                             {{ x.date_reception }} - {{ x.heure_reception }}
+                            <script src="//addtocalendar.com/atc/1.5/atc.min.js"></script>
                             <span class="addtocalendar atc-style-button-icon atc-style-menu-wb">
-                    <a class="atcb-link">
-                        <img src="/images/add_to_calendar.png" width="16"/>
-                    </a>
-                    <var class="atc_event">
-                        <var class="atc_date_start">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
-                        <var class="atc_date_end">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
-                        <var class="atc_timezone">Europe/Paris</var>
-                        <var class="atc_title">{{ x.equipe_dom }} contre {{ x.equipe_ext }}</var>
-                        <var class="atc_description">Compétition Ufolep 13 Volley</var>
-                        <var class="atc_location">http://www.ufolep13volley.org/new_site/#/phonebook/{{x.id_equipe_dom}}</var>
-                        <var class="atc_organizer">Ufolep 13 Volley</var>
-                        <var class="atc_organizer_email">laurent.gorlier@ufolep13volley.org</var>
-                    </var>
-                </span>
+                                <a class="atcb-link">
+                                    <img src="/images/add_to_calendar.png" width="16"/>
+                                </a>
+                                <var class="atc_event">
+                                    <var class="atc_date_start">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
+                                    <var class="atc_date_end">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
+                                    <var class="atc_timezone">Europe/Paris</var>
+                                    <var class="atc_title">{{ x.equipe_dom }} contre {{ x.equipe_ext }}</var>
+                                    <var class="atc_description">Compétition Ufolep 13 Volley</var>
+                                    <var class="atc_location">http://www.ufolep13volley.org/new_site/#/phonebook/{{x.id_equipe_dom}}</var>
+                                    <var class="atc_organizer">Ufolep 13 Volley</var>
+                                    <var class="atc_organizer_email">laurent.gorlier@ufolep13volley.org</var>
+                                </var>
+                            </span>
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_dom }}</span>
