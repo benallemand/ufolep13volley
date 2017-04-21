@@ -4,9 +4,17 @@
     <option name="SCOPE_TYPE" value="2" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="">
+    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="remove todo">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/_staging_/schema/ufolep_13volley/routine/SPLIT_STRING.(varchar(255),varchar(12),int(11)).sql" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dataSources/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/php.xml" afterPath="$PROJECT_DIR$/.idea/php.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/indicators.php" afterPath="$PROJECT_DIR$/ajax/indicators.php" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -18,10 +26,12 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager" flattened_view="false" />
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
   <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
     <option name="GROUP_SCHEMA" value="true" />
     <option name="GROUP_CONTENTS" value="false" />
     <option name="SORT_POSITIONED" value="false" />
@@ -33,6 +43,42 @@
         <option name="myItemId" />
         <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
       </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="MySQL - ufolep dev" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="MySQL - ufolep dev" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="ufolep_13volley" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="MySQL - ufolep dev" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="ufolep_13volley" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$GroupNode" />
+      </PATH_ELEMENT>
     </PATH>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
@@ -40,7 +86,48 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="indicators.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="496">
+              <caret line="329" column="61" lean-forward="false" selection-start-line="329" selection-start-column="61" selection-end-line="329" selection-end-column="61" />
+              <folding>
+                <marker date="1492762469192" expanded="true" signature="1000:1189" ph="SELECT conca... joueurs" />
+                <marker date="1492762469192" expanded="true" signature="1277:1750" ph="SELECT SUBST... activity" />
+                <marker date="1492762469192" expanded="true" signature="1830:2249" ph="SELECT m.cod... matches" />
+                <marker date="1492762469192" expanded="true" signature="2156:2226" ph="SELECT code_... matches" />
+                <marker date="1492762469192" expanded="true" signature="2343:3046" ph="SELECT CONCA... joueur_equipe" />
+                <marker date="1492762469192" expanded="true" signature="2984:3017" ph="SELECT id_eq... classements" />
+                <marker date="1492762469192" expanded="true" signature="3121:4202" ph="SELECT e.nom... equipes" />
+                <marker date="1492762469192" expanded="true" signature="4302:4649" ph="SELECT DISTI... joueurs" />
+                <marker date="1492762469192" expanded="true" signature="4742:5136" ph="SELECT DISTI... joueurs" />
+                <marker date="1492762469192" expanded="true" signature="5076:5109" ph="SELECT id_eq... classements" />
+                <marker date="1492762469192" expanded="true" signature="5196:5662" ph="SELECT DATE_... activity" />
+                <marker date="1492762469192" expanded="true" signature="5718:6067" ph="SELECT e.nom... equipes" />
+                <marker date="1492762469192" expanded="true" signature="6142:6471" ph="SELECT e1.no... matches" />
+                <marker date="1492762469192" expanded="true" signature="6546:7106" ph="SELECT e.nom... equipes" />
+                <marker date="1492762469192" expanded="true" signature="7186:7324" ph="SELECT num_l... joueurs" />
+                <marker date="1492762469192" expanded="true" signature="7394:8193" ph="SELECT m.cod... matches" />
+                <marker date="1492762469192" expanded="true" signature="8317:8818" ph="SELECT e.nom... equipes" />
+                <marker date="1492762469192" expanded="true" signature="8490:8739" ph="SELECT ca.id... comptes_acces" />
+                <marker date="1492762469192" expanded="true" signature="8563:8733" ph="SELECT up.us... users_profiles" />
+                <marker date="1492762469192" expanded="true" signature="8646:8725" ph="SELECT p.id profiles" />
+                <marker date="1492762469192" expanded="true" signature="8771:8814" ph="SELECT cl.id... classements" />
+                <marker date="1492762469192" expanded="true" signature="8920:8943" ph="SELECT e.nom... equipes" />
+                <marker date="1492762469192" expanded="true" signature="8920:9259" ph="SELECT je.id... joueur_equipe" />
+                <marker date="1492762469192" expanded="true" signature="8920:9267" ph="SELECT je.id... joueur_equipe" />
+                <marker date="1492762469192" expanded="true" signature="8920:9268" ph="SELECT je.id... joueur_equipe" />
+                <marker date="1492762469192" expanded="true" signature="9162:9205" ph="SELECT cl.id... classements" />
+                <marker date="1492762469192" expanded="true" signature="9409:10034" ph="SELECT m.cod... matches" />
+                <marker date="1492762469192" expanded="true" signature="10141:10562" ph="SELECT c2.li... creneau" />
+                <marker date="1492762469192" expanded="true" signature="10667:11035" ph="SELECT GROUP... joueur_equipe" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -48,6 +135,61 @@
         <option value="HTML File" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Error while retrieving data</find>
+      <find>&quot;Error while retrieving</find>
+      <find>atob</find>
+      <find>ato</find>
+      <find>b</find>
+      <find>bt</find>
+      <find>bto</find>
+      <find>btoa</find>
+      <find>window.btoa</find>
+      <find>jQuery.base64.encode</find>
+      <find>report</find>
+      <find>volleyball</find>
+      <find>for</find>
+      <find>saveMatch</find>
+      <find>declareSheetReceived</find>
+      <find>E</find>
+      <find>Em</find>
+      <find>Ema</find>
+      <find>Email</find>
+      <find>Emails</find>
+      <find>6x6</find>
+      <find>getTeamsEmailsFromMatch</find>
+      <find>a</find>
+      <find>atc_</find>
+      <find>atc_e</find>
+      <find>atc_eve</find>
+      <find>atc_even</find>
+      <find>atc_event</find>
+      <find>without</find>
+      <find>$indicatorActiveTeamWithoutTeamLeader</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')' (', cl.division, ')') AS team_full_name,</replace>
+      <replace>CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ') (', cl.division, ')') AS team_full_name,</replace>
+      <replace>FROM equipes e LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe</replace>
+      <replace>CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', cl.division, ')'), '')) AS team_full_name,</replace>
+      <replace>modify_player</replace>
+      <replace>matches</replace>
+      <replace>players</replace>
+      <replace>all_players</replace>
+      <replace>z.</replace>
+      <replace>bootbox.alert(</replace>
+      <replace>$current_file_iteration</replace>
+      <replace>!= '1'</replace>
+      <replace>menuitem</replace>
+      <replace>jQuery.base64.encode</replace>
+      <replace>Base64.encode</replace>
+      <replace>getTeamsEmailsFromMatchReport</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>C:\workspace_phpstorm\ufolep13volley\new_site</dir>
+    </dirStrings>
   </component>
   <component name="FrameworkCommandLineHistory">
     <commandsHistory>
@@ -78,61 +220,66 @@
     </option>
     <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="ufolep13volley-37" />
+      </map>
+    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/images/svg/volleyball.svg" />
-        <option value="$PROJECT_DIR$/images/svg/cup.svg" />
-        <option value="$PROJECT_DIR$/images/svg/volleyball_court.svg" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Portal.js" />
-        <option value="$PROJECT_DIR$/js/view/mobile/Main.js" />
-        <option value="$PROJECT_DIR$/js/controller/mobile/Teams.js" />
-        <option value="dbtable:/43897e94/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.commission" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/console.sql" />
-        <option value="$PROJECT_DIR$/js/view/day/Edit.js" />
-        <option value="$PROJECT_DIR$/playoff_fem.php" />
-        <option value="$PROJECT_DIR$/playoff_masc.php" />
-        <option value="$PROJECT_DIR$/js/administration.js" />
-        <option value="$PROJECT_DIR$/js/portal.js" />
-        <option value="$PROJECT_DIR$/js/view/site/MainPanel.js" />
-        <option value="$PROJECT_DIR$/includes/main.css" />
-        <option value="$PROJECT_DIR$/js/view/rank/Grid.js" />
-        <option value="$PROJECT_DIR$/js/view/team/GridAlerts.js" />
-        <option value="$PROJECT_DIR$/js/view/team/GridMatches.js" />
-        <option value="$PROJECT_DIR$/index_infos_utiles.php" />
-        <option value="$PROJECT_DIR$/index.php" />
-        <option value="$PROJECT_DIR$/coupe_kh.php" />
-        <option value="$PROJECT_DIR$/champ_masc.php" />
-        <option value="$PROJECT_DIR$/commission.php" />
-        <option value="$PROJECT_DIR$/portail.php" />
-        <option value="$PROJECT_DIR$/champ_mixte.php" />
-        <option value="$PROJECT_DIR$/coupe.php" />
-        <option value="$PROJECT_DIR$/coupe_kf.php" />
-        <option value="$PROJECT_DIR$/coupe_pf.php" />
-        <option value="$PROJECT_DIR$/coupe_cf.php" />
-        <option value="$PROJECT_DIR$/js/model/Competition.js" />
-        <option value="$PROJECT_DIR$/js/model/Team.js" />
-        <option value="$PROJECT_DIR$/js/store/ParentCompetitions.js" />
-        <option value="$PROJECT_DIR$/ajax/getRankTeams.php" />
-        <option value="$PROJECT_DIR$/js/model/Day.js" />
-        <option value="$PROJECT_DIR$/js/model/RankTeam.js" />
-        <option value="$PROJECT_DIR$/js/controller/Administration.js" />
-        <option value="$PROJECT_DIR$/js/store/RankTeams.js" />
-        <option value="$PROJECT_DIR$/js/view/match/Edit.js" />
-        <option value="$PROJECT_DIR$/annuaire.php" />
-        <option value="$PROJECT_DIR$/champ_fem.php" />
-        <option value="$PROJECT_DIR$/admin.php" />
-        <option value="$PROJECT_DIR$/js/model/Commission.js" />
-        <option value="$PROJECT_DIR$/js/controller/Menu.js" />
+        <option value="$PROJECT_DIR$/templates/emails/sendMailGiveReportDate.fr.html" />
+        <option value="$PROJECT_DIR$/downloadMatchFiles.php" />
+        <option value="$PROJECT_DIR$/ajax/downloadMatchFiles.php" />
+        <option value="$PROJECT_DIR$/new_site/pages/match.html" />
+        <option value="$PROJECT_DIR$/new_site/pages/match.php" />
+        <option value="$PROJECT_DIR$/new_site/pages/match_admin.html" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/infos_utiles/index.html" />
         <option value="$PROJECT_DIR$/js/view/site/MainMenu.js" />
-        <option value="$PROJECT_DIR$/new_site/pages/my_players.html" />
-        <option value="$PROJECT_DIR$/js/view/match/Grid.js" />
-        <option value="$PROJECT_DIR$/js/model/Match.js" />
-        <option value="$PROJECT_DIR$/new_site/pages/matches.html" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/console.sql" />
+        <option value="$PROJECT_DIR$/js/view/window/HallOfFame.js" />
+        <option value="$PROJECT_DIR$/new_site/pages/hallOfFame.html" />
+        <option value="$PROJECT_DIR$/ajax/getMatches.php" />
+        <option value="$PROJECT_DIR$/classes/Database.php" />
+        <option value="$PROJECT_DIR$/index.php" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/console.sql" />
+        <option value="$PROJECT_DIR$/js/controller/Administration.js" />
+        <option value="$PROJECT_DIR$/js/administration.js" />
+        <option value="$PROJECT_DIR$/js/view/match/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/team/DetailsEdit.js" />
+        <option value="$PROJECT_DIR$/js/view/day/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/team/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/rank/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/player/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/timeslot/Edit.js" />
+        <option value="$PROJECT_DIR$/js/view/limitdate/Edit.js" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/new_site/navs/my_page.html" />
+        <option value="$PROJECT_DIR$/new_site/navs/main.html" />
+        <option value="$PROJECT_DIR$/classes/Configuration.php" />
+        <option value="$PROJECT_DIR$/ajax/getMyClubMatches.php" />
+        <option value="$PROJECT_DIR$/ajax/getMesMatches.php" />
+        <option value="$PROJECT_DIR$/ajax/getTimeSlots.php" />
+        <option value="$PROJECT_DIR$/ajax/getMonEquipe.php" />
+        <option value="$PROJECT_DIR$/ajax/modifierMonMotDePasse.php" />
+        <option value="$PROJECT_DIR$/ajax/saveMyPreferences.php" />
+        <option value="$PROJECT_DIR$/ajax/getMyPreferences.php" />
+        <option value="$PROJECT_DIR$/classes/UserManager.php" />
+        <option value="$PROJECT_DIR$/ajax/getActivity.php" />
+        <option value="$PROJECT_DIR$/classes/Generic.php" />
+        <option value="dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.activity" />
+        <option value="$PROJECT_DIR$/classes/TimeSlotManager.php" />
+        <option value="$PROJECT_DIR$/classes/TeamManager.php" />
+        <option value="$PROJECT_DIR$/new_site/script.js" />
+        <option value="$PROJECT_DIR$/new_site/actions/match.php" />
+        <option value="$PROJECT_DIR$/templates/emails/sendMailSheetReceived.fr.html" />
+        <option value="$PROJECT_DIR$/classes/MatchManager.php" />
+        <option value="$PROJECT_DIR$/classes/Emails.php" />
         <option value="$PROJECT_DIR$/includes/fonctions_inc.php" />
-        <option value="dbtable:/950e1976/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.joueur_equipe" />
+        <option value="$PROJECT_DIR$/new_site/pages/matches.html" />
+        <option value="$PROJECT_DIR$/new_site/index.html" />
+        <option value="$PROJECT_DIR$/ajax/indicators.php" />
       </list>
     </option>
   </component>
@@ -160,10 +307,10 @@
   <component name="PhpWebServerValidation" deployment_server_id="ded6af07-c3ea-4500-afff-da686d938b93" path_to_validation_script="C:\Users\Ben\Documents\NetBeansProjects\ufolep13volley" selected_validation_type="REMOTE" web_path_to_validation_script="http://localhost:8080/" />
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="34" />
-    <option name="y" value="146" />
-    <option name="width" value="1474" />
-    <option name="height" value="974" />
+    <option name="x" value="1912" />
+    <option name="y" value="-282" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -220,15 +367,9 @@
       </profile-state>
     </entry>
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
-    <OptionsSetting value="true" id="Add" />
-    <OptionsSetting value="true" id="Remove" />
-    <OptionsSetting value="true" id="Checkout" />
+  <component name="ProjectLevelVcsManager">
     <OptionsSetting value="false" id="Update" />
-    <OptionsSetting value="true" id="Status" />
-    <OptionsSetting value="true" id="Edit" />
     <ConfirmationsSetting value="2" id="Add" />
-    <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -245,6 +386,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -253,10 +395,13 @@
               <option name="myItemId" value="ufolep13volley" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -265,11 +410,10 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="recentsLimit" value="5" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../wts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/new_site" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
-    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
-    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="http.proxy" />
     <property name="js.buildTools.gulp.node_interpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="C:\Program Files\nodejs\node_modules\gulp" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/SQL Dialects" value="MySQL" />
@@ -280,138 +424,46 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="prop_add_unversioned_files" value="true" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/classes/Configuration.php&#10;C:/workspace_phpstorm/ufolep13volley/includes/db_inc.php&#10;C:/workspace_phpstorm/ufolep13volley/classes/Database.php" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\workspace_phpstorm\ufolep13volley\templates\emails" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley\classes" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley\new_site\pages" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley\ajax" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\workspace_phpstorm\ufolep13volley\infos_utiles\Media" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley\ajax" />
+      <recent name="C:\workspace_phpstorm\ufolep13volley\includes" />
       <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\images\fonts" />
       <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\images\mobile" />
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\images\svg" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\js\model" />
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\ajax" />
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\js\store" />
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\images\fonts" />
-      <recent name="C:\Users\ballemand\phpstormProjects\ufolep13volley\images" />
     </key>
   </component>
-  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
-    <UpdatedFiles>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Updated from server" />
-        <option name="myStatusName" value="Changed on server" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="CHANGED_ON_SERVER" />
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated" />
-          <option name="myStatusName" value="Changed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/js/controller/Menu.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/js/view/site/MainMenu.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/new_site/navs/main.html</PATH>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Created" />
-          <option name="myStatusName" value="Created" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CREATED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Deleted" />
-          <option name="myStatusName" value="Deleted" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="true" />
-          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Restored" />
-          <option name="myStatusName" value="Will be restored" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="RESTORED" />
-        </FILE-GROUP>
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Modified" />
-        <option name="myStatusName" value="Modified" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MODIFIED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Skipped" />
-        <option name="myStatusName" value="Skipped" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SKIPPED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with conflicts" />
-        <option name="myStatusName" value="Will be merged with conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_CONFLICTS" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with tree conflicts" />
-        <option name="myStatusName" value="Merged with tree conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with property conflicts" />
-        <option name="myStatusName" value="Will be merged with property conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged" />
-        <option name="myStatusName" value="Will be merged" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Not in repository" />
-        <option name="myStatusName" value="Not in repository" />
-        <option name="mySupportsDeletion" value="true" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="UNKNOWN" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally added" />
-        <option name="myStatusName" value="Locally added" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_ADDED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally removed" />
-        <option name="myStatusName" value="Locally removed" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_REMOVED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Switched" />
-        <option name="myStatusName" value="Switched" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SWITCHED" />
-      </FILE-GROUP>
-    </UpdatedFiles>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
   </component>
   <component name="RunManager" selected="PHP Built-in Web Server.local">
     <configuration default="false" name="index.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/ufolep13volley/infos_utiles/index.html">
       <method />
     </configuration>
     <configuration default="false" name="index.html (1)" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/ufolep13volley/index.html">
+      <method />
+    </configuration>
+    <configuration default="false" name="testEmail.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/includes/testEmail.php">
       <method />
     </configuration>
     <configuration default="true" type="AppEnginePhpConfigurationType" factoryName="App Engine for PHP">
@@ -421,6 +473,12 @@
       <method />
     </configuration>
     <configuration default="true" type="FirefoxRemoteDebugType" factoryName="Firefox Remote">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
@@ -446,6 +504,10 @@
     <configuration default="true" type="PhpRemoteDebugRunConfigurationType" factoryName="PHP Remote Debug" server_name="localhost" session_id="PHPSTORM">
       <method />
     </configuration>
+    <configuration default="true" type="PhpSpecConfigurationType" factoryName="PHPSpec">
+      <PhpTestRunnerSettings />
+      <method />
+    </configuration>
     <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" server_name="localhost" start_url="/Ufolep13">
       <method />
     </configuration>
@@ -460,7 +522,7 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run-script" />
+      <command value="run" />
       <scripts />
       <node-interpreter value="project" />
       <envs />
@@ -482,15 +544,17 @@
     <configuration default="false" name="local" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" document_root="$PROJECT_DIR$" port="8081">
       <method />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="PHP Built-in Web Server.local" />
       <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.index.html" />
       <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.index.html (1)" />
+      <item index="3" class="java.lang.String" itemvalue="PHP Script.testEmail.php" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.index.html (1)" />
-        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.index.html" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="PHP Script.testEmail.php" />
+        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.index.html (1)" />
+        <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.index.html" />
       </list>
     </recent_temporary>
   </component>
@@ -505,11 +569,12 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" />
       <changelist id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="" />
       <created>1436078698686</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1436078698686</updated>
+      <updated>1487343189465</updated>
       <workItem from="1458295724196" duration="35000" />
       <workItem from="1458295977627" duration="12214000" />
       <workItem from="1458555353754" duration="66332000" />
@@ -529,352 +594,462 @@
       <workItem from="1478196083622" duration="17000" />
       <workItem from="1478210270828" duration="220000" />
       <workItem from="1478427717404" duration="1146000" />
+      <workItem from="1478513744613" duration="525000" />
+      <workItem from="1478515164965" duration="808000" />
+      <workItem from="1478595991652" duration="152000" />
+      <workItem from="1478616061477" duration="158000" />
+      <workItem from="1478616430216" duration="8716000" />
+      <workItem from="1479398942168" duration="1050000" />
+      <workItem from="1481021831305" duration="3714000" />
+      <workItem from="1481188036651" duration="13000" />
+      <workItem from="1481188107330" duration="37000" />
+      <workItem from="1481902243237" duration="854000" />
+      <workItem from="1482145452376" duration="2853000" />
+      <workItem from="1482150712082" duration="12963000" />
+      <workItem from="1482742225551" duration="2034000" />
+      <workItem from="1482744342046" duration="85000" />
+      <workItem from="1482757384403" duration="2602000" />
+      <workItem from="1483607738172" duration="258000" />
+      <workItem from="1483625541116" duration="104000" />
+      <workItem from="1485196524303" duration="1484000" />
+      <workItem from="1485442190009" duration="148000" />
+      <workItem from="1485448482256" duration="217000" />
+      <workItem from="1485505564776" duration="82000" />
+      <workItem from="1486372643866" duration="133000" />
+      <workItem from="1486466491785" duration="7159000" />
+      <workItem from="1486473748886" duration="424000" />
+      <workItem from="1486982122514" duration="22000" />
+      <workItem from="1486982174790" duration="127000" />
+      <workItem from="1486990423537" duration="288000" />
+      <workItem from="1487256404142" duration="7000" />
+      <workItem from="1487256422743" duration="741000" />
+      <workItem from="1487328611842" duration="6893000" />
+      <workItem from="1487343189731" duration="1328000" />
+      <workItem from="1487682909642" duration="2263000" />
+      <workItem from="1488457866962" duration="1236000" />
+      <workItem from="1488459320198" duration="1595000" />
+      <workItem from="1488463355212" duration="846000" />
+      <workItem from="1488473842265" duration="177000" />
+      <workItem from="1488474436339" duration="1436000" />
+      <workItem from="1488538197069" duration="5602000" />
+      <workItem from="1488554431017" duration="2052000" />
+      <workItem from="1488788944011" duration="3395000" />
+      <workItem from="1488804461372" duration="12104000" />
+      <workItem from="1488881452944" duration="1045000" />
+      <workItem from="1488890507542" duration="3750000" />
+      <workItem from="1489156430392" duration="318000" />
+      <workItem from="1489492672778" duration="2160000" />
+      <workItem from="1489753277558" duration="38000" />
+      <workItem from="1489753376982" duration="7007000" />
+      <workItem from="1489761499216" duration="1623000" />
+      <workItem from="1490365429870" duration="64000" />
+      <workItem from="1490615170775" duration="1422000" />
+      <workItem from="1490616638570" duration="32000" />
+      <workItem from="1490710866794" duration="697000" />
+      <workItem from="1490865805782" duration="6118000" />
+      <workItem from="1491813620569" duration="10000" />
+      <workItem from="1491813716484" duration="2657000" />
+      <workItem from="1491837851631" duration="6000" />
+      <workItem from="1492095877897" duration="46000" />
+      <workItem from="1492761090455" duration="1404000" />
     </task>
-    <task id="LOCAL-00072" summary="drop column heure_reception for matches">
-      <created>1456761692921</created>
-      <option name="number" value="00072" />
-      <option name="presentableId" value="LOCAL-00072" />
+    <task id="LOCAL-00128" summary="display homologation date">
+      <created>1481025678066</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
       <option name="project" value="LOCAL" />
-      <updated>1456761692921</updated>
+      <updated>1481025678067</updated>
     </task>
-    <task id="LOCAL-00073" summary="use of datasource ufolep DEV">
-      <created>1456841327830</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
+    <task id="LOCAL-00129" summary="add division in team full name">
+      <created>1482145680875</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
       <option name="project" value="LOCAL" />
-      <updated>1456841327831</updated>
+      <updated>1482145680875</updated>
     </task>
-    <task id="LOCAL-00074" summary="revert local run settings">
-      <created>1456843263888</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
+    <task id="LOCAL-00130" summary="update match model in order to see division string instead of int">
+      <created>1482146304520</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
       <option name="project" value="LOCAL" />
-      <updated>1456843263888</updated>
+      <updated>1482146304520</updated>
     </task>
-    <task id="LOCAL-00075" summary="login window: move register button">
-      <created>1456852907900</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
+    <task id="LOCAL-00131" summary="add PO PD menus for Div 5">
+      <created>1482147220696</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
       <option name="project" value="LOCAL" />
-      <updated>1456852907900</updated>
+      <updated>1482147220696</updated>
     </task>
-    <task id="LOCAL-00076" summary="login window: move register button">
-      <created>1456852921674</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
+    <task id="LOCAL-00132" summary="fix issue with phonebook">
+      <created>1482152591080</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
       <option name="project" value="LOCAL" />
-      <updated>1456852921674</updated>
+      <updated>1482152591080</updated>
     </task>
-    <task id="LOCAL-00077" summary="fix issue with timeslots">
-      <created>1456951831234</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
+    <task id="LOCAL-00133" summary="fix issue with phonebook">
+      <created>1482153186053</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
       <option name="project" value="LOCAL" />
-      <updated>1456951831235</updated>
+      <updated>1482153186054</updated>
     </task>
-    <task id="LOCAL-00078" summary="fix issue with timeslots">
-      <created>1456951854155</created>
-      <option name="number" value="00078" />
-      <option name="presentableId" value="LOCAL-00078" />
+    <task id="LOCAL-00134" summary="fix issue with phonebook">
+      <created>1482154867695</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
       <option name="project" value="LOCAL" />
-      <updated>1456951854155</updated>
+      <updated>1482154867695</updated>
     </task>
-    <task id="LOCAL-00079" summary="fix issue with utf8  encoding on pdf">
-      <created>1457349827681</created>
-      <option name="number" value="00079" />
-      <option name="presentableId" value="LOCAL-00079" />
+    <task id="LOCAL-00135" summary="remove last commit message in DEV">
+      <created>1482155792959</created>
+      <option name="number" value="00135" />
+      <option name="presentableId" value="LOCAL-00135" />
       <option name="project" value="LOCAL" />
-      <updated>1457349827683</updated>
+      <updated>1482155792959</updated>
     </task>
-    <task id="LOCAL-00080" summary="late match scoring is now computed dynamically (no need to use 'retard' field in match)">
-      <created>1457364813651</created>
-      <option name="number" value="00080" />
-      <option name="presentableId" value="LOCAL-00080" />
+    <task id="LOCAL-00136" summary="styling header in matches table">
+      <created>1482158800814</created>
+      <option name="number" value="00136" />
+      <option name="presentableId" value="LOCAL-00136" />
       <option name="project" value="LOCAL" />
-      <updated>1457364813651</updated>
+      <updated>1482158800814</updated>
     </task>
-    <task id="LOCAL-00081" summary="test deploy with jenkins">
-      <created>1457478572260</created>
-      <option name="number" value="00081" />
-      <option name="presentableId" value="LOCAL-00081" />
+    <task id="LOCAL-00137" summary="remove long loading when using localhost server">
+      <created>1482159436704</created>
+      <option name="number" value="00137" />
+      <option name="presentableId" value="LOCAL-00137" />
       <option name="project" value="LOCAL" />
-      <updated>1457478572260</updated>
+      <updated>1482159436704</updated>
     </task>
-    <task id="LOCAL-00082" summary="test deploy with jenkins">
-      <created>1457479630478</created>
-      <option name="number" value="00082" />
-      <option name="presentableId" value="LOCAL-00082" />
+    <task id="LOCAL-00138" summary="remove todo">
+      <created>1482230714191</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
       <option name="project" value="LOCAL" />
-      <updated>1457479630478</updated>
+      <updated>1482230714191</updated>
     </task>
-    <task id="LOCAL-00083" summary="move sql files to python project">
-      <created>1457991618422</created>
-      <option name="number" value="00083" />
-      <option name="presentableId" value="LOCAL-00083" />
+    <task id="ufolep13volley-2" summary="report management">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-2" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <option name="closed" value="true" />
+      <created>1482226661000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="2" />
+      <option name="presentableId" value="ufolep13volley-2" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1482742224797</updated>
+      <workItem from="1482241362957" duration="2445000" />
+      <workItem from="1482404478502" duration="14000" />
+      <workItem from="1482404787015" duration="7746000" />
+      <workItem from="1482421375591" duration="2166000" />
+      <workItem from="1482742199400" duration="26000" />
+    </task>
+    <task id="ufolep13volley-6" summary="add ability to edit a player">
+      <branch name="ufolep13volley-2" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-6" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <created>1482414324000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="6" />
+      <option name="presentableId" value="ufolep13volley-6" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1482421375253</updated>
+      <workItem from="1482417999789" duration="3349000" />
+    </task>
+    <task id="ufolep13volley-11" summary="add championship label">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-11" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <created>1482740647000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="11" />
+      <option name="presentableId" value="ufolep13volley-11" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1482744341097</updated>
+      <workItem from="1482744271277" duration="71000" />
+    </task>
+    <task id="LOCAL-00140" summary="ability to display alert, prompt and confirm with mobile browsers">
+      <created>1482759492283</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
       <option name="project" value="LOCAL" />
-      <updated>1457991618424</updated>
+      <updated>1482759492284</updated>
     </task>
-    <task id="LOCAL-00084" summary="remove match time edition">
-      <created>1457995629067</created>
-      <option name="number" value="00084" />
-      <option name="presentableId" value="LOCAL-00084" />
+    <task id="LOCAL-00141" summary="add report email for KH competition">
+      <created>1486372731731</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
       <option name="project" value="LOCAL" />
-      <updated>1457995629067</updated>
+      <updated>1486372731731</updated>
     </task>
-    <task id="LOCAL-00085" summary="remove match time edition">
-      <created>1457995660836</created>
-      <option name="number" value="00085" />
-      <option name="presentableId" value="LOCAL-00085" />
+    <task id="LOCAL-00142" summary="better management of emails">
+      <created>1486474158182</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
       <option name="project" value="LOCAL" />
-      <updated>1457995660836</updated>
+      <updated>1486474158182</updated>
     </task>
-    <task id="LOCAL-00086" summary="use of new CDN for extjs lib">
-      <created>1457995694217</created>
-      <option name="number" value="00086" />
-      <option name="presentableId" value="LOCAL-00086" />
+    <task id="ufolep13volley-39" summary="create a button for date of report">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-39" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <created>1486705653000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="39" />
+      <option name="presentableId" value="ufolep13volley-39" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1486990644277</updated>
+      <workItem from="1486982302306" duration="3311000" />
+    </task>
+    <task id="ufolep13volley-28" summary="upload match sheet and link to a match, status sheet_received must be set automatically">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-28" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <created>1485418553000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="28" />
+      <option name="presentableId" value="ufolep13volley-28" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1487328611139</updated>
+      <workItem from="1487257170404" duration="13993000" />
+    </task>
+    <task id="LOCAL-00143" summary="better display management for download match files">
+      <created>1487337635068</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
       <option name="project" value="LOCAL" />
-      <updated>1457995694217</updated>
+      <updated>1487337635068</updated>
     </task>
-    <task id="LOCAL-00087" summary="remove obsolete code&#10;remove use of match time">
-      <created>1457995909152</created>
-      <option name="number" value="00087" />
-      <option name="presentableId" value="LOCAL-00087" />
+    <task id="LOCAL-00144" summary="init match edition on click &quot;edit&quot; button in grid">
+      <created>1487340204132</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
       <option name="project" value="LOCAL" />
-      <updated>1457995909152</updated>
+      <updated>1487340204132</updated>
     </task>
-    <task id="LOCAL-00088" summary="bind comboboxes for match edition (admin only)">
-      <created>1457995934573</created>
-      <option name="number" value="00088" />
-      <option name="presentableId" value="LOCAL-00088" />
+    <task id="ufolep13volley-37" summary="add specific match and player edition for admin">
+      <branch name="master" repository="C:\workspace_phpstorm\ufolep13volley" original="true" />
+      <branch name="ufolep13volley-37" repository="C:\workspace_phpstorm\ufolep13volley" />
+      <created>1486307909000</created>
+      <option name="issue" value="true" />
+      <option name="number" value="37" />
+      <option name="presentableId" value="ufolep13volley-37" />
+      <option name="project" value="ufolep13volley" />
+      <option name="type" value="BUG" />
+      <updated>1487343189387</updated>
+      <workItem from="1487343119610" duration="70000" />
+    </task>
+    <task id="LOCAL-00145" summary="better managementof actions for match grid">
+      <created>1487685139345</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
       <option name="project" value="LOCAL" />
-      <updated>1457995934573</updated>
+      <updated>1487685139345</updated>
     </task>
-    <task id="LOCAL-00089" summary="Use Monday as first day of week in datefield">
-      <created>1458207200787</created>
-      <option name="number" value="00089" />
-      <option name="presentableId" value="LOCAL-00089" />
+    <task id="LOCAL-00146" summary="fix issue with admin actions on rankings table, when no match has been created for specific rank">
+      <created>1488458464954</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
       <option name="project" value="LOCAL" />
-      <updated>1458207200787</updated>
+      <updated>1488458464954</updated>
     </task>
-    <task id="LOCAL-00090" summary="Add start_date in journees table">
-      <created>1458228165726</created>
-      <option name="number" value="00090" />
-      <option name="presentableId" value="LOCAL-00090" />
+    <task id="LOCAL-00147" summary="add match sheet formatted on 1 side page">
+      <created>1488463603224</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
       <option name="project" value="LOCAL" />
-      <updated>1458228165726</updated>
+      <updated>1488463603224</updated>
     </task>
-    <task id="LOCAL-00091" summary="update readme for init db">
-      <created>1458228594271</created>
-      <option name="number" value="00091" />
-      <option name="presentableId" value="LOCAL-00091" />
+    <task id="LOCAL-00148" summary="fix issue with hall of fame">
+      <created>1488474458995</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
       <option name="project" value="LOCAL" />
-      <updated>1458228594271</updated>
+      <updated>1488474458996</updated>
     </task>
-    <task id="LOCAL-00092" summary="fix warnings">
-      <created>1458312156428</created>
-      <option name="number" value="00092" />
-      <option name="presentableId" value="LOCAL-00092" />
+    <task id="LOCAL-00149" summary="better management of hall of fame creation">
+      <created>1488475857103</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
       <option name="project" value="LOCAL" />
-      <updated>1458312156429</updated>
+      <updated>1488475857103</updated>
     </task>
-    <task id="LOCAL-00093" summary="fix warnings">
-      <created>1458312172630</created>
-      <option name="number" value="00093" />
-      <option name="presentableId" value="LOCAL-00093" />
+    <task id="LOCAL-00150" summary="reorder hall of fame display">
+      <created>1488546996028</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
       <option name="project" value="LOCAL" />
-      <updated>1458312172630</updated>
+      <updated>1488546996028</updated>
     </task>
-    <task id="LOCAL-00094" summary="fix warnings">
-      <created>1458312188061</created>
-      <option name="number" value="00094" />
-      <option name="presentableId" value="LOCAL-00094" />
+    <task id="LOCAL-00151" summary="file encoding was set to windows 1252, instead of UTF-8, fixed&#10;refactor matches in order to use new class">
+      <created>1488556471196</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
       <option name="project" value="LOCAL" />
-      <updated>1458312188061</updated>
+      <updated>1488556471196</updated>
     </task>
-    <task id="LOCAL-00095" summary="reformat">
-      <created>1458312205451</created>
-      <option name="number" value="00095" />
-      <option name="presentableId" value="LOCAL-00095" />
+    <task id="LOCAL-00152" summary="refactor match and team manager classes&#10;fix issue with matches grid (download files)">
+      <created>1488811450603</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
       <option name="project" value="LOCAL" />
-      <updated>1458312205452</updated>
+      <updated>1488811450603</updated>
     </task>
-    <task id="LOCAL-00096" summary="fix warnings">
-      <created>1458312290382</created>
-      <option name="number" value="00096" />
-      <option name="presentableId" value="LOCAL-00096" />
+    <task id="LOCAL-00153" summary="remove obsolete files">
+      <created>1488817600653</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
       <option name="project" value="LOCAL" />
-      <updated>1458312290382</updated>
+      <updated>1488817600653</updated>
     </task>
-    <task id="LOCAL-00097" summary="remove obsolete files">
-      <created>1458555387546</created>
-      <option name="number" value="00097" />
-      <option name="presentableId" value="LOCAL-00097" />
+    <task id="LOCAL-00154" summary="add original date based on day and timeslot">
+      <created>1488817653310</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
       <option name="project" value="LOCAL" />
-      <updated>1458555387546</updated>
+      <updated>1488817653312</updated>
     </task>
-    <task id="LOCAL-00098" summary="refactor admin page to be similar to other pages">
-      <created>1458565683972</created>
-      <option name="number" value="00098" />
-      <option name="presentableId" value="LOCAL-00098" />
+    <task id="LOCAL-00155" summary="refactor code for admin part&#10;menu is now set to top in order to gain more space">
+      <created>1488819815998</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
       <option name="project" value="LOCAL" />
-      <updated>1458565683972</updated>
+      <updated>1488819815998</updated>
     </task>
-    <task id="LOCAL-00099" summary="remove competitions button">
-      <created>1458574075547</created>
-      <option name="number" value="00099" />
-      <option name="presentableId" value="LOCAL-00099" />
+    <task id="LOCAL-00156" summary="add forceSelection: true to combo fields">
+      <created>1488891570632</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
       <option name="project" value="LOCAL" />
-      <updated>1458574075547</updated>
+      <updated>1488891570632</updated>
     </task>
-    <task id="LOCAL-00100" summary="fix issue with accented images">
-      <created>1458579175607</created>
-      <option name="number" value="00100" />
-      <option name="presentableId" value="LOCAL-00100" />
+    <task id="LOCAL-00157" summary="remove obsolete files">
+      <created>1488893350271</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
       <option name="project" value="LOCAL" />
-      <updated>1458579175607</updated>
+      <updated>1488893350272</updated>
     </task>
-    <task id="LOCAL-00101" summary="remove check licence">
-      <created>1458637073205</created>
-      <option name="number" value="00101" />
-      <option name="presentableId" value="LOCAL-00101" />
+    <task id="LOCAL-00158" summary="refactor readme">
+      <created>1488893696186</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
       <option name="project" value="LOCAL" />
-      <updated>1458637073205</updated>
+      <updated>1488893696186</updated>
     </task>
-    <task id="LOCAL-00102" summary="remove check licence">
-      <created>1458637314243</created>
-      <option name="number" value="00102" />
-      <option name="presentableId" value="LOCAL-00102" />
+    <task id="LOCAL-00159" summary="rename some menu items">
+      <created>1489156735442</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
       <option name="project" value="LOCAL" />
-      <updated>1458637314243</updated>
+      <updated>1489156735442</updated>
     </task>
-    <task id="LOCAL-00103" summary="fix issue with photo displa on select player">
-      <created>1458638301101</created>
-      <option name="number" value="00103" />
-      <option name="presentableId" value="LOCAL-00103" />
+    <task id="LOCAL-00160" summary="menu for d5">
+      <created>1489494118484</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
       <option name="project" value="LOCAL" />
-      <updated>1458638301101</updated>
+      <updated>1489494118484</updated>
     </task>
-    <task id="LOCAL-00104" summary="indicators are now displayed through controller">
-      <created>1458638981729</created>
-      <option name="number" value="00104" />
-      <option name="presentableId" value="LOCAL-00104" />
+    <task id="LOCAL-00161" summary="refactor codefor managers implementation&#10;standard user has now better overviewof its club">
+      <created>1489760684763</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
       <option name="project" value="LOCAL" />
-      <updated>1458638981729</updated>
+      <updated>1489760684765</updated>
     </task>
-    <task id="LOCAL-00105" summary="modify main panel in order to fix main title issue&#10;copyright modified too">
-      <created>1458652035067</created>
-      <option name="number" value="00105" />
-      <option name="presentableId" value="LOCAL-00105" />
+    <task id="LOCAL-00162" summary="better exception logs">
+      <created>1489761758289</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
       <option name="project" value="LOCAL" />
-      <updated>1458652035067</updated>
+      <updated>1489761758291</updated>
     </task>
-    <task id="LOCAL-00106" summary="refactor icons">
-      <created>1458662135793</created>
-      <option name="number" value="00106" />
-      <option name="presentableId" value="LOCAL-00106" />
+    <task id="LOCAL-00163" summary="convert string to int">
+      <created>1489762034420</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
       <option name="project" value="LOCAL" />
-      <updated>1458662135793</updated>
+      <updated>1489762034422</updated>
     </task>
-    <task id="LOCAL-00107" summary="include css for admin page">
-      <created>1458901468723</created>
-      <option name="number" value="00107" />
-      <option name="presentableId" value="LOCAL-00107" />
+    <task id="LOCAL-00164" summary="fix issue with getTeam usage, it can return many team instances (one per championship played)">
+      <created>1489762468185</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
       <option name="project" value="LOCAL" />
-      <updated>1458901468723</updated>
+      <updated>1489762468185</updated>
     </task>
-    <task id="LOCAL-00108" summary="disable all days of week except monday for start_date field">
-      <created>1458901900277</created>
-      <option name="number" value="00108" />
-      <option name="presentableId" value="LOCAL-00108" />
+    <task id="LOCAL-00165" summary="group matches by competition">
+      <created>1490616536870</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
       <option name="project" value="LOCAL" />
-      <updated>1458901900278</updated>
+      <updated>1490616536870</updated>
     </task>
-    <task id="LOCAL-00109" summary="simplify start_date field">
-      <created>1458902150417</created>
-      <option name="number" value="00109" />
-      <option name="presentableId" value="LOCAL-00109" />
+    <task id="LOCAL-00166" summary="base64 encoding cross browser">
+      <created>1490711547288</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
       <option name="project" value="LOCAL" />
-      <updated>1458902150417</updated>
+      <updated>1490711547288</updated>
     </task>
-    <task id="LOCAL-00110" summary="add new fonts in order to display icons for admin page">
-      <created>1459238574487</created>
-      <option name="number" value="00110" />
-      <option name="presentableId" value="LOCAL-00110" />
+    <task id="LOCAL-00167" summary="add report buttons controls in championship page, cup page, not only myteam page">
+      <created>1490867207789</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
       <option name="project" value="LOCAL" />
-      <updated>1459238574487</updated>
+      <updated>1490867207789</updated>
     </task>
-    <task id="LOCAL-00111" summary="new implementation of icons">
-      <created>1459264510567</created>
-      <option name="number" value="00111" />
-      <option name="presentableId" value="LOCAL-00111" />
+    <task id="LOCAL-00168" summary="ability for admin to edit match anytime">
+      <created>1491233840082</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
       <option name="project" value="LOCAL" />
-      <updated>1459264510567</updated>
+      <updated>1491233840082</updated>
     </task>
-    <task id="LOCAL-00112" summary="fix issue with Isoardi final phase">
-      <created>1460042448310</created>
-      <option name="number" value="00112" />
-      <option name="presentableId" value="LOCAL-00112" />
+    <task id="LOCAL-00169" summary="send email when a sheet has been attached to a match through edit button">
+      <created>1491235187085</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
       <option name="project" value="LOCAL" />
-      <updated>1460042448311</updated>
+      <updated>1491235187085</updated>
     </task>
-    <task id="LOCAL-00113" summary="add better match edition functionality">
-      <created>1460117154335</created>
-      <option name="number" value="00113" />
-      <option name="presentableId" value="LOCAL-00113" />
+    <task id="LOCAL-00170" summary="fix issue with add to calendar button">
+      <created>1491815494961</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
       <option name="project" value="LOCAL" />
-      <updated>1460117154335</updated>
+      <updated>1491815494961</updated>
     </task>
-    <task id="LOCAL-00114" summary="Filter teams when creating matchs in admin mode">
-      <created>1460384609734</created>
-      <option name="number" value="00114" />
-      <option name="presentableId" value="LOCAL-00114" />
+    <task id="LOCAL-00171" summary="new version for 1 page match sheet">
+      <created>1492095894262</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
       <option name="project" value="LOCAL" />
-      <updated>1460384609736</updated>
+      <updated>1492095894262</updated>
     </task>
-    <task id="LOCAL-00115" summary="add external link to UFOLEP 13">
-      <created>1463385873165</created>
-      <option name="number" value="00115" />
-      <option name="presentableId" value="LOCAL-00115" />
-      <option name="project" value="LOCAL" />
-      <updated>1463385873166</updated>
-    </task>
-    <task id="LOCAL-00116" summary="fix issue with cup link">
-      <created>1464381287974</created>
-      <option name="number" value="00116" />
-      <option name="presentableId" value="LOCAL-00116" />
-      <option name="project" value="LOCAL" />
-      <updated>1464381287974</updated>
-    </task>
-    <task id="LOCAL-00117" summary="update project">
-      <created>1475917652429</created>
-      <option name="number" value="00117" />
-      <option name="presentableId" value="LOCAL-00117" />
-      <option name="project" value="LOCAL" />
-      <updated>1475917652430</updated>
-    </task>
-    <task id="LOCAL-00118" summary="new site redirection when using mobile version">
-      <created>1476515137399</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1476515137399</updated>
-    </task>
-    <task id="LOCAL-00119" summary="fix issue with some match display">
-      <created>1477922528354</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1477922528354</updated>
-    </task>
-    <task id="LOCAL-00120" summary="fix issue with ranking played matches count">
-      <created>1477925532299</created>
-      <option name="number" value="00120" />
-      <option name="presentableId" value="LOCAL-00120" />
-      <option name="project" value="LOCAL" />
-      <updated>1477925532299</updated>
-    </task>
-    <option name="localTasksCounter" value="121" />
-    <servers />
+    <option name="localTasksCounter" value="172" />
+    <servers>
+      <GitHub shared="false" url="https://github.com">
+        <option name="assignedIssuesOnly" value="false" />
+        <commitMessageFormat>{id} {summary}</commitMessageFormat>
+        <password />
+        <token>df9fdf9adfcedf99df9fdfcfdf92df92df99dfcedfcedf9ddf93df93dfcfdf9edf9bdf98df9cdfcedfc9dfcedfc8df9bdfc8dfc8df9adf9fdfcfdfcedf9cdf9fdfcedf9ddfcfdfc8df9cdf9fdfc9df9b</token>
+        <option name="loginAnonymously" value="false" />
+        <option name="preferredCloseTaskState" />
+        <option name="preferredOpenTaskState" />
+        <option name="repoAuthor" value="benallemand" />
+        <option name="repoName" value="ufolep13volley" />
+        <option name="shouldFormatCommitMessage" value="true" />
+        <option name="useHttpAuthentication" value="false" />
+        <option name="useProxy" value="true" />
+        <option name="user" value="" />
+        <username />
+      </GitHub>
+    </servers>
   </component>
   <component name="TestHistory">
     <history-entry file="ufolep13volley - 2015.11.29 at 21h 46m 14s.xml">
@@ -885,7 +1060,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="118239000" />
+    <option name="totallyTimeSpent" value="266512000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -897,59 +1072,63 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="34" y="146" width="1474" height="974" extended-state="0" />
-    <editor active="false" />
+    <frame x="1912" y="-282" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36280057" sideWeight="0.5074184" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26944837" sideWeight="0.5341246" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41017655" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19654842" sideWeight="0.40681234" order="14" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36280057" sideWeight="0.4925816" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38836968" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19857313" sideWeight="0.5931877" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26944837" sideWeight="0.46587536" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25159913" sideWeight="0.46797386" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34669557" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3192964" sideWeight="0.6169935" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40953413" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21885157" sideWeight="0.42537314" order="14" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25159913" sideWeight="0.5320262" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4084507" sideWeight="0.8785347" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17118093" sideWeight="0.57462686" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3192964" sideWeight="0.38300654" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26002166" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="209" y="144" width="1473" height="356" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32841328" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Command Line Tools Console" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3291866" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3564464" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37486458" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41017655" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19654842" sideWeight="0.40681234" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32841328" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Command Line Tools Console" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3291866" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35671818" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19826652" sideWeight="0.5931877" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28104576" sideWeight="0.8785347" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28660437" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32287824" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-    </layout>
-    <layout-to-restore>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26845017" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.4974293" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4379085" sideWeight="0.5030257" order="14" side_tool="true" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32950193" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Command Line Tools Console" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3291866" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32950193" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17810458" sideWeight="0.75113463" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3108856" sideWeight="0.8785347" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32981783" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3279003" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1860817" sideWeight="0.47875816" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17270789" sideWeight="0.51216215" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28660437" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27238807" sideWeight="0.52837837" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14750378" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4379085" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1860817" sideWeight="0.52124184" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17270789" sideWeight="0.48783785" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38836968" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27238807" sideWeight="0.47162163" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26941514" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32287824" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -981,373 +1160,129 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <confirmMoveToFailedCommit value="1" />
-    <MESSAGE value="fix warnings" />
+    <confirmRemoveEmptyChangelist value="2" />
+    <MESSAGE value="fix issue with admin actions on rankings table, when no match has been created for specific rank" />
+    <MESSAGE value="add match sheet formatted on 1 side page" />
+    <MESSAGE value="fix issue with hall of fame" />
+    <MESSAGE value="better management of hall of fame creation" />
+    <MESSAGE value="reorder hall of fame display" />
+    <MESSAGE value="file encoding was set to windows 1252, instead of UTF-8, fixed&#10;refactor matches in order to use new class" />
+    <MESSAGE value="refactor match and team manager classes&#10;fix issue with matches grid (download files)" />
+    <MESSAGE value="add original date based on day and timeslot" />
+    <MESSAGE value="refactor code for admin part&#10;menu is now set to top in order to gain more space" />
+    <MESSAGE value="add forceSelection: true to combo fields" />
     <MESSAGE value="remove obsolete files" />
-    <MESSAGE value="refactor admin page to be similar to other pages" />
-    <MESSAGE value="remove competitions button" />
-    <MESSAGE value="fix issue with accented images" />
-    <MESSAGE value="remove check licence" />
-    <MESSAGE value="fix issue with photo displa on select player" />
-    <MESSAGE value="indicators are now displayed through controller" />
-    <MESSAGE value="modify main panel in order to fix main title issue&#10;copyright modified too" />
-    <MESSAGE value="refactor icons" />
-    <MESSAGE value="include css for admin page" />
-    <MESSAGE value="disable all days of week except monday for start_date field" />
-    <MESSAGE value="simplify start_date field" />
-    <MESSAGE value="add new fonts in order to display icons for admin page" />
-    <MESSAGE value="new implementation of icons" />
-    <MESSAGE value="fix issue with Isoardi final phase" />
-    <MESSAGE value="add mat" />
-    <MESSAGE value="add better match edition functionality" />
-    <MESSAGE value="Filter teams when creating matchs in admin mode" />
-    <MESSAGE value="add external link to UFOLEP 13" />
-    <MESSAGE value="fix issue with cup link" />
-    <MESSAGE value="update project" />
-    <MESSAGE value="new site redirection when using mobile version" />
-    <MESSAGE value="fix issue with some match display" />
-    <MESSAGE value="fix issue with ranking played matches count" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix issue with ranking played matches count" />
+    <MESSAGE value="refactor readme" />
+    <MESSAGE value="rename some menu items" />
+    <MESSAGE value="menu for d5" />
+    <MESSAGE value="refactor codefor managers implementation&#10;standard user has now better overviewof its club" />
+    <MESSAGE value="better exception logs" />
+    <MESSAGE value="convert string to int" />
+    <MESSAGE value="fix issue with getTeam usage, it can return many team instances (one per championship played)" />
+    <MESSAGE value="group matches by competition" />
+    <MESSAGE value="base64 encoding cross browser" />
+    <MESSAGE value="add report buttons controls in championship page, cup page, not only myteam page" />
+    <MESSAGE value="ability for admin to edit match anytime" />
+    <MESSAGE value="send email when a sheet has been attached to a match through edit button" />
+    <MESSAGE value="fix issue with add to calendar button" />
+    <MESSAGE value="new version for 1 page match sheet" />
+    <option name="LAST_COMMIT_MESSAGE" value="new version for 1 page match sheet" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="106" />
+      <option name="time" value="120" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="getLastResults.php">
         <watch expression="filter_input(INPUT_GET, 'callback')" language="PHP" />
       </configuration>
+      <configuration name="getMatches.php">
+        <watch expression="json_encode($manager-&gt;getMatches($query))" language="PHP" />
+      </configuration>
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/index_infos_utiles.php">
+    <entry file="file://$PROJECT_DIR$/js/controller/Administration.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+        <state relative-caret-position="850">
+          <caret line="398" column="14" lean-forward="false" selection-start-line="398" selection-start-column="14" selection-end-line="398" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/commission.php">
+    <entry file="file://$PROJECT_DIR$/js/view/rank/AdminGrid.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/portail.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/login.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/Competitions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/getTeams.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/saveMatch.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="15" column="30" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Competition.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="6" column="25" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/ParentCompetitions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="39" selection-start-line="0" selection-start-column="39" selection-end-line="0" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/AdminRanks.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="5" column="25" selection-start-line="5" selection-start-column="25" selection-end-line="5" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/Teams.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/js/view/rank/Grid.js" />
+    <entry file="file://$PROJECT_DIR$/js/controller/Classement.js" />
+    <entry file="file://$PROJECT_DIR$/js/view/site/TitlePanel.js" />
+    <entry file="file://$PROJECT_DIR$/js/model/Classement.js" />
     <entry file="file://$PROJECT_DIR$/js/store/AdminDays.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Day.js">
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="574">
+            <caret line="48" column="30" lean-forward="true" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/pages/my_team.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
+        <state relative-caret-position="34">
+          <caret line="2" column="64" lean-forward="false" selection-start-line="2" selection-start-column="64" selection-end-line="2" selection-end-column="64" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/RankTeam.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/store/RankTeams.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="3" column="41" selection-start-line="3" selection-start-column="41" selection-end-line="3" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/getRankTeams.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="7" column="15" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/match/Edit.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="105" column="35" selection-start-line="105" selection-start-column="35" selection-end-line="105" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controller/Administration.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/annuaire.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Commission.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="23" column="10" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/team/FormDetails.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/teamSheetPdf.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/portal.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="52" column="32" selection-start-line="52" selection-start-column="32" selection-end-line="52" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/db_inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="dbDummy://dbtable:/950e1976/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.matches" />
-    <entry file="dbDummy://dbtable:/950e1976/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.matches" />
-    <entry file="dbDummy://dbtable:/950e1976/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.comptes_acces" />
-    <entry file="dbDummy://dbtable:/950e1976/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.activity" />
-    <entry file="file://$PROJECT_DIR$/js/view/site/MainMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="365" column="16" selection-start-line="365" selection-start-column="16" selection-end-line="365" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controller/Menu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="541">
-          <caret line="34" column="14" selection-start-line="34" selection-start-column="14" selection-end-line="34" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/new_site/pages/my_players.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="27" column="48" selection-start-line="27" selection-start-column="48" selection-end-line="27" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/new_site/script.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="30" column="43" selection-start-line="30" selection-start-column="43" selection-end-line="30" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/new_site/pages/match.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/new_site/pages/match.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/getMatches.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Match.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="106" column="30" selection-start-line="106" selection-start-column="30" selection-end-line="106" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/match/Grid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="283">
-          <caret line="39" column="43" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/new_site/pages/matches.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="19" column="34" selection-start-line="19" selection-start-column="34" selection-end-line="19" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/match/AdminGrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="43" column="9" selection-start-line="43" selection-start-column="9" selection-end-line="43" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/view/match/LastResultsGrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="95" column="10" selection-start-line="95" selection-start-column="10" selection-end-line="95" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/console.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="27" column="28" selection-start-line="27" selection-start-column="28" selection-end-line="27" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="794" column="17" selection-start-line="794" selection-start-column="17" selection-end-line="794" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/getClassement.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="8" selection-start-line="6" selection-start-column="8" selection-end-line="6" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
+    <entry file="file://$PROJECT_DIR$/new_site/navs/my_main.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
-          <caret line="173" column="25" selection-start-line="173" selection-start-column="25" selection-end-line="173" selection-end-column="25" />
+          <caret line="17" column="67" lean-forward="false" selection-start-line="17" selection-start-column="60" selection-end-line="17" selection-end-column="67" />
         </state>
       </provider>
     </entry>
-    <entry file="dbDummy://dbtable:/950e1976/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.joueur_equipe">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true">
-            <filter text="id_joueur =1438" />
-            <filter text="id_joueur IN (1438,1439)" />
-            <filter text="id_joueur=1441" />
-            <filter text="id_joueur=1442" />
-            <filter text="id=1441" />
-          </filtering>
-        </state>
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+    <entry file="file://$PROJECT_DIR$/new_site/pages/my_preferences.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="24" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="dbDummy://dbtable:/950e1976/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.joueurs">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true">
-            <filter text="nom='leitao'" />
-            <filter text="nom='DURAND'" />
-          </filtering>
-        </state>
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+    <entry file="file://$PROJECT_DIR$/new_site/navs/my_page.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="87" lean-forward="false" selection-start-line="6" selection-start-column="87" selection-end-line="6" selection-end-column="87" />
         </state>
       </provider>
     </entry>
-    <entry file="dbDummy://dbtable:/950e1976/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef/ufolep_13volley.classements">
+    <entry file="file://$PROJECT_DIR$/new_site/navs/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="23" column="72" lean-forward="true" selection-start-line="23" selection-start-column="72" selection-end-line="23" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/Configuration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="25" lean-forward="false" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.users_profiles">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
@@ -1355,42 +1290,324 @@
       </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="dbDummy://dbtable:/950e1976/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.joueur_equipe">
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.profiles">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getTimeSlots.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="29" lean-forward="false" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getClassement.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/declareSheetReceived.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" column="3" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="24" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/modifierMonMotDePasse.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="32" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/saveMyPreferences.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="22" column="31" lean-forward="false" selection-start-line="22" selection-start-column="14" selection-end-line="22" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.comptes_acces">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.registry">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getMyPreferences.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="22" column="47" lean-forward="false" selection-start-line="22" selection-start-column="31" selection-end-line="22" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getAlerts.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getMesMatches.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getMatches.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getActivity.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="7" lean-forward="true" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/UserManager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="22" lean-forward="false" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/addPlayerToMyTeam.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="18" lean-forward="false" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/saveTimeSlot.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="14" lean-forward="false" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.activity">
       <provider editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
         </state>
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="119">
+          <caret line="7" column="56" lean-forward="false" selection-start-line="7" selection-start-column="56" selection-end-line="7" selection-end-column="56" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Player.js">
+    <entry file="file://$PROJECT_DIR$/ajax/getMyClubMatches.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="658">
-          <caret line="69" column="19" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="19" />
-          <folding />
+        <state relative-caret-position="561">
+          <caret line="33" column="7" lean-forward="true" selection-start-line="33" selection-start-column="7" selection-end-line="33" selection-end-column="7" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/model/Team.js">
+    <entry file="file://$PROJECT_DIR$/classes/Generic.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="29" lean-forward="false" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/TimeSlotManager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="44" column="44" lean-forward="true" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/TeamManager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="25" column="20" lean-forward="true" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/getMonEquipe.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="22" column="41" lean-forward="false" selection-start-line="22" selection-start-column="41" selection-end-line="22" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/script.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="1126" column="3" lean-forward="true" selection-start-line="1126" selection-start-column="3" selection-end-line="1126" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/actions/match.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="34" column="52" lean-forward="true" selection-start-line="34" selection-start-column="52" selection-end-line="34" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/saveMatch.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="17" lean-forward="true" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.matches">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/infos_utiles/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="199" column="99" lean-forward="false" selection-start-line="199" selection-start-column="60" selection-end-line="199" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/emails/sendMailSheetReceived.fr.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="78" lean-forward="false" selection-start-line="14" selection-start-column="78" selection-end-line="14" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/fonctions_inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="906" column="9" lean-forward="false" selection-start-line="906" selection-start-column="9" selection-end-line="906" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/Emails.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="470">
+          <caret line="132" column="38" lean-forward="true" selection-start-line="132" selection-start-column="38" selection-end-line="132" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/MatchManager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="342" column="41" lean-forward="false" selection-start-line="342" selection-start-column="41" selection-end-line="342" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="13" column="39" lean-forward="false" selection-start-line="13" selection-start-column="39" selection-end-line="13" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/pages/matches.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="48" column="35" lean-forward="false" selection-start-line="48" selection-start-column="35" selection-end-line="48" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/classes/Indicator.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
-          <caret line="4" column="32" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="32" />
+          <caret line="4" column="11" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-  </component>
-  <component name="webServersAuthStorage">
-    <data>AAAAsINldgb/tspdcfwpwYFoM4v/AoCp5GynfcyhMGN+gbfARw9YJJIVJMEqRrHGSsQnhcNHXee+EkzEf0aeLKYa2u3EJ9X86Do0ZMD+OajyME1JiPPbKKM0EgxEINZf/2hVIfmH3B0/d7Fi+FoMBecg13PQNYQoSNMAYDusYjEnTur/ILsX26cCcdTTMAkYOIf73BPYx0bnCm1QbG3mrABJuF/aBfqzcpHE8BgnCJaGrKCu5PKbhzEJ6f8M4yGVygAaig==</data>
+    <entry file="dbDummy://dbtable:/182c1244/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/ufolep_13volley.equipes">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="496">
+          <caret line="329" column="61" lean-forward="false" selection-start-line="329" selection-start-column="61" selection-end-line="329" selection-end-column="61" />
+          <folding>
+            <marker date="1492762469192" expanded="true" signature="1000:1189" ph="SELECT conca... joueurs" />
+            <marker date="1492762469192" expanded="true" signature="1277:1750" ph="SELECT SUBST... activity" />
+            <marker date="1492762469192" expanded="true" signature="1830:2249" ph="SELECT m.cod... matches" />
+            <marker date="1492762469192" expanded="true" signature="2156:2226" ph="SELECT code_... matches" />
+            <marker date="1492762469192" expanded="true" signature="2343:3046" ph="SELECT CONCA... joueur_equipe" />
+            <marker date="1492762469192" expanded="true" signature="2984:3017" ph="SELECT id_eq... classements" />
+            <marker date="1492762469192" expanded="true" signature="3121:4202" ph="SELECT e.nom... equipes" />
+            <marker date="1492762469192" expanded="true" signature="4302:4649" ph="SELECT DISTI... joueurs" />
+            <marker date="1492762469192" expanded="true" signature="4742:5136" ph="SELECT DISTI... joueurs" />
+            <marker date="1492762469192" expanded="true" signature="5076:5109" ph="SELECT id_eq... classements" />
+            <marker date="1492762469192" expanded="true" signature="5196:5662" ph="SELECT DATE_... activity" />
+            <marker date="1492762469192" expanded="true" signature="5718:6067" ph="SELECT e.nom... equipes" />
+            <marker date="1492762469192" expanded="true" signature="6142:6471" ph="SELECT e1.no... matches" />
+            <marker date="1492762469192" expanded="true" signature="6546:7106" ph="SELECT e.nom... equipes" />
+            <marker date="1492762469192" expanded="true" signature="7186:7324" ph="SELECT num_l... joueurs" />
+            <marker date="1492762469192" expanded="true" signature="7394:8193" ph="SELECT m.cod... matches" />
+            <marker date="1492762469192" expanded="true" signature="8317:8818" ph="SELECT e.nom... equipes" />
+            <marker date="1492762469192" expanded="true" signature="8490:8739" ph="SELECT ca.id... comptes_acces" />
+            <marker date="1492762469192" expanded="true" signature="8563:8733" ph="SELECT up.us... users_profiles" />
+            <marker date="1492762469192" expanded="true" signature="8646:8725" ph="SELECT p.id profiles" />
+            <marker date="1492762469192" expanded="true" signature="8771:8814" ph="SELECT cl.id... classements" />
+            <marker date="1492762469192" expanded="true" signature="8920:8943" ph="SELECT e.nom... equipes" />
+            <marker date="1492762469192" expanded="true" signature="8920:9259" ph="SELECT je.id... joueur_equipe" />
+            <marker date="1492762469192" expanded="true" signature="8920:9267" ph="SELECT je.id... joueur_equipe" />
+            <marker date="1492762469192" expanded="true" signature="8920:9268" ph="SELECT je.id... joueur_equipe" />
+            <marker date="1492762469192" expanded="true" signature="9162:9205" ph="SELECT cl.id... classements" />
+            <marker date="1492762469192" expanded="true" signature="9409:10034" ph="SELECT m.cod... matches" />
+            <marker date="1492762469192" expanded="true" signature="10141:10562" ph="SELECT c2.li... creneau" />
+            <marker date="1492762469192" expanded="true" signature="10667:11035" ph="SELECT GROUP... joueur_equipe" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

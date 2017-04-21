@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="db1c658f-e2bf-4591-a1b3-63220b31c0af" name="ufolep" url="http://217.16.10.10">
-        <fileTransfer host="217.16.10.10" port="21" rootFolder="/httpdocs/">
+      <webServer id="db1c658f-e2bf-4591-a1b3-63220b31c0af" name="ufolep" url="http://ufolepvocb.cluster020.hosting.ovh.net">
+        <fileTransfer host="ftp.cluster020.hosting.ovh.net" port="21" rootFolder="/www">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
           </advancedOptions>

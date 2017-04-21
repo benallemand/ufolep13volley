@@ -14,19 +14,5 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="MySQL - ufolep prod" uuid="7a4e14c2-1d0f-43b7-bf51-f9f313c76aef">
-      <driver-ref>mysql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://clustermysql05.hosteur.com:3306/ufolep_13volley</jdbc-url>
-      <driver-properties>
-        <property name="zeroDateTimeBehavior" value="convertToNull" />
-        <property name="tinyInt1isBit" value="false" />
-        <property name="characterEncoding" value="utf8" />
-        <property name="characterSetResults" value="utf8" />
-        <property name="yearIsDateType" value="false" />
-        <property name="lc_time_names" value="fr_FR" />
-      </driver-properties>
-    </data-source>
   </component>
 </project>

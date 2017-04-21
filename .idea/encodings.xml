@@ -11,6 +11,7 @@
     <file url="file://$PROJECT_DIR$/ajax/classes/Rest.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/commission.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/createUser.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ajax/decrementReportCount.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteClubs.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteDays.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteGymnasiums.php" charset="UTF-8" />
@@ -20,6 +21,7 @@
     <file url="file://$PROJECT_DIR$/ajax/deleteRanks.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteTeams.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/deleteUsers.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ajax/downloadMatchFiles.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/equipes.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getActivity.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getAlerts.php" charset="UTF-8" />
@@ -54,6 +56,7 @@
     <file url="file://$PROJECT_DIR$/ajax/getVolleyballImages.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getWebSites.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/getWeekSchedule.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ajax/incrementReportCount.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/indicators.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/logout.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/modifierMatch.php" charset="UTF-8" />
@@ -81,124 +84,61 @@
     <file url="file://$PROJECT_DIR$/ajax/updateMyTeamCaptain.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/updateMyTeamLeader.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ajax/updateMyTeamViceLeader.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/annuaire.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/commission.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/Configuration.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/Database.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/Emails.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/Generic.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/MatchManager.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/TeamManager.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/TimeSlotManager.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/classes/UserManager.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/includes/fonctions_inc.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/index.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/index_infos_utiles.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/index_mobile.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/accueil.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/administration.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/annuaire.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/championship.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/commission.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/controller/Administration.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/Classement.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/GymnasiumsMap.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/Login.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/Matches.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/Menu.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/TeamManagement.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/LastResults.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/Main.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/Phonebook.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/Portal.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/Teams.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/controller/mobile/Tournaments.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/libs/ColumnAutoWidthPlugin.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/libs/Commons.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/libs/GMapPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/login.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/matches.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/mobile.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/mobilePortal.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Activity.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Alert.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Classement.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Club.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Commission.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Competition.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Day.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Gymnasium.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Image.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/LastPost.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/LastResult.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/LimitDate.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Match.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Phonebook.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Player.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Preference.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Profile.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Rank.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/RankTeam.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/Team.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/TimeSlot.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/Tournament.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/User.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/model/WebSite.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/WeekDay.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/model/WeekSchedule.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/portal.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Activity.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/AdminDays.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/AdminMatches.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/AdminRanks.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Alerts.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Classement.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Clubs.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Commission.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Competitions.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Gymnasiums.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Images.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/LastPosts.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/LastResults.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/LimitDates.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Matches.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/MyMatches.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/MyPlayers.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/MyPreferences.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/MyTeam.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/ParentCompetitions.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Phonebooks.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Players.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Profiles.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/RankTeams.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/TeamPlayers.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Teams.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/TimeSlots.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/Tournaments.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/Users.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/WebSites.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/store/WeekDays.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/store/WeekSchedule.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/teamDetails.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/usefulInformations.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/activity/Grid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/activity/Window.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/club/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/club/Grid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/club/Select.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/day/AdminGrid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/day/Edit.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/forum/LastPostsGrid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/gymnasium/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/gymnasium/Grid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/limitdate/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/limitdate/Grid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/login/CreateUser.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/match/AdminGrid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/match/Edit.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/match/Grid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/match/LastResultsGrid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/LastResults.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/Main.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/MyPlayers.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/Players.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/Portal.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/SearchTeam.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/SearchTournament.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/Teams.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/mobile/Tournaments.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/player/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/player/Grid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/profile/Edit.js" charset="UTF-8" />
@@ -206,36 +146,9 @@
     <file url="file://$PROJECT_DIR$/js/view/profile/Select.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/rank/AdminGrid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/rank/Edit.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/rank/Grid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/Banner.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/ChampionshipPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/CommissionPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/HeaderPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/LimitDatePanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/MainMenu.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/MainPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/MatchesPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/PhonebookPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/TeamDetailsPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/TitlePanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/site/UsefulInformationsPanel.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/DetailsEdit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/team/Edit.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/EditPreferences.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/FormDetails.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/team/Grid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/GridAlerts.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/GridMatches.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/ModifyPassword.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/PlayerAddToMyTeam.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/PlayersManage.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/team/Select.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/SetMyTeamCaptain.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/SetMyTeamLeader.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/SetMyTeamViceLeader.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/TimeSlotsManage.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/team/WebSitesGrid.js" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/js/view/timeslot/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/timeslot/WeekScheduleGrid.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/user/Edit.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/view/user/Grid.js" charset="UTF-8" />
@@ -259,7 +172,12 @@
     <file url="file://$PROJECT_DIR$/libs/Unirest/HttpResponse.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/libs/Unirest/Unirest.php" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/login.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/portail.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/add_existing_player.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/add_new_player.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/edit_existing_player.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/match.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/match_admin.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/new_site/pages/players.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/teamSheetPdf.php" charset="UTF-8" />
     <file url="PROJECT" charset="windows-1252" />
   </component>

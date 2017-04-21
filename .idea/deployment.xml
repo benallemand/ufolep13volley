@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="ufolep" uploadOnCheckin="db1c658f-e2bf-4591-a1b3-63220b31c0af" showEqualInSync="true">
+  <component name="PublishConfigData" serverName="ufolep" persistUploadOnCheckin="false" showEqualInSync="true">
     <serverData>
       <paths name="ufolep">
         <serverdata>
@@ -10,6 +10,5 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myUploadOnCheckinName" value="ufolep" />
   </component>
 </project>
