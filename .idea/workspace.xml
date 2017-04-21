@@ -4,17 +4,9 @@
     <option name="SCOPE_TYPE" value="2" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="remove todo">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf/_staging_/schema/ufolep_13volley/routine/SPLIT_STRING.(varchar(255),varchar(12),int(11)).sql" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dataSources/7a4e14c2-1d0f-43b7-bf51-f9f313c76aef.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/2ba3cebe-98b2-469f-a1db-0d9e897f2edf.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/php.xml" afterPath="$PROJECT_DIR$/.idea/php.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
+    <list default="true" id="abff4148-2b3c-4801-a844-bf626ac4f569" name="Default" comment="add indicator for teams without leader">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ajax/indicators.php" afterPath="$PROJECT_DIR$/ajax/indicators.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/new_site/pages/my_page.html" afterPath="$PROJECT_DIR$/new_site/pages/my_page.html" />
     </list>
     <ignored path="ufolep13volley.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -86,48 +78,7 @@
     <favorites_list name="ufolep13volley" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="indicators.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ajax/indicators.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="496">
-              <caret line="329" column="61" lean-forward="false" selection-start-line="329" selection-start-column="61" selection-end-line="329" selection-end-column="61" />
-              <folding>
-                <marker date="1492762469192" expanded="true" signature="1000:1189" ph="SELECT conca... joueurs" />
-                <marker date="1492762469192" expanded="true" signature="1277:1750" ph="SELECT SUBST... activity" />
-                <marker date="1492762469192" expanded="true" signature="1830:2249" ph="SELECT m.cod... matches" />
-                <marker date="1492762469192" expanded="true" signature="2156:2226" ph="SELECT code_... matches" />
-                <marker date="1492762469192" expanded="true" signature="2343:3046" ph="SELECT CONCA... joueur_equipe" />
-                <marker date="1492762469192" expanded="true" signature="2984:3017" ph="SELECT id_eq... classements" />
-                <marker date="1492762469192" expanded="true" signature="3121:4202" ph="SELECT e.nom... equipes" />
-                <marker date="1492762469192" expanded="true" signature="4302:4649" ph="SELECT DISTI... joueurs" />
-                <marker date="1492762469192" expanded="true" signature="4742:5136" ph="SELECT DISTI... joueurs" />
-                <marker date="1492762469192" expanded="true" signature="5076:5109" ph="SELECT id_eq... classements" />
-                <marker date="1492762469192" expanded="true" signature="5196:5662" ph="SELECT DATE_... activity" />
-                <marker date="1492762469192" expanded="true" signature="5718:6067" ph="SELECT e.nom... equipes" />
-                <marker date="1492762469192" expanded="true" signature="6142:6471" ph="SELECT e1.no... matches" />
-                <marker date="1492762469192" expanded="true" signature="6546:7106" ph="SELECT e.nom... equipes" />
-                <marker date="1492762469192" expanded="true" signature="7186:7324" ph="SELECT num_l... joueurs" />
-                <marker date="1492762469192" expanded="true" signature="7394:8193" ph="SELECT m.cod... matches" />
-                <marker date="1492762469192" expanded="true" signature="8317:8818" ph="SELECT e.nom... equipes" />
-                <marker date="1492762469192" expanded="true" signature="8490:8739" ph="SELECT ca.id... comptes_acces" />
-                <marker date="1492762469192" expanded="true" signature="8563:8733" ph="SELECT up.us... users_profiles" />
-                <marker date="1492762469192" expanded="true" signature="8646:8725" ph="SELECT p.id profiles" />
-                <marker date="1492762469192" expanded="true" signature="8771:8814" ph="SELECT cl.id... classements" />
-                <marker date="1492762469192" expanded="true" signature="8920:8943" ph="SELECT e.nom... equipes" />
-                <marker date="1492762469192" expanded="true" signature="8920:9259" ph="SELECT je.id... joueur_equipe" />
-                <marker date="1492762469192" expanded="true" signature="8920:9267" ph="SELECT je.id... joueur_equipe" />
-                <marker date="1492762469192" expanded="true" signature="8920:9268" ph="SELECT je.id... joueur_equipe" />
-                <marker date="1492762469192" expanded="true" signature="9162:9205" ph="SELECT cl.id... classements" />
-                <marker date="1492762469192" expanded="true" signature="9409:10034" ph="SELECT m.cod... matches" />
-                <marker date="1492762469192" expanded="true" signature="10141:10562" ph="SELECT c2.li... creneau" />
-                <marker date="1492762469192" expanded="true" signature="10667:11035" ph="SELECT GROUP... joueur_equipe" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -138,7 +89,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Error while retrieving data</find>
       <find>&quot;Error while retrieving</find>
       <find>atob</find>
       <find>ato</find>
@@ -168,6 +118,7 @@
       <find>atc_event</find>
       <find>without</find>
       <find>$indicatorActiveTeamWithoutTeamLeader</find>
+      <find>alerts.html</find>
     </findStrings>
     <replaceStrings>
       <replace>CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')' (', cl.division, ')') AS team_full_name,</replace>
@@ -229,7 +180,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/emails/sendMailGiveReportDate.fr.html" />
         <option value="$PROJECT_DIR$/downloadMatchFiles.php" />
         <option value="$PROJECT_DIR$/ajax/downloadMatchFiles.php" />
         <option value="$PROJECT_DIR$/new_site/pages/match.html" />
@@ -280,6 +230,7 @@
         <option value="$PROJECT_DIR$/new_site/pages/matches.html" />
         <option value="$PROJECT_DIR$/new_site/index.html" />
         <option value="$PROJECT_DIR$/ajax/indicators.php" />
+        <option value="$PROJECT_DIR$/new_site/pages/my_page.html" />
       </list>
     </option>
   </component>
@@ -397,6 +348,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="new_site" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ufolep13volley" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="new_site" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -651,14 +634,7 @@
       <workItem from="1491813716484" duration="2657000" />
       <workItem from="1491837851631" duration="6000" />
       <workItem from="1492095877897" duration="46000" />
-      <workItem from="1492761090455" duration="1404000" />
-    </task>
-    <task id="LOCAL-00128" summary="display homologation date">
-      <created>1481025678066</created>
-      <option name="number" value="00128" />
-      <option name="presentableId" value="LOCAL-00128" />
-      <option name="project" value="LOCAL" />
-      <updated>1481025678067</updated>
+      <workItem from="1492761090455" duration="1464000" />
     </task>
     <task id="LOCAL-00129" summary="add division in team full name">
       <created>1482145680875</created>
@@ -1031,7 +1007,14 @@
       <option name="project" value="LOCAL" />
       <updated>1492095894262</updated>
     </task>
-    <option name="localTasksCounter" value="172" />
+    <task id="LOCAL-00172" summary="add indicator for teams without leader">
+      <created>1492762509255</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1492762509255</updated>
+    </task>
+    <option name="localTasksCounter" value="173" />
     <servers>
       <GitHub shared="false" url="https://github.com">
         <option name="assignedIssuesOnly" value="false" />
@@ -1060,7 +1043,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="266512000" />
+    <option name="totallyTimeSpent" value="266572000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1074,16 +1057,17 @@
   <component name="ToolWindowManager">
     <frame x="1912" y="-282" width="1936" height="1056" extended-state="6" />
     <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40953413" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21885157" sideWeight="0.42537314" order="14" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4084507" sideWeight="0.8785347" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17118093" sideWeight="0.57462686" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25159913" sideWeight="0.46797386" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34669557" sideWeight="0.4914712" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3192964" sideWeight="0.6169935" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40953413" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21885157" sideWeight="0.42537314" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25159913" sideWeight="0.5320262" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4084507" sideWeight="0.8785347" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17118093" sideWeight="0.57462686" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37486458" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3192964" sideWeight="0.38300654" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26002166" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1098,7 +1082,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32841328" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Command Line Tools Console" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3291866" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3564464" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37486458" sideWeight="0.4969743" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -1161,7 +1144,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <confirmRemoveEmptyChangelist value="2" />
-    <MESSAGE value="fix issue with admin actions on rankings table, when no match has been created for specific rank" />
     <MESSAGE value="add match sheet formatted on 1 side page" />
     <MESSAGE value="fix issue with hall of fame" />
     <MESSAGE value="better management of hall of fame creation" />
@@ -1186,7 +1168,8 @@
     <MESSAGE value="send email when a sheet has been attached to a match through edit button" />
     <MESSAGE value="fix issue with add to calendar button" />
     <MESSAGE value="new version for 1 page match sheet" />
-    <option name="LAST_COMMIT_MESSAGE" value="new version for 1 page match sheet" />
+    <MESSAGE value="add indicator for teams without leader" />
+    <option name="LAST_COMMIT_MESSAGE" value="add indicator for teams without leader" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1205,13 +1188,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controller/Administration.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
-          <caret line="398" column="14" lean-forward="false" selection-start-line="398" selection-start-column="14" selection-end-line="398" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/view/rank/AdminGrid.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1606,6 +1582,14 @@
             <marker date="1492762469192" expanded="true" signature="10141:10562" ph="SELECT c2.li... creneau" />
             <marker date="1492762469192" expanded="true" signature="10667:11035" ph="SELECT GROUP... joueur_equipe" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/new_site/pages/my_page.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
