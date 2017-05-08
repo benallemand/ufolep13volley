@@ -83,6 +83,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ASKED_BY_DOM'
         && x.sheet_received != '1'
+        && x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="refuseReport(x.code_match)">
@@ -93,6 +94,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ASKED_BY_DOM'
         && x.sheet_received != '1'
+        && x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="acceptReport(x.code_match)">
@@ -103,6 +105,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ASKED_BY_EXT'
         && x.sheet_received != '1'
+        && x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="refuseReport(x.code_match)">
@@ -113,6 +116,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ASKED_BY_EXT'
         && x.sheet_received != '1'
+        && x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="acceptReport(x.code_match)">
@@ -123,6 +127,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ACCEPTED_BY_DOM'
         && x.sheet_received != '1'
+        && x.id_equipe_ext != <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="giveReportDate(x.code_match)">
@@ -133,6 +138,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     </form>
     <form ng-if="x.report_status == 'ACCEPTED_BY_EXT'
         && x.sheet_received != '1'
+        && x.id_equipe_dom != <?php echo $_SESSION['id_equipe'] ?>
         && x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>"
           style="display: inline-block"
           ng-submit="giveReportDate(x.code_match)">
