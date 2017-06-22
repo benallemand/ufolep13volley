@@ -15,6 +15,7 @@ class Indicator {
     function execSqlGetDetails() {
         global $db;
         conn_db();
+        mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
         $req = mysqli_query($db, $this->sql);
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
