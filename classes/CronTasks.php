@@ -63,6 +63,9 @@ class CronTasks
     public function sendMailActivity()
     {
         $activities = $this->sql_manager->sql_get_activity();
+        if(count($activities) == 0) {
+            return;
+        }
         $string_activities = "";
         foreach ($activities as $activity) {
             $string_activities .= "<tr>
@@ -80,7 +83,8 @@ class CronTasks
                 'activity' => $string_activities
             ),
             implode(";", array(
-                'benallemand@gmail.com'
+                'benallemand@gmail.com',
+                'philipvolley@free.fr'
             ))
         );
     }
