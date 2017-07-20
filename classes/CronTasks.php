@@ -38,8 +38,16 @@ class CronTasks
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
             $message = str_replace("%$data_to_replace_key%", $data_to_replace_value, $message);
         }
-        $subject = $this->getH1FromHtmlString($message);
-        $this->email_manager->sendEmail($subject, $message, 'no-reply@ufolep13volley.org', $destination_email);
+        $subject = "[UFOLEP13VOLLEY] " . $this->getH1FromHtmlString($message);
+        $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+        switch ($serverName) {
+            case 'localhost':
+                $this->email_manager->sendEmail($subject, $message, 'no-reply@ufolep13volley.org', "benallemand@gmail.com");
+                break;
+            default:
+                $this->email_manager->sendEmail($subject, $message, 'no-reply@ufolep13volley.org', $destination_email);
+                break;
+        }
     }
 
     public function sendMailAccountRecap()
@@ -63,7 +71,7 @@ class CronTasks
     public function sendMailActivity()
     {
         $activities = $this->sql_manager->sql_get_activity();
-        if(count($activities) == 0) {
+        if (count($activities) == 0) {
             return;
         }
         $string_activities = "";
@@ -83,59 +91,108 @@ class CronTasks
                 'activity' => $string_activities
             ),
             implode(";", array(
-                'benallemand@gmail.com',
                 'philipvolley@free.fr'
             ))
         );
     }
 
-    public function sendMailMatchNotReported($email, $equipe_reception, $equipe_visiteur, $date_reception)
+    public function sendMailMatchesNotReported()
     {
+        $matches_not_reported = $this->sql_manager->sql_get_matches_not_reported();
+        if (count($matches_not_reported) == 0) {
+            return;
+        }
+        foreach ($matches_not_reported as $match_not_reported) {
+            $email = implode(";", array(
+                $match_not_reported['responsable_reception'],
+                $match_not_reported['responsable_visiteur']
+            ));
+            $this->sendGenericEmail(
+                '../templates/emails/sendMailMatchNotReported.fr.html',
+                array(
+                    'equipe_reception' => $match_not_reported['equipe_reception'],
+                    'equipe_visiteur' => $match_not_reported['equipe_visiteur'],
+                    'date_reception' => $match_not_reported['date_reception']
+                ),
+                $email
+            );
+        }
+    }
+
+    public function sendMailNextMatches()
+    {
+        $teams = $this->sql_manager->sql_get_ids_team_requesting_next_matches();
+        if (count($teams) == 0) {
+            return;
+        }
+        foreach ($teams as $team) {
+            $next_matches = $this->sql_manager->sql_get_next_matches_for_team($team['team_id']);
+            if (count($next_matches) == 0) {
+                continue;
+            }
+            $team_email = $this->sql_manager->sql_get_email_from_team_id($team['team_id']);
+            $this->sendGenericEmail(
+                '../templates/emails/sendMailNextMatches.fr.html',
+                array(
+                    'next_matches' => $next_matches
+                ),
+                $team_email['email']
+            );
+        }
+    }
+
+    public function sendMailPlayersWithoutLicenceNumber()
+    {
+        $players_without_licence_number = $this->sql_manager->sql_get_players_without_licence_number();
+        if (count($players_without_licence_number) == 0) {
+            return;
+        }
+        foreach ($players_without_licence_number as $players_without_licence_number_per_leader) {
+            $this->sendGenericEmail(
+                '../templates/emails/sendMailPlayersWithoutLicenceNumber.fr.html',
+                array(
+                    'joueurs' => $players_without_licence_number_per_leader['joueurs'],
+                    'club' => $players_without_licence_number_per_leader['club'],
+                    'equipe' => $players_without_licence_number_per_leader['equipe'],
+                    'responsable' => $players_without_licence_number_per_leader['responsable']
+                ),
+                $players_without_licence_number_per_leader['responsable']
+            );
+        }
+    }
+
+    public function sendMailTeamLeadersWithoutEmail()
+    {
+        $team_leaders_without_email = $this->sql_manager->sql_get_team_leaders_without_email();
+        if (count($team_leaders_without_email) == 0) {
+            return;
+        }
+        $string_team_leaders_without_email = "";
+        foreach ($team_leaders_without_email as $team_leader_without_email) {
+            $string_team_leaders_without_email .= "<tr>
+            <td>" . $team_leader_without_email['prenom'] . "</td>
+            <td>" . $team_leader_without_email['nom'] . "</td>
+            <td>" . $team_leader_without_email['competition'] . "</td>
+            <td>" . $team_leader_without_email['equipe'] . "</td>
+        </tr>";
+        }
         $this->sendGenericEmail(
-            '../templates/emails/sendMailMatchNotReported.fr.html',
+            '../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
             array(
-                'equipe_reception' => $equipe_reception,
-                'equipe_visiteur' => $equipe_visiteur,
-                'date_reception' => $date_reception
+                'team_leaders_without_email' => $string_team_leaders_without_email
             ),
-            $email
+            'laurent.gorlier@ufolep13volley.org'
         );
     }
 
-    public function sendMailNextMatches($email, $next_matches)
-    {
-        $this->sendGenericEmail(
-            '../templates/emails/sendMailNextMatches.fr.html',
-            array(
-                'next_matches' => $next_matches
-            ),
-            $email
-        );
-    }
-
-    public function sendMailPlayersWithoutLicenceNumber($email, $joueurs, $club, $equipe, $responsable)
-    {
-        $this->sendGenericEmail(
-            '../templates/emails/sendMailPlayersWithoutLicenceNumber.fr.html',
-            array(
-                'email' => $email,
-                'joueurs' => $joueurs,
-                'club' => $club,
-                'equipe' => $equipe,
-                'responsable' => $responsable
-            ),
-            $email
-        );
-    }
-
-    public function sendMailTeamLeadersWithoutEmail($email, $team_leaders_without_email)
+    public function sendMailTest()
     {
         $this->sendGenericEmail(
             '../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
             array(
-                'team_leaders_without_email' => $team_leaders_without_email
+                'team_leaders_without_email' => "this is a test"
             ),
-            $email
+            "benallemand@gmail.com"
         );
     }
 
