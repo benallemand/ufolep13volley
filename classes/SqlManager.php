@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ballemand
- * Date: 20/07/2017
- * Time: 11:08
- */
+require_once '../classes/Database.php';
 
 class SqlManager
 {
