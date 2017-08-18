@@ -2458,16 +2458,16 @@ function getHallOfFameDisplay()
     global $db;
     conn_db();
     $sql = "SELECT
-  hof.period,
-  CASE WHEN hof.title LIKE '%Division%'
-    THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
-  ELSE '' END                 AS division,
-  CASE WHEN hof.title LIKE '%mi-saison%'
-    THEN 1
-  ELSE 2 END                  AS demi_saison,
-  hof_champion.team_name      AS champion,
-  hof_vice_champion.team_name AS vice_champion,
-  hof.league
+      hof.period,
+      CASE WHEN hof.title LIKE '%Division%'
+        THEN SUBSTRING_INDEX(hof.title, 'Division ', -1)
+      ELSE '' END                 AS division,
+      CASE WHEN hof.title LIKE '%mi-saison%'
+        THEN 1
+      ELSE 2 END                  AS demi_saison,
+      hof_champion.team_name      AS champion,
+      hof_vice_champion.team_name AS vice_champion,
+      hof.league
 FROM hall_of_fame hof
   JOIN hall_of_fame hof_champion ON
                                    hof_champion.league = hof.league AND
@@ -2482,7 +2482,7 @@ FROM hall_of_fame hof
                                     ELSE 2 END) = (CASE WHEN hof.title LIKE '%mi-saison%'
                                      THEN 1
                                                    ELSE 2 END) AND
-                                   (hof_champion.title NOT LIKE '%Vice%' OR
+                                   (hof_champion.title NOT LIKE '%Vice%' AND
                                     hof_champion.title NOT LIKE '%Finaliste%')
   JOIN hall_of_fame hof_vice_champion ON
                                         hof_vice_champion.league = hof.league AND
