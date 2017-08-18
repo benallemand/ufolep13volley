@@ -27,7 +27,13 @@
                 title="{{x.exact_deuce == '1' ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
                 <a href="#phonebook/{{ x.id_equipe }}">{{ x.equipe }}</a>
             </td>
-            <td title="{{x.penalites != '0' ? x.penalites + ' point(s) de pénalité'  : ''}}">{{ x.points }}{{x.penalites != '0' ? '*' : ''}}</td>
+            <td>{{ x.points }}
+                <span
+                        ng-if="x.penalites != '0'"
+                        class="label label-danger">
+                dont {{ x.penalites }} pts de pénalité
+            </span>
+            </td>
             <td>{{ x.joues }}</td>
             <td>{{ x.gagnes }}</td>
             <td title="{{x.matches_lost_by_forfeit_count != '0' ? x.matches_lost_by_forfeit_count + ' par forfait'  : ''}}">
