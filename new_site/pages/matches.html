@@ -51,18 +51,18 @@
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_dom }}</span>
-                            <span ng-if="x.forfait_ext ==  '1'"
-                                  class="glyphicon glyphicon-asterisk text-success"
-                                  title="Par forfait"></span>
+                            <span ng-if="x.forfait_ext == '1'"
+                                  class="label label-info">par forfait
+                            </span>
                         </td>
                         <td class="text-center">
                             <span ng-if="x.score_equipe_dom == '3' || x.score_equipe_ext == '3'">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</span>
                         </td>
                         <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_ext }}</span>
-                            <span ng-if="x.forfait_dom ==  '1'"
-                                  class="glyphicon glyphicon-asterisk text-success"
-                                  title="Par forfait"></span>
+                            <span ng-if="x.forfait_dom == '1'"
+                                  class="label label-info">par forfait
+                            </span>
                         </td>
                         <td class="">
                             <span ng-if="x.set_1_dom != '0' || x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>

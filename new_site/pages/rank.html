@@ -36,8 +36,12 @@
             </td>
             <td>{{ x.joues }}</td>
             <td>{{ x.gagnes }}</td>
-            <td title="{{x.matches_lost_by_forfeit_count != '0' ? x.matches_lost_by_forfeit_count + ' par forfait'  : ''}}">
-                {{ x.perdus }}{{x.matches_lost_by_forfeit_count != '0' ? '*' : ''}}
+            <td> {{ x.perdus }}
+                <span
+                        ng-if="x.matches_lost_by_forfeit_count != '0'"
+                        class="label label-info">
+                dont {{ x.matches_lost_by_forfeit_count }} par forfait
+            </span>
             </td>
             <td>{{ x.sets_pour }}</td>
             <td>{{ x.sets_contre }}</td>
