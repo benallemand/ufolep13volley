@@ -1137,3 +1137,9 @@ scotchApp.filter('parseDate', function () {
         return new Date(input);
     };
 });
+
+scotchApp.filter('num', function() {
+    return function(input) {
+        return parseInt(input, 10);
+    };
+});

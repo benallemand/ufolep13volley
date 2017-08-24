@@ -31,7 +31,7 @@
                 <span
                         ng-if="x.penalites != '0'"
                         class="label label-danger">
-                dont {{ x.penalites }} pts de pénalité
+                {{ (x.points|num) + (x.penalites|num) }} - {{ x.penalites }} pts de pénalité
             </span>
             </td>
             <td>{{ x.joues }}</td>

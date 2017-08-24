@@ -51,8 +51,8 @@
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_dom }}</span>
-                            <span ng-if="x.forfait_ext == '1'"
-                                  class="label label-info">par forfait
+                            <span ng-if="x.forfait_dom == '1'"
+                                  class="label label-info">perdu par forfait
                             </span>
                         </td>
                         <td class="text-center">
@@ -60,8 +60,8 @@
                         </td>
                         <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_ext }}</span>
-                            <span ng-if="x.forfait_dom == '1'"
-                                  class="label label-info">par forfait
+                            <span ng-if="x.forfait_ext == '1'"
+                                  class="label label-info">perdu par forfait
                             </span>
                         </td>
                         <td class="">
