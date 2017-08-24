@@ -1,5 +1,11 @@
 <div class="panel panel-primary" id="matches">
-    <div class="panel-heading"><span class="panel-title">Matches</span>
+    <div class="panel-heading">
+        <span class="panel-title">Matches</span>
+    </div>
+    <div class="alert alert-info">
+        <label>Cacher les matches validés:
+            <input type="checkbox" ng-model="hideCertifiedMatches"/>
+        </label>
     </div>
     <table class="table table-bordered" ng-repeat="current_competition in matches | unique:'libelle_competition'">
         <tr class="info">
@@ -24,7 +30,8 @@
                         <th>Actions</th>
                     </tr>
 
-                    <tr ng-repeat="x in matches | filter:{ journee: current_journee.journee }:true | filter:search">
+                    <tr ng-repeat="x in matches | filter:{ journee: current_journee.journee }:true | filter:search"
+                        ng-hide="(hideCertifiedMatches == true && x.certif=='1')">
                         <td class="{{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
                             title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
                             {{ x.code_match }}

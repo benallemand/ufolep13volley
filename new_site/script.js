@@ -90,7 +90,7 @@ var Base64 = {
 };
 
 // create the module and name it scotchApp
-var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter']);
+var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar']);
 
 // configure our routes
 scotchApp.config(function ($routeProvider) {
