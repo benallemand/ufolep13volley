@@ -1120,8 +1120,9 @@ scotchApp.controller('volleyballImagesController', function ($scope, $http) {
     $http.get("../ajax/getVolleyballImages.php")
         .then(function (response) {
             for (var i in response.data.photo) {
-                response.data.photo[i]["index"] = i;
-                $scope.volleyballImages.push(response.data.photo[i]);
+                var index = parseInt(i);
+                response.data.photo[index]["index"] = index;
+                $scope.volleyballImages.push(response.data.photo[index]);
             }
         });
 });
