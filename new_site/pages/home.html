@@ -1,41 +1,37 @@
-<div class="jumbotron text-center">
-    <h1>Bienvenue sur le site de</h1>
-    <img src="../images/ufolep13volley.png"/>
-</div>
-<div class="jumbotron text-center" ng-bind-html="lastCommit | sanitize"></div>
 <div style="height: 305px">
-    <uib-carousel active="0" interval="3000" no-wrap="false">
-        <uib-slide index="0">
+    <div uib-carousel active="0" interval="3000" no-wrap="false">
+        <div uib-slide index="0">
             <a href="#lastResults">
                 <div class="jumbotron text-center">
                     <h2>Derniers résultats</h2>
                 </div>
             </a>
-        </uib-slide>
-        <uib-slide index="1">
+        </div>
+        <div uib-slide index="1">
             <a href="#lastPosts">
                 <div class="jumbotron text-center">
                     <h2>Derniers posts</h2>
                 </div>
             </a>
-        </uib-slide>
-        <uib-slide index="2">
+        </div>
+        <div uib-slide index="2">
             <a href="#webSites">
                 <div class="jumbotron text-center">
                     <h2>Sites web des clubs</h2>
                 </div>
             </a>
-        </uib-slide>
-    </uib-carousel>
+        </div>
+    </div>
 </div>
 <div ng-controller="volleyballImagesController">
     <div style="height: 150px">
-        <uib-carousel active="0" interval="3000" no-wrap="false">
-            <uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
-                       index="volleyballImage.index">
+        <div uib-carousel active="0" interval="3000" no-wrap="false">
+            <div uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
+                 index="volleyballImage.index">
                 <img ng-src="https://farm{{volleyballImage.farm}}.staticflickr.com/{{volleyballImage.server}}/{{volleyballImage.id}}_{{volleyballImage.secret}}.jpg"
                      style="margin:auto;">
-            </uib-slide>
-        </uib-carousel>
+            </div>
+        </div uib-carousel>
     </div>
 </div>
+<div class="jumbotron text-center" ng-bind-html="lastCommit | sanitize"></div>

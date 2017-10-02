@@ -1116,9 +1116,9 @@ scotchApp.controller('gymnasiumsController', function ($scope, $http) {
 });
 
 scotchApp.controller('volleyballImagesController', function ($scope, $http) {
+    $scope.volleyballImages = [];
     $http.get("../ajax/getVolleyballImages.php")
         .then(function (response) {
-            $scope.volleyballImages = [];
             for (var i in response.data.photo) {
                 response.data.photo[i]["index"] = i;
                 $scope.volleyballImages.push(response.data.photo[i]);
@@ -1138,8 +1138,8 @@ scotchApp.filter('parseDate', function () {
     };
 });
 
-scotchApp.filter('num', function() {
-    return function(input) {
+scotchApp.filter('num', function () {
+    return function (input) {
         return parseInt(input, 10);
     };
 });
