@@ -183,6 +183,9 @@ scotchApp.config(function ($routeProvider) {
         .when('/myPreferences', {
             templateUrl: 'pages/my_preferences.html',
             controller: 'myPreferencesController'
+        })
+        .when('/usefulInformations', {
+            templateUrl: 'pages/useful_informations.html'
         });
 });
 
