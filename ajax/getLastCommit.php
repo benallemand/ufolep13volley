@@ -1,17 +1,16 @@
 <?php
 
 require_once '../libs/Unirest.php';
-$serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+require_once '../includes/db_inc.php';
 $url = "https://api.github.com/repos/benallemand/ufolep13volley/commits";
 Unirest\Request::verifyPeer(false);
-switch ($serverName) {
-    case 'localhost':
-        Unirest\Request::proxy('aixproxyprod.insidefr.com', 3128, CURLPROXY_HTTP);
-        break;
-    default:
-        break;
+try {
+    $response = Unirest\Request::get($url);
+} catch (Unirest\Exception $e) {
+    // If localhost and proxy needed
+    Unirest\Request::proxy($proxy_url, 3128, CURLPROXY_HTTP);
+    $response = Unirest\Request::get($url);
 }
-$response = Unirest\Request::get($url);
 $test = json_decode($response->raw_body);
 $commitURL = $test[0]->commit->url;
 date_default_timezone_set('Europe/Paris');
