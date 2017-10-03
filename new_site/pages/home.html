@@ -1,3 +1,4 @@
+<div class="jumbotron text-center" ng-bind-html="lastCommit | sanitize"></div>
 <div style="height: 305px">
     <div uib-carousel active="0" interval="3000" no-wrap="false">
         <div uib-slide index="0">
@@ -23,15 +24,12 @@
         </div>
     </div>
 </div>
-<div ng-controller="volleyballImagesController">
-    <div style="height: 150px">
-        <div uib-carousel active="0" interval="3000" no-wrap="false">
-            <div uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
-                 index="volleyballImage.index">
-                <img ng-src="https://farm{{volleyballImage.farm}}.staticflickr.com/{{volleyballImage.server}}/{{volleyballImage.id}}_{{volleyballImage.secret}}.jpg"
-                     style="margin:auto;">
-            </div>
+<div ng-controller="volleyballImagesController" style="height:150px;">
+    <div uib-carousel active="0" interval="3000">
+        <div uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
+             index="volleyballImage.index">
+            <img ng-src="https://farm{{volleyballImage.farm}}.staticflickr.com/{{volleyballImage.server}}/{{volleyballImage.id}}_{{volleyballImage.secret}}.jpg"
+                 style="margin:auto;">
         </div>
     </div>
 </div>
-<div class="jumbotron text-center" ng-bind-html="lastCommit | sanitize"></div>
