@@ -32,7 +32,7 @@ class CronTasks
         return $h1NodeList->item(0)->textContent;
     }
 
-    private function sendGenericEmail($template_file_path, $array_data_to_replace, $destination_email)
+    public function sendGenericEmail($template_file_path, $array_data_to_replace, $destination_email)
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
@@ -193,17 +193,4 @@ class CronTasks
             'laurent.gorlier@ufolep13volley.org'
         );
     }
-
-    public function sendMailTest()
-    {
-        $this->sendGenericEmail(
-            '../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
-            array(
-                'team_leaders_without_email' => "this is a test"
-            ),
-            "benallemand@gmail.com"
-        );
-    }
-
-
 }
