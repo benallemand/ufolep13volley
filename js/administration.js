@@ -105,6 +105,18 @@ Ext.application({
                                         action: 'displayHallOfFame'
                                     }
                                 ]
+                            },
+                            '->',
+                            {
+                                text: "Rafraîchir",
+                                scale: 'medium',
+                                glyph: 'xf021@FontAwesome',
+                                handler: function () {
+                                    Ext.each(Ext.ComponentQuery.query('tabpanel > grid'), function(grid_panel) {
+                                        grid_panel.getStore().load();
+                                    });
+
+                                }
                             }
                         ]
                     }
