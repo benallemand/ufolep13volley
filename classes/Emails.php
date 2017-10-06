@@ -9,44 +9,47 @@ class Emails
 
     public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
     {
+        $mail = new PHPMailer();
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
-            default:
-                $mail = new PHPMailer();
-                $mail->CharSet = "UTF-8";
+            case 'localhost':
                 $mail->isSMTP();
-                $mail->Host = Configuration::MAIL_HOST;
-                $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
-                $mail->Username = Configuration::MAIL_USERNAME;
-                $mail->Password = Configuration::MAIL_PASSWORD;
-                $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
-                $mail->Port = Configuration::MAIL_PORT;
-                $mail->setFrom($from);
-                foreach (explode(';', $to) as $toAddress) {
-                    $mail->addAddress($toAddress);
-                }
-                if ($cc !== null) {
-                    foreach (explode(';', $cc) as $ccAddress) {
-                        $mail->addCC($ccAddress);
-                    }
-                }
-                if ($bcc !== null) {
-                    foreach (explode(';', $bcc) as $bccAddress) {
-                        $mail->addBCC($bccAddress);
-                    }
-                }
-                $mail->addBCC("benallemand@gmail.com");
-                if (is_array($attachments)) {
-                    foreach ($attachments as $fileName => $stringAttachment) {
-                        $mail->addStringAttachment($stringAttachment, $fileName, 'base64', 'text/plain');
-                    }
-                }
-                $mail->WordWrap = 50;
-                $mail->Subject = $subject;
-                $mail->Body = $mail->msgHTML($body);
-                if (!$mail->send()) {
-                    throw new Exception("Send email error : " . $mail->ErrorInfo);
-                }
+                break;
+            default:
+                $mail->isSendmail();
+        }
+        $mail->CharSet = "UTF-8";
+        $mail->Host = Configuration::MAIL_HOST;
+        $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
+        $mail->Username = Configuration::MAIL_USERNAME;
+        $mail->Password = Configuration::MAIL_PASSWORD;
+        $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
+        $mail->Port = Configuration::MAIL_PORT;
+        $mail->setFrom($from);
+        foreach (explode(';', $to) as $toAddress) {
+            $mail->addAddress($toAddress);
+        }
+        if ($cc !== null) {
+            foreach (explode(';', $cc) as $ccAddress) {
+                $mail->addCC($ccAddress);
+            }
+        }
+        if ($bcc !== null) {
+            foreach (explode(';', $bcc) as $bccAddress) {
+                $mail->addBCC($bccAddress);
+            }
+        }
+        $mail->addBCC("benallemand@gmail.com");
+        if (is_array($attachments)) {
+            foreach ($attachments as $fileName => $stringAttachment) {
+                $mail->addStringAttachment($stringAttachment, $fileName, 'base64', 'text/plain');
+            }
+        }
+        $mail->WordWrap = 50;
+        $mail->Subject = $subject;
+        $mail->Body = $mail->msgHTML($body);
+        if (!$mail->send()) {
+            throw new Exception("Send email error : " . $mail->ErrorInfo);
         }
     }
 

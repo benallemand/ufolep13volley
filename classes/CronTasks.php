@@ -42,10 +42,19 @@ class CronTasks
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-                $this->email_manager->sendEmail($subject, $message, 'no-reply@ufolep13volley.org', "benallemand@gmail.com");
+                $this->email_manager->sendEmail(
+                    $subject,
+                    $message,
+                    'no-reply@ufolep13volley.org',
+                    implode(";", array("benallemand@gmail.com"))
+                );
                 break;
             default:
-                $this->email_manager->sendEmail($subject, $message, 'no-reply@ufolep13volley.org', $destination_email);
+                $this->email_manager->sendEmail(
+                    $subject,
+                    $message,
+                    'no-reply@ufolep13volley.org',
+                    $destination_email);
                 break;
         }
     }
@@ -91,7 +100,7 @@ class CronTasks
                 'activity' => $string_activities
             ),
             implode(";", array(
-                'philipvolley@free.fr'
+                "philipvolley@free.fr"
             ))
         );
     }
