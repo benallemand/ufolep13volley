@@ -65,7 +65,6 @@ function createUser($login, $email, $idTeam)
     require_once '../classes/Emails.php';
     $emailManager = new Emails();
     $emailManager->sendMailNewUser($email, $login, $password, $idTeam);
-    return;
 }
 
 function deleteUsers($ids)

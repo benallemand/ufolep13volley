@@ -17,6 +17,7 @@ class Emails
                 break;
             default:
                 $mail->isSendmail();
+                break;
         }
         $mail->CharSet = "UTF-8";
         $mail->Host = Configuration::MAIL_HOST;
