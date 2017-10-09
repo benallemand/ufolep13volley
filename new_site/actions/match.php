@@ -150,17 +150,6 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
     <div ng-if="today >= x.date_reception_raw
         && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
         && x.certif != '1'">
-        <a title="Envoyer les feuilles de match"
-           class="btn btn-sm btn-info"
-           ng-href="mailto:{{ x.email_send_sheets }}?subject={{ x.email_send_sheets_subject }}&body={{ x.email_send_sheets_body }}"
-           target="_blank">
-            Envoyer les feuilles de match
-            <span class="glyphicon glyphicon-send"></span>
-        </a>
-    </div>
-    <div ng-if="today >= x.date_reception_raw
-        && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
-        && x.certif != '1'">
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
            ng-click="editMatch(x.id_match, matches)"
