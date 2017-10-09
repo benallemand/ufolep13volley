@@ -923,13 +923,13 @@ function getTeamsEmailsFromMatch($code_match)
     $division = $data['division'];
     switch ($data['code_competition']) {
         case 'm':
-            $emailCtsd = 'd'.$division.'m-6x6-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'm-6x6-ufolep13-volley@googlegroups.com';
             break;
         case 'f':
-            $emailCtsd = 'd'.$division.'f-4x4-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'f-4x4-ufolep13-volley@googlegroups.com';
             break;
         case 'mo':
-            $emailCtsd = 'd'.$division.'mi-4x4-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'mi-4x4-ufolep13-volley@googlegroups.com';
             break;
         case 'kh':
         case 'kf':
@@ -1202,66 +1202,6 @@ function invalidateMatch($code_match)
     return true;
 }
 
-function modifyMatch()
-{
-    global $db;
-    conn_db();
-    $score_equipe_dom = filter_input(INPUT_POST, 'score_equipe_dom');
-    $score_equipe_ext = filter_input(INPUT_POST, 'score_equipe_ext');
-    $set_1_dom = filter_input(INPUT_POST, 'set_1_dom');
-    $set_2_dom = filter_input(INPUT_POST, 'set_2_dom');
-    $set_3_dom = filter_input(INPUT_POST, 'set_3_dom');
-    $set_4_dom = filter_input(INPUT_POST, 'set_4_dom');
-    $set_5_dom = filter_input(INPUT_POST, 'set_5_dom');
-    $set_1_ext = filter_input(INPUT_POST, 'set_1_ext');
-    $set_2_ext = filter_input(INPUT_POST, 'set_2_ext');
-    $set_3_ext = filter_input(INPUT_POST, 'set_3_ext');
-    $set_4_ext = filter_input(INPUT_POST, 'set_4_ext');
-    $set_5_ext = filter_input(INPUT_POST, 'set_5_ext');
-    $code_match = filter_input(INPUT_POST, 'code_match');
-    //$compet = filter_input(INPUT_POST, 'code_competition');
-    //$division = filter_input(INPUT_POST, 'division');
-    $date_reception = filter_input(INPUT_POST, 'date_reception');
-    //$id_equipe_dom = filter_input(INPUT_POST, 'id_equipe_dom');
-    //$id_equipe_ext = filter_input(INPUT_POST, 'id_equipe_ext');
-    $total_sets_dom = $set_1_dom + $set_2_dom + $set_3_dom;
-    $total_sets_ext = $set_1_ext + $set_2_ext + $set_3_ext;
-    if ($total_sets_dom == 0 && $total_sets_ext == 75) {
-        $forfait_dom = 1;
-    } else {
-        $forfait_dom = 0;
-    }
-    if ($total_sets_dom == 75 && $total_sets_ext == 0) {
-        $forfait_ext = 1;
-    } else {
-        $forfait_ext = 0;
-    }
-    $sql = "UPDATE matches SET 
-    score_equipe_dom = $score_equipe_dom, 
-    score_equipe_ext = $score_equipe_ext, 
-    set_1_dom = $set_1_dom, 
-    set_1_ext = $set_1_ext, 
-    set_2_dom = $set_2_dom, 
-    set_2_ext = $set_2_ext, 
-    set_3_dom = $set_3_dom, 
-    set_3_ext = $set_3_ext, 
-    set_4_dom = $set_4_dom, 
-    set_4_ext = $set_4_ext, 
-    set_5_dom = $set_5_dom, 
-    set_5_ext = $set_5_ext, 
-    forfait_dom = $forfait_dom, 
-    forfait_ext = $forfait_ext, 
-    date_reception = DATE(STR_TO_DATE('$date_reception', '%d/%m/%Y'))
-    WHERE code_match = '$code_match'";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    disconn_db();
-    addActivity("Le match $code_match a ete modifie");
-    return true;
-}
-
 function addActivity($comment)
 {
     global $db;
@@ -1275,80 +1215,6 @@ function addActivity($comment)
     mysqli_query($db, $sql);
     disconn_db();
     return;
-}
-
-function modifyMyTeam()
-{
-    global $db;
-    conn_db();
-    if (isAdmin()) {
-        return false;
-    }
-    $id_equipe = filter_input(INPUT_POST, 'id_equipe');
-    if (!isTeamLeader()) {
-        return false;
-    }
-    $sessionIdEquipe = $_SESSION['id_equipe'];
-    if ($sessionIdEquipe != $id_equipe) {
-        return false;
-    }
-    $id_club = filter_input(INPUT_POST, 'id_club');
-    $site_web = filter_input(INPUT_POST, 'web_site');
-    $sql = "UPDATE equipes SET 
-        web_site='$site_web'
-        WHERE id_equipe=$id_equipe";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    $sql = "UPDATE equipes SET 
-      id_club = $id_club 
-      WHERE id_equipe = $id_equipe";
-    $req = mysqli_query($db, $sql);
-    disconn_db();
-    if ($req === FALSE) {
-        return false;
-    }
-    $champsModifies = filter_input(INPUT_POST, 'dirtyFields');
-    if ($champsModifies) {
-        $fieldsArray = explode(',', $champsModifies);
-        foreach ($fieldsArray as $fieldName) {
-            $fieldValue = filter_input(INPUT_POST, $fieldName);
-            $comment = "Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-            addActivity($comment);
-        }
-    }
-    if (!empty($_FILES['file_photo']['name'])) {
-        require_once '../ajax/classes/Files.php';
-        $fileManager = new Files();
-        $fileManager->uploadAndInsertFileInDb('file_photo', $idFile);
-        conn_db();
-        $sql = "UPDATE equipes SET 
-            id_photo = $idFile 
-            WHERE id_equipe = $id_equipe";
-        $req = mysqli_query($db, $sql);
-        disconn_db();
-        if ($req === FALSE) {
-            return false;
-        }
-        $comment = "Nouvelle photo pour l'équipe";
-        addActivity($comment);
-    }
-    return true;
-}
-
-function removeMatch($code_match)
-{
-    global $db;
-    conn_db();
-    $sql = 'DELETE FROM matches WHERE code_match = \'' . $code_match . '\'';
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    disconn_db();
-    addActivity("Le match $code_match a ete supprime");
-    return true;
 }
 
 function getDays()
@@ -1571,20 +1437,6 @@ function getProfiles()
         $results[] = $data;
     }
     return json_encode($results);
-}
-
-function getTeamsListForCaptain($playerId)
-{
-    global $db;
-    $teams = array();
-    conn_db();
-    $sql = "SELECT CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team FROM joueur_equipe je JOIN equipes e ON e.id_equipe=je.id_equipe
-    WHERE je.id_joueur = $playerId AND is_captain+0=1";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    while ($data = mysqli_fetch_array($req)) {
-        $teams[] = $data['team'];
-    }
-    return implode(',', $teams);
 }
 
 function isPlayerInTeam($idPlayer, $idTeam)
@@ -2553,24 +2405,6 @@ function getClubs()
         nom
         FROM clubs
         ORDER BY nom";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
-}
-
-function getAnnuaires()
-{
-    global $db;
-    conn_db();
-    $sql = "SELECT
- cl.id_equipe, e.nom_equipe, cl.code_competition, c.libelle AS libelle_competition, LPAD(cl.division, 2, '0') AS division
- FROM classements cl
- JOIN equipes e ON e.id_equipe = cl.id_equipe
- JOIN competitions c ON c.code_competition = cl.code_competition
- ORDER BY cl.code_competition, LPAD(cl.division, 2, '0'), e.nom_equipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

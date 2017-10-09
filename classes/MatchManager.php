@@ -53,6 +53,8 @@ class MatchManager extends Generic
                                 'Dimanche') - 1  DAY, '%d/%m/%Y') AS date_reception_originale,
         DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
         UNIX_TIMESTAMP(m.date_reception + INTERVAL 23 HOUR + INTERVAL 59 MINUTE)*1000 AS date_reception_raw,
+        DATE_FORMAT(m.date_original, '%d/%m/%Y') AS date_original,
+        UNIX_TIMESTAMP(m.date_original + INTERVAL 23 HOUR + INTERVAL 59 MINUTE)*1000 AS date_original_raw,
         m.forfait_dom+0 AS forfait_dom,
         m.forfait_ext+0 AS forfait_ext,
         m.sheet_received+0 AS sheet_received,
