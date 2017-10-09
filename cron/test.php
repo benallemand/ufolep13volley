@@ -46,11 +46,20 @@ $cron_tasks->sendGenericEmail(
     ),
     $test_email
 );
-
 $cron_tasks->sendGenericEmail(
     '../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
     array(
         'team_leaders_without_email' => "test"
+    ),
+    $test_email
+);
+$cron_tasks->sendGenericEmail(
+    '../templates/emails/sendMailAlertReport.fr.html',
+    array(
+        'match_reference' => "test",
+        'team_home' => "test",
+        'team_guest' => "test",
+        'original_match_date' => "test"
     ),
     $test_email
 );

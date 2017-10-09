@@ -193,4 +193,28 @@ class CronTasks
             'laurent.gorlier@ufolep13volley.org'
         );
     }
+
+    public function sendMailAlertReport()
+    {
+        $pending_reports = $this->sql_manager->sql_get_pending_reports();
+        if (count($pending_reports) == 0) {
+            return;
+        }
+        foreach ($pending_reports as $pending_report) {
+            $email = implode(";", array(
+                $pending_report['email_home'],
+                $pending_report['email_guest']
+            ));
+            $this->sendGenericEmail(
+                '../templates/emails/sendMailAlertReport.fr.html',
+                array(
+                    'match_reference' => $pending_report['match_reference'],
+                    'team_home' => $pending_report['team_home'],
+                    'team_guest' => $pending_report['team_guest'],
+                    'original_match_date' => $pending_report['original_match_date']
+                ),
+                $email
+            );
+        }
+    }
 }

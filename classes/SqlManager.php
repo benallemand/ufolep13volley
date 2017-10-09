@@ -171,8 +171,8 @@ class SqlManager
         $sql = "SELECT DISTINCT
                   j.prenom,
                   j.nom,
-                  c.libelle as competition,
-                  e.nom_equipe as equipe
+                  c.libelle AS competition,
+                  e.nom_equipe AS equipe
                 FROM classements cl
                   JOIN joueur_equipe je ON je.id_equipe = cl.id_equipe
                   JOIN joueurs j ON j.id = je.id_joueur
@@ -181,6 +181,28 @@ class SqlManager
                 WHERE je.is_leader + 0 > 0
                       AND j.email = ''
                       AND e.id_equipe IN (SELECT id_equipe FROM classements)";
+        return $this->getResults($sql);
+    }
+
+    public function sql_get_pending_reports()
+    {
+        $sql = "SELECT
+                m.code_match AS match_reference,
+                e1.nom_equipe AS team_home,
+                jresp1.email AS email_home,
+                e2.nom_equipe AS team_guest,
+                jresp2.email AS email_guest,
+                DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS original_match_date
+                FROM matches m
+                JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
+                JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
+                JOIN joueur_equipe jeresp1 ON jeresp1.id_equipe = e1.id_equipe AND jeresp1.is_leader+0 > 0
+                JOIN joueur_equipe jeresp2 ON jeresp2.id_equipe = e2.id_equipe AND jeresp2.is_leader+0 > 0
+                JOIN joueurs jresp1 ON jresp1.id = jeresp1.id_joueur
+                JOIN joueurs jresp2 ON jresp2.id = jeresp2.id_joueur
+                WHERE 
+                m.report_status IN ('ASKED_BY_DOM', 'ASKED_BY_EXT')
+                ORDER BY m.code_match ASC";
         return $this->getResults($sql);
     }
 }

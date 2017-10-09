@@ -5,3 +5,4 @@ $cron_tasks->sendMailMatchesNotReported();
 $cron_tasks->sendMailNextMatches();
 $cron_tasks->sendMailPlayersWithoutLicenceNumber();
 $cron_tasks->sendMailTeamLeadersWithoutEmail();
+$cron_tasks->sendMailAlertReport();
