@@ -107,6 +107,11 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             dateFormat: 'd/m/Y'
         },
         {
+            name: 'date_original',
+            type: 'date',
+            dateFormat: 'd/m/Y'
+        },
+        {
             name: 'forfait_dom',
             type: 'bool',
             convert: function (val) {
