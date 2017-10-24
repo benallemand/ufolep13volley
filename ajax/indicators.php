@@ -309,6 +309,18 @@ $indicatorTeamLeadersByChamp = new Indicator(
     "
 );
 
+$indicatorMatchesByGymnasiumByDate = new Indicator(
+    'Nombre de matches par date et par gymnase', "SELECT 
+gymnase.ville AS \"Ville\",
+gymnase.nom AS \"Gymnase\",
+matches.date_reception AS \"Date\", 
+COUNT(matches.id_match) AS \"Nombre de matches\"
+FROM matches
+JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
+JOIN gymnase ON gymnase.id = creneau.id_gymnase
+GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
+    "
+);
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -328,6 +340,7 @@ $results[] = $indicatorPendingMatchesWithWrongTimeSlot->getResult();
 $results[] = $indicatorTimeSlotWithConstraint->getResult();
 $results[] = $indicatorTeamLeadersByChamp->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamLeader->getResult();
+$results[] = $indicatorMatchesByGymnasiumByDate->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
