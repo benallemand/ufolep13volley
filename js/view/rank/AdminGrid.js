@@ -18,6 +18,10 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
             {
                 header: 'Division',
                 dataIndex: 'division'
+            },
+            {
+                header: 'Classement au début',
+                dataIndex: 'rank_start'
             }
         ]
     },
