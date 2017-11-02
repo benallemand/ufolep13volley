@@ -2677,6 +2677,13 @@ function saveRank()
             case 'rank_start':
                 $sql .= "$key = $value,";
                 break;
+            case 'division':
+                if (is_numeric($value)) {
+                    $sql .= "$key = $value,";
+                } else {
+                    $sql .= "$key = '$value',";
+                }
+                break;
             default:
                 $sql .= "$key = '$value',";
                 break;
