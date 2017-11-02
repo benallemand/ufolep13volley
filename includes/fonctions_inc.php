@@ -1030,7 +1030,8 @@ function getRanks()
       co.libelle AS nom_competition,
       LPAD(cl.division, 2, '0') AS division,
       cl.id_equipe,
-      e.nom_equipe
+      e.nom_equipe,
+      cl.rank_start
       FROM classements cl
       JOIN competitions co ON co.code_competition = cl.code_competition
       JOIN equipes e ON e.id_equipe = cl.id_equipe";
@@ -2673,6 +2674,7 @@ function saveRank()
             case 'dirtyFields':
                 continue;
             case 'id_equipe':
+            case 'rank_start':
                 $sql .= "$key = $value,";
                 break;
             default:

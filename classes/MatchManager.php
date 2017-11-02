@@ -370,4 +370,10 @@ class MatchManager extends Generic
         return true;
     }
 
+    public function generateMatches()
+    {
+        throw new Exception("Not implemented yet!");
+        require_once '../classes/RankManager';
+    }
+
 }

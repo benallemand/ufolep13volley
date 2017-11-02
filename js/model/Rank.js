@@ -24,6 +24,10 @@ Ext.define('Ufolep13Volley.model.Rank', Sencha.modelCompatibility({
         {
             name: 'nom_equipe',
             type: 'string'
+        },
+        {
+            name: 'rank_start',
+            type: 'int'
         }
     ]
 }));

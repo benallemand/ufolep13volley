@@ -49,6 +49,12 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true
+            },
+            {
+                xtype: 'numberfield',
+                fieldLabel: 'Classement au départ',
+                name: 'rank_start',
+                allowBlank: false
             }
         ],
         buttons: [
