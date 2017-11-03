@@ -2084,7 +2084,7 @@ function savePlayer()
                 $sql .= "$key = $val,";
                 break;
             case 'num_licence':
-                if ($inputs['num_licence'] != NULL) {
+                if (!empty($inputs['num_licence'])) {
                     $sql .= "$key = '$value',";
                 }
                 break;
