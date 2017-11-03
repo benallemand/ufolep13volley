@@ -320,7 +320,7 @@ FROM matches
   JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
-ORDER BY COUNT(matches.id_match) DESC
+ORDER BY COUNT(DISTINCT matches.id_match) DESC
     "
 );
 $results = array();
