@@ -372,8 +372,117 @@ class MatchManager extends Generic
 
     public function generateMatches()
     {
-        throw new Exception("Not implemented yet!");
-        require_once '../classes/RankManager';
+        require_once '../classes/RankManager.php';
+        $rank_manager = new RankManager();
+        $competitions = $rank_manager->getCompetitions();
+        foreach ($competitions as $competition) {
+            $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
+            foreach ($divisions as $division) {
+                $teams = $rank_manager->getTeamsFromDivisionAndCompetition($division['division'], $competition['code_competition']);
+                $ghost = false;
+                $teams_count = count($teams);
+                if ($teams_count % 2 == 1) {
+                    $teams_count++;
+                    $ghost = true;
+                }
+                // Generate the fixtures using the cyclic algorithm.
+                $totalRounds = $teams_count - 1;
+                $matchesPerRound = $teams_count / 2;
+                $rounds = array();
+                for ($i = 0; $i < $totalRounds; $i++) {
+                    $rounds[$i] = array();
+                }
+                for ($round = 0; $round < $totalRounds; $round++) {
+                    for ($match = 0; $match < $matchesPerRound; $match++) {
+                        $home_index = ($round + $match) % ($teams_count - 1);
+                        $away_index = ($teams_count - 1 - $match + $round) % ($teams_count - 1);
+                        // Last team stays in the same place while the others
+                        // rotate around it.
+                        if ($match == 0) {
+                            $away_index = $teams_count - 1;
+                        }
+                        $rounds[$round][$match] = strval($home_index)
+                            . " v " . strval($away_index);
+                    }
+                }
+                // Interleave so that home and away games are fairly evenly dispersed.
+                $interleaved = array();
+                for ($i = 0; $i < $totalRounds; $i++) {
+                    $interleaved[$i] = array();
+                }
+                $evn = 0;
+                $odd = ($teams_count / 2);
+                for ($i = 0; $i < sizeof($rounds); $i++) {
+                    if ($i % 2 == 0) {
+                        $interleaved[$i] = $rounds[$evn++];
+                    } else {
+                        $interleaved[$i] = $rounds[$odd++];
+                    }
+                }
+                $rounds = $interleaved;
+                // Last team can't be away for every game so flip them
+                // to home on odd rounds.
+                for ($round = 0; $round < sizeof($rounds); $round++) {
+                    if ($round % 2 == 1) {
+                        $rounds[$round][0] = $this->flip($rounds[$round][0]);
+                    }
+                }
+
+                foreach ($rounds as $index_round => $round) {
+                    require_once '../classes/DayManager.php';
+                    $day_manager = new DayManager();
+                    $id_journee = $day_manager->insertDay(
+                        $competition['code_competition'],
+                        strval($index_round + 1)
+                    );
+                    foreach ($round as $index_match => $match) {
+                        $code_match = strtoupper($competition['code_competition']) .
+                            $division['division'] .
+                            strval($index_round + 1) .
+                            strval($index_match + 1);
+                        $index_teams = explode('v', $match);
+                        if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
+                            continue;
+                        }
+                        $id_equipe_dom = $teams[intval($index_teams[0])]['id_equipe'];
+                        $id_equipe_ext = $teams[intval($index_teams[1])]['id_equipe'];
+                        $this->insertMatch(
+                            $code_match,
+                            $competition['code_competition'],
+                            $division['division'],
+                            $id_equipe_dom,
+                            $id_equipe_ext,
+                            $id_journee
+                        );
+                    }
+                }
+            }
+        }
     }
+
+    private function flip($match)
+    {
+        $components = explode(' v ', $match);
+        return $components[1] . " v " . $components[0];
+    }
+
+    private function insertMatch($code_match, $code_competition, $division, $id_equipe_dom, $id_equipe_ext, $id_journee)
+    {
+        $db = Database::openDbConnection();
+        $sql = "INSERT INTO matches SET code_match = '$code_match', 
+code_competition = '$code_competition', 
+division = '$division',
+id_equipe_dom = $id_equipe_dom,
+id_equipe_ext = $id_equipe_ext,
+id_journee = $id_journee
+";
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            $message = mysqli_error($db);
+            throw new Exception($message);
+        }
+        return mysqli_insert_id($db);
+    }
+
 
 }

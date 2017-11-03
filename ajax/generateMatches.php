@@ -4,6 +4,7 @@ try {
     $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
     switch ($requestMethod) {
         case 'POST':
+        case 'GET':
             break;
         default:
             throw new Exception("Request not allowed");
