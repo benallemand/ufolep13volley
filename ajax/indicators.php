@@ -310,15 +310,17 @@ $indicatorTeamLeadersByChamp = new Indicator(
 );
 
 $indicatorMatchesByGymnasiumByDate = new Indicator(
-    'Nombre de matches par date et par gymnase', "SELECT 
-gymnase.ville AS \"Ville\",
-gymnase.nom AS \"Gymnase\",
-matches.date_reception AS \"Date\", 
-COUNT(matches.id_match) AS \"Nombre de matches\"
+    'Nombre de matches par date et par gymnase', "SELECT
+  gymnase.ville AS \"Ville\",
+  gymnase.nom AS \"Gymnase\",
+  matches.date_reception AS \"Date\",
+  COUNT(matches.id_match) AS \"Nombre de matches\",
+  GROUP_CONCAT(matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
 FROM matches
-JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
-JOIN gymnase ON gymnase.id = creneau.id_gymnase
+  JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
+  JOIN gymnase ON gymnase.id = creneau.id_gymnase
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
+ORDER BY COUNT(matches.id_match) DESC
     "
 );
 $results = array();
