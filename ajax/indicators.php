@@ -314,8 +314,8 @@ $indicatorMatchesByGymnasiumByDate = new Indicator(
   gymnase.ville AS \"Ville\",
   gymnase.nom AS \"Gymnase\",
   matches.date_reception AS \"Date\",
-  COUNT(matches.id_match) AS \"Nombre de matches\",
-  GROUP_CONCAT(matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
+  COUNT(DISTINCT matches.id_match) AS \"Nombre de matches\",
+  GROUP_CONCAT(DISTINCT matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
 FROM matches
   JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
