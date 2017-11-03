@@ -2055,8 +2055,10 @@ function savePlayer()
         'show_photo' => filter_input(INPUT_POST, 'show_photo')
     );
     if (empty($inputs['id'])) {
-        if (isPlayerExists($inputs['num_licence'])) {
-            throw new Exception("Un joueur avec le même numéro de licence existe déjà !");
+        if (!empty($inputs['num_licence'])) {
+            if (isPlayerExists($inputs['num_licence'])) {
+                throw new Exception("Un joueur avec le même numéro de licence existe déjà !");
+            }
         }
     }
     conn_db();
@@ -2081,6 +2083,11 @@ function savePlayer()
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";
                 break;
+            case 'num_licence':
+                if (!empty($inputs['num_licence'])) {
+                    $sql .= "$key = '$value',";
+                }
+                break;
             default:
                 $sql .= "$key = '$value',";
                 break;
@@ -2101,7 +2108,7 @@ function savePlayer()
     $newId = mysqli_insert_id($db);
     disconn_db();
     if (empty($inputs['id'])) {
-        if (!empty($inputs['id_team'])) {
+        if (isTeamLeader()) {
             if ($newId > 0) {
                 if (!addPlayerToMyTeam($newId)) {
                     throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
