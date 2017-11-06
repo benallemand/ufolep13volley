@@ -13,9 +13,10 @@ try {
     $userDetails = $manager->getCurrentUserDetails();
     $profile = $userDetails['profile_name'];
     $id_team = $userDetails['id_equipe'];
+    $query = null;
     switch ($profile) {
         case 'ADMINISTRATEUR':
-            throw new Exception("Get timeslots not allowed for administrateur !");
+            break;
         case 'RESPONSABLE_EQUIPE':
         default:
             $query = "c.id_equipe = $id_team";
