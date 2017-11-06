@@ -207,6 +207,19 @@ function deleteHallOfFame($ids)
     return true;
 }
 
+function deleteTimeslot($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM creneau WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deleteCompetition($ids)
 {
     global $db;
