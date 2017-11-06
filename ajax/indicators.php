@@ -261,6 +261,20 @@ $indicatorActiveTeamWithoutTeamLeader = new Indicator(
   "
 );
 
+$indicatorActiveTeamWithoutTimeslot = new Indicator(
+    'Equipes actives sans créneau de réception', "SELECT
+  e.nom_equipe AS equipe,
+  c.libelle AS competition
+  FROM equipes e
+  JOIN competitions c ON c.code_competition = e.code_competition
+  WHERE e.id_equipe IN (
+    SELECT cl.id_equipe
+    FROM classements cl
+  )
+  AND e.id_equipe NOT IN (SELECT id_equipe FROM creneau)
+  "
+);
+
 $indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
     'Matches non certifiés dont la date ne correspond pas à un créneau', "SELECT m.code_match
     FROM matches m
@@ -344,6 +358,7 @@ $results[] = $indicatorTimeSlotWithConstraint->getResult();
 $results[] = $indicatorTeamLeadersByChamp->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamLeader->getResult();
 $results[] = $indicatorMatchesByGymnasiumByDate->getResult();
+$results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
