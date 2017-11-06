@@ -139,13 +139,48 @@ class CronTasks
             if (count($next_matches) == 0) {
                 continue;
             }
-            $team_email = $this->sql_manager->sql_get_email_from_team_id($team['team_id']);
+            $html_next_matches = "";
+            foreach ($next_matches as $next_match) {
+                $html_next_matches .= "<tr>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['equipe_domicile'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['equipe_exterieur'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['code_match'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['date'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['heure'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['responsable'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['telephone'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['email'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "<td>";
+                $html_next_matches .= $next_match['creneaux'];
+                $html_next_matches .= "</td>";
+                $html_next_matches .= "</tr>";
+            }
+            $team_emails = $this->sql_manager->sql_get_email_from_team_id($team['team_id']);
+            if (count($team_emails) == 0) {
+                continue;
+            }
             $this->sendGenericEmail(
                 '../templates/emails/sendMailNextMatches.fr.html',
                 array(
-                    'next_matches' => $next_matches
+                    'next_matches' => $html_next_matches
                 ),
-                $team_email['email']
+                $team_emails[0]['email']
             );
         }
     }
