@@ -1627,7 +1627,7 @@ function getPlayerFullName($idPlayer)
     global $db;
     conn_db();
     $sql = "SELECT 
-        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS player_full_name
+        CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS player_full_name
         FROM joueurs j
         WHERE j.id = $idPlayer";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -2941,7 +2941,7 @@ function hasNotLicencedPlayers($sessionIdEquipe)
         JOIN joueurs j ON j.id = je.id_joueur
         WHERE 
         je.id_equipe = $sessionIdEquipe
-        AND j.num_licence = ''";
+        AND (j.num_licence = '' OR j.num_licence IS NULL)";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
