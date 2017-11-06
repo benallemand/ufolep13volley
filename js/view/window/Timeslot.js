@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveTimeslot.php',
+        url: 'ajax/saveTimeSlot.php',
         items: [
             {
                 xtype: 'hidden',
