@@ -9,43 +9,52 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
         items: [
             {
                 header: 'Code',
-                dataIndex: 'code_match'
+                dataIndex: 'code_match',
+                flex: 1
             },
             {
                 header: 'Compétition',
-                dataIndex: 'libelle_competition'
+                dataIndex: 'libelle_competition',
+                flex: 1
             },
             {
                 header: 'Division',
-                dataIndex: 'division'
+                dataIndex: 'division',
+                flex: 1
             },
             {
                 header: 'Journée',
-                dataIndex: 'journee'
+                dataIndex: 'journee',
+                flex: 1
             },
             {
                 header: 'Domicile',
-                dataIndex: 'equipe_dom'
+                dataIndex: 'equipe_dom',
+                flex: 1
             },
             {
                 header: 'Extérieur',
-                dataIndex: 'equipe_ext'
+                dataIndex: 'equipe_ext',
+                flex: 1
             },
             {
                 header: 'Date',
                 xtype: 'datecolumn',
                 format: 'd/m/Y',
-                dataIndex: 'date_reception'
+                dataIndex: 'date_reception',
+                flex: 1
             },
             {
                 header: 'Date originale',
                 xtype: 'datecolumn',
                 format: 'd/m/Y',
-                dataIndex: 'date_original'
+                dataIndex: 'date_original',
+                flex: 1
             },
             {
                 header: 'Heure',
-                dataIndex: 'heure_reception'
+                dataIndex: 'heure_reception',
+                flex: 1
             }
         ]
     },
