@@ -46,6 +46,7 @@
                        uib-typeahead="existing_club.id as existing_club.nom for existing_club in all_clubs | filter:$viewValue | limitTo:8"
                        class="form-control"
                        typeahead-input-formatter="formatClubLabel($model, all_clubs)"
+                       autocomplete="off"
                 />
             </div>
         </div>

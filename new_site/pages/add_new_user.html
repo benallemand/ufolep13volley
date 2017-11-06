@@ -21,6 +21,7 @@
                        uib-typeahead="team.id_equipe as team.team_full_name for team in teams | filter:$viewValue | limitTo:8"
                        class="form-control"
                        typeahead-input-formatter="formatTeamLabel($model, teams)"
+                       autocomplete="off"
                 />
             </div>
         </div>
