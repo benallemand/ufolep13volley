@@ -74,6 +74,10 @@ Ext.application({
                                         action: 'displayCompetitions'
                                     },
                                     {
+                                        text: 'Gestion des créneaux',
+                                        action: 'displayTimeslots'
+                                    },
+                                    {
                                         text: 'Gestion des divisions/poules',
                                         glyph: 'xf201@FontAwesome',
                                         action: 'manageRanks'

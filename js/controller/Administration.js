@@ -420,7 +420,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'AdminDays',
         'LimitDates',
         'AdminRanks',
-        'HallOfFame'
+        'HallOfFame',
+        'Timeslots'
     ],
     models: [
         'Player',
@@ -438,7 +439,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'Day',
         'LimitDate',
         'Rank',
-        'HallOfFame'
+        'HallOfFame',
+        'Timeslot'
     ],
     views: [
         'player.Grid',
@@ -469,7 +471,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'grid.HallOfFame',
         'window.HallOfFame',
         'grid.Competitions',
-        'window.Competition'
+        'window.Competition',
+        'grid.Timeslots',
+        'window.Timeslot'
     ],
     refs: [
         {
@@ -868,6 +872,24 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'hall_of_fame_edit button[action=save]': {
                     click: this.updateHallOfFame
+                },
+                'menuitem[action=displayTimeslots]': {
+                    click: this.displayTimeslots
+                },
+                'timeslots_grid': {
+                    added: this.addToolbarTimeslots
+                },
+                'button[action=addTimeslot]': {
+                    click: this.addTimeslot
+                },
+                'button[action=editTimeslot]': {
+                    click: this.editTimeslot
+                },
+                'button[action=deleteTimeslot]': {
+                    click: this.deleteTimeslot
+                },
+                'timeslot_edit button[action=save]': {
+                    click: this.updateTimeslot
                 },
                 'menuitem[action=displayCompetitions]': {
                     click: this.displayCompetitions
@@ -1312,6 +1334,79 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 success: function () {
                     thisController.getStore('HallOfFame').load();
+                    button.up('window').close();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    addTimeslot: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        var windowEdit = Ext.widget('timeslot_edit');
+        if (!record) {
+            return;
+        }
+        record.set('id', null);
+        windowEdit.down('form').loadRecord(record);
+    },
+    editTimeslot: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var windowEdit = Ext.widget('timeslot_edit');
+        windowEdit.down('form').loadRecord(record);
+    },
+    deleteTimeslot: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteTimeslot.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    updateTimeslot: function (button) {
+        var thisController = this;
+        var form = button.up('form').getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getStore('Timeslots').load();
                     button.up('window').close();
                 },
                 failure: function (form, action) {
@@ -2099,6 +2194,52 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteHallOfFame'
+                }
+            ]
+        });
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        });
+    },
+    displayTimeslots: function () {
+        this.showAdministrationGrid('timeslots_grid');
+    },
+    addToolbarTimeslots: function (grid) {
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Ajouter',
+                    action: 'addTimeslot'
+                },
+                {
+                    text: 'Modifier',
+                    action: 'editTimeslot'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'deleteTimeslot'
                 }
             ]
         });
