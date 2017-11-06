@@ -767,7 +767,7 @@ function getPlayersFromTeam($id_equipe)
     global $db;
     conn_db();
     $sql = "SELECT
-        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
+        CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
         j.prenom, 
         j.nom, 
         j.telephone, 
@@ -1321,7 +1321,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         return false;
     }
     $sql = "SELECT 
-        CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name, 
+        CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name, 
         CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, 
         UPPER(j.nom) AS nom, 
         j.telephone, 
@@ -1392,7 +1392,7 @@ function getPlayers()
     conn_db();
     // TODO Filter teams in competition.
     $sql = "SELECT
-    CONCAT(j.nom, ' ', j.prenom, ' (', j.num_licence, ')') AS full_name,
+    CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
     j.prenom, 
     j.nom, 
     j.telephone, 
