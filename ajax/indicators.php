@@ -84,7 +84,8 @@ $indicatorPlayersWithoutLicence = new Indicator(
         JOIN joueurs jresp ON jresp.id = jeresp.id_joueur
         JOIN competitions comp ON comp.code_competition = e.code_competition
         JOIN clubs c ON c.id = j.id_club
-        WHERE j.num_licence = ''
+        WHERE (j.num_licence IS NULL 
+              OR j.num_licence = '')
         AND e.id_equipe IN (SELECT id_equipe FROM classements)
         ORDER BY equipe ASC");
 
