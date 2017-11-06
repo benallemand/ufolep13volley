@@ -207,6 +207,19 @@ function deleteHallOfFame($ids)
     return true;
 }
 
+function deleteCompetition($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM competitions WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deletePlayers($ids)
 {
     $explodedIds = explode(',', $ids);
@@ -2430,6 +2443,7 @@ function getCompetitions()
         c.code_competition,
         c.libelle,
         c.id_compet_maitre,
+        IFNULL(DATE_FORMAT(c.start_date, '%d/%m/%Y'), '') AS start_date,
         d.date_limite AS limit_date
         FROM competitions c
         LEFT JOIN dates_limite d ON d.code_competition = c.code_competition
@@ -2450,7 +2464,8 @@ function getCompetition($code_competition)
         id,
         code_competition,
         libelle,
-        id_compet_maitre
+        id_compet_maitre,
+        IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date,
         FROM competitions
         WHERE code_competition = '$code_competition'
         ORDER BY libelle";
@@ -2579,6 +2594,46 @@ function saveGymnasium()
         return false;
     }
     return true;
+}
+
+function saveCompetition()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO";
+    } else {
+        $sql = "UPDATE";
+    }
+    $sql .= " competitions SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+            case 'dirtyFields':
+                continue;
+            case 'start_date':
+                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                break;
+            default:
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
 }
 
 function saveClub()

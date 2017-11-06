@@ -467,7 +467,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'rank.AdminGrid',
         'rank.Edit',
         'grid.HallOfFame',
-        'window.HallOfFame'
+        'window.HallOfFame',
+        'grid.Competitions',
+        'window.Competition'
     ],
     refs: [
         {
@@ -867,6 +869,24 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'hall_of_fame_edit button[action=save]': {
                     click: this.updateHallOfFame
                 },
+                'menuitem[action=displayCompetitions]': {
+                    click: this.displayCompetitions
+                },
+                'competitions_grid': {
+                    added: this.addToolbarCompetitions
+                },
+                'button[action=addCompetition]': {
+                    click: this.addCompetition
+                },
+                'button[action=editCompetition]': {
+                    click: this.editCompetition
+                },
+                'button[action=deleteCompetition]': {
+                    click: this.deleteCompetition
+                },
+                'competition_edit button[action=save]': {
+                    click: this.updateCompetition
+                }
             }
         );
     },
@@ -1292,6 +1312,79 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 success: function () {
                     thisController.getStore('HallOfFame').load();
+                    button.up('window').close();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    addCompetition: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        var windowEdit = Ext.widget('competition_edit');
+        if (!record) {
+            return;
+        }
+        record.set('id', null);
+        windowEdit.down('form').loadRecord(record);
+    },
+    editCompetition: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var windowEdit = Ext.widget('competition_edit');
+        windowEdit.down('form').loadRecord(record);
+    },
+    deleteCompetition: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteCompetition.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    updateCompetition: function (button) {
+        var thisController = this;
+        var form = button.up('form').getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getStore('Competitions').load();
                     button.up('window').close();
                 },
                 failure: function (form, action) {
@@ -2006,6 +2099,52 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteHallOfFame'
+                }
+            ]
+        });
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        });
+    },
+    displayCompetitions: function () {
+        this.showAdministrationGrid('competitions_grid');
+    },
+    addToolbarCompetitions: function (grid) {
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Ajouter',
+                    action: 'addCompetition'
+                },
+                {
+                    text: 'Modifier',
+                    action: 'editCompetition'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'deleteCompetition'
                 }
             ]
         });

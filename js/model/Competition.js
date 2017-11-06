@@ -4,6 +4,11 @@ Ext.define('Ufolep13Volley.model.Competition', Sencha.modelCompatibility({
         {name: 'id', type: 'int'},
         'code_competition',
         'libelle',
-        'id_compet_maitre'
+        'id_compet_maitre',
+        {
+            name: 'start_date',
+            type: 'date',
+            dateFormat: 'd/m/Y'
+        }
     ]
 }));

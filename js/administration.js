@@ -70,6 +70,10 @@ Ext.application({
                                         action: 'manageDays'
                                     },
                                     {
+                                        text: 'Gestion des compétitions',
+                                        action: 'displayCompetitions'
+                                    },
+                                    {
                                         text: 'Gestion des divisions/poules',
                                         glyph: 'xf201@FontAwesome',
                                         action: 'manageRanks'
