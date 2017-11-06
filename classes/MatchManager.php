@@ -379,11 +379,9 @@ class MatchManager extends Generic
             $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
             foreach ($divisions as $division) {
                 $teams = $rank_manager->getTeamsFromDivisionAndCompetition($division['division'], $competition['code_competition']);
-                $ghost = false;
                 $teams_count = count($teams);
                 if ($teams_count % 2 == 1) {
                     $teams_count++;
-                    $ghost = true;
                 }
                 // Generate the fixtures using the cyclic algorithm.
                 $totalRounds = $teams_count - 1;
