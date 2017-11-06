@@ -139,9 +139,9 @@ class SqlManager
         $sql = "SELECT j.email
                 FROM joueurs j
                 JOIN joueur_equipe je ON
-                    je.id_equipe = $team_id
-                    AND je.id_joueur = j.id
-                    AND je.is_leader+0 > 0";
+                    je.id_joueur = j.id
+                    AND je.is_leader+0 > 0
+                    WHERE je.id_equipe = $team_id";
         return $this->getResults($sql);
     }
 
