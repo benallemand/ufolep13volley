@@ -425,6 +425,10 @@ function getTeam($id)
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
+        TO_BASE64(CONCAT(jresp.prenom, ' ', jresp.nom)) AS responsable_base64,
+        TO_BASE64(jresp.telephone) AS telephone_1_base64,
+        TO_BASE64(jsupp.telephone) AS telephone_2_base64,
+        TO_BASE64(jresp.email) AS email_base64,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo

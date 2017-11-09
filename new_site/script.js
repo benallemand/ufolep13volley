@@ -819,10 +819,6 @@ scotchApp.controller('phonebookController', ['$scope', '$routeParams', '$http', 
     })
         .then(function (response) {
             $scope.team = response.data;
-            $scope.team["responsable_base64"] = Base64.encode($scope.team["responsable"]);
-            $scope.team["telephone_1_base64"] = Base64.encode($scope.team["telephone_1"]);
-            $scope.team["telephone_2_base64"] = Base64.encode($scope.team["telephone_2"]);
-            $scope.team["email_base64"] = Base64.encode($scope.team["email"]);
         });
 }]);
 
