@@ -135,9 +135,9 @@ function deleteMatches($ids)
     $req = mysqli_query($db, $sql);
     disconn_db();
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        throw new Exception($message);
     }
-    return true;
 }
 
 function deleteRanks($ids)
@@ -176,9 +176,9 @@ function deleteDays($ids)
     $req = mysqli_query($db, $sql);
     disconn_db();
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        throw new Exception($message);
     }
-    return true;
 }
 
 function deleteLimitDates($ids)
@@ -246,12 +246,12 @@ function deletePlayers($ids)
     $req = mysqli_query($db, $sql);
     disconn_db();
     if ($req === FALSE) {
-        return false;
+        $message = mysqli_error($db);
+        throw new Exception($message);
     }
     foreach ($playersFullNames as $playerFullName) {
         addActivity("Suppression du joueur : $playerFullName");
     }
-    return true;
 }
 
 function logout()
@@ -1417,6 +1417,7 @@ function getPlayers()
     global $db;
     conn_db();
     // TODO Filter teams in competition.
+    // TODO  AND e.id_equipe IN (SELECT id_equipe FROM classements) pas nécessaire a priori...
     $sql = "SELECT
     CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
     j.prenom, 
@@ -2110,7 +2111,9 @@ function savePlayer()
                 $sql .= "$key = $val,";
                 break;
             case 'num_licence':
-                if (!empty($inputs['num_licence'])) {
+                if (empty($inputs['num_licence']) || $inputs['num_licence'] == 'null') {
+                    $sql .= "$key = NULL,";
+                } else {
                     $sql .= "$key = '$value',";
                 }
                 break;
