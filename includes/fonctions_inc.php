@@ -919,16 +919,16 @@ function getTeamsEmailsFromMatchReport($code_match)
     $emailReport = '';
     switch ($data['code_competition']) {
         case 'm':
-            $emailReport = 'report-6x6-mmx@googlegroups.com';
+            $emailReport = 'report-6x6-mmx@ufolep13volley.org';
             break;
         case 'f':
-            $emailReport = 'report-4x4-fem@googlegroups.com';
+            $emailReport = 'report-4x4-fem@ufolep13volley.org';
             break;
         case 'mo':
-            $emailReport = 'report-4x4-mxt@googlegroups.com';
+            $emailReport = 'report-4x4-mxt@ufolep13volley.org';
             break;
         case 'kh':
-            $emailReport = 'report-4x4-ckh@googlegroups.com';
+            $emailReport = 'report-4x4-ckh@ufolep13volley.org';
             break;
     }
     return array($emailDom, $emailExt, $emailReport);
@@ -953,21 +953,21 @@ function getTeamsEmailsFromMatch($code_match)
     $division = $data['division'];
     switch ($data['code_competition']) {
         case 'm':
-            $emailCtsd = 'd' . $division . 'm-6x6-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'm-6x6@ufolep13volley.org';
             break;
         case 'f':
-            $emailCtsd = 'd' . $division . 'f-4x4-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'f-4x4@ufolep13volley.org';
             break;
         case 'mo':
-            $emailCtsd = 'd' . $division . 'mi-4x4-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'd' . $division . 'mi-4x4@ufolep13volley.org';
             break;
         case 'kh':
         case 'kf':
-            $emailCtsd = 'khanna-ufolep13-volley@googlegroups.com';
+            $emailCtsd = 'khanna@ufolep13volley.org';
             break;
         case 'c':
         case 'cf':
-            $emailCtsd = 'isoardi-ufolep13-volley';
+            $emailCtsd = 'isoardi@ufolep13volley.org';
             break;
     }
     return array($emailDom, $emailExt, $emailCtsd);
