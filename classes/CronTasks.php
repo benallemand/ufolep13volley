@@ -225,7 +225,7 @@ class CronTasks
             array(
                 'team_leaders_without_email' => $string_team_leaders_without_email
             ),
-            'laurent.gorlier@ufolep13volley.org'
+            'contact@ufolep13volley.org'
         );
     }
 
