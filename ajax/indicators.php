@@ -53,7 +53,7 @@ AND MID(comment, LOCATE('(',comment)+1, 8) REGEXP '[0-9]+'
 GROUP BY 
 MID(comment, LOCATE('(',comment)+1, 8),
 SUBSTRING(SUBSTRING_INDEX(comment, '(', -1), 1, LENGTH(SUBSTRING_INDEX(comment, '(', -1))-1)
-HAVING COUNT(*) > 1");
+HAVING COUNT(DISTINCT SUBSTRING(comment, LOCATE('equipe ',comment)+7)) > 1");
 
 $indicatorDuplicateMatchCode = new Indicator(
     'Code match dupliqués', "SELECT
