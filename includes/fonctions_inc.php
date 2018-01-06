@@ -610,6 +610,15 @@ function giveReportDate($code_match, $report_date)
     if ($req === FALSE) {
         return false;
     }
+    require_once '../classes/MatchManager.php';
+    $match_manager = new MatchManager();
+    $matches = $match_manager->getMatches("m.code_match = '$code_match'");
+    $this_match = $matches[0];
+    if ($sessionIdEquipe == $this_match['id_equipe_dom']) {
+        incrementReportCount($this_match['code_competition'], $this_match['id_equipe_ext']);
+    } else {
+        incrementReportCount($this_match['code_competition'], $this_match['id_equipe_dom']);
+    }
     addActivity("Date de report transmise par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
     require_once '../classes/Emails.php';
     $emailManager = new Emails();
