@@ -604,7 +604,7 @@ function giveReportDate($code_match, $report_date)
     global $db;
     conn_db();
     $sessionIdEquipe = $_SESSION['id_equipe'];
-    $sql = "UPDATE matches SET date_reception = DATE(STR_TO_DATE('$report_date', '%d/%m/%Y')) WHERE code_match = '$code_match'";
+    $sql = "UPDATE matches SET date_reception = DATE(STR_TO_DATE('$report_date', '%Y-%m-%d')) WHERE code_match = '$code_match'";
     $req = mysqli_query($db, $sql);
     disconn_db();
     if ($req === FALSE) {

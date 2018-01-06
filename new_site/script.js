@@ -413,9 +413,10 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
     };
 
     $scope.giveReportDate = function (code_match) {
-        bootbox.prompt(
-            "Merci d'indiquer la date de report (format: JJ/MM/AAAA)",
-            function (report_date) {
+        bootbox.prompt({
+            title: "Merci d'indiquer la date de report (format: JJ/MM/AAAA)",
+            inputType: 'date',
+            callback: function (report_date) {
                 if (report_date !== null) {
                     $http({
                         method: 'POST',
@@ -436,7 +437,8 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         $scope.myTxt = "Erreur: " + response.data.message;
                     });
                 }
-            });
+            }
+        });
     };
 
 }]);
