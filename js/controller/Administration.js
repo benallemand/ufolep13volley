@@ -1260,8 +1260,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.getFormPanelEditMatch().getForm().findField('id_match').setValue("");
         this.getFormPanelEditMatch().getForm().findField('code_match').setValue("");
     },
-    addRank: function () {
-        Ext.widget('rankedit');
+    addRank: function (button) {
+        var widget = Ext.widget('rankedit');
+        var record = button.up('grid').getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        widget.down('form').loadRecord(record);
+        widget.down('form').getForm().findField('id').setValue("");
     },
     addDay: function () {
         Ext.widget('dayedit');
