@@ -372,15 +372,16 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
     };
 
     $scope.refuseReport = function (code_match) {
-        bootbox.confirm(
-            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Êtes vous sûr de vouloir continuer ?",
-            function (confirm_refuse_report) {
-                if (confirm_refuse_report === true) {
+        bootbox.prompt(
+            "Vous allez refuser la demande de report, le match sera donc joué le jour prévu ou l'équipe adverse sera déclarée forfait. Merci d'indiquer la raison du refus",
+            function (reason) {
+                if (reason !== null) {
                     $http({
                         method: 'POST',
                         url: '../ajax/refuseReport.php',
                         data: $.param({
-                            code_match: code_match
+                            code_match: code_match,
+                            reason: reason
                         }),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
@@ -394,8 +395,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         $scope.myTxt = "Erreur: " + response.data.message;
                     });
                 }
-            }
-        );
+            });
     };
 
     $scope.acceptReport = function (code_match) {

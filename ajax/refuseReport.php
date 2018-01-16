@@ -5,7 +5,8 @@ require_once "../includes/fonctions_inc.php";
 $success = false;
 
 $code_match = filter_input(INPUT_POST, 'code_match');
-$success = refuseReport($code_match);
+$reason = filter_input(INPUT_POST, 'reason');
+$success = refuseReport($code_match, $reason);
 
 echo json_encode(array(
     'success' => $success,

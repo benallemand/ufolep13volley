@@ -626,7 +626,7 @@ function giveReportDate($code_match, $report_date)
     return true;
 }
 
-function refuseReport($code_match)
+function refuseReport($code_match, $reason)
 {
     global $db;
     conn_db();
@@ -645,7 +645,7 @@ function refuseReport($code_match)
         addActivity("Report refusé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
         require_once '../classes/Emails.php';
         $emailManager = new Emails();
-        $emailManager->sendMailRefuseReport($code_match, $sessionIdEquipe);
+        $emailManager->sendMailRefuseReport($code_match, $reason, $sessionIdEquipe);
     }
     if (isAdmin()) {
         $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";

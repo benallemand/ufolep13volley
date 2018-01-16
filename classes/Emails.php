@@ -96,7 +96,7 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
-    public function sendMailRefuseReport($code_match, $id_team)
+    public function sendMailRefuseReport($code_match, $reason, $id_team)
     {
         $teamName = getTeamName($id_team);
         $teams_emails = getTeamsEmailsFromMatchReport($code_match);
@@ -104,6 +104,7 @@ class Emails
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReport.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
+        $message = str_replace('%reason%', $reason, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
         $this->sendEmail("[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
