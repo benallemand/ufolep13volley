@@ -43,8 +43,8 @@ class Emails
         }
         $mail->addBCC("benallemand@gmail.com");
         if (is_array($attachments)) {
-            foreach ($attachments as $fileName => $stringAttachment) {
-                $mail->addStringAttachment($stringAttachment, $fileName, 'base64', 'text/plain');
+            foreach ($attachments as $fileName) {
+                $mail->addAttachment($fileName, basename($fileName));
             }
         }
         $mail->WordWrap = 50;
@@ -159,7 +159,7 @@ class Emails
             null,
             null,
             array(
-                "$code_match.zip" => file_get_contents("$code_match.zip")
+                "$code_match.zip"
             ));
         unlink("$code_match.zip");
     }
