@@ -90,7 +90,19 @@ var Base64 = {
 };
 
 // create the module and name it scotchApp
-var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar']);
+var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar', 'filters']);
+
+
+angular.module('filters', []).filter('zpad', function () {
+    return function (input, n) {
+        if (input === undefined)
+            input = ""
+        if (input.length >= n)
+            return input
+        var zeros = "0".repeat(n);
+        return (zeros + input).slice(-1 * n)
+    };
+});
 
 // configure our routes
 scotchApp.config(function ($routeProvider) {

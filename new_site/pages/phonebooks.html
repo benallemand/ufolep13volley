@@ -14,7 +14,7 @@
                            ng-repeat="division in divisions | filter:{ code_competition: competition.code_competition }:true | orderBy:'division'">
                         <thead>
                         <tr>
-                            <th>Division {{division.division}}</th>
+                            <th>Division {{division.division | zpad:2}}</th>
                         </tr>
                         </thead>
                         <tbody>

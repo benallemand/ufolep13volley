@@ -1067,7 +1067,7 @@ function getRanks()
       cl.id,
       cl.code_competition,
       co.libelle AS nom_competition,
-      LPAD(cl.division, 2, '0') AS division,
+      cl.division,
       cl.id_equipe,
       e.nom_equipe,
       cl.rank_start
@@ -1087,7 +1087,7 @@ function getDivisions()
     global $db;
     conn_db();
     $sql = "SELECT
-        DISTINCT LPAD(c.division, 2, '0') AS division,
+        DISTINCT c.division,
         c.code_competition
       FROM classements c";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
