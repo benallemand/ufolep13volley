@@ -135,11 +135,24 @@ class Emails
     public function sendMailSheetReceived($code_match)
     {
         $teams_emails = getTeamsEmailsFromMatch($code_match);
+        require_once "MatchManager.php";
+        $match_manager = new MatchManager();
+        $matches = $match_manager->getMatches("m.code_match = '$code_match'");
+        $id_match = $matches[0]['id'];
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Feuilles du match $code_match reçues", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail(
+            "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
+            $message,
+            'no-reply@ufolep13volley.org',
+            $to,
+            null,
+            null,
+            array(
+                "$code_match.zip" => file_get_contents("../ajax/downloadMatchFiles.php?id=$id_match")
+            ));
     }
 }
