@@ -13,6 +13,7 @@ class Emails
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
+                return;
                 $mail->isSMTP();
                 break;
             default:
@@ -138,12 +139,17 @@ class Emails
         require_once "MatchManager.php";
         $match_manager = new MatchManager();
         $matches = $match_manager->getMatches("m.code_match = '$code_match'");
-        $id_match = $matches[0]['id'];
+        $id_match = $matches[0]['id_match'];
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
+        $url_host = filter_input(INPUT_SERVER, 'HTTP_HOST');
+        $match_manager->download(array(
+            'id' => $id_match,
+            'keep_file' => "true"
+        ));
         $this->sendEmail(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
@@ -152,7 +158,8 @@ class Emails
             null,
             null,
             array(
-                "$code_match.zip" => file_get_contents("../ajax/downloadMatchFiles.php?id=$id_match")
+                "$code_match.zip" => file_get_contents("$code_match.zip")
             ));
+        unlink("$code_match.zip");
     }
 }

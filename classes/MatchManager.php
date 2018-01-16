@@ -182,14 +182,15 @@ class MatchManager extends Generic
             $zip->addFile("../" . $match_file['path_file'], basename($match_file['path_file']));
         }
         $zip->close();
-        header("Content-type: application/zip");
-        header("Content-Disposition: attachment; filename=$archiveFileName");
-        header("Content-length: " . filesize($archiveFileName));
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        readfile($archiveFileName);
-        unlink($archiveFileName);
-        exit;
+        if (empty($inputs['keep_file'])) {
+            header("Content-type: application/zip");
+            header("Content-Disposition: attachment; filename=$archiveFileName");
+            header("Content-length: " . filesize($archiveFileName));
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            readfile($archiveFileName);
+            unlink($archiveFileName);
+        }
     }
 
     /**
