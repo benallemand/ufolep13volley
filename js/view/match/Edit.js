@@ -151,6 +151,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 fieldLabel: 'Date',
                 name: 'date_reception',
                 allowBlank: false,
+                format: 'd/m/Y',
                 startDay: 1
             },
             {
