@@ -44,6 +44,12 @@ function isUserExists($login)
     return true;
 }
 
+/**
+ * @param $login
+ * @param $email
+ * @param $idTeam
+ * @throws Exception
+ */
 function createUser($login, $email, $idTeam)
 {
     global $db;
@@ -127,6 +133,10 @@ function deleteTeams($ids)
     return true;
 }
 
+/**
+ * @param $ids
+ * @throws Exception
+ */
 function deleteMatches($ids)
 {
     global $db;
@@ -168,6 +178,10 @@ function razPoints($ids)
     return true;
 }
 
+/**
+ * @param $ids
+ * @throws Exception
+ */
 function deleteDays($ids)
 {
     global $db;
@@ -233,6 +247,10 @@ function deleteCompetition($ids)
     return true;
 }
 
+/**
+ * @param $ids
+ * @throws Exception
+ */
 function deletePlayers($ids)
 {
     $explodedIds = explode(',', $ids);
@@ -576,12 +594,46 @@ function getLastResults()
     return json_encode($results);
 }
 
+/**
+ * @param $team_id
+ * @param $match_code
+ * @throws Exception
+ */
+function check_team_allowed_to_ask_report($team_id, $match_code)
+{
+    require_once '../classes/MatchManager.php';
+    $match_manager = new MatchManager();
+    $matches = $match_manager->getMatches("m.code_match = '$match_code'");
+    $this_match = $matches[0];
+    $code_competition = $this_match['code_competition'];
+    global $db;
+    conn_db();
+    $sql = "SELECT report_count 
+            FROM classements 
+            WHERE id_equipe = $team_id 
+            AND code_competition = '$code_competition'";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    if (intval($results[0]['report_count']) > 0) {
+        throw new Exception("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.");
+    }
+}
 
+/**
+ * @param $code_match
+ * @param $reason
+ * @return bool
+ * @throws Exception
+ */
 function askForReport($code_match, $reason)
 {
     global $db;
     conn_db();
     $sessionIdEquipe = $_SESSION['id_equipe'];
+    check_team_allowed_to_ask_report($sessionIdEquipe, $code_match);
     if (isTeamDomForMatch($sessionIdEquipe, $code_match)) {
         $sql = "UPDATE matches SET report_status = 'ASKED_BY_DOM' WHERE code_match = '$code_match'";
     } else {
@@ -599,6 +651,12 @@ function askForReport($code_match, $reason)
     return true;
 }
 
+/**
+ * @param $code_match
+ * @param $report_date
+ * @return bool
+ * @throws Exception
+ */
 function giveReportDate($code_match, $report_date)
 {
     global $db;
@@ -1739,7 +1797,7 @@ function getClubName($idClub)
     global $db;
     conn_db();
     $sql = "SELECT 
-        c.nom as club_name 
+        c.nom AS club_name 
         FROM clubs c 
         WHERE c.id = $idClub";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -1756,7 +1814,7 @@ function getProfileName($idProfile)
     global $db;
     conn_db();
     $sql = "SELECT 
-        p.name as profile_name 
+        p.name AS profile_name 
         FROM profiles p 
         WHERE p.id = $idProfile";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -1950,6 +2008,11 @@ function getTeamSheet($idTeam)
     return json_encode($results);
 }
 
+/**
+ * @param $uploadfile
+ * @param $idPhoto
+ * @throws Exception
+ */
 function insertPhoto($uploadfile, &$idPhoto)
 {
     global $db;
@@ -1966,6 +2029,11 @@ function insertPhoto($uploadfile, &$idPhoto)
     return;
 }
 
+/**
+ * @param $idPlayer
+ * @param $idPhoto
+ * @throws Exception
+ */
 function linkPlayerToPhoto($idPlayer, $idPhoto)
 {
     global $db;
@@ -1981,6 +2049,11 @@ function linkPlayerToPhoto($idPlayer, $idPhoto)
     return;
 }
 
+/**
+ * @param $idTeam
+ * @param $idPhoto
+ * @throws Exception
+ */
 function linkTeamToPhoto($idTeam, $idPhoto)
 {
     global $db;
@@ -1996,6 +2069,11 @@ function linkTeamToPhoto($idTeam, $idPhoto)
     return;
 }
 
+/**
+ * @param $inputs
+ * @param int $newId
+ * @throws Exception
+ */
 function savePhoto($inputs, $newId = 0)
 {
     $lastName = $inputs['nom'];
@@ -2023,6 +2101,10 @@ function savePhoto($inputs, $newId = 0)
     return;
 }
 
+/**
+ * @param $idTeam
+ * @throws Exception
+ */
 function saveTeamPhoto($idTeam)
 {
     $team = getTeam($idTeam);
@@ -2075,6 +2157,9 @@ function isProfileExists($name)
     return true;
 }
 
+/**
+ * @throws Exception
+ */
 function savePlayer()
 {
     global $db;
@@ -2495,7 +2580,7 @@ function getCompetition($code_competition)
         code_competition,
         libelle,
         id_compet_maitre,
-        IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date,
+        IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date
         FROM competitions
         WHERE code_competition = '$code_competition'
         ORDER BY libelle";
@@ -2626,6 +2711,9 @@ function saveGymnasium()
     return true;
 }
 
+/**
+ * @throws Exception
+ */
 function saveCompetition()
 {
     global $db;
@@ -2703,6 +2791,9 @@ function saveClub()
     return true;
 }
 
+/**
+ * @throws Exception
+ */
 function saveTeam()
 {
     global $db;
@@ -2749,6 +2840,9 @@ function saveTeam()
     return;
 }
 
+/**
+ * @throws Exception
+ */
 function saveRank()
 {
     global $db;
@@ -2797,6 +2891,9 @@ function saveRank()
     return;
 }
 
+/**
+ * @throws Exception
+ */
 function saveDay()
 {
     global $db;
@@ -2840,6 +2937,9 @@ function saveDay()
     return;
 }
 
+/**
+ * @throws Exception
+ */
 function saveHallOfFame()
 {
     global $db;
@@ -2877,6 +2977,9 @@ function saveHallOfFame()
     return;
 }
 
+/**
+ * @throws Exception
+ */
 function saveLimitDate()
 {
     global $db;

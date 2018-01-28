@@ -365,7 +365,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                                 });
                             return;
                         }
-                        $scope.myTxt = "Erreur: " + response.data.message;
+                        bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
             });
@@ -392,7 +392,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                                 });
                             return;
                         }
-                        $scope.myTxt = "Erreur: " + response.data.message;
+                        bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
             });
@@ -418,7 +418,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                                 });
                             return;
                         }
-                        $scope.myTxt = "Erreur: " + response.data.message;
+                        bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
             });
@@ -446,7 +446,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                                 });
                             return;
                         }
-                        $scope.myTxt = "Erreur: " + response.data.message;
+                        bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
             }
@@ -471,7 +471,7 @@ scotchApp.controller('myPreferencesController', function ($scope, $http) {
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 });
@@ -498,7 +498,7 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.addTimeSlot = function () {
@@ -512,7 +512,7 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -530,7 +530,7 @@ scotchApp.controller('myPasswordController', function ($scope, $http) {
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -560,7 +560,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.removePlayerFromMyTeam = function (id) {
@@ -576,7 +576,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.updateMyTeamCaptain = function (id) {
@@ -592,7 +592,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.updateMyTeamLeader = function (id) {
@@ -608,7 +608,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.updateMyTeamViceLeader = function (id) {
@@ -624,7 +624,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 }]);
@@ -710,7 +710,7 @@ scotchApp.controller('registerController', function ($scope, $http) {
                     });
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.formatTeamLabel = function (model, teams) {
@@ -918,7 +918,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.addPenalty = function (id_equipe, competition) {
@@ -936,7 +936,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -954,7 +954,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
     $scope.IncrementReportCount = function (id_equipe, competition) {
@@ -971,7 +971,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -988,7 +988,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -1005,7 +1005,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -1022,7 +1022,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 }]);
@@ -1062,7 +1062,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -1079,7 +1079,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 
@@ -1096,7 +1096,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
                 window.location.reload();
                 return;
             }
-            $scope.myTxt = "Erreur: " + response.data.message;
+            bootbox.alert("Erreur: " + response.data.message);
         });
     };
 }]);
