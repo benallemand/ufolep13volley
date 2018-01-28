@@ -1366,6 +1366,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
         j.telephone, 
         j.email, 
         j.num_licence, 
+        CONCAT(LPAD(j.departement_affiliation, 3, '0'), j.num_licence) AS num_licence_ext, 
         p.path_photo,
         j.sexe, 
         j.departement_affiliation, 
