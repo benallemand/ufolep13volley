@@ -101,7 +101,7 @@ foreach ($jsonPlayers as $index => $jsonPlayer) {
     $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 5 + $heightPlayer * ($currentIndex % $NbByColumns));
     $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->nom), 0, 1, 'L');
     $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 10 + $heightPlayer * ($currentIndex % $NbByColumns));
-    $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->num_licence) . ' /' . toWellFormatted($jsonPlayer->sexe), 0, 1, 'L');
+    $pdf->Cell(50, 5, toWellFormatted($jsonPlayer->num_licence_ext) . ' /' . toWellFormatted($jsonPlayer->sexe), 0, 1, 'L');
     $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 15 + $heightPlayer * ($currentIndex % $NbByColumns));
     $pdf->Cell(16, 5, toWellFormatted('Présent(e) : '), 0, 0, 'L');
     $pdf->SetFont('ZapfDingbats', '', 18);
