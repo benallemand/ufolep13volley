@@ -107,7 +107,8 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 xtype: 'checkboxfield',
                 fieldLabel: 'Actif ?',
                 boxLabel: 'Oui',
-                msgTarget: 'under'
+                msgTarget: 'under',
+                uncheckedValue: 'off'
             },
             {
                 xtype: 'fieldset',
@@ -138,7 +139,8 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 xtype: 'checkboxfield',
                 fieldLabel: 'Diffusion photo autorisée ?',
                 boxLabel: 'Oui',
-                msgTarget: 'under'
+                msgTarget: 'under',
+                uncheckedValue: 'off'
             },
             {
                 name: 'photo',
@@ -163,7 +165,8 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'est_responsable_club',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Responsable ?',
-                msgTarget: 'under'
+                msgTarget: 'under',
+                uncheckedValue: 'off'
             },
             {
                 xtype: 'fieldset',
