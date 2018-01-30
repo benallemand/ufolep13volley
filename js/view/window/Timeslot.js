@@ -141,7 +141,8 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
                 name: 'has_time_constraint',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Contrainte horaire ?',
-                boxLabel: 'Oui'
+                boxLabel: 'Oui',
+                uncheckedValue: 'off'
             }
         ],
         buttons: [

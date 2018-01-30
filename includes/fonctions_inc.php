@@ -262,11 +262,12 @@ function deletePlayers($ids)
     conn_db();
     $sql = "DELETE FROM joueurs WHERE id IN($ids)";
     $req = mysqli_query($db, $sql);
-    disconn_db();
     if ($req === FALSE) {
         $message = mysqli_error($db);
+        disconn_db();
         throw new Exception($message);
     }
+    disconn_db();
     foreach ($playersFullNames as $playerFullName) {
         addActivity("Suppression du joueur : $playerFullName");
     }
@@ -2163,23 +2164,7 @@ function isProfileExists($name)
 function savePlayer()
 {
     global $db;
-    $inputs = array(
-        'prenom' => filter_input(INPUT_POST, 'prenom'),
-        'nom' => filter_input(INPUT_POST, 'nom'),
-        'telephone' => filter_input(INPUT_POST, 'telephone'),
-        'email' => filter_input(INPUT_POST, 'email'),
-        'num_licence' => filter_input(INPUT_POST, 'num_licence'),
-        'sexe' => filter_input(INPUT_POST, 'sexe'),
-        'departement_affiliation' => filter_input(INPUT_POST, 'departement_affiliation'),
-        'est_actif' => filter_input(INPUT_POST, 'est_actif'),
-        'id_club' => filter_input(INPUT_POST, 'id_club'),
-        'id_team' => filter_input(INPUT_POST, 'id_team'),
-        'telephone2' => filter_input(INPUT_POST, 'telephone2'),
-        'email2' => filter_input(INPUT_POST, 'email2'),
-        'est_responsable_club' => filter_input(INPUT_POST, 'est_responsable_club'),
-        'id' => filter_input(INPUT_POST, 'id'),
-        'show_photo' => filter_input(INPUT_POST, 'show_photo')
-    );
+    $inputs = filter_input_array(INPUT_POST);
     if (empty($inputs['id'])) {
         if (!empty($inputs['num_licence'])) {
             if (isPlayerExists($inputs['num_licence'])) {
@@ -2198,6 +2183,7 @@ function savePlayer()
         switch ($key) {
             case 'id':
             case 'id_team':
+            case 'dirtyFields':
                 continue;
             case 'departement_affiliation':
             case 'id_club':
@@ -2209,15 +2195,12 @@ function savePlayer()
                 $val = ($value === 'on') ? 1 : 0;
                 $sql .= "$key = $val,";
                 break;
-            case 'num_licence':
-                if (empty($inputs['num_licence']) || $inputs['num_licence'] == 'null') {
+            default:
+                if (empty($inputs[$key]) || $inputs[$key] == 'null') {
                     $sql .= "$key = NULL,";
                 } else {
                     $sql .= "$key = '$value',";
                 }
-                break;
-            default:
-                $sql .= "$key = '$value',";
                 break;
         }
     }
