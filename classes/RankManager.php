@@ -29,6 +29,11 @@ class RankManager extends Generic
         return $sql;
     }
 
+    /**
+     * @param null $query
+     * @return array
+     * @throws Exception
+     */
     public function getRanks($query = null)
     {
         $db = Database::openDbConnection();
@@ -41,6 +46,10 @@ class RankManager extends Generic
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function getCompetitions()
     {
         $db = Database::openDbConnection();
@@ -55,6 +64,11 @@ class RankManager extends Generic
         return $results;
     }
 
+    /**
+     * @param $code_competition
+     * @return array
+     * @throws Exception
+     */
     public function getDivisionsFromCompetition($code_competition)
     {
         $db = Database::openDbConnection();
@@ -69,6 +83,12 @@ class RankManager extends Generic
         return $results;
     }
 
+    /**
+     * @param $division
+     * @param $code_competition
+     * @return array
+     * @throws Exception
+     */
     public function getTeamsFromDivisionAndCompetition($division, $code_competition)
     {
         $db = Database::openDbConnection();
@@ -90,5 +110,189 @@ class RankManager extends Generic
         }
         return $results;
     }
+
+    /**
+     * @param $code_competition
+     * @param $division
+     * @return mixed
+     * @throws Exception
+     */
+    public function getLeader($code_competition, $division)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT
+              @r := @r + 1 AS rang,
+              z.*
+            FROM (
+                   SELECT
+                     e.id_equipe,
+                     '$code_competition' AS code_competition,
+                     e.nom_equipe                      AS equipe,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 3
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 3
+                                           ELSE 0 END) +
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0
+                       THEN 1
+                                           ELSE 0 END)
+                     - c.penalite                      AS points,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 1
+                                           ELSE 0 END) +
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+                       THEN 1
+                                           ELSE 0 END)                 AS joues,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 1
+                                           ELSE 0 END) AS gagnes,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+                       THEN 1
+                                           ELSE 0 END) AS perdus,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_dom
+                         ELSE m.score_equipe_ext END)  AS sets_pour,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_ext
+                         ELSE m.score_equipe_dom END)  AS sets_contre,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_dom
+                         ELSE m.score_equipe_ext END) - SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_ext
+                                                            ELSE m.score_equipe_dom END)         AS diff,
+                     c.penalite                        AS penalites,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
+                       THEN 1
+                                           ELSE 0 END) AS matches_lost_by_forfeit_count,
+                      c.report_count
+                   FROM
+                     classements c
+                     JOIN equipes e ON e.id_equipe = c.id_equipe
+                     LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                   WHERE c.code_competition = '$code_competition' AND c.division = '$division'
+                   GROUP BY e.id_equipe
+                   ORDER BY points DESC, diff DESC
+                 ) z, (SELECT @r := 0) y LIMIT 0, 1";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        if (count($results) !== 1) {
+            throw new Exception("Le champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
+        }
+        return $results[0];
+    }
+
+    /**
+     * @param $code_competition
+     * @param $division
+     * @return mixed
+     * @throws Exception
+     */
+    public function getViceLeader($code_competition, $division)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT
+              @r := @r + 1 AS rang,
+              z.*
+            FROM (
+                   SELECT
+                     e.id_equipe,
+                     '$code_competition' AS code_competition,
+                     e.nom_equipe                      AS equipe,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 3
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 3
+                                           ELSE 0 END) +
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0
+                       THEN 1
+                                           ELSE 0 END)
+                     - c.penalite                      AS points,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 1
+                                           ELSE 0 END) +
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+                       THEN 1
+                                           ELSE 0 END)                 AS joues,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
+                       THEN 1
+                                           ELSE 0 END) AS gagnes,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
+                       THEN 1
+                                           ELSE 0 END) AS perdus,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_dom
+                         ELSE m.score_equipe_ext END)  AS sets_pour,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_ext
+                         ELSE m.score_equipe_dom END)  AS sets_contre,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_dom
+                         ELSE m.score_equipe_ext END) - SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
+                       THEN m.score_equipe_ext
+                                                            ELSE m.score_equipe_dom END)         AS diff,
+                     c.penalite                        AS penalites,
+                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1
+                       THEN 1
+                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
+                       THEN 1
+                                           ELSE 0 END) AS matches_lost_by_forfeit_count,
+                      c.report_count
+                   FROM
+                     classements c
+                     JOIN equipes e ON e.id_equipe = c.id_equipe
+                     LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                   WHERE c.code_competition = '$code_competition' AND c.division = '$division'
+                   GROUP BY e.id_equipe
+                   ORDER BY points DESC, diff DESC
+                 ) z, (SELECT @r := 0) y LIMIT 1, 1";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        if (count($results) !== 1) {
+            throw new Exception("Le champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
+        }
+        return $results[0];
+    }
+
+    public function resetRankPoints($code_competition)
+    {
+        $db = Database::openDbConnection();
+        $sql = "UPDATE classements
+         SET penalite = 0,
+         report_count = 0
+        WHERE code_competition = '$code_competition'";
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            throw new Exception("Erreur durant l'opération: " . mysqli_error($db));
+        }
+    }
+
 
 }

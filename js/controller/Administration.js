@@ -723,8 +723,17 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'rankgrid button[action=delete]': {
                     click: this.deleteRanks
                 },
-                'rankgrid button[action=razPoints]': {
-                    click: this.razPoints
+                'competitions_grid button[action=generateHallOfFame]': {
+                    click: this.generateHallOfFame
+                },
+                'competitions_grid button[action=resetCompetition]': {
+                    click: this.resetCompetition
+                },
+                'competitions_grid button[action=generateDays]': {
+                    click: this.generateDays
+                },
+                'competitions_grid button[action=generateMatches]': {
+                    click: this.generateMatches
                 },
                 'daysgrid button[action=delete]': {
                     click: this.deleteDays
@@ -1342,7 +1351,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     thisController.getStore('HallOfFame').load();
                     button.up('window').close();
                 },
-                failure: function (form, action) {
+                failure: function (response, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }
             });
@@ -1680,15 +1689,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    razPoints: function () {
-        var me = this;
-        var records = this.getManageRanksGrid().getSelectionModel().getSelection();
+    genericRequest: function (button, title, url) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
         if (records.length == 0) {
             return;
         }
         Ext.Msg.show({
-            title: 'Remise à zéro?',
-            msg: 'Etes-vous certain de vouloir effectuer une remise à zéro des points de cette/ces équipe(s)?',
+            title: title,
+            msg: 'Etes-vous certain de vouloir effectuer cette action ?',
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {
@@ -1700,16 +1709,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: 'ajax/razPoints.php',
+                    url: url,
                     params: {
                         ids: ids.join(',')
                     },
-                    success: function () {
-                        me.getAdminRanksStore().load();
+                    success: function (response, opts) {
+                        Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
+                        grid.getStore().load();
+                    },
+                    failure: function (response, opts) {
+                        if (response.status == '404') {
+                            Ext.Msg.alert('Erreur', "La page n'a pas été trouvée !");
+                            return;
+                        }
+                        var response_json = Ext.decode(response.responseText);
+                        Ext.Msg.alert('Erreur', response_json.message);
                     }
                 });
             }
         });
+    },
+    generateHallOfFame: function (button) {
+        this.genericRequest(button, 'Générer le palmarès', 'ajax/generateHallOfFame.php');
+    },
+    resetCompetition: function (button) {
+        this.genericRequest(button, 'Reset compétition', 'ajax/resetCompetition.php');
+    },
+    generateDays: function (button) {
+        this.genericRequest(button, 'Générer les journées', 'ajax/generateDays.php');
+    },
+    generateMatches: function (button) {
+        this.genericRequest(button, 'Générer les matches', 'ajax/generateMatches.php');
     },
     deleteDays: function () {
         var me = this;
@@ -2292,6 +2322,22 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteCompetition'
+                },
+                {
+                    text: 'Générer le palmarès...',
+                    action: 'generateHallOfFame'
+                },
+                {
+                    text: 'Reset compétition...',
+                    action: 'resetCompetition'
+                },
+                {
+                    text: 'Générer les journées...',
+                    action: 'generateDays'
+                },
+                {
+                    text: 'Générer les matches...',
+                    action: 'generateMatches'
                 }
             ]
         });
