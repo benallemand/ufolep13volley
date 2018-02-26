@@ -1,28 +1,27 @@
 <?php
-
+$function_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+require_once "../includes/fonctions_inc.php";
 try {
     $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
     switch ($requestMethod) {
         case 'POST':
-            $code_competition = filter_input(INPUT_POST, 'code_competition');
-            break;
-        case 'GET':
-            $code_competition = filter_input(INPUT_GET, 'code_competition');
             break;
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/MatchManager.php';
-    $manager = new MatchManager();
-    $manager->generateMatches($code_competition);
-} catch (Exception $ex) {
+    if (function_exists($function_name)) {
+        call_user_func($function_name);
+    } else {
+        throw new Exception("La fonction $function_name n'existe pas !");
+    }
     echo json_encode(array(
-        'success' => false,
-        'message' => 'Erreur durant la modification: ' . $ex->getMessage()
+        'success' => true,
+        'message' => 'Modification OK'
     ));
-    return;
+} catch (Exception $exc) {
+    header('HTTP/1.1 500 Internal Server Error');
+    echo json_encode(array(
+        "success" => false,
+        "message" => $exc->getMessage()
+    ));
 }
-echo json_encode(array(
-    'success' => true,
-    'message' => 'Modification OK'
-));

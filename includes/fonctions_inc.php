@@ -163,21 +163,6 @@ function deleteRanks($ids)
     return true;
 }
 
-function razPoints($ids)
-{
-    global $db;
-    conn_db();
-    $sql = "UPDATE classements
-     SET penalite = 0
-    WHERE id IN($ids)";
-    $req = mysqli_query($db, $sql);
-    disconn_db();
-    if ($req === FALSE) {
-        return false;
-    }
-    return true;
-}
-
 /**
  * @param $ids
  * @throws Exception
@@ -3381,4 +3366,171 @@ function hasAnyEmail($sessionIdEquipe)
         return false;
     }
     return true;
+}
+
+/**
+ * for each competition id
+ * - get competition date
+ * - for each division
+ * -- get leader
+ * -- insert into hall of fame the leader
+ * -- get vice-leader
+ * -- insert into hall of fame the vice-leader
+ * @throws Exception
+ */
+function generateHallOfFame()
+{
+    $inputs = filter_input_array(INPUT_POST);
+    if (empty($inputs['ids'])) {
+        throw new Exception("Aucune compétition sélectionnée !");
+    }
+    $ids = explode(',', $inputs['ids']);
+    foreach ($ids as $id) {
+        require_once '../classes/CompetitionManager.php';
+        $competition_manager = new CompetitionManager();
+        $competitions = $competition_manager->getCompetitions("c.id = $id");
+        if (count($competitions) !== 1) {
+            throw new Exception("Une seule compétition doit être trouvée !");
+        }
+        if (!$competition_manager->isCompetitionOver($competitions[0]['id'])) {
+            throw new Exception("La compétition n'est pas terminée !!!");
+        }
+        $competition_date = DateTime::createFromFormat("d/m/Y", $competitions[0]['start_date']);
+        require_once '../classes/RankManager.php';
+        $rank_manager = new RankManager();
+        $divisions = $rank_manager->getDivisionsFromCompetition($competitions[0]['code_competition']);
+        foreach ($divisions as $division) {
+            $leader = $rank_manager->getLeader($competitions[0]['code_competition'], $division['division']);
+            $vice_leader = $rank_manager->getViceLeader($competitions[0]['code_competition'], $division['division']);
+            require_once '../classes/HallOfFameManager.php';
+            $hall_of_fame_manager = new HallOfFameManager();
+            if (intval($competition_date->format('m')) >= 9) {
+                $title_season = " mi-saison ";
+                $period = $competition_date->format('Y') . "-" . (intval($competition_date->format('Y')) + 1);
+            } else {
+                $title_season = " Dept. ";
+                $period = (intval($competition_date->format('Y')) - 1) . "-" . $competition_date->format('Y');
+            }
+            $hall_of_fame_manager->insert(
+                "Championne" . $title_season . "de Division " . $division['division'],
+                $leader['equipe'],
+                $period,
+                $competitions[0]['libelle']
+            );
+            $hall_of_fame_manager->insert(
+                "Vice-championne" . $title_season . "de Division " . $division['division'],
+                $vice_leader['equipe'],
+                $period,
+                $competitions[0]['libelle']
+            );
+        }
+    }
+}
+
+/**
+ * @throws Exception
+ */
+function generateDays()
+{
+    $inputs = filter_input_array(INPUT_POST);
+    if (empty($inputs['ids'])) {
+        throw new Exception("Aucune compétition sélectionnée !");
+    }
+    $ids = explode(',', $inputs['ids']);
+    foreach ($ids as $id) {
+        require_once '../classes/CompetitionManager.php';
+        $competition_manager = new CompetitionManager();
+        $competitions = $competition_manager->getCompetitions("c.id = $id");
+        if (count($competitions) !== 1) {
+            throw new Exception("Une seule compétition doit être trouvée !");
+        }
+        if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
+            throw new Exception("La compétition a déjà commencé !!!");
+        }
+        require_once '../classes/RankManager.php';
+        $rank_manager = new RankManager();
+        $competition = $competitions[0];
+        $code_competition = $competition['code_competition'];
+        if (empty($competition['start_date'])) {
+            throw new Exception("Date de début de compétition non renseignée");
+        }
+        require_once '../classes/MatchManager.php';
+        $match_manager = new MatchManager();
+        $match_manager->deleteMatches("code_competition = '$code_competition'");
+        require_once '../classes/DayManager.php';
+        $day_manager = new DayManager();
+        $day_manager->deleteDays("code_competition = '$code_competition'");
+        $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
+        $rounds_counts = array();
+        foreach ($divisions as $division) {
+            $teams = $rank_manager->getTeamsFromDivisionAndCompetition($division['division'], $code_competition);
+            $teams_count = count($teams);
+            if ($teams_count % 2 == 1) {
+                $teams_count++;
+            }
+            $rounds_counts[] = $teams_count - 1;
+        }
+        for ($round_number = 1; $round_number <= max($rounds_counts); $round_number++) {
+            $day_manager->insertDay(
+                $code_competition,
+                strval($round_number),
+                $competition['start_date']
+            );
+        }
+    }
+}
+
+/**
+ * @throws Exception
+ */
+function resetCompetition()
+{
+    $inputs = filter_input_array(INPUT_POST);
+    if (empty($inputs['ids'])) {
+        throw new Exception("Aucune compétition sélectionnée !");
+    }
+    $ids = explode(',', $inputs['ids']);
+    foreach ($ids as $id) {
+        require_once '../classes/CompetitionManager.php';
+        $competition_manager = new CompetitionManager();
+        $competitions = $competition_manager->getCompetitions("c.id = $id");
+        if (count($competitions) !== 1) {
+            throw new Exception("Une seule compétition doit être trouvée !");
+        }
+        if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
+            throw new Exception("La compétition a déjà commencé !!!");
+        }
+        require_once '../classes/RankManager.php';
+        $rank_manager = new RankManager();
+        $competition = $competitions[0];
+        $code_competition = $competition['code_competition'];
+        $rank_manager->resetRankPoints($code_competition);
+    }
+}
+
+/**
+ * @throws Exception
+ */
+function generateMatches()
+{
+    $inputs = filter_input_array(INPUT_POST);
+    if (empty($inputs['ids'])) {
+        throw new Exception("Aucune compétition sélectionnée !");
+    }
+    $ids = explode(',', $inputs['ids']);
+    foreach ($ids as $id) {
+        require_once '../classes/CompetitionManager.php';
+        $competition_manager = new CompetitionManager();
+        $competitions = $competition_manager->getCompetitions("c.id = $id");
+        if (count($competitions) !== 1) {
+            throw new Exception("Une seule compétition doit être trouvée !");
+        }
+        if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
+            throw new Exception("La compétition a déjà commencé !!!");
+        }
+        require_once '../classes/MatchManager.php';
+        $match_manager = new MatchManager();
+        $competition = $competitions[0];
+        $match_manager->generateMatches($competition);
+    }
 }

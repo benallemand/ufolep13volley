@@ -424,72 +424,23 @@ class MatchManager extends Generic
     }
 
     /**
-     * @param $code_competition
+     * @param $competition
      * @throws Exception
      */
-    public function generateDays($code_competition)
+    public function generateMatches($competition)
     {
+        if (empty($competition)) {
+            throw new Exception("Compétition non trouvée !");
+        }
+        $code_competition = $competition['code_competition'];
+        $this->deleteMatches("code_competition = '$code_competition'");
         require_once '../classes/RankManager.php';
         $rank_manager = new RankManager();
-        $competition = null;
-        $competitions = $rank_manager->getCompetitions();
-        foreach ($competitions as $current_competition) {
-            if ($current_competition['code_competition'] == $code_competition) {
-                $competition = $current_competition;
-                break;
-            }
-        }
-        if (empty($competition)) {
-            throw new Exception("Compétition inconnue");
-        }
-        if (empty($competition['start_date'])) {
-            throw new Exception("Date de début de compétition non renseignée");
-        }
-        $this->deleteMatches("code_competition = '$code_competition'");
-        require_once '../classes/DayManager.php';
-        $day_manager = new DayManager();
-        $day_manager->deleteDays("code_competition = '$code_competition'");
-        $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
-        $rounds_counts = array();
-        foreach ($divisions as $division) {
-            $teams = $rank_manager->getTeamsFromDivisionAndCompetition($division['division'], $code_competition);
-            $teams_count = count($teams);
-            if ($teams_count % 2 == 1) {
-                $teams_count++;
-            }
-            $rounds_counts[] = $teams_count - 1;
-        }
-        for ($round_number = 1; $round_number <= max($rounds_counts); $round_number++) {
-            $day_manager->insertDay(
-                $code_competition,
-                strval($round_number),
-                $competition['start_date']
-            );
-        }
-    }
-
-    /**
-     * @param $code_competition
-     * @throws Exception
-     */
-    public function generateMatches($code_competition)
-    {
-        require_once '../classes/RankManager.php';
-        $rank_manager = new RankManager();
-        $competitions = $rank_manager->getCompetitions();
-        foreach ($competitions as $current_competition) {
-            if ($current_competition['code_competition'] == $code_competition) {
-                $competition = $current_competition;
-                break;
-            }
-        }
-        if (empty($competition)) {
-            throw new Exception("Compétition inconnue");
-        }
-        $this->deleteMatches("code_competition = '$code_competition'");
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
         foreach ($divisions as $division) {
-            $teams = $rank_manager->getTeamsFromDivisionAndCompetition($division['division'], $competition['code_competition']);
+            $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
+                $division['division'],
+                $competition['code_competition']);
             $teams_count = count($teams);
             if ($teams_count % 2 == 1) {
                 $teams_count++;
@@ -665,7 +616,7 @@ class MatchManager extends Generic
                                                  'Jeudi',
                                                  'Vendredi',
                                                  'Samedi',
-                                                 'Dimanche') DAY, '%d/%m/%Y') AS computed_date
+                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date
                 FROM journees j
                   JOIN creneau cr ON cr.id = (SELECT MIN(creneau.id)
                                               FROM creneau
@@ -716,7 +667,7 @@ class MatchManager extends Generic
      * @param $query
      * @throws Exception
      */
-    private function deleteMatches($query)
+    public function deleteMatches($query)
     {
         $db = Database::openDbConnection();
         $sql = "DELETE FROM matches WHERE 1=1";
