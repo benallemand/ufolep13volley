@@ -3468,7 +3468,12 @@ function generateDays()
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
-            $rounds_counts[] = $teams_count - 1;
+            if ($code_competition == 'mo') {
+                // seule compétition retour
+                $rounds_counts[] = ($teams_count - 1) * 2;
+            } else {
+                $rounds_counts[] = $teams_count - 1;
+            }
         }
         for ($round_number = 1; $round_number <= max($rounds_counts); $round_number++) {
             $day_manager->insertDay(
