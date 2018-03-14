@@ -41,6 +41,9 @@ class SqlManager
     {
         $db = Database::openDbConnection();
         $req = mysqli_query($db, $sql);
+        if ($req === false) {
+            throw new Exception("Error during SQL request: " . mysqli_error($db));
+        }
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
