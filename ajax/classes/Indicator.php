@@ -1,18 +1,21 @@
 <?php
 
-require_once '../includes/fonctions_inc.php';
+require_once __DIR__ . '/../../includes/fonctions_inc.php';
 
-class Indicator {
+class Indicator
+{
 
     private $fieldLabel;
     private $sql;
 
-    function __construct($fieldLabel, $sql) {
+    function __construct($fieldLabel, $sql)
+    {
         $this->fieldLabel = $fieldLabel;
         $this->sql = $sql;
     }
 
-    function execSqlGetDetails() {
+    function execSqlGetDetails()
+    {
         global $db;
         conn_db();
         mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
@@ -25,7 +28,8 @@ class Indicator {
         return $results;
     }
 
-    function getResult() {
+    function getResult()
+    {
         $results = $this->execSqlGetDetails();
         return array(
             'fieldLabel' => $this->fieldLabel,

@@ -6,7 +6,7 @@
  * Date: 17/02/2017
  * Time: 10:33
  */
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class TeamManager extends Generic
 {
@@ -47,6 +47,11 @@ class TeamManager extends Generic
         return $sql;
     }
 
+    /**
+     * @param null $query
+     * @return array
+     * @throws Exception
+     */
     public function getTeams($query = null)
     {
         $db = Database::openDbConnection();
@@ -59,6 +64,11 @@ class TeamManager extends Generic
         return $results;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws Exception
+     */
     public function getTeam($id)
     {
         $results = $this->getTeams("e.id_equipe = $id");

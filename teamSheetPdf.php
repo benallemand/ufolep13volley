@@ -5,8 +5,8 @@ function toWellFormatted($string)
     return iconv('UTF-8', 'windows-1252', $string);
 }
 
-require_once './includes/fonctions_inc.php';
-require_once './libs/Fpdf/fpdf.php';
+require_once __DIR__ . '/./includes/fonctions_inc.php';
+require_once __DIR__ . '/./libs/Fpdf/fpdf.php';
 $id = filter_input(INPUT_GET, 'id');
 if ($id === NULL) {
     $id = $_SESSION['id_equipe'];

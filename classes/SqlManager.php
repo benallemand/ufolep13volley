@@ -1,8 +1,12 @@
 <?php
-require_once '../classes/Database.php';
+require_once __DIR__ . '/../classes/Database.php';
 
 class SqlManager
 {
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_accounts()
     {
         $sql = "SELECT
@@ -19,6 +23,10 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_activity()
     {
         $sql = "SELECT
@@ -37,6 +45,11 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @param $sql
+     * @return array
+     * @throws Exception
+     */
     public function getResults($sql)
     {
         $db = Database::openDbConnection();
@@ -51,6 +64,10 @@ class SqlManager
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_matches_not_reported()
     {
         $sql = "SELECT
@@ -85,6 +102,10 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_ids_team_requesting_next_matches()
     {
         $sql = "SELECT
@@ -95,6 +116,11 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @param $team_id
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_next_matches_for_team($team_id)
     {
         $sql = "SELECT
@@ -137,6 +163,11 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @param $team_id
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_email_from_team_id($team_id)
     {
         $sql = "SELECT j.email
@@ -148,6 +179,10 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_players_without_licence_number()
     {
         $sql = "SELECT
@@ -169,6 +204,10 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_team_leaders_without_email()
     {
         $sql = "SELECT DISTINCT
@@ -187,6 +226,10 @@ class SqlManager
         return $this->getResults($sql);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function sql_get_pending_reports()
     {
         $sql = "SELECT

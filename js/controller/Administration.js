@@ -362,7 +362,7 @@ Ext.define('Ufolep13Volley.overrides.view.Grid', {
             }
             t += '<Row>';
             var cellClass = (i & 1) ? 'odd' : 'even';
-            r = it[i].data;
+            var r = it[i].data;
             var k = 0;
             for (var j = 0; j < colCount; j++) {
                 if (cm[j].xtype != 'actioncolumn' && (cm[j].dataIndex != '') && (includeHidden || !cm[j].hidden)) {

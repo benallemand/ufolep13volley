@@ -8,7 +8,7 @@ try {
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/TimeSlotManager.php';
+    require_once __DIR__ . '/../classes/TimeSlotManager.php';
     $manager = new TimeSlotManager();
     $userDetails = $manager->getCurrentUserDetails();
     $profile = $userDetails['profile_name'];

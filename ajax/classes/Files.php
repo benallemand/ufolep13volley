@@ -1,10 +1,15 @@
 <?php
 
-require_once '../includes/db_inc.php';
+require_once __DIR__ . '/../../includes/db_inc.php';
 
 class Files
 {
 
+    /**
+     * @param $fileKey
+     * @param $uploadfile
+     * @throws Exception
+     */
     function uploadFile($fileKey, &$uploadfile)
     {
         if (empty($_FILES[$fileKey]['name'])) {
@@ -17,6 +22,11 @@ class Files
         }
     }
 
+    /**
+     * @param $uploadfile
+     * @param $id
+     * @throws Exception
+     */
     function insertFileInDb($uploadfile, &$id)
     {
         global $db;
@@ -32,6 +42,11 @@ class Files
         disconn_db();
     }
 
+    /**
+     * @param $fileKey
+     * @param $id
+     * @throws Exception
+     */
     function uploadAndInsertFileInDb($fileKey, &$id)
     {
         $uploadfile = null;

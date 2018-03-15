@@ -6,7 +6,7 @@
  * Date: 17/02/2017
  * Time: 10:33
  */
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class DayManager extends Generic
 {
@@ -75,6 +75,10 @@ class DayManager extends Generic
         return mysqli_insert_id($db);
     }
 
+    /**
+     * @param $query
+     * @throws Exception
+     */
     public function deleteDays($query)
     {
         $db = Database::openDbConnection();

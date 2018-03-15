@@ -68,7 +68,10 @@ var Base64 = {
     }, _utf8_decode: function (e) {
         var t = "";
         var n = 0;
-        var r = c1 = c2 = 0;
+        var r = 0;
+        var c1 = 0;
+        var c2 = 0;
+        var c3 = 0;
         while (n < e.length) {
             r = e.charCodeAt(n);
             if (r < 128) {
@@ -96,9 +99,9 @@ var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstr
 angular.module('filters', []).filter('zpad', function () {
     return function (input, n) {
         if (input === undefined)
-            input = ""
+            input = "";
         if (input.length >= n)
-            return input
+            return input;
         var zeros = "0".repeat(n);
         return (zeros + input).slice(-1 * n)
     };

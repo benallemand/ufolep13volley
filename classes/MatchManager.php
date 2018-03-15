@@ -6,7 +6,7 @@
  * Date: 17/02/2017
  * Time: 10:33
  */
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class MatchManager extends Generic
 {
@@ -365,7 +365,7 @@ class MatchManager extends Generic
         }
         if ($mark_sheet_received) {
             $this->declareSheetReceived($code_match);
-            require_once '../classes/Emails.php';
+            require_once __DIR__ . '/../classes/Emails.php';
             $emailManager = new Emails();
             $emailManager->sendMailSheetReceived($code_match);
         }
@@ -434,7 +434,7 @@ class MatchManager extends Generic
         }
         $code_competition = $competition['code_competition'];
         $this->deleteMatches("code_competition = '$code_competition'");
-        require_once '../classes/RankManager.php';
+        require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
         foreach ($divisions as $division) {
@@ -489,7 +489,7 @@ class MatchManager extends Generic
             }
             $round_number = 1;
             foreach ($rounds as $round) {
-                require_once '../classes/DayManager.php';
+                require_once __DIR__ . '/../classes/DayManager.php';
                 $day_manager = new DayManager();
                 $days = $day_manager->getDays(
                     "j.code_competition = '$code_competition' AND j.numero = $round_number"
@@ -629,7 +629,7 @@ class MatchManager extends Generic
             $results[] = $data;
         }
         if (count($results) == 0) {
-            require_once 'TeamManager.php';
+            require_once __DIR__ . '/TeamManager.php';
             $team_manager = new TeamManager();
             $team = $team_manager->getTeam($id_equipe_dom);
             $team_full_name = $team['team_full_name'];

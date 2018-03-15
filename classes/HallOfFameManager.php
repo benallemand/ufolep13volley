@@ -5,7 +5,7 @@
  * Date: 26/02/2018
  * Time: 14:28
  */
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class HallOfFameManager extends Generic
 {

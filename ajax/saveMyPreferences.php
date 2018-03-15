@@ -8,7 +8,7 @@ try {
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/UserManager.php';
+    require_once __DIR__ . '/../classes/UserManager.php';
     $manager = new UserManager();
     $userDetails = $manager->getCurrentUserDetails();
     $profile = $userDetails['profile_name'];

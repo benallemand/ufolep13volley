@@ -1,7 +1,7 @@
 <?php
 
-require_once '../classes/Emails.php';
-require_once '../classes/SqlManager.php';
+require_once __DIR__ . '/../classes/Emails.php';
+require_once __DIR__ . '/../classes/SqlManager.php';
 
 class CronTasks
 {
@@ -18,6 +18,11 @@ class CronTasks
     }
 
 
+    /**
+     * @param $message
+     * @return string
+     * @throws Exception
+     */
     private function getH1FromHtmlString($message)
     {
         $doc = new DomDocument;
@@ -32,6 +37,13 @@ class CronTasks
         return $h1NodeList->item(0)->textContent;
     }
 
+    /**
+     * @param $template_file_path
+     * @param $array_data_to_replace
+     * @param $destination_email
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendGenericEmail($template_file_path, $array_data_to_replace, $destination_email)
     {
         $message = file_get_contents($template_file_path);
@@ -59,6 +71,10 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailAccountRecap()
     {
         $accounts = $this->sql_manager->sql_get_accounts();
@@ -77,6 +93,10 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailActivity()
     {
         $activities = $this->sql_manager->sql_get_activity();
@@ -105,6 +125,10 @@ class CronTasks
         );
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailMatchesNotReported()
     {
         $matches_not_reported = $this->sql_manager->sql_get_matches_not_reported();
@@ -128,6 +152,10 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailNextMatches()
     {
         $teams = $this->sql_manager->sql_get_ids_team_requesting_next_matches();
@@ -185,6 +213,10 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailPlayersWithoutLicenceNumber()
     {
         $players_without_licence_number = $this->sql_manager->sql_get_players_without_licence_number();
@@ -205,6 +237,10 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailTeamLeadersWithoutEmail()
     {
         $team_leaders_without_email = $this->sql_manager->sql_get_team_leaders_without_email();
@@ -229,6 +265,10 @@ class CronTasks
         );
     }
 
+    /**
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailAlertReport()
     {
         $pending_reports = $this->sql_manager->sql_get_pending_reports();

@@ -6,10 +6,14 @@
  * Date: 17/02/2017
  * Time: 10:54
  */
-require_once 'Database.php';
+require_once __DIR__ . '/Database.php';
 
 class Generic
 {
+    /**
+     * @return mixed
+     * @throws Exception
+     */
     public function getCurrentUserDetails()
     {
         if (!(isset($_SESSION['login']))) {
@@ -21,6 +25,10 @@ class Generic
         return $_SESSION;
     }
 
+    /**
+     * @param $comment
+     * @throws Exception
+     */
     protected function addActivity($comment)
     {
         $userDetails = $this->getCurrentUserDetails();
@@ -45,6 +53,11 @@ class Generic
         return strtr($str, $unwanted_array);
     }
 
+    /**
+     * @param $id_team
+     * @return array
+     * @throws Exception
+     */
     public function getActivity($id_team)
     {
         $userDetails = $this->getCurrentUserDetails();

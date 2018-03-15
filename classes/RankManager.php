@@ -5,7 +5,7 @@
  * Date: 02/11/2017
  * Time: 15:51
  */
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class RankManager extends Generic
 {
@@ -281,6 +281,10 @@ class RankManager extends Generic
         return $results[0];
     }
 
+    /**
+     * @param $code_competition
+     * @throws Exception
+     */
     public function resetRankPoints($code_competition)
     {
         $db = Database::openDbConnection();

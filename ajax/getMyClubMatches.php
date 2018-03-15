@@ -8,12 +8,12 @@ try {
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $manager = new MatchManager();
     $userDetails = $manager->getCurrentUserDetails();
     $profile = $userDetails['profile_name'];
     $id_team = $userDetails['id_equipe'];
-    require_once '../classes/TeamManager.php';
+    require_once __DIR__ . '/../classes/TeamManager.php';
     $team_manager = new TeamManager();
     $team_details = $team_manager->getTeam($id_team);
     $id_club = $team_details['id_club'];

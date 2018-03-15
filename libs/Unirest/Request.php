@@ -230,6 +230,7 @@ class Request
      * @param string $username Authentication username (deprecated)
      * @param string $password Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function get($url, $headers = array(), $parameters = null, $username = null, $password = null)
     {
@@ -244,6 +245,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function head($url, $headers = array(), $parameters = null, $username = null, $password = null)
     {
@@ -258,6 +260,7 @@ class Request
      * @param string $username Basic Authentication username
      * @param string $password Basic Authentication password
      * @return Response
+     * @throws Exception
      */
     public static function options($url, $headers = array(), $parameters = null, $username = null, $password = null)
     {
@@ -272,6 +275,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function connect($url, $headers = array(), $parameters = null, $username = null, $password = null)
     {
@@ -286,6 +290,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response response
+     * @throws Exception
      */
     public static function post($url, $headers = array(), $body = null, $username = null, $password = null)
     {
@@ -300,6 +305,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function delete($url, $headers = array(), $body = null, $username = null, $password = null)
     {
@@ -314,6 +320,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function put($url, $headers = array(), $body = null, $username = null, $password = null)
     {
@@ -328,6 +335,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function patch($url, $headers = array(), $body = null, $username = null, $password = null)
     {
@@ -342,6 +350,7 @@ class Request
      * @param string $username Basic Authentication username (deprecated)
      * @param string $password Basic Authentication password (deprecated)
      * @return Response
+     * @throws Exception
      */
     public static function trace($url, $headers = array(), $body = null, $username = null, $password = null)
     {

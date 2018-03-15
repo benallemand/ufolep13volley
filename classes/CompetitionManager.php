@@ -1,5 +1,5 @@
 <?php
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class CompetitionManager extends Generic
 {
@@ -19,6 +19,11 @@ class CompetitionManager extends Generic
         return $sql;
     }
 
+    /**
+     * @param null $query
+     * @return array
+     * @throws Exception
+     */
     public function getCompetitions($query = null)
     {
         $db = Database::openDbConnection();
@@ -31,6 +36,11 @@ class CompetitionManager extends Generic
         return $results;
     }
 
+    /**
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
     public function isCompetitionOver($id)
     {
         $db = Database::openDbConnection();
@@ -52,6 +62,11 @@ class CompetitionManager extends Generic
         return false;
     }
 
+    /**
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
     public function isCompetitionStarted($id)
     {
         $db = Database::openDbConnection();

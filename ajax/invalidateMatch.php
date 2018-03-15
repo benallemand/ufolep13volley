@@ -1,6 +1,6 @@
 <?php
 
-require_once "../includes/fonctions_inc.php";
+require_once __DIR__ . "/../includes/fonctions_inc.php";
 
 $code_match = filter_input(INPUT_POST, 'code_match');
 $success = invalidateMatch($code_match);

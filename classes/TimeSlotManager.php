@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class TimeSlotManager extends Generic
 {
@@ -28,6 +28,11 @@ class TimeSlotManager extends Generic
         return $sql;
     }
 
+    /**
+     * @param null $query
+     * @return array
+     * @throws Exception
+     */
     public function getTimeSlots($query = null)
     {
         $db = Database::openDbConnection();
@@ -40,6 +45,11 @@ class TimeSlotManager extends Generic
         return $results;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws Exception
+     */
     public function getTimeSlot($id)
     {
         $results = $this->getTimeSlots("c.id = $id");

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'db_inc.php';
+require_once __DIR__ . '/db_inc.php';
 if (!isset($_SESSION)) {
     session_start();
 }
@@ -68,7 +68,7 @@ function createUser($login, $email, $idTeam)
         throw new Exception("Unable to create new account in database !");
     }
     addActivity("Creation du compte $login pour l'equipe " . getTeamName($idTeam));
-    require_once '../classes/Emails.php';
+    require_once __DIR__ . '/../classes/Emails.php';
     $emailManager = new Emails();
     $emailManager->sendMailNewUser($email, $login, $password, $idTeam);
 }
@@ -587,7 +587,7 @@ function getLastResults()
  */
 function check_team_allowed_to_ask_report($team_id, $match_code)
 {
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $match_manager = new MatchManager();
     $matches = $match_manager->getMatches("m.code_match = '$match_code'");
     $this_match = $matches[0];
@@ -631,7 +631,7 @@ function askForReport($code_match, $reason)
         return false;
     }
     addActivity("Report demandé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-    require_once '../classes/Emails.php';
+    require_once __DIR__ . '/../classes/Emails.php';
     $emailManager = new Emails();
     $emailManager->sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
     return true;
@@ -654,7 +654,7 @@ function giveReportDate($code_match, $report_date)
     if ($req === FALSE) {
         return false;
     }
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $match_manager = new MatchManager();
     $matches = $match_manager->getMatches("m.code_match = '$code_match'");
     $this_match = $matches[0];
@@ -664,12 +664,19 @@ function giveReportDate($code_match, $report_date)
         incrementReportCount($this_match['code_competition'], $this_match['id_equipe_dom']);
     }
     addActivity("Date de report transmise par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-    require_once '../classes/Emails.php';
+    require_once __DIR__ . '/../classes/Emails.php';
     $emailManager = new Emails();
     $emailManager->sendMailGiveReportDate($code_match, $report_date, $sessionIdEquipe);
     return true;
 }
 
+/**
+ * @param $code_match
+ * @param $reason
+ * @return bool
+ * @throws Exception
+ * @throws phpmailerException
+ */
 function refuseReport($code_match, $reason)
 {
     global $db;
@@ -687,7 +694,7 @@ function refuseReport($code_match, $reason)
             return false;
         }
         addActivity("Report refusé par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-        require_once '../classes/Emails.php';
+        require_once __DIR__ . '/../classes/Emails.php';
         $emailManager = new Emails();
         $emailManager->sendMailRefuseReport($code_match, $reason, $sessionIdEquipe);
     }
@@ -699,13 +706,19 @@ function refuseReport($code_match, $reason)
             return false;
         }
         addActivity("Report refusé par la commission pour le match $code_match");
-        require_once '../classes/Emails.php';
+        require_once __DIR__ . '/../classes/Emails.php';
         $emailManager = new Emails();
         $emailManager->sendMailRefuseReportAdmin($code_match);
     }
     return true;
 }
 
+/**
+ * @param $code_match
+ * @return bool
+ * @throws Exception
+ * @throws phpmailerException
+ */
 function acceptReport($code_match)
 {
     global $db;
@@ -723,7 +736,7 @@ function acceptReport($code_match)
             return false;
         }
         addActivity("Report accepté par " . getTeamName($sessionIdEquipe) . " pour le match $code_match");
-        require_once '../classes/Emails.php';
+        require_once __DIR__ . '/../classes/Emails.php';
         $emailManager = new Emails();
         $emailManager->sendMailAcceptReport($code_match, $sessionIdEquipe);
     }
@@ -735,7 +748,7 @@ function acceptReport($code_match)
             return false;
         }
         addActivity("Report refusé par la commission pour le match $code_match");
-        require_once '../classes/Emails.php';
+        require_once __DIR__ . '/../classes/Emails.php';
         $emailManager = new Emails();
         $emailManager->sendMailRefuseReportAdmin($code_match);
     }
@@ -3386,7 +3399,7 @@ function generateHallOfFame()
     }
     $ids = explode(',', $inputs['ids']);
     foreach ($ids as $id) {
-        require_once '../classes/CompetitionManager.php';
+        require_once __DIR__ . '/../classes/CompetitionManager.php';
         $competition_manager = new CompetitionManager();
         $competitions = $competition_manager->getCompetitions("c.id = $id");
         if (count($competitions) !== 1) {
@@ -3396,13 +3409,13 @@ function generateHallOfFame()
             throw new Exception("La compétition n'est pas terminée !!!");
         }
         $competition_date = DateTime::createFromFormat("d/m/Y", $competitions[0]['start_date']);
-        require_once '../classes/RankManager.php';
+        require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competitions[0]['code_competition']);
         foreach ($divisions as $division) {
             $leader = $rank_manager->getLeader($competitions[0]['code_competition'], $division['division']);
             $vice_leader = $rank_manager->getViceLeader($competitions[0]['code_competition'], $division['division']);
-            require_once '../classes/HallOfFameManager.php';
+            require_once __DIR__ . '/../classes/HallOfFameManager.php';
             $hall_of_fame_manager = new HallOfFameManager();
             if (intval($competition_date->format('m')) >= 9) {
                 $title_season = " mi-saison ";
@@ -3438,7 +3451,7 @@ function generateDays()
     }
     $ids = explode(',', $inputs['ids']);
     foreach ($ids as $id) {
-        require_once '../classes/CompetitionManager.php';
+        require_once __DIR__ . '/../classes/CompetitionManager.php';
         $competition_manager = new CompetitionManager();
         $competitions = $competition_manager->getCompetitions("c.id = $id");
         if (count($competitions) !== 1) {
@@ -3447,17 +3460,17 @@ function generateDays()
         if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
             throw new Exception("La compétition a déjà commencé !!!");
         }
-        require_once '../classes/RankManager.php';
+        require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $competition = $competitions[0];
         $code_competition = $competition['code_competition'];
         if (empty($competition['start_date'])) {
             throw new Exception("Date de début de compétition non renseignée");
         }
-        require_once '../classes/MatchManager.php';
+        require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
         $match_manager->deleteMatches("code_competition = '$code_competition'");
-        require_once '../classes/DayManager.php';
+        require_once __DIR__ . '/../classes/DayManager.php';
         $day_manager = new DayManager();
         $day_manager->deleteDays("code_competition = '$code_competition'");
         $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
@@ -3496,7 +3509,7 @@ function resetCompetition()
     }
     $ids = explode(',', $inputs['ids']);
     foreach ($ids as $id) {
-        require_once '../classes/CompetitionManager.php';
+        require_once __DIR__ . '/../classes/CompetitionManager.php';
         $competition_manager = new CompetitionManager();
         $competitions = $competition_manager->getCompetitions("c.id = $id");
         if (count($competitions) !== 1) {
@@ -3505,7 +3518,7 @@ function resetCompetition()
         if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
             throw new Exception("La compétition a déjà commencé !!!");
         }
-        require_once '../classes/RankManager.php';
+        require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $competition = $competitions[0];
         $code_competition = $competition['code_competition'];
@@ -3524,7 +3537,7 @@ function generateMatches()
     }
     $ids = explode(',', $inputs['ids']);
     foreach ($ids as $id) {
-        require_once '../classes/CompetitionManager.php';
+        require_once __DIR__ . '/../classes/CompetitionManager.php';
         $competition_manager = new CompetitionManager();
         $competitions = $competition_manager->getCompetitions("c.id = $id");
         if (count($competitions) !== 1) {
@@ -3533,7 +3546,7 @@ function generateMatches()
         if ($competition_manager->isCompetitionStarted($competitions[0]['id'])) {
             throw new Exception("La compétition a déjà commencé !!!");
         }
-        require_once '../classes/MatchManager.php';
+        require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
         $competition = $competitions[0];
         $match_manager->generateMatches($competition);
