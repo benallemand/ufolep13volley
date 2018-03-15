@@ -730,6 +730,7 @@ class PHPMailer
      * @param string $address
      * @param string $name
      * @return boolean true on success, false if address already used
+     * @throws phpmailerException
      */
     public function addAddress($address, $name = '')
     {
@@ -742,6 +743,7 @@ class PHPMailer
      * @param string $address
      * @param string $name
      * @return boolean true on success, false if address already used
+     * @throws phpmailerException
      */
     public function addCC($address, $name = '')
     {
@@ -754,6 +756,7 @@ class PHPMailer
      * @param string $address
      * @param string $name
      * @return boolean true on success, false if address already used
+     * @throws phpmailerException
      */
     public function addBCC($address, $name = '')
     {
@@ -765,6 +768,7 @@ class PHPMailer
      * @param string $address
      * @param string $name
      * @return boolean
+     * @throws phpmailerException
      */
     public function addReplyTo($address, $name = '')
     {
@@ -2967,7 +2971,7 @@ class PHPMailer
     public function html2text($html, $advanced = false)
     {
         if ($advanced) {
-            require_once 'extras/class.html2text.php';
+            require_once __DIR__ . '/extras/class.html2text.php';
             $htmlconverter = new html2text($html);
             return $htmlconverter->get_text();
         }

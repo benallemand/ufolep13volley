@@ -1,6 +1,6 @@
 <?php
 
-require_once "../includes/fonctions_inc.php";
+require_once __DIR__ . "/../includes/fonctions_inc.php";
 try {
     saveTeam();
 } catch (Exception $ex) {

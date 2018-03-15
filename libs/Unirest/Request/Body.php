@@ -27,6 +27,11 @@ class Body
         return sprintf('@%s;filename=%s;type=%s', $filename, $postname ?: basename($filename), $mimetype);
     }
 
+    /**
+     * @param $data
+     * @return string
+     * @throws Exception
+     */
     public static function Json($data)
     {
         if (!function_exists('json_encode')) {

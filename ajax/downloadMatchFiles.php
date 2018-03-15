@@ -1,7 +1,7 @@
 <?php
 
 try {
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $manager = new MatchManager();
     $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
     $inputs = filter_input_array(INPUT_GET);

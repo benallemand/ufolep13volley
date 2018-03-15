@@ -1,7 +1,7 @@
 
 <?php
 
-require_once "../includes/fonctions_inc.php";
+require_once __DIR__ . "/../includes/fonctions_inc.php";
 
 $idPlayers = filter_input(INPUT_POST, 'id_players');
 $idTeam = filter_input(INPUT_POST, 'id_team');

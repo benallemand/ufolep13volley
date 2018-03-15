@@ -3,7 +3,7 @@ session_start();
 ?>
 <ul class="nav navbar-nav navbar-right">
     <?php
-    require_once '../../includes/fonctions_inc.php';
+    require_once __DIR__ . '/../../includes/fonctions_inc.php';
     if (isset($_SESSION['login']) && $_SESSION['profile_name'] != 'ADMINISTRATEUR') {
         $userName = $_SESSION['login'];
         $team = json_decode(getTeam($_SESSION['id_equipe']));

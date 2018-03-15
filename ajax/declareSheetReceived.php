@@ -8,7 +8,7 @@ try {
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $code_match = filter_input(INPUT_POST, 'code_match');
     $manager = new MatchManager();
     $manager->declareSheetReceived($code_match);

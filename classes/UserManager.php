@@ -1,9 +1,13 @@
 <?php
 
-require_once 'Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 class UserManager extends Generic
 {
+    /**
+     * @return array
+     * @throws Exception
+     */
     function getMyPreferences()
     {
         $db = Database::openDbConnection();
@@ -20,6 +24,10 @@ class UserManager extends Generic
         return $results;
     }
 
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function modifyMyPassword()
     {
         $db = Database::openDbConnection();
@@ -45,6 +53,10 @@ class UserManager extends Generic
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function saveMyPreferences()
     {
         $db = Database::openDbConnection();
@@ -71,6 +83,11 @@ class UserManager extends Generic
         return true;
     }
 
+    /**
+     * @param $key
+     * @return bool
+     * @throws Exception
+     */
     private function isRegistryKeyPresent($key)
     {
         $db = Database::openDbConnection();

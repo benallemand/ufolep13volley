@@ -8,7 +8,7 @@ try {
         default:
             throw new Exception("Request not allowed");
     }
-    require_once '../classes/MatchManager.php';
+    require_once __DIR__ . '/../classes/MatchManager.php';
     $manager = new MatchManager();
     $compet = filter_input(INPUT_GET, 'competition');
     $div = filter_input(INPUT_GET, 'division');

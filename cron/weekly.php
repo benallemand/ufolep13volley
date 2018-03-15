@@ -1,6 +1,6 @@
 <?php
 try {
-    require_once '../classes/CronTasks.php';
+    require_once __DIR__ . '/../classes/CronTasks.php';
     $cron_tasks = new CronTasks();
     $cron_tasks->sendMailMatchesNotReported();
     $cron_tasks->sendMailNextMatches();

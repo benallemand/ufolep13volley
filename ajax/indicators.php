@@ -2,6 +2,13 @@
 
 header('Content-Type: text/html; charset=utf-8');
 
+/**
+ * @param $data
+ * @param string $delimiter
+ * @param string $enclosure
+ * @return string
+ * @throws Exception
+ */
 function generateCsv($data, $delimiter = ';', $enclosure = '"')
 {
     $contents = '';
@@ -28,7 +35,7 @@ function generateCsv($data, $delimiter = ';', $enclosure = '"')
     return $contents;
 }
 
-require_once 'classes/Indicator.php';
+require_once __DIR__ . '/classes/Indicator.php';
 
 
 $indicatorPossibleDuplicatePlayers = new Indicator(
@@ -372,7 +379,10 @@ if (!$indicatorName) {
 }
 foreach ($results as $result) {
     if ($result['fieldLabel'] === $indicatorName) {
-        echo generateCsv($result['details']);
+        try {
+            echo generateCsv($result['details']);
+        } catch (Exception $e) {
+        }
         exit();
     }
 }

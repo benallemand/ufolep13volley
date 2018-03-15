@@ -1,12 +1,23 @@
 <?php
 
-require_once '../includes/fonctions_inc.php';
-require_once '../classes/Configuration.php';
-require_once '../libs/php/PHPMailer/PHPMailerAutoload.php';
+require_once __DIR__ . '/../includes/fonctions_inc.php';
+require_once __DIR__ . '/../classes/Configuration.php';
+require_once __DIR__ . '/../libs/php/PHPMailer/PHPMailerAutoload.php';
 
 class Emails
 {
 
+    /**
+     * @param $subject
+     * @param $body
+     * @param $from
+     * @param $to
+     * @param null $cc
+     * @param null $bcc
+     * @param null $attachments
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
     {
         $mail = new PHPMailer();
@@ -14,8 +25,8 @@ class Emails
         switch ($serverName) {
             case 'localhost':
                 return;
-                $mail->isSMTP();
-                break;
+            //$mail->isSMTP();
+            //break;
             default:
                 $mail->isSendmail();
                 break;
@@ -56,6 +67,14 @@ class Emails
     }
 
 
+    /**
+     * @param $email
+     * @param $login
+     * @param $password
+     * @param $idTeam
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailNewUser($email, $login, $password, $idTeam)
     {
         $teamName = getTeamName($idTeam);
@@ -68,6 +87,13 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Identifiants de connexion", $message, 'no-reply@ufolep13volley.org', $email);
     }
 
+    /**
+     * @param $code_match
+     * @param $reason
+     * @param $id_team
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailAskForReport($code_match, $reason, $id_team)
     {
         $teamName = getTeamName($id_team);
@@ -82,6 +108,13 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
+    /**
+     * @param $code_match
+     * @param $report_date
+     * @param $id_team
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailGiveReportDate($code_match, $report_date, $id_team)
     {
         $teamName = getTeamName($id_team);
@@ -96,6 +129,13 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
+    /**
+     * @param $code_match
+     * @param $reason
+     * @param $id_team
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailRefuseReport($code_match, $reason, $id_team)
     {
         $teamName = getTeamName($id_team);
@@ -110,6 +150,12 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
+    /**
+     * @param $code_match
+     * @param $id_team
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailAcceptReport($code_match, $id_team)
     {
         $teamName = getTeamName($id_team);
@@ -123,6 +169,11 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailRefuseReportAdmin($code_match)
     {
         $teams_emails = getTeamsEmailsFromMatchReport($code_match);
@@ -134,10 +185,15 @@ class Emails
         $this->sendEmail("[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
     }
 
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws phpmailerException
+     */
     public function sendMailSheetReceived($code_match)
     {
         $teams_emails = getTeamsEmailsFromMatch($code_match);
-        require_once "MatchManager.php";
+        require_once __DIR__ . "/MatchManager.php";
         $match_manager = new MatchManager();
         $matches = $match_manager->getMatches("m.code_match = '$code_match'");
         $id_match = $matches[0]['id_match'];

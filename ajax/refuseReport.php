@@ -1,14 +1,24 @@
 <?php
+try {
+    require_once __DIR__ . "/../includes/fonctions_inc.php";
 
-require_once "../includes/fonctions_inc.php";
+    $code_match = filter_input(INPUT_POST, 'code_match');
+    $reason = filter_input(INPUT_POST, 'reason');
 
-$success = false;
+    $success = refuseReport($code_match, $reason);
+    echo json_encode(array(
+        'success' => true,
+        'message' => 'Modification OK'
+    ));
+} catch (phpmailerException $e) {
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Erreur durant la modification'
+    ));
+} catch (Exception $e) {
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Erreur durant la modification'
+    ));
+}
 
-$code_match = filter_input(INPUT_POST, 'code_match');
-$reason = filter_input(INPUT_POST, 'reason');
-$success = refuseReport($code_match, $reason);
-
-echo json_encode(array(
-    'success' => $success,
-    'message' => $success ? 'Modification OK' : 'Erreur durant la modification'
-));

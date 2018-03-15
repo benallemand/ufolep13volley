@@ -440,7 +440,7 @@ class SMTP
                  * http://technet.microsoft.com/en-us/library/aa995718%28EXCHG.65%29.aspx
                  * PROTOCOL Docs http://curl.haxx.se/rfc/ntlm.html#ntlmSmtpAuthentication
                  */
-                require_once 'extras/ntlm_sasl_client.php';
+                require_once __DIR__ . '/extras/ntlm_sasl_client.php';
                 $temp = new stdClass();
                 $ntlm_client = new ntlm_sasl_client_class;
                 //Check that functions are available
