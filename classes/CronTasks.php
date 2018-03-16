@@ -80,7 +80,7 @@ class CronTasks
         $accounts = $this->sql_manager->sql_get_accounts();
         foreach ($accounts as $current_data) {
             $this->sendGenericEmail(
-                '../templates/emails/sendMailAccountRecap.fr.html',
+                __DIR__ . '/../templates/emails/sendMailAccountRecap.fr.html',
                 array(
                     'email' => $current_data['email'],
                     'login' => $current_data['login'],
@@ -115,7 +115,7 @@ class CronTasks
         </tr>";
         }
         $this->sendGenericEmail(
-            '../templates/emails/sendMailActivity.fr.html',
+            __DIR__ . '/../templates/emails/sendMailActivity.fr.html',
             array(
                 'activity' => $string_activities
             ),
@@ -141,7 +141,7 @@ class CronTasks
                 $match_not_reported['responsable_visiteur']
             ));
             $this->sendGenericEmail(
-                '../templates/emails/sendMailMatchNotReported.fr.html',
+                __DIR__ . '/../templates/emails/sendMailMatchNotReported.fr.html',
                 array(
                     'equipe_reception' => $match_not_reported['equipe_reception'],
                     'equipe_visiteur' => $match_not_reported['equipe_visiteur'],
@@ -204,7 +204,7 @@ class CronTasks
                 continue;
             }
             $this->sendGenericEmail(
-                '../templates/emails/sendMailNextMatches.fr.html',
+                __DIR__ . '/../templates/emails/sendMailNextMatches.fr.html',
                 array(
                     'next_matches' => $html_next_matches
                 ),
@@ -225,7 +225,7 @@ class CronTasks
         }
         foreach ($players_without_licence_number as $players_without_licence_number_per_leader) {
             $this->sendGenericEmail(
-                '../templates/emails/sendMailPlayersWithoutLicenceNumber.fr.html',
+                __DIR__ . '/../templates/emails/sendMailPlayersWithoutLicenceNumber.fr.html',
                 array(
                     'joueurs' => $players_without_licence_number_per_leader['joueurs'],
                     'club' => $players_without_licence_number_per_leader['club'],
@@ -257,7 +257,7 @@ class CronTasks
         </tr>";
         }
         $this->sendGenericEmail(
-            '../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
+            __DIR__ . '/../templates/emails/sendMailTeamLeadersWithoutEmail.fr.html',
             array(
                 'team_leaders_without_email' => $string_team_leaders_without_email
             ),
@@ -281,7 +281,7 @@ class CronTasks
                 $pending_report['email_guest']
             ));
             $this->sendGenericEmail(
-                '../templates/emails/sendMailAlertReport.fr.html',
+                __DIR__ . '/../templates/emails/sendMailAlertReport.fr.html',
                 array(
                     'match_reference' => $pending_report['match_reference'],
                     'team_home' => $pending_report['team_home'],
