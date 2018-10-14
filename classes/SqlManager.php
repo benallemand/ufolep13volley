@@ -40,7 +40,7 @@ class SqlManager
                 LEFT JOIN comptes_acces ca ON ca.id=a.user_id
                 LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
                 LEFT JOIN competitions c ON c.code_competition=e.code_competition
-                WHERE a.activity_date > DATE_SUB(NOW(), INTERVAL 2 DAY)
+                WHERE a.activity_date > DATE_SUB(NOW(), INTERVAL 1 DAY)
                 ORDER BY a.id DESC";
         return $this->getResults($sql);
     }
