@@ -498,7 +498,11 @@ class MatchManager extends Generic
             if ($is_mirror_needed) {
                 $mirror_rounds = array();
                 foreach ($rounds as $round) {
-                    $mirror_rounds[] = $this->flip($round);
+                    $mirror_matchs = array();
+                    foreach ($round as $match) {
+                        $mirror_matchs[] = $this->flip($match);
+                    }
+                    $mirror_rounds[] = $mirror_matchs;
                 }
                 foreach ($mirror_rounds as $mirror_round) {
                     $rounds[] = $mirror_round;
