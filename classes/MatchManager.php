@@ -433,6 +433,14 @@ class MatchManager extends Generic
             throw new Exception("Compétition non trouvée !");
         }
         $code_competition = $competition['code_competition'];
+        switch ($code_competition) {
+            case 'mo':
+                $is_mirror_needed = true;
+                break;
+            default:
+                $is_mirror_needed = false;
+                break;
+        }
         $this->deleteMatches("code_competition = '$code_competition'");
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
@@ -485,6 +493,15 @@ class MatchManager extends Generic
             for ($round = 0; $round < sizeof($rounds); $round++) {
                 if ($round % 2 == 1) {
                     $rounds[$round][0] = $this->flip($rounds[$round][0]);
+                }
+            }
+            if ($is_mirror_needed) {
+                $mirror_rounds = array();
+                foreach ($rounds as $round) {
+                    $mirror_rounds[] = $this->flip($round);
+                }
+                foreach ($mirror_rounds as $mirror_round) {
+                    $rounds[] = $mirror_round;
                 }
             }
             $round_number = 1;
