@@ -2515,7 +2515,8 @@ function getGymnasiums()
         code_postal, 
         ville, 
         gps, 
-        CONCAT(ville, ' - ', nom, ' - ', adresse) AS full_name 
+        CONCAT(ville, ' - ', nom, ' - ', adresse) AS full_name,
+        nb_terrain
         FROM gymnase
         ORDER BY ville, nom, adresse";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -2666,7 +2667,8 @@ function saveGymnasium()
         'adresse' => filter_input(INPUT_POST, 'adresse'),
         'code_postal' => filter_input(INPUT_POST, 'code_postal'),
         'ville' => filter_input(INPUT_POST, 'ville'),
-        'gps' => filter_input(INPUT_POST, 'gps')
+        'gps' => filter_input(INPUT_POST, 'gps'),
+        'nb_terrain' => filter_input(INPUT_POST, 'nb_terrain')
     );
     conn_db();
     if (empty($inputs['id'])) {
@@ -2685,6 +2687,9 @@ function saveGymnasium()
                 } else {
                     $sql .= "$key = $value,";
                 }
+                break;
+            case 'nb_terrain':
+                $sql .= "$key = $value,";
                 break;
             default:
                 $sql .= "$key = '$value',";

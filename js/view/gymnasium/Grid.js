@@ -21,6 +21,11 @@ Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
                 header: 'Ville',
                 dataIndex: 'ville',
                 width: 300
+            },
+            {
+                header: 'Terrains',
+                dataIndex: 'nb_terrain',
+                width: 300
             }
         ]
     },

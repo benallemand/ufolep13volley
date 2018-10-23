@@ -53,6 +53,15 @@ Ext.define('Ufolep13Volley.view.gymnasium.Edit', {
                 fieldLabel: 'GPS',
                 allowBlank: false,
                 msgTarget: 'under'
+            },
+            {
+                xtype: 'numberfield',
+                name: 'nb_terrain',
+                fieldLabel: 'Nombre de terrains',
+                allowBlank: false,
+                minValue: 1,
+                maxValue: 6,
+                msgTarget: 'under'
             }
         ],
         buttons: [
@@ -64,7 +73,7 @@ Ext.define('Ufolep13Volley.view.gymnasium.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function() {
+                handler: function () {
                     this.up('window').close();
                 }
             }

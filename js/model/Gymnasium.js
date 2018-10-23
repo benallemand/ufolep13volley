@@ -10,6 +10,10 @@ Ext.define('Ufolep13Volley.model.Gymnasium', Sencha.modelCompatibility({
         {
             name: 'id',
             type: 'int'
+        },
+        {
+            name: 'nb_terrain',
+            type: 'int'
         }
     ]
 }));
