@@ -88,4 +88,25 @@ class CompetitionManager extends Generic
         return false;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getBlacklistGymnase()
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT  bg.id, 
+                        bg.id_gymnase, 
+                        CONCAT(g.nom, ' (', g.ville, ')') AS libelle_gymnase,
+                        DATE_FORMAT(bg.closed_date, '%d/%m/%Y') AS closed_date 
+                FROM blacklist_gymnase bg
+                JOIN gymnase g on bg.id_gymnase = g.id";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return $results;
+    }
+
 }

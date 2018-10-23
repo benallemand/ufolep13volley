@@ -111,6 +111,10 @@ Ext.application({
                                         text: 'Palmarès',
                                         glyph: 'xe906@icomoon',
                                         action: 'displayHallOfFame'
+                                    },
+                                    {
+                                        text: 'Gestion des dates blacklistées',
+                                        action: 'displayBlacklistGymnase'
                                     }
                                 ]
                             },
