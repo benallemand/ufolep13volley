@@ -445,6 +445,7 @@ class MatchManager extends Generic
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
+        $exceptions = array();
         foreach ($divisions as $division) {
             $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
                 $division['division'],
@@ -526,56 +527,68 @@ class MatchManager extends Generic
                         strval($round_number) .
                         strval($match_number);
                     $match_number++;
-                    $index_teams = explode('v', $match);
-                    if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
-                        continue;
-                    }
-                    $team_dom = $teams[intval($index_teams[0])];
-                    $team_ext = $teams[intval($index_teams[1])];
-                    if ($team_dom['has_timeslot'] == '0') {
-                        if ($team_ext['has_timeslot'] == '0') {
-                            $dom_full_name = $team_dom['team_full_name'];
-                            $ext_full_name = $team_ext['team_full_name'];
-                            throw new Exception("$dom_full_name et $ext_full_name n'ont pas de créneau de réception");
+                    try {
+                        $index_teams = explode('v', $match);
+                        if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
+                            continue;
                         }
-                        $team_dom = $teams[intval($index_teams[1])];
-                        $team_ext = $teams[intval($index_teams[0])];
-                    }
-                    $computed_date = $this->getComputedDate($id_journee, $team_dom['id_equipe']);
-                    if ($this->isDateFilled($computed_date, $team_dom['id_equipe'])) {
-                        if ($team_ext['has_timeslot'] == '0') {
-                            $dom_full_name = $team_dom['team_full_name'];
-                            $ext_full_name = $team_ext['team_full_name'];
-                            throw new Exception("$ext_full_name n'a pas de créneau de réception et le créneau de réception de $dom_full_name est plein le $computed_date");
+                        $team_dom = $teams[intval($index_teams[0])];
+                        $team_ext = $teams[intval($index_teams[1])];
+                        if ($team_dom['has_timeslot'] == '0') {
+                            if ($team_ext['has_timeslot'] == '0') {
+                                $dom_full_name = $team_dom['team_full_name'];
+                                $ext_full_name = $team_ext['team_full_name'];
+                                throw new Exception("$code_match : $dom_full_name et $ext_full_name n'ont pas de créneau de réception");
+                            }
+                            $team_dom = $teams[intval($index_teams[1])];
+                            $team_ext = $teams[intval($index_teams[0])];
                         }
-                        $computed_date = $this->getComputedDate($id_journee, $team_ext['id_equipe']);
-                        if ($this->isDateFilled($computed_date, $team_ext['id_equipe'])) {
-                            $dom_full_name = $team_dom['team_full_name'];
-                            $ext_full_name = $team_ext['team_full_name'];
-                            throw new Exception("Les créneaux de réception de $ext_full_name contre $dom_full_name sont pleins le $computed_date");
+                        $computed_date = $this->getComputedDate($id_journee, $team_dom['id_equipe']);
+                        if ($this->isDateFilled($computed_date, $team_dom['id_equipe']) ||
+                            $this->isDateBlacklisted($computed_date, $team_dom['id_equipe'])) {
+                            if ($team_ext['has_timeslot'] == '0') {
+                                $dom_full_name = $team_dom['team_full_name'];
+                                $ext_full_name = $team_ext['team_full_name'];
+                                throw new Exception("$code_match : $ext_full_name n'a pas de créneau de réception et le créneau de réception de $dom_full_name est plein le $computed_date");
+                            }
+                            $computed_date = $this->getComputedDate($id_journee, $team_ext['id_equipe']);
+                            if ($this->isDateFilled($computed_date, $team_ext['id_equipe']) ||
+                                $this->isDateBlacklisted($computed_date, $team_ext['id_equipe'])) {
+                                $dom_full_name = $team_dom['team_full_name'];
+                                $ext_full_name = $team_ext['team_full_name'];
+                                throw new Exception("$code_match : Les créneaux de réception de $ext_full_name contre $dom_full_name sont pleins le $computed_date");
+                            }
+                            $this->insertMatch(
+                                $code_match,
+                                $competition['code_competition'],
+                                $division['division'],
+                                $team_ext['id_equipe'],
+                                $team_dom['id_equipe'],
+                                $id_journee
+                            );
+                        } else {
+                            $this->insertMatch(
+                                $code_match,
+                                $competition['code_competition'],
+                                $division['division'],
+                                $team_dom['id_equipe'],
+                                $team_ext['id_equipe'],
+                                $id_journee
+                            );
                         }
-                        $this->insertMatch(
-                            $code_match,
-                            $competition['code_competition'],
-                            $division['division'],
-                            $team_ext['id_equipe'],
-                            $team_dom['id_equipe'],
-                            $id_journee
-                        );
-                    } else {
-                        $this->insertMatch(
-                            $code_match,
-                            $competition['code_competition'],
-                            $division['division'],
-                            $team_dom['id_equipe'],
-                            $team_ext['id_equipe'],
-                            $id_journee
-                        );
+                    } catch (Exception $e) {
+                        $exceptions[] = $e->getMessage();
                     }
-
                 }
                 $round_number++;
             }
+        }
+        if (count($exceptions) > 0) {
+            $message = count($exceptions) . " erreur(s) pendant la génération : <br>";
+            foreach ($exceptions as $exception) {
+                $message .= $exception . "<br>";
+            }
+            throw new Exception($message);
         }
     }
 
@@ -699,6 +712,32 @@ class MatchManager extends Generic
         if ($req === FALSE) {
             throw new Exception("Erreur durant l'effacement: " . mysqli_error($db));
         }
+    }
+
+    private function isDateBlacklisted($computed_date, $id_equipe)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM blacklist_gymnase 
+                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')
+                AND id_gymnase IN (
+                    SELECT id_gymnase 
+                    FROM creneau 
+                    WHERE id_equipe = $id_equipe
+                    AND jour = ELT(WEEKDAY(closed_date) + 2,
+                                           'Dimanche',
+                                           'Lundi',
+                                           'Mardi',
+                                           'Mercredi',
+                                           'Jeudi',
+                                           'Vendredi',
+                                           'Samedi'))";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return (count($results) > 0);
     }
 
 
