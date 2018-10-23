@@ -348,9 +348,22 @@ FROM matches
   JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
-ORDER BY COUNT(DISTINCT matches.id_match) DESC
-    "
-);
+ORDER BY COUNT(DISTINCT matches.id_match) DESC");
+
+$indicatorTooMuchMatchesByGymnasiumByDate = new Indicator(
+    'Nombre de matches trop élevés par date et par gymnase', "SELECT
+  gymnase.ville AS \"Ville\",
+  gymnase.nom AS \"Gymnase\",
+  matches.date_reception AS \"Date\",
+  COUNT(DISTINCT matches.id_match) AS \"Nombre de matches\",
+  gymnase.nb_terrain AS \"Nombre de terrains\",
+  GROUP_CONCAT(DISTINCT matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
+FROM matches
+  JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
+  JOIN gymnase ON gymnase.id = creneau.id_gymnase
+GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
+HAVING COUNT(DISTINCT matches.id_match) > gymnase.nb_terrain
+ORDER BY COUNT(DISTINCT matches.id_match) DESC");
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -371,6 +384,7 @@ $results[] = $indicatorTimeSlotWithConstraint->getResult();
 $results[] = $indicatorTeamLeadersByChamp->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamLeader->getResult();
 $results[] = $indicatorMatchesByGymnasiumByDate->getResult();
+$results[] = $indicatorTooMuchMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
