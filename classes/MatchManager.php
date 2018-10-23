@@ -680,7 +680,30 @@ class MatchManager extends Generic
      */
     private function isDateFilled($computed_date, $id_equipe)
     {
+        // Chercher le gymnase de réception
         $db = Database::openDbConnection();
+        $sql = "SELECT * FROM gymnase WHERE id IN (
+                    SELECT id_gymnase 
+                    FROM creneau 
+                    WHERE id_equipe = $id_equipe
+                    AND jour = ELT(WEEKDAY(STR_TO_DATE('$computed_date', '%d/%m/%Y')) + 2,
+                                           'Dimanche',
+                                           'Lundi',
+                                           'Mardi',
+                                           'Mercredi',
+                                           'Jeudi',
+                                           'Vendredi',
+                                           'Samedi'))";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        $nb_terrain = 0;
+        foreach ($results as $result) {
+            $nb_terrain += $result['nb_terrain'];
+        }
+        // Trouver les matchs déjà joués ce soir là
         $sql = "SELECT cr.id_gymnase
                 FROM matches m
                   JOIN equipes e ON e.id_equipe = m.id_equipe_dom
@@ -694,7 +717,7 @@ class MatchManager extends Generic
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        return (count($results) > 2);
+        return (count($results) >= $nb_terrain);
     }
 
     /**
