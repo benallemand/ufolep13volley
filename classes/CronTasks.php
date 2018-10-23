@@ -120,7 +120,7 @@ class CronTasks
                 'activity' => $string_activities
             ),
             implode(";", array(
-                "philipvolley@free.fr"
+                "contact@ufolep13volley.org"
             ))
         );
     }
