@@ -2200,6 +2200,9 @@ function savePlayer()
             case 'id_club':
                 $sql .= "$key = $value,";
                 break;
+            case 'date_homologation':
+                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                break;
             case 'est_actif':
             case 'est_responsable_club':
             case 'show_photo':
