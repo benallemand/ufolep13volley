@@ -117,7 +117,7 @@ $indicatorEquipesEngageesChampionnat = new Indicator(
         JOIN clubs ON clubs.id=e.id_club
         JOIN competitions comp ON comp.code_competition=e.code_competition
         JOIN classements c ON c.id_equipe=e.id_equipe AND c.code_competition=e.code_competition
-        WHERE ((e.code_competition='m' OR e.code_competition='f') AND c.division IS NOT NULL)
+        WHERE ((e.code_competition='m' OR e.code_competition='f' OR e.code_competition='mo') AND c.division IS NOT NULL)
         GROUP BY id
         ORDER BY e.code_competition, c.division, e.id_equipe");
 
