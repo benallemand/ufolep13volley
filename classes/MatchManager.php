@@ -509,78 +509,27 @@ class MatchManager extends Generic
                     $rounds[] = $mirror_round;
                 }
             }
-            $round_number = 1;
+            $to_be_inserted_matches = array();
             foreach ($rounds as $round) {
-                require_once __DIR__ . '/../classes/DayManager.php';
-                $day_manager = new DayManager();
-                $days = $day_manager->getDays(
-                    "j.code_competition = '$code_competition' AND j.numero = $round_number"
-                );
-                if (count($days) == 0) {
-                    throw new Exception("Journée non trouvée pour la competition $code_competition, journée $round_number");
-                }
-                $id_journee = $days[0]['id'];
-                $match_number = 1;
                 foreach ($round as $match) {
-                    $code_match = strtoupper($competition['code_competition']) .
-                        $division['division'] .
-                        strval($round_number) .
-                        strval($match_number);
-                    $match_number++;
-                    try {
-                        $index_teams = explode('v', $match);
-                        if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
-                            continue;
-                        }
-                        $team_dom = $teams[intval($index_teams[0])];
-                        $team_ext = $teams[intval($index_teams[1])];
-                        if ($team_dom['has_timeslot'] == '0') {
-                            if ($team_ext['has_timeslot'] == '0') {
-                                $dom_full_name = $team_dom['team_full_name'];
-                                $ext_full_name = $team_ext['team_full_name'];
-                                throw new Exception("$code_match : $dom_full_name et $ext_full_name n'ont pas de créneau de réception");
-                            }
-                            $team_dom = $teams[intval($index_teams[1])];
-                            $team_ext = $teams[intval($index_teams[0])];
-                        }
-                        $computed_date = $this->getComputedDate($id_journee, $team_dom['id_equipe']);
-                        if ($this->isDateFilled($computed_date, $team_dom['id_equipe']) ||
-                            $this->isDateBlacklisted($computed_date, $team_dom['id_equipe'])) {
-                            if ($team_ext['has_timeslot'] == '0') {
-                                $dom_full_name = $team_dom['team_full_name'];
-                                $ext_full_name = $team_ext['team_full_name'];
-                                throw new Exception("$code_match : $ext_full_name n'a pas de créneau de réception et le créneau de réception de $dom_full_name est plein le $computed_date");
-                            }
-                            $computed_date = $this->getComputedDate($id_journee, $team_ext['id_equipe']);
-                            if ($this->isDateFilled($computed_date, $team_ext['id_equipe']) ||
-                                $this->isDateBlacklisted($computed_date, $team_ext['id_equipe'])) {
-                                $dom_full_name = $team_dom['team_full_name'];
-                                $ext_full_name = $team_ext['team_full_name'];
-                                throw new Exception("$code_match : Les créneaux de réception de $ext_full_name contre $dom_full_name sont pleins le $computed_date");
-                            }
-                            $this->insertMatch(
-                                $code_match,
-                                $competition['code_competition'],
-                                $division['division'],
-                                $team_ext['id_equipe'],
-                                $team_dom['id_equipe'],
-                                $id_journee
-                            );
-                        } else {
-                            $this->insertMatch(
-                                $code_match,
-                                $competition['code_competition'],
-                                $division['division'],
-                                $team_dom['id_equipe'],
-                                $team_ext['id_equipe'],
-                                $id_journee
-                            );
-                        }
-                    } catch (Exception $e) {
-                        $exceptions[] = $e->getMessage();
+                    $index_teams = explode('v', $match);
+                    if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
+                        continue;
                     }
+                    $team_dom = $teams[intval($index_teams[0])];
+                    $team_ext = $teams[intval($index_teams[1])];
+                    $to_be_inserted_matches[] = array(
+                        'dom' => $team_dom,
+                        'ext' => $team_ext,
+                        'competition' => $competition,
+                        'division' => $division
+                    );
                 }
-                $round_number++;
+            }
+            try {
+                $this->insert_matches($to_be_inserted_matches);
+            } catch (Exception $e) {
+                $exceptions[] = $e->getMessage();
             }
         }
         if (count($exceptions) > 0) {
@@ -737,6 +686,12 @@ class MatchManager extends Generic
         }
     }
 
+    /**
+     * @param $computed_date
+     * @param $id_equipe
+     * @return bool
+     * @throws Exception
+     */
     private function isDateBlacklisted($computed_date, $id_equipe)
     {
         $db = Database::openDbConnection();
@@ -761,6 +716,128 @@ class MatchManager extends Generic
             $results[] = $data;
         }
         return (count($results) > 0);
+    }
+
+    /**
+     * @param array $to_be_inserted_matches
+     * @throws Exception
+     */
+    private function insert_matches(array $to_be_inserted_matches)
+    {
+        // exit if all matches have been inserted
+        if (count($to_be_inserted_matches) === 0) {
+            return;
+        }
+        // get first match to be inserted
+        $to_be_inserted_match = $to_be_inserted_matches[count($to_be_inserted_matches) - 1];
+        $team_dom = $to_be_inserted_match['dom'];
+        $team_ext = $to_be_inserted_match['ext'];
+        $competition = $to_be_inserted_match['competition'];
+        $division = $to_be_inserted_match['division'];
+        $code_competition = $competition['code_competition'];
+        if ($team_dom['has_timeslot'] === '0') {
+            if ($team_ext['has_timeslot'] === '0') {
+                $dom_full_name = $team_dom['team_full_name'];
+                $ext_full_name = $team_ext['team_full_name'];
+                throw new Exception("$dom_full_name et $ext_full_name n'ont pas de créneau de réception");
+            }
+            $team_dom = $to_be_inserted_match['ext'];
+            $team_ext = $to_be_inserted_match['dom'];
+        }
+        require_once __DIR__ . '/../classes/DayManager.php';
+        $day_manager = new DayManager();
+        $days = $day_manager->getDays(
+            "j.code_competition = '$code_competition'"
+        );
+        if (count($days) == 0) {
+            throw new Exception("Il n'y a pas de journée pour la competition $code_competition");
+        }
+        if ($team_dom['has_timeslot'] == '0') {
+            throw new Exception("L'équipe " . $team_dom['team_full_name'] . " n'a pas de créneau de réception");
+        }
+        $is_match_inserted = false;
+        foreach ($days as $index_day => $day) {
+            $id_journee = $day['id'];
+            $computed_date = $this->getComputedDate($id_journee, $team_dom['id_equipe']);
+            if (($this->count_matches_by_day_by_team($id_journee, $team_dom['id_equipe']) > 0) ||
+                ($this->count_matches_by_day_by_team($id_journee, $team_ext['id_equipe']) > 0)) {
+                continue;
+            }
+            if ($this->isDateFilled($computed_date, $team_dom['id_equipe']) ||
+                $this->isDateBlacklisted($computed_date, $team_dom['id_equipe'])) {
+                continue;
+            }
+            $round_number = $index_day + 1;
+            $match_number = $this->get_count_matches_per_day(
+                    $competition,
+                    $division,
+                    $day) + 1;
+            $code_match = strtoupper($competition['code_competition']) .
+                $division['division'] .
+                strval($round_number) .
+                strval($match_number);
+            $this->insertMatch(
+                $code_match,
+                $competition['code_competition'],
+                $division['division'],
+                $team_dom['id_equipe'],
+                $team_ext['id_equipe'],
+                $day['id']
+            );
+            $is_match_inserted = true;
+            break;
+        }
+        if (!$is_match_inserted) {
+            throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name']);
+        }
+        array_pop($to_be_inserted_matches);
+        $this->insert_matches($to_be_inserted_matches);
+    }
+
+    /**
+     * @param $id_journee
+     * @param $id_equipe
+     * @return int
+     * @throws Exception
+     */
+    private function count_matches_by_day_by_team($id_journee, $id_equipe)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM matches
+                WHERE ( id_equipe_dom = $id_equipe 
+                        OR id_equipe_ext = $id_equipe)
+                    AND id_journee = $id_journee";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results);
+    }
+
+    /**
+     * @param $competition
+     * @param $division
+     * @param $day
+     * @return int
+     * @throws Exception
+     */
+    private function get_count_matches_per_day($competition, $division, $day)
+    {
+        $db = Database::openDbConnection();
+        $code_competition = $competition['code_competition'];
+        $division_number = $division['division'];
+        $id_day = $day['id'];
+        $sql = "SELECT * 
+                FROM matches
+                WHERE code_competition = '$code_competition' AND division = '$division_number' AND id_journee = $id_day";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results);
     }
 
 
