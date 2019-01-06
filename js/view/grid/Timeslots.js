@@ -36,6 +36,11 @@ Ext.define('Ufolep13Volley.view.grid.Timeslots', {
                         return false;
                     }
                 }
+            },
+            {
+                header: "Priorité d'utilisation",
+                dataIndex: 'usage_priority',
+                flex: 1
             }
         ]
     }

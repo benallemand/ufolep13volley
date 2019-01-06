@@ -9,6 +9,7 @@
             <th>Jour</th>
             <th>Heure</th>
             <th>Contrainte horaire forte ?</th>
+            <th>Priorité d'utilisation</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -18,6 +19,7 @@
             <td>{{ x.jour }}</td>
             <td>{{ x.heure }}</td>
             <td ng-class="x.has_time_constraint == '1' ? 'alert alert-danger' : ''"></td>
+            <td>{{ x.usage_priority }}</td>
             <td>
                 <form ng-submit="removeTimeSlot(x.id)">
                     <button type="submit" class="btn btn-sm btn-danger">
@@ -72,6 +74,15 @@
                 <span class="c-indicator"></span>
                 Contrainte horaire forte
             </label>
+            <label for="usage_priority">Priorité d'utilisation</label>
+            <select id="usage_priority"
+                    name="usage_priority"
+                    ng-model="newTimeslot.usage_priority"
+                    required>
+                <option value="1">1 (créneau utilisé au maximum)</option>
+                <option value="2">2</option>
+                <option value="3">3 (créneau utilisé au minimum)</option>
+            </select>
         </div>
         <button type="submit" class="btn btn-default">Sauver</button>
     </form>

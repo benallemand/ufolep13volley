@@ -143,6 +143,16 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
                 fieldLabel: 'Contrainte horaire ?',
                 boxLabel: 'Oui',
                 uncheckedValue: 'off'
+            },
+            {
+                name: 'usage_priority',
+                xtype: 'numberfield',
+                fieldLabel: "Priorité d'utilisation",
+                value: 1,
+                minValue: 1,
+                allowDecimals: false,
+                allowBlank: false,
+                allowExponential: false
             }
         ],
         buttons: [

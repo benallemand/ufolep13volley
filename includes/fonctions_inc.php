@@ -2271,7 +2271,8 @@ function saveTimeSlot()
         'id_gymnase' => filter_input(INPUT_POST, 'id_gymnase'),
         'jour' => filter_input(INPUT_POST, 'jour'),
         'heure' => filter_input(INPUT_POST, 'heure'),
-        'has_time_constraint' => filter_input(INPUT_POST, 'has_time_constraint')
+        'has_time_constraint' => filter_input(INPUT_POST, 'has_time_constraint'),
+        'usage_priority' => filter_input(INPUT_POST, 'usage_priority')
     );
     conn_db();
     if (empty($inputs['id'])) {
@@ -2286,6 +2287,7 @@ function saveTimeSlot()
                 continue;
             case 'id_equipe':
             case 'id_gymnase':
+            case 'usage_priority':
                 $sql .= "$key = $value,";
                 break;
             case 'has_time_constraint':
