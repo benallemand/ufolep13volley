@@ -158,6 +158,7 @@ class SqlManager
                 AND
                 m.date_reception < DATE_ADD(CURDATE(), INTERVAL 7 DAY)
                 )
+                AND m.score_equipe_dom = 0 AND m.score_equipe_ext = 0
                 GROUP BY m.code_match
                 ORDER BY date_reception ASC";
         return $this->getResults($sql);
