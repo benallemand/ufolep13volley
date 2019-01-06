@@ -558,14 +558,18 @@ class MatchManager extends Generic
      * @param $id_equipe_dom
      * @param $id_equipe_ext
      * @param $id_journee
+     * @param string $date_match , format '%d/%m/%Y'
      * @return int|string
      * @throws Exception
      */
-    private function insertMatch($code_match, $code_competition, $division, $id_equipe_dom, $id_equipe_ext, $id_journee)
+    private function insertMatch($code_match,
+                                 $code_competition,
+                                 $division,
+                                 $id_equipe_dom,
+                                 $id_equipe_ext,
+                                 $id_journee,
+                                 $date_match)
     {
-        $date_match = $this->getComputedDate(
-            $id_journee,
-            $id_equipe_dom);
         $db = Database::openDbConnection();
         $sql = "INSERT INTO matches SET 
                 code_match = '$code_match', 
@@ -589,7 +593,7 @@ class MatchManager extends Generic
      * @return mixed
      * @throws Exception
      */
-    private function getComputedDate($id_journee, $id_equipe_dom)
+    private function getComputedDates($id_journee, $id_equipe_dom)
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(cr.jour,
@@ -601,24 +605,18 @@ class MatchManager extends Generic
                                                  'Samedi',
                                                  'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date
                 FROM journees j
-                  JOIN creneau cr ON cr.id = (SELECT MIN(creneau.id)
+                  JOIN creneau cr ON cr.id IN (SELECT creneau.id
                                               FROM creneau
                                               WHERE creneau.id_equipe = $id_equipe_dom)
                 WHERE cr.id_equipe = $id_equipe_dom
-                      AND j.id = $id_journee";
+                      AND j.id = $id_journee
+                      ORDER BY cr.usage_priority ASC";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
         }
-        if (count($results) == 0) {
-            require_once __DIR__ . '/TeamManager.php';
-            $team_manager = new TeamManager();
-            $team = $team_manager->getTeam($id_equipe_dom);
-            $team_full_name = $team['team_full_name'];
-            throw new Exception("Créneau non défini pour l'équipe $team_full_name");
-        }
-        return $results[0]['computed_date'];
+        return $results;
     }
 
     /**
@@ -758,13 +756,23 @@ class MatchManager extends Generic
         $is_match_inserted = false;
         foreach ($days as $index_day => $day) {
             $id_journee = $day['id'];
-            $computed_date = $this->getComputedDate($id_journee, $team_dom['id_equipe']);
             if (($this->count_matches_by_day_by_team($id_journee, $team_dom['id_equipe']) > 0) ||
                 ($this->count_matches_by_day_by_team($id_journee, $team_ext['id_equipe']) > 0)) {
                 continue;
             }
-            if ($this->isDateFilled($computed_date, $team_dom['id_equipe']) ||
-                $this->isDateBlacklisted($computed_date, $team_dom['id_equipe'])) {
+            $is_date_found = false;
+            $computed_dates = $this->getComputedDates($id_journee, $team_dom['id_equipe']);
+            $found_date = null;
+            foreach ($computed_dates as $computed_date) {
+                if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe']) ||
+                    $this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                    continue;
+                }
+                $is_date_found = true;
+                $found_date = $computed_date['computed_date'];
+                break;
+            }
+            if (!$is_date_found) {
                 continue;
             }
             $round_number = $index_day + 1;
@@ -782,8 +790,8 @@ class MatchManager extends Generic
                 $division['division'],
                 $team_dom['id_equipe'],
                 $team_ext['id_equipe'],
-                $day['id']
-            );
+                $day['id'],
+                $found_date);
             $is_match_inserted = true;
             break;
         }

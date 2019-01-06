@@ -14,7 +14,8 @@ class TimeSlotManager extends Generic
         c.heure, 
         CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse) AS gymnasium_full_name, 
         CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')') AS team_full_name,
-        c.has_time_constraint+0 AS has_time_constraint
+        c.has_time_constraint+0 AS has_time_constraint,
+        c.usage_priority
         FROM creneau c
         JOIN gymnase g ON g.id = c.id_gymnase
         JOIN equipes e ON e.id_equipe = c.id_equipe
