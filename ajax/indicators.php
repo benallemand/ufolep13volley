@@ -364,6 +364,16 @@ FROM matches
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
 HAVING COUNT(DISTINCT matches.id_match) > gymnase.nb_terrain
 ORDER BY COUNT(DISTINCT matches.id_match) DESC");
+$indicatorEquityBetweenHomeAndAway = new Indicator(
+    "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT e.nom_equipe AS equipe,
+       e.code_competition AS competition,
+       COUNT(DISTINCT matches_dom.id_match) AS domicile,
+       COUNT(DISTINCT matches_ext.id_match) AS exterieur
+FROM equipes e
+       JOIN matches matches_dom ON e.id_equipe = matches_dom.id_equipe_dom
+       JOIN matches matches_ext ON e.id_equipe = matches_ext.id_equipe_ext
+GROUP BY e.id_equipe
+HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1");
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -386,6 +396,7 @@ $results[] = $indicatorActiveTeamWithoutTeamLeader->getResult();
 $results[] = $indicatorMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorTooMuchMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
+$results[] = $indicatorEquityBetweenHomeAndAway->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
