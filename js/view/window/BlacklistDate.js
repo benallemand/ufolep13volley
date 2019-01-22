@@ -1,7 +1,7 @@
-Ext.define('Ufolep13Volley.view.window.BlacklistGymnase', {
+Ext.define('Ufolep13Volley.view.window.BlacklistDate', {
     extend: 'Ext.window.Window',
-    alias: 'widget.blacklistgymnase_edit',
-    title: "Saisie de date interdite pour les matchs dans un gymnase",
+    alias: 'widget.blacklistdate_edit',
+    title: "Saisie de date interdite pour tous les gymnases",
     height: 400,
     width: 700,
     modal: true,
@@ -15,23 +15,12 @@ Ext.define('Ufolep13Volley.view.window.BlacklistGymnase', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveBlacklistGymnase.php',
+        url: 'ajax/saveBlacklistDate.php',
         items: [
             {
                 xtype: 'hidden',
                 fieldLabel: 'id',
                 name: 'id'
-            },
-            {
-                xtype: 'combo',
-                fieldLabel: 'Gymnase',
-                name: 'id_gymnase',
-                displayField: 'full_name',
-                valueField: 'id',
-                store: 'Gymnasiums',
-                queryMode: 'local',
-                allowBlank: false,
-                forceSelection: true
             },
             {
                 xtype: 'datefield',

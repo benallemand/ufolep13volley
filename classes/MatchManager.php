@@ -690,10 +690,15 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function isDateBlacklisted($computed_date, $id_equipe)
+    private function isDateBlacklisted($computed_date, $id_equipe = null)
     {
         $db = Database::openDbConnection();
-        $sql = "SELECT * 
+        if ($id_equipe === null) {
+            $sql = "SELECT * 
+                FROM blacklist_date 
+                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')";
+        } else {
+            $sql = "SELECT * 
                 FROM blacklist_gymnase 
                 WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')
                 AND id_gymnase IN (
@@ -708,6 +713,7 @@ class MatchManager extends Generic
                                            'Jeudi',
                                            'Vendredi',
                                            'Samedi'))";
+        }
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -765,6 +771,7 @@ class MatchManager extends Generic
             $found_date = null;
             foreach ($computed_dates as $computed_date) {
                 if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe']) ||
+                    $this->isDateBlacklisted($computed_date['computed_date']) ||
                     $this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
                     continue;
                 }

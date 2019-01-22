@@ -422,7 +422,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'AdminRanks',
         'HallOfFame',
         'Timeslots',
-        'BlacklistGymnase'
+        'BlacklistGymnase',
+        'BlacklistDate'
     ],
     models: [
         'Player',
@@ -442,7 +443,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'Rank',
         'HallOfFame',
         'Timeslot',
-        'BlacklistGymnase'
+        'BlacklistGymnase',
+        'BlacklistDate'
     ],
     views: [
         'player.Grid',
@@ -476,6 +478,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'window.Competition',
         'grid.BlacklistGymnase',
         'window.BlacklistGymnase',
+        'grid.BlacklistDate',
+        'window.BlacklistDate',
         'grid.Timeslots',
         'window.Timeslot'
     ],
@@ -939,6 +943,24 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'blacklistgymnase_edit button[action=save]': {
                     click: this.updateBlacklistGymnase
+                },
+                'menuitem[action=displayBlacklistDate]': {
+                    click: this.displayBlacklistDate
+                },
+                'blacklistdate_grid': {
+                    added: this.addToolbarBlacklistDate
+                },
+                'button[action=addBlacklistDate]': {
+                    click: this.addBlacklistDate
+                },
+                'button[action=editBlacklistDate]': {
+                    click: this.editBlacklistDate
+                },
+                'button[action=deleteBlacklistDate]': {
+                    click: this.deleteBlacklistDate
+                },
+                'blacklistdate_edit button[action=save]': {
+                    click: this.updateBlacklistDate
                 }
             }
         );
@@ -1590,6 +1612,79 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 success: function () {
                     thisController.getStore('BlacklistGymnase').load();
+                    button.up('window').close();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    addBlacklistDate: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        var windowEdit = Ext.widget('blacklistdate_edit');
+        if (!record) {
+            return;
+        }
+        record.set('id', null);
+        windowEdit.down('form').loadRecord(record);
+    },
+    editBlacklistDate: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var windowEdit = Ext.widget('blacklistdate_edit');
+        windowEdit.down('form').loadRecord(record);
+    },
+    deleteBlacklistDate: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteBlacklistDate.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    updateBlacklistDate: function (button) {
+        var thisController = this;
+        var form = button.up('form').getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getStore('BlacklistDate').load();
                     button.up('window').close();
                 },
                 failure: function (form, action) {
@@ -2479,6 +2574,52 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteBlacklistGymnase'
+                }
+            ]
+        });
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        });
+    },
+    displayBlacklistDate: function () {
+        this.showAdministrationGrid('blacklistdate_grid');
+    },
+    addToolbarBlacklistDate: function (grid) {
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Ajouter',
+                    action: 'addBlacklistDate'
+                },
+                {
+                    text: 'Modifier',
+                    action: 'editBlacklistDate'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'deleteBlacklistDate'
                 }
             ]
         });
