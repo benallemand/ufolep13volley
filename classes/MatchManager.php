@@ -64,7 +64,8 @@ class MatchManager extends Generic
           WHEN curdate() >= DATE_ADD(m.date_reception, INTERVAL 5 DAY) THEN 1
           END
         ) AS retard,
-        IF(mf.id_file IS NOT NULL, '1', '0') AS is_file_attached
+        IF(mf.id_file IS NOT NULL, '1', '0') AS is_file_attached,
+        m.match_status
         FROM matches m 
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom

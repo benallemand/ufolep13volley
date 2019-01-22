@@ -55,6 +55,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 header: 'Heure',
                 dataIndex: 'heure_reception',
                 flex: 1
+            },
+            {
+                header: 'Statut',
+                dataIndex: 'match_status',
+                flex: 1
             }
         ]
     },
@@ -78,6 +83,18 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                },
+                {
+                    text: 'Archiver',
+                    action: 'archiveMatch'
+                },
+                {
+                    text: 'Confirmer',
+                    action: 'confirmMatch'
+                },
+                {
+                    text: 'Dé-confirmer',
+                    action: 'unconfirmMatch'
                 }
             ]
         },

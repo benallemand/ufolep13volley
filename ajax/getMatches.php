@@ -13,9 +13,13 @@ try {
     $compet = filter_input(INPUT_GET, 'competition');
     $div = filter_input(INPUT_GET, 'division');
     if (!isset($compet)) {
-        $query = "1 = 1 ORDER BY m.code_match";
+        $query = "1 = 1 
+                  ORDER BY m.code_match";
     } else {
-        $query = "m.code_competition = '$compet' AND m.division = '$div' ORDER BY j.nommage, m.date_reception, m.code_match";
+        $query = "m.code_competition = '$compet' 
+                  AND m.division = '$div'
+                  AND m.match_status = 'CONFIRMED' 
+                  ORDER BY j.nommage, m.date_reception, m.code_match";
     }
     echo json_encode($manager->getMatches($query));
     exit();
