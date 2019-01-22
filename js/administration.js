@@ -113,8 +113,12 @@ Ext.application({
                                         action: 'displayHallOfFame'
                                     },
                                     {
-                                        text: 'Gestion des dates blacklistées',
+                                        text: 'Gestion des dates interdites par gymnase',
                                         action: 'displayBlacklistGymnase'
+                                    },
+                                    {
+                                        text: 'Gestion des dates interdites',
+                                        action: 'displayBlacklistDate'
                                     }
                                 ]
                             },
@@ -124,7 +128,7 @@ Ext.application({
                                 scale: 'medium',
                                 glyph: 'xf021@FontAwesome',
                                 handler: function () {
-                                    Ext.each(Ext.ComponentQuery.query('tabpanel > grid'), function(grid_panel) {
+                                    Ext.each(Ext.ComponentQuery.query('tabpanel > grid'), function (grid_panel) {
                                         grid_panel.getStore().load();
                                     });
 

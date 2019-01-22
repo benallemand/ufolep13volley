@@ -109,4 +109,22 @@ class CompetitionManager extends Generic
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getBlacklistDate()
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT  bd.id,
+                        DATE_FORMAT(bd.closed_date, '%d/%m/%Y') AS closed_date 
+                FROM blacklist_date bd";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return $results;
+    }
+
 }
