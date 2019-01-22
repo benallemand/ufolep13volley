@@ -3677,3 +3677,48 @@ function generateMatches()
         $match_manager->generateMatches($competition);
     }
 }
+
+function archiveMatch($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE matches 
+            SET match_status = 'ARCHIVED' 
+            WHERE id_match IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function confirmMatch($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE matches 
+            SET match_status = 'CONFIRMED' 
+            WHERE id_match IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function unconfirmMatch($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "UPDATE matches 
+            SET match_status = 'NOT_CONFIRMED' 
+            WHERE id_match IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}

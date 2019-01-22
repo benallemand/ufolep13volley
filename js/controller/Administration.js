@@ -961,6 +961,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'blacklistdate_edit button[action=save]': {
                     click: this.updateBlacklistDate
+                },
+                'button[action=archiveMatch]': {
+                    click: this.archiveMatch
+                },
+                'button[action=confirmMatch]': {
+                    click: this.confirmMatch
+                },
+                'button[action=unconfirmMatch]': {
+                    click: this.unconfirmMatch
                 }
             }
         );
@@ -2641,6 +2650,99 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     action: 'displayFilteredCount'
                 }
             ]
+        });
+    },
+    archiveMatch: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Archiver?',
+            msg: 'Etes-vous certain de vouloir archiver ces matchs ?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id_match'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/archiveMatch.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    confirmMatch: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Archiver?',
+            msg: 'Etes-vous certain de vouloir confirmer ces matchs ?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id_match'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/confirmMatch.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    unconfirmMatch: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Archiver?',
+            msg: 'Etes-vous certain de vouloir infirmer ces matchs ?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id_match'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/unconfirmMatch.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
         });
     }
 });
