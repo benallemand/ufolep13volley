@@ -310,6 +310,7 @@ class MatchManager extends Generic
                     $sql .= "$key = $val,";
                     break;
                 default:
+                    $value = mysqli_real_escape_string($db, $value);
                     $sql .= "$key = '$value',";
                     break;
             }

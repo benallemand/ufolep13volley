@@ -112,7 +112,8 @@ class Rest {
                         $sql .= "$key=DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
                         break;
                     default :
-                        $sql .= "$key = \"$value\",";
+                        $value = mysqli_real_escape_string($db, $value);
+                        $sql .= "$key = '$value',";
                         break;
                 }
                 break;
@@ -198,7 +199,8 @@ class Rest {
                         $sql .= "DATE(STR_TO_DATE(\"$value\", '%d/%m/%Y')),";
                         break;
                     default :
-                        $sql .= "\"$value\",";
+                        $value = mysqli_real_escape_string($db, $value);
+                        $sql .= "'$value',";
                         break;
                 }
                 break;
