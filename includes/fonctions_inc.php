@@ -1329,11 +1329,12 @@ function addActivity($comment)
 {
     global $db;
     conn_db();
+    $comment = mysqli_real_escape_string($db, $comment);
     if (!empty($_SESSION['id_user'])) {
         $sessionIdUser = $_SESSION['id_user'];
-        $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
+        $sql = "INSERT activity SET comment='$comment', activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
     } else {
-        $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
+        $sql = "INSERT activity SET comment='$comment', activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
     }
     mysqli_query($db, $sql);
     disconn_db();
@@ -2226,6 +2227,7 @@ function savePlayer()
                 if (empty($inputs[$key]) || $inputs[$key] == 'null') {
                     $sql .= "$key = NULL,";
                 } else {
+                    $value = mysqli_real_escape_string($db, $value);
                     $sql .= "$key = '$value',";
                 }
                 break;
@@ -2308,6 +2310,7 @@ function saveTimeSlot()
                 $sql .= "$key = $val,";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2357,6 +2360,7 @@ function saveProfile()
             case 'id':
                 continue;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2639,6 +2643,7 @@ function saveUser()
                 }
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2710,6 +2715,7 @@ function saveGymnasium()
                 $sql .= "$key = $value,";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2751,6 +2757,7 @@ function saveCompetition()
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2797,6 +2804,7 @@ function saveBlacklistGymnase()
                 $sql .= "$key = $value,";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2840,6 +2848,7 @@ function saveBlacklistDate()
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2879,6 +2888,7 @@ function saveClub()
             case 'id':
                 continue;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2923,6 +2933,7 @@ function saveTeam()
                 $sql .= "$key = $value,";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -2973,10 +2984,12 @@ function saveRank()
                 if (is_numeric($value)) {
                     $sql .= "$key = $value,";
                 } else {
+                    $value = mysqli_real_escape_string($db, $value);
                     $sql .= "$key = '$value',";
                 }
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -3023,6 +3036,7 @@ function saveDay()
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
                 break;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -3063,6 +3077,7 @@ function saveHallOfFame()
             case 'dirtyFields':
                 continue;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }
@@ -3103,6 +3118,7 @@ function saveLimitDate()
             case 'dirtyFields':
                 continue;
             default:
+                $value = mysqli_real_escape_string($db, $value);
                 $sql .= "$key = '$value',";
                 break;
         }

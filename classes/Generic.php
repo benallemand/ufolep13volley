@@ -33,11 +33,12 @@ class Generic
     {
         $userDetails = $this->getCurrentUserDetails();
         $db = Database::openDbConnection();
+        $comment = mysqli_real_escape_string($db, $comment);
         if (!empty($userDetails['id_user'])) {
             $sessionIdUser = $userDetails['id_user'];
-            $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
+            $sql = "INSERT activity SET comment='$comment', activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id=$sessionIdUser";
         } else {
-            $sql = "INSERT activity SET comment=\"$comment\", activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
+            $sql = "INSERT activity SET comment='$comment', activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
         }
         mysqli_query($db, $sql);
     }
