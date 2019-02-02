@@ -364,16 +364,26 @@ FROM matches
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
 HAVING COUNT(DISTINCT matches.id_match) > gymnase.nb_terrain
 ORDER BY COUNT(DISTINCT matches.id_match) DESC");
+
 $indicatorEquityBetweenHomeAndAway = new Indicator(
-    "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT e.nom_equipe AS equipe,
-       e.code_competition AS competition,
+    "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT e.nom_equipe                         AS equipe,
+       m.code_competition                   AS competition,
        COUNT(DISTINCT matches_dom.id_match) AS domicile,
        COUNT(DISTINCT matches_ext.id_match) AS exterieur
 FROM equipes e
-       JOIN matches matches_dom ON e.id_equipe = matches_dom.id_equipe_dom
-       JOIN matches matches_ext ON e.id_equipe = matches_ext.id_equipe_ext
-GROUP BY e.id_equipe
-HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1");
+       JOIN matches m ON
+    m.id_equipe_dom = e.id_equipe
+    OR m.id_equipe_ext = e.id_equipe
+       JOIN matches matches_dom
+            ON e.id_equipe = matches_dom.id_equipe_dom
+              AND matches_dom.code_competition = m.code_competition
+       JOIN matches matches_ext
+            ON e.id_equipe = matches_ext.id_equipe_ext
+              AND matches_ext.code_competition = m.code_competition
+GROUP BY m.code_competition, e.id_equipe
+HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1
+ORDER BY e.nom_equipe ASC, m.code_competition ASC");
+
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
