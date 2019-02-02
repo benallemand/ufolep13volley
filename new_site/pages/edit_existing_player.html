@@ -79,7 +79,7 @@
                        ng-model="modify_player.show_photo">
                 <span class="c-indicator"></span></div>
         </div>
-        <div class="form-group">
+        <div class="form-group" ng-if="modify_player.show_photo == 'on'">
             <label class="col-sm-2 control-label">Photo</label>
             <div class="col-sm-10">
                 <input class="form-control-file" type="file" aria-describedby="fileHelp"
