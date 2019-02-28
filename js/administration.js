@@ -117,6 +117,10 @@ Ext.application({
                                         action: 'displayBlacklistGymnase'
                                     },
                                     {
+                                        text: 'Gestion des dates interdites par équipe',
+                                        action: 'displayBlacklistTeam'
+                                    },
+                                    {
                                         text: 'Gestion des dates interdites',
                                         action: 'displayBlacklistDate'
                                     }

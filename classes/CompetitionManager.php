@@ -113,6 +113,27 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
+    public function getBlacklistTeam()
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT  bt.id, 
+                        bt.id_team, 
+                        CONCAT(e.nom_equipe, ' (', e.code_competition, ')') AS libelle_equipe,
+                        DATE_FORMAT(bt.closed_date, '%d/%m/%Y') AS closed_date 
+                FROM blacklist_team bt
+                JOIN equipes e ON e.id_equipe = bt.id_team";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return $results;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function getBlacklistDate()
     {
         $db = Database::openDbConnection();

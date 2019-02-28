@@ -232,6 +232,19 @@ function deleteCompetition($ids)
     return true;
 }
 
+function deleteBlacklistTeam($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM blacklist_team WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
 function deleteBlacklistGymnase($ids)
 {
     global $db;
@@ -2801,6 +2814,53 @@ function saveBlacklistGymnase()
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
                 break;
             case 'id_gymnase':
+                $sql .= "$key = $value,";
+                break;
+            default:
+                $value = mysqli_real_escape_string($db, $value);
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}
+
+/**
+ * @throws Exception
+ */
+function saveBlacklistTeam()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO";
+    } else {
+        $sql = "UPDATE";
+    }
+    $sql .= " blacklist_team SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+            case 'dirtyFields':
+                continue;
+            case 'closed_date':
+                $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                break;
+            case 'id_team':
                 $sql .= "$key = $value,";
                 break;
             default:

@@ -725,6 +725,27 @@ class MatchManager extends Generic
     }
 
     /**
+     * @param $computed_date
+     * @param $id_equipe
+     * @return bool
+     * @throws Exception
+     */
+    private function isTeamBlacklisted($computed_date, $id_equipe)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM blacklist_team
+                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')
+                AND id_team = $id_equipe";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return (count($results) > 0);
+    }
+
+    /**
      * @param array $to_be_inserted_matches
      * @throws Exception
      */
@@ -774,7 +795,9 @@ class MatchManager extends Generic
             foreach ($computed_dates as $computed_date) {
                 if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe']) ||
                     $this->isDateBlacklisted($computed_date['computed_date']) ||
-                    $this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                    $this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe']) ||
+                    $this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe']) ||
+                    $this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
                     continue;
                 }
                 $is_date_found = true;
