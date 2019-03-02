@@ -98,6 +98,7 @@ class SqlManager
                 ((m.set_1_dom+m.set_1_ext>0) AND (m.score_equipe_dom+m.score_equipe_ext+0=0))
                 )
                 AND m.date_reception < CURDATE() - INTERVAL 10 DAY
+                AND m.match_status != 'ARCHIVED'
                 ORDER BY m.code_match ASC";
         return $this->getResults($sql);
     }
@@ -159,6 +160,7 @@ class SqlManager
                 m.date_reception < DATE_ADD(CURDATE(), INTERVAL 7 DAY)
                 )
                 AND m.score_equipe_dom = 0 AND m.score_equipe_ext = 0
+                AND m.match_status != 'ARCHIVED'
                 GROUP BY m.code_match
                 ORDER BY date_reception ASC";
         return $this->getResults($sql);
@@ -249,6 +251,7 @@ class SqlManager
                 JOIN joueurs jresp2 ON jresp2.id = jeresp2.id_joueur
                 WHERE 
                 m.report_status IN ('ASKED_BY_DOM', 'ASKED_BY_EXT')
+                AND m.match_status != 'ARCHIVED'
                 ORDER BY m.code_match ASC";
         return $this->getResults($sql);
     }

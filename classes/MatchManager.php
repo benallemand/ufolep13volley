@@ -425,6 +425,19 @@ class MatchManager extends Generic
         return true;
     }
 
+    public function unsetDayMatches($query)
+    {
+        $db = Database::openDbConnection();
+        $sql = "UPDATE matches SET id_journee = NULL WHERE 1=1";
+        if ($query !== NULL) {
+            $sql .= " AND $query";
+        }
+        $req = mysqli_query($db, $sql);
+        if ($req === FALSE) {
+            throw new Exception("Erreur durant unsetDayMatches: " . mysqli_error($db));
+        }
+    }
+
     /**
      * @param $competition
      * @throws Exception
@@ -443,7 +456,7 @@ class MatchManager extends Generic
                 $is_mirror_needed = false;
                 break;
         }
-        $this->deleteMatches("code_competition = '$code_competition'");
+        $this->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
@@ -660,7 +673,8 @@ class MatchManager extends Generic
                 WHERE m.date_reception = STR_TO_DATE('$computed_date', '%d/%m/%Y')
                       AND cr.id_gymnase IN (SELECT id_gymnase
                                             FROM creneau
-                                            WHERE creneau.id_equipe = $id_equipe)";
+                                            WHERE creneau.id_equipe = $id_equipe)
+                      AND m.match_status != 'ARCHIVED'";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -812,7 +826,9 @@ class MatchManager extends Generic
                     $competition,
                     $division,
                     $day) + 1;
+            $year_month = date('ym');
             $code_match = strtoupper($competition['code_competition']) .
+                $year_month .
                 $division['division'] .
                 strval($round_number) .
                 strval($match_number);
@@ -847,7 +863,8 @@ class MatchManager extends Generic
                 FROM matches
                 WHERE ( id_equipe_dom = $id_equipe 
                         OR id_equipe_ext = $id_equipe)
-                    AND id_journee = $id_journee";
+                    AND id_journee = $id_journee
+                    AND match_status != 'ARCHIVED'";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -871,7 +888,10 @@ class MatchManager extends Generic
         $id_day = $day['id'];
         $sql = "SELECT * 
                 FROM matches
-                WHERE code_competition = '$code_competition' AND division = '$division_number' AND id_journee = $id_day";
+                WHERE code_competition = '$code_competition' 
+                  AND division = '$division_number' 
+                  AND id_journee = $id_day
+                  AND match_status != 'ARCHIVED'";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {

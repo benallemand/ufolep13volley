@@ -180,7 +180,11 @@ class RankManager extends Generic
                    FROM
                      classements c
                      JOIN equipes e ON e.id_equipe = c.id_equipe
-                     LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                     LEFT JOIN matches m ON 
+                       m.code_competition = c.code_competition
+                         AND m.division = c.division 
+                         AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                         AND m.match_status != 'ARCHIVED'
                    WHERE c.code_competition = '$code_competition' AND c.division = '$division'
                    GROUP BY e.id_equipe
                    ORDER BY points DESC, diff DESC
@@ -265,7 +269,11 @@ class RankManager extends Generic
                    FROM
                      classements c
                      JOIN equipes e ON e.id_equipe = c.id_equipe
-                     LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                     LEFT JOIN matches m ON 
+                       m.code_competition = c.code_competition 
+                         AND m.division = c.division 
+                         AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                         AND m.match_status != 'ARCHIVED'
                    WHERE c.code_competition = '$code_competition' AND c.division = '$division'
                    GROUP BY e.id_equipe
                    ORDER BY points DESC, diff DESC

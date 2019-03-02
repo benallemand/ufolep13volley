@@ -585,6 +585,7 @@ function getLastResults()
     JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
     WHERE (
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
+    AND m.match_status != 'ARCHIVED'
     AND (m.date_reception <= CURDATE())
     AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
     AND (a_modif.activity_date >= m.date_reception OR a_sheet_received.activity_date >= m.date_reception)
@@ -800,7 +801,8 @@ function isTeamDomForMatch($id_team, $code_match)
     conn_db();
     $sql = "SELECT * FROM matches 
         WHERE id_equipe_dom=$id_team 
-        AND code_match='$code_match'";
+        AND code_match='$code_match'
+        AND match_status != 'ARCHIVED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -839,8 +841,10 @@ function isSameRankingTable($id_equipe)
     }
     conn_db();
     $sql = "SELECT * FROM matches 
-        WHERE id_equipe_dom=$sessionIdEquipe 
-        OR id_equipe_ext=$sessionIdEquipe";
+        WHERE 
+              match_status != 'ARCHIVED'
+              AND(id_equipe_dom=$sessionIdEquipe 
+                  OR id_equipe_ext=$sessionIdEquipe)";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1016,7 +1020,8 @@ function getTeamsEmailsFromMatchReport($code_match)
       m.id_equipe_ext,
       m.code_competition
       FROM matches m
-      WHERE m.code_match = '$code_match'";
+      WHERE m.code_match = '$code_match'
+        AND m.match_status != 'ARCHIVED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $data = mysqli_fetch_assoc($req);
     $emailDom = getTeamEmail($data['id_equipe_dom']);
@@ -1049,7 +1054,8 @@ function getTeamsEmailsFromMatch($code_match)
       m.code_competition,
       LEFT(m.division, 1) AS division
       FROM matches m
-      WHERE m.code_match = '$code_match'";
+      WHERE m.code_match = '$code_match'
+        AND m.match_status != 'ARCHIVED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $data = mysqli_fetch_assoc($req);
     $emailDom = getTeamEmail($data['id_equipe_dom']);
@@ -1142,7 +1148,11 @@ FROM (
        FROM
          classements c
          JOIN equipes e ON e.id_equipe = c.id_equipe
-         LEFT JOIN matches m ON m.code_competition = c.code_competition AND m.division = c.division AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+         LEFT JOIN matches m ON 
+           m.code_competition = c.code_competition 
+             AND m.division = c.division 
+             AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+             AND m.match_status != 'ARCHIVED'
        WHERE c.code_competition = '$compet' AND c.division = '$div'
        GROUP BY e.id_equipe
        ORDER BY points DESC, diff DESC
@@ -1285,28 +1295,6 @@ function decrementReportCount($compet, $id_equipe)
     }
     disconn_db();
     addActivity("Un report a ete retire pour l'equipe " . getTeamName($id_equipe));
-    return true;
-}
-
-function removeTeamFromCompetition($compet, $id_equipe)
-{
-    global $db;
-    conn_db();
-    $sql = "DELETE FROM classements 
-      WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-    $req = mysqli_query($db, $sql);
-    if ($req === FALSE) {
-        return false;
-    }
-    $sql = "DELETE FROM matches 
-      WHERE (id_equipe_dom = $id_equipe AND code_competition = '$compet') 
-      OR (id_equipe_ext = $id_equipe AND code_competition = '$compet')";
-    $req2 = mysqli_query($db, $sql);
-    if ($req2 === FALSE) {
-        return false;
-    }
-    disconn_db();
-    addActivity("L'equipe " . getTeamName($id_equipe) . " a ete supprimee de la competition " . getTournamentName($compet));
     return true;
 }
 
@@ -3670,7 +3658,8 @@ function generateDays()
         }
         require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
-        $match_manager->deleteMatches("code_competition = '$code_competition'");
+        $match_manager->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        $match_manager->unsetDayMatches("code_competition = '$code_competition'");
         require_once __DIR__ . '/../classes/DayManager.php';
         $day_manager = new DayManager();
         $day_manager->deleteDays("code_competition = '$code_competition'");
