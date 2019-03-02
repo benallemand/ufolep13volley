@@ -62,22 +62,6 @@ MID(comment, LOCATE('(',comment)+1, 8),
 SUBSTRING(SUBSTRING_INDEX(comment, '(', -1), 1, LENGTH(SUBSTRING_INDEX(comment, '(', -1))-1)
 HAVING COUNT(DISTINCT SUBSTRING(comment, LOCATE('equipe ',comment)+7)) > 1");
 
-$indicatorDuplicateMatchCode = new Indicator(
-    'Code match dupliqués', "SELECT
-m.code_match,
-c.libelle AS competition,
-m.division,
-edom.nom_equipe AS domicile,
-eext.nom_equipe AS exterieur
-FROM matches m
-JOIN competitions c ON c.code_competition = m.code_competition
-JOIN equipes edom ON edom.id_equipe = m.id_equipe_dom
-JOIN equipes eext ON eext.id_equipe = m.id_equipe_ext
-WHERE m.code_match IN
-(SELECT code_match FROM matches GROUP BY code_match HAVING COUNT(*) > 1)
-ORDER BY m.code_match"
-);
-
 $indicatorPlayersWithoutLicence = new Indicator(
     'Joueurs sans numéro de licence', "SELECT
         CONCAT(j.nom, ' ', j.prenom) AS joueur, 
@@ -177,6 +161,7 @@ $indicatorMatchesDupliques = new Indicator(
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
         WHERE m.code_competition != 'mo'
+        AND m.match_status != 'ARCHIVED'
         GROUP BY m.id_equipe_dom, m.id_equipe_ext, m.code_competition
         HAVING COUNT(*) > 1");
 
@@ -222,7 +207,8 @@ $indicatorMatchesNonRenseignes = new Indicator(
         OR
         ((m.set_1_dom+m.set_1_ext>0) AND (m.score_equipe_dom+m.score_equipe_ext+0=0))
         )
-        AND m.date_reception < CURDATE() - INTERVAL 5 DAY"
+          AND m.match_status != 'ARCHIVED'
+          AND m.date_reception < CURDATE() - INTERVAL 5 DAY"
 );
 
 $indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
@@ -301,6 +287,7 @@ $indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
                                            'Vendredi',
                                            'Samedi')
     WHERE cr.id IS NULL AND m.certif + 0 = 0
+    AND m.match_status != 'ARCHIVED'
     ORDER BY m.code_match"
 );
 
@@ -341,29 +328,31 @@ $indicatorMatchesByGymnasiumByDate = new Indicator(
     'Nombre de matches par date et par gymnase', "SELECT
   gymnase.ville AS \"Ville\",
   gymnase.nom AS \"Gymnase\",
-  matches.date_reception AS \"Date\",
-  COUNT(DISTINCT matches.id_match) AS \"Nombre de matches\",
-  GROUP_CONCAT(DISTINCT matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
-FROM matches
-  JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
+  m.date_reception AS \"Date\",
+  COUNT(DISTINCT m.id_match) AS \"Nombre de matches\",
+  GROUP_CONCAT(DISTINCT m.code_match SEPARATOR ', ') AS \"Liste des matches\"
+FROM matches m
+  JOIN creneau ON creneau.id_equipe = m.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
-GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
-ORDER BY COUNT(DISTINCT matches.id_match) DESC");
+WHERE m.match_status != 'ARCHIVED'
+GROUP BY CONCAT(gymnase.nom, gymnase.ville), m.date_reception
+ORDER BY COUNT(DISTINCT m.id_match) DESC");
 
 $indicatorTooMuchMatchesByGymnasiumByDate = new Indicator(
     'Nombre de matches trop élevés par date et par gymnase', "SELECT
   gymnase.ville AS \"Ville\",
   gymnase.nom AS \"Gymnase\",
-  matches.date_reception AS \"Date\",
-  COUNT(DISTINCT matches.id_match) AS \"Nombre de matches\",
+  m.date_reception AS \"Date\",
+  COUNT(DISTINCT m.id_match) AS \"Nombre de matches\",
   gymnase.nb_terrain AS \"Nombre de terrains\",
-  GROUP_CONCAT(DISTINCT matches.code_match SEPARATOR ', ') AS \"Liste des matches\"
-FROM matches
-  JOIN creneau ON creneau.id_equipe = matches.id_equipe_dom
+  GROUP_CONCAT(DISTINCT m.code_match SEPARATOR ', ') AS \"Liste des matches\"
+FROM matches m
+  JOIN creneau ON creneau.id_equipe = m.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
-GROUP BY CONCAT(gymnase.nom, gymnase.ville), matches.date_reception
-HAVING COUNT(DISTINCT matches.id_match) > gymnase.nb_terrain
-ORDER BY COUNT(DISTINCT matches.id_match) DESC");
+WHERE m.match_status != 'ARCHIVED'
+GROUP BY CONCAT(gymnase.nom, gymnase.ville), m.date_reception
+HAVING COUNT(DISTINCT m.id_match) > gymnase.nb_terrain
+ORDER BY COUNT(DISTINCT m.id_match) DESC");
 
 $indicatorEquityBetweenHomeAndAway = new Indicator(
     "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT e.nom_equipe                         AS equipe,
@@ -380,6 +369,9 @@ FROM equipes e
        JOIN matches matches_ext
             ON e.id_equipe = matches_ext.id_equipe_ext
               AND matches_ext.code_competition = m.code_competition
+WHERE m.match_status != 'ARCHIVED'
+AND matches_dom.match_status != 'ARCHIVED'
+AND matches_ext.match_status != 'ARCHIVED'
 GROUP BY m.code_competition, e.id_equipe
 HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1
 ORDER BY e.nom_equipe ASC, m.code_competition ASC");
@@ -395,7 +387,6 @@ $results[] = $indicatorEquipesSansClub->getResult();
 $results[] = $indicatorMatchesDupliques->getResult();
 $results[] = $indicatorComptes->getResult();
 $results[] = $indicatorPlayersWithoutLicence->getResult();
-$results[] = $indicatorDuplicateMatchCode->getResult();
 $results[] = $indicatorSuspectTransfert->getResult();
 $results[] = $indicatorPossibleDuplicatePlayers->getResult();
 $results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
