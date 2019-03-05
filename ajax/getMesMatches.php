@@ -18,8 +18,8 @@ try {
             throw new Exception("Get my matches allowed only for RESPONSABLE_EQUIPE !");
         case 'RESPONSABLE_EQUIPE':
         default:
-            $query = "m.id_equipe_dom = $id_team 
-                      OR m.id_equipe_ext = $id_team
+            $query = "(m.id_equipe_dom = $id_team 
+                      OR m.id_equipe_ext = $id_team)
                       AND m.match_status = 'CONFIRMED' 
                       ORDER BY j.nommage, m.date_reception, m.code_match";
             break;
