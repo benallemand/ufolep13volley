@@ -31,10 +31,8 @@ class Emails
         switch ($serverName) {
             case 'localhost':
                 return;
-            //$mail->isSMTP();
-            //break;
             default:
-                $mail->isSendmail();
+                $mail->isSMTP();
                 break;
         }
         $mail->CharSet = "UTF-8";
