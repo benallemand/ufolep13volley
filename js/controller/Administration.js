@@ -1983,10 +1983,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    genericRequest: function (button, title, url) {
+    genericRequest: function (button, title, url, is_one_record_allowed) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length == 0) {
+            return;
+        }
+        if (records.length > 1 && is_one_record_allowed === true) {
+            Ext.Msg.alert('Erreur', "Cette action n'est utilisable que pour une seule entrée !");
             return;
         }
         Ext.Msg.show({
@@ -2033,7 +2037,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.genericRequest(button, 'Générer les journées', 'ajax/generateDays.php');
     },
     generateMatches: function (button) {
-        this.genericRequest(button, 'Générer les matches', 'ajax/generateMatches.php');
+        this.genericRequest(button, 'Générer les matches', 'ajax/generateMatches.php', true);
     },
     deleteDays: function () {
         var me = this;
