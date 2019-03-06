@@ -2021,7 +2021,17 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                             return;
                         }
                         var response_json = Ext.decode(response.responseText);
-                        Ext.Msg.alert('Erreur', response_json.message);
+                        Ext.create('Ext.window.Window', {
+                            title: 'Erreur (copiable)',
+                            height: 500,
+                            width: 700,
+                            maximizable: true,
+                            layout: 'fit',
+                            items: {
+                                xtype: 'textarea',
+                                value: response_json.message
+                            }
+                        }).show();
                     }
                 });
             }

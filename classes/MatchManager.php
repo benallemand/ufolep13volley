@@ -548,9 +548,9 @@ class MatchManager extends Generic
             }
         }
         if (count($exceptions) > 0) {
-            $message = count($exceptions) . " erreur(s) pendant la génération : <br>";
+            $message = count($exceptions) . " erreur(s) pendant la génération :" . PHP_EOL;
             foreach ($exceptions as $exception) {
-                $message .= $exception . "<br>";
+                $message .= $exception . PHP_EOL;
             }
             throw new Exception($message);
         }
@@ -797,21 +797,39 @@ class MatchManager extends Generic
             throw new Exception("L'équipe " . $team_dom['team_full_name'] . " n'a pas de créneau de réception");
         }
         $is_match_inserted = false;
+        $log_why_not_possible = "";
         foreach ($days as $index_day => $day) {
             $id_journee = $day['id'];
-            if (($this->count_matches_by_day_by_team($id_journee, $team_dom['id_equipe']) > 0) ||
-                ($this->count_matches_by_day_by_team($id_journee, $team_ext['id_equipe']) > 0)) {
+            if ($this->count_matches_by_day_by_team($id_journee, $team_dom['id_equipe']) > 0) {
+                $log_why_not_possible .= "- la semaine du " . $day['start_date'] . " car l'équipe qui reçoit joue déjà cette semaine." . PHP_EOL;
+                continue;
+            }
+            if ($this->count_matches_by_day_by_team($id_journee, $team_ext['id_equipe']) > 0) {
+                $log_why_not_possible .= "- la semaine du " . $day['start_date'] . " car l'équipe qui se déplace joue déjà cette semaine." . PHP_EOL;
                 continue;
             }
             $is_date_found = false;
             $computed_dates = $this->getComputedDates($id_journee, $team_dom['id_equipe']);
             $found_date = null;
             foreach ($computed_dates as $computed_date) {
-                if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe']) ||
-                    $this->isDateBlacklisted($computed_date['computed_date']) ||
-                    $this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe']) ||
-                    $this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe']) ||
-                    $this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
+                if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase est plein." . PHP_EOL;
+                    continue;
+                }
+                if ($this->isDateBlacklisted($computed_date['computed_date'])) {
+                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le jour est férié." . PHP_EOL;
+                    continue;
+                }
+                if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase n'est pas dispo." . PHP_EOL;
+                    continue;
+                }
+                if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit ne peut pas jouer ce jour là." . PHP_EOL;
+                    continue;
+                }
+                if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
+                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace ne peut pas jouer ce jour là." . PHP_EOL;
                     continue;
                 }
                 $is_date_found = true;
@@ -844,7 +862,7 @@ class MatchManager extends Generic
             break;
         }
         if (!$is_match_inserted) {
-            throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name']);
+            throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name'] . ":" . PHP_EOL . $log_why_not_possible);
         }
         array_pop($to_be_inserted_matches);
         $this->insert_matches($to_be_inserted_matches);
