@@ -461,6 +461,7 @@ class MatchManager extends Generic
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
         $exceptions = array();
+        $message = "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
         foreach ($divisions as $division) {
             $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
                 $division['division'],
@@ -545,10 +546,14 @@ class MatchManager extends Generic
                 $this->insert_matches($to_be_inserted_matches);
             } catch (Exception $e) {
                 $exceptions[] = $e->getMessage();
+                foreach ($to_be_inserted_matches as $to_be_inserted_match) {
+                    $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . " (division " . $to_be_inserted_match['division']['division'] . ")" . PHP_EOL;
+                }
             }
         }
         if (count($exceptions) > 0) {
-            $message = count($exceptions) . " erreur(s) pendant la génération :" . PHP_EOL;
+            $message .= PHP_EOL . PHP_EOL;
+            $message .= "Il y a eu " . count($exceptions) . " erreur(s) pendant la génération:" . PHP_EOL;
             foreach ($exceptions as $exception) {
                 $message .= $exception . PHP_EOL;
             }

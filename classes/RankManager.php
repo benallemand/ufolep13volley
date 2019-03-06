@@ -74,7 +74,8 @@ class RankManager extends Generic
         $db = Database::openDbConnection();
         $sql = "SELECT DISTINCT division 
             FROM classements
-            WHERE code_competition = '$code_competition'";
+            WHERE code_competition = '$code_competition'
+            ORDER BY CAST(division AS UNSIGNED)";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -93,6 +94,7 @@ class RankManager extends Generic
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DISTINCT c.id_equipe,
+                e.nom_equipe,
                 CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', c.division, ')'), '')) AS team_full_name,
                 IF(cr.id IS NULL, '0', '1') AS has_timeslot
                 FROM classements c
