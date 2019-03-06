@@ -1179,7 +1179,8 @@ function getRanks()
       cl.rank_start
       FROM classements cl
       JOIN competitions co ON co.code_competition = cl.code_competition
-      JOIN equipes e ON e.id_equipe = cl.id_equipe";
+      JOIN equipes e ON e.id_equipe = cl.id_equipe
+      ORDER BY cl.code_competition ASC, CAST(cl.division AS UNSIGNED) ASC, cl.rank_start ASC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
