@@ -340,5 +340,29 @@ class CronTasks
         if ($req_clean === FALSE) {
             throw new Exception(mysqli_error($db));
         }
+        // list db files
+        $sql_select = "SELECT * FROM files";
+        $req_select = mysqli_query($db, $sql_select);
+        if ($req_select === FALSE) {
+            throw new Exception(mysqli_error($db));
+        }
+        $results_select = array();
+        while ($data_select = mysqli_fetch_assoc($req_select)) {
+            $results_select[] = $data_select;
+        }
+        $db_file_paths = array_column($results_select, 'path_file');
+        // list files under directory match_files
+        $existing_files = scandir(__DIR__ . "/../match_files");
+        foreach ($existing_files as $current_existing_file) {
+            if (in_array($current_existing_file, array('.', '..'))) {
+                continue;
+            }
+            if (in_array("match_files/$current_existing_file", $db_file_paths)) {
+                continue;
+            }
+            // if file is not found in database, delete it
+            unlink(__DIR__ . "/../match_files/$current_existing_file");
+        }
+
     }
 }
