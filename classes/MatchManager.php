@@ -98,7 +98,8 @@ class MatchManager extends Generic
     {
         $sql = "SELECT 
         f.id,
-        f.path_file
+        f.path_file,
+        f.hash
         FROM files f 
         JOIN matches_files mf ON mf.id_file = f.id
         WHERE 1=1";
@@ -358,7 +359,8 @@ class MatchManager extends Generic
                 $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
             }
             $id_file = 0;
-            $this->insertFile(substr($uploadfile, 3), $id_file);
+            $file_hash = md5_file($_FILES[$current_file_iteration]['tmp_name']);
+            $this->insertFile(substr($uploadfile, 3), $file_hash, $id_file);
             $id_match = $match['id_match'];
             $this->linkMatchToFile($id_match, $id_file);
             if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], $this->accentedToNonAccented($uploadfile))) {
@@ -376,13 +378,14 @@ class MatchManager extends Generic
 
     /**
      * @param $uploadfile
+     * @param $file_hash
      * @param $idFile
      * @throws Exception
      */
-    private function insertFile($uploadfile, &$idFile)
+    private function insertFile($uploadfile, $file_hash, &$idFile)
     {
         $db = Database::openDbConnection();
-        $sql = "INSERT INTO files SET path_file = '$uploadfile'";
+        $sql = "INSERT INTO files SET path_file = '$uploadfile', hash = '$file_hash'";
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             $message = mysqli_error($db);
