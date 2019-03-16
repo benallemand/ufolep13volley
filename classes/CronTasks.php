@@ -292,4 +292,53 @@ class CronTasks
             );
         }
     }
+
+    public function cleanupFiles()
+    {
+        require_once __DIR__ . "/Database.php";
+        $db = Database::openDbConnection();
+        // Detect files without hash written in database
+        $sql_select = "SELECT * FROM files WHERE hash IS NULL";
+        $req_select = mysqli_query($db, $sql_select);
+        if ($req_select === FALSE) {
+            throw new Exception(mysqli_error($db));
+        }
+        $results_select = array();
+        while ($data_select = mysqli_fetch_assoc($req_select)) {
+            $results_select[] = $data_select;
+        }
+        foreach ($results_select as $result_select) {
+            $file_path = __DIR__ . "/../" . $result_select['path_file'];
+            if (file_exists($file_path)) {
+                // compute md5 if file exists and save in database
+                $hash = md5_file($file_path);
+                $id = $result_select['id'];
+                $sql_update = "UPDATE files SET hash = '$hash' WHERE id = $id";
+                $req_update = mysqli_query($db, $sql_update);
+                if ($req_update === FALSE) {
+                    throw new Exception(mysqli_error($db));
+                }
+            } else {
+                // if file does not exist, delete from database
+                $id = $result_select['id'];
+                $sql_delete = "DELETE FROM files WHERE id = $id";
+                $req_delete = mysqli_query($db, $sql_delete);
+                if ($req_delete === FALSE) {
+                    throw new Exception(mysqli_error($db));
+                }
+            }
+        }
+        // clean duplicate files in db
+        $sql_clean = "DELETE f1
+                       FROM files f1,
+                            files f2
+                       WHERE f1.id > f2.id
+                         AND f1.hash = f2.hash
+                         AND f1.hash IS NOT NULL
+                         AND f2.hash IS NOT NULL";
+        $req_clean = mysqli_query($db, $sql_clean);
+        if ($req_clean === FALSE) {
+            throw new Exception(mysqli_error($db));
+        }
+    }
 }
