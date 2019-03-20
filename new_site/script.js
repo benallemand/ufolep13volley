@@ -871,8 +871,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         var teams = $scope.rankings;
         var teams_count = teams.length;
         for (var currentTeamIndex = 0; currentTeamIndex < teams.length; currentTeamIndex++) {
-            $scope.rankings[currentTeamIndex]["is_promotion"] = ((teams[currentTeamIndex]["rang"] === "1") || (teams[currentTeamIndex]["rang"] === "2")) ? "1" : "0";
-            $scope.rankings[currentTeamIndex]["is_relegation"] = ((teams[currentTeamIndex]["rang"] === teams_count.toString()) || (teams[currentTeamIndex]["rang"] === (teams_count - 1).toString())) ? "1" : "0";
+            $scope.rankings[currentTeamIndex]["is_promotion"] = "0";//((teams[currentTeamIndex]["rang"] === "1") || (teams[currentTeamIndex]["rang"] === "2")) ? "1" : "0";
+            $scope.rankings[currentTeamIndex]["is_relegation"] = "0";//((teams[currentTeamIndex]["rang"] === teams_count.toString()) || (teams[currentTeamIndex]["rang"] === (teams_count - 1).toString())) ? "1" : "0";
             if (teams[currentTeamIndex]["joues"] === "0") {
                 $scope.rankings[currentTeamIndex]["exact_deuce"] = "0";
                 continue;
