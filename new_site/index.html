@@ -3,6 +3,10 @@
 <!-- define angular app -->
 <html ng-app="scotchApp">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css"/>
     <link href="https://addtocalendar.com/atc/1.5/atc-style-button-icon.css" rel="stylesheet" type="text/css">
@@ -18,6 +22,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.9.0/loading-bar.min.js"></script>
+    <link href="sticky-footer.css" rel="stylesheet">
     <script src="script.js"></script>
 </head>
 <body ng-controller="mainController">
@@ -30,6 +35,8 @@
 </div>
 <div id="main" style="max-width: 95%;margin: auto">
     <div ng-view></div>
+</div>
+<div ng-include src="'pages/footer.php'">
 </div>
 </body>
 </html>
