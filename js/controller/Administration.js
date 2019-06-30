@@ -1070,6 +1070,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                             layout: 'fit',
                                             items: {
                                                 xtype: 'grid',
+                                                viewConfig : {
+                                                    enableTextSelection: true
+                                                },
                                                 autoScroll: true,
                                                 store: Ext.create('Ext.data.Store', {
                                                     fields: fields,
