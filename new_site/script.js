@@ -118,6 +118,10 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/lastResults.html',
             controller: 'lastResultsController'
         })
+        .when('/weekMatches', {
+            templateUrl: 'pages/matches_of_the_week.html',
+            controller: 'weekMatchesController'
+        })
         .when('/lastPosts', {
             templateUrl: 'pages/lastPosts.html',
             controller: 'lastPostsController'
@@ -843,6 +847,13 @@ scotchApp.controller('lastResultsController', function ($scope, $http) {
     $http.get("../ajax/getLastResults.php")
         .then(function (response) {
             $scope.lastResults = response.data;
+        });
+});
+
+scotchApp.controller('weekMatchesController', function ($scope, $http) {
+    $http.get("../ajax/getWeekMatches.php")
+        .then(function (response) {
+            $scope.matches_of_the_week = response.data;
         });
 });
 
