@@ -22,7 +22,7 @@ class EmailsTest extends TestCase
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             "benallemand@gmail.com");
-        $this->assertIsInt($id);
+        $this->assertInternalType("int", $id);
         $this->assertNotEquals(0, $id);
         $email_manager->delete_email($id);
         $file_manager = new Files();
@@ -37,7 +37,7 @@ class EmailsTest extends TestCase
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             array($file_id));
-        $this->assertIsInt($id);
+        $this->assertInternalType("int", $id);
         $this->assertNotEquals(0, $id);
         $email_files = $email_manager->get_email_files($id);
         $this->assertEquals(1, count($email_files));
