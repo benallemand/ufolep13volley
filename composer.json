@@ -11,6 +11,6 @@
   ],
   "require": {
     "phpmailer/phpmailer": "~6.0",
-    "phpunit/phpunit": "8.2.5"
+    "phpunit/phpunit": "^6"
   }
 }
