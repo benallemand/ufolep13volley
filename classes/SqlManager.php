@@ -65,6 +65,57 @@ class SqlManager
     }
 
     /**
+     * @param $sql
+     * @return array
+     * @throws Exception
+     */
+    public function get_result($sql)
+    {
+        $results = $this->getResults($sql);
+        if (count($results) !== 1) {
+            throw new Exception("Error during SQL request: $sql ! 1 and only 1 result is expected");
+        }
+        return $results[0];
+    }
+
+    /**
+     * @param $sql
+     * @param $bindings
+     * @return int|string
+     * @throws Exception
+     */
+    public function execute($sql, $bindings = array())
+    {
+        $db = Database::openDbConnection();
+        $stmt = mysqli_prepare($db, $sql);
+        if ($stmt === FALSE) {
+            throw new Exception("SQL error : " . mysqli_error($db));
+        }
+        if (count($bindings) > 0) {
+            $array_params = array($stmt, '');
+            foreach ($bindings as $binding) {
+                $array_params[1] .= $binding['type'];
+            }
+            foreach ($bindings as $binding) {
+                $array_params[] = $binding['value'];
+            }
+            if (call_user_func_array('mysqli_stmt_bind_param', $this->make_values_referenced($array_params)) === FALSE) {
+                throw new Exception("SQL error : " . mysqli_error($db));
+            }
+        }
+        if (mysqli_stmt_execute($stmt) === FALSE) {
+            throw new Exception("SQL error : " . mysqli_error($db));
+        }
+        if (mysqli_stmt_close($stmt) === FALSE) {
+            throw new Exception("SQL error : " . mysqli_error($db));
+        }
+        if (strpos($sql, "INSERT INTO") === 0) {
+            return mysqli_insert_id($db);
+        }
+        return 0;
+    }
+
+    /**
      * @return array
      * @throws Exception
      */
@@ -254,5 +305,14 @@ class SqlManager
                 AND m.match_status != 'ARCHIVED'
                 ORDER BY m.code_match ASC";
         return $this->getResults($sql);
+    }
+
+    private function make_values_referenced($arr)
+    {
+        $refs = array();
+        foreach ($arr as $key => $value) {
+            $refs[$key] = &$arr[$key];
+        }
+        return $refs;
     }
 }

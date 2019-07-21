@@ -5,6 +5,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require_once __DIR__ . '/../includes/fonctions_inc.php';
 require_once __DIR__ . '/../classes/Configuration.php';
+require_once __DIR__ . '/../classes/SqlManager.php';
 
 require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/Exception.php';
 require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
@@ -12,6 +13,79 @@ require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
 
 class Emails
 {
+    /**
+     * @param $subject
+     * @param $body
+     * @param $from
+     * @param $to
+     * @param null $cc
+     * @param null $bcc
+     * @param array $file_ids
+     * @return int|string
+     * @throws \Exception
+     */
+    public function insert_email($subject,
+                                 $body,
+                                 $from,
+                                 $to,
+                                 $cc = "",
+                                 $bcc = "",
+                                 $file_ids = array())
+    {
+        $sql = "INSERT INTO emails (
+                    from_email, 
+                    to_email, 
+                    cc, 
+                    bcc, 
+                    subject, 
+                    body) VALUES (?,
+                                  ?, 
+                                  ?,
+                                  ?,
+                                  ?,
+                                  ?)";
+        $sql_manager = new SqlManager();
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $from
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $to
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $cc
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $bcc
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $subject
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $body
+        );
+        $email_id = $sql_manager->execute($sql, $bindings);
+        foreach ($file_ids as $file_id) {
+            $bindings = array();
+            $bindings[] = array(
+                'type' => 'i',
+                'value' => $email_id
+            );
+            $bindings[] = array(
+                'type' => 'i',
+                'value' => $file_id
+            );
+            $sql = "INSERT INTO emails_files (id_email, id_file) VALUES (?, ?)";
+            $sql_manager->execute($sql, $bindings);
+        }
+        return $email_id;
+    }
 
     /**
      * @param $subject
@@ -222,5 +296,82 @@ class Emails
                 "$code_match.zip"
             ));
         unlink("$code_match.zip");
+    }
+
+    /**
+     * @param int $id
+     * @throws \Exception
+     */
+    public function delete_email(int $id)
+    {
+        $sql = "DELETE FROM emails WHERE id = ?";
+        $sql_manager = new SqlManager();
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id
+        );
+        $sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @param int $email_id
+     * @return array
+     * @throws \Exception
+     */
+    public function get_email_files(int $email_id)
+    {
+        $sql = "SELECT * FROM emails_files WHERE id_email = $email_id";
+        $sql_manager = new SqlManager();
+        return $sql_manager->getResults($sql);
+    }
+
+    /**
+     * @param int $player_id
+     * @return int|string
+     * @throws \Exception
+     */
+    public function insert_email_notify_activated_player(int $player_id)
+    {
+        require_once __DIR__ . "/Players.php";
+        $players_manager = new Players();
+        $player = $players_manager->get_player($player_id);
+        $player_related_emails = $players_manager->get_related_emails($player_id);
+        if (count($player_related_emails) === 0) {
+            return 0;
+        }
+        $message = file_get_contents('../templates/emails/notify_activated_player.fr.html');
+        $message = str_replace('%full_name%', $player['full_name'], $message);
+        $message = str_replace('%date_homologation%', $player['date_homologation'], $message);
+        $message = str_replace('%teams_list%', $player['teams_list'], $message);
+        return $this->insert_email(
+            "[UFOLEP13VOLLEY]La licence de " . $player['full_name'] . " a été validée par la commission",
+            $message,
+            "no-reply@ufolep13volley.org",
+            implode(',', $player_related_emails),
+            "contact@ufolep13volley.org");
+    }
+
+    /**
+     * @param string $where
+     * @throws \Exception
+     */
+    public function delete_emails($where)
+    {
+        $sql = "DELETE FROM emails WHERE $where";
+        $sql_manager = new SqlManager();
+        $sql_manager->execute($sql);
+    }
+
+    /**
+     * @param string $where
+     * @return array
+     * @throws \Exception
+     */
+    public function get_emails(string $where = "1=1")
+    {
+        $sql = "SELECT * FROM emails WHERE $where";
+        $sql_manager = new SqlManager();
+        return $sql_manager->getResults($sql);
     }
 }

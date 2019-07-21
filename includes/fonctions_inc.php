@@ -2335,6 +2335,18 @@ function savePlayer()
                 $name = $inputs['nom'];
                 $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
                 addActivity($comment);
+                if ($fieldName === 'est_actif') {
+                    if ($fieldValue === 'on') {
+                        if (empty($inputs['id'])) {
+                            $player_id = $newId;
+                        } else {
+                            $player_id = $inputs['id'];
+                        }
+                        require_once __DIR__ . '/../classes/Emails.php';
+                        $email_manager = new Emails();
+                        $email_manager->insert_email_notify_activated_player($player_id);
+                    }
+                }
             }
         }
     }

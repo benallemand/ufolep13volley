@@ -54,4 +54,30 @@ class Files
         $id = null;
         $this->insertFileInDb($uploadfile, $id);
     }
+
+    /**
+     * @param string $path
+     * @param string $hash
+     * @return int|string
+     * @throws Exception
+     */
+    public function insert_file(string $path, string $hash)
+    {
+        $sql = "INSERT INTO files (
+                    path_file, 
+                    hash) VALUES (?,
+                                  ?)";
+        $sql_manager = new SqlManager();
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $path
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $hash
+        );
+        $file_id = $sql_manager->execute($sql, $bindings);
+        return $file_id;
+    }
 }

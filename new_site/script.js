@@ -209,10 +209,6 @@ scotchApp.config(function ($routeProvider) {
 });
 
 scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', function ($scope, $http, multipartForm) {
-    $http.get("../ajax/getLastCommit.php")
-        .then(function (response) {
-            $scope.lastCommit = response.data;
-        });
     $scope.today = new Date();
     // $scope.limit_date_for_report = new Date();
     // $scope.limit_date_for_report.setDate($scope.today.getDate() + 2);
