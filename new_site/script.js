@@ -205,6 +205,9 @@ scotchApp.config(function ($routeProvider) {
         })
         .when('/usefulInformations', {
             templateUrl: 'pages/useful_informations.html'
+        })
+        .when('/generalRules', {
+            templateUrl: 'pages/general_rules.html'
         });
 });
 
