@@ -70,7 +70,7 @@ class MatchManager extends Generic
         JOIN competitions c ON c.code_competition = m.code_competition
         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-        JOIN journees j ON j.id=m.id_journee
+        LEFT JOIN journees j ON j.id=m.id_journee
         LEFT JOIN creneau cr ON 
           cr.id_equipe = m.id_equipe_dom AND 
           cr.jour = ELT(WEEKDAY(m.date_reception) + 2,
@@ -463,8 +463,8 @@ class MatchManager extends Generic
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
+        $message = "Nombre de divisions : " . count($divisions) . PHP_EOL;
         $exceptions = array();
-        $message = "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
         foreach ($divisions as $division) {
             $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
                 $division['division'],
@@ -476,6 +476,10 @@ class MatchManager extends Generic
             // Generate the fixtures using the cyclic algorithm.
             $totalRounds = $teams_count - 1;
             $matchesPerRound = $teams_count / 2;
+            $message .= "Division : " . $division['division'] . PHP_EOL;
+            $message .= "Nombre d'équipes : " . $teams_count . PHP_EOL;
+            $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
+            $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
             $rounds = array();
             for ($i = 0; $i < $totalRounds; $i++) {
                 $rounds[$i] = array();
@@ -545,12 +549,14 @@ class MatchManager extends Generic
                     );
                 }
             }
-            try {
-                $this->insert_matches($to_be_inserted_matches);
-            } catch (Exception $e) {
-                $exceptions[] = $e->getMessage();
-                foreach ($to_be_inserted_matches as $to_be_inserted_match) {
-                    $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . " (division " . $to_be_inserted_match['division']['division'] . ")" . PHP_EOL;
+            $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
+            $message .= "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
+            foreach ($to_be_inserted_matches as $to_be_inserted_match) {
+                try {
+                    $this->insert_match($to_be_inserted_match);
+                } catch (Exception $e) {
+                    $exceptions[] = $e->getMessage();
+                    $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . PHP_EOL;
                 }
             }
         }
@@ -768,17 +774,61 @@ class MatchManager extends Generic
     }
 
     /**
-     * @param array $to_be_inserted_matches
+     * @param $id_journee
+     * @param $id_equipe
+     * @return int
      * @throws Exception
      */
-    private function insert_matches(array $to_be_inserted_matches)
+    private function count_matches_by_day_by_team($id_journee, $id_equipe)
     {
-        // exit if all matches have been inserted
-        if (count($to_be_inserted_matches) === 0) {
-            return;
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM matches
+                WHERE ( id_equipe_dom = $id_equipe 
+                        OR id_equipe_ext = $id_equipe)
+                    AND id_journee = $id_journee
+                    AND match_status != 'ARCHIVED'";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
         }
-        // get first match to be inserted
-        $to_be_inserted_match = $to_be_inserted_matches[count($to_be_inserted_matches) - 1];
+        return count($results);
+    }
+
+    /**
+     * @param $competition
+     * @param $division
+     * @param $day
+     * @return int
+     * @throws Exception
+     */
+    private function get_count_matches_per_day($competition, $division, $day)
+    {
+        $db = Database::openDbConnection();
+        $code_competition = $competition['code_competition'];
+        $division_number = $division['division'];
+        $id_day = $day['id'];
+        $sql = "SELECT * 
+                FROM matches
+                WHERE code_competition = '$code_competition' 
+                  AND division = '$division_number' 
+                  AND id_journee = $id_day
+                  AND match_status != 'ARCHIVED'";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results);
+    }
+
+    /**
+     * @param $to_be_inserted_match
+     * @throws Exception
+     */
+    private function insert_match($to_be_inserted_match)
+    {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
         $competition = $to_be_inserted_match['competition'];
@@ -872,58 +922,6 @@ class MatchManager extends Generic
         if (!$is_match_inserted) {
             throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name'] . ":" . PHP_EOL . $log_why_not_possible);
         }
-        array_pop($to_be_inserted_matches);
-        $this->insert_matches($to_be_inserted_matches);
-    }
-
-    /**
-     * @param $id_journee
-     * @param $id_equipe
-     * @return int
-     * @throws Exception
-     */
-    private function count_matches_by_day_by_team($id_journee, $id_equipe)
-    {
-        $db = Database::openDbConnection();
-        $sql = "SELECT * 
-                FROM matches
-                WHERE ( id_equipe_dom = $id_equipe 
-                        OR id_equipe_ext = $id_equipe)
-                    AND id_journee = $id_journee
-                    AND match_status != 'ARCHIVED'";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return count($results);
-    }
-
-    /**
-     * @param $competition
-     * @param $division
-     * @param $day
-     * @return int
-     * @throws Exception
-     */
-    private function get_count_matches_per_day($competition, $division, $day)
-    {
-        $db = Database::openDbConnection();
-        $code_competition = $competition['code_competition'];
-        $division_number = $division['division'];
-        $id_day = $day['id'];
-        $sql = "SELECT * 
-                FROM matches
-                WHERE code_competition = '$code_competition' 
-                  AND division = '$division_number' 
-                  AND id_journee = $id_day
-                  AND match_status != 'ARCHIVED'";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return count($results);
     }
 
 

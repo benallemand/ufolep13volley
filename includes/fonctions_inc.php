@@ -3823,7 +3823,8 @@ function archiveMatch($ids)
     global $db;
     conn_db();
     $sql = "UPDATE matches 
-            SET match_status = 'ARCHIVED' 
+            SET match_status = 'ARCHIVED',
+                id_journee = NULL
             WHERE id_match IN($ids)";
     $req = mysqli_query($db, $sql);
     disconn_db();
