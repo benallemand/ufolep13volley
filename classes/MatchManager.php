@@ -11,6 +11,33 @@ require_once __DIR__ . '/Generic.php';
 class MatchManager extends Generic
 {
     /**
+     * @param $id_equipe
+     * @return int
+     * @throws Exception
+     */
+    private static function get_generation_criticity($id_equipe)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT  g.nb_terrain - COUNT(c1.id_equipe) AS ratio
+        FROM equipes e
+        LEFT JOIN creneau c on e.id_equipe = c.id_equipe
+        LEFT JOIN creneau c1 on 
+            c1.id_gymnase = c.id_gymnase 
+                AND c1.jour = c.jour 
+                AND c1.id_equipe != c.id_equipe 
+                AND c1.id_equipe IN (SELECT id_equipe FROM classements)
+        LEFT JOIN gymnase g on c.id_gymnase = g.id
+        LEFT JOIN equipes e2 ON e2.id_equipe = c1.id_equipe
+        WHERE e.id_equipe = $id_equipe";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return intval($results[0]['ratio']);
+    }
+
+    /**
      * @param null $query
      * @return string
      */
@@ -428,6 +455,10 @@ class MatchManager extends Generic
         return true;
     }
 
+    /**
+     * @param $query
+     * @throws Exception
+     */
     public function unsetDayMatches($query)
     {
         $db = Database::openDbConnection();
@@ -557,11 +588,10 @@ class MatchManager extends Generic
             }
             $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
             $message .= "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
-            // TODO à voir: trier les matchs pour placer en premier ceux qui ont le + de contraintes
-            // 1 seul terrain ou + d'équipes que de terrains...
+            //$this->sort_matches_for_generation($to_be_inserted_matches);
             foreach ($to_be_inserted_matches as $to_be_inserted_match) {
                 try {
-                    $this->insert_match($to_be_inserted_match);
+                    $this->insert_match($to_be_inserted_match, false);
                 } catch (Exception $e) {
                     $exceptions[] = $e->getMessage();
                     $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . PHP_EOL;
@@ -596,6 +626,7 @@ class MatchManager extends Generic
      * @param $id_equipe_ext
      * @param $id_journee
      * @param string $date_match , format '%d/%m/%Y'
+     * @param $note
      * @return int|string
      * @throws Exception
      */
@@ -605,21 +636,23 @@ class MatchManager extends Generic
                                  $id_equipe_dom,
                                  $id_equipe_ext,
                                  $id_journee,
-                                 $date_match)
+                                 $date_match,
+                                 $note)
     {
         $db = Database::openDbConnection();
         $sql = "INSERT INTO matches SET 
-                code_match = '$code_match', 
+                code_match = " . (is_null($code_match) ? "NULL" : "'$code_match'") . ", 
                 code_competition = '$code_competition', 
                 division = '$division',
                 id_equipe_dom = $id_equipe_dom,
                 id_equipe_ext = $id_equipe_ext,
-                id_journee = $id_journee,
-                date_reception = STR_TO_DATE('$date_match', '%d/%m/%Y')";
+                id_journee = " . (is_null($id_journee) ? "NULL" : "$id_journee") . ",
+                date_reception = " . (is_null($date_match) ? "NULL" : "STR_TO_DATE('$date_match', '%d/%m/%Y')") . ",
+                note = " . (is_null($note) ? "NULL" : "'" . mysqli_real_escape_string($db, $note) . "'");
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             $message = mysqli_error($db);
-            throw new Exception($message);
+            throw new Exception($message . ", SQL : " . $sql);
         }
         return mysqli_insert_id($db);
     }
@@ -647,7 +680,7 @@ class MatchManager extends Generic
                                               WHERE creneau.id_equipe = $id_equipe_dom)
                 WHERE cr.id_equipe = $id_equipe_dom
                       AND j.id = $id_journee
-                      ORDER BY cr.usage_priority ASC";
+                      ORDER BY cr.usage_priority";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -833,9 +866,10 @@ class MatchManager extends Generic
 
     /**
      * @param $to_be_inserted_match
+     * @param bool $throw_exception
      * @throws Exception
      */
-    private function insert_match($to_be_inserted_match)
+    private function insert_match($to_be_inserted_match, $try_flip = true)
     {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
@@ -923,14 +957,48 @@ class MatchManager extends Generic
                 $team_dom['id_equipe'],
                 $team_ext['id_equipe'],
                 $day['id'],
-                $found_date);
+                $found_date,
+                null);
             $is_match_inserted = true;
             break;
         }
         if (!$is_match_inserted) {
-            //TODO insert match without found_date, code_match, day_id (check that fields are nullable)
-            throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name'] . ":" . PHP_EOL . $log_why_not_possible);
+            // TODO essayer d'intervertir le match de la semaine où l'une des 2 equipes peut jouer...
+            if ($try_flip) {
+                $this->insert_match(array(
+                    'dom' => $to_be_inserted_match['ext'],
+                    'ext' => $to_be_inserted_match['dom'],
+                    'competition' => $to_be_inserted_match['competition'],
+                    'division' => $to_be_inserted_match['division']
+                ), false);
+            } else {
+                $note = "Impossible de trouver une date pour le match : " . PHP_EOL . $log_why_not_possible;
+                $this->insertMatch(
+                    null,
+                    $competition['code_competition'],
+                    $division['division'],
+                    $team_dom['id_equipe'],
+                    $team_ext['id_equipe'],
+                    null,
+                    null,
+                    $note);
+            }
         }
+    }
+
+    /**
+     * Trier les matchs pour placer en premier ceux qui ont le + de contraintes
+     * 1 seul terrain ou + d'équipes que de terrains...
+     *
+     * @param array $to_be_inserted_matches
+     */
+    private function sort_matches_for_generation(array &$to_be_inserted_matches)
+    {
+        usort($to_be_inserted_matches, function ($match_a, $match_b) {
+            $criticity_a = MatchManager::get_generation_criticity($match_a['dom']['id_equipe']);
+            $criticity_b = MatchManager::get_generation_criticity($match_b['dom']['id_equipe']);
+            return ($criticity_a - $criticity_b);
+        });
     }
 
 
