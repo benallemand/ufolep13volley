@@ -450,6 +450,7 @@ class MatchManager extends Generic
         if (empty($competition)) {
             throw new Exception("Compétition non trouvée !");
         }
+        // aller/retour pour le chapionnat 4x4 mixte
         $code_competition = $competition['code_competition'];
         switch ($code_competition) {
             case 'mo':
@@ -459,6 +460,7 @@ class MatchManager extends Generic
                 $is_mirror_needed = false;
                 break;
         }
+        // supprimer les matchs générés et non confirmés pour la compétition (on préserver les matchs archivés)
         $this->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
@@ -474,6 +476,7 @@ class MatchManager extends Generic
                 $teams_count++;
             }
             // Generate the fixtures using the cyclic algorithm.
+            // source: http://bluebones.net/fixtures.php
             $totalRounds = $teams_count - 1;
             $matchesPerRound = $teams_count / 2;
             $message .= "Division : " . $division['division'] . PHP_EOL;
@@ -519,6 +522,7 @@ class MatchManager extends Generic
                     $rounds[$round][0] = $this->flip($rounds[$round][0]);
                 }
             }
+            // si matchs aller/retour, on prend le tableau et on inverse chaque élément
             if ($is_mirror_needed) {
                 $mirror_rounds = array();
                 foreach ($rounds as $round) {
@@ -539,8 +543,10 @@ class MatchManager extends Generic
                     if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
                         continue;
                     }
+                    // on récupère les équipes correspondantes selon leur position de départ dans la division
                     $team_dom = $teams[intval($index_teams[0])];
                     $team_ext = $teams[intval($index_teams[1])];
+                    // on remplit le tableau avec les matchs à insérer
                     $to_be_inserted_matches[] = array(
                         'dom' => $team_dom,
                         'ext' => $team_ext,
@@ -551,6 +557,8 @@ class MatchManager extends Generic
             }
             $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
             $message .= "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
+            // TODO à voir: trier les matchs pour placer en premier ceux qui ont le + de contraintes
+            // 1 seul terrain ou + d'équipes que de terrains...
             foreach ($to_be_inserted_matches as $to_be_inserted_match) {
                 try {
                     $this->insert_match($to_be_inserted_match);
