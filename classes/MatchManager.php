@@ -920,6 +920,7 @@ class MatchManager extends Generic
             break;
         }
         if (!$is_match_inserted) {
+            //TODO insert match without found_date, code_match, day_id (check that fields are nullable)
             throw new Exception("Impossible de créer le match " . $team_dom['team_full_name'] . " contre " . $team_ext['team_full_name'] . ":" . PHP_EOL . $log_why_not_possible);
         }
     }
