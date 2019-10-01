@@ -376,6 +376,26 @@ GROUP BY m.code_competition, e.id_equipe
 HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1
 ORDER BY e.nom_equipe ASC, m.code_competition ASC");
 
+$indicatorMatchGenerationCriticity = new Indicator(
+    "Criticité de génération des matchs",
+    "SELECT  e.nom_equipe, 
+                  COUNT(c1.id_equipe) AS nb_equipes_meme_creneau,
+                  g.nb_terrain,
+                  g.nb_terrain - COUNT(c1.id_equipe) AS ratio
+        FROM equipes e
+        LEFT JOIN creneau c on e.id_equipe = c.id_equipe
+        LEFT JOIN creneau c1 on 
+            c1.id_gymnase = c.id_gymnase 
+                AND c1.jour = c.jour 
+                AND c1.id_equipe != c.id_equipe 
+                AND c1.id_equipe IN (SELECT id_equipe FROM classements)
+        LEFT JOIN gymnase g on c.id_gymnase = g.id
+        LEFT JOIN equipes e2 ON e2.id_equipe = c1.id_equipe
+        WHERE e.id_equipe IN (SELECT id_equipe FROM classements)
+        GROUP BY e.nom_equipe 
+        ORDER BY ratio");
+
+
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -398,6 +418,7 @@ $results[] = $indicatorMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorTooMuchMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
 $results[] = $indicatorEquityBetweenHomeAndAway->getResult();
+$results[] = $indicatorMatchGenerationCriticity->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
