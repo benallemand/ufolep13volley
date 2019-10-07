@@ -11,6 +11,8 @@
   ],
   "require": {
     "phpmailer/phpmailer": "~6.0",
-    "phpunit/phpunit": "^6"
+    "phpunit/phpunit": "^6",
+    "ext-mysqli": "*",
+    "ext-zip": "*"
   }
 }

@@ -11,33 +11,6 @@ require_once __DIR__ . '/Generic.php';
 class MatchManager extends Generic
 {
     /**
-     * @param $id_equipe
-     * @return int
-     * @throws Exception
-     */
-    private static function get_generation_criticity($id_equipe)
-    {
-        $db = Database::openDbConnection();
-        $sql = "SELECT  g.nb_terrain - COUNT(c1.id_equipe) AS ratio
-        FROM equipes e
-        LEFT JOIN creneau c on e.id_equipe = c.id_equipe
-        LEFT JOIN creneau c1 on 
-            c1.id_gymnase = c.id_gymnase 
-                AND c1.jour = c.jour 
-                AND c1.id_equipe != c.id_equipe 
-                AND c1.id_equipe IN (SELECT id_equipe FROM classements)
-        LEFT JOIN gymnase g on c.id_gymnase = g.id
-        LEFT JOIN equipes e2 ON e2.id_equipe = c1.id_equipe
-        WHERE e.id_equipe = $id_equipe";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return intval($results[0]['ratio']);
-    }
-
-    /**
      * @param null $query
      * @return string
      */
@@ -591,7 +564,7 @@ class MatchManager extends Generic
             //$this->sort_matches_for_generation($to_be_inserted_matches);
             foreach ($to_be_inserted_matches as $to_be_inserted_match) {
                 try {
-                    $this->insert_match($to_be_inserted_match, false);
+                    $this->insert_match($to_be_inserted_match, true);
                 } catch (Exception $e) {
                     $exceptions[] = $e->getMessage();
                     $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . PHP_EOL;
@@ -658,29 +631,32 @@ class MatchManager extends Generic
     }
 
     /**
-     * @param $id_journee
+     * @param $code_competition
      * @param $id_equipe_dom
      * @return mixed
      * @throws Exception
      */
-    private function getComputedDates($id_journee, $id_equipe_dom)
+    private function getComputedDates($code_competition, $id_equipe_dom)
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(cr.jour,
-                                                 'Lundi',
-                                                 'Mardi',
-                                                 'Mercredi',
-                                                 'Jeudi',
-                                                 'Vendredi',
-                                                 'Samedi',
-                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date
+                                                                 'Lundi',
+                                                                 'Mardi',
+                                                                 'Mercredi',
+                                                                 'Jeudi',
+                                                                 'Vendredi',
+                                                                 'Samedi',
+                                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date,
+                       j.numero                                                                   AS week_number,
+                       j.id                                                                       AS week_id
                 FROM journees j
-                  JOIN creneau cr ON cr.id IN (SELECT creneau.id
-                                              FROM creneau
-                                              WHERE creneau.id_equipe = $id_equipe_dom)
+                         JOIN creneau cr ON cr.id IN (SELECT creneau.id
+                                                      FROM creneau
+                                                      WHERE creneau.id_equipe = $id_equipe_dom)
+                         JOIN classements c on cr.id_equipe = c.id_equipe
                 WHERE cr.id_equipe = $id_equipe_dom
-                      AND j.id = $id_journee
-                      ORDER BY cr.usage_priority";
+                  AND j.code_competition = '$code_competition'
+                ORDER BY week_number, cr.usage_priority";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
@@ -840,21 +816,20 @@ class MatchManager extends Generic
     /**
      * @param $competition
      * @param $division
-     * @param $day
+     * @param $week_id
      * @return int
      * @throws Exception
      */
-    private function get_count_matches_per_day($competition, $division, $day)
+    private function get_count_matches_per_day($competition, $division, $week_id)
     {
         $db = Database::openDbConnection();
         $code_competition = $competition['code_competition'];
         $division_number = $division['division'];
-        $id_day = $day['id'];
         $sql = "SELECT * 
                 FROM matches
                 WHERE code_competition = '$code_competition' 
                   AND division = '$division_number' 
-                  AND id_journee = $id_day
+                  AND id_journee = $week_id
                   AND match_status != 'ARCHIVED'";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
@@ -866,7 +841,7 @@ class MatchManager extends Generic
 
     /**
      * @param $to_be_inserted_match
-     * @param bool $throw_exception
+     * @param bool $try_flip
      * @throws Exception
      */
     private function insert_match($to_be_inserted_match, $try_flip = true)
@@ -876,74 +851,43 @@ class MatchManager extends Generic
         $competition = $to_be_inserted_match['competition'];
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
-        if ($team_dom['has_timeslot'] === '0') {
-            if ($team_ext['has_timeslot'] === '0') {
-                $dom_full_name = $team_dom['team_full_name'];
-                $ext_full_name = $team_ext['team_full_name'];
-                throw new Exception("$dom_full_name et $ext_full_name n'ont pas de créneau de réception");
-            }
-            $team_dom = $to_be_inserted_match['ext'];
-            $team_ext = $to_be_inserted_match['dom'];
-        }
-        require_once __DIR__ . '/../classes/DayManager.php';
-        $day_manager = new DayManager();
-        $days = $day_manager->getDays(
-            "j.code_competition = '$code_competition'"
-        );
-        if (count($days) == 0) {
-            throw new Exception("Il n'y a pas de journée pour la competition $code_competition");
-        }
-        if ($team_dom['has_timeslot'] == '0') {
-            throw new Exception("L'équipe " . $team_dom['team_full_name'] . " n'a pas de créneau de réception");
-        }
-        $is_match_inserted = false;
         $log_why_not_possible = "";
-        foreach ($days as $index_day => $day) {
-            $id_journee = $day['id'];
-            if ($this->count_matches_by_day_by_team($id_journee, $team_dom['id_equipe']) > 0) {
-                $log_why_not_possible .= "- la semaine du " . $day['start_date'] . " car l'équipe qui reçoit joue déjà cette semaine." . PHP_EOL;
+        $is_date_found = false;
+        $computed_dates = $this->getComputedDates($code_competition, $team_dom['id_equipe']);
+        $found_date = null;
+        foreach ($computed_dates as $computed_date) {
+            if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase est plein." . PHP_EOL;
                 continue;
             }
-            if ($this->count_matches_by_day_by_team($id_journee, $team_ext['id_equipe']) > 0) {
-                $log_why_not_possible .= "- la semaine du " . $day['start_date'] . " car l'équipe qui se déplace joue déjà cette semaine." . PHP_EOL;
+            if ($this->isDateBlacklisted($computed_date['computed_date'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le jour est férié." . PHP_EOL;
                 continue;
             }
-            $is_date_found = false;
-            $computed_dates = $this->getComputedDates($id_journee, $team_dom['id_equipe']);
-            $found_date = null;
-            foreach ($computed_dates as $computed_date) {
-                if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase est plein." . PHP_EOL;
-                    continue;
-                }
-                if ($this->isDateBlacklisted($computed_date['computed_date'])) {
-                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le jour est férié." . PHP_EOL;
-                    continue;
-                }
-                if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase n'est pas dispo." . PHP_EOL;
-                    continue;
-                }
-                if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit ne peut pas jouer ce jour là." . PHP_EOL;
-                    continue;
-                }
-                if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
-                    $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace ne peut pas jouer ce jour là." . PHP_EOL;
-                    continue;
-                }
-                $is_date_found = true;
-                $found_date = $computed_date['computed_date'];
-                break;
-            }
-            if (!$is_date_found) {
+            if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase n'est pas dispo." . PHP_EOL;
                 continue;
             }
-            $round_number = $index_day + 1;
-            $match_number = $this->get_count_matches_per_day(
-                    $competition,
-                    $division,
-                    $day) + 1;
+            if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit ne peut pas jouer ce jour là." . PHP_EOL;
+                continue;
+            }
+            if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace ne peut pas jouer ce jour là." . PHP_EOL;
+                continue;
+            }
+            if ($this->isWeekAvailable($computed_date['week_id'], $team_dom['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit joue déjà cette semaine." . PHP_EOL;
+                continue;
+            }
+            if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
+                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace joue déjà cette semaine." . PHP_EOL;
+                continue;
+            }
+            $is_date_found = true;
+            $found_date = $computed_date['computed_date'];
+            $round_number = $computed_date['week_number'];
+            $match_number = $this->get_count_matches_per_day($competition, $division, $computed_date['week_id']) + 1;
             $year_month = date('ym');
             $code_match = strtoupper($competition['code_competition']) .
                 $year_month .
@@ -956,14 +900,12 @@ class MatchManager extends Generic
                 $division['division'],
                 $team_dom['id_equipe'],
                 $team_ext['id_equipe'],
-                $day['id'],
+                $computed_date['week_id'],
                 $found_date,
                 null);
-            $is_match_inserted = true;
             break;
         }
-        if (!$is_match_inserted) {
-            // TODO essayer d'intervertir le match de la semaine où l'une des 2 equipes peut jouer...
+        if (!$is_date_found) {
             if ($try_flip) {
                 $this->insert_match(array(
                     'dom' => $to_be_inserted_match['ext'],
@@ -986,20 +928,17 @@ class MatchManager extends Generic
         }
     }
 
-    /**
-     * Trier les matchs pour placer en premier ceux qui ont le + de contraintes
-     * 1 seul terrain ou + d'équipes que de terrains...
-     *
-     * @param array $to_be_inserted_matches
-     */
-    private function sort_matches_for_generation(array &$to_be_inserted_matches)
+    private function isWeekAvailable($week_id, $id_equipe)
     {
-        usort($to_be_inserted_matches, function ($match_a, $match_b) {
-            $criticity_a = MatchManager::get_generation_criticity($match_a['dom']['id_equipe']);
-            $criticity_b = MatchManager::get_generation_criticity($match_b['dom']['id_equipe']);
-            return ($criticity_a - $criticity_b);
-        });
+        $db = Database::openDbConnection();
+        $sql = "SELECT m.* FROM matches m 
+                WHERE m.id_journee = $week_id
+                AND (m.id_equipe_dom = $id_equipe OR m.id_equipe_ext = $id_equipe)";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results) > 0;
     }
-
-
 }
