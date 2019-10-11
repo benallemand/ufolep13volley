@@ -470,7 +470,7 @@ class MatchManager extends Generic
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
         $message = "Nombre de divisions : " . count($divisions) . PHP_EOL;
-        $exceptions = array();
+        $count_to_be_inserted_matches = 0;
         foreach ($divisions as $division) {
             $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
                 $division['division'],
@@ -560,25 +560,13 @@ class MatchManager extends Generic
                 }
             }
             $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
-            $message .= "L'opération a tenté de créer les matchs suivants:" . PHP_EOL;
-            //$this->sort_matches_for_generation($to_be_inserted_matches);
-            foreach ($to_be_inserted_matches as $to_be_inserted_match) {
-                try {
-                    $this->insert_match($to_be_inserted_match, true);
-                } catch (Exception $e) {
-                    $exceptions[] = $e->getMessage();
-                    $message .= "- " . $to_be_inserted_match['dom']['nom_equipe'] . " contre " . $to_be_inserted_match['ext']['nom_equipe'] . PHP_EOL;
-                }
-            }
+            $count_to_be_inserted_matches += count($to_be_inserted_matches);
+            $this->insert_matches($to_be_inserted_matches, $code_competition, $division['division'], 0, 0);
         }
-        if (count($exceptions) > 0) {
-            $message .= PHP_EOL . PHP_EOL;
-            $message .= "Il y a eu " . count($exceptions) . " erreur(s) pendant la génération:" . PHP_EOL;
-            foreach ($exceptions as $exception) {
-                $message .= $exception . PHP_EOL;
-            }
-            throw new Exception($message);
-        }
+        $count_inserted_matches = count($this->getMatches("m.code_competition = '$code_competition' AND m.match_status = 'NOT_CONFIRMED'"));
+        $message .= "Nombre de matchs à créer : $count_to_be_inserted_matches" . PHP_EOL;
+        $message .= "Nombre de matchs créés : $count_inserted_matches" . PHP_EOL;
+        throw new Exception($message);
     }
 
     /**
@@ -791,29 +779,6 @@ class MatchManager extends Generic
     }
 
     /**
-     * @param $id_journee
-     * @param $id_equipe
-     * @return int
-     * @throws Exception
-     */
-    private function count_matches_by_day_by_team($id_journee, $id_equipe)
-    {
-        $db = Database::openDbConnection();
-        $sql = "SELECT * 
-                FROM matches
-                WHERE ( id_equipe_dom = $id_equipe 
-                        OR id_equipe_ext = $id_equipe)
-                    AND id_journee = $id_journee
-                    AND match_status != 'ARCHIVED'";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return count($results);
-    }
-
-    /**
      * @param $competition
      * @param $division
      * @param $week_id
@@ -842,46 +807,39 @@ class MatchManager extends Generic
     /**
      * @param $to_be_inserted_match
      * @param bool $try_flip
+     * @return bool
      * @throws Exception
      */
-    private function insert_match($to_be_inserted_match, $try_flip = true)
+    private function insert_match($to_be_inserted_match, $try_flip = false)
     {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
         $competition = $to_be_inserted_match['competition'];
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
-        $log_why_not_possible = "";
         $is_date_found = false;
         $computed_dates = $this->getComputedDates($code_competition, $team_dom['id_equipe']);
         $found_date = null;
         foreach ($computed_dates as $computed_date) {
             if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase est plein." . PHP_EOL;
                 continue;
             }
             if ($this->isDateBlacklisted($computed_date['computed_date'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le jour est férié." . PHP_EOL;
                 continue;
             }
             if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car le gymnase n'est pas dispo." . PHP_EOL;
                 continue;
             }
             if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit ne peut pas jouer ce jour là." . PHP_EOL;
                 continue;
             }
             if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace ne peut pas jouer ce jour là." . PHP_EOL;
                 continue;
             }
             if ($this->isWeekAvailable($computed_date['week_id'], $team_dom['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui reçoit joue déjà cette semaine." . PHP_EOL;
                 continue;
             }
             if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
-                $log_why_not_possible .= "- le " . $computed_date['computed_date'] . " car l'équipe qui se déplace joue déjà cette semaine." . PHP_EOL;
                 continue;
             }
             $is_date_found = true;
@@ -907,28 +865,27 @@ class MatchManager extends Generic
         }
         if (!$is_date_found) {
             if ($try_flip) {
-                $this->insert_match(array(
-                    'dom' => $to_be_inserted_match['ext'],
-                    'ext' => $to_be_inserted_match['dom'],
-                    'competition' => $to_be_inserted_match['competition'],
-                    'division' => $to_be_inserted_match['division']
-                ), false);
-            } else {
-                $note = "Impossible de trouver une date pour le match : " . PHP_EOL . $log_why_not_possible;
-                $this->insertMatch(
-                    null,
-                    $competition['code_competition'],
-                    $division['division'],
-                    $team_dom['id_equipe'],
-                    $team_ext['id_equipe'],
-                    null,
-                    null,
-                    $note);
+                if ($this->is_flip_allowed($to_be_inserted_match['dom']) && $this->is_flip_allowed($to_be_inserted_match['ext'])) {
+                    return $this->insert_match(array(
+                        'dom' => $to_be_inserted_match['ext'],
+                        'ext' => $to_be_inserted_match['dom'],
+                        'competition' => $to_be_inserted_match['competition'],
+                        'division' => $to_be_inserted_match['division']
+                    ), false);
+                }
             }
         }
+        return $is_date_found;
     }
 
-    private function isWeekAvailable($week_id, $id_equipe)
+    /**
+     * @param $week_id
+     * @param $id_equipe
+     * @return bool
+     * @throws Exception
+     */
+    private
+    function isWeekAvailable($week_id, $id_equipe)
     {
         $db = Database::openDbConnection();
         $sql = "SELECT m.* FROM matches m 
@@ -940,5 +897,86 @@ class MatchManager extends Generic
             $results[] = $data;
         }
         return count($results) > 0;
+    }
+
+    function move_element($array, $index_from, $index_to)
+    {
+        $new_array = $array;
+        $out = array_splice($new_array, $index_from, 1);
+        array_splice($new_array, $index_to, 0, $out);
+        return $new_array;
+    }
+
+    /**
+     * @param array $to_be_inserted_matches
+     * @param $code_competition
+     * @param $division
+     * @param $index_match
+     * @param $index_place
+     * @return void
+     * @throws Exception
+     */
+    private
+    function insert_matches(array $to_be_inserted_matches,
+                            $code_competition,
+                            $division,
+                            $index_match,
+                            $index_place)
+    {
+        $matches = $this->getMatches("m.code_competition = '$code_competition' 
+                                             AND m.division = '$division' 
+                                             AND m.match_status = 'NOT_CONFIRMED'");
+        if (count($matches) === count($to_be_inserted_matches)) {
+            return;
+        }
+        $this->deleteMatches("code_competition = '$code_competition' 
+                                             AND division = '$division' 
+                                             AND match_status = 'NOT_CONFIRMED'");
+        if ($index_match === count($to_be_inserted_matches)) {
+            return;
+        }
+        if ($index_place === count($to_be_inserted_matches)) {
+            $this->insert_matches($to_be_inserted_matches, $code_competition, $division, $index_match + 1, 0);
+            return;
+        }
+        $to_be_inserted_matches = $this->move_element($to_be_inserted_matches, $index_match, $index_place);
+        $is_successful = true;
+        foreach ($to_be_inserted_matches as $to_be_inserted_match) {
+            if (!$this->insert_match($to_be_inserted_match, true)) {
+                $is_successful = false;
+                break;
+            }
+        }
+        if (!$is_successful) {
+            $this->insert_matches($to_be_inserted_matches, $code_competition, $division, $index_match, $index_place + 1);
+        }
+    }
+
+    private
+    function is_flip_allowed($team)
+    {
+        $db = Database::openDbConnection();
+        $id_team = $team['id_equipe'];
+        $sql = "SELECT 
+                       e.id_equipe,
+                       COUNT(DISTINCT matches_dom.id_match) AS domicile,
+                       COUNT(DISTINCT matches_ext.id_match) AS exterieur
+                FROM equipes e
+                       JOIN matches matches_dom
+                            ON matches_dom.id_equipe_dom = $id_team
+                       JOIN matches matches_ext
+                            ON matches_ext.id_equipe_ext = $id_team
+                WHERE 
+                    matches_dom.match_status != 'ARCHIVED'
+                    AND matches_ext.match_status != 'ARCHIVED'
+                    AND e.id_equipe = $id_team
+                GROUP BY e.id_equipe
+                HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 2";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results) === 0;
     }
 }
