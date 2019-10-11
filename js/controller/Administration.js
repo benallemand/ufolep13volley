@@ -2014,6 +2014,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     params: {
                         ids: ids.join(',')
                     },
+                    timeout: 300000,
                     success: function (response, opts) {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
                         grid.getStore().load();
