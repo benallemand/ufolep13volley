@@ -353,7 +353,7 @@ WHERE m.match_status != 'ARCHIVED'
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), m.date_reception
 HAVING COUNT(DISTINCT m.id_match) > gymnase.nb_terrain
 ORDER BY COUNT(DISTINCT m.id_match) DESC");
-
+// TODO ne remonte pas les equipes sans match à dom ou ext...
 $indicatorEquityBetweenHomeAndAway = new Indicator(
     "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT e.nom_equipe                         AS equipe,
        m.code_competition                   AS competition,
@@ -363,17 +363,17 @@ FROM equipes e
        JOIN matches m ON
     m.id_equipe_dom = e.id_equipe
     OR m.id_equipe_ext = e.id_equipe
-       JOIN matches matches_dom
+       LEFT JOIN matches matches_dom
             ON e.id_equipe = matches_dom.id_equipe_dom
               AND matches_dom.code_competition = m.code_competition
-       JOIN matches matches_ext
+       LEFT JOIN matches matches_ext
             ON e.id_equipe = matches_ext.id_equipe_ext
               AND matches_ext.code_competition = m.code_competition
 WHERE m.match_status != 'ARCHIVED'
 AND matches_dom.match_status != 'ARCHIVED'
 AND matches_ext.match_status != 'ARCHIVED'
 GROUP BY m.code_competition, e.id_equipe
-HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 1
+HAVING ABS(domicile-exterieur) > 2 OR domicile = 0 OR exterieur = 0
 ORDER BY e.nom_equipe ASC, m.code_competition ASC");
 
 $indicatorMatchGenerationCriticity = new Indicator(
