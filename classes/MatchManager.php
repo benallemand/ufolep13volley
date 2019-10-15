@@ -865,14 +865,12 @@ class MatchManager extends Generic
         }
         if (!$is_date_found) {
             if ($try_flip) {
-                if ($this->is_flip_allowed($to_be_inserted_match['dom']) && $this->is_flip_allowed($to_be_inserted_match['ext'])) {
-                    return $this->insert_match(array(
-                        'dom' => $to_be_inserted_match['ext'],
-                        'ext' => $to_be_inserted_match['dom'],
-                        'competition' => $to_be_inserted_match['competition'],
-                        'division' => $to_be_inserted_match['division']
-                    ), false);
-                }
+                return $this->insert_match(array(
+                    'dom' => $to_be_inserted_match['ext'],
+                    'ext' => $to_be_inserted_match['dom'],
+                    'competition' => $to_be_inserted_match['competition'],
+                    'division' => $to_be_inserted_match['division']
+                ), false);
             }
         }
         return $is_date_found;
@@ -952,26 +950,27 @@ class MatchManager extends Generic
         }
     }
 
-    private
-    function is_flip_allowed($team)
+    /**
+     * @param $team
+     * @return bool
+     * @throws Exception
+     */
+    private function is_flip_allowed($team)
     {
         $db = Database::openDbConnection();
         $id_team = $team['id_equipe'];
         $sql = "SELECT 
-                       e.id_equipe,
-                       COUNT(DISTINCT matches_dom.id_match) AS domicile,
-                       COUNT(DISTINCT matches_ext.id_match) AS exterieur
-                FROM equipes e
-                       JOIN matches matches_dom
-                            ON matches_dom.id_equipe_dom = $id_team
-                       JOIN matches matches_ext
-                            ON matches_ext.id_equipe_ext = $id_team
-                WHERE 
-                    matches_dom.match_status != 'ARCHIVED'
-                    AND matches_ext.match_status != 'ARCHIVED'
-                    AND e.id_equipe = $id_team
-                GROUP BY e.id_equipe
-                HAVING ABS(COUNT(DISTINCT matches_dom.id_match) - COUNT(DISTINCT matches_ext.id_match)) > 2";
+                       SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
+                       SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
+                       m.code_competition                           AS competition,
+                       e.nom_equipe                                 AS equipe
+                FROM matches m
+                         JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
+                WHERE m.match_status != 'ARCHIVED'
+                AND e.id_equipe = $id_team
+                GROUP BY competition, equipe
+                HAVING ABS(domicile - exterieur) > 2
+                ORDER BY competition, equipe";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
