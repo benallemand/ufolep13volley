@@ -3863,3 +3863,58 @@ function unconfirmMatch($ids)
     }
     return true;
 }
+
+function deleteBlacklistTeams($ids)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM blacklist_teams WHERE id IN($ids)";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        return false;
+    }
+    return true;
+}
+
+function saveBlacklistTeams()
+{
+    global $db;
+    $inputs = filter_input_array(INPUT_POST);
+    conn_db();
+    if (empty($inputs['id'])) {
+        $sql = "INSERT INTO";
+    } else {
+        $sql = "UPDATE";
+    }
+    $sql .= " blacklist_teams SET ";
+    foreach ($inputs as $key => $value) {
+        switch ($key) {
+            case 'id':
+            case 'dirtyFields':
+                continue;
+            case 'id_team_1':
+            case 'id_team_2':
+                $sql .= "$key = $value,";
+                break;
+            default:
+                $value = mysqli_real_escape_string($db, $value);
+                $sql .= "$key = '$value',";
+                break;
+        }
+    }
+    $sql = trim($sql, ',');
+    if (empty($inputs['id'])) {
+
+    } else {
+        $sql .= " WHERE id=" . $inputs['id'];
+    }
+    $req = mysqli_query($db, $sql);
+    if ($req === FALSE) {
+        $message = mysqli_error($db);
+        disconn_db();
+        throw new Exception($message);
+    }
+    disconn_db();
+    return;
+}

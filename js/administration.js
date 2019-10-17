@@ -121,6 +121,10 @@ Ext.application({
                                         action: 'displayBlacklistTeam'
                                     },
                                     {
+                                        text: 'Gestion des équipes interdites de jouer ensemble',
+                                        action: 'displayBlacklistTeams'
+                                    },
+                                    {
                                         text: 'Gestion des dates interdites',
                                         action: 'displayBlacklistDate'
                                     }

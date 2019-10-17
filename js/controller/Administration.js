@@ -424,6 +424,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'Timeslots',
         'BlacklistGymnase',
         'BlacklistTeam',
+        'BlacklistTeams',
         'BlacklistDate'
     ],
     models: [
@@ -446,6 +447,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'Timeslot',
         'BlacklistGymnase',
         'BlacklistTeam',
+        'BlacklistTeams',
         'BlacklistDate'
     ],
     views: [
@@ -482,6 +484,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         'window.BlacklistGymnase',
         'grid.BlacklistTeam',
         'window.BlacklistTeam',
+        'grid.BlacklistTeams',
+        'window.BlacklistTeams',
         'grid.BlacklistDate',
         'window.BlacklistDate',
         'grid.Timeslots',
@@ -951,8 +955,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'menuitem[action=displayBlacklistTeam]': {
                     click: this.displayBlacklistTeam
                 },
+                'menuitem[action=displayBlacklistTeams]': {
+                    click: this.displayBlacklistTeams
+                },
                 'blacklistteam_grid': {
                     added: this.addToolbarBlacklistTeam
+                },
+                'blacklistteams_grid': {
+                    added: this.addToolbarBlacklistTeams
                 },
                 'button[action=addBlacklistTeam]': {
                     click: this.addBlacklistTeam
@@ -965,6 +975,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'blacklistteam_edit button[action=save]': {
                     click: this.updateBlacklistTeam
+                },
+                'button[action=addBlacklistTeams]': {
+                    click: this.addBlacklistTeams
+                },
+                'button[action=editBlacklistTeams]': {
+                    click: this.editBlacklistTeams
+                },
+                'button[action=deleteBlacklistTeams]': {
+                    click: this.deleteBlacklistTeams
+                },
+                'blacklistteams_edit button[action=save]': {
+                    click: this.updateBlacklistTeams
                 },
                 'menuitem[action=displayBlacklistDate]': {
                     click: this.displayBlacklistDate
@@ -1070,7 +1092,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                             layout: 'fit',
                                             items: {
                                                 xtype: 'grid',
-                                                viewConfig : {
+                                                viewConfig: {
                                                     enableTextSelection: true
                                                 },
                                                 autoScroll: true,
@@ -1719,6 +1741,79 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 success: function () {
                     thisController.getStore('BlacklistTeam').load();
+                    button.up('window').close();
+                },
+                failure: function (form, action) {
+                    Ext.Msg.alert('Erreur', action.result.message);
+                }
+            });
+        }
+    },
+    addBlacklistTeams: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        var windowEdit = Ext.widget('blacklistteams_edit');
+        if (!record) {
+            return;
+        }
+        record.set('id', null);
+        windowEdit.down('form').loadRecord(record);
+    },
+    editBlacklistTeams: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var windowEdit = Ext.widget('blacklistteams_edit');
+        windowEdit.down('form').loadRecord(record);
+    },
+    deleteBlacklistTeams: function (button) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length == 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Supprimer?',
+            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var ids = [];
+                Ext.each(records, function (record) {
+                    ids.push(record.get('id'));
+                });
+                Ext.Ajax.request({
+                    url: 'ajax/deleteBlacklistTeams.php',
+                    params: {
+                        ids: ids.join(',')
+                    },
+                    success: function () {
+                        grid.getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    updateBlacklistTeams: function (button) {
+        var thisController = this;
+        var form = button.up('form').getForm();
+        if (form.isValid()) {
+            var dirtyFieldsJson = form.getFieldValues(true);
+            var dirtyFieldsArray = [];
+            for (var key in dirtyFieldsJson) {
+                dirtyFieldsArray.push(key);
+            }
+            form.submit({
+                params: {
+                    dirtyFields: dirtyFieldsArray.join(',')
+                },
+                success: function () {
+                    thisController.getStore('BlacklistTeams').load();
                     button.up('window').close();
                 },
                 failure: function (form, action) {
@@ -2722,6 +2817,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     displayBlacklistTeam: function () {
         this.showAdministrationGrid('blacklistteam_grid');
     },
+    displayBlacklistTeams: function () {
+        this.showAdministrationGrid('blacklistteams_grid');
+    },
     addToolbarBlacklistTeam: function (grid) {
         grid.addDocked({
             xtype: 'toolbar',
@@ -2742,6 +2840,49 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteBlacklistTeam'
+                }
+            ]
+        });
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'FILTRES',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Recherche'
+                },
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Total',
+                    action: 'displayFilteredCount'
+                }
+            ]
+        });
+    },
+    addToolbarBlacklistTeams: function (grid) {
+        grid.addDocked({
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                'ACTIONS',
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Ajouter',
+                    action: 'addBlacklistTeams'
+                },
+                {
+                    text: 'Modifier',
+                    action: 'editBlacklistTeams'
+                },
+                {
+                    text: 'Supprimer',
+                    action: 'deleteBlacklistTeams'
                 }
             ]
         });
