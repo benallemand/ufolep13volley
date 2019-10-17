@@ -842,6 +842,9 @@ class MatchManager extends Generic
             if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
                 continue;
             }
+            if ($this->isTeamsBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                continue;
+            }
             $is_date_found = true;
             $found_date = $computed_date['computed_date'];
             $round_number = $computed_date['week_number'];
@@ -977,5 +980,55 @@ class MatchManager extends Generic
             $results[] = $data;
         }
         return count($results) === 0;
+    }
+
+    private function isTeamsBlacklisted($computed_date, $id_equipe)
+    {
+        $blacklistedTeamIds = $this->getBlackListedTeamIds($id_equipe);
+        foreach ($blacklistedTeamIds as $blacklistedTeamId) {
+            if ($this->has_match($blacklistedTeamId, $computed_date)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function getBlackListedTeamIds($id_equipe)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM blacklist_teams
+                WHERE id_team_1 = $id_equipe
+                OR id_team_2 = $id_equipe";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        $blacklisted_teams_ids = array();
+        foreach ($results as $result) {
+            if ($result['id_team_1'] == $id_equipe) {
+                $blacklisted_teams_ids[] = $result['id_team_2'];
+            } else {
+                $blacklisted_teams_ids[] = $result['id_team_1'];
+            }
+        }
+        return $blacklisted_teams_ids;
+    }
+
+    private function has_match($team_id, $date_string)
+    {
+        $db = Database::openDbConnection();
+        $sql = "SELECT * 
+                FROM matches
+                WHERE
+                      (id_equipe_dom = $team_id OR id_equipe_ext = $team_id) 
+                  AND date_reception = STR_TO_DATE('$date_string', '%d/%m/%Y')";
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+        $results = array();
+        while ($data = mysqli_fetch_assoc($req)) {
+            $results[] = $data;
+        }
+        return count($results) > 0;
     }
 }
