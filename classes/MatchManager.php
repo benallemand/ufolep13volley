@@ -14,9 +14,9 @@ class MatchManager extends Generic
      * @param null $query
      * @return string
      */
-    private function getSql($query = null)
+    private function getSql($query = "1=1")
     {
-        $sql = "SELECT DISTINCT
+        return "SELECT DISTINCT
         m.id_match,
         m.code_match,
         m.code_competition,
@@ -82,30 +82,23 @@ class MatchManager extends Generic
                                   'Vendredi',
                                   'Samedi')
         LEFT JOIN matches_files mf ON mf.id_match = m.id_match
-            WHERE 
-            1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
-        return $sql;
+            WHERE $query";
     }
 
     /**
      * @param null $query
      * @return string
      */
-    private function getSqlMatchFiles($query = null)
+    private function getSqlMatchFiles($query = "1=1")
     {
+        // group by to avoid duplicate files in zip file
         $sql = "SELECT 
         f.id,
         f.path_file,
         f.hash
         FROM files f 
         JOIN matches_files mf ON mf.id_file = f.id
-        WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
+        WHERE $query GROUP BY f.hash";
         return $sql;
     }
 
@@ -317,9 +310,7 @@ class MatchManager extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (empty($inputs['id_match'])) {
-
-        } else {
+        if (!empty($inputs['id_match'])) {
             $sql .= " WHERE id_match=" . $inputs['id_match'];
         }
         $req = mysqli_query($db, $sql);
@@ -432,13 +423,10 @@ class MatchManager extends Generic
      * @param $query
      * @throws Exception
      */
-    public function unsetDayMatches($query)
+    public function unsetDayMatches($query = "1=1")
     {
         $db = Database::openDbConnection();
-        $sql = "UPDATE matches SET id_journee = NULL WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
+        $sql = "UPDATE matches SET id_journee = NULL WHERE $query";
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             throw new Exception("Erreur durant unsetDayMatches: " . mysqli_error($db));
@@ -706,13 +694,10 @@ class MatchManager extends Generic
      * @param $query
      * @throws Exception
      */
-    public function deleteMatches($query)
+    public function deleteMatches($query = "1=1")
     {
         $db = Database::openDbConnection();
-        $sql = "DELETE FROM matches WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
+        $sql = "DELETE FROM matches WHERE $query";
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             throw new Exception("Erreur durant l'effacement: " . mysqli_error($db));
@@ -982,6 +967,12 @@ class MatchManager extends Generic
         return count($results) === 0;
     }
 
+    /**
+     * @param $computed_date
+     * @param $id_equipe
+     * @return bool
+     * @throws Exception
+     */
     private function isTeamsBlacklisted($computed_date, $id_equipe)
     {
         $blacklistedTeamIds = $this->getBlackListedTeamIds($id_equipe);
@@ -993,6 +984,11 @@ class MatchManager extends Generic
         return false;
     }
 
+    /**
+     * @param $id_equipe
+     * @return array
+     * @throws Exception
+     */
     private function getBlackListedTeamIds($id_equipe)
     {
         $db = Database::openDbConnection();
@@ -1016,6 +1012,12 @@ class MatchManager extends Generic
         return $blacklisted_teams_ids;
     }
 
+    /**
+     * @param $team_id
+     * @param $date_string
+     * @return bool
+     * @throws Exception
+     */
     private function has_match($team_id, $date_string)
     {
         $db = Database::openDbConnection();
