@@ -100,6 +100,10 @@ class Emails
      */
     public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
     {
+        if(empty($to)) {
+            error_log("Email does not have any TO, subject: $subject, body: $body");
+            return;
+        }
         $mail = new PHPMailer();
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
