@@ -1,6 +1,6 @@
 Ext.application({
     requires: ['Ext.container.Viewport'],
-    controllers: ['Administration'],
+    controllers: ['Administration', 'manage_friendships'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {

@@ -1,39 +1,37 @@
 <?php
 require_once __DIR__ . '/Generic.php';
+require_once __DIR__ . '/../classes/SqlManager.php';
 
 class CompetitionManager extends Generic
 {
-    private function getSql($query = null)
+    private $sql_manager;
+
+    public function __construct()
     {
-        $sql = "SELECT 
+        $this->sql_manager = new SqlManager();
+    }
+
+    private function getSql($query = "1=1")
+    {
+        return "SELECT 
         c.id,
         c.code_competition,
         c.libelle,
         c.id_compet_maitre,
         DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date
         FROM competitions c
-        WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
-        return $sql;
+        WHERE $query";
     }
 
     /**
-     * @param null $query
+     * @param string $query
      * @return array
      * @throws Exception
      */
-    public function getCompetitions($query = null)
+    public function getCompetitions($query = "1=1")
     {
-        $db = Database::openDbConnection();
         $sql = $this->getSql($query);
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return $results;
+        return $this->sql_manager->getResults($sql);
     }
 
     /**
@@ -148,6 +146,10 @@ class CompetitionManager extends Generic
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function getBlacklistTeams()
     {
         $db = Database::openDbConnection();
@@ -167,4 +169,76 @@ class CompetitionManager extends Generic
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function get_friendships()
+    {
+        $sql = "SELECT f.id, 
+                       f.id_club_1, 
+                       f.id_club_2, 
+                       c1.nom AS nom_club_1,
+                       c2.nom AS nom_club_2
+                FROM friendships f
+                JOIN clubs c1 ON c1.id = f.id_club_1
+                JOIN clubs c2 ON c2.id = f.id_club_2";
+        return $this->sql_manager->getResults($sql);
+    }
+
+    /**
+     * @param $inputs
+     * @throws Exception
+     */
+    public function save_friendships($inputs)
+    {
+        $bindings = array();
+        if (empty($inputs['id'])) {
+            $sql = "INSERT INTO";
+        } else {
+            $sql = "UPDATE";
+        }
+        $sql .= " friendships SET ";
+        foreach ($inputs as $key => $value) {
+            switch ($key) {
+                case 'id':
+                case 'dirtyFields':
+                    continue;
+                case 'id_club_1':
+                case 'id_club_2':
+                    $bindings[] = array(
+                        'type' => 'i',
+                        'value' => $value
+                    );
+                    $sql .= "$key = ?,";
+                    break;
+                default:
+                    $bindings[] = array(
+                        'type' => 's',
+                        'value' => $value
+                    );
+                    $sql .= "$key = ?,";
+                    break;
+            }
+        }
+        $sql = trim($sql, ',');
+        if (!empty($inputs['id'])) {
+            $bindings[] = array(
+                'type' => 'i',
+                'value' => $inputs['id']
+            );
+            $sql .= " WHERE id = ?";
+        }
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @param $ids
+     * @throws Exception
+     */
+    public function delete_friendships($ids)
+    {
+        $sql = "DELETE FROM friendships WHERE id IN($ids)";
+        $this->sql_manager->execute($sql);
+    }
 }
