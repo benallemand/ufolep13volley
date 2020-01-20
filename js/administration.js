@@ -1,6 +1,6 @@
 Ext.application({
     requires: ['Ext.container.Viewport'],
-    controllers: ['Administration', 'manage_friendships'],
+    controllers: ['Administration', 'manage_friendships', 'remove_duplicate_files'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {
