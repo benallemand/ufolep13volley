@@ -3924,11 +3924,7 @@ function saveBlacklistTeams()
  */
 function remove_duplicate_files()
 {
-    require_once __DIR__ . '/../classes/SqlManager.php';
-    $sql_manager = new SqlManager();
-    $sql_manager->execute("DELETE f1
-                                FROM files f1,
-                                     files f2
-                                WHERE f1.id > f2.id
-                                  AND f1.hash = f2.hash");
+    require_once __DIR__ . '/../classes/CronTasks.php';
+    $cron_tasks = new CronTasks();
+    $cron_tasks->cleanupFiles();
 }
