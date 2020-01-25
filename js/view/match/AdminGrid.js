@@ -95,6 +95,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 {
                     text: 'Dé-confirmer',
                     action: 'unconfirmMatch'
+                },
+                {
+                    text: 'Gérer les présents',
+                    hidden: true,
+                    action: 'manage_match_players'
                 }
             ]
         },

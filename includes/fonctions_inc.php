@@ -1574,8 +1574,13 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
     return json_encode($results);
 }
 
-function getPlayers()
+function getPlayers($params)
 {
+    $where = "1=1";
+    if (!empty($params['query'])) {
+        $query = $params['query'];
+        $where = "CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') LIKE '%$query%'";
+    }
     global $db;
     conn_db();
     // TODO Filter teams in competition.
@@ -1605,6 +1610,54 @@ LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
 LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
 LEFT JOIN clubs c ON c.id = j.id_club
 LEFT JOIN photos p ON p.id = j.id_photo
+WHERE $where
+GROUP BY j.id";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $data['path_photo'] = accentedToNonAccented($data['path_photo']);
+        $results[] = $data;
+
+    }
+    return json_encode($results);
+}
+
+function getMatchPlayers($params)
+{
+    $where = "1=1";
+    if (!empty($params['id_match'])) {
+        $id_match = $params['id_match'];
+        $where = "mp.id_match = $id_match";
+    }
+    global $db;
+    conn_db();
+    $sql = "SELECT
+    CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
+    j.prenom, 
+    j.nom, 
+    j.telephone, 
+    j.email, 
+    j.num_licence,
+    p.path_photo,
+    j.sexe, 
+    j.departement_affiliation, 
+    j.est_actif+0 AS est_actif, 
+    j.id_club, 
+    c.nom AS club, 
+    j.telephone2, 
+    j.email2, 
+    j.est_responsable_club+0 AS est_responsable_club, 
+    j.show_photo+0 AS show_photo,
+    j.id, 
+    GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list,
+    DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation
+FROM match_player mp
+LEFT JOIN joueurs j ON mp.id_player = j.id 
+LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
+LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
+LEFT JOIN clubs c ON c.id = j.id_club
+LEFT JOIN photos p ON p.id = j.id_photo
+WHERE $where
 GROUP BY j.id";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
