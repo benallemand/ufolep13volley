@@ -66,22 +66,8 @@ class SqlManager
 
     /**
      * @param $sql
-     * @return array
-     * @throws Exception
-     */
-    public function get_result($sql)
-    {
-        $results = $this->getResults($sql);
-        if (count($results) !== 1) {
-            throw new Exception("Error during SQL request: $sql ! 1 and only 1 result is expected");
-        }
-        return $results[0];
-    }
-
-    /**
-     * @param $sql
      * @param $bindings
-     * @return int|string
+     * @return array|int|string
      * @throws Exception
      */
     public function execute($sql, $bindings = array())
@@ -106,13 +92,27 @@ class SqlManager
         if (mysqli_stmt_execute($stmt) === FALSE) {
             throw new Exception("SQL error : " . mysqli_error($db));
         }
+        if (strpos($sql, "SELECT") === 0) {
+            $mysqli_result = mysqli_stmt_get_result($stmt);
+            $results = array();
+            while ($data = mysqli_fetch_assoc($mysqli_result)) {
+                $results[] = $data;
+            }
+            if (mysqli_stmt_close($stmt) === FALSE) {
+                throw new Exception("SQL error : " . mysqli_error($db));
+            }
+            return $results;
+        }
+        if (strpos($sql, "INSERT INTO") === 0) {
+            if (mysqli_stmt_close($stmt) === FALSE) {
+                throw new Exception("SQL error : " . mysqli_error($db));
+            }
+            return mysqli_insert_id($db);
+        }
         if (mysqli_stmt_close($stmt) === FALSE) {
             throw new Exception("SQL error : " . mysqli_error($db));
         }
-        if (strpos($sql, "INSERT INTO") === 0) {
-            return mysqli_insert_id($db);
-        }
-        return 0;
+        return null;
     }
 
     /**
@@ -150,7 +150,7 @@ class SqlManager
                 )
                 AND m.date_reception < CURDATE() - INTERVAL 10 DAY
                 AND m.match_status != 'ARCHIVED'
-                ORDER BY m.code_match ASC";
+                ORDER BY m.code_match";
         return $this->getResults($sql);
     }
 
@@ -212,8 +212,8 @@ class SqlManager
                 )
                 AND m.score_equipe_dom = 0 AND m.score_equipe_ext = 0
                 AND m.match_status != 'ARCHIVED'
-                GROUP BY m.code_match
-                ORDER BY date_reception ASC";
+                GROUP BY m.code_match, m.date_reception
+                ORDER BY m.date_reception";
         return $this->getResults($sql);
     }
 
@@ -254,7 +254,7 @@ class SqlManager
                 WHERE (j.num_licence = '' OR j.num_licence IS NULL)
                 AND e.id_equipe IN (SELECT id_equipe FROM classements)
                 GROUP BY jresp.email
-                ORDER BY equipe ASC";
+                ORDER BY equipe";
         return $this->getResults($sql);
     }
 
@@ -303,7 +303,7 @@ class SqlManager
                 WHERE 
                 m.report_status IN ('ASKED_BY_DOM', 'ASKED_BY_EXT')
                 AND m.match_status != 'ARCHIVED'
-                ORDER BY m.code_match ASC";
+                ORDER BY m.code_match";
         return $this->getResults($sql);
     }
 
