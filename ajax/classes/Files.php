@@ -77,7 +77,22 @@ class Files
             'type' => 's',
             'value' => $hash
         );
-        $file_id = $sql_manager->execute($sql, $bindings);
-        return $file_id;
+        return $sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @param int $id
+     * @throws Exception
+     */
+    public function delete_file(int $id)
+    {
+        $sql = "DELETE FROM files WHERE id = ?";
+        $sql_manager = new SqlManager();
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id
+        );
+        $sql_manager->execute($sql, $bindings);
     }
 }
