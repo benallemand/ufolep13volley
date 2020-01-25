@@ -42,7 +42,6 @@ class CronTasks
      * @param $array_data_to_replace
      * @param $destination_email
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendGenericEmail($template_file_path, $array_data_to_replace, $destination_email)
     {
@@ -73,7 +72,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailAccountRecap()
     {
@@ -95,7 +93,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailActivity()
     {
@@ -127,7 +124,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailMatchesNotReported()
     {
@@ -154,7 +150,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailNextMatches()
     {
@@ -215,7 +210,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailPlayersWithoutLicenceNumber()
     {
@@ -239,7 +233,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailTeamLeadersWithoutEmail()
     {
@@ -267,7 +260,6 @@ class CronTasks
 
     /**
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailAlertReport()
     {
@@ -293,6 +285,9 @@ class CronTasks
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function cleanupFiles()
     {
         require_once __DIR__ . "/Database.php";
@@ -364,5 +359,45 @@ class CronTasks
             unlink(__DIR__ . "/../match_files/$current_existing_file");
         }
 
+    }
+
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
+     */
+    public function send_pending_emails()
+    {
+        $sql = "SELECT * FROM emails WHERE sending_status = 'TO_DO' AND creation_date > CURDATE() - INTERVAL 5 DAY LIMIT 10";
+        $pending_emails = $this->sql_manager->getResults($sql);
+        foreach ($pending_emails as $pending_email) {
+            $sql = "SELECT f.path_file FROM emails_files ef JOIN files f on ef.id_file = f.id WHERE id_email = ?";
+            $bindings = array();
+            $bindings[] = array(
+                'type' => 'i',
+                'value' => $pending_email['id']
+            );
+            $email_files = $this->sql_manager->execute($sql, $bindings);
+            $attachments = array();
+            foreach ($email_files as $email_file) {
+                $attachments[] = "../" . $email_file['path_file'];
+            }
+            try {
+                $this->email_manager->sendEmail(
+                    $pending_email['subject'],
+                    $pending_email['body'],
+                    $pending_email['from_email'],
+                    $pending_email['to_email'],
+                    $pending_email['cc'],
+                    $pending_email['bcc'],
+                    $attachments
+                );
+            } catch (Exception $exception) {
+                print_r("ERROR");
+                $this->email_manager->set_email_status($pending_email['id'], 'ERROR');
+                continue;
+            }
+            print_r("DONE");
+            $this->email_manager->set_email_status($pending_email['id'], 'DONE');
+        }
     }
 }
