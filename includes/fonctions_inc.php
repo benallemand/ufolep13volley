@@ -1635,30 +1635,26 @@ function getMatchPlayers($params)
     CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
     j.prenom, 
     j.nom, 
-    j.telephone, 
-    j.email, 
     j.num_licence,
     p.path_photo,
     j.sexe, 
     j.departement_affiliation, 
-    j.est_actif+0 AS est_actif, 
-    j.id_club, 
+    j.est_actif+0 AS est_actif,
     c.nom AS club, 
-    j.telephone2, 
-    j.email2, 
-    j.est_responsable_club+0 AS est_responsable_club, 
     j.show_photo+0 AS show_photo,
     j.id, 
-    GROUP_CONCAT( CONCAT(e.nom_equipe, '(',e.code_competition,')') SEPARATOR ', ') AS teams_list,
+    DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception, 
     DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation
 FROM match_player mp
-LEFT JOIN joueurs j ON mp.id_player = j.id 
+LEFT JOIN joueurs j ON mp.id_player = j.id
+LEFT JOIN matches m ON mp.id_match = m.id_match   
 LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
 LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
 LEFT JOIN clubs c ON c.id = j.id_club
 LEFT JOIN photos p ON p.id = j.id_photo
 WHERE $where
-GROUP BY j.id";
+GROUP BY CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')'), j.prenom, j.nom, j.num_licence, p.path_photo, j.sexe, j.departement_affiliation, j.est_actif+0, c.nom, j.show_photo+0, j.id, DATE_FORMAT(j.date_homologation, '%d/%m/%Y')
+ORDER BY club, j.nom";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
