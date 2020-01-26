@@ -107,7 +107,6 @@ class Emails
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-            case null:
                 $from = Configuration::MAIL_USERNAME;
                 $to = "benallemand@gmail.com";
                 $cc = "benallemand@gmail.com";
