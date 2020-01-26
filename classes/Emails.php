@@ -107,18 +107,16 @@ class Emails
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-                print_r($subject);
-                print_r($body);
-                print_r($from);
-                print_r($to);
-                print_r($cc);
-                print_r($bcc);
-                print_r($attachments);
-                return;
+            case null:
+                $from = Configuration::MAIL_USERNAME;
+                $to = "benallemand@gmail.com";
+                $cc = "benallemand@gmail.com";
+                $bcc = "benallemand@gmail.com";
+                break;
             default:
-                $mail->isSMTP();
                 break;
         }
+        $mail->isSMTP();
         $mail->CharSet = "UTF-8";
         $mail->Host = Configuration::MAIL_HOST;
         $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
