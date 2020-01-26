@@ -400,4 +400,14 @@ class CronTasks
             $this->email_manager->set_email_status($pending_email['id'], 'DONE');
         }
     }
+
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
+     */
+    public function retry_error_emails()
+    {
+        $sql = "UPDATE emails SET sending_status = 'TO_DO' WHERE sending_status = 'ERROR'";
+        $this->sql_manager->execute($sql);
+    }
 }

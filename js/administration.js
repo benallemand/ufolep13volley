@@ -4,7 +4,8 @@ Ext.application({
         'Administration',
         'manage_friendships',
         'remove_duplicate_files',
-        'manage_match_players'],
+        'manage_match_players',
+        'retry_error_emails'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {

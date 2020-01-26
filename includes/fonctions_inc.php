@@ -3977,3 +3977,12 @@ function remove_duplicate_files()
     $cron_tasks = new CronTasks();
     $cron_tasks->cleanupFiles();
 }
+/**
+ * @throws Exception
+ */
+function retry_error_emails()
+{
+    require_once __DIR__ . '/../classes/CronTasks.php';
+    $cron_tasks = new CronTasks();
+    $cron_tasks->retry_error_emails();
+}
