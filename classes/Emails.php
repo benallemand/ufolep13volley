@@ -284,11 +284,12 @@ class Emails
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $url_host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-        $match_manager->download(array(
-            'id' => $id_match,
-            'keep_file' => "true"
-        ));
+        $match_manager = new MatchManager();
+        $match_files = $match_manager->getMatchFiles($id_match);
+        $attached_files = array();
+        foreach ($match_files as $match_file) {
+            $attached_files[] = "../" . $match_file['path_file'];
+        }
         $this->sendEmail(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
@@ -296,10 +297,8 @@ class Emails
             $to,
             null,
             null,
-            array(
-                "$code_match.zip"
-            ));
-        unlink("$code_match.zip");
+            $attached_files
+        );
     }
 
     /**
