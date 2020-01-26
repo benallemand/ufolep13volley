@@ -18,8 +18,8 @@ class Emails
      * @param $body
      * @param $from
      * @param $to
-     * @param null $cc
-     * @param null $bcc
+     * @param string $cc
+     * @param string $bcc
      * @param array $file_ids
      * @return int|string
      * @throws \Exception
@@ -96,10 +96,13 @@ class Emails
      * @param null $bcc
      * @param null $attachments
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
     {
+        if (empty($to)) {
+            error_log("Email does not have any TO, subject: $subject, body: $body");
+            return;
+        }
         $mail = new PHPMailer();
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
@@ -120,12 +123,12 @@ class Emails
         foreach (explode(';', $to) as $toAddress) {
             $mail->addAddress($toAddress);
         }
-        if ($cc !== null) {
+        if (!empty($cc)) {
             foreach (explode(';', $cc) as $ccAddress) {
                 $mail->addCC($ccAddress);
             }
         }
-        if ($bcc !== null) {
+        if (!empty($bcc)) {
             foreach (explode(';', $bcc) as $bccAddress) {
                 $mail->addBCC($bccAddress);
             }
@@ -151,7 +154,6 @@ class Emails
      * @param $password
      * @param $idTeam
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailNewUser($email, $login, $password, $idTeam)
     {
@@ -170,7 +172,6 @@ class Emails
      * @param $reason
      * @param $id_team
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailAskForReport($code_match, $reason, $id_team)
     {
@@ -191,7 +192,6 @@ class Emails
      * @param $report_date
      * @param $id_team
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailGiveReportDate($code_match, $report_date, $id_team)
     {
@@ -212,7 +212,6 @@ class Emails
      * @param $reason
      * @param $id_team
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailRefuseReport($code_match, $reason, $id_team)
     {
@@ -232,7 +231,6 @@ class Emails
      * @param $code_match
      * @param $id_team
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailAcceptReport($code_match, $id_team)
     {
@@ -250,7 +248,6 @@ class Emails
     /**
      * @param $code_match
      * @throws Exception
-     * @throws phpmailerException
      */
     public function sendMailRefuseReportAdmin($code_match)
     {
@@ -266,7 +263,7 @@ class Emails
     /**
      * @param $code_match
      * @throws Exception
-     * @throws phpmailerException
+     * @throws \Exception
      */
     public function sendMailSheetReceived($code_match)
     {
@@ -280,11 +277,12 @@ class Emails
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $url_host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-        $match_manager->download(array(
-            'id' => $id_match,
-            'keep_file' => "true"
-        ));
+        $match_manager = new MatchManager();
+        $match_files = $match_manager->getMatchFiles($id_match);
+        $attached_files = array();
+        foreach ($match_files as $match_file) {
+            $attached_files[] = "../" . $match_file['path_file'];
+        }
         $this->sendEmail(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
@@ -292,10 +290,8 @@ class Emails
             $to,
             null,
             null,
-            array(
-                "$code_match.zip"
-            ));
-        unlink("$code_match.zip");
+            $attached_files
+        );
     }
 
     /**
@@ -348,19 +344,8 @@ class Emails
             "[UFOLEP13VOLLEY]La licence de " . $player['full_name'] . " a été validée par la commission",
             $message,
             "no-reply@ufolep13volley.org",
-            implode(',', $player_related_emails),
+            implode(';', $player_related_emails),
             "contact@ufolep13volley.org");
-    }
-
-    /**
-     * @param string $where
-     * @throws \Exception
-     */
-    public function delete_emails($where)
-    {
-        $sql = "DELETE FROM emails WHERE $where";
-        $sql_manager = new SqlManager();
-        $sql_manager->execute($sql);
     }
 
     /**
@@ -373,5 +358,26 @@ class Emails
         $sql = "SELECT * FROM emails WHERE $where";
         $sql_manager = new SqlManager();
         return $sql_manager->getResults($sql);
+    }
+
+    /**
+     * @param $id
+     * @param string $status
+     * @throws \Exception
+     */
+    public function set_email_status($id, string $status)
+    {
+        $sql = "UPDATE emails SET sending_status = ? WHERE id = ?";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $status
+        );
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id
+        );
+        $sql_manager = new SqlManager();
+        $sql_manager->execute($sql, $bindings);
     }
 }
