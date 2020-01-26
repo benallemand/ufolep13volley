@@ -384,4 +384,20 @@ class Emails
         $sql_manager = new SqlManager();
         $sql_manager->execute($sql, $bindings);
     }
+
+    /**
+     * @param $id
+     * @throws \Exception
+     */
+    public function set_sent_date($id)
+    {
+        $sql = "UPDATE emails SET sent_date = NOW() WHERE id = ?";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id
+        );
+        $sql_manager = new SqlManager();
+        $sql_manager->execute($sql, $bindings);
+    }
 }

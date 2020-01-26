@@ -398,6 +398,7 @@ class CronTasks
             }
             print_r("DONE");
             $this->email_manager->set_email_status($pending_email['id'], 'DONE');
+            $this->email_manager->set_sent_date($pending_email['id']);
         }
     }
 
