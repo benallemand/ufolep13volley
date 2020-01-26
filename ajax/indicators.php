@@ -386,6 +386,22 @@ $indicatorMatchGenerationCriticity = new Indicator(
         GROUP BY e.nom_equipe 
         ORDER BY ratio");
 
+$indicatorErrorInEmails = new Indicator(
+    "Emails en erreur",
+    "SELECT  
+            id,
+            from_email,
+            to_email,
+            cc,
+            bcc,
+            subject,
+            body,
+            creation_date,
+            sent_date
+        FROM emails
+        WHERE sending_status = 'ERROR'
+        ORDER BY creation_date DESC");
+
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -410,6 +426,7 @@ $results[] = $indicatorTooMuchMatchesByGymnasiumByDate->getResult();
 $results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
 $results[] = $indicatorEquityBetweenHomeAndAway->getResult();
 $results[] = $indicatorMatchGenerationCriticity->getResult();
+$results[] = $indicatorErrorInEmails->getResult();
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
