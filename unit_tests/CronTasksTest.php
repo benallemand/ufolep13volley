@@ -17,13 +17,13 @@ class CronTasksTest extends TestCase
         // create email
         $email_manager = new Emails();
         $file_manager = new Files();
+        $email_manager->delete_emails();
         $file_id = $file_manager->insert_file(
             "images/logo_ufolep.jpg",
             md5_file(__DIR__ . '/../images/logo_ufolep.jpg'));
         $id = $email_manager->insert_email(
             "test subject",
             "test body",
-            "no-reply@ufolep13volley.org",
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             "benallemand@gmail.com",

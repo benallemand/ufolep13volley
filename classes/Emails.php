@@ -16,7 +16,6 @@ class Emails
     /**
      * @param $subject
      * @param $body
-     * @param $from
      * @param $to
      * @param string $cc
      * @param string $bcc
@@ -26,7 +25,6 @@ class Emails
      */
     public function insert_email($subject,
                                  $body,
-                                 $from,
                                  $to,
                                  $cc = "",
                                  $bcc = "",
@@ -48,7 +46,7 @@ class Emails
         $bindings = array();
         $bindings[] = array(
             'type' => 's',
-            'value' => $from
+            'value' => Configuration::MAIL_USERNAME
         );
         $bindings[] = array(
             'type' => 's',
@@ -90,14 +88,13 @@ class Emails
     /**
      * @param $subject
      * @param $body
-     * @param $from
      * @param $to
      * @param null $cc
      * @param null $bcc
      * @param null $attachments
      * @throws Exception
      */
-    public function sendEmail($subject, $body, $from, $to, $cc = null, $bcc = null, $attachments = null)
+    public function sendEmail($subject, $body, $to, $cc = null, $bcc = null, $attachments = null)
     {
         if (empty($to)) {
             error_log("Email does not have any TO, subject: $subject, body: $body");
@@ -107,7 +104,6 @@ class Emails
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-                $from = Configuration::MAIL_USERNAME;
                 $to = "benallemand@gmail.com";
                 $cc = "benallemand@gmail.com";
                 $bcc = "benallemand@gmail.com";
@@ -123,7 +119,7 @@ class Emails
         $mail->Password = Configuration::MAIL_PASSWORD;
         $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
         $mail->Port = Configuration::MAIL_PORT;
-        $mail->setFrom($from);
+        $mail->setFrom(Configuration::MAIL_USERNAME);
         foreach (explode(';', $to) as $toAddress) {
             $mail->addAddress($toAddress);
         }
@@ -168,7 +164,7 @@ class Emails
         $message = str_replace('%password%', $password, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Identifiants de connexion", $message, 'no-reply@ufolep13volley.org', $email);
+        $this->sendEmail("[UFOLEP13VOLLEY]Identifiants de connexion", $message, $email);
     }
 
     /**
@@ -188,7 +184,7 @@ class Emails
         $message = str_replace('%reason%', $reason, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match", $message, $to);
     }
 
     /**
@@ -208,7 +204,7 @@ class Emails
         $message = str_replace('%report_date%', $report_date, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, $to);
     }
 
     /**
@@ -228,7 +224,7 @@ class Emails
         $message = str_replace('%reason%', $reason, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match", $message, $to);
     }
 
     /**
@@ -246,7 +242,7 @@ class Emails
         $message = str_replace('%code_match%', $code_match, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match", $message, $to);
     }
 
     /**
@@ -261,7 +257,7 @@ class Emails
         $message = file_get_contents('../templates/emails/sendMailRefuseReportAdmin.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match", $message, 'no-reply@ufolep13volley.org', $to);
+        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match", $message, $to);
     }
 
     /**
@@ -290,7 +286,6 @@ class Emails
         $this->sendEmail(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
-            'no-reply@ufolep13volley.org',
             $to,
             null,
             null,
@@ -311,6 +306,17 @@ class Emails
             'type' => 'i',
             'value' => $id
         );
+        $sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function delete_emails()
+    {
+        $sql = "DELETE FROM emails";
+        $sql_manager = new SqlManager();
+        $bindings = array();
         $sql_manager->execute($sql, $bindings);
     }
 
@@ -347,7 +353,6 @@ class Emails
         return $this->insert_email(
             "[UFOLEP13VOLLEY]La licence de " . $player['full_name'] . " a été validée par la commission",
             $message,
-            "no-reply@ufolep13volley.org",
             implode(';', $player_related_emails),
             "contact@ufolep13volley.org");
     }

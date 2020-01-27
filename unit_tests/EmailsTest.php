@@ -18,7 +18,6 @@ class EmailsTest extends TestCase
         $id = $email_manager->insert_email(
             "test subject",
             "test body",
-            "no-reply@ufolep13volley.org",
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             "benallemand@gmail.com");
@@ -32,7 +31,6 @@ class EmailsTest extends TestCase
         $id = $email_manager->insert_email(
             "test subject",
             "test body",
-            "no-reply@ufolep13volley.org",
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             "benallemand@gmail.com",

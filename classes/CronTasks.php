@@ -53,18 +53,16 @@ class CronTasks
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-                $this->email_manager->sendEmail(
+                $this->email_manager->insert_email(
                     $subject,
                     $message,
-                    'no-reply@ufolep13volley.org',
                     implode(";", array("benallemand@gmail.com"))
                 );
                 break;
             default:
-                $this->email_manager->sendEmail(
+                $this->email_manager->insert_email(
                     $subject,
                     $message,
-                    'no-reply@ufolep13volley.org',
                     $destination_email);
                 break;
         }
@@ -385,7 +383,6 @@ class CronTasks
                 $this->email_manager->sendEmail(
                     $pending_email['subject'],
                     $pending_email['body'],
-                    $pending_email['from_email'],
                     $pending_email['to_email'],
                     $pending_email['cc'],
                     $pending_email['bcc'],
