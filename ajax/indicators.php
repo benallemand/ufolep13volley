@@ -402,6 +402,21 @@ $indicatorErrorInEmails = new Indicator(
         WHERE sending_status = 'ERROR'
         ORDER BY creation_date DESC");
 
+$indicatorMatchesWithInvalidPlayers = new Indicator(
+    "Matchs avec joueurs non homologués",
+    "select m.code_match,
+                 m.date_reception,
+                 j.prenom,
+                 j.nom,
+                 c.nom as club,
+                 j.date_homologation
+          from matches m
+                   join match_player mp on m.id_match = mp.id_match
+                   join joueurs j on mp.id_player = j.id
+                   join clubs c on j.id_club = c.id
+          where j.date_homologation > m.date_reception
+             OR j.est_actif = 0
+          order by nom");
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -427,6 +442,8 @@ $results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
 $results[] = $indicatorEquityBetweenHomeAndAway->getResult();
 $results[] = $indicatorMatchGenerationCriticity->getResult();
 $results[] = $indicatorErrorInEmails->getResult();
+$results[] = $indicatorMatchesWithInvalidPlayers->getResult();
+
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
