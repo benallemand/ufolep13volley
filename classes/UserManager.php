@@ -79,7 +79,7 @@ class UserManager extends Generic
         if ($req === FALSE) {
             return false;
         }
-        $this->addActivity("Mot de passe modifie");
+        $this->addActivity("Préférence de réception modifiée: rappel de match");
         return true;
     }
 
