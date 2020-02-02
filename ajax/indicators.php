@@ -414,8 +414,8 @@ $indicatorMatchesWithInvalidPlayers = new Indicator(
                    join match_player mp on m.id_match = mp.id_match
                    join joueurs j on mp.id_player = j.id
                    join clubs c on j.id_club = c.id
-          where j.date_homologation > m.date_reception
-             OR j.est_actif = 0
+          where (j.date_homologation > m.date_reception OR j.est_actif = 0) 
+                AND m.match_status = 'CONFIRMED'
           order by nom");
 
 $results = array();
