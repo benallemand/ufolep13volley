@@ -799,28 +799,40 @@ class MatchManager extends Generic
         $computed_dates = $this->getComputedDates($code_competition, $team_dom['id_equipe']);
         $found_date = null;
         foreach ($computed_dates as $computed_date) {
+            // computed date is full (too many matches in same gymnasium)
             if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (holiday)
             if ($this->isDateBlacklisted($computed_date['computed_date'])) {
                 continue;
             }
+            // computed date is not allowed (gymnasium is not available)
             if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (home team is not available)
             if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (away team is not available)
             if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (home team already has a match)
             if ($this->isWeekAvailable($computed_date['week_id'], $team_dom['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (away team already has a match)
             if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
                 continue;
             }
+            // computed date is not allowed (home team cannot play if another team plays too)
             if ($this->isTeamsBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+                continue;
+            }
+            // computed date is not allowed (away team cannot play if another team plays too)
+            if ($this->isTeamsBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
                 continue;
             }
             $is_date_found = true;
