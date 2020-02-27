@@ -28,6 +28,16 @@ Ext.define('Ufolep13Volley.view.grid.Competitions', {
                 format: 'd/m/Y',
                 dataIndex: 'start_date',
                 flex: 1
+            },
+            {
+                header: 'Matchs aller-retour ?',
+                dataIndex: 'is_home_and_away',
+                xtype: 'checkcolumn',
+                listeners: {
+                    beforecheckchange: function () {
+                        return false;
+                    }
+                }
             }
         ]
     }

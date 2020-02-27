@@ -2701,6 +2701,7 @@ function getCompetitions()
         c.libelle,
         c.id_compet_maitre,
         IFNULL(DATE_FORMAT(c.start_date, '%d/%m/%Y'), '') AS start_date,
+        c.is_home_and_away+0 AS is_home_and_away,
         d.date_limite AS limit_date
         FROM competitions c
         LEFT JOIN dates_limite d ON d.code_competition = c.code_competition
@@ -2722,8 +2723,9 @@ function getCompetition($code_competition)
         code_competition,
         libelle,
         id_compet_maitre,
-        IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date
-        FROM competitions
+        IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date,
+        is_home_and_away+0 AS is_home_and_away
+  FROM competitions
         WHERE code_competition = '$code_competition'
         ORDER BY libelle";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -2880,6 +2882,10 @@ function saveCompetition()
                 continue;
             case 'start_date':
                 $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                break;
+            case 'is_home_and_away':
+                $val = ($value === 'on') ? 1 : 0;
+                $sql .= "$key = $val,";
                 break;
             default:
                 $value = mysqli_real_escape_string($db, $value);
@@ -3795,8 +3801,7 @@ function generateDays()
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
-            if ($code_competition == 'mo') {
-                // seule compétition retour
+            if ($competition['is_home_and_away'] === 1) {
                 $rounds_counts[] = ($teams_count - 1) * 2;
             } else {
                 $rounds_counts[] = $teams_count - 1;

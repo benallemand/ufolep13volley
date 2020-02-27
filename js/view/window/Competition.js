@@ -46,6 +46,13 @@ Ext.define('Ufolep13Volley.view.window.Competition', {
                 name: 'start_date',
                 allowBlank: true,
                 startDay: 1
+            },
+            {
+                name: 'is_home_and_away',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Matchs aller-retour ?',
+                boxLabel: 'Oui',
+                uncheckedValue: 'off'
             }
         ],
         buttons: [

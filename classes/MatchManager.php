@@ -442,16 +442,9 @@ class MatchManager extends Generic
         if (empty($competition)) {
             throw new Exception("Compétition non trouvée !");
         }
-        // aller/retour pour le chapionnat 4x4 mixte
+        // aller/retour pour le championnat 4x4 mixte
         $code_competition = $competition['code_competition'];
-        switch ($code_competition) {
-            case 'mo':
-                $is_mirror_needed = true;
-                break;
-            default:
-                $is_mirror_needed = false;
-                break;
-        }
+        $is_mirror_needed = ($competition['is_home_and_away'] === 1);
         // supprimer les matchs générés et non confirmés pour la compétition (on préserver les matchs archivés)
         $this->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
         require_once __DIR__ . '/../classes/RankManager.php';

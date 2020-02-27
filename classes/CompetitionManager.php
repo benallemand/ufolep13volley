@@ -18,7 +18,8 @@ class CompetitionManager extends Generic
         c.code_competition,
         c.libelle,
         c.id_compet_maitre,
-        DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date
+        DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date,
+        c.is_home_and_away+0 AS is_home_and_away
         FROM competitions c
         WHERE $query";
     }
