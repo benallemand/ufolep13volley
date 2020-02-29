@@ -11,6 +11,16 @@ require_once __DIR__ . '/Generic.php';
 class MatchManager extends Generic
 {
     /**
+     * MatchManager constructor.
+     */
+    public function __construct()
+    {
+        ini_set('max_execution_time', 1200);
+        ini_set('memory_limit', '512M');
+        ini_set('xdebug.max_nesting_level', 2000);
+    }
+
+    /**
      * @param null $query
      * @return string
      */
@@ -811,28 +821,12 @@ class MatchManager extends Generic
             if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
-            // computed date is not allowed (home team is not available)
-            if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                continue;
-            }
-            // computed date is not allowed (away team is not available)
-            if ($this->isTeamBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
-                continue;
-            }
             // computed date is not allowed (home team already has a match)
             if ($this->isWeekAvailable($computed_date['week_id'], $team_dom['id_equipe'])) {
                 continue;
             }
             // computed date is not allowed (away team already has a match)
             if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
-                continue;
-            }
-            // computed date is not allowed (home team cannot play if another team plays too)
-            if ($this->isTeamsBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
-                continue;
-            }
-            // computed date is not allowed (away team cannot play if another team plays too)
-            if ($this->isTeamsBlacklisted($computed_date['computed_date'], $team_ext['id_equipe'])) {
                 continue;
             }
             $is_date_found = true;
