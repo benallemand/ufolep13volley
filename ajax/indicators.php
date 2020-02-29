@@ -485,6 +485,7 @@ FROM blacklist_teams bt
          JOIN equipes eext on bt.id_team_2 = eext.id_equipe
 WHERE m_t1.date_reception = m_t2.date_reception
   AND m_t1.match_status != 'ARCHIVED'
+GROUP BY date_reception
 order by code_match");
 
 $results = array();
