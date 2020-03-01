@@ -41,6 +41,7 @@
                         <td class="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'warning':''}}"
                             title="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'Match reporté':''}}">
                             {{ x.date_reception }} - {{ x.heure_reception }}
+                            <div ng-show="x.match_status == 'NOT_CONFIRMED'" style="color: red"> Non Confirmé !</div>
                             <script src="//addtocalendar.com/atc/1.5/atc.min.js"></script>
                             <span class="addtocalendar atc-style-button-icon atc-style-menu-wb">
                                 <a class="atcb-link">
