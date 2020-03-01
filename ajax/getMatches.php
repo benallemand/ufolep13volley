@@ -18,7 +18,7 @@ try {
     } else {
         $query = "m.code_competition = '$compet' 
                   AND m.division = '$div'
-                  AND m.match_status = 'CONFIRMED' 
+                  AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED') 
                   ORDER BY j.nommage, m.date_reception, m.code_match";
     }
     echo json_encode($manager->getMatches($query));

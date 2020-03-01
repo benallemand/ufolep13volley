@@ -20,7 +20,7 @@ try {
         default:
             $query = "(m.id_equipe_dom = $id_team 
                       OR m.id_equipe_ext = $id_team)
-                      AND m.match_status = 'CONFIRMED' 
+                      AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED') 
                       ORDER BY j.nommage, m.date_reception, m.code_match";
             break;
     }

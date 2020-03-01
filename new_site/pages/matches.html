@@ -31,7 +31,9 @@
                     </tr>
 
                     <tr ng-repeat="x in matches | filter:{ journee: current_journee.journee }:true | filter:search"
-                        ng-hide="(hideCertifiedMatches == true && x.certif=='1')">
+                        ng-hide="(hideCertifiedMatches == true && x.certif=='1')"
+                        class="{{x.match_status == 'NOT_CONFIRMED' ? 'danger' : ''}}"
+                        title="{{x.match_status == 'NOT_CONFIRMED' ? 'Date non confirmée par la commission' : ''}}">
                         <td class="{{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
                             title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
                             {{ x.code_match }}

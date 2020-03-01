@@ -28,7 +28,7 @@ try {
                       OR m.id_equipe_ext IN (SELECT id_equipe 
                                              FROM equipes 
                                              WHERE id_club = $id_club))
-                      AND m.match_status = 'CONFIRMED' 
+                      AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED') 
                       ORDER BY j.nommage, m.date_reception, m.code_match";
             break;
     }
