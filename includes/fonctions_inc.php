@@ -585,7 +585,7 @@ function getLastResults()
     JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
     WHERE (
     (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
-    AND m.match_status != 'ARCHIVED'
+    AND m.match_status = 'CONFIRMED'
     AND (m.date_reception <= CURDATE())
     AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
     AND (a_modif.activity_date >= m.date_reception OR a_sheet_received.activity_date >= m.date_reception)
@@ -652,6 +652,7 @@ FROM matches m
          JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
          JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
 WHERE WEEK(m.date_reception) = WEEK(STR_TO_DATE('$date_string', '%d/%m/%Y'))
+AND m.match_status = 'CONFIRMED'
 ORDER BY c.libelle ASC, m.division ASC, j.nommage ASC, m.date_reception DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
@@ -864,7 +865,7 @@ function isTeamDomForMatch($id_team, $code_match)
     $sql = "SELECT * FROM matches 
         WHERE id_equipe_dom=$id_team 
         AND code_match='$code_match'
-        AND match_status != 'ARCHIVED'";
+        AND match_status = 'CONFIRMED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -904,7 +905,7 @@ function isSameRankingTable($id_equipe)
     conn_db();
     $sql = "SELECT * FROM matches 
         WHERE 
-              match_status != 'ARCHIVED'
+              match_status = 'CONFIRMED'
               AND(id_equipe_dom=$sessionIdEquipe 
                   OR id_equipe_ext=$sessionIdEquipe)";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
@@ -1083,7 +1084,7 @@ function getTeamsEmailsFromMatchReport($code_match)
       m.code_competition
       FROM matches m
       WHERE m.code_match = '$code_match'
-        AND m.match_status != 'ARCHIVED'";
+        AND m.match_status = 'CONFIRMED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $data = mysqli_fetch_assoc($req);
     $emailDom = getTeamEmail($data['id_equipe_dom']);
@@ -1117,7 +1118,7 @@ function getTeamsEmailsFromMatch($code_match)
       LEFT(m.division, 1) AS division
       FROM matches m
       WHERE m.code_match = '$code_match'
-        AND m.match_status != 'ARCHIVED'";
+        AND m.match_status = 'CONFIRMED'";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $data = mysqli_fetch_assoc($req);
     $emailDom = getTeamEmail($data['id_equipe_dom']);
