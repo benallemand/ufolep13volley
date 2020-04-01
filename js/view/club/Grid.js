@@ -11,6 +11,36 @@ Ext.define('Ufolep13Volley.view.club.Grid', {
                 header: 'Nom',
                 dataIndex: 'nom',
                 width: 300
+            },
+            {
+                header: "Numéro d'affiliation",
+                dataIndex: 'affiliation_number',
+                width: 300
+            },
+            {
+                dataIndex: 'nom_responsable',
+                header: "Nom",
+                flex: 1
+            },
+            {
+                dataIndex: 'prenom_responsable',
+                header: "Prénom",
+                flex: 1
+            },
+            {
+                dataIndex: 'tel1_responsable',
+                header: "Tel 1",
+                flex: 1
+            },
+            {
+                dataIndex: 'tel2_responsable',
+                header: "Tel 2",
+                flex: 1
+            },
+            {
+                dataIndex: 'email_responsable',
+                header: "Email",
+                flex: 1
             }
         ]
     },

@@ -787,35 +787,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'limitdatesgrid': {
                     itemdblclick: this.editLimitDate
                 },
-                'playeredit button[action=save]': {
-                    click: this.updatePlayer
-                },
-                'profileedit button[action=save]': {
-                    click: this.updateProfile
-                },
-                'useredit button[action=save]': {
-                    click: this.updateUser
-                },
-                'gymnasiumedit button[action=save]': {
-                    click: this.updateGymnasium
-                },
-                'clubedit button[action=save]': {
-                    click: this.updateClub
-                },
-                'teamedit button[action=save]': {
-                    click: this.updateTeam
-                },
-                'matchedit button[action=save]': {
-                    click: this.updateMatch
-                },
-                'rankedit button[action=save]': {
-                    click: this.updateRank
-                },
-                'dayedit button[action=save]': {
-                    click: this.updateDay
-                },
-                'limitdateedit button[action=save]': {
-                    click: this.updateLimitDate
+
+                'button[action=save]': {
+                    click: this.save
                 },
                 'menuitem[action=displayActivity]': {
                     click: this.showActivityGrid
@@ -862,15 +836,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'button[action=showTeamSelect]': {
                     click: this.showTeamSelect
                 },
-                'clubselect button[action=save]': {
-                    click: this.linkPlayerToClub
-                },
-                'profileselect button[action=save]': {
-                    click: this.linkUsersToProfile
-                },
-                'teamselect button[action=save]': {
-                    click: this.linkPlayerToTeam
-                },
                 'playersgrid button[action=delete]': {
                     click: this.deletePlayers
                 },
@@ -895,9 +860,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'button[action=deleteHallOfFame]': {
                     click: this.deleteHallOfFame
                 },
-                'hall_of_fame_edit button[action=save]': {
-                    click: this.updateHallOfFame
-                },
                 'menuitem[action=displayTimeslots]': {
                     click: this.displayTimeslots
                 },
@@ -912,9 +874,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=deleteTimeslot]': {
                     click: this.deleteTimeslot
-                },
-                'timeslot_edit button[action=save]': {
-                    click: this.updateTimeslot
                 },
                 'menuitem[action=displayCompetitions]': {
                     click: this.displayCompetitions
@@ -931,9 +890,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'button[action=deleteCompetition]': {
                     click: this.deleteCompetition
                 },
-                'competition_edit button[action=save]': {
-                    click: this.updateCompetition
-                },
                 'menuitem[action=displayBlacklistGymnase]': {
                     click: this.displayBlacklistGymnase
                 },
@@ -948,9 +904,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=deleteBlacklistGymnase]': {
                     click: this.deleteBlacklistGymnase
-                },
-                'blacklistgymnase_edit button[action=save]': {
-                    click: this.updateBlacklistGymnase
                 },
                 'menuitem[action=displayBlacklistTeam]': {
                     click: this.displayBlacklistTeam
@@ -973,9 +926,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'button[action=deleteBlacklistTeam]': {
                     click: this.deleteBlacklistTeam
                 },
-                'blacklistteam_edit button[action=save]': {
-                    click: this.updateBlacklistTeam
-                },
                 'button[action=addBlacklistTeams]': {
                     click: this.addBlacklistTeams
                 },
@@ -984,9 +934,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=deleteBlacklistTeams]': {
                     click: this.deleteBlacklistTeams
-                },
-                'blacklistteams_edit button[action=save]': {
-                    click: this.updateBlacklistTeams
                 },
                 'menuitem[action=displayBlacklistDate]': {
                     click: this.displayBlacklistDate
@@ -1002,9 +949,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 },
                 'button[action=deleteBlacklistDate]': {
                     click: this.deleteBlacklistDate
-                },
-                'blacklistdate_edit button[action=save]': {
-                    click: this.updateBlacklistDate
                 },
                 'button[action=archiveMatch]': {
                     click: this.archiveMatch
@@ -1406,7 +1350,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteHallOfFame: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1434,29 +1378,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateHallOfFame: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('HallOfFame').load();
-                    button.up('window').close();
-                },
-                failure: function (response, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addTimeslot: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1479,7 +1400,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteTimeslot: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1507,29 +1428,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateTimeslot: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('Timeslots').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addCompetition: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1552,7 +1450,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteCompetition: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1580,29 +1478,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateCompetition: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('Competitions').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addBlacklistGymnase: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1625,7 +1500,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteBlacklistGymnase: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1653,29 +1528,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateBlacklistGymnase: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('BlacklistGymnase').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addBlacklistTeam: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1698,7 +1550,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteBlacklistTeam: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1726,29 +1578,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateBlacklistTeam: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('BlacklistTeam').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addBlacklistTeams: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1771,7 +1600,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteBlacklistTeams: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1799,29 +1628,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateBlacklistTeams: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('BlacklistTeams').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     addBlacklistDate: function (button) {
         var grid = button.up('grid');
         var record = grid.getSelectionModel().getSelection()[0];
@@ -1844,7 +1650,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteBlacklistDate: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1872,33 +1678,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updateBlacklistDate: function (button) {
-        var thisController = this;
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getStore('BlacklistDate').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
     deleteUsers: function () {
         var me = this;
         var records = this.getManageUsersGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1929,7 +1712,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteGymnasiums: function () {
         var me = this;
         var records = this.getManageGymnasiumsGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1960,7 +1743,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteClubs: function () {
         var me = this;
         var records = this.getManageClubsGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -1991,7 +1774,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteTeams: function () {
         var me = this;
         var records = this.getManageTeamsGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2022,7 +1805,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteMatches: function () {
         var me = this;
         var records = this.getManageMatchesGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2053,7 +1836,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteRanks: function () {
         var me = this;
         var records = this.getManageRanksGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2084,7 +1867,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     genericRequest: function (button, title, url, is_one_record_allowed) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         if (records.length > 1 && is_one_record_allowed === true) {
@@ -2110,12 +1893,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         ids: ids.join(',')
                     },
                     timeout: 600000,
-                    success: function (response, opts) {
+                    success: function () {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
                         grid.getStore().load();
                     },
-                    failure: function (response, opts) {
-                        if (response.status == '404') {
+                    failure: function (response) {
+                        if (response.status === '404') {
                             Ext.Msg.alert('Erreur', "La page n'a pas été trouvée !");
                             return;
                         }
@@ -2151,7 +1934,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteDays: function () {
         var me = this;
         var records = this.getManageDaysGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2182,7 +1965,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteLimitDates: function () {
         var me = this;
         var records = this.getManageLimitDatesGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2213,7 +1996,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deletePlayers: function () {
         var me = this;
         var records = this.getManagePlayersGrid().getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2241,9 +2024,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    updatePlayer: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditPlayer().getForm();
+    save: function (button) {
+        var viewport = Ext.ComponentQuery.query('viewport')[0];
+        var form = button.up('form').getForm();
         if (form.isValid()) {
             var dirtyFieldsJson = form.getFieldValues(true);
             var dirtyFieldsArray = [];
@@ -2255,226 +2038,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
                 success: function () {
-                    thisController.getPlayersStore().load();
-                    thisController.getWindowEditPlayer().close();
-                    thisController.getManagePlayersGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateProfile: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditProfile().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getProfilesStore().load();
-                    thisController.getWindowEditProfile().close();
-                    thisController.getManageProfilesGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateUser: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditUser().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getUsersStore().load();
-                    thisController.getWindowEditUser().close();
-                    thisController.getManageUsersGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateGymnasium: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditGymnasium().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getGymnasiumsStore().load();
-                    thisController.getWindowEditGymnasium().close();
-                    thisController.getManageGymnasiumsGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateClub: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditClub().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getClubsStore().load();
-                    thisController.getWindowEditClub().close();
-                    thisController.getManageClubsGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateTeam: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditTeam().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getTeamsStore().load();
-                    thisController.getWindowEditTeam().close();
-                    thisController.getManageTeamsGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateMatch: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditMatch().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function (form, action) {
-                    Ext.Msg.alert('Modification OK', action.result.message);
-                    thisController.getAdminMatchesStore().load();
-                    thisController.getWindowEditMatch().close();
-                    thisController.getManageMatchesGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateRank: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditRank().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getAdminRanksStore().load();
-                    thisController.getWindowEditRank().close();
-                    thisController.getManageRanksGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateDay: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditDay().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getAdminDaysStore().load();
-                    thisController.getWindowEditDay().close();
-                    thisController.getManageDaysGrid().getSelectionModel().deselectAll();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    updateLimitDate: function () {
-        var thisController = this;
-        var form = this.getFormPanelEditLimitDate().getForm();
-        if (form.isValid()) {
-            var dirtyFieldsJson = form.getFieldValues(true);
-            var dirtyFieldsArray = [];
-            for (var key in dirtyFieldsJson) {
-                dirtyFieldsArray.push(key);
-            }
-            form.submit({
-                params: {
-                    dirtyFields: dirtyFieldsArray.join(',')
-                },
-                success: function () {
-                    thisController.getLimitDatesStore().load();
-                    thisController.getWindowEditLimitDate().close();
-                    thisController.getManageLimitDatesGrid().getSelectionModel().deselectAll();
+                    viewport.down('tabpanel').getActiveTab().getStore().load();
+                    button.up('window').close();
                 },
                 failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
@@ -2568,51 +2133,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.getFormPanelSelectTeam().getForm().setValues({
             id_players: idPlayers.join(',')
         });
-    },
-    linkPlayerToClub: function () {
-        var thisController = this;
-        var form = this.getFormPanelSelectClub().getForm();
-        if (form.isValid()) {
-            form.submit({
-                success: function () {
-                    thisController.getPlayersStore().load();
-                    thisController.getWindowSelectClub().close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    linkUsersToProfile: function () {
-        var thisController = this;
-        var form = this.getFormPanelSelectProfile().getForm();
-        if (form.isValid()) {
-            form.submit({
-                success: function () {
-                    thisController.getUsersStore().load();
-                    thisController.getWindowSelectProfile().close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
-    },
-    linkPlayerToTeam: function () {
-        var thisController = this;
-        var form = this.getFormPanelSelectTeam().getForm();
-        if (form.isValid()) {
-            form.submit({
-                success: function () {
-                    thisController.getPlayersStore().load();
-                    thisController.getWindowSelectTeam().close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
     },
     displayHallOfFame: function () {
         this.showAdministrationGrid('hall_of_fame_grid');
@@ -2955,7 +2475,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     archiveMatch: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -2986,7 +2506,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     confirmMatch: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
@@ -3017,7 +2537,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     unconfirmMatch: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
-        if (records.length == 0) {
+        if (records.length === 0) {
             return;
         }
         Ext.Msg.show({

@@ -2675,23 +2675,6 @@ function getGymnasiums()
     return json_encode($results);
 }
 
-function getClubs()
-{
-    global $db;
-    conn_db();
-    $sql = "SELECT 
-        id, 
-        nom
-        FROM clubs
-        ORDER BY nom";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    return json_encode($results);
-}
-
 function getCompetitions()
 {
     global $db;
@@ -3046,44 +3029,6 @@ function saveBlacklistDate()
     }
     disconn_db();
     return;
-}
-
-function saveClub()
-{
-    global $db;
-    $inputs = array(
-        'id' => filter_input(INPUT_POST, 'id'),
-        'nom' => filter_input(INPUT_POST, 'nom')
-    );
-    conn_db();
-    if (empty($inputs['id'])) {
-        $sql = "INSERT INTO";
-    } else {
-        $sql = "UPDATE";
-    }
-    $sql .= " clubs SET ";
-    foreach ($inputs as $key => $value) {
-        switch ($key) {
-            case 'id':
-                continue;
-            default:
-                $value = mysqli_real_escape_string($db, $value);
-                $sql .= "$key = '$value',";
-                break;
-        }
-    }
-    $sql = trim($sql, ',');
-    if (empty($inputs['id'])) {
-
-    } else {
-        $sql .= " WHERE id=" . $inputs['id'];
-    }
-    $req = mysqli_query($db, $sql);
-    disconn_db();
-    if ($req === FALSE) {
-        return false;
-    }
-    return true;
 }
 
 /**
@@ -3983,6 +3928,7 @@ function remove_duplicate_files()
     $cron_tasks = new CronTasks();
     $cron_tasks->cleanupFiles();
 }
+
 /**
  * @throws Exception
  */

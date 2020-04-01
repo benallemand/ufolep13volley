@@ -18,9 +18,6 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
                 'button[action=manage_match_players]': {
                     click: this.manage_match_players
                 },
-                'button[action=save]': {
-                    click: this.save
-                },
                 'matchesgrid': {
                     selectionchange: this.manage_display
                 }
@@ -34,20 +31,6 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
             selected.length !== 1 ||
             selected[0].get('match_status') !== 'CONFIRMED';
         button.setHidden(is_hidden);
-    },
-    save: function (button) {
-        var form = button.up('form').getForm();
-        if (form.isValid()) {
-            form.submit({
-                success: function () {
-                    Ext.data.StoreManager.lookup('Players').load();
-                    button.up('window').close();
-                },
-                failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
-                }
-            });
-        }
     },
     manage_match_players: function (button) {
         var current_record = button.up('grid').getSelectionModel().getSelection()[0];

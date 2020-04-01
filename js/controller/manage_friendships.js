@@ -32,9 +32,6 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                 },
                 'friendships_grid > toolbar > button[action=delete]': {
                     click: this.display_delete
-                },
-                'button[action=save]': {
-                    click: this.save
                 }
             }
         );

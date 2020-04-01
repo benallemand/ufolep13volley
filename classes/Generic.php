@@ -85,4 +85,18 @@ class Generic
         }
         return $results;
     }
+
+    protected function build_activity($subject, $dirty_fields, $inputs)
+    {
+        if (empty($dirty_fields)) {
+            return null;
+        }
+        $fieldsArray = explode(',', $dirty_fields);
+        $comment = "$subject : " . "<br/>";
+        foreach ($fieldsArray as $fieldName) {
+            $fieldValue = $inputs[$fieldName];
+            $comment .= "- $fieldName => $fieldValue" . "<br/>";
+        }
+        return $comment;
+    }
 }
