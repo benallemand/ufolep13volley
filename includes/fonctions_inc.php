@@ -620,6 +620,26 @@ function getLastResults()
     return json_encode($results);
 }
 
+function getLastNews()
+{
+    global $db;
+    conn_db();
+    $sql = "SELECT 
+                n.id,
+                n.title,
+                n.file_path,
+                DATE_FORMAT(n.news_date, ' %a %d/%m/%Y') AS news_date
+            FROM news n
+            ORDER BY n.news_date DESC";
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
+    $results = array();
+    $results = array();
+    while ($data = mysqli_fetch_assoc($req)) {
+        $results[] = $data;
+    }
+    return json_encode($results);
+}
+
 function getWeekMatches($date_string)
 {
     global $db;

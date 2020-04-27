@@ -459,6 +459,11 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
         });
     };
 
+    $http.get("../ajax/getLastNews.php")
+        .then(function (response) {
+            $scope.lastNews = response.data;
+        });
+
 }]);
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
