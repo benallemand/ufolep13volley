@@ -3,6 +3,7 @@ Ext.application({
     controllers: [
         'Administration',
         'manage_friendships',
+        'manage_blacklist_by_city',
         'remove_duplicate_files',
         'manage_match_players',
         'retry_error_emails'],

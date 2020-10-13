@@ -242,4 +242,87 @@ class CompetitionManager extends Generic
         $sql = "DELETE FROM friendships WHERE id IN($ids)";
         $this->sql_manager->execute($sql);
     }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function get_blacklist_by_city()
+    {
+        $sql = "SELECT  bbc.id,
+                        bbc.city,
+                        DATE_FORMAT(bbc.from_date, '%d/%m/%Y') AS from_date ,
+                        DATE_FORMAT(bbc.to_date, '%d/%m/%Y') AS to_date 
+                FROM blacklist_by_city bbc";
+        return $this->sql_manager->getResults($sql);
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function get_city()
+    {
+        $sql = "SELECT DISTINCT ville AS name 
+                FROM gymnase
+                ORDER BY ville";
+        return $this->sql_manager->getResults($sql);
+    }
+
+    /**
+     * @param $inputs
+     * @throws Exception
+     */
+    public function save_blacklist_by_city($inputs)
+    {
+        $bindings = array();
+        if (empty($inputs['id'])) {
+            $sql = "INSERT INTO";
+        } else {
+            $sql = "UPDATE";
+        }
+        $sql .= " blacklist_by_city SET ";
+        foreach ($inputs as $key => $value) {
+            switch ($key) {
+                case 'id':
+                case 'dirtyFields':
+                    continue;
+                case 'from_date':
+                case 'to_date':
+                    $bindings[] = array(
+                        'type' => 's',
+                        'value' => $value
+                    );
+                    $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
+                    break;
+                case 'city':
+                default:
+                    $bindings[] = array(
+                        'type' => 's',
+                        'value' => $value
+                    );
+                    $sql .= "$key = ?,";
+                    break;
+            }
+        }
+        $sql = trim($sql, ',');
+        if (!empty($inputs['id'])) {
+            $bindings[] = array(
+                'type' => 'i',
+                'value' => $inputs['id']
+            );
+            $sql .= " WHERE id = ?";
+        }
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @param $ids
+     * @throws Exception
+     */
+    public function delete_blacklist_by_city($ids)
+    {
+        $sql = "DELETE FROM blacklist_by_city WHERE id IN($ids)";
+        $this->sql_manager->execute($sql);
+    }
 }
