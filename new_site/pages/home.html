@@ -27,13 +27,13 @@
     <div class="panel-heading">
         <h1 class="panel-title">Dernières nouvelles</h1>
     </div>
-    <table class="table table-bordered" ng-repeat="x in lastNews">
+    <table class="table table-bordered">
         <tr class="warning">
             <th>Titre</th>
             <th>Lien</th>
             <th>Date</th>
         </tr>
-        <tr>
+        <tr ng-repeat="x in lastNews">
             <th>{{ x.title }}</th>
             <th><a href="{{ x.file_path }}" target="_blank">Lire...</a></th>
             <th>{{ x.news_date }}</th>
