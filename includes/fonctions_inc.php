@@ -627,12 +627,12 @@ function getLastNews()
     $sql = "SELECT 
                 n.id,
                 n.title,
+                n.text,
                 n.file_path,
                 DATE_FORMAT(n.news_date, ' %a %d/%m/%Y') AS news_date
             FROM news n
             ORDER BY n.news_date DESC";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;

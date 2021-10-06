@@ -93,7 +93,7 @@ var Base64 = {
 };
 
 // create the module and name it scotchApp
-var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar', 'filters']);
+var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar', 'filters', 'ngSanitize']);
 
 
 angular.module('filters', []).filter('zpad', function () {
