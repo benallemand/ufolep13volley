@@ -6,7 +6,8 @@ Ext.application({
         'manage_blacklist_by_city',
         'remove_duplicate_files',
         'manage_match_players',
-        'retry_error_emails'],
+        'retry_error_emails',
+        'send_mail_team_recap'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {

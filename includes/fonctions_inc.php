@@ -3958,3 +3958,10 @@ function retry_error_emails()
     $cron_tasks = new CronTasks();
     $cron_tasks->retry_error_emails();
 }
+
+function send_mail_team_recap()
+{
+    require_once __DIR__ . '/../classes/CronTasks.php';
+    $cron_tasks = new CronTasks();
+    $cron_tasks->sendMailTeamRecap();
+}

@@ -259,6 +259,30 @@ class CronTasks
     /**
      * @throws Exception
      */
+    public function sendMailTeamRecap()
+    {
+        $team_recaps = $this->sql_manager->sql_get_team_recaps();
+        if (count($team_recaps) == 0) {
+            return;
+        }
+        foreach ($team_recaps as $team_recap) {
+            $this->sendGenericEmail(
+                __DIR__ . '/../templates/emails/sendMailTeamRecap.fr.html',
+                array(
+                    'team_name' => $team_recap['team_name'],
+                    'team_leader' => $team_recap['team_leader'],
+                    'championship_name' => $team_recap['championship_name'],
+                    'division' => $team_recap['division'],
+                    'creneaux' => $team_recap['creneaux'],
+                ),
+                $team_recap['club_email']
+            );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public function sendMailAlertReport()
     {
         $pending_reports = $this->sql_manager->sql_get_pending_reports();
