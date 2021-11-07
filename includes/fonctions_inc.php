@@ -3767,7 +3767,7 @@ function generateDays()
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
-            if ($competition['is_home_and_away'] === 1) {
+            if ($competition['is_home_and_away'] === '1') {
                 $rounds_counts[] = ($teams_count - 1) * 2;
             } else {
                 $rounds_counts[] = $teams_count - 1;
