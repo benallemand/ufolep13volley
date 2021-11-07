@@ -463,10 +463,12 @@ class MatchManager extends Generic
         $message = "Nombre de divisions : " . count($divisions) . PHP_EOL;
         $count_to_be_inserted_matches = 0;
         foreach ($divisions as $division) {
+            $message .= "Division : " . $division['division'] . PHP_EOL;
             $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
                 $division['division'],
                 $competition['code_competition']);
             $teams_count = count($teams);
+            $message .= "Nombre d'équipes : " . $teams_count . PHP_EOL;
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
@@ -474,9 +476,12 @@ class MatchManager extends Generic
             // source: http://bluebones.net/fixtures.php
             $totalRounds = $teams_count - 1;
             $matchesPerRound = $teams_count / 2;
-            $message .= "Division : " . $division['division'] . PHP_EOL;
-            $message .= "Nombre d'équipes : " . $teams_count . PHP_EOL;
-            $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
+            if($is_mirror_needed) {
+                $message .= "Nombre de journées : " . (2 * $totalRounds) . PHP_EOL;
+            }
+            else {
+                $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
+            }
             $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
             $rounds = array();
             for ($i = 0; $i < $totalRounds; $i++) {
