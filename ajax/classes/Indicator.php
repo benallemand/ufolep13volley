@@ -20,6 +20,10 @@ class Indicator
         conn_db();
         mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
         $req = mysqli_query($db, $this->sql);
+        if ($req === FALSE) {
+            disconn_db();
+            throw new Exception("SQL error : " . mysqli_error($db));
+        }
         $results = array();
         while ($data = mysqli_fetch_assoc($req)) {
             $results[] = $data;
