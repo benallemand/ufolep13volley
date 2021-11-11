@@ -1038,25 +1038,4 @@ class MatchManager extends Generic
         return count($results) > 0;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function run_insert_matches_from_script() {
-        $db = Database::openDbConnection();
-        $full_sql = file_get_contents(__DIR__ . '/../sql/insert_matches.sql');
-        $sql_sentences = explode(';', $full_sql);
-        foreach ($sql_sentences as $sql) {
-            $sql = trim($sql);
-            if(empty($sql)) {
-                continue;
-            }
-            $req = mysqli_query($db, $sql);
-            if ($req === FALSE) {
-                $message = mysqli_error($db);
-                disconn_db();
-                throw new Exception("SQL exception ! message: $message");
-            }
-        }
-    }
-
 }
