@@ -1054,7 +1054,7 @@ class MatchManager extends Generic
             if ($req === FALSE) {
                 $message = mysqli_error($db);
                 disconn_db();
-                throw new Exception($message);
+                throw new Exception("SQL exception ! message: $message");
             }
         }
     }
