@@ -1935,7 +1935,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.genericRequest(button, 'Générer les matches', 'ajax/generateMatches.php', true);
     },
     insert_matches_from_script: function (button) {
-        this.genericRequest(button, 'Importer les matchs', 'rest/action.php/insert_matches_from_script');
+        this.genericRequest(button, 'Importer les matchs', '/rest/action.php/insert_matches_from_script');
     },
     deleteDays: function () {
         var me = this;
