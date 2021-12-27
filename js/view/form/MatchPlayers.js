@@ -14,7 +14,10 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
             xtype: 'tagfield',
             fieldLabel: 'Joueurs',
             name: 'player_ids[]',
-            store: 'Players',
+            store: {
+                type: 'Players'
+            },
+            queryMode: 'local',
             displayField: 'full_name',
             valueField: 'id',
             forceSelection: true

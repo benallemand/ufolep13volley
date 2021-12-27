@@ -1600,12 +1600,19 @@ function getPlayers($params)
     $where = "1=1";
     if (!empty($params['query'])) {
         $query = $params['query'];
-        $where = "CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') LIKE '%$query%'";
+        $where .= " AND CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') LIKE '%$query%'";
+    }
+    // filter available match players by id_match (known teams)
+    if (!empty($params['id_match'])) {
+        $id_match = $params['id_match'];
+        $where .= " AND (
+                        e.id_equipe IN (SELECT id_equipe_dom FROM matches WHERE id_match = $id_match) 
+                        OR e.id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match)
+                        )";
     }
     global $db;
     conn_db();
-    // TODO Filter teams in competition.
-    // TODO  AND e.id_equipe IN (SELECT id_equipe FROM classements) pas nécessaire a priori...
+    // add order by
     $sql = "SELECT
     CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
     j.prenom, 
@@ -1632,7 +1639,8 @@ LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_eq
 LEFT JOIN clubs c ON c.id = j.id_club
 LEFT JOIN photos p ON p.id = j.id_photo
 WHERE $where
-GROUP BY j.id";
+GROUP BY j.id
+ORDER BY c.nom IS NULL, c.nom, j.nom";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
