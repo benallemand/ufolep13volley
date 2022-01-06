@@ -35,4 +35,15 @@ class CronTasksTest extends TestCase
         $email_manager->delete_email($id);
         $file_manager->delete_file($file_id);
     }
+
+    /**
+     * @doesNotPerformAssertions
+     * @throws Exception
+     */
+    public function test_sendMailMissingLicences()
+    {
+        // run cron
+        $cron_task = new CronTasks();
+        $cron_task->sendMailMissingLicences();
+    }
 }

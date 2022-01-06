@@ -7,6 +7,7 @@ try {
     $cron_tasks->sendMailPlayersWithoutLicenceNumber();
     $cron_tasks->sendMailTeamLeadersWithoutEmail();
     $cron_tasks->sendMailAlertReport();
+    $cron_tasks->sendMailMissingLicences();
     $cron_tasks->cleanupFiles();
 } catch (Exception $exception) {
     echo json_encode(array(
