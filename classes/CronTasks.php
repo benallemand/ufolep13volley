@@ -432,4 +432,28 @@ class CronTasks
         $sql = "UPDATE emails SET sending_status = 'TO_DO' WHERE sending_status = 'ERROR'";
         $this->sql_manager->execute($sql);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function sendMailMissingLicences()
+    {
+        $teams_with_missing_licences = $this->sql_manager->get_teams_with_missing_licences();
+        if (count($teams_with_missing_licences) == 0) {
+            return;
+        }
+        foreach ($teams_with_missing_licences as $teams_with_missing_licence) {
+            $this->sendGenericEmail(
+                __DIR__ . '/../templates/emails/sendMailTeamWithMissingLicences.fr.html',
+                array(
+                    'joueurs' => $teams_with_missing_licence['joueurs'],
+                    'club' => $teams_with_missing_licence['club'],
+                    'responsable' => $teams_with_missing_licence['responsable'],
+                    'equipe' => $teams_with_missing_licence['equipe'],
+                    'email' => $teams_with_missing_licence['email'],
+                ),
+                implode(';', array($teams_with_missing_licence['responsable'], $teams_with_missing_licence['email']))
+            );
+        }
+    }
 }

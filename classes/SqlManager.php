@@ -348,4 +348,30 @@ class SqlManager
                 ORDER BY championship_name, division, team_name";
         return $this->getResults($sql);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function get_teams_with_missing_licences(): array
+    {
+        $sql = "SELECT GROUP_CONCAT(CONCAT(j.prenom, ' ', j.nom)) AS joueurs,
+                       c.nom AS club,
+                       c.email_responsable AS responsable,
+                       e.nom_equipe AS equipe,
+                       jr.email
+                FROM joueurs j
+                         JOIN joueur_equipe je ON je.id_joueur = j.id
+                         JOIN match_player mp ON mp.id_player = je.id_joueur
+                         JOIN matches m ON m.id_match = mp.id_match
+                         JOIN equipes e
+                              ON e.id_equipe = je.id_equipe AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
+                         JOIN joueur_equipe jer ON jer.id_equipe = e.id_equipe AND jer.is_leader + 0 > 0
+                         JOIN joueurs jr ON jr.id = jer.id_joueur
+                         JOIN clubs c ON c.id = e.id_club
+                WHERE (j.date_homologation IS NOT NULL AND j.date_homologation > m.date_reception)
+                   OR j.est_actif = 0
+                    AND m.match_status = 'CONFIRMED'
+                GROUP BY c.nom, c.email_responsable, e.nom_equipe, jr.email";
+        return $this->getResults($sql);
+    }
 }
