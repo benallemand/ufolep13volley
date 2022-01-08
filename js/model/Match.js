@@ -119,6 +119,20 @@ Ext.define('Ufolep13Volley.model.Match', Sencha.modelCompatibility({
             }
         },
         {
+            name: 'is_match_player_filled',
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
+        },
+        {
+            name: 'is_match_player_requested',
+            type: 'bool',
+            convert: function (val) {
+                return val === '1';
+            }
+        },
+        {
             name: 'forfait_ext',
             type: 'bool',
             convert: function (val) {

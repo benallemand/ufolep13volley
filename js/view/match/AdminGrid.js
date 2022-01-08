@@ -8,6 +8,50 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
     columns: {
         items: [
             {
+                header: 'Statut',
+                xtype: 'actioncolumn',
+                items: [
+                    {
+                        getTip: function (value, meta, record) {
+                            if (!record.get('is_match_player_filled')) {
+                                return '';
+                            }
+                            return "Présents renseignés";
+
+                        },
+                        getClass: function (value, meta, record) {
+                            if (!record.get('is_match_player_filled')) {
+                                return 'x-hidden-display';
+                            }
+                            return 'fa fa-list';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
+                            if (!record.get('is_match_player_requested')) {
+                                return '';
+                            }
+                            return "Présents non renseignés !";
+
+                        },
+                        getClass: function (value, meta, record) {
+                            if (!record.get('is_match_player_requested')) {
+                                return 'x-hidden-display';
+                            }
+                            return 'fa fa-exclamation-triangle';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            grid.getSelectionModel().select(record);
+                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
+                        },
+                    }
+
+                ],
+                flex: 1
+            },
+            {
                 header: 'Code',
                 dataIndex: 'code_match',
                 flex: 1
@@ -119,6 +163,19 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     xtype: 'displayfield',
                     fieldLabel: 'Total',
                     action: 'displayFilteredCount'
+                },
+                {
+                    text: 'Présents à renseigner',
+                    enableToggle: true,
+                    handler: function (button) {
+                        var store = button.up('grid').getStore();
+                        if (button.pressed) {
+                            store.filter('is_match_player_requested', true);
+                        } else {
+                            store.clearFilter();
+                        }
+                        button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                    }
                 }
             ]
         }
