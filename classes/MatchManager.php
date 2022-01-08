@@ -33,6 +33,7 @@ class MatchManager extends Generic
                                 IF((m.id_match NOT IN (SELECT DISTINCT id_match FROM match_player)) 
                                     AND (m.forfait_dom + m.forfait_ext = 0)
                                     AND (m.sheet_received > 0)
+                                    AND (m.certif = 0)
                                     , 1, 0)                                                                     AS is_match_player_requested,
                                 m.code_match,
                                 m.code_competition,
