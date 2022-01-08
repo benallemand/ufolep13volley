@@ -13,6 +13,23 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 items: [
                     {
                         getTip: function (value, meta, record) {
+                            if (!record.get('certif')) {
+                                return '';
+                            }
+                            return "Match validé";
+
+                        },
+                        getClass: function (value, meta, record) {
+                            if (!record.get('certif')) {
+                                return 'x-hidden-display';
+                            }
+                            return 'fa fa-check green';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
                             if (!record.get('is_match_player_filled')) {
                                 return '';
                             }
@@ -23,7 +40,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             if (!record.get('is_match_player_filled')) {
                                 return 'x-hidden-display';
                             }
-                            return 'fa fa-list';
+                            return 'fa fa-list green';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                         },
@@ -40,14 +57,32 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             if (!record.get('is_match_player_requested')) {
                                 return 'x-hidden-display';
                             }
-                            return 'fa fa-exclamation-triangle';
+                            return 'fa fa-exclamation-triangle orange';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            grid.getSelectionModel().select(record);
+                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
+                            if (!record.get('has_forbidden_player')) {
+                                return '';
+                            }
+                            return "Au moins 1 joueur n'était pas valide !";
+
+                        },
+                        getClass: function (value, meta, record) {
+                            if (!record.get('has_forbidden_player')) {
+                                return 'x-hidden-display';
+                            }
+                            return 'fa fa-exclamation-circle red';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                             grid.getSelectionModel().select(record);
                             grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
                         },
                     }
-
                 ],
                 flex: 1
             },

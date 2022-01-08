@@ -35,6 +35,12 @@ class MatchManager extends Generic
                                     AND (m.sheet_received > 0)
                                     AND (m.certif = 0)
                                     , 1, 0)                                                                     AS is_match_player_requested,
+                                IF(m.id_match IN (  SELECT id_match 
+                                                    FROM match_player
+                                                    JOIN joueurs j2 on match_player.id_player = j2.id
+                                                    WHERE j2.date_homologation > m.date_reception
+                                                 )
+                                    , 1, 0)                                                                     AS has_forbidden_player,
                                 m.code_match,
                                 m.code_competition,
                                 c.id_compet_maitre                                                              AS parent_code_competition,
