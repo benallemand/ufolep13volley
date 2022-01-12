@@ -111,7 +111,7 @@ class Emails
             default:
                 break;
         }
-        $mail->isSMTP();
+        $mail->isMail();
         $mail->CharSet = "UTF-8";
         $mail->Host = Configuration::MAIL_HOST;
         $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
