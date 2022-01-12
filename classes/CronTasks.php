@@ -75,6 +75,10 @@ class CronTasks
     {
         $accounts = $this->sql_manager->sql_get_accounts();
         foreach ($accounts as $current_data) {
+            $email = $current_data['email'];
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailAccountRecap.fr.html',
                 array(
@@ -84,7 +88,7 @@ class CronTasks
                     'team' => $current_data['nom_equipe'],
                     'competition' => $current_data['competition']
                 ),
-                $current_data['email']
+                $email
             );
         }
     }
@@ -134,6 +138,9 @@ class CronTasks
                 $match_not_reported['responsable_reception'],
                 $match_not_reported['responsable_visiteur']
             ));
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailMatchNotReported.fr.html',
                 array(
@@ -196,12 +203,16 @@ class CronTasks
             if (count($team_emails) == 0) {
                 continue;
             }
+            $email = $team_emails[0]['email'];
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailNextMatches.fr.html',
                 array(
                     'next_matches' => $html_next_matches
                 ),
-                $team_emails[0]['email']
+                $email
             );
         }
     }
@@ -216,6 +227,10 @@ class CronTasks
             return;
         }
         foreach ($players_without_licence_number as $players_without_licence_number_per_leader) {
+            $email = $players_without_licence_number_per_leader['responsable'];
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailPlayersWithoutLicenceNumber.fr.html',
                 array(
@@ -224,7 +239,7 @@ class CronTasks
                     'equipe' => $players_without_licence_number_per_leader['equipe'],
                     'responsable' => $players_without_licence_number_per_leader['responsable']
                 ),
-                $players_without_licence_number_per_leader['responsable']
+                $email
             );
         }
     }
@@ -266,6 +281,10 @@ class CronTasks
             return;
         }
         foreach ($team_recaps as $team_recap) {
+            $email = $team_recap['club_email'];
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailTeamRecap.fr.html',
                 array(
@@ -275,7 +294,7 @@ class CronTasks
                     'division' => $team_recap['division'],
                     'creneaux' => $team_recap['creneaux'],
                 ),
-                $team_recap['club_email']
+                $email
             );
         }
     }
@@ -294,6 +313,9 @@ class CronTasks
                 $pending_report['email_home'],
                 $pending_report['email_guest']
             ));
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailAlertReport.fr.html',
                 array(
@@ -443,6 +465,10 @@ class CronTasks
             return;
         }
         foreach ($teams_with_missing_licences as $teams_with_missing_licence) {
+            $email = implode(';', array($teams_with_missing_licence['responsable'], $teams_with_missing_licence['email']));
+            if (empty($email)) {
+                continue;
+            }
             $this->sendGenericEmail(
                 __DIR__ . '/../templates/emails/sendMailTeamWithMissingLicences.fr.html',
                 array(
@@ -452,7 +478,7 @@ class CronTasks
                     'equipe' => $teams_with_missing_licence['equipe'],
                     'email' => $teams_with_missing_licence['email'],
                 ),
-                implode(';', array($teams_with_missing_licence['responsable'], $teams_with_missing_licence['email']))
+                $email
             );
         }
     }
