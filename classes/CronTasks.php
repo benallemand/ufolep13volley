@@ -411,7 +411,7 @@ class CronTasks
      */
     public function send_pending_emails()
     {
-        $sql = "SELECT * FROM emails WHERE sending_status = 'TO_DO' AND creation_date > CURDATE() - INTERVAL 5 DAY LIMIT 10";
+        $sql = "SELECT * FROM emails WHERE sending_status = 'TO_DO' AND creation_date > CURDATE() - INTERVAL 10 DAY LIMIT 50";
         $pending_emails = $this->sql_manager->getResults($sql);
         foreach ($pending_emails as $pending_email) {
             $sql = "SELECT f.path_file FROM emails_files ef JOIN files f on ef.id_file = f.id WHERE id_email = ?";
