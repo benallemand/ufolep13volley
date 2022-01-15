@@ -15,7 +15,17 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
             fieldLabel: 'Joueurs',
             name: 'player_ids[]',
             store: {
-                type: 'Players'
+                type: 'Players',
+                sorters: [
+                    {
+                        property: 'id_club',
+                        directon: 'ASC'
+                    },
+                    {
+                        property: 'sexe',
+                        directon: 'ASC'
+                    }
+                ]
             },
             queryMode: 'local',
             displayField: 'full_name',

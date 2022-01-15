@@ -1683,7 +1683,7 @@ LEFT JOIN clubs c ON c.id = j.id_club
 LEFT JOIN photos p ON p.id = j.id_photo
 WHERE $where
 GROUP BY CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')'), j.prenom, j.nom, j.num_licence, p.path_photo, j.sexe, j.departement_affiliation, j.est_actif+0, c.nom, j.show_photo+0, j.id, DATE_FORMAT(j.date_homologation, '%d/%m/%Y')
-ORDER BY club, j.nom";
+ORDER BY club, sexe, j.nom";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {

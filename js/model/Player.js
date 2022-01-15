@@ -99,6 +99,15 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
             name: 'date_reception',
             type: 'date',
             dateFormat: 'd/m/Y'
+        },
+        {
+            name: 'is_valid_for_match',
+            type: 'bool',
+            convert: function (val, record) {
+                return record.get('est_actif') &&
+                    record.get('date_homologation') &&
+                    record.get('date_homologation') <= record.get('date_reception');
+            }
         }
     ]
 }));
