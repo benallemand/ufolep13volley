@@ -60,9 +60,7 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
         buttons: [
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             },
             {
                 text: 'Sauver',

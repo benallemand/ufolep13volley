@@ -787,7 +787,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'limitdatesgrid': {
                     itemdblclick: this.editLimitDate
                 },
-
+                'button[action=cancel]': {
+                    click: this.cancel
+                },
                 'button[action=save]': {
                     click: this.save
                 },
@@ -2024,6 +2026,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
+    cancel: function (button) {
+        if (!Ext.isEmpty(button.up('window'))) {
+            button.up('window').close();
+            return;
+        }
+    },
     save: function (button) {
         var viewport = Ext.ComponentQuery.query('viewport')[0];
         var form = button.up('form').getForm();
@@ -2038,8 +2046,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     dirtyFields: dirtyFieldsArray.join(',')
                 },
                 success: function () {
-                    viewport.down('tabpanel').getActiveTab().getStore().load();
-                    button.up('window').close();
+                    if (viewport.down('tabpanel')) {
+                        viewport.down('tabpanel').getActiveTab().getStore().load();
+                        button.up('window').close();
+                        return;
+                    }
+                    window.close();
                 },
                 failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);

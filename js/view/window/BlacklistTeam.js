@@ -45,9 +45,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeam', {
         buttons: [
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             },
             {
                 text: 'Sauver',

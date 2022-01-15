@@ -209,9 +209,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             }
         ]
     }

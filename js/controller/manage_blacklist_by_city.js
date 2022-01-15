@@ -124,9 +124,7 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
                 buttons: [
                     {
                         text: 'Annuler',
-                        handler: function () {
-                            this.up('window').close();
-                        }
+                        action: 'cancel',
                     },
                     {
                         text: 'Sauver',

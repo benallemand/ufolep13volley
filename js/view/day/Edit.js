@@ -59,9 +59,7 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
         buttons: [
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             },
             {
                 text: 'Sauver',

@@ -73,9 +73,7 @@ Ext.define('Ufolep13Volley.view.gymnasium.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             }
         ]
     }

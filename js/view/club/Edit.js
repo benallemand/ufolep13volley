@@ -76,9 +76,7 @@ Ext.define('Ufolep13Volley.view.club.Edit', {
             },
             {
                 text: 'Annuler',
-                handler: function () {
-                    this.up('window').close();
-                }
+                action: 'cancel',
             }
         ]
     }

@@ -1423,7 +1423,6 @@ function addActivity($comment)
     }
     mysqli_query($db, $sql);
     disconn_db();
-    return;
 }
 
 function getDays()
@@ -1673,7 +1672,8 @@ function getMatchPlayers($params)
     j.show_photo+0 AS show_photo,
     j.id, 
     DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception, 
-    DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation
+    DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation,
+    mp.id_match   
 FROM match_player mp
 LEFT JOIN joueurs j ON mp.id_player = j.id
 LEFT JOIN matches m ON mp.id_match = m.id_match   
@@ -3973,3 +3973,23 @@ function send_mail_team_recap()
     $cron_tasks = new CronTasks();
     $cron_tasks->sendMailTeamRecap();
 }
+
+/**
+ * @param $id_match
+ * @param $id_player
+ * @throws Exception
+ */
+function delete_match_player($id_match, $id_player)
+{
+    global $db;
+    conn_db();
+    $sql = "DELETE FROM match_player 
+            WHERE id_match = $id_match
+            AND id_player = $id_player";
+    $req = mysqli_query($db, $sql);
+    disconn_db();
+    if ($req === FALSE) {
+        throw new Exception(mysqli_error());
+    }
+}
+

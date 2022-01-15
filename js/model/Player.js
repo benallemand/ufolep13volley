@@ -108,6 +108,10 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
                     record.get('date_homologation') &&
                     record.get('date_homologation') <= record.get('date_reception');
             }
+        },
+        {
+            name: 'id_match',
+            type: 'int',
         }
     ]
 }));

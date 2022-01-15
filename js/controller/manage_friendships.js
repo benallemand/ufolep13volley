@@ -119,9 +119,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                 buttons: [
                     {
                         text: 'Annuler',
-                        handler: function () {
-                            this.up('window').close();
-                        }
+                        action: 'cancel',
                     },
                     {
                         text: 'Sauver',
