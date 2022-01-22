@@ -3,7 +3,21 @@
         <h1 class="panel-title">Modification d'un match</h1>
     </div>
     <div class="jumbotron">
-        <h2 class="text-center">{{modify_match.code_match}} : {{modify_match.equipe_dom}} contre {{modify_match.equipe_ext}}</h2>
+        <h2 class="text-center">{{modify_match.code_match}} : {{modify_match.equipe_dom}} contre
+            {{modify_match.equipe_ext}}</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <a title="Qui était présent ?"
+                   class="btn btn-primary"
+                   ng-href="/manage_match_players.php?id_match={{modify_match.id_match}}"
+                   target="_blank">
+                    Qui était présent ?
+                    <span class="glyphicon glyphicon-user"></span>
+                </a>
+            </div>
+        </div>
     </div>
     <form class="form-horizontal" role="form">
         <div class="form-group">
