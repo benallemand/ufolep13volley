@@ -726,8 +726,11 @@ function check_team_allowed_to_ask_report($team_id, $match_code)
     while ($data = mysqli_fetch_assoc($req)) {
         $results[] = $data;
     }
-    if (intval($results[0]['report_count']) > 0) {
-        throw new Exception("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.");
+    require_once __DIR__ . '/../classes/Configuration.php';
+    if (!Configuration::COVID_MODE) {
+        if (intval($results[0]['report_count']) > 0) {
+            throw new Exception("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.");
+        }
     }
 }
 
