@@ -368,8 +368,7 @@ class SqlManager
                          JOIN joueur_equipe jer ON jer.id_equipe = e.id_equipe AND jer.is_leader + 0 > 0
                          JOIN joueurs jr ON jr.id = jer.id_joueur
                          JOIN clubs c ON c.id = e.id_club
-                WHERE (j.date_homologation IS NOT NULL AND j.date_homologation > m.date_reception)
-                   OR j.est_actif = 0
+                WHERE j.est_actif = 0
                     AND m.match_status = 'CONFIRMED'
                 GROUP BY c.nom, c.email_responsable, e.nom_equipe, jr.email";
         return $this->getResults($sql);
