@@ -27,9 +27,8 @@ class MatchManager extends Generic
     private function getSql($query = "1=1")
     {
         $sql = "SELECT DISTINCT m.id_match,
-                                IF((m.id_match IN (SELECT DISTINCT id_match FROM match_player)) OR
-                                   (m.forfait_dom + m.forfait_ext > 0)
-                                    , 1, 0)                                                                     AS is_match_player_filled,
+                                IF(m.forfait_dom + m.forfait_ext > 0, 1, 0)                                     AS is_forfait,
+                                IF(m.id_match IN (SELECT DISTINCT id_match FROM match_player), 1, 0)            AS is_match_player_filled,
                                 IF((m.id_match NOT IN (SELECT DISTINCT id_match FROM match_player)) 
                                     AND (m.forfait_dom + m.forfait_ext = 0)
                                     AND (m.sheet_received > 0)

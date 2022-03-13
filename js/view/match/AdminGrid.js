@@ -47,6 +47,23 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
+                            if (!record.get('is_forfait')) {
+                                return '';
+                            }
+                            return "Equipe forfait";
+
+                        },
+                        getClass: function (value, meta, record) {
+                            if (!record.get('is_forfait')) {
+                                return 'x-hidden-display';
+                            }
+                            return 'fa fa-f green';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
                             if (!record.get('is_match_player_requested')) {
                                 return '';
                             }
