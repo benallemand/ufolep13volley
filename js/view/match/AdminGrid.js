@@ -91,7 +91,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'code_match',
                 flex: 1,
                 renderer: function (value, meta, record) {
-                    if(!record.get('sheet_received')) {
+                    if (!record.get('sheet_received')) {
                         return value;
                     }
                     return Ext.String.format("<a href='/ajax/downloadMatchFiles.php?id={0}' target='_blank'>{1}</a>",
@@ -187,6 +187,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     text: 'Gérer les présents',
                     hidden: true,
                     action: 'manage_match_players'
+                },
+                {
+                    text: 'Certifier',
+                    hidden: true,
+                    action: 'certify_matchs'
                 }
             ]
         },
@@ -208,17 +213,48 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     action: 'displayFilteredCount'
                 },
                 {
-                    text: 'Présents à renseigner',
-                    enableToggle: true,
-                    handler: function (button) {
-                        var store = button.up('grid').getStore();
-                        if (button.pressed) {
-                            store.filter('is_match_player_requested', true);
-                        } else {
-                            store.clearFilter();
+                    xtype: 'segmentedbutton',
+                    items: [
+                        {
+                            text: 'Présents à renseigner',
+                            iconCls: 'fa fa-exclamation-triangle orange',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                store.filter('is_match_player_requested', true);
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
+                        },
+                        {
+                            text: 'Joueurs non valides',
+                            iconCls: 'fa fa-exclamation-circle red',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                store.filter('has_forbidden_player', true);
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
+                        },
+                        {
+                            text: 'Non certifiés',
+                            iconCls: 'fa fa-check red',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                store.filter('certif', false);
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
+                        },
+                        {
+                            text: 'Tous',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
                         }
-                        button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
-                    }
+                    ]
+
                 }
             ]
         }
