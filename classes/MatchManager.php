@@ -457,6 +457,30 @@ class MatchManager extends Generic
     }
 
     /**
+     * @param $N
+     * @return array
+     */
+    function generate_round_robin_rounds($N): array
+    {
+        assert($N % 2 === 0);
+        $rounds = array();
+        for ($i = 0; $i < $N - 1; $i++) {
+            // round
+            // first match
+            $matches = array();
+            $matches[] = (0) . " v " . ($N - 1 - $i);
+            for ($j = 1; $j < $N / 2; $j++) {
+                // 2..n match
+                $home = (1 + (($N - $i + $j - 2) % ($N - 1)));
+                $away = (1 + ((2 * $N - $i - $j - 3) % ($N - 1)));
+                $matches[] = $home . " v " . $away;
+            }
+            $rounds[] = $matches;
+        }
+        return $rounds;
+    }
+
+    /**
      * @param $competition
      * @throws Exception
      */
@@ -485,8 +509,7 @@ class MatchManager extends Generic
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
-            // Generate the fixtures using the cyclic algorithm.
-            // source: http://bluebones.net/fixtures.php
+            // Generate the fixtures using the round robin cyclic algorithm.
             $totalRounds = $teams_count - 1;
             $matchesPerRound = $teams_count / 2;
             if ($is_mirror_needed) {
@@ -499,19 +522,7 @@ class MatchManager extends Generic
             for ($i = 0; $i < $totalRounds; $i++) {
                 $rounds[$i] = array();
             }
-            for ($round = 0; $round < $totalRounds; $round++) {
-                for ($match = 0; $match < $matchesPerRound; $match++) {
-                    $home_index = ($round + $match) % ($teams_count - 1);
-                    $away_index = ($teams_count - 1 - $match + $round) % ($teams_count - 1);
-                    // Last team stays in the same place while the others
-                    // rotate around it.
-                    if ($match == 0) {
-                        $away_index = $teams_count - 1;
-                    }
-                    $rounds[$round][$match] = strval($home_index)
-                        . " v " . strval($away_index);
-                }
-            }
+            $rounds = $this->generate_round_robin_rounds($teams_count);
             // Interleave so that home and away games are fairly evenly dispersed.
             $interleaved = array();
             for ($i = 0; $i < $totalRounds; $i++) {
@@ -815,7 +826,7 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function insert_match($to_be_inserted_match, $try_flip = false)
+    private function insert_match($to_be_inserted_match, bool $try_flip=false): bool
     {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
@@ -824,7 +835,6 @@ class MatchManager extends Generic
         $code_competition = $competition['code_competition'];
         $is_date_found = false;
         $computed_dates = $this->getComputedDates($code_competition, $team_dom['id_equipe']);
-        $found_date = null;
         foreach ($computed_dates as $computed_date) {
             // computed date is full (too many matches in same gymnasium)
             if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
@@ -851,11 +861,12 @@ class MatchManager extends Generic
             $round_number = $computed_date['week_number'];
             $match_number = $this->get_count_matches_per_day($competition, $division, $computed_date['week_id']) + 1;
             $year_month = date('ym');
-            $code_match = strtoupper($competition['code_competition']) .
+            $code_match =
+                strtoupper($competition['code_competition']) .
                 $year_month .
                 $division['division'] .
-                strval($round_number) .
-                strval($match_number);
+                $round_number .
+                $match_number;
             $this->insertMatch(
                 $code_match,
                 $competition['code_competition'],
