@@ -1241,7 +1241,7 @@ FROM (
              AND m.match_status != 'ARCHIVED'
        WHERE c.code_competition = '$compet' AND c.division = '$div'
        GROUP BY e.id_equipe
-       ORDER BY points DESC, diff DESC
+       ORDER BY points DESC, diff DESC, c.rank_start ASC
      ) z, (SELECT @r := 0) y";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
