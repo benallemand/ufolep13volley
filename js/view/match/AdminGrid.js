@@ -238,6 +238,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             handler: function (button) {
                                 var store = button.up('grid').getStore();
                                 store.clearFilter();
+                                store.filter({
+                                    property: 'match_status',
+                                    operator: 'in',
+                                    value: ['CONFIRMED', 'NOT_CONFIRMED'],
+                                });
                                 store.filter('is_match_player_requested', true);
                                 button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
@@ -248,6 +253,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             handler: function (button) {
                                 var store = button.up('grid').getStore();
                                 store.clearFilter();
+                                store.filter({
+                                    property: 'match_status',
+                                    operator: 'in',
+                                    value: ['CONFIRMED', 'NOT_CONFIRMED'],
+                                });
                                 store.filter('has_forbidden_player', true);
                                 button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
@@ -258,15 +268,40 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             handler: function (button) {
                                 var store = button.up('grid').getStore();
                                 store.clearFilter();
+                                store.filter({
+                                    property: 'match_status',
+                                    operator: 'in',
+                                    value: ['CONFIRMED', 'NOT_CONFIRMED'],
+                                });
                                 store.filter('certif', false);
                                 button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
-                            text: 'Tous',
+                            text: 'Tous (saison en cours)',
+                            iconCls: 'fa fa-inbox',
                             handler: function (button) {
                                 var store = button.up('grid').getStore();
                                 store.clearFilter();
+                                store.filter({
+                                    property: 'match_status',
+                                    operator: 'in',
+                                    value: ['CONFIRMED', 'NOT_CONFIRMED'],
+                                });
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
+                        },
+                        {
+                            text: 'Archivés',
+                            iconCls: 'fa fa-box-archive',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                store.filter({
+                                    property: 'match_status',
+                                    operator: 'in',
+                                    value: ['ARCHIVED'],
+                                });
                                 button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         }
