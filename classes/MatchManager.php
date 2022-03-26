@@ -37,7 +37,9 @@ class MatchManager extends Generic
                                 IF(m.id_match IN (  SELECT id_match 
                                                     FROM match_player
                                                     JOIN joueurs j2 on match_player.id_player = j2.id
-                                                    WHERE j2.date_homologation > m.date_reception
+                                                    WHERE (j2.date_homologation > m.date_reception 
+                                                           OR j2.date_homologation IS NULL 
+                                                           OR j2.num_licence IS NULL)
                                                  )
                                     , 1, 0)                                                                     AS has_forbidden_player,
                                 m.code_match,
