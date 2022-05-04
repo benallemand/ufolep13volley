@@ -29,6 +29,13 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
             },
             queryMode: 'local',
             displayField: 'full_name',
+            tpl: '<tpl for=".">' +
+                '<tpl if="est_actif">' +
+                '<div class="x-boundlist-item"><img src="{path_photo}" width="50px" style="vertical-align: middle"/><span>{full_name}</span></div>' +
+                '<tpl else>' +
+                '<div class="x-boundlist-item" style="background: pink"><img src="{path_photo}" width="50px" style="vertical-align: middle"/><span>{full_name}</span></div>' +
+                '</tpl>' +
+                '</tpl>',
             valueField: 'id',
             forceSelection: true
         }
