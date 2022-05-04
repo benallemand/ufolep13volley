@@ -19,11 +19,11 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
                 sorters: [
                     {
                         property: 'id_club',
-                        directon: 'ASC'
+                        direction: 'ASC'
                     },
                     {
                         property: 'sexe',
-                        directon: 'ASC'
+                        direction: 'ASC'
                     }
                 ]
             },

@@ -6,7 +6,7 @@ function toWellFormatted($string)
 }
 
 require_once __DIR__ . '/./includes/fonctions_inc.php';
-require_once __DIR__ . '/./libs/Fpdf/fpdf.php';
+require_once __DIR__ . '/./libs/fpdf184/fpdf.php';
 $id = filter_input(INPUT_GET, 'id');
 if ($id === NULL) {
     $id = $_SESSION['id_equipe'];
