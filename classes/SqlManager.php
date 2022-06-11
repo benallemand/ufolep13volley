@@ -303,6 +303,7 @@ class SqlManager
                 WHERE 
                 m.report_status IN ('ASKED_BY_DOM', 'ASKED_BY_EXT')
                 AND m.match_status = 'CONFIRMED'
+                AND m.sheet_received = 0
                 ORDER BY m.code_match";
         return $this->getResults($sql);
     }
