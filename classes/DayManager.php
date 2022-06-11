@@ -12,10 +12,10 @@ class DayManager extends Generic
 {
 
     /**
-     * @param null $query
+     * @param string|null $query
      * @return string
      */
-    private function getSql($query = null)
+    private function getSql(?string $query = "1=1"): string
     {
         $sql = "SELECT 
         j.id,
@@ -25,10 +25,8 @@ class DayManager extends Generic
         j.libelle,
         DATE_FORMAT(j.start_date, '%d/%m/%Y') AS start_date
         FROM journees j
-        WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
+        WHERE $query
+        ORDER BY j.start_date";
         return $sql;
     }
 
@@ -53,18 +51,23 @@ class DayManager extends Generic
      * @param $code_competition
      * @param $numero
      * @param $competition_start_date
+     * @param bool $is_extra_day
      * @return int|string
      * @throws Exception
      */
-    public function insertDay($code_competition, $numero, $competition_start_date)
+    public function insertDay($code_competition, $numero, $competition_start_date, bool $is_extra_day=false)
     {
         $db = Database::openDbConnection();
         $numero_padded = str_pad($numero, 2, '0', STR_PAD_LEFT);
         $week_offset = $numero - 1;
+        $nommage = "Journee $numero_padded";
+        if($is_extra_day) {
+            $nommage = "Journee de reports";
+        }
         $sql = "INSERT INTO journees SET 
           code_competition = '$code_competition', 
           numero = $numero, 
-          nommage = 'Journee $numero_padded',
+          nommage = '$nommage',
           start_date = ADDDATE(STR_TO_DATE('$competition_start_date', '%d/%m/%Y'), INTERVAL $week_offset WEEK)";
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {

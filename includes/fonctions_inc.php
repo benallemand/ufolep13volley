@@ -972,6 +972,7 @@ function getLimitDate($compet)
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     while ($data = mysqli_fetch_assoc($req)) {
         echo $data['date_limite'];
+        return $data['date_limite'];
     }
 }
 
@@ -3790,6 +3791,22 @@ function generateDays()
                 strval($round_number),
                 $competition['start_date']
             );
+        }
+        $days = $day_manager->getDays("j.code_competition = '$code_competition'");
+        $last_day = array_pop($days);
+        $limit_date = DateTime::createFromFormat('d/m/Y', getLimitDate($code_competition));
+        $last_start_date = DateTime::createFromFormat('d/m/Y', $last_day['start_date']);
+        $bonus_day_start_date = $last_start_date;
+        $bonus_day_start_date->modify('+1 week');
+        $bonus_day_number = intval($last_day['numero']);
+        while ($bonus_day_start_date < $limit_date) {
+            $day_manager->insertDay(
+                $code_competition,
+                strval(++$bonus_day_number),
+                $competition['start_date'],
+                true
+            );
+            $bonus_day_start_date->modify('+1 week');
         }
     }
 }
