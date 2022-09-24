@@ -66,11 +66,11 @@ class SqlManager
 
     /**
      * @param $sql
-     * @param $bindings
+     * @param array $bindings
      * @return array|int|string
      * @throws Exception
      */
-    public function execute($sql, $bindings = array())
+    public function execute($sql, array $bindings = array())
     {
         $db = Database::openDbConnection();
         $stmt = mysqli_prepare($db, $sql);

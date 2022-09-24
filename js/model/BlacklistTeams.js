@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.BlacklistTeams', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.BlacklistTeams', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -16,4 +16,4 @@ Ext.define('Ufolep13Volley.model.BlacklistTeams', Sencha.modelCompatibility({
         },
         'libelle_equipe_2'
     ]
-}));
+});

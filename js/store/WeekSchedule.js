@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.WeekSchedule', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.WeekSchedule', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.WeekSchedule',
@@ -9,4 +9,4 @@ Ext.define('Ufolep13Volley.store.WeekSchedule', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

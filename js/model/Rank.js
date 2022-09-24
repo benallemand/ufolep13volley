@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Rank', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Rank', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -30,4 +30,4 @@ Ext.define('Ufolep13Volley.model.Rank', Sencha.modelCompatibility({
             type: 'int'
         }
     ]
-}));
+});

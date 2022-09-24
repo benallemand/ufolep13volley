@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Team', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Team', {
     extend: 'Ext.data.Model',
     fields: [
         {name: 'id_equipe', type: 'int'},
@@ -17,4 +17,4 @@ Ext.define('Ufolep13Volley.model.Team', Sencha.modelCompatibility({
         'web_site',
         'path_photo'
     ]
-}));
+});

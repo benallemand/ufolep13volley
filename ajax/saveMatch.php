@@ -10,7 +10,7 @@ try {
     }
     require_once __DIR__ . '/../classes/MatchManager.php';
     $manager = new MatchManager();
-    $manager->saveMatch();
+    $manager->save_match();
 } catch (Exception $ex) {
     echo json_encode(array(
         'success' => false,

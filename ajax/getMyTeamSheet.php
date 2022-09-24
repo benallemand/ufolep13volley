@@ -1,6 +1,11 @@
 <?php
 
-require_once __DIR__ . "/../includes/fonctions_inc.php";
+require_once __DIR__ . '/../classes/TeamManager.php';
 
-echo getTeamSheet($_SESSION['id_equipe']);
+try {
+    $team_manager = new TeamManager();
+    echo $team_manager->getTeamSheet($_SESSION['id_equipe']);
+} catch (Exception $e) {
+    echo "Erreur ! " . $e->getMessage();
+}
 

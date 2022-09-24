@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.BlacklistTeams', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.BlacklistTeams', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.BlacklistTeams',
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.store.BlacklistTeams', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Activity', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Activity', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -27,4 +27,4 @@ Ext.define('Ufolep13Volley.model.Activity', Sencha.modelCompatibility({
             type: 'string'
         }
     ]
-}));
+});

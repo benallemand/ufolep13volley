@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.HallOfFame', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.HallOfFame', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.HallOfFame',
@@ -8,4 +8,4 @@ Ext.define('Ufolep13Volley.store.HallOfFame', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

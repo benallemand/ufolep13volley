@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Day', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Day', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -38,4 +38,4 @@ Ext.define('Ufolep13Volley.model.Day', Sencha.modelCompatibility({
             }
         }
     ]
-}));
+});

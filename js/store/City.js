@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.City', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.City', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.City',
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.store.City', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

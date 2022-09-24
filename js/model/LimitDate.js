@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.LimitDate', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.LimitDate', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -18,4 +18,4 @@ Ext.define('Ufolep13Volley.model.LimitDate', Sencha.modelCompatibility({
             type: 'string'
         }
     ]
-}));
+});

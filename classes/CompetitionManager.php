@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
+require_once __DIR__ . '/../classes/RankManager.php';
 
 class CompetitionManager extends Generic
 {
@@ -324,5 +325,39 @@ class CompetitionManager extends Generic
     {
         $sql = "DELETE FROM blacklist_by_city WHERE id IN($ids)";
         $this->sql_manager->execute($sql);
+    }
+
+    public function generate_menu(string $code_competition)
+    {
+        switch ($code_competition) {
+            case 'm':
+            case 'f':
+            case 'mo':
+                $label = 'Division';
+                break;
+            case 'c':
+            case 'kh':
+                $label = 'Poule';
+                break;
+            default:
+                $label = '?';
+                break;
+        }
+        $rank_manager = new RankManager();
+        $result_string = "";
+        $competitions = $this->getCompetitions("c.code_competition = '$code_competition'");
+        foreach ($competitions as $competition) {
+            if (in_array($code_competition, array('cf', 'kf'))) {
+                $result_string .= "<li><a href='#matches/$code_competition'>" . $competition['libelle'] . "</a></li>";
+                continue;
+            }
+            $result_string .= "<li class='dropdown-header'><h4>" . $competition['libelle'] . "</h4></li>";
+            $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
+            foreach ($divisions as $division) {
+                $division_string = $division['division'];
+                $result_string .= "<li><a href='#championship/$code_competition/$division_string'>$label $division_string</a></li>";
+            }
+        }
+        echo $result_string;
     }
 }

@@ -20,26 +20,16 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-header"><h4>Masculin (Mixte possible)</h4></li>
-                        <li><a href="#championship/m/1">Division 1</a></li>
-                        <li><a href="#championship/m/2">Division 2</a></li>
-                        <li><a href="#championship/m/3">Division 3</a></li>
-                        <li><a href="#championship/m/4">Division 4</a></li>
-                        <li><a href="#championship/m/5">Division 5</a></li>
-<!--                        <li><a href="#championship/m/6">Division 6</a></li>-->
-                        <!--<li><a href="#championship/m/7">Division 7</a></li>-->
-                        <li class="dropdown-header"><h4>Féminin</h4></li>
-                        <li><a href="#championship/f/1">Division 1</a></li>
-                        <li><a href="#championship/f/2">Division 2</a></li>
-<!--                        <li><a href="#championship/f/3">Division 3</a></li>-->
-                        <li class="dropdown-header"><h4>4x4 Mixte</h4></li>
-                        <li><a href="#championship/mo/1">Division 1</a></li>
-                        <li><a href="#championship/mo/2">Division 2</a></li>
-                        <li><a href="#championship/mo/3">Division 3</a></li>
-<!--                        <li><a href="#championship/mo/4">Division 4</a></li>-->
+                        <?php
+                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                        $manager = new CompetitionManager();
+                        $manager->generate_menu('m');
+                        $manager->generate_menu('f');
+                        $manager->generate_menu('mo');
+                        ?>
                     </ul>
                 </li>
-<!--                <li class="dropdown">
+                <li class="dropdown">
                     <a class="dropdown-toggle" role="button" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -47,27 +37,16 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-header"><h4>Isoardi</h4></li>
-                        <li><a href="#championship/c/1">Poule 1</a></li>
-                        <li><a href="#championship/c/2">Poule 2</a></li>
-                        <li><a href="#championship/c/3">Poule 3</a></li>
-                        <li><a href="#championship/c/4">Poule 4</a></li>
-                        <li><a href="#championship/c/5">Poule 5</a></li>
-                        <li><a href="#championship/c/6">Poule 6</a></li>
-                        <li><a href="#championship/c/7">Poule 7</a></li>
-                        <li><a href="#championship/c/8">Poule 8</a></li>
-                        <li><a href="#championship/c/9">Poule 9</a></li>
-                        <li><a href="#matches/cf">Phases finales</a></li>
-                        <li class="dropdown-header"><h4>Khoury Hanna</h4></li>
-                        <li><a href="#championship/kh/1">Poule 1</a></li>
-                        <li><a href="#championship/kh/2">Poule 2</a></li>
-                        <li><a href="#championship/kh/3">Poule 3</a></li>
-                        <li><a href="#championship/kh/4">Poule 4</a></li>
-                        <li><a href="#championship/kh/5">Poule 5</a></li>
-                        <li><a href="#championship/kh/6">Poule 6</a></li>
-                        <li><a href="#matches/kf">Phases finales</a></li>
+                        <?php
+                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                        $manager = new CompetitionManager();
+                        $manager->generate_menu('c');
+                        $manager->generate_menu('cf');
+                        $manager->generate_menu('kh');
+                        $manager->generate_menu('kf');
+                        ?>
                     </ul>
-                </li>-->
+                </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" role="button" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">

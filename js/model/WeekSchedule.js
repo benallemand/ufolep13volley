@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.WeekSchedule', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.WeekSchedule', {
     extend: 'Ext.data.Model',
     fields: [
         'gymnasium',
@@ -6,4 +6,4 @@ Ext.define('Ufolep13Volley.model.WeekSchedule', Sencha.modelCompatibility({
         'startTime',
         'team'
     ]
-}));
+});

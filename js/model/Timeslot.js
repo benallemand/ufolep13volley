@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Timeslot', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Timeslot', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -29,4 +29,4 @@ Ext.define('Ufolep13Volley.model.Timeslot', Sencha.modelCompatibility({
         'team_full_name',
         'gymnasium_full_name'
     ]
-}));
+});

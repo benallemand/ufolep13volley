@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Player', {
     extend: 'Ext.data.Model',
     fields: [
         'full_name',
@@ -27,6 +27,16 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
                     }
                 }
                 return val;
+            }
+        },
+        {
+            name: 'photo',
+            type: 'string',
+            convert: function (val, rec) {
+                if (Ext.isEmpty(rec.get('path_photo'))) {
+                    return '';
+                }
+                return Ext.String.format("<img src='{0}' width='50px' height='50px'/>", rec.get('path_photo'));
             }
         },
         'sexe',
@@ -114,4 +124,4 @@ Ext.define('Ufolep13Volley.model.Player', Sencha.modelCompatibility({
             type: 'int',
         }
     ]
-}));
+});

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Profile', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Profile', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -7,4 +7,4 @@ Ext.define('Ufolep13Volley.model.Profile', Sencha.modelCompatibility({
         },
         'name'
     ]
-}));
+});

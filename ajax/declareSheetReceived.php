@@ -11,7 +11,7 @@ try {
     require_once __DIR__ . '/../classes/MatchManager.php';
     $code_match = filter_input(INPUT_POST, 'code_match');
     $manager = new MatchManager();
-    $manager->declareSheetReceived($code_match);
+    $manager->declare_sheet_received($code_match);
 } catch (Exception $ex) {
     echo json_encode(array(
         'success' => false,

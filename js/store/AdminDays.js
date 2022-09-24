@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.AdminDays', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.AdminDays', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Day',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.store.AdminDays', Sencha.storeCompatibility({
             }
         },
         autoLoad: true}
-}));
+});

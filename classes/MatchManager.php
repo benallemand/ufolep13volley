@@ -7,26 +7,33 @@
  * Time: 10:33
  */
 require_once __DIR__ . '/Generic.php';
+require_once __DIR__ . '/SqlManager.php';
 
 class MatchManager extends Generic
 {
+    /**
+     * @var SqlManager
+     */
+    private $sql_manager;
+
     /**
      * MatchManager constructor.
      */
     public function __construct()
     {
+        $this->sql_manager = new SqlManager();
         ini_set('max_execution_time', 1200);
         ini_set('memory_limit', '512M');
         ini_set('xdebug.max_nesting_level', 2000);
     }
 
     /**
-     * @param null $query
+     * @param string|null $query
      * @return string
      */
-    private function getSql($query = "1=1")
+    private function get_sql(?string $query = "1=1"): string
     {
-        $sql = "SELECT DISTINCT m.id_match,
+        return "SELECT DISTINCT m.id_match,
                                 IF(m.forfait_dom + m.forfait_ext > 0, 1, 0)                                     AS is_forfait,
                                 IF(m.id_match IN (SELECT DISTINCT id_match FROM match_player), 1, 0)            AS is_match_player_filled,
                                 IF((m.id_match NOT IN (SELECT DISTINCT id_match FROM match_player)) 
@@ -107,24 +114,22 @@ class MatchManager extends Generic
                                                         'Samedi')
                 LEFT JOIN matches_files mf ON mf.id_match = m.id_match
                 WHERE $query";
-        return $sql;
     }
 
     /**
-     * @param null $query
+     * @param string|null $query
      * @return string
      */
-    private function getSqlMatchFiles($query = "1=1")
+    private function get_sql_match_files(?string $query = "1=1"): string
     {
         // group by to avoid duplicate files in zip file
-        $sql = "SELECT 
+        return "SELECT 
         f.id,
         f.path_file,
         f.hash
         FROM files f 
         JOIN matches_files mf ON mf.id_file = f.id
         WHERE $query GROUP BY f.hash";
-        return $sql;
     }
 
     /**
@@ -132,16 +137,9 @@ class MatchManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getMatches($query = null)
+    public function get_matches($query = null): array
     {
-        $db = Database::openDbConnection();
-        $sql = $this->getSql($query);
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return $results;
+        return $this->sql_manager->execute($this->get_sql($query));
     }
 
     /**
@@ -149,11 +147,12 @@ class MatchManager extends Generic
      * @return mixed
      * @throws Exception
      */
-    public function getMatch($id_match)
+    public function get_match($id_match)
     {
-        $results = $this->getMatches("m.id_match = $id_match");
-        if (count($results) !== 1) {
-            throw new Exception("Error while retrieving match data");
+        $results = $this->get_matches("m.id_match = $id_match");
+        $count_results = count($results);
+        if ($count_results !== 1) {
+            throw new Exception("Error while retrieving match data ! Found $count_results match(s) !");
         }
         return $results[0];
     }
@@ -163,16 +162,9 @@ class MatchManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getMatchFiles($id_match)
+    public function get_match_files($id_match): array
     {
-        $db = Database::openDbConnection();
-        $sql = $this->getSqlMatchFiles("mf.id_match = $id_match");
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return $results;
+        return $this->sql_manager->execute($this->get_sql_match_files("mf.id_match = $id_match"));
     }
 
     /**
@@ -185,11 +177,11 @@ class MatchManager extends Generic
         if (empty($inputs['id'])) {
             throw new Exception("No ID specified\n");
         }
-        if (!$this->isDownloadAllowed($inputs['id'])) {
+        if (!$this->is_download_allowed($inputs['id'])) {
             throw new Exception("User not allowed to download !");
         }
-        $match = $this->getMatch($inputs['id']);
-        $match_files = $this->getMatchFiles($inputs['id']);
+        $match = $this->get_match($inputs['id']);
+        $match_files = $this->get_match_files($inputs['id']);
         $archiveFileName = $match['code_match'] . ".zip";
         $zip = new ZipArchive();
         if ($zip->open($archiveFileName, ZIPARCHIVE::CREATE) !== TRUE) {
@@ -218,12 +210,12 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function isDownloadAllowed($id_match)
+    private function is_download_allowed($id_match): bool
     {
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
         $id_team = $userDetails['id_equipe'];
-        $match = $this->getMatch($id_match);
+        $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
                 return true;
@@ -246,12 +238,12 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function isMatchUpdateAllowed($id_match)
+    private function is_match_update_allowed($id_match): bool
     {
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
         $id_team = $userDetails['id_equipe'];
-        $match = $this->getMatch($id_match);
+        $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
                 return true;
@@ -275,14 +267,14 @@ class MatchManager extends Generic
     /**
      * @throws Exception
      */
-    public function saveMatch()
+    public function save_match()
     {
-        $db = Database::openDbConnection();
         $inputs = filter_input_array(INPUT_POST);
+        $bindings = array();
         if (empty($inputs['id_match'])) {
             $sql = "INSERT INTO";
         } else {
-            if (!$this->isMatchUpdateAllowed($inputs['id_match'])) {
+            if (!$this->is_match_update_allowed($inputs['id_match'])) {
                 throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
             }
             $sql = "UPDATE";
@@ -295,12 +287,10 @@ class MatchManager extends Generic
                 case 'parent_code_competition':
                 case 'equipe_dom':
                 case 'equipe_ext':
-                    continue;
+                    break;
                 case 'id_equipe_dom':
                 case 'id_equipe_ext':
                 case 'id_journee':
-                    $sql .= "$key = $value,";
-                    break;
                 case 'set_1_dom':
                 case 'set_1_ext':
                 case 'set_2_dom':
@@ -313,50 +303,50 @@ class MatchManager extends Generic
                 case 'set_5_ext':
                 case 'score_equipe_dom':
                 case 'score_equipe_ext':
-                    $sql .= empty($value) ? "$key = 0," : "$key = $value,";
+                    $sql .= "$key = ?,";
+                    $bindings[] = array('type' => 'i', 'value' => $value);
                     break;
                 case 'date_reception':
-                    $sql .= "$key = DATE(STR_TO_DATE('$value', '%d/%m/%Y')),";
+                    $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
+                    $bindings[] = array('type' => 's', 'value' => $value);
                     break;
                 case 'certif':
                 case 'sheet_received':
                     $val = ($value === 'on') ? 1 : 0;
-                    $sql .= "$key = $val,";
-                    break;
+                    $sql .= "$key = ?,";
+                    $bindings[] = array('type' => 'i', 'value' => $val);
+                break;
                 case 'forfait_dom':
                 case 'forfait_ext':
                     $val = ($value === 'true') ? 1 : 0;
-                    $sql .= "$key = $val,";
-                    break;
+                    $sql .= "$key = ?,";
+                    $bindings[] = array('type' => 'i', 'value' => $val);
+                break;
                 default:
-                    $value = mysqli_real_escape_string($db, $value);
-                    $sql .= "$key = '$value',";
+                    $sql .= "$key = ?,";
+                    $bindings[] = array('type' => 's', 'value' => $value);
                     break;
             }
         }
         $sql = trim($sql, ',');
         if (!empty($inputs['id_match'])) {
-            $sql .= " WHERE id_match=" . $inputs['id_match'];
+            $sql .= " WHERE id_match = ?";
+            $bindings[] = array('type' => 'i', 'value' => $inputs['id_match']);
         }
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            $message = mysqli_error($db);
-            throw new Exception($message);
-        }
+        $this->sql_manager->execute($sql, $bindings);
         if (empty($inputs['id_match'])) {
             return;
         }
-        $this->saveMatchFiles($inputs);
+        $this->save_match_files($inputs);
         $code_match = $inputs['code_match'];
         $this->addActivity("Le match $code_match a ete modifie");
-        return;
     }
 
     /**
      * @param $match
      * @throws Exception
      */
-    private function saveMatchFiles($match)
+    private function save_match_files($match)
     {
         $uploaddir = '../match_files/';
         $code_match = $match['code_match'];
@@ -376,86 +366,74 @@ class MatchManager extends Generic
             }
             $id_file = 0;
             $file_hash = md5_file($_FILES[$current_file_iteration]['tmp_name']);
-            $this->insertFile(substr($uploadfile, 3), $file_hash, $id_file);
+            $id_file = $this->insert_file(substr($uploadfile, 3), $file_hash);
             $id_match = $match['id_match'];
-            $this->linkMatchToFile($id_match, $id_file);
+            $this->link_match_to_file($id_match, $id_file);
             if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], $this->accentedToNonAccented($uploadfile))) {
                 $this->addActivity("Un nouveau fichier a ete transmis pour le match $code_match.");
             }
         }
         if ($mark_sheet_received) {
-            $this->declareSheetReceived($code_match);
+            $this->declare_sheet_received($code_match);
             require_once __DIR__ . '/../classes/Emails.php';
             $emailManager = new Emails();
             $emailManager->sendMailSheetReceived($code_match);
         }
-        return;
     }
 
     /**
      * @param $uploadfile
      * @param $file_hash
-     * @param $idFile
+     * @return array|int|string|null
      * @throws Exception
      */
-    private function insertFile($uploadfile, $file_hash, &$idFile)
+    private function insert_file($uploadfile, $file_hash)
     {
-        $db = Database::openDbConnection();
-        $sql = "INSERT INTO files SET path_file = '$uploadfile', hash = '$file_hash'";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            $message = mysqli_error($db);
-            disconn_db();
-            throw new Exception($message);
-        }
-        $idFile = mysqli_insert_id($db);
+        $sql = "INSERT INTO files SET path_file = ?, hash = ?";
+        $bindings = array(
+            array('type' => 's', 'value' => $uploadfile),
+            array('type' => 's', 'value' => $file_hash),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @param $idMatch
      * @param $idFile
+     * @return array|int|string|null
      * @throws Exception
      */
-    private function linkMatchToFile($idMatch, $idFile)
+    private function link_match_to_file($idMatch, $idFile)
     {
-        $db = Database::openDbConnection();
-        $sql = "INSERT INTO matches_files SET id_file = $idFile, id_match = $idMatch";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            $message = mysqli_error($db);
-            throw new Exception($message);
-        }
+        $sql = "INSERT INTO matches_files SET id_file = ?, id_match = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idFile),
+            array('type' => 'i', 'value' => $idMatch),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @param $code_match
-     * @return bool
      * @throws Exception
      */
-    public function declareSheetReceived($code_match)
+    public function declare_sheet_received($code_match): bool
     {
-        $db = Database::openDbConnection();
-        $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = '$code_match'";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            return false;
-        }
+        $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = ?";
+        $bindings = array(
+            array('type' => 's', 'value' => $code_match),
+        );
+        $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("La feuille du match $code_match a ete reçue");
-        return true;
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @throws Exception
      */
-    public function unsetDayMatches($query = "1=1")
+    public function unset_day_matches(string $query = "1=1")
     {
-        $db = Database::openDbConnection();
-        $sql = "UPDATE matches SET id_journee = NULL WHERE $query";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            throw new Exception("Erreur durant unsetDayMatches: " . mysqli_error($db));
-        }
+        $this->sql_manager->execute("UPDATE matches SET id_journee = NULL WHERE $query");
     }
 
     /**
@@ -486,7 +464,7 @@ class MatchManager extends Generic
      * @param $competition
      * @throws Exception
      */
-    public function generateMatches($competition)
+    public function generate_matches($competition)
     {
         if (empty($competition)) {
             throw new Exception("Compétition non trouvée !");
@@ -495,7 +473,7 @@ class MatchManager extends Generic
         $code_competition = $competition['code_competition'];
         $is_mirror_needed = ($competition['is_home_and_away'] === '1');
         // supprimer les matchs générés et non confirmés pour la compétition (on préserver les matchs archivés)
-        $this->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        $this->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
         require_once __DIR__ . '/../classes/RankManager.php';
         $rank_manager = new RankManager();
         $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
@@ -572,19 +550,32 @@ class MatchManager extends Generic
                     $team_dom = $teams[intval($index_teams[0])];
                     $team_ext = $teams[intval($index_teams[1])];
                     // on remplit le tableau avec les matchs à insérer
-                    $to_be_inserted_matches[] = array(
-                        'dom' => $team_dom,
-                        'ext' => $team_ext,
-                        'competition' => $competition,
-                        'division' => $division
-                    );
+                    $home_id = $team_dom['id_equipe'];
+                    $away_id = $team_ext['id_equipe'];
+                    if ($this->is_last_match_same_home($home_id, $away_id)) {
+                        // si il y a déjà eu une rencontre dom vs ext la dernière fois, inverser la réception
+                        $to_be_inserted_matches[] = array(
+                            'dom' => $team_ext,
+                            'ext' => $team_dom,
+                            'competition' => $competition,
+                            'division' => $division
+                        );
+                    } else {
+                        // sinon garder tel quel
+                        $to_be_inserted_matches[] = array(
+                            'dom' => $team_dom,
+                            'ext' => $team_ext,
+                            'competition' => $competition,
+                            'division' => $division
+                        );
+                    }
                 }
             }
             $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
             $count_to_be_inserted_matches += count($to_be_inserted_matches);
             $this->insert_matches($to_be_inserted_matches, $code_competition, $division['division'], 0, 0);
         }
-        $count_inserted_matches = count($this->getMatches("m.code_competition = '$code_competition' AND m.match_status = 'NOT_CONFIRMED'"));
+        $count_inserted_matches = count($this->get_matches("m.code_competition = '$code_competition' AND m.match_status = 'NOT_CONFIRMED'"));
         $message .= "Nombre de matchs à créer : $count_to_be_inserted_matches" . PHP_EOL;
         $message .= "Nombre de matchs créés : $count_inserted_matches" . PHP_EOL;
         throw new Exception($message);
@@ -594,7 +585,7 @@ class MatchManager extends Generic
      * @param $match
      * @return string
      */
-    private function flip($match)
+    private function flip($match): string
     {
         $components = explode(' v ', $match);
         return $components[1] . " v " . $components[0];
@@ -612,42 +603,60 @@ class MatchManager extends Generic
      * @return int|string
      * @throws Exception
      */
-    private function insertMatch($code_match,
-                                 $code_competition,
-                                 $division,
-                                 $id_equipe_dom,
-                                 $id_equipe_ext,
-                                 $id_journee,
-                                 $date_match,
-                                 $note)
+    private function insert_db_match($code_match,
+                                     $code_competition,
+                                     $division,
+                                     $id_equipe_dom,
+                                     $id_equipe_ext,
+                                     $id_journee,
+                                     $date_match,
+                                     $note)
     {
-        $db = Database::openDbConnection();
-        $sql = "INSERT INTO matches SET 
-                code_match = " . (is_null($code_match) ? "NULL" : "'$code_match'") . ", 
-                code_competition = '$code_competition', 
-                division = '$division',
-                id_equipe_dom = $id_equipe_dom,
-                id_equipe_ext = $id_equipe_ext,
-                id_journee = " . (is_null($id_journee) ? "NULL" : "$id_journee") . ",
-                date_reception = " . (is_null($date_match) ? "NULL" : "STR_TO_DATE('$date_match', '%d/%m/%Y')") . ",
-                note = " . (is_null($note) ? "NULL" : "'" . mysqli_real_escape_string($db, $note) . "'");
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            $message = mysqli_error($db);
-            throw new Exception($message . ", SQL : " . $sql);
+        $bindings = array();
+        $code_match_string = "code_match = NULL";
+        if (!is_null($code_match)) {
+            $bindings[] = array('type' => 's', 'value' => $code_match);
+            $code_match_string = "code_match = ?";
         }
-        return mysqli_insert_id($db);
+        $bindings[] = array('type' => 's', 'value' => $code_competition);
+        $bindings[] = array('type' => 's', 'value' => $division);
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe_dom);
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe_ext);
+        $day_string = "id_journee = NULL";
+        if (!is_null($id_journee)) {
+            $bindings[] = array('type' => 'i', 'value' => $id_journee);
+            $day_string = "id_journee = ?";
+        }
+        $date_reception_string = "date_reception = NULL";
+        if (!is_null($date_match)) {
+            $bindings[] = array('type' => 's', 'value' => $date_match);
+            $date_reception_string = "date_reception = STR_TO_DATE(?, '%d/%m/%Y')";
+        }
+        $note_string = "note = NULL";
+        if (!is_null($note)) {
+            $bindings[] = array('type' => 's', 'value' => $note);
+            $note_string = "note = ?";
+        }
+        $sql = "INSERT INTO matches SET 
+                $code_match_string, 
+                code_competition = ?, 
+                division = ?,
+                id_equipe_dom = ?,
+                id_equipe_ext = ?,
+                $day_string,
+                $date_reception_string,
+                $note_string";
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @param $code_competition
      * @param $id_equipe_dom
-     * @return mixed
+     * @return array|int|string|null
      * @throws Exception
      */
-    private function getComputedDates($code_competition, $id_equipe_dom)
+    private function get_computed_dates($code_competition, $id_equipe_dom)
     {
-        $db = Database::openDbConnection();
         $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(cr.jour,
                                                                  'Lundi',
                                                                  'Mardi',
@@ -661,17 +670,17 @@ class MatchManager extends Generic
                 FROM journees j
                          JOIN creneau cr ON cr.id IN (SELECT creneau.id
                                                       FROM creneau
-                                                      WHERE creneau.id_equipe = $id_equipe_dom)
+                                                      WHERE creneau.id_equipe = ?)
                          JOIN classements c on cr.id_equipe = c.id_equipe
-                WHERE cr.id_equipe = $id_equipe_dom
-                  AND j.code_competition = '$code_competition'
+                WHERE cr.id_equipe = ?
+                  AND j.code_competition = ?
                 ORDER BY week_number, cr.usage_priority";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return $results;
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe_dom),
+            array('type' => 'i', 'value' => $id_equipe_dom),
+            array('type' => 's', 'value' => $code_competition),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -680,15 +689,14 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function isDateFilled($computed_date, $id_equipe)
+    private function is_date_filled($computed_date, $id_equipe): bool
     {
         // Chercher le gymnase de réception
-        $db = Database::openDbConnection();
         $sql = "SELECT * FROM gymnase WHERE id IN (
                     SELECT id_gymnase 
                     FROM creneau 
-                    WHERE id_equipe = $id_equipe
-                    AND jour = ELT(WEEKDAY(STR_TO_DATE('$computed_date', '%d/%m/%Y')) + 2,
+                    WHERE id_equipe = ?
+                    AND jour = ELT(WEEKDAY(STR_TO_DATE(?, '%d/%m/%Y')) + 2,
                                            'Dimanche',
                                            'Lundi',
                                            'Mardi',
@@ -696,11 +704,11 @@ class MatchManager extends Generic
                                            'Jeudi',
                                            'Vendredi',
                                            'Samedi'))";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $computed_date),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         $nb_terrain = 0;
         foreach ($results as $result) {
             $nb_terrain += $result['nb_terrain'];
@@ -710,54 +718,54 @@ class MatchManager extends Generic
                 FROM matches m
                   JOIN equipes e ON e.id_equipe = m.id_equipe_dom
                   JOIN creneau cr ON cr.id_equipe = e.id_equipe
-                WHERE m.date_reception = STR_TO_DATE('$computed_date', '%d/%m/%Y')
+                WHERE m.date_reception = STR_TO_DATE(?, '%d/%m/%Y')
                       AND cr.id_gymnase IN (SELECT id_gymnase
                                             FROM creneau
-                                            WHERE creneau.id_equipe = $id_equipe)
+                                            WHERE creneau.id_equipe = ?)
                       AND m.match_status != 'ARCHIVED'";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+        $bindings = array(
+            array('type' => 's', 'value' => $computed_date),
+            array('type' => 'i', 'value' => $id_equipe),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         return (count($results) >= $nb_terrain);
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @throws Exception
      */
-    public function deleteMatches($query = "1=1")
+    public function delete_matches(string $query = "1=1")
     {
-        $db = Database::openDbConnection();
         $sql = "DELETE FROM matches WHERE $query";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            throw new Exception("Erreur durant l'effacement: " . mysqli_error($db));
-        }
+        $this->sql_manager->execute($sql);
     }
 
     /**
      * @param $computed_date
-     * @param $id_equipe
+     * @param $team_id
      * @return bool
      * @throws Exception
      */
-    private function isDateBlacklisted($computed_date, $id_equipe = null)
+    public function is_date_blacklisted($computed_date, $team_id = null): bool
     {
-        $db = Database::openDbConnection();
-        if ($id_equipe === null) {
+        // tested ok
+        $bindings = array(
+            array('type' => 's', 'value' => $computed_date),
+        );
+        if ($team_id === null) {
             $sql = "SELECT * 
                 FROM blacklist_date 
-                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')";
+                WHERE closed_date = STR_TO_DATE(?, '%d/%m/%Y')";
         } else {
+            $bindings[] = array('type' => 'i', 'value' => $team_id);
             $sql = "SELECT * 
                 FROM blacklist_gymnase 
-                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')
+                WHERE closed_date = STR_TO_DATE(?, '%d/%m/%Y')
                 AND id_gymnase IN (
                     SELECT id_gymnase 
                     FROM creneau 
-                    WHERE id_equipe = $id_equipe
+                    WHERE id_equipe = ?
                     AND jour = ELT(WEEKDAY(closed_date) + 2,
                                            'Dimanche',
                                            'Lundi',
@@ -767,58 +775,53 @@ class MatchManager extends Generic
                                            'Vendredi',
                                            'Samedi'))";
         }
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+        $results = $this->sql_manager->execute($sql, $bindings);
         return (count($results) > 0);
     }
 
-    /**
-     * @param $computed_date
-     * @param $id_equipe
-     * @return bool
-     * @throws Exception
-     */
-    private function isTeamBlacklisted($computed_date, $id_equipe)
-    {
-        $db = Database::openDbConnection();
-        $sql = "SELECT * 
-                FROM blacklist_team
-                WHERE closed_date = STR_TO_DATE('$computed_date', '%d/%m/%Y')
-                AND id_team = $id_equipe";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return (count($results) > 0);
-    }
+//    TODO dead code ?
+//    /**
+//     * @param $computed_date
+//     * @param $team_id
+//     * @return bool
+//     * @throws Exception
+//     */
+//    private function is_team_blacklisted($computed_date, $team_id): bool
+//    {
+//        $sql = "SELECT *
+//                FROM blacklist_team
+//                WHERE closed_date = STR_TO_DATE(?, '%d/%m/%Y')
+//                AND id_team = ?";
+//        $bindings = array(
+//            array('type' => 's', 'value' => $computed_date),
+//            array('type' => 'i', 'value' => $team_id),
+//        );
+//        $results = $this->sql_manager->execute($sql, $bindings);
+//        return (count($results) > 0);
+//    }
 
     /**
-     * @param $competition
-     * @param $division
+     * @param $code_competition
+     * @param $division_number
      * @param $week_id
      * @return int
      * @throws Exception
      */
-    private function get_count_matches_per_day($competition, $division, $week_id)
+    public function get_count_matches_per_day($code_competition, $division_number, $week_id): int
     {
-        $db = Database::openDbConnection();
-        $code_competition = $competition['code_competition'];
-        $division_number = $division['division'];
+        // tested ok
         $sql = "SELECT * 
                 FROM matches
-                WHERE code_competition = '$code_competition' 
-                  AND division = '$division_number' 
-                  AND id_journee = $week_id
+                WHERE code_competition = ? 
+                  AND division = ? 
+                  AND id_journee = ?
                   AND match_status != 'ARCHIVED'";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+        $bindings = array(
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $division_number),
+            array('type' => 'i', 'value' => $week_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         return count($results);
     }
 
@@ -828,7 +831,7 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function insert_match($to_be_inserted_match, bool $try_flip=false): bool
+    private function insert_match($to_be_inserted_match, bool $try_flip = false): bool
     {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
@@ -836,32 +839,32 @@ class MatchManager extends Generic
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
         $is_date_found = false;
-        $computed_dates = $this->getComputedDates($code_competition, $team_dom['id_equipe']);
+        $computed_dates = $this->get_computed_dates($code_competition, $team_dom['id_equipe']);
         foreach ($computed_dates as $computed_date) {
             // computed date is full (too many matches in same gymnasium)
-            if ($this->isDateFilled($computed_date['computed_date'], $team_dom['id_equipe'])) {
+            if ($this->is_date_filled($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
             // computed date is not allowed (holiday)
-            if ($this->isDateBlacklisted($computed_date['computed_date'])) {
+            if ($this->is_date_blacklisted($computed_date['computed_date'])) {
                 continue;
             }
             // computed date is not allowed (gymnasium is not available)
-            if ($this->isDateBlacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
+            if ($this->is_date_blacklisted($computed_date['computed_date'], $team_dom['id_equipe'])) {
                 continue;
             }
             // computed date is not allowed (home team already has a match)
-            if ($this->isWeekAvailable($computed_date['week_id'], $team_dom['id_equipe'])) {
+            if ($this->is_team_busy_for_week($computed_date['week_id'], $team_dom['id_equipe'])) {
                 continue;
             }
             // computed date is not allowed (away team already has a match)
-            if ($this->isWeekAvailable($computed_date['week_id'], $team_ext['id_equipe'])) {
+            if ($this->is_team_busy_for_week($computed_date['week_id'], $team_ext['id_equipe'])) {
                 continue;
             }
             $is_date_found = true;
             $found_date = $computed_date['computed_date'];
             $round_number = $computed_date['week_number'];
-            $match_number = $this->get_count_matches_per_day($competition, $division, $computed_date['week_id']) + 1;
+            $match_number = $this->get_count_matches_per_day($competition['code_competition'], $division['division'], $computed_date['week_id']) + 1;
             $year_month = date('ym');
             $code_match =
                 strtoupper($competition['code_competition']) .
@@ -869,7 +872,7 @@ class MatchManager extends Generic
                 $division['division'] .
                 $round_number .
                 $match_number;
-            $this->insertMatch(
+            $this->insert_db_match(
                 $code_match,
                 $competition['code_competition'],
                 $division['division'],
@@ -895,22 +898,22 @@ class MatchManager extends Generic
 
     /**
      * @param $week_id
-     * @param $id_equipe
+     * @param $team_id
      * @return bool
      * @throws Exception
      */
-    private
-    function isWeekAvailable($week_id, $id_equipe)
+    public function is_team_busy_for_week($week_id, $team_id): bool
     {
-        $db = Database::openDbConnection();
+        // tested ok
         $sql = "SELECT m.* FROM matches m 
-                WHERE m.id_journee = $week_id
-                AND (m.id_equipe_dom = $id_equipe OR m.id_equipe_ext = $id_equipe)";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+                WHERE m.id_journee = ?
+                AND (m.id_equipe_dom = ? OR m.id_equipe_ext = ?)";
+        $bindings = array(
+            array('type' => 'i', 'value' => $week_id),
+            array('type' => 'i', 'value' => $team_id),
+            array('type' => 'i', 'value' => $team_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         return count($results) > 0;
     }
 
@@ -931,20 +934,19 @@ class MatchManager extends Generic
      * @return void
      * @throws Exception
      */
-    private
-    function insert_matches(array $to_be_inserted_matches,
-                                  $code_competition,
-                                  $division,
-                                  $index_match,
-                                  $index_place)
+    public function insert_matches(array $to_be_inserted_matches,
+                                         $code_competition,
+                                         $division,
+                                         $index_match,
+                                         $index_place)
     {
-        $matches = $this->getMatches("m.code_competition = '$code_competition' 
+        $matches = $this->get_matches("m.code_competition = '$code_competition' 
                                              AND m.division = '$division' 
                                              AND m.match_status = 'NOT_CONFIRMED'");
         if (count($matches) === count($to_be_inserted_matches)) {
             return;
         }
-        $this->deleteMatches("code_competition = '$code_competition' 
+        $this->delete_matches("code_competition = '$code_competition' 
                                              AND division = '$division' 
                                              AND match_status = 'NOT_CONFIRMED'");
         if ($index_match === count($to_be_inserted_matches)) {
@@ -967,72 +969,68 @@ class MatchManager extends Generic
         }
     }
 
-    /**
-     * @param $team
-     * @return bool
-     * @throws Exception
-     */
-    private function is_flip_allowed($team)
-    {
-        $db = Database::openDbConnection();
-        $id_team = $team['id_equipe'];
-        $sql = "SELECT 
-                       SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
-                       SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
-                       m.code_competition                           AS competition,
-                       e.nom_equipe                                 AS equipe
-                FROM matches m
-                         JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
-                WHERE m.match_status != 'ARCHIVED'
-                AND e.id_equipe = $id_team
-                GROUP BY competition, equipe
-                HAVING ABS(domicile - exterieur) > 2
-                ORDER BY competition, equipe";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return count($results) === 0;
-    }
+//    TODO dead code ?
+//    /**
+//     * @param $team
+//     * @return bool
+//     * @throws Exception
+//     */
+//    private function is_flip_allowed($team)
+//    {
+//        $id_team = $team['id_equipe'];
+//        $sql = "SELECT
+//                       SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
+//                       SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
+//                       m.code_competition                           AS competition,
+//                       e.nom_equipe                                 AS equipe
+//                FROM matches m
+//                         JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
+//                WHERE m.match_status != 'ARCHIVED'
+//                AND e.id_equipe = $id_team
+//                GROUP BY competition, equipe
+//                HAVING ABS(domicile - exterieur) > 2
+//                ORDER BY competition, equipe";
+//        $results = $this->sql_manager->execute($sql);
+//        return count($results) === 0;
+//    }
+//
+//    /**
+//     * @param $computed_date
+//     * @param $team_id
+//     * @return bool
+//     * @throws Exception
+//     */
+//    public function are_teams_blacklisted($computed_date, $team_id)
+//    {
+//        $blacklistedTeamIds = $this->get_blacklisted_team_ids($team_id);
+//        foreach ($blacklistedTeamIds as $blacklistedTeamId) {
+//            if ($this->has_match($blacklistedTeamId, $computed_date)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
-     * @param $computed_date
-     * @param $id_equipe
-     * @return bool
-     * @throws Exception
-     */
-    private function isTeamsBlacklisted($computed_date, $id_equipe)
-    {
-        $blacklistedTeamIds = $this->getBlackListedTeamIds($id_equipe);
-        foreach ($blacklistedTeamIds as $blacklistedTeamId) {
-            if ($this->has_match($blacklistedTeamId, $computed_date)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param $id_equipe
+     * @param $team_id
      * @return array
      * @throws Exception
      */
-    private function getBlackListedTeamIds($id_equipe)
+    public function get_blacklisted_team_ids($team_id): array
     {
-        $db = Database::openDbConnection();
+        // tested ok
         $sql = "SELECT * 
                 FROM blacklist_teams
-                WHERE id_team_1 = $id_equipe
-                OR id_team_2 = $id_equipe";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+                WHERE id_team_1 = ?
+                OR id_team_2 = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $team_id),
+            array('type' => 'i', 'value' => $team_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         $blacklisted_teams_ids = array();
         foreach ($results as $result) {
-            if ($result['id_team_1'] == $id_equipe) {
+            if ($result['id_team_1'] == $team_id) {
                 $blacklisted_teams_ids[] = $result['id_team_2'];
             } else {
                 $blacklisted_teams_ids[] = $result['id_team_1'];
@@ -1047,20 +1045,49 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function has_match($team_id, $date_string)
+    public function has_match($team_id, $date_string): bool
     {
-        $db = Database::openDbConnection();
+        // tested ok
         $sql = "SELECT * 
                 FROM matches
-                WHERE
-                      (id_equipe_dom = $team_id OR id_equipe_ext = $team_id) 
-                  AND date_reception = STR_TO_DATE('$date_string', '%d/%m/%Y')";
-        $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
+                WHERE (id_equipe_dom = ? OR id_equipe_ext = ?) 
+                  AND date_reception = STR_TO_DATE(?, '%d/%m/%Y')";
+        $bindings = array(
+            array('type' => 'i', 'value' => $team_id),
+            array('type' => 'i', 'value' => $team_id),
+            array('type' => 's', 'value' => $date_string)
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         return count($results) > 0;
+    }
+
+    /**
+     * @param $home_id
+     * @param $away_id
+     * @return bool
+     * @throws Exception
+     */
+    public function is_last_match_same_home($home_id, $away_id): bool
+    {
+        // tested ok
+        $sql = "SELECT  MAX(date_reception), 
+                        id_equipe_dom, 
+                        id_equipe_ext 
+                FROM matches 
+                WHERE (id_equipe_dom = ? AND id_equipe_ext = ?) 
+                   OR (id_equipe_dom = ? AND id_equipe_ext = ?)";
+        $bindings = array(
+            array('type' => 'i', 'value' => $home_id),
+            array('type' => 'i', 'value' => $away_id),
+            array('type' => 'i', 'value' => $away_id),
+            array('type' => 'i', 'value' => $home_id)
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        $count_results = count($results);
+        if ($count_results !== 1) {
+            throw new Exception("Unable to find last match between ids $home_id and $away_id ! sql returned $count_results line(s) !");
+        }
+        return $results[0]['id_equipe_dom'] === $home_id;
     }
 
 }

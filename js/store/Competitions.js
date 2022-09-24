@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Competitions', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.Competitions', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Competition',
@@ -8,4 +8,4 @@ Ext.define('Ufolep13Volley.store.Competitions', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

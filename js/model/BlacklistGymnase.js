@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.BlacklistGymnase', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.BlacklistGymnase', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -15,4 +15,4 @@ Ext.define('Ufolep13Volley.model.BlacklistGymnase', Sencha.modelCompatibility({
             dateFormat: 'd/m/Y'
         }
     ]
-}));
+});

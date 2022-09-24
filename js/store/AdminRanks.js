@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.AdminRanks', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.AdminRanks', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Rank',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.store.AdminRanks', Sencha.storeCompatibility({
             }
         },
         autoLoad: true}
-}));
+});

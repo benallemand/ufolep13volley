@@ -270,7 +270,7 @@ class Emails
         $teams_emails = getTeamsEmailsFromMatch($code_match);
         require_once __DIR__ . "/MatchManager.php";
         $match_manager = new MatchManager();
-        $matches = $match_manager->getMatches("m.code_match = '$code_match'");
+        $matches = $match_manager->get_matches("m.code_match = '$code_match'");
         $id_match = $matches[0]['id_match'];
         $to = implode(';', $teams_emails);
 
@@ -278,7 +278,7 @@ class Emails
         $message = str_replace('%code_match%', $code_match, $message);
 
         $match_manager = new MatchManager();
-        $match_files = $match_manager->getMatchFiles($id_match);
+        $match_files = $match_manager->get_match_files($id_match);
         $attached_files = array();
         foreach ($match_files as $match_file) {
             $attached_files[] = "../" . $match_file['path_file'];

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.HallOfFame', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.HallOfFame', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -10,4 +10,4 @@ Ext.define('Ufolep13Volley.model.HallOfFame', Sencha.modelCompatibility({
         'period',
         'league'
     ]
-}));
+});

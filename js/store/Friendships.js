@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Friendships', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.Friendships', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Friendships',
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.store.Friendships', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

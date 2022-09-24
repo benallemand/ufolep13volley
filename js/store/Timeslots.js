@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Timeslots', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.Timeslots', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Timeslot',
@@ -8,4 +8,4 @@ Ext.define('Ufolep13Volley.store.Timeslots', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

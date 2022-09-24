@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.AdminMatches', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.AdminMatches', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Match',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.store.AdminMatches', Sencha.storeCompatibility({
             }
         },
         autoLoad: true}
-}));
+});

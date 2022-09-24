@@ -712,7 +712,7 @@ function check_team_allowed_to_ask_report($team_id, $match_code)
 {
     require_once __DIR__ . '/../classes/MatchManager.php';
     $match_manager = new MatchManager();
-    $matches = $match_manager->getMatches("m.code_match = '$match_code'");
+    $matches = $match_manager->get_matches("m.code_match = '$match_code'");
     $this_match = $matches[0];
     $code_competition = $this_match['code_competition'];
     global $db;
@@ -854,7 +854,7 @@ function acceptReport($code_match)
         }
         require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
-        $matches = $match_manager->getMatches("m.code_match = '$code_match'");
+        $matches = $match_manager->get_matches("m.code_match = '$code_match'");
         $this_match = $matches[0];
         if ($sessionIdEquipe == $this_match['id_equipe_dom']) {
             incrementReportCount($this_match['code_competition'], $this_match['id_equipe_ext']);
@@ -1511,8 +1511,22 @@ function getMyTeam()
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
         WHERE e.id_equipe=$sessionIdEquipe        
-        GROUP BY team_full_name
-        ORDER BY comp.libelle, c.nom, nom_equipe ASC";
+        GROUP BY e.code_competition, 
+                 comp.libelle,
+                 e.nom_equipe,
+                 CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', cl.division, ')'), '')),
+                 e.id_club, 
+                 c.nom, 
+                 e.id_equipe, 
+                 CONCAT(jresp.prenom, ' ', jresp.nom), 
+                 jresp.telephone, 
+                 jsupp.telephone,
+                 jresp.email, 
+                 e.web_site, 
+                 p.path_photo
+        ORDER BY comp.libelle, 
+                 c.nom,
+                 nom_equipe";
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
     $results = array();
     while ($data = mysqli_fetch_assoc($req)) {
@@ -1521,52 +1535,20 @@ function getMyTeam()
     return json_encode($results);
 }
 
+/**
+ * @throws Exception
+ */
 function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = false)
 {
     if ($idTeam === NULL) {
         return false;
     }
-    global $db;
-    conn_db();
     if (!isTeamSheetAllowedForUser($idTeam)) {
-        return false;
+        throw new Exception("Vous n'avez pas la permission de consulter cette équipe !");
     }
-    $sql = "SELECT 
-        CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name, 
-        CONCAT(UPPER(LEFT(j.prenom, 1)), LOWER(SUBSTRING(j.prenom, 2))) AS prenom, 
-        UPPER(j.nom) AS nom, 
-        j.telephone, 
-        j.email, 
-        j.num_licence, 
-        CONCAT(LPAD(j.departement_affiliation, 3, '0'), j.num_licence) AS num_licence_ext, 
-        p.path_photo,
-        j.sexe, 
-        j.departement_affiliation, 
-        j.est_actif+0 AS est_actif, 
-        j.id_club, 
-        j.telephone2, 
-        j.email2, 
-        j.est_responsable_club+0 AS est_responsable_club, 
-        je.is_captain+0 AS is_captain, 
-        je.is_vice_leader+0 AS is_vice_leader, 
-        je.is_leader+0 AS is_leader, 
-        j.id, 
-        j.show_photo+0 AS show_photo,
-        DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation 
-        FROM joueur_equipe je
-        LEFT JOIN joueurs j ON j.id=je.id_joueur
-        LEFT JOIN photos p ON p.id = j.id_photo
-        WHERE 
-        je.id_equipe = $idTeam";
-    if ($doHideInactivePlayers) {
-        $sql .= " AND j.est_actif+0=1 ";
-    }
-    $sql .= " ORDER BY sexe, nom ASC";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
+    require_once __DIR__ . "/../classes/Players.php";
+    $players = new Players();
+    $results = $players->get_players("je.id_equipe = $idTeam");
     foreach ($results as $index => $result) {
         if ($result['show_photo'] === '1') {
             $results[$index]['path_photo'] = accentedToNonAccented($result['path_photo']);
@@ -1595,7 +1577,7 @@ function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = fals
             }
         }
     }
-    return json_encode($results);
+    return $results;
 }
 
 function getPlayers($params)
@@ -2136,48 +2118,6 @@ function removeTimeSlot($id)
     disconn_db();
     addActivity("Un créneau a été supprimé");
     return true;
-}
-
-function getTeamSheet($idTeam)
-{
-    if ($idTeam === NULL) {
-        return false;
-    }
-    global $db;
-    conn_db();
-    if (!isTeamSheetAllowedForUser($idTeam)) {
-        return false;
-    }
-    $sql = "SELECT 
-        c.nom AS club,
-        e.code_competition, 
-        comp.libelle AS championnat,
-        cla.division,
-        CONCAT(jresp.prenom, ' ', jresp.nom) AS leader,
-        jresp.telephone AS portable,
-        jresp.email AS courriel,
-        GROUP_CONCAT(CONCAT(LEFT(cr.jour, 2), ' ', cr.heure, ' ', g.nom) SEPARATOR '\n') AS gymnasiums_list,
-        e.nom_equipe AS equipe,
-        DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
-        FROM equipes e
-        JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=e.code_competition
-        LEFT JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
-        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
-        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
-        LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
-        LEFT JOIN gymnase g ON g.id=cr.id_gymnase
-        WHERE e.id_equipe = $idTeam
-        GROUP BY equipe";
-    $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>' . $sql . '<br>' . mysqli_error($db));
-    $results = array();
-    while ($data = mysqli_fetch_assoc($req)) {
-        $results[] = $data;
-    }
-    if (count($results) === 0) {
-        return false;
-    }
-    return json_encode($results);
 }
 
 /**
@@ -3766,8 +3706,8 @@ function generateDays()
         }
         require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
-        $match_manager->deleteMatches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
-        $match_manager->unsetDayMatches("code_competition = '$code_competition'");
+        $match_manager->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        $match_manager->unset_day_matches("code_competition = '$code_competition'");
         require_once __DIR__ . '/../classes/DayManager.php';
         $day_manager = new DayManager();
         $day_manager->deleteDays("code_competition = '$code_competition'");
@@ -3862,7 +3802,7 @@ function generateMatches()
         require_once __DIR__ . '/../classes/MatchManager.php';
         $match_manager = new MatchManager();
         $competition = $competitions[0];
-        $match_manager->generateMatches($competition);
+        $match_manager->generate_matches($competition);
     }
 }
 

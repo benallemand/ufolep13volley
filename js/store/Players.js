@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Players', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.Players', {
     extend: 'Ext.data.Store',
     alias: 'store.Players',
     config: {
@@ -9,4 +9,4 @@ Ext.define('Ufolep13Volley.store.Players', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

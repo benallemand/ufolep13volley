@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.BlacklistByCity', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.BlacklistByCity', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.BlacklistByCity',
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.store.BlacklistByCity', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

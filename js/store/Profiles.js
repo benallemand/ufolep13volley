@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.Profiles', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.Profiles', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Profile',
@@ -7,4 +7,4 @@ Ext.define('Ufolep13Volley.store.Profiles', Sencha.storeCompatibility({
             url: 'ajax/getProfiles.php'
         },
         autoLoad: true}
-}));
+});

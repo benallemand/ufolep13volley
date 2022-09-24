@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.MatchPlayers', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.MatchPlayers', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.Player',
@@ -7,4 +7,4 @@ Ext.define('Ufolep13Volley.store.MatchPlayers', Sencha.storeCompatibility({
             url: 'ajax/getMatchPlayers.php'
         }
     }
-}));
+});

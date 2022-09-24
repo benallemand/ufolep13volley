@@ -33,7 +33,7 @@ function certify_matchs($parameters)
             'value' => $id
         );
         $sql_manager->execute($sql, $bindings);
-        $match = $match_manager->getMatch($id);
+        $match = $match_manager->get_match($id);
         addActivity("Le match " . $match['code_match'] . " a ete certifie");
     }
 }
@@ -46,7 +46,7 @@ function is_action_allowed(string $function_name, $parameters)
     switch ($function_name) {
         case 'manage_match_players':
             $match_manager = new MatchManager();
-            $match = $match_manager->getMatch($parameters['id_match']);
+            $match = $match_manager->get_match($parameters['id_match']);
             @session_start();
             // allow admin
             if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {

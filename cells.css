@@ -1,0 +1,11 @@
+.grid-red .x-style-cell {
+    background: pink !important;
+}
+
+.grid-orange .x-style-cell {
+    background: gold !important;
+}
+
+.grid-green .x-style-cell {
+    background: greenyellow !important;
+}

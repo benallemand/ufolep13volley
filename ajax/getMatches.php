@@ -21,7 +21,7 @@ try {
                   AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED') 
                   ORDER BY j.nommage, m.date_reception, m.code_match";
     }
-    echo json_encode($manager->getMatches($query));
+    echo json_encode($manager->get_matches($query));
     exit();
 } catch (Exception $exc) {
     echo json_encode(array(

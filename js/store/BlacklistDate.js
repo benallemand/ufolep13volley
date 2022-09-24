@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.BlacklistDate', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.BlacklistDate', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.BlacklistDate',
@@ -12,4 +12,4 @@ Ext.define('Ufolep13Volley.store.BlacklistDate', Sencha.storeCompatibility({
         },
         autoLoad: true
     }
-}));
+});

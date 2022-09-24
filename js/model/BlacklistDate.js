@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.BlacklistDate', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.BlacklistDate', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.model.BlacklistDate', Sencha.modelCompatibility({
             dateFormat: 'd/m/Y'
         }
     ]
-}));
+});

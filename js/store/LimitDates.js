@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.store.LimitDates', Sencha.storeCompatibility({
+Ext.define('Ufolep13Volley.store.LimitDates', {
     extend: 'Ext.data.Store',
     config: {
         model: 'Ufolep13Volley.model.LimitDate',
@@ -11,4 +11,4 @@ Ext.define('Ufolep13Volley.store.LimitDates', Sencha.storeCompatibility({
             }
         },
         autoLoad: true}
-}));
+});

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.WeekDay', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.WeekDay', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -6,4 +6,4 @@ Ext.define('Ufolep13Volley.model.WeekDay', Sencha.modelCompatibility({
             type: 'string'
         }
     ]
-}));
+});

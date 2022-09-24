@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Friendships', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Friendships', {
     extend: 'Ext.data.Model',
     fields: [
         {
@@ -16,4 +16,4 @@ Ext.define('Ufolep13Volley.model.Friendships', Sencha.modelCompatibility({
         },
         'nom_club_2'
     ]
-}));
+});

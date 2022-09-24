@@ -40,7 +40,7 @@ function manage_match_players($parameters)
     }
     if(count($parameters['player_ids']) > 0) {
         $match_manager = new MatchManager();
-        $match = $match_manager->getMatch($parameters['id_match']);
+        $match = $match_manager->get_match($parameters['id_match']);
         $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
         addActivity($comment);
     }
@@ -54,7 +54,7 @@ function is_action_allowed(string $function_name, $parameters)
     switch ($function_name) {
         case 'manage_match_players':
             $match_manager = new MatchManager();
-            $match = $match_manager->getMatch($parameters['id_match']);
+            $match = $match_manager->get_match($parameters['id_match']);
             @session_start();
             // allow admin
             if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {

@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.model.Club', Sencha.modelCompatibility({
+Ext.define('Ufolep13Volley.model.Club', {
     extend: 'Ext.data.Model',
     fields: [
         {name: 'id', type: 'int'},
@@ -10,4 +10,4 @@ Ext.define('Ufolep13Volley.model.Club', Sencha.modelCompatibility({
         'tel2_responsable',
         'email_responsable'
     ]
-}));
+});
