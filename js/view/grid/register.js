@@ -1,0 +1,20 @@
+Ext.define('Ufolep13Volley.view.grid.register', {
+    extend: 'Ufolep13Volley.view.grid.ufolep',
+    alias: 'widget.grid_register',
+    title: 'Equipes inscrites',
+    store: 'register',
+    selType: 'rowmodel',
+    autoScroll: true,
+    columns: [
+        {header: "Nom d'équipe", dataIndex: 'new_team_name', width: 200,},
+        {header: 'Club', dataIndex: 'club', width: 200,},
+        {header: 'Ancien nom', dataIndex: 'old_team', width: 200,},
+        {header: 'Responsable', dataIndex: 'leader', width: 200,},
+        {header: 'Gymnase 1', dataIndex: 'court_1', hidden: true, width: 200,},
+        {header: 'Jour 1', dataIndex: 'day_court_1', hidden: true, width: 200,},
+        {header: 'Heure 1', dataIndex: 'hour_court_1', hidden: true, width: 200,},
+        {header: 'Gymnase 2', dataIndex: 'court_2', hidden: true, width: 200,},
+        {header: 'Jour 2', dataIndex: 'day_court_2', hidden: true, width: 200,},
+        {header: 'Heure 2', dataIndex: 'hour_court_2', hidden: true, width: 200,},
+    ],
+});
