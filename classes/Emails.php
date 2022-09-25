@@ -405,4 +405,38 @@ class Emails
         $sql_manager = new SqlManager();
         $sql_manager->execute($sql, $bindings);
     }
+
+    /**
+     * @param int $register_id
+     * @return int|string
+     * @throws Exception
+     */
+    public function insert_email_notify_registration(int $register_id)
+    {
+        require_once __DIR__ . "/Register.php";
+        $manager = new Register();
+        $register = $manager->get_register($register_id);
+        $message = file_get_contents('../templates/emails/notify_registration.fr.html');
+        $message = str_replace('%new_team_name%', $register['new_team_name'], $message);
+        $message = str_replace('%club%', $register['club'], $message);
+        $message = str_replace('%competition%', $register['competition'], $message);
+        $message = str_replace('%old_team%', $register['old_team'], $message);
+        $message = str_replace('%leader_name%', $register['leader_name'], $message);
+        $message = str_replace('%leader_first_name%', $register['leader_first_name'], $message);
+        $message = str_replace('%leader_email%', $register['leader_email'], $message);
+        $message = str_replace('%leader_phone%', $register['leader_phone'], $message);
+        $message = str_replace('%court_1%', $register['court_1'], $message);
+        $message = str_replace('%day_court_1%', $register['day_court_1'], $message);
+        $message = str_replace('%hour_court_1%', $register['hour_court_1'], $message);
+        $message = str_replace('%court_2%', $register['court_2'], $message);
+        $message = str_replace('%day_court_2%', $register['day_court_2'], $message);
+        $message = str_replace('%hour_court_2%', $register['hour_court_2'], $message);
+        $message = str_replace('%remarks%', $register['remarks'], $message);
+        return $this->insert_email(
+            "[UFOLEP13VOLLEY]L'inscription de l'équipe " . $register['new_team_name'] . " a bien été prise en compte",
+            $message,
+            implode(';', array($register['leader_email'])),
+            "contact@ufolep13volley.org");
+    }
+
 }
