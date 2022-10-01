@@ -12,7 +12,7 @@ class CompetitionManager extends Generic
         $this->sql_manager = new SqlManager();
     }
 
-    private function getSql($query = "1=1")
+    private function getSql($query = "1=1"): string
     {
         return "SELECT 
         c.id,
@@ -30,7 +30,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getCompetitions($query = "1=1")
+    public function getCompetitions(string $query = "1=1"): array
     {
         $sql = $this->getSql($query);
         return $this->sql_manager->getResults($sql);
@@ -41,7 +41,7 @@ class CompetitionManager extends Generic
      * @return bool
      * @throws Exception
      */
-    public function isCompetitionOver($id)
+    public function isCompetitionOver($id): bool
     {
         $db = Database::openDbConnection();
         $sql = "SELECT date_limite FROM dates_limite WHERE code_competition IN (SELECT code_competition FROM competitions WHERE id = $id)";
@@ -67,7 +67,7 @@ class CompetitionManager extends Generic
      * @return bool
      * @throws Exception
      */
-    public function isCompetitionStarted($id)
+    public function isCompetitionStarted($id): bool
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DATE_FORMAT(start_date, '%d/%m/%Y') AS start_date FROM competitions WHERE id = $id";
@@ -92,7 +92,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getBlacklistGymnase()
+    public function getBlacklistGymnase(): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT  bg.id, 
@@ -113,7 +113,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getBlacklistTeam()
+    public function getBlacklistTeam(): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT  bt.id, 
@@ -134,7 +134,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getBlacklistDate()
+    public function getBlacklistDate(): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT  bd.id,
@@ -152,7 +152,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getBlacklistTeams()
+    public function getBlacklistTeams(): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT  bt.id, 
@@ -175,7 +175,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_friendships()
+    public function get_friendships(): array
     {
         $sql = "SELECT f.id, 
                        f.id_club_1, 
@@ -205,7 +205,7 @@ class CompetitionManager extends Generic
             switch ($key) {
                 case 'id':
                 case 'dirtyFields':
-                    continue;
+                    break;
                 case 'id_club_1':
                 case 'id_club_2':
                     $bindings[] = array(
@@ -248,7 +248,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_blacklist_by_city()
+    public function get_blacklist_by_city(): array
     {
         $sql = "SELECT  bbc.id,
                         bbc.city,
@@ -262,7 +262,7 @@ class CompetitionManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_city()
+    public function get_city(): array
     {
         $sql = "SELECT DISTINCT ville AS name 
                 FROM gymnase
@@ -287,7 +287,7 @@ class CompetitionManager extends Generic
             switch ($key) {
                 case 'id':
                 case 'dirtyFields':
-                    continue;
+                    break;
                 case 'from_date':
                 case 'to_date':
                     $bindings[] = array(
@@ -327,6 +327,11 @@ class CompetitionManager extends Generic
         $this->sql_manager->execute($sql);
     }
 
+    /**
+     * @param string $code_competition
+     * @return void
+     * @throws Exception
+     */
     public function generate_menu(string $code_competition)
     {
         switch ($code_competition) {

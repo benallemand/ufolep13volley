@@ -3904,7 +3904,6 @@ function saveBlacklistTeams()
         throw new Exception($message);
     }
     disconn_db();
-    return;
 }
 
 /**
@@ -3912,9 +3911,9 @@ function saveBlacklistTeams()
  */
 function remove_duplicate_files()
 {
-    require_once __DIR__ . '/../classes/CronTasks.php';
-    $cron_tasks = new CronTasks();
-    $cron_tasks->cleanupFiles();
+    require_once __DIR__ . '/../classes/Files.php';
+    $files = new Files();
+    $files->cleanup_files();
 }
 
 /**
@@ -3922,16 +3921,19 @@ function remove_duplicate_files()
  */
 function retry_error_emails()
 {
-    require_once __DIR__ . '/../classes/CronTasks.php';
-    $cron_tasks = new CronTasks();
-    $cron_tasks->retry_error_emails();
+    require_once __DIR__ . '/../classes/Emails.php';
+    $emails = new Emails();
+    $emails->retry_error_emails();
 }
 
+/**
+ * @throws \PHPMailer\PHPMailer\Exception
+ */
 function send_mail_team_recap()
 {
-    require_once __DIR__ . '/../classes/CronTasks.php';
-    $cron_tasks = new CronTasks();
-    $cron_tasks->sendMailTeamRecap();
+    require_once __DIR__ . '/../classes/Emails.php';
+    $email = new Emails();
+    $email->insert_email_team_recap();
 }
 
 /**

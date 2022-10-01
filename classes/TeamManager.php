@@ -19,9 +19,9 @@ class TeamManager extends Generic
         $this->sql_manager = new SqlManager();
     }
 
-    private function getSql($query = null)
+    private function getSql($query = "1=1"): string
     {
-        $sql = "SELECT 
+        return "SELECT 
         e.code_competition, 
         comp.libelle AS libelle_competition, 
         e.nom_equipe, 
@@ -47,13 +47,9 @@ class TeamManager extends Generic
         LEFT JOIN joueurs jsupp ON jsupp.id=jesupp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
-        WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
-        $sql .= " GROUP BY team_full_name
-                  ORDER BY comp.libelle, c.nom, nom_equipe ASC";
-        return $sql;
+        WHERE $query
+        GROUP BY team_full_name, comp.libelle, c.nom, nom_equipe
+        ORDER BY comp.libelle, c.nom, nom_equipe";
     }
 
     /**
@@ -61,7 +57,7 @@ class TeamManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getTeams($query = null)
+    public function getTeams($query = null): array
     {
         $db = Database::openDbConnection();
         $sql = $this->getSql($query);
@@ -182,6 +178,12 @@ class TeamManager extends Generic
         addActivity(getPlayerFullName($id_player) . " a ete supprime de l'equipe " . getTeamName($id_team));
     }
 
+    /**
+     * @param $id_team
+     * @param string $id_player
+     * @return void
+     * @throws Exception
+     */
     public function add_to_team($id_team, string $id_player)
     {
         if (!isTeamLeader()) {

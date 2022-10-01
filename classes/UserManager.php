@@ -8,7 +8,7 @@ class UserManager extends Generic
      * @return array
      * @throws Exception
      */
-    function getMyPreferences()
+    function getMyPreferences(): array
     {
         $db = Database::openDbConnection();
         $userDetails = $this->getCurrentUserDetails();
@@ -28,7 +28,7 @@ class UserManager extends Generic
      * @return bool
      * @throws Exception
      */
-    public function modifyMyPassword()
+    public function modifyMyPassword(): bool
     {
         $db = Database::openDbConnection();
         $userDetails = $this->getCurrentUserDetails();
@@ -57,7 +57,7 @@ class UserManager extends Generic
      * @return bool
      * @throws Exception
      */
-    public function saveMyPreferences()
+    public function saveMyPreferences(): bool
     {
         $db = Database::openDbConnection();
         $userDetails = $this->getCurrentUserDetails();
@@ -88,7 +88,7 @@ class UserManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function isRegistryKeyPresent($key)
+    private function isRegistryKeyPresent($key): bool
     {
         $db = Database::openDbConnection();
         $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = '$key'";

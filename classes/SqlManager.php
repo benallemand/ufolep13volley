@@ -7,7 +7,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_accounts()
+    public function sql_get_accounts(): array
     {
         $sql = "SELECT
                 e.nom_equipe,
@@ -27,7 +27,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_activity()
+    public function sql_get_activity(): array
     {
         $sql = "SELECT
                 DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date,
@@ -50,7 +50,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function getResults($sql)
+    public function getResults($sql): array
     {
         $db = Database::openDbConnection();
         $req = mysqli_query($db, $sql);
@@ -104,9 +104,6 @@ class SqlManager
             return $results;
         }
         if (strpos($sql, "INSERT INTO") === 0) {
-            if (mysqli_stmt_close($stmt) === FALSE) {
-                throw new Exception("SQL error : " . mysqli_error($db));
-            }
             return mysqli_insert_id($db);
         }
         if (mysqli_stmt_close($stmt) === FALSE) {
@@ -119,7 +116,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_matches_not_reported()
+    public function sql_get_matches_not_reported(): array
     {
         $sql = "SELECT
                 m.code_match,
@@ -158,7 +155,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_ids_team_requesting_next_matches()
+    public function sql_get_ids_team_requesting_next_matches(): array
     {
         $sql = "SELECT
                 REPLACE(REPLACE(registry_key, '.is_remind_matches',''), 'users.','') AS team_id
@@ -173,7 +170,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_next_matches_for_team($team_id)
+    public function sql_get_next_matches_for_team($team_id): array
     {
         $sql = "SELECT
                 e1.nom_equipe AS equipe_domicile,
@@ -222,7 +219,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_email_from_team_id($team_id)
+    public function sql_get_email_from_team_id($team_id): array
     {
         $sql = "SELECT j.email
                 FROM joueurs j
@@ -237,7 +234,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_players_without_licence_number()
+    public function sql_get_players_without_licence_number(): array
     {
         $sql = "SELECT
                 GROUP_CONCAT(CONCAT(j.nom, ' ', j.prenom) SEPARATOR ', ') AS joueurs,
@@ -262,7 +259,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_team_leaders_without_email()
+    public function sql_get_team_leaders_without_email(): array
     {
         $sql = "SELECT DISTINCT
                   j.prenom,
@@ -284,7 +281,7 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_pending_reports()
+    public function sql_get_pending_reports(): array
     {
         $sql = "SELECT
                 m.code_match AS match_reference,
@@ -308,7 +305,7 @@ class SqlManager
         return $this->getResults($sql);
     }
 
-    private function make_values_referenced($arr)
+    private function make_values_referenced($arr): array
     {
         $refs = array();
         foreach ($arr as $key => $value) {
@@ -321,14 +318,13 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_team_recaps()
+    public function sql_get_team_recaps(): array
     {
         $sql = "SELECT 
                     e.nom_equipe AS team_name,
-                    CASE 
-                        WHEN je.id_equipe IS NOT NULL THEN CONCAT(j.prenom, ' ', j.nom, ' (tel: ', j.telephone, ', mail: ', j.email, ')')
-                        ELSE CONCAT('Pas de responsable ! Infos club: ', c2.prenom_responsable, ' ', c2.nom_responsable, ' (tel: ', c2.tel1_responsable, ', mail: ', c2.email_responsable, ')')
-                        END AS team_leader,
+                    IF(je.id_equipe IS NOT NULL, 
+                        CONCAT(j.prenom, ' ', j.nom, ' (tel: ', j.telephone, ', mail: ', j.email, ')'), 
+                        CONCAT('Pas de responsable ! Infos club: ', c2.prenom_responsable, ' ', c2.nom_responsable, ' (tel: ', c2.tel1_responsable, ', mail: ', c2.email_responsable, ')')) AS team_leader,
                     c2.email_responsable AS club_email,
                     c3.libelle AS championship_name,
                     c.division AS division,
@@ -342,10 +338,10 @@ class SqlManager
                 LEFT JOIN creneau c4 on e.id_equipe = c4.id_equipe
                 LEFT JOIN gymnase g on c4.id_gymnase = g.id
                 WHERE c3.libelle LIKE '%Championnat%'
-                GROUP BY e.nom_equipe, CASE 
-                        WHEN je.id_equipe IS NOT NULL THEN CONCAT(j.prenom, ' ', j.nom, ' (tel: ', j.telephone, ', mail: ', j.email, ')')
-                        ELSE CONCAT('Pas de responsable ! Infos club: ', c2.prenom_responsable, ' ', c2.nom_responsable, ' (tel: ', c2.tel1_responsable, ', mail: ', c2.email_responsable, ')')
-                        END, c2.email_responsable, c3.libelle, c.division
+                GROUP BY e.nom_equipe, 
+                         IF(je.id_equipe IS NOT NULL, 
+                             CONCAT(j.prenom, ' ', j.nom, ' (tel: ', j.telephone, ', mail: ', j.email, ')'), 
+                             CONCAT('Pas de responsable ! Infos club: ', c2.prenom_responsable, ' ', c2.nom_responsable, ' (tel: ', c2.tel1_responsable, ', mail: ', c2.email_responsable, ')')), c2.email_responsable, c3.libelle, c.division
                 ORDER BY championship_name, division, team_name";
         return $this->getResults($sql);
     }

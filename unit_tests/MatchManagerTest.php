@@ -95,7 +95,7 @@ class MatchManagerTest extends TestCase
     /**
      * @throws Exception
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->sql_manager = new SqlManager();

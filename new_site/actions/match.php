@@ -167,8 +167,8 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
         && x.match_status == 'CONFIRMED'">
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
-           ng-click="editMatch(x.id_match, matches)"
-        >
+           ng-href="/match.php?id_match={{x.id_match}}"
+           target="_blank">
             Modifier
             <span class="glyphicon glyphicon-edit"></span>
         </a>

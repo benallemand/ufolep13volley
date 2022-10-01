@@ -9,24 +9,20 @@ require_once __DIR__ . '/Generic.php';
 
 class RankManager extends Generic
 {
-    private function getSql($query = null)
+    private function getSql($query = "1=1"): string
     {
-        $sql = "SELECT 
-        c.id,
-        c.code_competition,
-        c.division,
-        c.id_equipe,
-        c.penalite,
-        c.report_count,
-        c.rank_start
-        FROM classements c
-        JOIN competitions comp ON comp.code_competition = c.code_competition
-        JOIN equipes e ON e.id_equipe = c.id_equipe
-        WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
-        return $sql;
+        return "SELECT 
+                    c.id,
+                    c.code_competition,
+                    c.division,
+                    c.id_equipe,
+                    c.penalite,
+                    c.report_count,
+                    c.rank_start
+                FROM classements c
+                JOIN competitions comp ON comp.code_competition = c.code_competition
+                JOIN equipes e ON e.id_equipe = c.id_equipe
+                WHERE $query";
     }
 
     /**
@@ -34,7 +30,7 @@ class RankManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getRanks($query = null)
+    public function getRanks($query = null): array
     {
         $db = Database::openDbConnection();
         $sql = $this->getSql($query);
@@ -50,7 +46,7 @@ class RankManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getCompetitions()
+    public function getCompetitions(): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT  c.code_competition, 
@@ -69,7 +65,7 @@ class RankManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getDivisionsFromCompetition($code_competition)
+    public function getDivisionsFromCompetition($code_competition): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DISTINCT division 
@@ -90,7 +86,7 @@ class RankManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getTeamsFromDivisionAndCompetition($division, $code_competition)
+    public function getTeamsFromDivisionAndCompetition($division, $code_competition): array
     {
         $db = Database::openDbConnection();
         $sql = "SELECT DISTINCT c.id_equipe,
@@ -128,57 +124,29 @@ class RankManager extends Generic
             FROM (
                    SELECT
                      e.id_equipe,
-                     '$code_competition' AS code_competition,
-                     e.nom_equipe                      AS equipe,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 3
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 3
-                                           ELSE 0 END) +
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0
-                       THEN 1
-                                           ELSE 0 END)
-                     - c.penalite                      AS points,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 1
-                                           ELSE 0 END) +
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
-                       THEN 1
-                                           ELSE 0 END)                 AS joues,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 1
-                                           ELSE 0 END) AS gagnes,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
-                       THEN 1
-                                           ELSE 0 END) AS perdus,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_dom
-                         ELSE m.score_equipe_ext END)  AS sets_pour,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_ext
-                         ELSE m.score_equipe_dom END)  AS sets_contre,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_dom
-                         ELSE m.score_equipe_ext END) - SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_ext
-                                                            ELSE m.score_equipe_dom END)         AS diff,
-                     c.penalite                        AS penalites,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
-                       THEN 1
-                                           ELSE 0 END) AS matches_lost_by_forfeit_count,
-                      c.report_count
+                     '$code_competition'                                                                    AS code_competition,
+                     e.nom_equipe                                                                           AS equipe,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0)) - 
+                    c.penalite                                                                              AS points,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) +
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS joues,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0))                 AS gagnes,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS perdus,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext))          AS sets_pour,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))          AS sets_contre,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) - 
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))          AS diff,
+                    c.penalite                                                                              AS penalites,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1, 1, 0))                      AS matches_lost_by_forfeit_count,
+                    c.report_count
                    FROM
                      classements c
                      JOIN equipes e ON e.id_equipe = c.id_equipe
@@ -219,55 +187,27 @@ class RankManager extends Generic
                      e.id_equipe,
                      '$code_competition' AS code_competition,
                      e.nom_equipe                      AS equipe,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 3
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 3
-                                           ELSE 0 END) +
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0
-                       THEN 1
-                                           ELSE 0 END)
-                     - c.penalite                      AS points,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 1
-                                           ELSE 0 END) +
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
-                       THEN 1
-                                           ELSE 0 END)                 AS joues,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3
-                       THEN 1
-                                           ELSE 0 END) AS gagnes,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3
-                       THEN 1
-                                           ELSE 0 END) AS perdus,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_dom
-                         ELSE m.score_equipe_ext END)  AS sets_pour,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_ext
-                         ELSE m.score_equipe_dom END)  AS sets_contre,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_dom
-                         ELSE m.score_equipe_ext END) - SUM(CASE WHEN e.id_equipe = m.id_equipe_dom
-                       THEN m.score_equipe_ext
-                                                            ELSE m.score_equipe_dom END)         AS diff,
-                     c.penalite                        AS penalites,
-                     SUM(CASE WHEN e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1
-                       THEN 1
-                         ELSE 0 END) + SUM(CASE WHEN e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1
-                       THEN 1
-                                           ELSE 0 END) AS matches_lost_by_forfeit_count,
-                      c.report_count
+                     SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) + 
+                     SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
+                     SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) + 
+                     SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0)) - 
+                     c.penalite                      AS points,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) +
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS joues,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) AS gagnes,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0)) AS perdus,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext))  AS sets_pour,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))  AS sets_contre,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) - 
+                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))         AS diff,
+                    c.penalite                        AS penalites,
+                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1, 1, 0)) + 
+                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1, 1, 0)) AS matches_lost_by_forfeit_count,
+                    c.report_count
                    FROM
                      classements c
                      JOIN equipes e ON e.id_equipe = c.id_equipe

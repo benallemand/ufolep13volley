@@ -8,7 +8,7 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
         {
             xtype: 'hidden',
             fieldLabel: 'id_match',
-            name: 'id_match'
+            name: 'id_match',
         },
         {
             xtype: 'tagfield',
@@ -16,6 +16,7 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
             name: 'player_ids[]',
             store: {
                 type: 'Players',
+                autoLoad: false,
                 sorters: [
                     {
                         property: 'id_club',

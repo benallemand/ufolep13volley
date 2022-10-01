@@ -11,10 +11,10 @@ require_once __DIR__ . '/Database.php';
 class Generic
 {
     /**
-     * @return mixed
+     * @return array
      * @throws Exception
      */
-    public function getCurrentUserDetails()
+    public function getCurrentUserDetails(): array
     {
         if (!(isset($_SESSION['login']))) {
             session_start();
@@ -43,13 +43,17 @@ class Generic
         mysqli_query($db, $sql);
     }
 
-    protected function accentedToNonAccented($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    protected function accentedToNonAccented($str): string
     {
-        $unwanted_array = array('?' => 'S', '�' => 'A', '�' => 'A', '�' => 'A', '�' => 'A', '�' => 'A', '�' => 'A', '�' => 'A', '�' => 'C', '�' => 'E', '�' => 'E',
-            '�' => 'E', '�' => 'E', '�' => 'I', '�' => 'I', '�' => 'I', '�' => 'I', '�' => 'N', '�' => 'O', '�' => 'O', '�' => 'O', '�' => 'O', '�' => 'O', '�' => 'O', '�' => 'U',
-            '�' => 'U', '�' => 'U', '�' => 'U', '�' => 'Y', '�' => 'B', '�' => 'Ss', '�' => 'a', '�' => 'a', '�' => 'a', '�' => 'a', '�' => 'a', '�' => 'a', '�' => 'a', '�' => 'c',
-            '�' => 'e', '�' => 'e', '�' => 'e', '�' => 'e', '�' => 'i', '�' => 'i', '�' => 'i', '�' => 'i', '�' => 'o', '�' => 'n', '�' => 'o', '�' => 'o', '�' => 'o', '�' => 'o',
-            '�' => 'o', '�' => 'o', '�' => 'u', '�' => 'u', '�' => 'u', '�' => 'y', '�' => 'b', '�' => 'y',
+        $unwanted_array = array('?' => 'S', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+            'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
+            'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+            'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y',
             '-' => '', ' ' => '');
         return strtr($str, $unwanted_array);
     }
@@ -59,7 +63,7 @@ class Generic
      * @return array
      * @throws Exception
      */
-    public function getActivity($id_team)
+    public function getActivity($id_team): array
     {
         $userDetails = $this->getCurrentUserDetails();
         $db = Database::openDbConnection();
@@ -86,7 +90,7 @@ class Generic
         return $results;
     }
 
-    protected function build_activity($subject, $dirty_fields, $inputs)
+    protected function build_activity($subject, $dirty_fields, $inputs): ?string
     {
         if (empty($dirty_fields)) {
             return null;

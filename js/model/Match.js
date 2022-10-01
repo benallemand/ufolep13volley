@@ -178,6 +178,13 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'match_status',
             type: 'string'
+        },
+        {
+            name: 'confrontation',
+            convert: function (val, record) {
+                return Ext.String.format("<h1>{0} contre {1}</h1>", record.get('equipe_dom'), record.get('equipe_ext'))
+
+            }
         }
     ]
 });

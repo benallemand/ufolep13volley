@@ -8,6 +8,7 @@
  */
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/SqlManager.php';
+require_once __DIR__ . '/../classes/Emails.php';
 
 class MatchManager extends Generic
 {
@@ -238,7 +239,7 @@ class MatchManager extends Generic
      * @return bool
      * @throws Exception
      */
-    private function is_match_update_allowed($id_match): bool
+    public function is_match_update_allowed($id_match): bool
     {
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
@@ -267,9 +268,9 @@ class MatchManager extends Generic
     /**
      * @throws Exception
      */
-    public function save_match()
+    public function save_match($parameters)
     {
-        $inputs = filter_input_array(INPUT_POST);
+        $inputs = $parameters;
         $bindings = array();
         if (empty($inputs['id_match'])) {
             $sql = "INSERT INTO";
@@ -315,13 +316,13 @@ class MatchManager extends Generic
                     $val = ($value === 'on') ? 1 : 0;
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
-                break;
+                    break;
                 case 'forfait_dom':
                 case 'forfait_ext':
                     $val = ($value === 'true') ? 1 : 0;
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
-                break;
+                    break;
                 default:
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 's', 'value' => $value);
@@ -364,7 +365,6 @@ class MatchManager extends Generic
                 $iteration++;
                 $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
             }
-            $id_file = 0;
             $file_hash = md5_file($_FILES[$current_file_iteration]['tmp_name']);
             $id_file = $this->insert_file(substr($uploadfile, 3), $file_hash);
             $id_match = $match['id_match'];
@@ -375,7 +375,6 @@ class MatchManager extends Generic
         }
         if ($mark_sheet_received) {
             $this->declare_sheet_received($code_match);
-            require_once __DIR__ . '/../classes/Emails.php';
             $emailManager = new Emails();
             $emailManager->sendMailSheetReceived($code_match);
         }
@@ -417,7 +416,7 @@ class MatchManager extends Generic
      * @param $code_match
      * @throws Exception
      */
-    public function declare_sheet_received($code_match): bool
+    public function declare_sheet_received($code_match)
     {
         $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = ?";
         $bindings = array(
@@ -489,7 +488,7 @@ class MatchManager extends Generic
             if ($teams_count % 2 == 1) {
                 $teams_count++;
             }
-            // Generate the fixtures using the round robin cyclic algorithm.
+            // Generate the fixtures using the round-robin cyclic algorithm.
             $totalRounds = $teams_count - 1;
             $matchesPerRound = $teams_count / 2;
             if ($is_mirror_needed) {
@@ -498,10 +497,6 @@ class MatchManager extends Generic
                 $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
             }
             $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
-            $rounds = array();
-            for ($i = 0; $i < $totalRounds; $i++) {
-                $rounds[$i] = array();
-            }
             $rounds = $this->generate_round_robin_rounds($teams_count);
             // Interleave so that home and away games are fairly evenly dispersed.
             $interleaved = array();
@@ -592,29 +587,29 @@ class MatchManager extends Generic
     }
 
     /**
-     * @param $code_match
-     * @param $code_competition
+     * @param string $code_match
+     * @param string $code_competition
      * @param $division
-     * @param $id_equipe_dom
-     * @param $id_equipe_ext
-     * @param $id_journee
+     * @param int $id_equipe_dom
+     * @param int $id_equipe_ext
+     * @param int $id_journee
      * @param string $date_match , format '%d/%m/%Y'
-     * @param $note
+     * @param string $note
      * @return int|string
      * @throws Exception
      */
-    private function insert_db_match($code_match,
-                                     $code_competition,
-                                     $division,
-                                     $id_equipe_dom,
-                                     $id_equipe_ext,
-                                     $id_journee,
-                                     $date_match,
-                                     $note)
+    private function insert_db_match(string $code_match,
+                                     string $code_competition,
+                                            $division,
+                                     int    $id_equipe_dom,
+                                     int    $id_equipe_ext,
+                                     int    $id_journee,
+                                     string $date_match,
+                                     string $note)
     {
         $bindings = array();
         $code_match_string = "code_match = NULL";
-        if (!is_null($code_match)) {
+        if (!empty($code_match)) {
             $bindings[] = array('type' => 's', 'value' => $code_match);
             $code_match_string = "code_match = ?";
         }
@@ -623,17 +618,17 @@ class MatchManager extends Generic
         $bindings[] = array('type' => 'i', 'value' => $id_equipe_dom);
         $bindings[] = array('type' => 'i', 'value' => $id_equipe_ext);
         $day_string = "id_journee = NULL";
-        if (!is_null($id_journee)) {
+        if (!empty($id_journee)) {
             $bindings[] = array('type' => 'i', 'value' => $id_journee);
             $day_string = "id_journee = ?";
         }
         $date_reception_string = "date_reception = NULL";
-        if (!is_null($date_match)) {
+        if (!empty($date_match)) {
             $bindings[] = array('type' => 's', 'value' => $date_match);
             $date_reception_string = "date_reception = STR_TO_DATE(?, '%d/%m/%Y')";
         }
         $note_string = "note = NULL";
-        if (!is_null($note)) {
+        if (!empty($note)) {
             $bindings[] = array('type' => 's', 'value' => $note);
             $note_string = "note = ?";
         }
@@ -890,7 +885,7 @@ class MatchManager extends Generic
                     'ext' => $to_be_inserted_match['dom'],
                     'competition' => $to_be_inserted_match['competition'],
                     'division' => $to_be_inserted_match['division']
-                ), false);
+                ));
             }
         }
         return $is_date_found;

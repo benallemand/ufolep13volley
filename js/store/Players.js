@@ -7,6 +7,6 @@ Ext.define('Ufolep13Volley.store.Players', {
             type: 'ajax',
             url: 'ajax/getPlayers.php'
         },
-        autoLoad: true
+        autoLoad: false
     }
 });

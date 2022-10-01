@@ -17,17 +17,16 @@ class DayManager extends Generic
      */
     private function getSql(?string $query = "1=1"): string
     {
-        $sql = "SELECT 
-        j.id,
-        j.code_competition,
-        j.numero,
-        j.nommage,
-        j.libelle,
-        DATE_FORMAT(j.start_date, '%d/%m/%Y') AS start_date
-        FROM journees j
-        WHERE $query
-        ORDER BY j.start_date";
-        return $sql;
+        return "SELECT 
+                    j.id,
+                    j.code_competition,
+                    j.numero,
+                    j.nommage,
+                    j.libelle,
+                DATE_FORMAT(j.start_date, '%d/%m/%Y') AS start_date
+                FROM journees j
+                WHERE $query
+                ORDER BY j.start_date";
     }
 
     /**
@@ -35,7 +34,7 @@ class DayManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function getDays($query = null)
+    public function getDays($query = null): array
     {
         $db = Database::openDbConnection();
         $sql = $this->getSql($query);
@@ -79,16 +78,13 @@ class DayManager extends Generic
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @throws Exception
      */
-    public function deleteDays($query)
+    public function deleteDays(string $query="1=1")
     {
         $db = Database::openDbConnection();
-        $sql = "DELETE FROM journees WHERE 1=1";
-        if ($query !== NULL) {
-            $sql .= " AND $query";
-        }
+        $sql = "DELETE FROM journees WHERE $query";
         $req = mysqli_query($db, $sql);
         if ($req === FALSE) {
             throw new Exception("Erreur durant l'effacement: " . mysqli_error($db));

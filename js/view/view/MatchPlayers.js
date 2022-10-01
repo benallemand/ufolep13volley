@@ -1,14 +1,14 @@
 var match_player_tpl = new Ext.XTemplate(
     '<table>',
     '<tpl for=".">',
-    '<div style="margin: 10px;float: left;width: 120px; height: 220px" class="thumb-wrap">',
-    '<p style="text-align: center"><img src="{path_photo}" width="100px" height="129px"/></p>',
+    '<div style="margin: 10px;float: left;width: 80px; height: 180px" class="thumb-wrap">',
+    '<p style="text-align: center;"><button type="button" class="ctl-delete">Enlever</button></p>',
+    '<p style="text-align: center"><img src="{path_photo}" width="50px" height="50px"/></p>',
     '<tpl if="is_valid_for_match">',
-    '<p style="text-align: center">{full_name}</p>',
+    '<p style="font-size:xx-small;text-align: center">{full_name}</p>',
     '<tpl else>',
     '<p style="text-align: center; color: pink">{full_name}</p>',
     '</tpl>',
-    '<p style="text-align: center;"><button type="button" class="ctl-delete">Enlever</button></p>',
     '</div>',
     '</tpl>'
 );

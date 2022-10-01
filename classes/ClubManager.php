@@ -13,7 +13,7 @@ class ClubManager extends Generic
         $this->table_name = 'clubs';
     }
 
-    private function getSql($query = "1=1")
+    private function getSql($query = "1=1"): string
     {
         return "SELECT * 
                 FROM $this->table_name
@@ -25,7 +25,7 @@ class ClubManager extends Generic
      * @return array
      * @throws Exception
      */
-    public function get($query = "1=1")
+    public function get(string $query = "1=1"): array
     {
         $sql = $this->getSql($query);
         return $this->sql_manager->getResults($sql);
@@ -48,7 +48,7 @@ class ClubManager extends Generic
             switch ($key) {
                 case 'id':
                 case 'dirtyFields':
-                    continue;
+                    break;
                 default:
                     $bindings[] = array(
                         'type' => 's',

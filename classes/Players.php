@@ -19,7 +19,7 @@ class Players
      * @return array
      * @throws Exception
      */
-    public function get_player(int $player_id)
+    public function get_player(int $player_id): array
     {
         $results = $this->get_players("j.id = $player_id");
         if (count($results) !== 1) {
@@ -57,7 +57,7 @@ class Players
         $results = $this->sql_manager->getResults($sql);
         $related_emails = array();
         foreach ($results as $result) {
-            foreach ($result as $key => $value) {
+            foreach ($result as $value) {
                 if (!empty($value)) {
                     $emails = explode(',', $value);
                     foreach ($emails as $email) {
@@ -77,9 +77,9 @@ class Players
     public function get_players(string $where = "1=1"): array
     {
         $sql = "SELECT
-                CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
+                CONCAT(UPPER(j.nom), ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
                 j.prenom, 
-                j.nom, 
+                UPPER(j.nom) AS nom, 
                 j.telephone, 
                 j.email, 
                 j.num_licence,
@@ -108,8 +108,8 @@ class Players
             LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
             LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
         WHERE $where
-        GROUP BY j.id
-        ORDER BY j.sexe, j.nom";
+        GROUP BY j.id, j.sexe, UPPER(j.nom)
+        ORDER BY j.sexe, UPPER(j.nom)";
         return $this->sql_manager->getResults($sql);
     }
 
@@ -137,7 +137,7 @@ class Players
                 case 'id':
                 case 'id_team':
                 case 'dirtyFields':
-                    continue;
+                    break;
                 case 'departement_affiliation':
                 case 'id_club':
                     $sql .= "$key = ?,";
@@ -155,7 +155,7 @@ class Players
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     break;
                 default:
-                    if (empty($parameters[$key]) || $parameters[$key] == 'null') {
+                    if (empty($value) || $value == 'null') {
                         $sql .= "$key = NULL,";
                     } else {
                         $sql .= "$key = ?,";
