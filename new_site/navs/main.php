@@ -21,11 +21,15 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
-                        $manager->generate_menu('m');
-                        $manager->generate_menu('f');
-                        $manager->generate_menu('mo');
+                        try {
+                            require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                            $manager = new CompetitionManager();
+                            $manager->generate_menu('m');
+                            $manager->generate_menu('f');
+                            $manager->generate_menu('mo');
+                        } catch (Exception $e) {
+                            print_r("Erreur ! " . $e->getMessage());
+                        }
                         ?>
                     </ul>
                 </li>
@@ -38,12 +42,16 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
-                        $manager->generate_menu('c');
-                        $manager->generate_menu('cf');
-                        $manager->generate_menu('kh');
-                        $manager->generate_menu('kf');
+                        try {
+                            require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                            $manager = new CompetitionManager();
+                            $manager->generate_menu('c');
+                            $manager->generate_menu('cf');
+                            $manager->generate_menu('kh');
+                            $manager->generate_menu('kf');
+                        } catch (Exception $e) {
+                            print_r("Erreur ! " . $e->getMessage());
+                        }
                         ?>
                     </ul>
                 </li>
@@ -56,7 +64,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#weekMatches"><span class="glyphicon glyphicon-fire"></span> Matchs de la
-                            semaine</a>
+                                semaine</a>
                         </li>
                         <li><a href="#lastResults"><span class="glyphicon glyphicon-fire"></span> Derniers résultats</a>
                         </li>
@@ -69,18 +77,18 @@
                                target="_blank"><span class="glyphicon glyphicon-info-sign"></span> Tuto Responsable
                                 d'équipe</a></li>
                         <li><a href="#usefulInformations"><span class="glyphicon glyphicon-info-sign"></span> Infos
-                            utiles</a></li>
+                                utiles</a></li>
                         <li><a href="#commission">Commission</a></li>
                         <li><a href="mailto:contact@ufolep13volley.org"><span
-                                class="glyphicon glyphicon-envelope"></span>
-                            contact@ufolep13volley.org</a></li>
+                                        class="glyphicon glyphicon-envelope"></span>
+                                contact@ufolep13volley.org</a></li>
                         <li class="dropdown-header"><h4>Liens</h4></li>
                         <li><a href="#webSites" target="_blank"><span class="glyphicon glyphicon-link"></span> Sites web
-                            des clubs</a>
+                                des clubs</a>
                         </li>
                         <li><a href="http://ufolep13.org/" target="_blank"><span
-                                class="glyphicon glyphicon-link"></span> Site de
-                            l'UFOLEP 13</a></li>
+                                        class="glyphicon glyphicon-link"></span> Site de
+                                l'UFOLEP 13</a></li>
                         <li class="dropdown-header"><h4>Règlements</h4></li>
                         <li>
                             <a href="http://www.fivb.org/EN/Refereeing-Rules/documents/FIVB-Volleyball_Rules_2017-2020-FR-v01.pdf"
@@ -90,14 +98,14 @@
                         <li><a href="../infos_utiles/Media/ReglementFeminin.pdf" target="_blank">Championnat féminin</a>
                         </li>
                         <li><a href="../infos_utiles/Media/ReglementMasculin.pdf" target="_blank">Championnat
-                            masculin</a></li>
+                                masculin</a></li>
                         <li><a href="../infos_utiles/Media/ReglementChampionnatMixte.pdf" target="_blank">Championnat
-                            mixte</a></li>
+                                mixte</a></li>
                         <li><a href="../infos_utiles/Media/ReglementKouryHanna.pdf" target="_blank">Coupe Khoury
-                            Hanna</a></li>
+                                Hanna</a></li>
                         <li><a href="../infos_utiles/Media/ReglementIsoardi.pdf" target="_blank">Coupe Isoardi</a></li>
                         <li><a href="../infos_utiles/Media/ReglementCoupeFeminine6x6.pdf" target="_blank">Coupe Féminine
-                            6x6</a></li>
+                                6x6</a></li>
                         <li class="dropdown-header"><h4>Bonus</h4></li>
                         <li><a href="../infos_utiles/Media/FeuilleMatch1page.pdf" target="_blank">Feuille de match</a>
                         </li>
