@@ -21,15 +21,11 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        try {
-                            require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                            $manager = new CompetitionManager();
-                            $manager->generate_menu('m');
-                            $manager->generate_menu('f');
-                            $manager->generate_menu('mo');
-                        } catch (Exception $e) {
-                            print_r("Erreur ! " . $e->getMessage());
-                        }
+                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                        $manager = new CompetitionManager();
+                        $manager->generate_menu('m');
+                        $manager->generate_menu('f');
+                        $manager->generate_menu('mo');
                         ?>
                     </ul>
                 </li>
@@ -42,16 +38,12 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        try {
-                            require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                            $manager = new CompetitionManager();
-                            $manager->generate_menu('c');
-                            $manager->generate_menu('cf');
-                            $manager->generate_menu('kh');
-                            $manager->generate_menu('kf');
-                        } catch (Exception $e) {
-                            print_r("Erreur ! " . $e->getMessage());
-                        }
+                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+                        $manager = new CompetitionManager();
+                        $manager->generate_menu('c');
+                        $manager->generate_menu('cf');
+                        $manager->generate_menu('kh');
+                        $manager->generate_menu('kf');
                         ?>
                     </ul>
                 </li>
