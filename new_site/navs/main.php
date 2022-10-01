@@ -19,15 +19,15 @@
                         Championnats
                         <span class="caret"></span>
                     </a>
-                    <ul class="dropdown-menu">
-                        <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
-                        $manager->generate_menu('m');
-                        $manager->generate_menu('f');
-                        $manager->generate_menu('mo');
-                        ?>
-                    </ul>
+<!--                    <ul class="dropdown-menu">-->
+<!--                        --><?php
+//                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+//                        $manager = new CompetitionManager();
+//                        $manager->generate_menu('m');
+//                        $manager->generate_menu('f');
+//                        $manager->generate_menu('mo');
+//                        ?>
+<!--                    </ul>-->
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" role="button" data-toggle="dropdown"
@@ -36,16 +36,16 @@
                         Coupes
                         <span class="caret"></span>
                     </a>
-                    <ul class="dropdown-menu">
-                        <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
-                        $manager->generate_menu('c');
-                        $manager->generate_menu('cf');
-                        $manager->generate_menu('kh');
-                        $manager->generate_menu('kf');
-                        ?>
-                    </ul>
+<!--                    <ul class="dropdown-menu">-->
+<!--                        --><?php
+//                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
+//                        $manager = new CompetitionManager();
+//                        $manager->generate_menu('c');
+//                        $manager->generate_menu('cf');
+//                        $manager->generate_menu('kh');
+//                        $manager->generate_menu('kf');
+//                        ?>
+<!--                    </ul>-->
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" role="button" data-toggle="dropdown"
