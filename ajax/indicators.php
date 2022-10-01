@@ -488,6 +488,23 @@ WHERE m_t1.date_reception = m_t2.date_reception
 GROUP BY date_reception
 order by code_match");
 
+$indicatorNotYetRegisteredOldTeam = new Indicator(
+    "Equipes non réengagées",
+    "SELECT res.* FROM (select e.nom_equipe AS equipe,
+                                    c.nom AS club,
+                                    j.email AS contact_equipe, 
+                                    c.email_responsable AS contact_club,
+                                    CASE WHEN cl.id_equipe IN (SELECT old_team_id FROM register) THEN 1
+                                    ELSE 0
+                                    END AS is_engaged
+                            FROM classements cl
+                            LEFT JOIN equipes e on cl.id_equipe = e.id_equipe
+                            LEFT JOIN clubs c on e.id_club = c.id
+                            LEFT JOIN joueur_equipe je on e.id_equipe = je.id_equipe AND je.is_leader+0 = 1
+                            LEFT JOIN joueurs j on je.id_joueur = j.id) res
+        WHERE res.is_engaged = 0
+        ORDER BY club, equipe");
+
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -514,6 +531,7 @@ $results[] = $indicatorMatchGenerationCriticity->getResult();
 $results[] = $indicatorErrorInEmails->getResult();
 $results[] = $indicatorMatchesWithInvalidPlayers->getResult();
 $results[] = $indicatorMatchesWithInvalidDate->getResult();
+$results[] = $indicatorNotYetRegisteredOldTeam->getResult();
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
