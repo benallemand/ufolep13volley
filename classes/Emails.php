@@ -113,6 +113,7 @@ class Emails
         }
         $mail = new PHPMailer();
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+        print_r("Server: " . $serverName);
         switch ($serverName) {
             case 'localhost':
             case null:
@@ -154,8 +155,8 @@ class Emails
         $mail->WordWrap = 50;
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
-        if(empty($serverName)) {
-            print_r("Skip email sending when local execution");
+        if($serverName === null) {
+            print_r("Skip email sending when server not in use");
             return;
         }
         if (!$mail->send()) {
