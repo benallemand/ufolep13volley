@@ -16,6 +16,21 @@ class Emails
     private $file_manager;
     private $sql_manager;
 
+    public static function starts_with($string, $startString): bool
+    {
+        $len = strlen($startString);
+        return (substr($string, 0, $len) === $startString);
+    }
+
+    public static function ends_with($string, $endString): bool
+    {
+        $len = strlen($endString);
+        if ($len == 0) {
+            return true;
+        }
+        return (substr($string, -$len) === $endString);
+    }
+
     /**
      * Emails constructor.
      */
@@ -113,7 +128,6 @@ class Emails
         }
         $mail = new PHPMailer();
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
-        print_r("Server: " . $serverName);
         switch ($serverName) {
             case 'localhost':
             case null:
@@ -155,9 +169,10 @@ class Emails
         $mail->WordWrap = 50;
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
-        if($serverName === null) {
-            print_r("Skip email sending when server not in use");
-            return;
+        if (empty($serverName)) {
+            if (self::ends_with(filter_input(INPUT_SERVER, 'PHP_SELF'), 'phpunit')) {
+                return;
+            }
         }
         if (!$mail->send()) {
             throw new Exception("Send email error : " . $mail->ErrorInfo);
@@ -329,7 +344,7 @@ class Emails
     /**
      * @throws Exception
      */
-    public function delete_emails($where="1=1")
+    public function delete_emails($where = "1=1")
     {
         $sql = "DELETE FROM emails 
                 WHERE $where";
