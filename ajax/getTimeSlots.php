@@ -13,9 +13,9 @@ try {
     $userDetails = $manager->getCurrentUserDetails();
     $profile = $userDetails['profile_name'];
     $id_team = $userDetails['id_equipe'];
-    $query = null;
     switch ($profile) {
         case 'ADMINISTRATEUR':
+            $query = "1=1";
             break;
         case 'RESPONSABLE_EQUIPE':
         default:
