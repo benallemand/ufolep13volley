@@ -23,17 +23,18 @@ Ext.application({
                         },
                         {
                             xtype: 'label',
-                            html: "<h2 style='text-align: center'>DATE LIMITE D'INSCRIPTION: " + limit + " !</h2>"
+                            html: "<h2 style='text-align: center'>DATE LIMITE D'INSCRIPTION: " + (Ext.Date.format(Ext.Date.parse(limit, 'd/m/Y'), 'l d F Y')).toUpperCase() + " !</h2>"
                         }
                     ]
                 },
+                Ext.Date.now < Ext.Date.parse(limit, 'd/m/Y') ?
+                    {
+                        region: 'west',
+                        flex: 2,
+                        xtype: 'form_register',
+                    } : null,
                 {
                     region: 'center',
-                    flex: 2,
-                    xtype: 'form_register',
-                },
-                {
-                    region: 'east',
                     flex: 1,
                     split: true,
                     xtype: 'grid_register'

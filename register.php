@@ -1,6 +1,6 @@
 <?php
 $saison = "2022-2023";
-$limit = "SAMEDI 08 OCTOBRE 2022";
+$limit = "08/10/2022";
 ?>
 <!DOCTYPE html>
 <HTML>
