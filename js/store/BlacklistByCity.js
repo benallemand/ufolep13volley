@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.BlacklistByCity', {
         model: 'Ufolep13Volley.model.BlacklistByCity',
         proxy: {
             type: 'ajax',
-            url: 'ajax/get_blacklist_by_city.php',
+            url: '/rest/action.php/competition/get_blacklist_by_city',
             reader: {
                 type: 'json',
                 root: 'results'

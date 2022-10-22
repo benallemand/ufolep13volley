@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
             xtype: 'textfield',
             anchor: '90%'
         },
-        url: 'ajax/savePlayer.php',
+        url: '/rest/action.php/player/savePlayer',
         autoScroll: true,
         layout: 'anchor',
         items: [

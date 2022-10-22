@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.window.BlacklistTeam', {
     extend: 'Ext.window.Window',
     alias: 'widget.blacklistteam_edit',
-    title: "Saisie de date interdite pour les matchs par une équipe",
+    title: "Saisie de date interdite pour les matchs par une ï¿½quipe",
     height: 400,
     width: 700,
     modal: true,
@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeam', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveBlacklistTeam.php',
+        url: '/rest/action.php/blacklistteam/saveBlacklistTeam',
         items: [
             {
                 xtype: 'hidden',
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeam', {
                 name: 'id_team',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

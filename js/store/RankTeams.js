@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.RankTeams', {
         model: 'Ufolep13Volley.model.RankTeam',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getRankTeams.php',
+            url: '/rest/action.php/team/getRankTeams',
             reader: {
                 type: 'json',
                 root: 'results'

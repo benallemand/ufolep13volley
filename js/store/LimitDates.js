@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.LimitDates', {
         model: 'Ufolep13Volley.model.LimitDate',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getLimitDates.php',
+            url: '/rest/action.php/limitdate/getLimitDates',
             reader: {
                 type: 'json',
                 root: 'results'

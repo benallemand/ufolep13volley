@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.City', {
         model: 'Ufolep13Volley.model.City',
         proxy: {
             type: 'ajax',
-            url: 'ajax/get_city.php',
+            url: '/rest/action.php/competition/get_city',
             reader: {
                 type: 'json',
                 root: 'results'

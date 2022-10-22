@@ -19,7 +19,9 @@ Ext.application({
                         {
                             text: "RETOUR",
                             iconCls: 'fa-solid fa-arrow-left',
-                            href: 'javascript:history.back()',
+                            handler: function() {
+                                history.back();
+                            }
                         }
                     ]
                 },

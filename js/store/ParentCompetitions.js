@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.ParentCompetitions', {
         model: 'Ufolep13Volley.model.Competition',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getCompetitions.php'
+            url: '/rest/action.php/competition/getCompetitions'
         },
         autoLoad: true
     }

@@ -22,7 +22,7 @@ Ext.define('Ufolep13Volley.controller.my_players', {
             'button[action=add_to_team]': {
                 click: this.add_to_team
             },
-            'combo[name=add_to_team_player_id]': {
+            'tagfield[name=add_to_team_player_id]': {
                 select: this.enable_add_to_team
             },
             'button[action=new_player]': {
@@ -67,33 +67,13 @@ Ext.define('Ufolep13Volley.controller.my_players', {
     },
     manage_post: function (button) {
         var action = button.action;
-        var ids = [];
         var records = button.up('grid').getSelectionModel().getSelection();
-        Ext.each(records, function (record) {
-            ids.push(record.get('id'));
-        });
-        Ext.Ajax.request({
-            url: Ext.String.format('rest/action.php/{0}', action), params: {
-                ids: ids.join(',')
-            }, success: function () {
-                button.up('grid').getStore().load();
-            }
-        });
+        this.post_ids(button, action, records);
     },
     add_to_team: function (button) {
         var action = button.action;
-        var ids = [];
-        var records = button.up('toolbar').down('combo[name=add_to_team_player_id]').getSelection();
-        Ext.each(records, function (record) {
-            ids.push(record.get('id'));
-        });
-        Ext.Ajax.request({
-            url: Ext.String.format('rest/action.php/{0}', action), params: {
-                ids: ids.join(',')
-            }, success: function () {
-                button.up('grid').getStore().load();
-            }
-        });
+        var records = button.up('toolbar').down('tagfield[name=add_to_team_player_id]').getValueRecords();
+        this.post_ids(button, action, records);
     },
     save_form: function (button) {
         var viewport = button.up('viewport');
@@ -109,6 +89,7 @@ Ext.define('Ufolep13Volley.controller.my_players', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 }, success: function () {
+                    Ext.Msg.alert('Info', this.result.message);
                     grid.getStore().load();
                 }, failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
@@ -117,4 +98,25 @@ Ext.define('Ufolep13Volley.controller.my_players', {
         }
 
     },
+    post_ids(button, action, records) {
+        var ids = [];
+        Ext.each(records, function (record) {
+            ids.push(record.get('id'));
+        });
+        Ext.Ajax.request({
+            url: Ext.String.format('rest/action.php/player/{0}', action),
+            params: {
+                'ids[]': ids
+            },
+            success: function (response) {
+                var obj = Ext.decode(response.responseText);
+                Ext.Msg.alert('Info', obj.message);
+                button.up('grid').getStore().load();
+            },
+            failure: function (response) {
+                var obj = Ext.decode(response.responseText);
+                Ext.Msg.alert('Erreur', obj.message);
+            },
+        });
+    }
 });

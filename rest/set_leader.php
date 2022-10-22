@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../classes/TeamManager.php';
-require_once __DIR__ . '/../includes/fonctions_inc.php';
+require_once __DIR__ . '/../classes/Team.php';
 /**
  * @throws Exception
  */
@@ -19,7 +18,7 @@ function set_leader($parameters)
     if (count($ids) > 1) {
         throw new Exception("Un seul responsable par équipe !");
     }
-    $manager = new TeamManager();
+    $manager = new Team();
     foreach ($ids as $id) {
         if (empty($id)) {
             continue;

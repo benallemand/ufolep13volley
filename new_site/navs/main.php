@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/../../classes/Competition.php';
+?>
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
@@ -21,8 +24,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
+                        $manager = new Competition();
                         $manager->generate_menu('m');
                         $manager->generate_menu('f');
                         $manager->generate_menu('mo');
@@ -38,8 +40,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                        require_once __DIR__ . '/../../classes/CompetitionManager.php';
-                        $manager = new CompetitionManager();
+                        $manager = new Competition();
                         $manager->generate_menu('c');
                         $manager->generate_menu('cf');
                         $manager->generate_menu('kh');

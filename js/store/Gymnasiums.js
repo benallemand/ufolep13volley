@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.store.Gymnasiums', {
         model: 'Ufolep13Volley.model.Gymnasium',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getGymnasiums.php'
+            url: '/rest/action.php/court/getGymnasiums'
         },
         autoLoad: true
     }

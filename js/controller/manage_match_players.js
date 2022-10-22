@@ -9,7 +9,8 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
     ],
     views: [
         'form.MatchPlayers',
-        'view.MatchPlayers'
+        'view.MatchPlayers',
+        'form.field.tag.players'
     ],
     refs: [],
     init: function () {

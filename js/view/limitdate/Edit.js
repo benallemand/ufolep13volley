@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.limitdate.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveLimitDate.php',
+        url: '/rest/action.php/limitdate/saveLimitDate',
         items: [
             {
                 xtype: 'hidden',

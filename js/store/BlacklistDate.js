@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.BlacklistDate', {
         model: 'Ufolep13Volley.model.BlacklistDate',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getBlacklistDate.php',
+            url: '/rest/action.php/blacklistdate/getBlacklistDate',
             reader: {
                 type: 'json',
                 root: 'results'

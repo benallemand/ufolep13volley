@@ -1,6 +1,6 @@
 <?php
-include("includes/fonctions_inc.php");
-if (!isAdmin()) {
+require_once __DIR__ . "/classes/UserManager.php";
+if (!UserManager::isAdmin()) {
     die('<META HTTP-equiv="refresh" content=0;URL=index.php>');
 }
 ?>

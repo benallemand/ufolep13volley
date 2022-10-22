@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.Timeslots', {
         model: 'Ufolep13Volley.model.Timeslot',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getTimeSlots.php'
+            url: '/rest/action.php/timeslot/getTimeSlots'
         },
         autoLoad: true
     }

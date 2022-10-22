@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.Clubs', {
         model: 'Ufolep13Volley.model.Club',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getClubs.php'
+            url: '/rest/action.php/club/get'
         },
         autoLoad: true
     }

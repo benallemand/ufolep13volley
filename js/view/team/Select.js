@@ -13,7 +13,7 @@ Ext.define('Ufolep13Volley.view.team.Select', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/addPlayersToTeam.php',
+        url: '/rest/action.php/player/addPlayersToTeam',
         items: [
             {
                 xtype: 'hidden',
@@ -27,7 +27,7 @@ Ext.define('Ufolep13Volley.view.team.Select', {
                 fieldLabel: 'Equipe',
                 name: 'id_team',
                 queryMode: 'local',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 displayField: 'team_full_name',
                 valueField: 'id_equipe'
             }

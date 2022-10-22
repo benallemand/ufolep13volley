@@ -27,16 +27,16 @@ Ext.application({
                         }
                     ]
                 },
-                Ext.Date.now < Ext.Date.parse(limit, 'd/m/Y') ?
-                    {
+                (Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y') && (user_details.profile_name !== 'ADMINISTRATEUR')) ?
+                    null : {
                         region: 'west',
                         flex: 2,
+                        split: true,
                         xtype: 'form_register',
-                    } : null,
+                    },
                 {
                     region: 'center',
                     flex: 1,
-                    split: true,
                     xtype: 'grid_register'
                 }
             ]

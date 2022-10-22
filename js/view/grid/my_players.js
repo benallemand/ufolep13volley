@@ -11,43 +11,28 @@ Ext.define('Ufolep13Volley.view.grid.my_players', {
             return '';
         }
     },
-    columns: [
-        {
-            header: 'Photo', dataIndex: 'photo',
-            tdCls: 'x-style-cell'
+    columns: {
+        items: [
+            {
+                header: 'Photo', dataIndex: 'photo',
+                tdCls: 'x-style-cell'
+            },
+            {header: 'Prénom', dataIndex: 'prenom'},
+            {header: 'Nom', dataIndex: 'nom'},
+            {header: 'Numéro de licence', dataIndex: 'num_licence'},
+            {header: 'Role', dataIndex: 'role'},
+        ],
+        defaults: {
+            flex: 1
         },
-        {header: 'Prénom', dataIndex: 'prenom'},
-        {header: 'Nom', dataIndex: 'nom'},
-        {header: 'Numéro de licence', dataIndex: 'num_licence'},
-        {
-            xtype: 'checkcolumn', header: 'Capitaine', dataIndex: 'is_captain', listeners: {
-                beforecheckchange: function () {
-                    return false;
-                }
-            }
-        },
-        {
-            xtype: 'checkcolumn', header: 'Responsable', dataIndex: 'is_leader', listeners: {
-                beforecheckchange: function () {
-                    return false;
-                }
-            }
-        },
-        {
-            xtype: 'checkcolumn', header: 'Suppléant', dataIndex: 'is_vice_leader', listeners: {
-                beforecheckchange: function () {
-                    return false;
-                }
-            }
-        },
-    ],
+    },
     dockedItems: [
         {
             xtype: 'toolbar',
             dock: 'top',
             items: [
                 {
-                    xtype: 'combo',
+                    xtype: 'tagfield',
                     fieldLabel: 'Recherche',
                     width: 400,
                     name: 'add_to_team_player_id',
@@ -56,7 +41,8 @@ Ext.define('Ufolep13Volley.view.grid.my_players', {
                     displayField: 'full_name',
                     valueField: 'id',
                     forceSelection: true,
-                    emptyText: "Taper votre recherche ici"
+                    emptyText: "Taper votre recherche ici",
+                    anyMatch: true,
                 },
                 {
                     xtype: 'button',

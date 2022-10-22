@@ -1,6 +1,8 @@
 <?php
 $saison = "2022-2023";
 $limit = "08/10/2022";
+@session_start();
+$user_details = $_SESSION;
 ?>
 <!DOCTYPE html>
 <HTML>
@@ -36,6 +38,7 @@ $limit = "08/10/2022";
     <script type="text/javascript">
         var saison = "<?php echo $saison; ?>";
         var limit = "<?php echo $limit; ?>";
+        var user_details = <?php echo json_encode($user_details); ?>;
     </script>
 </HEAD>
 <BODY>

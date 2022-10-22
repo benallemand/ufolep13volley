@@ -13,7 +13,7 @@ Ext.define('Ufolep13Volley.view.club.Select', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/addPlayersToClub.php',
+        url: '/rest/action.php/player/addPlayersToClub',
         items: [
             {
                 xtype: 'hidden',

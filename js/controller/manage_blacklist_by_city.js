@@ -86,7 +86,7 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
                 xtype: 'form',
                 trackResetOnLoad: true,
                 layout: 'form',
-                url: 'ajax/save_blacklist_by_city.php',
+                url: '/rest/action.php/competition/save_blacklist_by_city',
                 items: [
                     {
                         xtype: 'hidden',
@@ -180,7 +180,7 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: 'ajax/delete_blacklist_by_city.php',
+                    url: '/rest/action.php/competition/delete_blacklist_by_city',
                     params: {
                         ids: ids.join(',')
                     },

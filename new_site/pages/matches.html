@@ -34,8 +34,8 @@
                         ng-hide="(hideCertifiedMatches == true && x.certif=='1')"
                         class="{{x.match_status == 'NOT_CONFIRMED' ? 'danger' : ''}}"
                         title="{{x.match_status == 'NOT_CONFIRMED' ? 'Date non confirmée par la commission' : ''}}">
-                        <td class="{{x.retard == '1' ? 'warning' : (x.retard == '2' ? 'danger' : '')}}"
-                            title="{{x.retard == '1' ? 'Match non renseigné depuis 5 jours' : (x.retard == '2' ? 'Match non renseigné depuis 10 jours' : '')}}">
+                        <td class="{{x.retard == 1 ? 'warning' : (x.retard == 2 ? 'danger' : '')}}"
+                            title="{{x.retard == 1 ? 'Match non renseigné depuis 5 jours' : (x.retard == 2 ? 'Match non renseigné depuis 10 jours' : '')}}">
                             {{ x.code_match }}
                         </td>
                         <td class="{{(x.report_status == 'ACCEPTED_BY_DOM' || x.report_status == 'ACCEPTED_BY_EXT') ? 'warning':''}}"
@@ -61,7 +61,7 @@
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_dom }}</span>
-                            <span ng-if="x.forfait_dom == '1'"
+                            <span ng-if="x.forfait_dom == 1"
                                   class="label label-info">perdu par forfait
                             </span>
                         </td>
@@ -70,7 +70,7 @@
                         </td>
                         <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
                             <span>{{ x.equipe_ext }}</span>
-                            <span ng-if="x.forfait_ext == '1'"
+                            <span ng-if="x.forfait_ext == 1"
                                   class="label label-info">perdu par forfait
                             </span>
                         </td>
@@ -82,10 +82,10 @@
                             <span ng-if="x.set_5_dom != '0' || x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
                         </td>
                         <td class="text-center">
-                <span ng-if="x.certif == '1'"
+                <span ng-if="x.certif == 1"
                       title="Feuille de match reçue et certifiée"
                       class="glyphicon glyphicon-ok text-success"></span>
-                            <span ng-if="x.certif == '0' && x.sheet_received == '1'"
+                            <span ng-if="x.certif == 0 && x.sheet_received == 1"
                                   title="La feuille de match n'a pas encore été validée par la commission"
                                   class=""></span>
                             <span ng-if="x.sheet_received == '0' && (x.date_reception_raw < today)"
@@ -102,7 +102,7 @@
                             <span ng-if="x.report_status == 'REFUSED_BY_EXT'">Report refusé par {{ x.equipe_ext }}</span>
                             <span ng-if="x.report_status == 'REFUSED_BY_ADMIN'">Report refusé par la commission</span>
 
-                            <span ng-if="x.sheet_received == '1'">Feuilles de match reçues</span>
+                            <span ng-if="x.sheet_received == 1">Feuilles de match reçues</span>
 
                         </td>
                         <td class="text-center" ng-include="'actions/match.php'"></td>

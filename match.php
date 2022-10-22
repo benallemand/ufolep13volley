@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/classes/Generic.php';
-require_once __DIR__ . '/classes/MatchManager.php';
+require_once __DIR__ . '/classes/MatchMgr.php';
 try {
     $generic = new Generic();
     $user_details = $generic->getCurrentUserDetails();
-    if ($user_details['profile_name'] !== 'RESPONSABLE_EQUIPE') {
-        throw new Exception("Profil responsable d'équipe nécessaire !", 401);
+    if (!in_array($user_details['profile_name'], array('RESPONSABLE_EQUIPE', 'ADMINISTRATEUR'))) {
+        throw new Exception("Profil responsable d'équipe ou administrateur nécessaire !", 401);
     }
 } catch (Exception $e) {
     header('Location: login.php', true, 401);
@@ -15,7 +15,7 @@ try {
     if (empty($id_match)) {
         throw new Exception("id_match non défini !");
     }
-    $manager = new MatchManager();
+    $manager = new MatchMgr();
     if (!$manager->is_match_update_allowed($id_match)) {
         throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
     }

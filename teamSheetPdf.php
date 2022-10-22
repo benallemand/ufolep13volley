@@ -2,22 +2,23 @@
 
 function toWellFormatted($string)
 {
-    return iconv('UTF-8', 'windows-1252', $string);
+    return !empty($string) ? iconv('UTF-8', 'windows-1252', $string) : '';
 }
 
-require_once __DIR__ . '/includes/fonctions_inc.php';
 require_once __DIR__ . '/libs/fpdf184/fpdf.php';
-require_once __DIR__ . '/classes/TeamManager.php';
+require_once __DIR__ . '/classes/Team.php';
+require_once __DIR__ . '/classes/Players.php';
 
 try {
     $id = filter_input(INPUT_GET, 'id');
     if ($id === NULL) {
+        @session_start();
         $id = $_SESSION['id_equipe'];
     }
-    $team_manager = new TeamManager();
+    $team_manager = new Team();
+    $player = new Players();
     $teamSheet = $team_manager->getTeamSheet($id);
-    $jsonTeam = json_decode($teamSheet);
-    $playersPdf = getPlayersPdf($id, '', false);
+    $playersPdf = $player->getPlayersPdf($id, '', false);
     if (empty($playersPdf)) {
         die('Erreur durant la recuperation des joueurs !');
     }
@@ -28,23 +29,23 @@ try {
     $pdf->AddPage();
     $pdf->SetFont('Arial', '', 8);
     $pdf->Cell(20, 5, 'Club: ', 0, 0, 'L');
-    $pdf->MultiCell(40, 5, toWellFormatted($jsonTeam[0]->club), 'L', 'L');
+    $pdf->MultiCell(40, 5, toWellFormatted($teamSheet['club']), 'L', 'L');
     $pdf->Cell(20, 5, 'Championnat: ', 'T', 0, 'L');
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->championnat), 'TL', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['championnat']), 'TL', 1, 'L');
     $pdf->Cell(20, 5, 'Division: ', 0, 0, 'L');
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->division), 'L', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['division']), 'L', 1, 'L');
     $pdf->Cell(20, 5, 'Responsable: ', 'T', 0, 'L');
     $pdf->SetFont('Arial', 'B', 8);
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->leader), 'TL', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['leader']), 'TL', 1, 'L');
     $pdf->SetFont('Arial', '', 8);
     $pdf->Cell(20, 5, 'Portable: ', 0, 0, 'L');
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->portable), 'L', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['portable']), 'L', 1, 'L');
     $pdf->Cell(20, 5, 'Courriel: ', 0, 0, 'L');
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->courriel), 'L', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['courriel']), 'L', 1, 'L');
     $pdf->Cell(20, 5, toWellFormatted('Créneau(x): '), 0, 0, 'L');
-    $pdf->MultiCell(35, 5, toWellFormatted($jsonTeam[0]->gymnasiums_list), 'L', 'L');
+    $pdf->MultiCell(35, 5, toWellFormatted($teamSheet['gymnasiums_list']), 'L', 'L');
     $pdf->Cell(20, 5, 'Visa CTSD: ', 'T', 0, 'L');
-    $pdf->Cell(40, 5, toWellFormatted($jsonTeam[0]->date_visa_ctsd), 'TL', 1, 'L');
+    $pdf->Cell(40, 5, toWellFormatted($teamSheet['date_visa_ctsd']), 'TL', 1, 'L');
     $pdf->Cell(20, 5, 'Nota: ', 'T', 0, 'L');
     $pdf->MultiCell(40, 5, toWellFormatted("Les joueurs en rose n'ont pas été validés par la CTSD"), 'TL', 'L');
     $offsetYPlayers = $pdf->GetY() + 5;
@@ -53,7 +54,7 @@ try {
     $pdf->Image('images/JeuAvantEnjeu.jpg', 150, 25, 20);
     $pdf->SetXY(80, 40);
     $pdf->SetFont('Arial', '', 16);
-    $pdf->MultiCell(50, 7, toWellFormatted($jsonTeam[0]->equipe), 0, 'C');
+    $pdf->MultiCell(50, 7, toWellFormatted($teamSheet['equipe']), 0, 'C');
     $pdf->SetFont('Arial', '', 8);
     $pdf->SetXY(150, 30);
     $pdf->Cell(30, 5, 'Le:', 0, 0, 'L');
@@ -84,7 +85,7 @@ try {
     foreach ($jsonPlayers as $index => $jsonPlayer) {
         $currentIndex = $index;
         $pdf->SetXY(5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
-        if (toWellFormatted($jsonPlayer['est_actif']) === "1") {
+        if ($jsonPlayer['est_actif'] === "1") {
             $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + $heightPlayer * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, $heightPlayer - 2);
         } else {
             $pdf->SetFillColor(255, 192, 203);
@@ -104,13 +105,13 @@ try {
         $pdf->Cell(5, 5, 'o', 0, 0, 'L');
         $pdf->SetFont('Arial', '', 8);
         $roles = array();
-        if (toWellFormatted($jsonPlayer['is_captain']) === "1") {
+        if ($jsonPlayer['is_captain'] === "1") {
             $roles[] = 'CAP';
         }
-        if (toWellFormatted($jsonPlayer['is_leader']) === "1") {
+        if ($jsonPlayer['is_leader'] === "1") {
             $roles[] = 'RESP';
         }
-        if (toWellFormatted($jsonPlayer['is_vice_leader']) === "1") {
+        if ($jsonPlayer['is_vice_leader'] === "1") {
             $roles[] = 'SUPP';
         }
         if (count($roles) > 0) {
@@ -120,7 +121,7 @@ try {
             $pdf->SetTextColor(0, 0, 0);
         }
     }
-    $pdf->Output(toWellFormatted($jsonTeam[0]->equipe . '.pdf'), 'D');
+    $pdf->Output(toWellFormatted($teamSheet['equipe'] . '.pdf'), 'D');
 } catch (Exception $e) {
     echo "Erreur ! " . $e->getMessage();
 }

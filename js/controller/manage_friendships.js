@@ -86,7 +86,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                 xtype: 'form',
                 trackResetOnLoad: true,
                 layout: 'form',
-                url: 'ajax/save_friendships.php',
+                url: '/rest/action.php/competition/save_friendships',
                 items: [
                     {
                         xtype: 'hidden',
@@ -175,7 +175,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: 'ajax/delete_friendships.php',
+                    url: '/rest/action.php/competition/delete_friendships',
                     params: {
                         ids: ids.join(',')
                     },

@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.HallOfFame', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveHallOfFame.php',
+        url: '/rest/action.php/halloffame/saveHallOfFame',
         items: [
             {
                 xtype: 'hidden',

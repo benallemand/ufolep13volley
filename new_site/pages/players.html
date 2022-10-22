@@ -18,12 +18,12 @@
         <tbody>
         <tr ng-repeat="x in players | filter:search">
             <td><img height="100px" src="../{{ x.path_photo }}"/></td>
-            <td ng-class="x.est_actif == '1' ? '' : 'alert alert-danger'">{{ x.prenom }}</td>
-            <td ng-class="x.est_actif == '1' ? '' : 'alert alert-danger'">{{ x.nom }}</td>
+            <td ng-class="x.est_actif == 1 ? '' : 'alert alert-danger'">{{ x.prenom }}</td>
+            <td ng-class="x.est_actif == 1 ? '' : 'alert alert-danger'">{{ x.nom }}</td>
             <td>{{ x.num_licence }}</td>
-            <td ng-class="x.is_captain == '1' ? 'alert alert-success' : ''"></td>
-            <td ng-class="x.is_leader == '1' ? 'alert alert-success' : ''"></td>
-            <td ng-class="x.is_vice_leader == '1' ? 'alert alert-success' : ''"></td>
+            <td ng-class="x.is_captain == 1 ? 'alert alert-success' : ''"></td>
+            <td ng-class="x.is_leader == 1 ? 'alert alert-success' : ''"></td>
+            <td ng-class="x.is_vice_leader == 1 ? 'alert alert-success' : ''"></td>
             <td>
                 <form ng-submit="removePlayerFromMyTeam(x.id)">
                     <button type="submit" class="btn btn-sm btn-danger">

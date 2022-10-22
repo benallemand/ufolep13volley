@@ -13,7 +13,7 @@ Ext.define('Ufolep13Volley.view.profile.Select', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/addProfileToUsers.php',
+        url: '/rest/action.php/usermanager/addProfileToUsers',
         items: [
             {
                 xtype: 'hidden',

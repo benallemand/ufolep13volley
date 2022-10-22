@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.HallOfFame', {
         model: 'Ufolep13Volley.model.HallOfFame',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getHallOfFame.php'
+            url: '/rest/action.php/halloffame/getHallOfFame'
         },
         autoLoad: true
     }

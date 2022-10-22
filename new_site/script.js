@@ -122,10 +122,6 @@ scotchApp.config(function ($routeProvider) {
             templateUrl: 'pages/matches_of_the_week.html',
             controller: 'weekMatchesController'
         })
-        .when('/lastPosts', {
-            templateUrl: 'pages/lastPosts.html',
-            controller: 'lastPostsController'
-        })
         .when('/webSites', {
             templateUrl: 'pages/webSites.html',
             controller: 'webSitesController'
@@ -224,12 +220,12 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
     $scope.team = {};
 
     $scope.add_new_player = function () {
-        var uploadUrl = '../ajax/savePlayer.php';
+        var uploadUrl = '/rest/action.php/player/savePlayer';
         multipartForm.post(uploadUrl, $scope.newPlayer);
     };
 
     $scope.edit_existing_player = function () {
-        var uploadUrl = '../ajax/savePlayer.php';
+        var uploadUrl = '/rest/action.php/player/savePlayer';
         multipartForm.post(uploadUrl, $scope.modify_player);
     };
 
@@ -271,8 +267,8 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                     $scope.modify_match.set_5_ext = parseInt(matches[i].set_5_ext);
                     $scope.modify_match.equipe_dom = matches[i].equipe_dom;
                     $scope.modify_match.equipe_ext = matches[i].equipe_ext;
-                    $scope.modify_match.forfait_dom = matches[i].forfait_dom === '1';
-                    $scope.modify_match.forfait_ext = matches[i].forfait_ext === '1';
+                    $scope.modify_match.forfait_dom = matches[i].forfait_dom === 1;
+                    $scope.modify_match.forfait_ext = matches[i].forfait_ext === 1;
                     $scope.modify_match.code_match = matches[i].code_match;
                     if (matches[i].note) {
                         $scope.modify_match.note = matches[i].note;
@@ -312,7 +308,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
     };
 
     $scope.saveMatch = function () {
-        var uploadUrl = '../ajax/saveMatch.php';
+        var uploadUrl = '/rest/action.php/matchmgr/saveMatch';
         multipartForm.post(uploadUrl, $scope.modify_match);
     };
 
@@ -357,7 +353,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                 if (reason !== null) {
                     $http({
                         method: 'POST',
-                        url: '../ajax/askForReport.php',
+                        url: '/rest/action.php/matchmgr/askForReport',
                         data: $.param({
                             code_match: code_match,
                             reason: reason
@@ -384,7 +380,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                 if (reason !== null) {
                     $http({
                         method: 'POST',
-                        url: '../ajax/refuseReport.php',
+                        url: '/rest/action.php/matchmgr/refuseReport',
                         data: $.param({
                             code_match: code_match,
                             reason: reason
@@ -411,7 +407,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                 if (confirm_accept_report === true) {
                     $http({
                         method: 'POST',
-                        url: '../ajax/acceptReport.php',
+                        url: '/rest/action.php/matchmgr/acceptReport',
                         data: $.param({
                             code_match: code_match
                         }),
@@ -438,7 +434,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                 if (report_date !== null) {
                     $http({
                         method: 'POST',
-                        url: '../ajax/giveReportDate.php',
+                        url: '/rest/action.php/matchmgr/giveReportDate',
                         data: $.param({
                             code_match: code_match,
                             report_date: report_date
@@ -459,7 +455,7 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
         });
     };
 
-    $http.get("../ajax/getLastNews.php")
+    $http.get("../rest/action.php/news/getLastNews")
         .then(function (response) {
             $scope.lastNews = response.data;
         });
@@ -467,14 +463,14 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
 }]);
 
 scotchApp.controller('myPreferencesController', function ($scope, $http) {
-    $http.get("../ajax/getMyPreferences.php")
+    $http.get("/rest/action.php/usermanager/getMyPreferences")
         .then(function (response) {
             $scope.preferences = response.data[0];
         });
     $scope.saveMyPreferences = function () {
         $http({
             method: 'POST',
-            url: '../ajax/saveMyPreferences.php',
+            url: '/rest/action.php/usermanager/saveMyPreferences',
             data: $.param($scope.preferences),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -488,18 +484,18 @@ scotchApp.controller('myPreferencesController', function ($scope, $http) {
 });
 
 scotchApp.controller('myTimeslotsController', function ($scope, $http) {
-    $http.get("../ajax/getTimeSlots.php")
+    $http.get("/rest/action.php/timeslot/get_my_timeslots")
         .then(function (response) {
             $scope.timeslots = response.data;
         });
-    $http.get("../ajax/getGymnasiums.php")
+    $http.get("/rest/action.php/court/getGymnasiums")
         .then(function (response) {
             $scope.gymnasiums = response.data;
         });
     $scope.removeTimeSlot = function (id) {
         $http({
             method: 'POST',
-            url: '../ajax/removeTimeSlot.php',
+            url: '/rest/action.php/timeslot/removeTimeSlot',
             data: $.param({
                 id: id
             }),
@@ -515,7 +511,7 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
     $scope.addTimeSlot = function () {
         $http({
             method: 'POST',
-            url: '../ajax/saveTimeSlot.php',
+            url: '/rest/action.php/timeslot/saveTimeSlot',
             data: $.param($scope.newTimeslot),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -533,7 +529,7 @@ scotchApp.controller('myPasswordController', function ($scope, $http) {
     $scope.modifierMonMotDePasse = function () {
         $http({
             method: 'POST',
-            url: '../ajax/modifierMonMotDePasse.php',
+            url: '/rest/action.php/usermanager/modifierMonMotDePasse',
             data: $.param($scope.new_password_model),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -548,22 +544,22 @@ scotchApp.controller('myPasswordController', function ($scope, $http) {
 });
 
 scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope, $http) {
-    $http.get("../ajax/getMyPlayers.php")
+    $http.get("/rest/action.php/player/getMyPlayers")
         .then(function (response) {
             $scope.players = response.data;
         });
-    $http.get("../ajax/getPlayers.php")
+    $http.get("/rest/action.php/player/getPlayers")
         .then(function (response) {
             $scope.all_players = response.data;
         });
-    $http.get("../ajax/getClubs.php")
+    $http.get("/rest/action.php/club/get")
         .then(function (response) {
             $scope.all_clubs = response.data;
         });
     $scope.addPlayerToTeam = function () {
         $http({
             method: 'POST',
-            url: '../ajax/addPlayerToMyTeam.php',
+            url: '/rest/action.php/player/addPlayerToMyTeam',
             data: $.param($scope.existingPlayer),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -577,7 +573,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
     $scope.removePlayerFromMyTeam = function (id) {
         $http({
             method: 'POST',
-            url: '../ajax/removePlayerFromMyTeam.php',
+            url: '/rest/action.php/player/removePlayerFromMyTeam',
             data: $.param({
                 id: id
             }),
@@ -593,7 +589,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
     $scope.updateMyTeamCaptain = function (id) {
         $http({
             method: 'POST',
-            url: '../ajax/updateMyTeamCaptain.php',
+            url: '/rest/action.php/team/updateMyTeamCaptain',
             data: $.param({
                 id_joueur: id
             }),
@@ -609,7 +605,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
     $scope.updateMyTeamLeader = function (id) {
         $http({
             method: 'POST',
-            url: '../ajax/updateMyTeamLeader.php',
+            url: '/rest/action.php/team/updateMyTeamLeader',
             data: $.param({
                 id_joueur: id
             }),
@@ -625,7 +621,7 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
     $scope.updateMyTeamViceLeader = function (id) {
         $http({
             method: 'POST',
-            url: '../ajax/updateMyTeamViceLeader.php',
+            url: '/rest/action.php/team/updateMyTeamViceLeader',
             data: $.param({
                 id_joueur: id
             }),
@@ -641,22 +637,18 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
 }]);
 
 scotchApp.controller('myTeamController', ['$scope', '$http', 'multipartForm', function ($scope, $http, multipartForm) {
-    $http.get("../ajax/getMonEquipe.php")
+    $http.get("/rest/action.php/team/getMyTeam")
         .then(function (response) {
             $scope.team = response.data[0];
-            $scope.team["responsable_base64"] = Base64.encode($scope.team["responsable"]);
-            $scope.team["telephone_1_base64"] = Base64.encode($scope.team["telephone_1"]);
-            $scope.team["telephone_2_base64"] = Base64.encode($scope.team["telephone_2"]);
-            $scope.team["email_base64"] = Base64.encode($scope.team["email"]);
             $scope.modify_my_team.web_site = $scope.team.web_site;
             $scope.modify_my_team.id_club = $scope.team.id_club;
         });
-    $http.get("../ajax/getClubs.php")
+    $http.get("/rest/action.php/club/get")
         .then(function (response) {
             $scope.all_clubs = response.data;
         });
     $scope.Submit = function () {
-        var uploadUrl = '../ajax/saveTeam.php';
+        var uploadUrl = '/rest/action.php/team/saveTeam';
         multipartForm.post(uploadUrl, $scope.modify_my_team);
     };
 
@@ -698,7 +690,7 @@ scotchApp.service('multipartForm', ['$http', function ($http) {
 }]);
 
 scotchApp.controller('myHistoryController', function ($scope, $http) {
-    $http.get("../ajax/getActivity.php")
+    $http.get("/rest/action.php/activity/getActivity")
         .then(function (response) {
             $scope.activities = response.data;
         });
@@ -709,7 +701,7 @@ scotchApp.controller('registerController', function ($scope, $http) {
     $scope.add_new_user = function () {
         $http({
             method: 'POST',
-            url: '../ajax/createUser.php',
+            url: '/rest/action.php/usermanager/createUser',
             data: $.param($scope.newUser),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -733,18 +725,18 @@ scotchApp.controller('registerController', function ($scope, $http) {
             }
         }
     };
-    $http.get("../ajax/getTeams.php")
+    $http.get("/rest/action.php/team/getTeams")
         .then(function (response) {
             $scope.teams = response.data;
         });
 });
 
 scotchApp.controller('myPageController', function ($scope, $http) {
-    $http.get("../ajax/getMesMatches.php")
+    $http.get("/rest/action.php/matchmgr/getMesMatches")
         .then(function (response) {
             $scope.matches = response.data;
         });
-    $http.get("../ajax/getAlerts.php")
+    $http.get("/rest/action.php/alerts/getAlerts")
         .then(function (response) {
             $scope.alerts = response.data;
             for (var currentAlertIndex = 0; currentAlertIndex < $scope.alerts.length; currentAlertIndex++) {
@@ -788,33 +780,29 @@ scotchApp.controller('myPageController', function ($scope, $http) {
                 }
             }
         });
-    $http.get("../ajax/getMonEquipe.php")
+    $http.get("/rest/action.php/team/getMyTeam")
         .then(function (response) {
             $scope.team = response.data[0];
-            $scope.team["responsable_base64"] = Base64.encode($scope.team["responsable"]);
-            $scope.team["telephone_1_base64"] = Base64.encode($scope.team["telephone_1"]);
-            $scope.team["telephone_2_base64"] = Base64.encode($scope.team["telephone_2"]);
-            $scope.team["email_base64"] = Base64.encode($scope.team["email"]);
         });
 });
 
 scotchApp.controller('myClubController', function ($scope, $http) {
-    $http.get("../ajax/getMyClubMatches.php")
+    $http.get("/rest/action.php/matchmgr/getMyClubMatches")
         .then(function (response) {
             $scope.matches = response.data;
         });
 });
 
 scotchApp.controller('phonebooksController', function ($scope, $http) {
-    $http.get("../ajax/getCompetitions.php")
+    $http.get("/rest/action.php/competition/getCompetitions")
         .then(function (response) {
             $scope.competitions = response.data;
         });
-    $http.get("../ajax/getDivisions.php")
+    $http.get("/rest/action.php/rank/getDivisions")
         .then(function (response) {
             $scope.divisions = response.data;
         });
-    $http.get("../ajax/getRanks.php")
+    $http.get("/rest/action.php/rank/getRanks")
         .then(function (response) {
             $scope.ranks = response.data;
         });
@@ -837,7 +825,7 @@ scotchApp.controller('commissionController', function ($scope, $http) {
 });
 
 scotchApp.controller('phonebookController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
-    $http.get("../ajax/getTeam.php", {
+    $http.get("/rest/action.php/team/getTeam", {
         params: {
             id: $routeParams.id
         }
@@ -848,14 +836,14 @@ scotchApp.controller('phonebookController', ['$scope', '$routeParams', '$http', 
 }]);
 
 scotchApp.controller('lastResultsController', function ($scope, $http) {
-    $http.get("../ajax/getLastResults.php")
+    $http.get("/rest/action.php/matchmgr/getLastResults")
         .then(function (response) {
             $scope.lastResults = response.data;
         });
 });
 
 scotchApp.controller('weekMatchesController', function ($scope, $http) {
-    $http.get("../ajax/getWeekMatches.php")
+    $http.get("/rest/action.php/matchmgr/getWeekMatches")
         .then(function (response) {
             $scope.matches_of_the_week = response.data;
         });
@@ -864,7 +852,7 @@ scotchApp.controller('weekMatchesController', function ($scope, $http) {
 scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
     $scope.code_competition = $routeParams.competition;
     $scope.division = $routeParams.division;
-    $http.get("../ajax/getCompetitions.php")
+    $http.get("/rest/action.php/competition/getCompetitions")
         .then(function (response) {
             $scope.competitions = response.data;
             var competitions = $scope.competitions;
@@ -876,7 +864,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
                 }
             }
         });
-    $http.get("../ajax/getClassement.php", {
+    $http.get("/rest/action.php/rank/getRank", {
         params: {
             competition: $routeParams.competition,
             division: $routeParams.division
@@ -912,7 +900,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
         }
     });
 
-    $http.get("../ajax/getMatches.php", {
+    $http.get("/rest/action.php/matchmgr/getMatches", {
         params: {
             competition: $routeParams.competition,
             division: $routeParams.division
@@ -924,11 +912,10 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.removePenalty = function (id_equipe, competition) {
         $http({
             method: 'POST',
-            url: '../ajax/penalite.php',
+            url: '/rest/action.php/rank/removePenalty',
             data: $.param({
-                type: 'suppression',
                 compet: competition,
-                equipe: id_equipe
+                id_equipe: id_equipe
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -942,11 +929,10 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.addPenalty = function (id_equipe, competition) {
         $http({
             method: 'POST',
-            url: '../ajax/penalite.php',
+            url: '/rest/action.php/rank/addPenalty',
             data: $.param({
-                type: 'ajout',
                 compet: competition,
-                equipe: id_equipe
+                id_equipe: id_equipe
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -961,7 +947,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.DecrementReportCount = function (id_equipe, competition) {
         $http({
             method: 'POST',
-            url: '../ajax/decrementReportCount.php',
+            url: '/rest/action.php/rank/decrementReportCount',
             data: $.param({
                 compet: competition,
                 equipe: id_equipe
@@ -978,10 +964,10 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.IncrementReportCount = function (id_equipe, competition) {
         $http({
             method: 'POST',
-            url: '../ajax/incrementReportCount.php',
+            url: '/rest/action.php/rank/incrementReportCount',
             data: $.param({
                 compet: competition,
-                equipe: id_equipe
+                id_equipe: id_equipe
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
@@ -996,7 +982,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.validateMatch = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/certifierMatch.php',
+            url: '/rest/action.php/matchmgr/certifyMatch',
             data: $.param({
                 code_match: code_match
             }),
@@ -1013,7 +999,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.declareSheetReceived = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/declareSheetReceived.php',
+            url: '/rest/action.php/matchmgr/declareSheetReceived',
             data: $.param({
                 code_match: code_match
             }),
@@ -1030,7 +1016,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.invalidateMatch = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/invalidateMatch.php',
+            url: '/rest/action.php/matchmgr/invalidateMatch',
             data: $.param({
                 code_match: code_match
             }),
@@ -1047,7 +1033,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
 
 scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
     $scope.code_competition = $routeParams.competition;
-    $http.get("../ajax/getCompetitions.php")
+    $http.get("/rest/action.php/competition/getCompetitions")
         .then(function (response) {
             $scope.competitions = response.data;
             var competitions = $scope.competitions;
@@ -1058,7 +1044,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
                 }
             }
         });
-    $http.get("../ajax/getMatches.php", {
+    $http.get("/rest/action.php/matchmgr/getMatches", {
         params: {
             competition: $routeParams.competition,
             division: 1
@@ -1070,7 +1056,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     $scope.validateMatch = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/certifierMatch.php',
+            url: '/rest/action.php/matchmgr/certifyMatch',
             data: $.param({
                 code_match: code_match
             }),
@@ -1087,7 +1073,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     $scope.declareSheetReceived = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/declareSheetReceived.php',
+            url: '/rest/action.php/matchmgr/declareSheetReceived',
             data: $.param({
                 code_match: code_match
             }),
@@ -1104,7 +1090,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     $scope.invalidateMatch = function (code_match) {
         $http({
             method: 'POST',
-            url: '../ajax/invalidateMatch.php',
+            url: '/rest/action.php/matchmgr/invalidateMatch',
             data: $.param({
                 code_match: code_match
             }),
@@ -1119,28 +1105,20 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     };
 }]);
 
-scotchApp.controller('lastPostsController', function ($scope, $http) {
-    $http.get("../ajax/getLastPosts.php")
-        .then(function (response) {
-            $scope.lastPosts = response.data;
-        });
-});
-
-
 scotchApp.controller('webSitesController', function ($scope, $http) {
-    $http.get("../ajax/getWebSites.php")
+    $http.get("/rest/action.php/team/getWebSites")
         .then(function (response) {
             $scope.webSites = response.data;
         });
 });
 scotchApp.controller('hallOfFameController', function ($scope, $http) {
-    $http.get("../ajax/getHallOfFameDisplay.php")
+    $http.get("/rest/action.php/halloffame/getHallOfFameDisplay")
         .then(function (response) {
             $scope.hallOfFame = response.data;
         });
 });
 scotchApp.controller('gymnasiumsController', function ($scope, $http) {
-    $http.get("../ajax/getGymnasiums.php")
+    $http.get("/rest/action.php/court/getGymnasiums")
         .then(function (response) {
             $scope.gymnasiums = response.data;
         });

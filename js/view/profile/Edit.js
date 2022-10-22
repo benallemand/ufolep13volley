@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.profile.Edit', {
             xtype: 'textfield',
             anchor: '90%'
         },
-        url: 'ajax/saveProfile.php',
+        url: '/rest/action.php/usermanager/saveProfile',
         autoScroll: true,
         layout: 'anchor',
         items: [

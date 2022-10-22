@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveRank.php',
+        url: '/rest/action.php/rank/saveRank',
         items: [
             {
                 xtype: 'hidden',
@@ -45,7 +45,7 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
                 name: 'id_equipe',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

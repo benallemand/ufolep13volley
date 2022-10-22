@@ -2,7 +2,12 @@ Ext.define('Ufolep13Volley.controller.match', {
     extend: 'Ext.app.Controller',
     stores: ['match', 'MatchPlayers', 'Players'],
     models: ['Match', 'Player'],
-    views: ['form.match', 'form.MatchPlayers', 'view.MatchPlayers'],
+    views: [
+        'form.match',
+        'form.MatchPlayers',
+        'view.MatchPlayers',
+        'form.field.tag.players',
+    ],
     refs: [],
     init: function () {
         this.control({
@@ -56,7 +61,15 @@ Ext.define('Ufolep13Volley.controller.match', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 }, success: function () {
-                    me.load_match_players(button.up('form'));
+                    Ext.Msg.alert('Info', this.result.message);
+                    switch (button.up('form').getXType()) {
+                        case 'form_match_players':
+                            me.load_match_players(button.up('form'));
+                            break;
+                        case 'form_match':
+                        default:
+                            return;
+                    }
                 }, failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }

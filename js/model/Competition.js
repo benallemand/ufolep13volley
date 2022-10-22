@@ -13,9 +13,6 @@ Ext.define('Ufolep13Volley.model.Competition', {
         {
             name: 'is_home_and_away',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         }
     ]
 });

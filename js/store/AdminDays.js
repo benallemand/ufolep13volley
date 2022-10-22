@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.AdminDays', {
         model: 'Ufolep13Volley.model.Day',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getDays.php',
+            url: '/rest/action.php/day/getDays',
             reader: {
                 type: 'json',
                 root: 'results'

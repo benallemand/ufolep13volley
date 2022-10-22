@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.AdminMatches', {
         model: 'Ufolep13Volley.model.Match',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getMatches.php',
+            url: '/rest/action.php/matchmgr/getMatches',
             reader: {
                 type: 'json',
                 root: 'results'

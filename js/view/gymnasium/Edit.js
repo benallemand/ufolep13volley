@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.gymnasium.Edit', {
             xtype: 'textfield',
             anchor: '90%'
         },
-        url: 'ajax/saveGymnasium.php',
+        url: '/rest/action.php/court/saveGymnasium',
         autoScroll: true,
         layout: 'anchor',
         items: [

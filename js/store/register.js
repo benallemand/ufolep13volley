@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.store.register', {
         model: 'Ufolep13Volley.model.register',
         proxy: {
             type: 'rest',
-            url: 'rest/action.php/get_register'
+            url: 'rest/action.php/register/get_register'
         },
         autoLoad: true
     }

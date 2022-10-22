@@ -1,14 +1,11 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../includes/fonctions_inc.php';
+@session_start();
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
-    <div ng-include src="'pages/match_admin.html'"></div>
     <?php
 } else if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
     <div class="alert alert-warning" role="alert">Attention ! Vous ne pouvez éditer que les matches non certifiés que vous avez joués !</div>
-    <div ng-include src="'pages/match.html'"></div>
     <?php
 }
 ?>

@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
     title: 'Gestion des Equipes',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Teams',
+    store: {type: 'Teams'},
     columns: {
         items: [
             {

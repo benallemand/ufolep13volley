@@ -114,58 +114,34 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'forfait_dom',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'is_match_player_filled',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'is_forfait',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'is_match_player_requested',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'has_forbidden_player',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'forfait_ext',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'sheet_received',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'certif',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'retard',

@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.Activity', {
         model: 'Ufolep13Volley.model.Activity',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getActivity.php',
+            url: '/rest/action.php/activity/getActivity',
             reader: {
                 type: 'json',
                 root: 'results'

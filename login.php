@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/classes/UserManager.php';
 
-require_once __DIR__ . "/includes/fonctions_inc.php";
-login();
+$manager = new UserManager();
+$manager->login();

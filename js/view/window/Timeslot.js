@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveTimeSlot.php',
+        url: '/rest/action.php/timeslot/saveTimeSlot',
         items: [
             {
                 xtype: 'hidden',
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
                 name: 'id_equipe',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

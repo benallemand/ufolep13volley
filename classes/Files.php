@@ -4,101 +4,10 @@ require_once __DIR__ . '/../classes/SqlManager.php';
 
 class Files extends Generic
 {
-    private $sql_manager;
-    private $table_name;
-
     public function __construct()
     {
-        $this->sql_manager = new SqlManager();
+        parent::__construct();
         $this->table_name = 'files';
-    }
-
-    private function getSql($query = "1=1"): string
-    {
-        return "SELECT * 
-                FROM $this->table_name
-                WHERE $query";
-    }
-
-    /**
-     * @param string $query
-     * @return array
-     * @throws Exception
-     */
-    public function get(string $query = "1=1"): array
-    {
-        $sql = $this->getSql($query);
-        return $this->sql_manager->getResults($sql);
-    }
-
-    /**
-     * @param $id
-     * @return array
-     * @throws Exception
-     */
-    public function get_by_id($id): array
-    {
-        $query = "id = ?";
-        $bindings = array();
-        $bindings[] = array(
-            'type' => 'i',
-            'value' => $id
-        );
-        $sql = $this->getSql($query);
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (empty($results)) {
-            throw new Exception("Unable to find file for id $id !");
-        }
-        return $results[0];
-    }
-
-    /**
-     * @param $inputs
-     * @return array|int|string|null
-     * @throws Exception
-     */
-    public function save($inputs)
-    {
-        $bindings = array();
-        if (empty($inputs['id'])) {
-            $sql = "INSERT INTO";
-        } else {
-            $sql = "UPDATE";
-        }
-        $sql .= " $this->table_name SET ";
-        foreach ($inputs as $key => $value) {
-            switch ($key) {
-                case 'id':
-                case 'dirtyFields':
-                    break;
-                default:
-                    $bindings[] = array(
-                        'type' => 's',
-                        'value' => $value
-                    );
-                    $sql .= "$key = ?,";
-                    break;
-            }
-        }
-        $sql = trim($sql, ',');
-        if (!empty($inputs['id'])) {
-            $bindings[] = array(
-                'type' => 'i',
-                'value' => $inputs['id']
-            );
-            $sql .= " WHERE id = ?";
-        }
-        return $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @param $ids
-     * @throws Exception
-     */
-    public function delete($ids)
-    {
-        $sql = "DELETE FROM $this->table_name WHERE id IN($ids)";
-        $this->sql_manager->execute($sql);
     }
 
     /**
@@ -178,19 +87,11 @@ class Files extends Generic
      * @param $id
      * @throws Exception
      */
-    function insert_file_in_db($uploadfile, &$id)
+    function insert_file_in_db($uploadfile)
     {
-        global $db;
-        conn_db();
         $path_photo = str_replace('../', '', $uploadfile);
         $sql = "INSERT INTO photos SET path_photo = '$path_photo'";
-        $req = mysqli_query($db, $sql);
-        if ($req === FALSE) {
-            disconn_db();
-            throw new Exception("SQL error : " . mysqli_error($db));
-        }
-        $id = mysqli_insert_id($db);
-        disconn_db();
+        return $this->sql_manager->execute($sql);
     }
 
     /**
@@ -198,11 +99,10 @@ class Files extends Generic
      * @param $id
      * @throws Exception
      */
-    function upload_and_insert_file_in_db($fileKey, &$id)
+    function upload_and_insert_file_in_db($fileKey)
     {
         $uploadfile = null;
         $this->upload_file($fileKey, $uploadfile);
-        $id = null;
-        $this->insert_file_in_db($uploadfile, $id);
+        return $this->insert_file_in_db($uploadfile);
     }
 }

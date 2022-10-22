@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.form.player', {
     alias: 'widget.form_player',
     title: "Fiche joueur/joueuse",
     layout: 'form',
-    url: 'rest/action.php/update_player',
+    url: 'rest/action.php/player/update_player',
     trackResetOnLoad: true,
     defaults: {
         xtype: 'textfield',

@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
             xtype: 'textfield',
             anchor: '90%'
         },
-        url: 'ajax/saveUser.php',
+        url: '/rest/action.php/usermanager/saveUser',
         autoScroll: true,
         layout: 'anchor',
         items: [
@@ -47,7 +47,7 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
                 xtype: 'combo',
                 queryMode: 'local',
                 fieldLabel: 'Equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 displayField: 'team_full_name',
                 valueField: 'id_equipe'
             }

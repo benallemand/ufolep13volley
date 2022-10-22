@@ -17,9 +17,11 @@ Ext.application({
                     },
                     items: [
                         {
-                            text: "RETOUR A L'ACCUEIL",
-                            iconCls: 'fa-solid fa-house',
-                            href: '/',
+                            text: "RETOUR",
+                            iconCls: 'fa-solid fa-arrow-left',
+                            handler: function() {
+                                history.back();
+                            }
                         },
                         {
                             text: "Télécharger la fiche équipe",
@@ -30,7 +32,7 @@ Ext.application({
                 },
                 {
                     region: 'center',
-                    flex: 1,
+                    flex: 2,
                     xtype: 'grid_my_players',
                 },
                 {

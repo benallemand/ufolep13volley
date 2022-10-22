@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveMatch.php',
+        url: '/rest/action.php/matchmgr/saveMatch',
         viewModel: true,
         autoScroll: true,
         items: [

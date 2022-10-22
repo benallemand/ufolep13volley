@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.store.my_players', {
         model: 'Ufolep13Volley.model.Player',
         proxy: {
             type: 'rest',
-            url: 'rest/action.php/my_players'
+            url: 'rest/action.php/player/getMyPlayers'
         },
         autoLoad: true
     }

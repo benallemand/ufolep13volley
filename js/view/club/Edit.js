@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.view.club.Edit', {
             xtype: 'textfield',
             anchor: '90%'
         },
-        url: 'ajax/saveClub.php',
+        url: '/rest/action.php/club/saveClub',
         autoScroll: true,
         layout: 'anchor',
         items: [

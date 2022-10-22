@@ -18,9 +18,6 @@ Ext.define('Ufolep13Volley.model.Timeslot', {
         {
             name: 'has_time_constraint',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
         },
         {
             name: 'usage_priority',

@@ -47,7 +47,7 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
                     ids.push(record.get('id_match'));
                 });
                 Ext.Ajax.request({
-                    url: 'rest/action.php/certify_matchs',
+                    url: 'rest/action.php/matchmgr/certify_matchs',
                     params: {
                         ids: ids.join(',')
                     },

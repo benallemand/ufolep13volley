@@ -7,11 +7,7 @@ Ext.define('Ufolep13Volley.model.Player', {
         'telephone',
         'email',
         'num_licence',
-        {
-            name: 'date_homologation',
-            type: 'date',
-            dateFormat: 'd/m/Y'
-        },
+        'num_licence_ext',
         {
             name: 'path_photo',
             type: 'string',
@@ -46,64 +42,51 @@ Ext.define('Ufolep13Volley.model.Player', {
         },
         {
             name: 'est_actif',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
+            type: 'bool'
         },
         {
             name: 'id_club',
             type: 'int'
         },
         'club',
-        'adresse',
-        'code_postal',
-        'ville',
         'telephone2',
         'email2',
-        'telephone3',
-        'telephone4',
         {
             name: 'est_responsable_club',
             type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
+        },
+        {
+            name: 'is_captain',
+            type: 'bool',
+        },
+        {
+            name: 'is_leader',
+            type: 'bool',
+        },
+        {
+            name: 'is_vice_leader',
+            type: 'bool',
+        },
+        {
+            name: 'show_photo',
+            type: 'bool',
         },
         {
             name: 'id',
             type: 'int'
         },
-        {
-            name: 'show_photo',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
-        },
-        'team_leader_list',
         'teams_list',
         {
-            name: 'is_captain',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
+            name: 'date_homologation',
+            type: 'date',
+            dateFormat: 'd/m/Y'
         },
-        {
-            name: 'is_leader',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
-        },
-        {
-            name: 'is_vice_leader',
-            type: 'bool',
-            convert: function (val) {
-                return val === '1';
-            }
-        },
+        'adresse',
+        'team_leader_list',
+        'code_postal',
+        'ville',
+        'telephone3',
+        'telephone4',
         // uniquement pour match_player
         {
             name: 'date_reception',
@@ -117,6 +100,23 @@ Ext.define('Ufolep13Volley.model.Player', {
                 return record.get('est_actif') &&
                     record.get('date_homologation') &&
                     record.get('date_homologation') <= record.get('date_reception');
+            }
+        },
+        {
+            name: 'role',
+            type: 'string',
+            convert: function (val, record) {
+                var value = '';
+                if(record.get('is_captain')) {
+                    value += 'Capitaine<br/>';
+                }
+                if(record.get('is_leader')) {
+                    value += 'Responsable<br/>';
+                }
+                if(record.get('is_vice_leader')) {
+                    value += 'Suppléant<br/>';
+                }
+                return value;
             }
         },
         {

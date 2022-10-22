@@ -20,7 +20,7 @@ class SqlManager
                 JOIN equipes e ON e.id_equipe=ca.id_equipe
                 JOIN competitions c ON c.code_competition=e.code_competition
                 WHERE ca.is_email_sent = 'N'";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -42,37 +42,21 @@ class SqlManager
                 LEFT JOIN competitions c ON c.code_competition=e.code_competition
                 WHERE a.activity_date > DATE_SUB(NOW(), INTERVAL 1 DAY)
                 ORDER BY a.id DESC";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
-    /**
-     * @param $sql
-     * @return array
-     * @throws Exception
-     */
-    public function getResults($sql): array
-    {
-        $db = Database::openDbConnection();
-        $req = mysqli_query($db, $sql);
-        if ($req === false) {
-            throw new Exception("Error during SQL request: " . mysqli_error($db));
-        }
-        $results = array();
-        while ($data = mysqli_fetch_assoc($req)) {
-            $results[] = $data;
-        }
-        return $results;
-    }
 
     /**
      * @param $sql
      * @param array $bindings
-     * @return array|int|string
+     * @return array|int|string|null
      * @throws Exception
      */
-    public function execute($sql, array $bindings = array())
+    public function execute($sql, array $bindings = array()): array|int|string|null
     {
         $db = Database::openDbConnection();
+        $sql = trim($sql);
+        mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
         $stmt = mysqli_prepare($db, $sql);
         if ($stmt === FALSE) {
             throw new Exception("SQL error : " . mysqli_error($db));
@@ -92,7 +76,7 @@ class SqlManager
         if (mysqli_stmt_execute($stmt) === FALSE) {
             throw new Exception("SQL error : " . mysqli_error($db));
         }
-        if (strpos($sql, "SELECT") === 0) {
+        if (str_starts_with($sql, "SELECT") || str_starts_with($sql, "SHOW")) {
             $mysqli_result = mysqli_stmt_get_result($stmt);
             $results = array();
             while ($data = mysqli_fetch_assoc($mysqli_result)) {
@@ -103,7 +87,7 @@ class SqlManager
             }
             return $results;
         }
-        if (strpos($sql, "INSERT INTO") === 0) {
+        if (str_starts_with($sql, "INSERT INTO")) {
             return mysqli_insert_id($db);
         }
         if (mysqli_stmt_close($stmt) === FALSE) {
@@ -148,7 +132,7 @@ class SqlManager
                 AND m.date_reception < CURDATE() - INTERVAL 10 DAY
                 AND m.match_status = 'CONFIRMED'
                 ORDER BY m.code_match";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -162,7 +146,7 @@ class SqlManager
                 FROM registry
                 WHERE registry_key LIKE 'users.%.is_remind_matches'
                 AND registry_value = 'on'";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -211,7 +195,7 @@ class SqlManager
                 AND m.match_status = 'CONFIRMED'
                 GROUP BY m.code_match, m.date_reception
                 ORDER BY m.date_reception";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -227,7 +211,7 @@ class SqlManager
                     je.id_joueur = j.id
                     AND je.is_leader+0 > 0
                     WHERE je.id_equipe = $team_id";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -252,7 +236,7 @@ class SqlManager
                 AND e.id_equipe IN (SELECT id_equipe FROM classements)
                 GROUP BY jresp.email
                 ORDER BY equipe";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -274,7 +258,7 @@ class SqlManager
                 WHERE je.is_leader + 0 > 0
                       AND j.email = ''
                       AND e.id_equipe IN (SELECT id_equipe FROM classements)";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -302,7 +286,7 @@ class SqlManager
                 AND m.match_status = 'CONFIRMED'
                 AND m.sheet_received = 0
                 ORDER BY m.code_match";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     private function make_values_referenced($arr): array
@@ -343,7 +327,7 @@ class SqlManager
                              CONCAT(j.prenom, ' ', j.nom, ' (tel: ', j.telephone, ', mail: ', j.email, ')'), 
                              CONCAT('Pas de responsable ! Infos club: ', c2.prenom_responsable, ' ', c2.nom_responsable, ' (tel: ', c2.tel1_responsable, ', mail: ', c2.email_responsable, ')')), c2.email_responsable, c3.libelle, c.division
                 ORDER BY championship_name, division, team_name";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 
     /**
@@ -368,6 +352,6 @@ class SqlManager
                 WHERE j.est_actif = 0
                     AND m.match_status = 'CONFIRMED'
                 GROUP BY c.nom, c.email_responsable, e.nom_equipe, jr.email";
-        return $this->getResults($sql);
+        return $this->execute($sql);
     }
 }

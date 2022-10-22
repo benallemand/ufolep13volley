@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../includes/fonctions_inc.php';
+@session_start();
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
     <div ng-include src="'pages/edit_existing_player.html'"></div>

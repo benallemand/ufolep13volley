@@ -2,6 +2,12 @@ Ext.define('Ufolep13Volley.view.grid.register', {
     extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.grid_register',
     title: 'Equipes inscrites',
+    features: [
+        {
+            ftype: 'grouping',
+            groupHeaderTpl: '{name}'
+        }
+    ],
     store:
         {
             type: 'register',
@@ -21,6 +27,10 @@ Ext.define('Ufolep13Volley.view.grid.register', {
     columns: [
         {header: "Nom d'équipe", dataIndex: 'new_team_name', width: 200,},
         {header: 'Compétition', dataIndex: 'competition', width: 200,},
+        {header: 'Division', dataIndex: 'division', width: 200,},
+        {header: 'Rang de départ', dataIndex: 'rank_start', width: 200,},
+        {header: 'Compétition', dataIndex: 'competition', width: 200,},
+        {header: 'Remarques', dataIndex: 'remarks', width: 200,},
         {header: 'Club', dataIndex: 'club', width: 200,},
         {header: 'Ancien nom', dataIndex: 'old_team', width: 200,},
         {header: 'Responsable', dataIndex: 'leader', width: 200,},
@@ -30,5 +40,6 @@ Ext.define('Ufolep13Volley.view.grid.register', {
         {header: 'Gymnase 2', dataIndex: 'court_2', hidden: false, width: 200,},
         {header: 'Jour 2', dataIndex: 'day_court_2', hidden: false, width: 200,},
         {header: 'Heure 2', dataIndex: 'hour_court_2', hidden: false, width: 200,},
+        {header: "Date d'inscription", dataIndex: 'creation_date', xtype: 'datecolumn', format: 'd/m/Y H:i:s', hidden: false, width: 200,},
     ],
 });

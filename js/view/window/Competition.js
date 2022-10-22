@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.Competition', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveCompetition.php',
+        url: '/rest/action.php/competition/saveCompetition',
         items: [
             {
                 xtype: 'hidden',

@@ -18,7 +18,7 @@
             <td>{{ x.gymnasium_full_name }}</td>
             <td>{{ x.jour }}</td>
             <td>{{ x.heure }}</td>
-            <td ng-class="x.has_time_constraint == '1' ? 'alert alert-danger' : ''"></td>
+            <td ng-class="x.has_time_constraint == 1 ? 'alert alert-danger' : ''"></td>
             <td>{{ x.usage_priority }}</td>
             <td>
                 <form ng-submit="removeTimeSlot(x.id)">

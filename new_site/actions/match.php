@@ -1,12 +1,11 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../includes/fonctions_inc.php';
+@session_start();
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
-    <a ng-if="x.sheet_received == '1'
-    && x.is_file_attached == '1'
+    <a ng-if="x.sheet_received == 1
+    && x.is_file_attached == 1
     && x.match_status == 'CONFIRMED'"
-       href="../ajax/downloadMatchFiles.php?id={{x.id_match}}"
+       href="/rest/action.php/matchmgr/download?id={{x.id_match}}"
        role="button"
        class="btn btn-sm btn-primary">
         <span class="glyphicon glyphicon-download-alt"></span>
@@ -33,7 +32,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-ok"></span>
         </button>
     </form>
-    <form ng-if="x.certif == '1'
+    <form ng-if="x.certif == 1
                  && x.match_status == 'CONFIRMED'"
           style="display: inline-block"
           ng-submit="invalidateMatch(x.code_match)">
@@ -58,7 +57,8 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
                 && x.match_status == 'CONFIRMED'">
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
-           ng-click="editMatch(x.id_match, matches)">
+           ng-href="/match.php?id_match={{x.id_match}}"
+           target="_self">
             Modifier
             <span class="glyphicon glyphicon-edit"></span>
         </a>
@@ -67,11 +67,11 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
 }
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
-    <a ng-if="x.sheet_received == '1'
+    <a ng-if="x.sheet_received == 1
         && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
-        && x.is_file_attached == '1'
+        && x.is_file_attached == 1
         && x.match_status == 'CONFIRMED'"
-       href="../ajax/downloadMatchFiles.php?id={{x.id_match}}"
+       href="/rest/action.php/matchmgr/download?id={{x.id_match}}"
        role="button"
        class="btn btn-sm btn-primary">
         <span class="glyphicon glyphicon-download-alt"></span>
@@ -168,7 +168,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
         <a title="Modifier le match"
            class="btn btn-sm btn-warning"
            ng-href="/match.php?id_match={{x.id_match}}"
-           target="_blank">
+           target="_self">
             Modifier
             <span class="glyphicon glyphicon-edit"></span>
         </a>

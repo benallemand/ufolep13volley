@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.controller.retry_error_emails', {
                     return;
                 }
                 Ext.Ajax.request({
-                    url: "ajax/retry_error_emails.php",
+                    url: "/rest/action.php/emails/retry_error_emails",
                     method: 'POST',
                     success: function () {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");

@@ -1,10 +1,11 @@
 Ext.define('Ufolep13Volley.store.Teams', {
     extend: 'Ext.data.Store',
+    alias: 'store.Teams',
     config: {
         model: 'Ufolep13Volley.model.Team',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getTeams.php',
+            url: '/rest/action.php/team/getTeams',
             reader: {
                 type: 'json',
                 root: 'results'

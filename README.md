@@ -7,20 +7,6 @@ Files has been ignored in GIT :
 
     $flickr_api_key = "<api key>";
 
-    function conn_db()
-    {
-        global $db;
-        $db = mysqli_connect('<mysql host>', '<user>', '<password>', '<db name>', '<port>');
-        mysqli_query($db, "SET NAMES UTF8");
-        mysqli_query($db, "SET lc_time_names = 'fr_FR'");
-    }
-
-    function disconn_db()
-    {
-        global $db;
-        mysqli_close($db);
-    }
-
 /classes/Configuration.php contains:
 
     <?php

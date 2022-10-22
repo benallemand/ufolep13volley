@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.window.BlacklistTeams', {
     extend: 'Ext.window.Window',
     alias: 'widget.blacklistteams_edit',
-    title: "Equipes qui ne peuvent pas jouer le même soir",
+    title: "Equipes qui ne peuvent pas jouer le mÃªme soir",
     height: 400,
     width: 700,
     modal: true,
@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeams', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveBlacklistTeams.php',
+        url: '/rest/action.php/blacklistteams/saveBlacklistTeams',
         items: [
             {
                 xtype: 'hidden',
@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeams', {
                 name: 'id_team_1',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true
@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistTeams', {
                 name: 'id_team_2',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'Teams',
+                store: {type: 'Teams'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

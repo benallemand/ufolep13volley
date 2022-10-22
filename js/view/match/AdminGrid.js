@@ -13,6 +13,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 items: [
                     {
                         getTip: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return '';
+                            }
                             if (!record.get('certif')) {
                                 return '';
                             }
@@ -20,6 +23,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
 
                         },
                         getClass: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return 'x-hidden-display';
+                            }
                             if (!record.get('certif')) {
                                 return 'x-hidden-display';
                             }
@@ -30,6 +36,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return '';
+                            }
                             if (!record.get('is_match_player_filled')) {
                                 return '';
                             }
@@ -37,6 +46,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
 
                         },
                         getClass: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return 'x-hidden-display';
+                            }
                             if (!record.get('is_match_player_filled')) {
                                 return 'x-hidden-display';
                             }
@@ -47,6 +59,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return '';
+                            }
                             if (!record.get('is_forfait')) {
                                 return '';
                             }
@@ -54,6 +69,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
 
                         },
                         getClass: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return 'x-hidden-display';
+                            }
                             if (!record.get('is_forfait')) {
                                 return 'x-hidden-display';
                             }
@@ -64,6 +82,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return '';
+                            }
                             if (!record.get('is_match_player_requested')) {
                                 return '';
                             }
@@ -71,6 +92,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
 
                         },
                         getClass: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return 'x-hidden-display';
+                            }
                             if (!record.get('is_match_player_requested')) {
                                 return 'x-hidden-display';
                             }
@@ -83,6 +107,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return '';
+                            }
                             if (!record.get('has_forbidden_player')) {
                                 return '';
                             }
@@ -90,6 +117,9 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
 
                         },
                         getClass: function (value, meta, record) {
+                            if (record.get('match_status') === 'ARCHIVED') {
+                                return 'x-hidden-display';
+                            }
                             if (!record.get('has_forbidden_player')) {
                                 return 'x-hidden-display';
                             }
@@ -111,7 +141,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     if (!record.get('sheet_received')) {
                         return value;
                     }
-                    return Ext.String.format("<a href='/ajax/downloadMatchFiles.php?id={0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/rest/action.php/matchmgr/download?id={0}' target='_blank'>{1}</a>",
                         record.get('id_match'),
                         value);
                 }

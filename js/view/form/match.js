@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.form.match', {
     extend: 'Ext.form.Panel',
     alias: 'widget.form_match',
     layout: 'form',
-    url: 'rest/action.php/update_match',
+    url: 'rest/action.php/matchmgr/save_match',
     trackResetOnLoad: true,
     defaults: {
         xtype: 'textfield',

@@ -40,7 +40,7 @@ Ext.define('Ufolep13Volley.controller.remove_duplicate_files', {
                     return;
                 }
                 Ext.Ajax.request({
-                    url: "ajax/remove_duplicate_files.php",
+                    url: "/rest/action.php/files/remove_duplicate_files",
                     method: 'POST',
                     success: function () {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");

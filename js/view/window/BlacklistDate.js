@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistDate', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveBlacklistDate.php',
+        url: '/rest/action.php/blacklistdate/saveBlacklistDate',
         items: [
             {
                 xtype: 'hidden',

@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.Friendships', {
         model: 'Ufolep13Volley.model.Friendships',
         proxy: {
             type: 'ajax',
-            url: 'ajax/get_friendships.php',
+            url: '/rest/action.php/competition/get_friendships',
             reader: {
                 type: 'json',
                 root: 'results'

@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.day.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveDay.php',
+        url: '/rest/action.php/day/save_day',
         items: [
             {
                 xtype: 'hidden',

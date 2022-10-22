@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
     alias: 'widget.form_match_players',
     title: "Cocher les joueurs du match",
     layout: 'form',
-    url: 'rest/action.php/manage_match_players',
+    url: 'rest/action.php/matchmgr/manage_match_players',
     items: [
         {
             xtype: 'hidden',
@@ -11,34 +11,7 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
             name: 'id_match',
         },
         {
-            xtype: 'tagfield',
-            fieldLabel: 'Joueurs',
-            name: 'player_ids[]',
-            store: {
-                type: 'Players',
-                autoLoad: false,
-                sorters: [
-                    {
-                        property: 'id_club',
-                        direction: 'ASC'
-                    },
-                    {
-                        property: 'sexe',
-                        direction: 'ASC'
-                    }
-                ]
-            },
-            queryMode: 'local',
-            displayField: 'full_name',
-            tpl: '<tpl for=".">' +
-                '<tpl if="est_actif">' +
-                '<div class="x-boundlist-item"><img src="{path_photo}" width="50px" style="vertical-align: middle"/><span>{full_name}</span></div>' +
-                '<tpl else>' +
-                '<div class="x-boundlist-item" style="background: pink"><img src="{path_photo}" width="50px" style="vertical-align: middle"/><span>{full_name}</span></div>' +
-                '</tpl>' +
-                '</tpl>',
-            valueField: 'id',
-            forceSelection: true
+            xtype: 'tag_field_players',
         }
     ],
     buttons: [

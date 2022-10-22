@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistGymnase', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveBlacklistGymnase.php',
+        url: '/rest/action.php/blacklistcourt/saveBlacklistGymnase',
         items: [
             {
                 xtype: 'hidden',

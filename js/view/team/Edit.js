@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
             anchor: '90%',
             margins: 10
         },
-        url: 'ajax/saveTeam.php',
+        url: '/rest/action.php/team/saveTeam',
         items: [
             {
                 xtype: 'hidden',

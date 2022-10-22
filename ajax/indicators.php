@@ -35,7 +35,7 @@ function generateCsv($data, $delimiter = ';', $enclosure = '"')
     return $contents;
 }
 
-require_once __DIR__ . '/classes/Indicator.php';
+require_once __DIR__ . '/../classes/Indicator.php';
 
 
 $indicatorPossibleDuplicatePlayers = new Indicator(
@@ -404,7 +404,7 @@ $indicatorErrorInEmails = new Indicator(
 
 $indicatorMatchesWithInvalidPlayers = new Indicator(
     "Matchs avec joueurs non homologués",
-    "select m.code_match,
+    "SELECT m.code_match,
                  m.date_reception,
                  j.prenom,
                  j.nom,
@@ -420,7 +420,7 @@ $indicatorMatchesWithInvalidPlayers = new Indicator(
 
 $indicatorMatchesWithInvalidDate = new Indicator(
     "Problèmes dans les dates des matchs",
-    "select m.code_match,
+    "SELECT m.code_match,
        m.date_reception,
        edom.nom_equipe  AS domicile,
        eext.nom_equipe  AS exterieur,
@@ -432,7 +432,7 @@ from matches m
 WHERE (m.date_reception IN (SELECT closed_date FROM blacklist_date))
   AND m.match_status != 'ARCHIVED'
 UNION ALL
-select m.code_match,
+SELECT m.code_match,
        m.date_reception,
        edom.nom_equipe   AS domicile,
        eext.nom_equipe   AS exterieur,
@@ -446,7 +446,7 @@ from matches m
 WHERE bg.closed_date = m.date_reception
   AND m.match_status != 'ARCHIVED'
 UNION ALL
-select m.code_match,
+SELECT m.code_match,
        m.date_reception,
        edom.nom_equipe           AS domicile,
        eext.nom_equipe           AS exterieur,
@@ -459,7 +459,7 @@ from matches m
 WHERE bt.closed_date = m.date_reception
   AND m.match_status != 'ARCHIVED'
 UNION ALL
-select m.code_match,
+SELECT m.code_match,
        m.date_reception,
        edom.nom_equipe            AS domicile,
        eext.nom_equipe            AS exterieur,
@@ -472,7 +472,7 @@ from matches m
 WHERE bt.closed_date = m.date_reception
   AND m.match_status != 'ARCHIVED'
 UNION ALL
-select m_t1.code_match || ' et ' || m_t2.code_match    AS code_match,
+SELECT m_t1.code_match || ' et ' || m_t2.code_match    AS code_match,
        m_t1.date_reception,
        edom.nom_equipe                                 AS domicile,
        eext.nom_equipe                                 AS exterieur,
@@ -490,7 +490,7 @@ order by code_match");
 
 $indicatorNotYetRegisteredOldTeam = new Indicator(
     "Equipes non réengagées",
-    "SELECT res.* FROM (select e.nom_equipe AS equipe,
+    "SELECT res.* FROM (SELECT e.nom_equipe AS equipe,
                                     c.nom AS club,
                                     j.email AS contact_equipe, 
                                     c.email_responsable AS contact_club,

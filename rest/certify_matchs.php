@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../classes/SqlManager.php';
-require_once __DIR__ . '/../classes/MatchManager.php';
-require_once __DIR__ . '/../includes/fonctions_inc.php';
+require_once __DIR__ . '/../classes/MatchMgr.php';
 /**
  * @throws Exception
  */
@@ -18,21 +17,12 @@ function certify_matchs($parameters)
     if (empty($ids)) {
         throw new Exception("ids is empty !");
     }
-    $sql_manager = new SqlManager();
-    $match_manager = new MatchManager();
+    $match_manager = new MatchMgr();
     foreach ($ids as $id) {
         if (empty($id)) {
             continue;
         }
-        $sql = "UPDATE matches 
-                SET certif = 1
-                WHERE id_match = ?";
-        $bindings = array();
-        $bindings[] = array(
-            'type' => 'i',
-            'value' => $id
-        );
-        $sql_manager->execute($sql, $bindings);
+        $match_manager->certify_match($id);
         $match = $match_manager->get_match($id);
         addActivity("Le match " . $match['code_match'] . " a ete certifie");
     }
@@ -45,7 +35,7 @@ function is_action_allowed(string $function_name, $parameters)
 {
     switch ($function_name) {
         case 'manage_match_players':
-            $match_manager = new MatchManager();
+            $match_manager = new MatchMgr();
             $match = $match_manager->get_match($parameters['id_match']);
             @session_start();
             // allow admin

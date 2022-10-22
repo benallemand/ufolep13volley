@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.store.WeekSchedule', {
         groupField: 'gymnasium',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getWeekSchedule.php'
+            url: '/rest/action.php/timeslot/getWeekSchedule'
         },
         autoLoad: true
     }

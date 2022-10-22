@@ -5,8 +5,8 @@ Ext.define('Ufolep13Volley.store.Players', {
         model: 'Ufolep13Volley.model.Player',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getPlayers.php'
+            url: '/rest/action.php/player/getPlayers'
         },
-        autoLoad: false
+        autoLoad: true
     }
 });

@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.form.field.combo.team', {
     alias: 'widget.combo_team',
     displayField: 'team_full_name',
     valueField: 'id_equipe',
-    store: 'Teams',
+    store: {type: 'Teams'},
     queryMode: 'local',
     allowBlank: true,
     forceSelection: true

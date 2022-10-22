@@ -41,6 +41,13 @@ Ext.define('Ufolep13Volley.controller.register', {
     manage_display: function (selection_model, selected) {
         var form = selection_model.view.ownerCt.up('viewport').down('form');
         if (selected.length === 1) {
+            if(user_details.profile_name === 'ADMINISTRATEUR') {
+                form.loadRecord(selected[0]);
+                return;
+            }
+            if(Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y')) {
+                return;
+            }
             Ext.Msg.prompt("Identification",
                 "Pour modifier votre inscription, veuillez saisir l'adresse email du responsable d'équipe:",
                 function (btn, text) {

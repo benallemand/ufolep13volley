@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.store.Profiles', {
         model: 'Ufolep13Volley.model.Profile',
         proxy: {
             type: 'ajax',
-            url: 'ajax/getProfiles.php'
+            url: '/rest/action.php/usermanager/getProfiles'
         },
         autoLoad: true}
 });

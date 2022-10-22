@@ -23,8 +23,8 @@
             <td>
                 {{ x.rang }}
             </td>
-            <td class="{{x.exact_deuce == '1' ? 'warning' : ''}} {{x.is_promotion == '1' ? 'success' : ''}} {{x.is_relegation == '1' ? 'danger' : ''}}"
-                title="{{x.exact_deuce == '1' ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
+            <td class="{{x.exact_deuce == 1 ? 'warning' : ''}} {{x.is_promotion == 1 ? 'success' : ''}} {{x.is_relegation == 1 ? 'danger' : ''}}"
+                title="{{x.exact_deuce == 1 ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
                 <a href="#phonebook/{{ x.id_equipe }}">{{ x.equipe }}</a>
             </td>
             <td>{{ x.points }}

@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
     alias: 'widget.form_register',
     title: "Inscriptions championnats UFOLEP 13 Volley-ball " + saison,
     layout: 'form',
-    url: 'rest/action.php/register',
+    url: 'rest/action.php/register/register',
     trackResetOnLoad: true,
     defaults: {
         xtype: 'textfield',
@@ -71,6 +71,32 @@ Ext.define('Ufolep13Volley.view.form.register', {
                 }
             }
         },
+        user_details.profile_name === 'ADMINISTRATEUR' ? {
+            xtype: 'fieldset',
+            title: "Attribution de division (Admin)",
+            defaults: {
+                xtype: 'textfield',
+                margin: 10,
+                anchor: '100%'
+            },
+            layout: 'anchor',
+            items: [
+                {
+                    name: 'division',
+                    fieldLabel: "Division",
+                    allowBlank: true,
+                    msgTarget: 'under'
+                },
+                {
+                    xtype: 'numberfield',
+                    name: 'rank_start',
+                    fieldLabel: "Rang de départ",
+                    allowBlank: true,
+                    msgTarget: 'under',
+                    minValue: 1,
+                },
+            ]
+        } : null,
         {
             xtype: 'combo_team',
             fieldLabel: "Nom de l'équipe lors de la saison précédente",

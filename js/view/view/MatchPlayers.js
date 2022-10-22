@@ -25,16 +25,16 @@ Ext.define('Ufolep13Volley.view.view.MatchPlayers', {
             var target = e.target;
             if (target.tagName === 'BUTTON' && target.className === "ctl-delete") {
                 Ext.Ajax.request({
-                    url: "/ajax/delete_match_player.php",
+                    url: "/rest/action.php/matchmgr/delete_match_player",
                     params: {
-                        id_match: record.get('id_match'),
+                        id_match: id_match,
                         id_player: record.get('id'),
                     },
                     method: 'POST',
                     success: function () {
                         view.getStore().load({
                             params: {
-                                id_match: record.get('id_match')
+                                id_match: id_match
                             }
                         });
                     },

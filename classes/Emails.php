@@ -2,42 +2,30 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-require_once __DIR__ . '/../includes/fonctions_inc.php';
 require_once __DIR__ . '/../classes/Configuration.php';
-require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/Files.php';
+require_once __DIR__ . '/../classes/MatchMgr.php';
+require_once __DIR__ . '/../classes/Generic.php';
 
 require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/Exception.php';
 require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
 
-class Emails
+class Emails extends Generic
 {
-    private $file_manager;
-    private $sql_manager;
-
-    public static function starts_with($string, $startString): bool
-    {
-        $len = strlen($startString);
-        return (substr($string, 0, $len) === $startString);
-    }
-
-    public static function ends_with($string, $endString): bool
-    {
-        $len = strlen($endString);
-        if ($len == 0) {
-            return true;
-        }
-        return (substr($string, -$len) === $endString);
-    }
+    private Files $file_manager;
+    private MatchMgr $match;
+    private Team $team;
 
     /**
      * Emails constructor.
      */
     public function __construct()
     {
+        parent::__construct();
         $this->file_manager = new Files();
-        $this->sql_manager = new SqlManager();
+        $this->match = new MatchMgr();
+        $this->team = new Team();
     }
 
     /**
@@ -169,7 +157,7 @@ class Emails
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
         if (empty($serverName)) {
-            if (self::ends_with(filter_input(INPUT_SERVER, 'PHP_SELF'), 'phpunit')) {
+            if (Generic::ends_with(filter_input(INPUT_SERVER, 'PHP_SELF'), 'phpunit')) {
                 return;
             }
         }
@@ -188,14 +176,17 @@ class Emails
      */
     public function sendMailNewUser($email, $login, $password, $idTeam)
     {
-        $teamName = getTeamName($idTeam);
+        $teamName = $this->team->getTeamName($idTeam);
 
         $message = file_get_contents('../templates/emails/sendMailNewUser.fr.html');
         $message = str_replace('%login%', $login, $message);
         $message = str_replace('%password%', $password, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Identifiants de connexion", $message, $email);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Identifiants de connexion",
+            $message,
+            $email);
     }
 
     /**
@@ -206,8 +197,8 @@ class Emails
      */
     public function sendMailAskForReport($code_match, $reason, $id_team)
     {
-        $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
+        $teamName = $this->team->getTeamName($id_team);
+        $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAskForReport.fr.html');
@@ -215,7 +206,10 @@ class Emails
         $message = str_replace('%reason%', $reason, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match", $message, $to);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match",
+            $message,
+            $to);
     }
 
     /**
@@ -226,8 +220,8 @@ class Emails
      */
     public function sendMailGiveReportDate($code_match, $report_date, $id_team)
     {
-        $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
+        $teamName = $this->team->getTeamName($id_team);
+        $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailGiveReportDate.fr.html');
@@ -235,7 +229,10 @@ class Emails
         $message = str_replace('%report_date%', $report_date, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match", $message, $to);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match",
+            $message,
+            $to);
     }
 
     /**
@@ -246,8 +243,8 @@ class Emails
      */
     public function sendMailRefuseReport($code_match, $reason, $id_team)
     {
-        $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
+        $teamName = $this->team->getTeamName($id_team);
+        $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReport.fr.html');
@@ -255,7 +252,10 @@ class Emails
         $message = str_replace('%reason%', $reason, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match", $message, $to);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match",
+            $message,
+            $to);
     }
 
     /**
@@ -265,15 +265,18 @@ class Emails
      */
     public function sendMailAcceptReport($code_match, $id_team)
     {
-        $teamName = getTeamName($id_team);
-        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
+        $teamName = $this->team->getTeamName($id_team);
+        $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAcceptReport.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
         $message = str_replace('%team_name%', $teamName, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match", $message, $to);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match",
+            $message,
+            $to);
     }
 
     /**
@@ -282,13 +285,16 @@ class Emails
      */
     public function sendMailRefuseReportAdmin($code_match)
     {
-        $teams_emails = getTeamsEmailsFromMatchReport($code_match);
+        $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReportAdmin.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $this->sendEmail("[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match", $message, $to);
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match",
+            $message,
+            $to);
     }
 
     /**
@@ -298,18 +304,16 @@ class Emails
      */
     public function sendMailSheetReceived($code_match)
     {
-        $teams_emails = getTeamsEmailsFromMatch($code_match);
-        require_once __DIR__ . "/MatchManager.php";
-        $match_manager = new MatchManager();
-        $matches = $match_manager->get_matches("m.code_match = '$code_match'");
+        $teams_emails = $this->match->getTeamsEmailsFromMatch($code_match);
+        require_once __DIR__ . "/MatchMgr.php";
+        $matches = $this->match->get_matches("m.code_match = '$code_match'");
         $id_match = $matches[0]['id_match'];
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
 
-        $match_manager = new MatchManager();
-        $match_files = $match_manager->get_match_files($id_match);
+        $match_files = $this->match->get_match_files($id_match);
         $attached_files = array();
         foreach ($match_files as $match_file) {
             $attached_files[] = $match_file['id'];
@@ -331,13 +335,12 @@ class Emails
     public function delete_email(int $id)
     {
         $sql = "DELETE FROM emails WHERE id = ?";
-        $sql_manager = new SqlManager();
         $bindings = array();
         $bindings[] = array(
             'type' => 'i',
             'value' => $id
         );
-        $sql_manager->execute($sql, $bindings);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -347,9 +350,8 @@ class Emails
     {
         $sql = "DELETE FROM emails 
                 WHERE $where";
-        $sql_manager = new SqlManager();
         $bindings = array();
-        $sql_manager->execute($sql, $bindings);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -360,8 +362,7 @@ class Emails
     public function get_email_files(int $email_id): array
     {
         $sql = "SELECT * FROM emails_files WHERE id_email = $email_id";
-        $sql_manager = new SqlManager();
-        return $sql_manager->getResults($sql);
+        return $this->sql_manager->execute($sql);
     }
 
     /**
@@ -397,8 +398,7 @@ class Emails
     public function get_emails(string $where = "1=1"): array
     {
         $sql = "SELECT * FROM emails WHERE $where";
-        $sql_manager = new SqlManager();
-        return $sql_manager->getResults($sql);
+        return $this->sql_manager->execute($sql);
     }
 
     /**
@@ -418,8 +418,7 @@ class Emails
             'type' => 'i',
             'value' => $id
         );
-        $sql_manager = new SqlManager();
-        $sql_manager->execute($sql, $bindings);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -434,8 +433,7 @@ class Emails
             'type' => 'i',
             'value' => $id
         );
-        $sql_manager = new SqlManager();
-        $sql_manager->execute($sql, $bindings);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -482,7 +480,7 @@ class Emails
             $attachments = array();
             foreach ($email_files as $email_file) {
                 $file = $this->file_manager->get_by_id($email_file['id_file']);
-                $attachments[] = "../" . $file['path_file'];
+                $attachments[] = __DIR__ . "/../" . $file['path_file'];
             }
             try {
                 $this->sendEmail(
@@ -496,6 +494,7 @@ class Emails
             } catch (Exception $exception) {
                 print_r("ERROR");
                 $this->set_email_status($pending_email['id'], 'ERROR');
+                print_r($exception->getMessage());
                 continue;
             }
             print_r("DONE");
