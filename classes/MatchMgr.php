@@ -11,6 +11,9 @@ require_once __DIR__ . '/SqlManager.php';
 require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Players.php';
 require_once __DIR__ . '/Rank.php';
+require_once __DIR__ . '/Register.php';
+require_once __DIR__ . '/Competition.php';
+require_once __DIR__ . '/Day.php';
 
 class MatchMgr extends Generic
 {
@@ -1777,6 +1780,32 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function generateAll($ids)
+    {
+        // init all gymnasiums etc. from register table
+        (new Register())->set_up_season();
+        // get competitions
+        $competition_mgr = new Competition();
+        $competitions = array(
+            $competition_mgr->getCompetition('m'),
+            $competition_mgr->getCompetition('f'),
+            $competition_mgr->getCompetition('mo'),
+        );
+        foreach ($competitions as $competition) {
+            // reset competition
+            $competition_mgr->resetCompetition($competition['id']);
+            // generate days
+            (new Day())->generateDays($competition['id']);
+        }
+        $this->delete_matches("match_status = 'NOT_CONFIRMED'");
+        foreach ($competitions as $competition) {
+            $this->generate_matches($competition, false, false);
         }
     }
 

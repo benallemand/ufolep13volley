@@ -751,6 +751,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'competitions_grid button[action=generateMatches]': {
                     click: this.generateMatches
                 },
+                'competitions_grid button[action=generateAll]': {
+                    click: this.generateAll
+                },
                 'daysgrid button[action=delete]': {
                     click: this.deleteDays
                 },
@@ -1933,6 +1936,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     generateMatches: function (button) {
         this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches', true);
     },
+    generateAll: function (button) {
+        this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
+    },
     deleteDays: function () {
         var me = this;
         var records = this.getManageDaysGrid().getSelectionModel().getSelection();
@@ -2277,6 +2283,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Générer les matches...',
                     action: 'generateMatches'
+                },
+                {
+                    text: "Générer tout d'un coup",
+                    action: 'generateAll'
                 }
             ]
         });
