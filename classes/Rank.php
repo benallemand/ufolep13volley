@@ -256,6 +256,7 @@ class Rank extends Generic
 
     public function save($inputs)
     {
+        $bindings = array();
         if (empty($inputs['id'])) {
             $sql = "INSERT INTO";
         } else {
