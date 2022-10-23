@@ -359,14 +359,13 @@ $indicatorEquityBetweenHomeAndAway = new Indicator(
        SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
        SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
        m.code_competition                           AS competition,
-       m.division                                   AS division,
        e.nom_equipe                                 AS equipe
 FROM matches m
          JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
 WHERE m.match_status != 'ARCHIVED'
-GROUP BY competition, division, equipe
+GROUP BY competition, equipe
 HAVING ABS(domicile - exterieur) > 1
-ORDER BY competition ASC, division ASC, equipe ASC");
+ORDER BY competition, equipe");
 
 $indicatorMatchGenerationCriticity = new Indicator(
     "Criticité de génération des matchs",
