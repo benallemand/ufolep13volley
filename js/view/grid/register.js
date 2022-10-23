@@ -29,7 +29,6 @@ Ext.define('Ufolep13Volley.view.grid.register', {
         {header: 'Compétition', dataIndex: 'competition', width: 200,},
         {header: 'Division', dataIndex: 'division', width: 200,},
         {header: 'Rang de départ', dataIndex: 'rank_start', width: 200,},
-        {header: 'Compétition', dataIndex: 'competition', width: 200,},
         {header: 'Remarques', dataIndex: 'remarks', width: 200,},
         {header: 'Club', dataIndex: 'club', width: 200,},
         {header: 'Ancien nom', dataIndex: 'old_team', width: 200,},
