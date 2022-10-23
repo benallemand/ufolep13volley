@@ -104,19 +104,16 @@ class UserManager extends Generic
      */
     public function create_leader_account($login, $email, $team_id)
     {
-        // create team account
-        if ($this->is_existing_user($login, $team_id)) {
-            $this->remove($login, $team_id);
-        }
-        if ($this->is_existing_user($login, $team_id)) {
-            throw new Exception("Account already exists ! !");
+        // do not create team account if it already exists
+        if ($this->is_existing_user($login, $email, $team_id)) {
+            return;
         }
         $password = Generic::randomPassword();
         $sql = "INSERT INTO comptes_acces SET 
-                    id_equipe = ?, 
-                    login = ?, 
-                    email = ?, 
-                    password = ?";
+                        id_equipe = ?, 
+                        login = ?, 
+                        email = ?, 
+                        password = ?";
         $bindings = array(
             array('type' => 'i', 'value' => $team_id),
             array('type' => 's', 'value' => $login),
@@ -125,8 +122,8 @@ class UserManager extends Generic
         );
         $id_account = $this->sql_manager->execute($sql, $bindings);
         $sql = "INSERT INTO users_profiles SET 
-                    user_id = ?, 
-                    profile_id = (SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE')";
+                        user_id = ?, 
+                        profile_id = (SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE')";
         $bindings = array(
             array('type' => 'i', 'value' => $id_account),
         );
@@ -139,18 +136,21 @@ class UserManager extends Generic
 
     /**
      * @param $login
+     * @param $email
      * @param $team_id
      * @return bool
      * @throws Exception
      */
-    public function is_existing_user($login, $team_id): bool
+    public function is_existing_user($login, $email, $team_id): bool
     {
         $sql = "SELECT COUNT(*) AS cnt 
                 FROM comptes_acces 
-                WHERE login = ? 
+                WHERE login = ?
+                  AND email = ?
                   AND id_equipe = ?";
         $bindings = array(
             array('type' => 's', 'value' => $login),
+            array('type' => 's', 'value' => $email),
             array('type' => 'i', 'value' => $team_id),
         );
         $results = $this->sql_manager->execute($sql, $bindings);
