@@ -1622,7 +1622,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistteams/deleteBlacklistTeams',
+                    url: '/rest/action.php/blacklistteams/delete',
                     params: {
                         ids: ids.join(',')
                     },
