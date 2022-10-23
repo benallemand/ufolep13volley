@@ -421,4 +421,13 @@ class MatchManagerTest extends TestCase
             $this->match_manager->generate_matches($competition, false, false);
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_generate_all()
+    {
+        //221023:PASS
+        $this->match_manager->generateAll();
+    }
 }

@@ -937,6 +937,18 @@ class MatchMgr extends Generic
                 $computed_date['id_gymnase'])) {
                 continue;
             }
+            // computed date is not allowed (home team cannot play when another one is playing)
+            if ($this->is_date_blacklisted_team(
+                $computed_date['computed_date'],
+                $team_dom['id_equipe'])) {
+                continue;
+            }
+            // computed date is not allowed (away team cannot play when another one is playing)
+            if ($this->is_date_blacklisted_team(
+                $computed_date['computed_date'],
+                $team_ext['id_equipe'])) {
+                continue;
+            }
             // computed date is not allowed (home team already has a match)
             if ($this->is_team_busy_for_week($computed_date['week_id'], $team_dom['id_equipe'])) {
                 continue;
@@ -1788,7 +1800,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function generateAll($ids)
+    public function generateAll($ids=null)
     {
         // init all gymnasiums etc. from register table
         (new Register())->set_up_season();
@@ -1809,6 +1821,47 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         foreach ($competitions as $competition) {
             $this->generate_matches($competition);
         }
+    }
+
+    /**
+     * @param mixed $computed_date
+     * @param $id_equipe
+     * @return bool
+     * @throws Exception
+     */
+    private function is_date_blacklisted_team(mixed $computed_date, $id_equipe): bool
+    {
+        $sql = "SELECT *
+                FROM blacklist_teams bt
+                WHERE (
+                    id_team_1 = ? 
+                    AND (
+                        id_team_1 IN (  SELECT id_equipe_dom 
+                                        FROM matches 
+                                        WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y'))                   
+                        OR 
+                        id_team_1 IN (  SELECT id_equipe_ext 
+                                        FROM matches 
+                                        WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y'))))
+                OR (
+                    id_team_2 = ? 
+                    AND (
+                        id_team_2 IN (  SELECT id_equipe_dom 
+                                        FROM matches 
+                                        WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y'))                   
+                        OR
+                        id_team_2 IN (  SELECT id_equipe_ext 
+                                        FROM matches 
+                                        WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y'))))";
+        $bindings = array(
+            $bindings[] = array('type' => 'i', 'value' => $id_equipe),
+            $bindings[] = array('type' => 's', 'value' => $computed_date),
+            $bindings[] = array('type' => 's', 'value' => $computed_date),
+            $bindings[] = array('type' => 'i', 'value' => $id_equipe),
+            $bindings[] = array('type' => 's', 'value' => $computed_date),
+            $bindings[] = array('type' => 's', 'value' => $computed_date),
+        );
+        return count($this->sql_manager->execute($sql, $bindings)) > 0;
     }
 
 }
