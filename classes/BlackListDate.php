@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/Generic.php";
+
 class BlackListDate extends Generic
 {
 
@@ -9,7 +10,25 @@ class BlackListDate extends Generic
         $this->table_name = 'blacklist_date';
     }
 
-    public function save($inputs)
+    /**
+     * @throws Exception
+     */
+    public function saveBlacklistDate($closed_date, $id = null, $dirtyFields = null): int|array|string|null
+    {
+        $inputs = array(
+            'closed_date' => $closed_date,
+            'id' => $id,
+            'dirtyFields' => $dirtyFields,
+        );
+        return $this->save($inputs);
+    }
+
+    /**
+     * @param $inputs
+     * @return array|int|string|null
+     * @throws Exception
+     */
+    public function save($inputs): array|int|string|null
     {
         $bindings = array();
         if (empty($inputs['id'])) {
