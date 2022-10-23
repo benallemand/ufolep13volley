@@ -564,9 +564,11 @@ class MatchMgr extends Generic
 
     /**
      * @param $competition
+     * @param bool $try_flip
+     * @param bool $forbid_same_home
      * @throws Exception
      */
-    public function generate_matches($competition, $try_flip, $forbid_same_home = false)
+    public function generate_matches($competition, bool $try_flip = false, bool $forbid_same_home = false)
     {
         if (empty($competition)) {
             throw new Exception("Compétition non trouvée !");
@@ -1462,7 +1464,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 throw new Exception("La compétition a déjà commencé !!!");
             }
             $competition = $competitions[0];
-            $this->generate_matches($competition, false, false);
+            $this->generate_matches($competition);
         }
     }
 
@@ -1805,7 +1807,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         }
         $this->delete_matches("match_status = 'NOT_CONFIRMED'");
         foreach ($competitions as $competition) {
-            $this->generate_matches($competition, false, false);
+            $this->generate_matches($competition);
         }
     }
 
