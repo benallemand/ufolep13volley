@@ -268,14 +268,28 @@ class Team extends Generic
     /**
      * @throws Exception
      */
-    public function saveTeam($web_site = null, $id_club = null, $id_equipe = null)
+    public function saveTeam($web_site = null, $id_club = null, $id_equipe = null, $dirtyFields = null, $code_competition = null, $nom_equipe = null)
     {
         $bindings = array();
-        $inputs = array(
-            'web_site' => $web_site,
-            'id_club' => $id_club,
-            'id_equipe' => $id_equipe
-        );
+        $inputs = array();
+        if (!is_null($web_site)) {
+            $inputs['web_site'] = $web_site;
+        }
+        if (!is_null($id_club)) {
+            $inputs['id_club'] = $id_club;
+        }
+        if (!is_null($id_equipe)) {
+            $inputs['id_equipe'] = $id_equipe;
+        }
+        if (!is_null($dirtyFields)) {
+            $inputs['dirtyFields'] = $dirtyFields;
+        }
+        if (!is_null($code_competition)) {
+            $inputs['code_competition'] = $code_competition;
+        }
+        if (!is_null($nom_equipe)) {
+            $inputs['nom_equipe'] = $nom_equipe;
+        }
         if (UserManager::isTeamLeader()) {
             $inputs['id_equipe'] = $_SESSION['id_equipe'];
         }
