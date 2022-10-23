@@ -11,16 +11,6 @@ Ext.define('Ufolep13Volley.view.grid.register', {
     store:
         {
             type: 'register',
-            sorters: [
-                {
-                    property: 'competition',
-                    direction: 'ASC'
-                },
-                {
-                    property: 'club',
-                    direction: 'ASC'
-                }
-            ]
         },
     selType: 'rowmodel',
     autoScroll: true,
