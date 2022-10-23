@@ -371,6 +371,57 @@ class MatchMgr extends Generic
     }
 
     /**
+     * @param $code_match
+     * @param $parent_code_competition
+     * @param $code_competition
+     * @param $division
+     * @param $id_equipe_dom
+     * @param $id_equipe_ext
+     * @param $id_journee
+     * @param $date_reception
+     * @param $sheet_received
+     * @param $certif
+     * @param $note
+     * @param $dirtyFields
+     * @param $id_match
+     * @return array|int|string|null
+     * @throws Exception
+     */
+    public function saveMatch(
+        $code_match,
+        $parent_code_competition,
+        $code_competition,
+        $division,
+        $id_equipe_dom,
+        $id_equipe_ext,
+        $id_journee,
+        $date_reception,
+        $sheet_received,
+        $certif,
+        $note,
+        $dirtyFields = null,
+        $id_match = null
+    ): array|int|string|null
+    {
+        $inputs = array(
+            'code_match' => $code_match,
+            'parent_code_competition' => $parent_code_competition,
+            'code_competition' => $code_competition,
+            'division' => $division,
+            'id_equipe_dom' => $id_equipe_dom,
+            'id_equipe_ext' => $id_equipe_ext,
+            'id_journee' => $id_journee,
+            'date_reception' => $date_reception,
+            'sheet_received' => $sheet_received,
+            'certif' => $certif,
+            'note' => $note,
+            'dirtyFields' => $dirtyFields,
+            'id_match' => $id_match,
+        );
+        return $this->save($inputs);
+    }
+
+    /**
      * @throws Exception
      */
     public function save($inputs)
@@ -1800,7 +1851,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function generateAll($ids=null)
+    public function generateAll($ids = null)
     {
         // init all gymnasiums etc. from register table
         (new Register())->set_up_season();
