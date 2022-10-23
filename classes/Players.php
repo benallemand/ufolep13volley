@@ -16,6 +16,7 @@ class Players extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'joueurs';
         $this->team = new Team();
         $this->club = new Club();
         $this->photo = new Photo();
