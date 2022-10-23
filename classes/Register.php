@@ -176,7 +176,7 @@ class Register extends Generic
      */
     public function set_up_season(): void
     {
-        // make a cleanup before new season: remove all leader accounts and existing timeslots
+        // make a cleanup before new season
         $this->cleanup_before_start();
         // check that all data is ok  in register table
         $this->check_data();
@@ -200,7 +200,7 @@ class Register extends Generic
     public function cleanup_before_start(): void
     {
         // remove all standard and leader accounts
-        $this->cleanup_accounts();
+//        $this->cleanup_accounts();
         // remove all timeslots
         $this->cleanup_timeslots();
         // archive any active match
