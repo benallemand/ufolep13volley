@@ -4,7 +4,6 @@ function toWellFormatted($string)
 {
     return !empty($string) ? iconv('UTF-8', 'windows-1252', $string) : '';
 }
-
 require_once __DIR__ . '/libs/fpdf184/fpdf.php';
 require_once __DIR__ . '/classes/Team.php';
 require_once __DIR__ . '/classes/Players.php';
@@ -18,7 +17,7 @@ try {
     $team_manager = new Team();
     $player = new Players();
     $teamSheet = $team_manager->getTeamSheet($id);
-    $playersPdf = $player->getPlayersPdf($id, '', false);
+    $playersPdf = $player->getPlayersPdf($id);
     if (empty($playersPdf)) {
         die('Erreur durant la recuperation des joueurs !');
     }
@@ -27,7 +26,7 @@ try {
     $pdf->SetMargins(0, 5);
     $pdf->SetLineWidth(0.5);
     $pdf->AddPage();
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Arial', 'B', 8);
     $pdf->Cell(20, 5, 'Club: ', 0, 0, 'L');
     $pdf->MultiCell(40, 5, toWellFormatted($teamSheet['club']), 'L', 'L');
     $pdf->Cell(20, 5, 'Championnat: ', 'T', 0, 'L');
@@ -37,7 +36,7 @@ try {
     $pdf->Cell(20, 5, 'Responsable: ', 'T', 0, 'L');
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->Cell(40, 5, toWellFormatted($teamSheet['leader']), 'TL', 1, 'L');
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Arial', 'B', 8);
     $pdf->Cell(20, 5, 'Portable: ', 0, 0, 'L');
     $pdf->Cell(40, 5, toWellFormatted($teamSheet['portable']), 'L', 1, 'L');
     $pdf->Cell(20, 5, 'Courriel: ', 0, 0, 'L');
@@ -53,9 +52,9 @@ try {
     $pdf->Image('images/MainVolley.jpg', 150, 5, 20);
     $pdf->Image('images/JeuAvantEnjeu.jpg', 150, 25, 20);
     $pdf->SetXY(80, 40);
-    $pdf->SetFont('Arial', '', 16);
+    $pdf->SetFont('Arial', 'B', 16);
     $pdf->MultiCell(50, 7, toWellFormatted($teamSheet['equipe']), 0, 'C');
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetXY(150, 30);
     $pdf->Cell(30, 5, 'Le:', 0, 0, 'L');
     $pdf->Cell(30, 5, '............/............/............', 0, 1, 'R');
@@ -70,9 +69,9 @@ try {
     $pdf->Cell(30, 5, '...................................', 0, 1, 'R');
     $pdf->SetXY(150, 55);
     $pdf->Cell(50, 5, toWellFormatted('Fiche équipe adverse consultée : '), 0, 0, 'L');
-    $pdf->SetFont('ZapfDingbats', '', 18);
+    $pdf->SetFont('ZapfDingbats', 'B', 18);
     $pdf->Cell(5, 5, 'o', 0, 0, 'R');
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetXY(150, 60);
     $pdf->Cell(30, 5, toWellFormatted("Signatures des responsables d'équipes: "), 0, 0, 'L');
     $pdf->SetXY(150, 70);
@@ -101,9 +100,9 @@ try {
         $pdf->Cell(50, 5, toWellFormatted($jsonPlayer['num_licence_ext']) . ' /' . toWellFormatted($jsonPlayer['sexe']), 0, 1, 'L');
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 15 + $heightPlayer * ($currentIndex % $NbByColumns));
         $pdf->Cell(16, 5, toWellFormatted('Présent(e) : '), 0, 0, 'L');
-        $pdf->SetFont('ZapfDingbats', '', 18);
+        $pdf->SetFont('ZapfDingbats', 'B', 18);
         $pdf->Cell(5, 5, 'o', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 8);
+        $pdf->SetFont('Arial', 'B', 8);
         $roles = array();
         if ($jsonPlayer['is_captain'] === "1") {
             $roles[] = 'CAP';
