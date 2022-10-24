@@ -104,15 +104,6 @@ Ext.define('Ufolep13Volley.view.form.player', {
             msgTarget: 'under'
         },
         {
-            name: 'est_actif',
-            xtype: 'checkboxfield',
-            fieldLabel: 'Actif ?',
-            boxLabel: 'Oui',
-            msgTarget: 'under',
-            uncheckedValue: 'off',
-            readOnly: true,
-        },
-        {
             name: 'id_club',
             fieldLabel: 'Club',
             xtype: 'combo',

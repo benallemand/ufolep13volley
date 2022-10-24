@@ -160,15 +160,18 @@ class Alerts extends Generic
         return true;
     }
 
-    public function hasInactivePlayers($sessionIdEquipe)
+    /**
+     * @throws Exception
+     */
+    public function hasInactivePlayers($sessionIdEquipe): bool
     {
         $sql = "SELECT 
         COUNT(*) AS cnt 
         FROM joueur_equipe je 
-        JOIN joueurs j ON j.id = je.id_joueur
+        JOIN players_view j ON j.id = je.id_joueur
         WHERE 
         je.id_equipe = $sessionIdEquipe
-        AND j.est_actif+0 = 0";
+        AND j.est_actif = 0";
         $results = $this->sql_manager->execute($sql);
         if (intval($results[0]['cnt']) === 0) {
             return false;

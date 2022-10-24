@@ -51,7 +51,7 @@ class EmailsTest extends TestCase
     {
         $email_manager = new Emails();
         $players_manager = new Players();
-        $where = "j.est_actif + 0 > 0";
+        $where = "j.est_actif = 1";
         $active_players = $players_manager->get_players($where);
         $email_ids = array();
         foreach ($active_players as $active_player) {

@@ -94,50 +94,20 @@ class Players extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_players(string $where = "1=1", $order_by = "j.sexe, UPPER(j.nom)"): array
+    public function get_players(string $where = "1=1", string $order_by = "j.sexe, UPPER(j.nom)"): array
     {
-        $sql = "SELECT
-                CONCAT(UPPER(j.nom), ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
-                j.prenom, 
-                UPPER(j.nom) AS nom, 
-                j.telephone, 
-                j.email, 
-                j.num_licence,
-                CONCAT(LPAD(j.departement_affiliation, 3, '0'), j.num_licence) AS num_licence_ext,
-                p.path_photo,
-                j.sexe, 
-                j.departement_affiliation, 
-                j.est_actif+0 AS est_actif, 
-                j.id_club, 
-                c.nom AS club, 
-                j.telephone2, 
-                j.email2, 
-                j.est_responsable_club+0 AS est_responsable_club, 
-                je.is_captain+0 AS is_captain,
-                je.is_vice_leader+0 AS is_vice_leader,
-                je.is_leader+0 AS is_leader,
-                j.show_photo+0 AS show_photo,
-                j.id, 
-                GROUP_CONCAT( DISTINCT concat(e.nom_equipe, ' (', comp.libelle, ')', ' (D', cl.division, ')') SEPARATOR '<br/>') AS teams_list,
-                GROUP_CONCAT( DISTINCT e2.nom_equipe SEPARATOR '<br/>') AS team_leader_list,
-                DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation
-        FROM joueurs j
-            LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
-            LEFT JOIN joueur_equipe je2 ON je2.id_joueur = j.id AND je2.is_leader+0 > 0
-            LEFT JOIN equipes e ON e.id_equipe=je.id_equipe
-            LEFT JOIN equipes e2 ON e2.id_equipe=je2.id_equipe
-            LEFT JOIN clubs c ON c.id = j.id_club
-            LEFT JOIN photos p ON p.id = j.id_photo
-            LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
-            LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
-        WHERE $where
-        GROUP BY j.id, j.sexe, UPPER(j.nom)
-        ORDER BY $order_by";
+        $sql = "SELECT j.* 
+                FROM players_view j
+                LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
+                LEFT JOIN equipes e ON e.id_equipe = je.id_equipe
+                WHERE $where
+                GROUP BY j.id, j.sexe, UPPER(j.nom)
+                ORDER BY $order_by";
         $results = $this->sql_manager->execute($sql);
         foreach ($results as $index => $result) {
             if ($result['show_photo'] === 1) {
                 $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
-                if (($results[$index]['path_photo'] == '') || (file_exists("../" . $results[$index]['path_photo']) === FALSE)) {
+                if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
                     switch ($result['sexe']) {
                         case 'M':
                             $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
@@ -176,7 +146,6 @@ class Players extends Generic
         $date_homologation,
         $sexe,
         $departement_affiliation,
-        $est_actif,
         $id_club,
         $show_photo,
         $telephone,
@@ -194,7 +163,6 @@ class Players extends Generic
             'date_homologation' => $date_homologation,
             'sexe' => $sexe,
             'departement_affiliation' => $departement_affiliation,
-            'est_actif' => $est_actif,
             'id_club' => $id_club,
             'show_photo' => $show_photo,
             'telephone' => $telephone,
@@ -233,7 +201,6 @@ class Players extends Generic
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     $bindings[] = array('type' => 's', 'value' => $value);
                     break;
-                case 'est_actif':
                 case 'est_responsable_club':
                 case 'show_photo':
                     $val = ($value === 'on' || $value === 1) ? 1 : 0;
@@ -278,18 +245,6 @@ class Players extends Generic
                     $name = $parameters['nom'];
                     $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
                     $this->addActivity($comment);
-                    if ($fieldName === 'est_actif') {
-                        if ($fieldValue === 'on' || $fieldValue === 1) {
-                            if (empty($parameters['id'])) {
-                                $player_id = $newId;
-                            } else {
-                                $player_id = $parameters['id'];
-                            }
-                            require_once __DIR__ . '/../classes/Emails.php';
-                            $email_manager = new Emails();
-                            $email_manager->insert_email_notify_activated_player($player_id);
-                        }
-                    }
                 }
             }
         }
@@ -361,7 +316,6 @@ class Players extends Generic
         $date_homologation,
         $sexe,
         $departement_affiliation,
-        $est_actif,
         $id_club,
         $show_photo,
         $est_responsable_club,
@@ -381,7 +335,6 @@ class Players extends Generic
             'date_homologation' => $date_homologation,
             'sexe' => $sexe,
             'departement_affiliation' => $departement_affiliation,
-            'est_actif' => $est_actif,
             'id_club' => $id_club,
             'show_photo' => $show_photo,
             'est_responsable_club' => $est_responsable_club,
@@ -425,7 +378,6 @@ class Players extends Generic
                     );
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
-                case 'est_actif':
                 case 'est_responsable_club':
                 case 'show_photo':
                     $val = ($value === 'on' || $value === 1) ? 1 : 0;
@@ -481,18 +433,6 @@ class Players extends Generic
                     $name = $inputs['nom'];
                     $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
                     $this->addActivity($comment);
-                    if ($fieldName === 'est_actif') {
-                        if ($fieldValue === 'on' || $fieldValue === 1) {
-                            if (empty($inputs['id'])) {
-                                $player_id = $newId;
-                            } else {
-                                $player_id = $inputs['id'];
-                            }
-                            require_once __DIR__ . '/../classes/Emails.php';
-                            $email_manager = new Emails();
-                            $email_manager->insert_email_notify_activated_player($player_id);
-                        }
-                    }
                 }
             }
         }
@@ -687,7 +627,7 @@ class Players extends Generic
     {
         $where = "1=1";
         if (!empty($query)) {
-            $where .= " AND CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') LIKE '%$query%'";
+            $where .= " AND j.full_name LIKE '%$query%'";
         }
         // filter available match players by id_match (known teams)
         if (!empty($id_match)) {
@@ -696,13 +636,13 @@ class Players extends Generic
                         OR e.id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match)
                         )";
         }
-        return $this->get_players($where, "c.nom IS NULL, c.nom, j.nom");
+        return $this->get_players($where, "j.club IS NULL, j.club, j.nom");
     }
 
     /**
      * @throws Exception
      */
-    public function getPlayersPdf($idTeam, $rootPath = '../', $doHideInactivePlayers = false)
+    public function getPlayersPdf($idTeam, $doHideInactivePlayers = false)
     {
         if ($idTeam === NULL) {
             return false;
@@ -710,71 +650,39 @@ class Players extends Generic
         if (!$this->team->isTeamSheetAllowedForUser($idTeam)) {
             throw new Exception("Vous n'avez pas la permission de consulter cette équipe !");
         }
-        $results = $this->get_players("je.id_equipe = $idTeam");
-        foreach ($results as $index => $result) {
-            if ($result['show_photo'] === 1) {
-                $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
-                if (($results[$index]['path_photo'] == '') || (file_exists($rootPath . $results[$index]['path_photo']) === FALSE)) {
-                    switch ($result['sexe']) {
-                        case 'M':
-                            $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
-                            break;
-                        case 'F':
-                            $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } else {
-                switch ($result['sexe']) {
-                    case 'M':
-                        $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
-                        break;
-                    case 'F':
-                        $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        return $results;
+        return $this->get_players("je.id_equipe = $idTeam");
     }
 
     /**
      * @throws Exception
      */
-    public function getPlayersFromTeam($id_equipe)
+    public function getPlayersFromTeam($id_equipe): array|int|string|null
     {
         $sql = "SELECT
-        CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
+        j.full_name,
         j.prenom, 
         j.nom, 
         j.telephone, 
         j.email, 
         j.num_licence, 
-        p.path_photo,
+        j.path_photo,
         j.sexe, 
         j.departement_affiliation, 
-        j.est_actif+0 AS est_actif, 
+        j.est_actif, 
         j.id_club, 
         j.telephone2, 
         j.email2, 
-        j.est_responsable_club+0 AS est_responsable_club, 
-        je.is_captain+0 AS is_captain, 
-        je.is_vice_leader+0 AS is_vice_leader, 
-        je.is_leader+0 AS is_leader, 
+        j.est_responsable_club, 
+        je.is_captain, 
+        je.is_vice_leader, 
+        je.is_leader, 
         j.id, 
-        j.show_photo+0 AS show_photo,
-        DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation 
+        j.show_photo,
+        j.date_homologation 
         FROM joueur_equipe je
-        LEFT JOIN joueurs j ON j.id=je.id_joueur
-        LEFT JOIN photos p ON p.id = j.id_photo
-    WHERE id_equipe = $id_equipe";
-        $results = $this->sql_manager->execute($sql);
-
-        return $results;
+        LEFT JOIN players_view j ON j.id=je.id_joueur
+        WHERE id_equipe = $id_equipe";
+        return $this->sql_manager->execute($sql);
     }
 
     /**

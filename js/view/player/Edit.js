@@ -103,14 +103,6 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 msgTarget: 'under'
             },
             {
-                name: 'est_actif',
-                xtype: 'checkboxfield',
-                fieldLabel: 'Actif ?',
-                boxLabel: 'Oui',
-                msgTarget: 'under',
-                uncheckedValue: 'off'
-            },
-            {
                 xtype: 'fieldset',
                 title: 'Club',
                 layout: 'anchor',
