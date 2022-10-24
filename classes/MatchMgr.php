@@ -655,20 +655,20 @@ class MatchMgr extends Generic
             $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
             $rounds = $this->generate_round_robin_rounds($teams_count);
             // Interleave so that home and away games are fairly evenly dispersed.
-            $interleaved = array();
-            for ($i = 0; $i < $totalRounds; $i++) {
-                $interleaved[$i] = array();
-            }
-            $evn = 0;
-            $odd = ($teams_count / 2);
-            for ($i = 0; $i < sizeof($rounds); $i++) {
-                if ($i % 2 == 0) {
-                    $interleaved[$i] = $rounds[$evn++];
-                } else {
-                    $interleaved[$i] = $rounds[$odd++];
-                }
-            }
-            $rounds = $interleaved;
+//            $interleaved = array();
+//            for ($i = 0; $i < $totalRounds; $i++) {
+//                $interleaved[$i] = array();
+//            }
+//            $evn = 0;
+//            $odd = ($teams_count / 2);
+//            for ($i = 0; $i < sizeof($rounds); $i++) {
+//                if ($i % 2 == 0) {
+//                    $interleaved[$i] = $rounds[$evn++];
+//                } else {
+//                    $interleaved[$i] = $rounds[$odd++];
+//                }
+//            }
+//            $rounds = $interleaved;
             // Last team can't be away for every game so flip them
             // to home on odd rounds.
             for ($round = 0; $round < sizeof($rounds); $round++) {
@@ -807,36 +807,32 @@ class MatchMgr extends Generic
     }
 
     /**
-     * @param $code_competition
-     * @param $id_equipe_dom
+     * @param $id_equipe
      * @return array|int|string|null
      * @throws Exception
      */
-    private function get_computed_dates($code_competition, $id_equipe_dom)
+    private function get_computed_dates($id_equipe): array|int|string|null
     {
-        $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(cr.jour,
-                                                                 'Lundi',
-                                                                 'Mardi',
-                                                                 'Mercredi',
-                                                                 'Jeudi',
-                                                                 'Vendredi',
-                                                                 'Samedi',
-                                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date,
-                       j.numero                                                                   AS week_number,
-                       j.id                                                                       AS week_id,
-                       cr.id_gymnase
+        $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(c.jour,
+                                                 'Lundi',
+                                                 'Mardi',
+                                                 'Mercredi',
+                                                 'Jeudi',
+                                                 'Vendredi',
+                                                 'Samedi',
+                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date,
+                       j.numero                                                   AS week_number,
+                       j.id                                                       AS week_id,
+                       c.id_gymnase,
+                       e.code_competition,
+                       e.nom_equipe
                 FROM journees j
-                         JOIN creneau cr ON cr.id IN (SELECT creneau.id
-                                                      FROM creneau
-                                                      WHERE creneau.id_equipe = ?)
-                         JOIN classements c on cr.id_equipe = c.id_equipe
-                WHERE cr.id_equipe = ?
-                  AND j.code_competition = ?
-                ORDER BY week_number, cr.usage_priority";
+                         JOIN equipes e on j.code_competition = e.code_competition
+                         JOIN creneau c on e.id_equipe = c.id_equipe
+                WHERE c.id_equipe = ?
+                ORDER BY j.code_competition, STR_TO_DATE(computed_date, '%d/%m/%Y'), week_number, c.usage_priority";
         $bindings = array(
-            array('type' => 'i', 'value' => $id_equipe_dom),
-            array('type' => 'i', 'value' => $id_equipe_dom),
-            array('type' => 's', 'value' => $code_competition),
+            array('type' => 'i', 'value' => $id_equipe),
         );
         return $this->sql_manager->execute($sql, $bindings);
     }
@@ -849,28 +845,20 @@ class MatchMgr extends Generic
      */
     private function is_date_filled($computed_date, $id_gymnase): bool
     {
-        // Chercher le gymnase de réception
-        $sql = "SELECT nb_terrain FROM gymnase WHERE id = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $id_gymnase),
-        );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        $nb_terrain = 0;
-        if (count($results) > 0) {
-            $nb_terrain = $results[0]['nb_terrain'];
-        }
-        // Trouver les matchs déjà joués ce soir là
-        $sql = "SELECT *
+        // si le gymnase est complet, retourner true
+        $sql = "SELECT id_gymnasium, date_reception, COUNT(*)
                 FROM matches m
+                         JOIN gymnase g on m.id_gymnasium = g.id
                 WHERE id_gymnasium = ?
-                    AND m.date_reception = STR_TO_DATE(?, '%d/%m/%Y')
-                    AND m.match_status != 'ARCHIVED'";
+                  AND m.date_reception = STR_TO_DATE(?, '%d/%m/%Y')
+                  AND m.match_status != 'ARCHIVED'
+                GROUP BY id_gymnasium, g.nb_terrain
+                HAVING COUNT(*) >= g.nb_terrain";
         $bindings = array(
             array('type' => 'i', 'value' => $id_gymnase),
             array('type' => 's', 'value' => $computed_date),
         );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        return (count($results) >= $nb_terrain);
+        return count($this->sql_manager->execute($sql, $bindings)) > 0;
     }
 
     /**
@@ -970,7 +958,7 @@ class MatchMgr extends Generic
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
         $is_date_found = false;
-        $computed_dates = $this->get_computed_dates($code_competition, $team_dom['id_equipe']);
+        $computed_dates = $this->get_computed_dates($team_dom['id_equipe']);
         foreach ($computed_dates as $computed_date) {
             // computed date is full (too many matches in same gymnasium)
             if ($this->is_date_filled(
