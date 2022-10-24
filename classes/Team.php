@@ -344,11 +344,11 @@ class Team extends Generic
         if (empty($_FILES['photo']['name'])) {
             return;
         }
-        $uploaddir = __DIR__ . '/../teams_pics/';
+        $uploaddir = 'teams_pics/';
         $uploadfile = "$uploaddir$idTeam.jpg";
-        $idPhoto = $this->photo->insertPhoto(substr($uploadfile, 3));
+        $idPhoto = $this->photo->insertPhoto($uploadfile);
         $this->linkTeamToPhoto($idTeam, $idPhoto);
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadfile)) {
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], __DIR__ . '/../' . $uploadfile)) {
             $this->addActivity("Une nouvelle photo a ete transmise pour l'équipe " . $team['team_full_name']);
         }
     }
