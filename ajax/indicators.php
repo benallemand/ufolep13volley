@@ -474,19 +474,22 @@ from matches m
 WHERE bt.closed_date = m.date_reception
   AND m.match_status != 'ARCHIVED'
 UNION ALL
-SELECT m_t1.code_match || ' et ' || m_t2.code_match    AS code_match,
+SELECT CONCAT(m_t1.code_match, ' et ', m_t2.code_match) AS code_match,
        m_t1.date_reception,
-       edom.nom_equipe                                 AS domicile,
-       eext.nom_equipe                                 AS exterieur,
+       edom.nom_equipe                                  AS domicile,
+       eext.nom_equipe                                  AS exterieur,
        m_t1.match_status                               AS statut,
        'equipes qui ne peuvent pas jouer le même soir' AS raison
-FROM blacklist_teams bt
-         JOIN matches m_t1 ON m_t1.id_equipe_dom = bt.id_team_1 OR m_t1.id_equipe_ext = bt.id_team_1
-         JOIN matches m_t2 ON m_t2.id_equipe_dom = bt.id_team_2 OR m_t2.id_equipe_ext = bt.id_team_2
+FROM matches m_t1,
+     matches m_t2,
+     blacklist_teams bt
          JOIN equipes edom on bt.id_team_1 = edom.id_equipe
          JOIN equipes eext on bt.id_team_2 = eext.id_equipe
-WHERE m_t1.date_reception = m_t2.date_reception
+WHERE (m_t1.id_equipe_dom = bt.id_team_1 OR m_t1.id_equipe_ext = bt.id_team_1)
+  AND (m_t2.id_equipe_dom = bt.id_team_2 OR m_t2.id_equipe_ext = bt.id_team_2)
+  AND m_t1.date_reception = m_t2.date_reception
   AND m_t1.match_status != 'ARCHIVED'
+  AND m_t2.match_status != 'ARCHIVED'
 GROUP BY date_reception
 order by code_match");
 
