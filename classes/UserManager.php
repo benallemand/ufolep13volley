@@ -42,7 +42,7 @@ class UserManager extends Generic
      * @return bool
      * @throws Exception
      */
-    public function modifierMonMotDePasse($new_password, $new_password_again)
+    public function modifierMonMotDePasse($new_password, $new_password_again): bool
     {
         $userDetails = $this->getCurrentUserDetails();
         $id_team = $userDetails['id_equipe'];
@@ -57,10 +57,12 @@ class UserManager extends Generic
         if ($password !== $passwordAgain) {
             throw new Exception("Password and password confirmation do not match!");
         }
-        $sql = "UPDATE comptes_acces SET password = '$password' WHERE id_equipe = $id_team";
-        $this->sql_manager->execute($sql);
+        $sql = "UPDATE comptes_acces SET password = ? WHERE id_equipe = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $password);
+        $bindings[] = array('type' => 'i', 'value' => $id_team);
+        $this->sql_manager->execute($sql, $bindings);
         $this->activity->add("Mot de passe modifie");
-
     }
 
     /**
