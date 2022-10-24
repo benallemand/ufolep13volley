@@ -81,7 +81,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_equipe_dom',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'RankTeams',
+                store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
                 bind: {
@@ -107,7 +107,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_equipe_ext',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'RankTeams',
+                store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
                 bind: {
@@ -125,6 +125,17 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                         }
                     ]
                 },
+                forceSelection: true
+            },
+            {
+                xtype: 'combo',
+                fieldLabel: 'Gymnase',
+                name: 'id_gymnasium',
+                displayField: 'full_name',
+                valueField: 'id',
+                store: {type: 'Gymnasiums'},
+                queryMode: 'local',
+                allowBlank: false,
                 forceSelection: true
             },
             {

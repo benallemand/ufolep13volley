@@ -377,13 +377,14 @@ class MatchMgr extends Generic
      * @param $division
      * @param $id_equipe_dom
      * @param $id_equipe_ext
+     * @param $id_gymnasium
      * @param $id_journee
      * @param $date_reception
      * @param $sheet_received
      * @param $certif
      * @param $note
-     * @param $dirtyFields
-     * @param $id_match
+     * @param null $dirtyFields
+     * @param null $id_match
      * @return array|int|string|null
      * @throws Exception
      */
@@ -394,6 +395,7 @@ class MatchMgr extends Generic
         $division,
         $id_equipe_dom,
         $id_equipe_ext,
+        $id_gymnasium,
         $id_journee,
         $date_reception,
         $sheet_received,
@@ -410,6 +412,7 @@ class MatchMgr extends Generic
             'division' => $division,
             'id_equipe_dom' => $id_equipe_dom,
             'id_equipe_ext' => $id_equipe_ext,
+            'id_gymnasium' => $id_gymnasium,
             'id_journee' => $id_journee,
             'date_reception' => $date_reception,
             'sheet_received' => $sheet_received,
@@ -446,6 +449,7 @@ class MatchMgr extends Generic
                     break;
                 case 'id_equipe_dom':
                 case 'id_equipe_ext':
+                case 'id_gymnasium':
                 case 'id_journee':
                 case 'set_1_dom':
                 case 'set_1_ext':
@@ -1528,40 +1532,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         return (new Players())->get_players(
             "j.id IN (SELECT id_player FROM match_player WHERE id_match = $id_match)",
             "club");
-//        $where = "1=1";
-//        if (!empty($id_match)) {
-//            $where = "mp.id_match = $id_match";
-//        }
-//        $sql = "SELECT
-//                    CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS full_name,
-//                    j.prenom,
-//                    j.nom,
-//                    j.num_licence,
-//                    p.path_photo,
-//                    j.sexe,
-//                    j.departement_affiliation,
-//                    j.est_actif+0 AS est_actif,
-//                    c.nom AS club,
-//                    j.show_photo+0 AS show_photo,
-//                    j.id,
-//                    DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_reception,
-//                    DATE_FORMAT(j.date_homologation, '%d/%m/%Y') AS date_homologation,
-//                    mp.id_match
-//                FROM match_player mp
-//                LEFT JOIN joueurs j ON mp.id_player = j.id
-//                LEFT JOIN matches m ON mp.id_match = m.id_match
-//                LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
-//                LEFT JOIN equipes e ON e.id_equipe=je.id_equipe AND e.id_equipe IN (SELECT id_equipe FROM classements)
-//                LEFT JOIN clubs c ON c.id = j.id_club
-//                LEFT JOIN photos p ON p.id = j.id_photo
-//                WHERE $where
-//                GROUP BY CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')'), j.prenom, j.nom, j.num_licence, p.path_photo, j.sexe, j.departement_affiliation, j.est_actif+0, c.nom, j.show_photo+0, j.id, DATE_FORMAT(j.date_homologation, '%d/%m/%Y')
-//                ORDER BY club, sexe, j.nom";
-//        $results = $this->sql_manager->execute($sql);
-//        foreach ($results as $index => $result) {
-//            $results[$index]['path_photo'] = Generic::accentedToNonAccented($results[$index]['path_photo']);
-//        }
-//        return $results;
     }
 
     /**
