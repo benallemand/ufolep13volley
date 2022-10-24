@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.RankTeams', {
     extend: 'Ext.data.Store',
+    alias: 'store.RankTeams',
     config: {
         model: 'Ufolep13Volley.model.RankTeam',
         proxy: {
