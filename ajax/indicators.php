@@ -78,6 +78,7 @@ $indicatorPlayersWithoutLicence = new Indicator(
         WHERE (j.num_licence IS NULL 
               OR j.num_licence = '')
         AND e.id_equipe IN (SELECT id_equipe FROM classements)
+        AND CURRENT_DATE >= comp.start_date
         ORDER BY equipe ASC");
 
 $indicatorEquipesEngageesChampionnat = new Indicator(
@@ -122,12 +123,15 @@ $indicatorNotValidatedPlayers = new Indicator(
         j.prenom, 
         j.nom, 
         CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence, 
-        c.nom AS nom_club
-        FROM joueurs j
+        j.club AS nom_club
+        FROM players_view j
         JOIN joueur_equipe je ON je.id_joueur = j.id
         JOIN clubs c ON c.id = j.id_club
-        WHERE j.est_actif+0 = 0
+        JOIN equipes e on je.id_equipe = e.id_equipe
+        JOIN competitions c2 on e.code_competition = c2.code_competition
+        WHERE j.est_actif = 0
         AND je.id_equipe IN (SELECT id_equipe FROM classements)
+        AND CURRENT_DATE >= c2.start_date
         ORDER BY j.id ASC");
 
 $indicatorActivity = new Indicator(
@@ -414,7 +418,7 @@ $indicatorMatchesWithInvalidPlayers = new Indicator(
                  j.date_homologation
           from matches m
                    join match_player mp on m.id_match = mp.id_match
-                   join joueurs j on mp.id_player = j.id
+                   join players_view j on mp.id_player = j.id
                    join clubs c on j.id_club = c.id
           where (j.date_homologation > m.date_reception OR j.est_actif = 0) 
                 AND m.match_status = 'CONFIRMED'
