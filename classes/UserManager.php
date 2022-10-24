@@ -60,6 +60,7 @@ class UserManager extends Generic
         $sql = "UPDATE comptes_acces SET password = '$password' WHERE id_equipe = $id_team";
         $this->sql_manager->execute($sql);
         $this->activity->add("Mot de passe modifie");
+
     }
 
     /**
@@ -194,19 +195,24 @@ class UserManager extends Generic
      * @param $idTeam
      * @throws Exception
      */
-    public function createUser($login, $email, $idTeam)
+    public function createUser($login, $email, $id_equipe)
     {
         if ($this->isUserExists($login)) {
             throw new Exception("Account already exists ! !");
         }
-        if ($idTeam === NULL) {
-            $idTeam = 0;
+        if ($id_equipe === NULL) {
+            $id_equipe = 0;
         }
         $password = Generic::randomPassword();
-        $sql = "INSERT comptes_acces SET id_equipe = $idTeam, login = '$login', email = '$email', password = '$password'";
-        $this->sql_manager->execute($sql);
-        $this->addActivity("Creation du compte $login pour l'equipe " . $this->team->getTeamName($idTeam));
-        $this->email->sendMailNewUser($email, $login, $password, $idTeam);
+        $sql = "INSERT comptes_acces SET id_equipe = ?, login = ?, email = ?, password = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe);
+        $bindings[] = array('type' => 's', 'value' => $login);
+        $bindings[] = array('type' => 's', 'value' => $email);
+        $bindings[] = array('type' => 's', 'value' => $password);
+        $this->sql_manager->execute($sql, $bindings);
+        $this->addActivity("Creation du compte $login pour l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->email->sendMailNewUser($email, $login, $password, $id_equipe);
     }
 
     /**
