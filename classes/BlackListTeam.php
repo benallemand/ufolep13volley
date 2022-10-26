@@ -10,6 +10,19 @@ class BlackListTeam extends Generic
         $this->table_name = 'blacklist_team';
     }
 
+    public function saveBlacklistTeam($id_team,
+                                      $closed_date,
+                                      $dirtyFields = null,
+                                      $id = null)
+    {
+        $inputs = array();
+        $inputs['id_team'] = $id_team;
+        $inputs['closed_date'] = $closed_date;
+        $inputs['dirtyFields'] = $dirtyFields;
+        $inputs['id'] = $id;
+        $this->save($inputs);
+    }
+
     public function save($inputs)
     {
         $bindings = array();
@@ -47,7 +60,7 @@ class BlackListTeam extends Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
-        /**
+    /**
      * @return array
      * @throws Exception
      */
