@@ -265,7 +265,6 @@ class Players extends Generic
             null,
             null,
             null,
-            null,
             $id_club,
             null,
             $leader_phone,
