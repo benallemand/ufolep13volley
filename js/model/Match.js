@@ -34,6 +34,14 @@ Ext.define('Ufolep13Volley.model.Match', {
             type: 'string'
         },
         {
+            name: 'id_gymnasium',
+            type: 'int'
+        },
+        {
+            name: 'gymnasium',
+            type: 'string'
+        },
+        {
             name: 'id_equipe_dom',
             type: 'string'
         },
@@ -161,6 +169,10 @@ Ext.define('Ufolep13Volley.model.Match', {
                 return Ext.String.format("<h1>{0} contre {1}</h1>", record.get('equipe_dom'), record.get('equipe_ext'))
 
             }
+        },
+        {
+            name: 'files_paths',
+            type: 'string',
         }
     ]
 });

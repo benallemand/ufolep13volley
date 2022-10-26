@@ -40,7 +40,7 @@ class MatchMgr extends Generic
      * @param string $order
      * @return string
      */
-    private function get_sql(?string $query = "1=1", string $order = "numero_journee"): string
+    private function get_sql(?string $query = "1=1", string $order = "code_competition, division, numero_journee, code_match"): string
     {
         return "SELECT  m.id_match,
                         IF(m.forfait_dom + m.forfait_ext > 0, 1, 0)                                     AS is_forfait,
@@ -109,7 +109,8 @@ class MatchMgr extends Generic
                                 END
                             )                                                                           AS retard,
                         IF(mf.id_file IS NOT NULL, '1', '0')                                            AS is_file_attached,
-                        m.match_status
+                        m.match_status,
+                        GROUP_CONCAT(f.path_file SEPARATOR '|')                                         AS files_paths                    
                 FROM matches m
                 JOIN      competitions c ON c.code_competition = m.code_competition
                 JOIN      equipes e1 ON e1.id_equipe = m.id_equipe_dom
@@ -127,7 +128,9 @@ class MatchMgr extends Generic
                                         AND cr.id_gymnase = m.id_gymnasium
                 LEFT JOIN gymnase g ON m.id_gymnasium = g.id    
                 LEFT JOIN matches_files mf ON mf.id_match = m.id_match
+                LEFT JOIN files f on mf.id_file = f.id
                 WHERE $query
+                GROUP BY code_competition, division, numero_journee, code_match
                 ORDER BY $order";
     }
 
@@ -166,7 +169,7 @@ class MatchMgr extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_matches(?string $query = "1=1", string $order = "numero_journee"): array
+    public function get_matches(?string $query = "1=1", string $order = "code_competition, division, numero_journee, code_match"): array
     {
         return $this->sql_manager->execute($this->get_sql($query, $order));
     }
@@ -834,7 +837,7 @@ class MatchMgr extends Generic
                          JOIN equipes e on j.code_competition = e.code_competition
                          JOIN creneau c on e.id_equipe = c.id_equipe
                 WHERE c.id_equipe = ?
-                ORDER BY j.code_competition, STR_TO_DATE(computed_date, '%d/%m/%Y'), week_number, c.usage_priority";
+                ORDER BY c.usage_priority, week_number";
         $bindings = array(
             array('type' => 'i', 'value' => $id_equipe),
         );

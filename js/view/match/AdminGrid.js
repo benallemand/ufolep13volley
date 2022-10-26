@@ -147,6 +147,25 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 }
             },
             {
+                header: 'Fichiers',
+                dataIndex: 'files_paths',
+                flex: 1,
+                renderer: function (value) {
+                    if (Ext.isEmpty(value)) {
+                        return value;
+                    }
+                    value = value.split('|');
+                    var result_string = '';
+                    Ext.each(value, function (file_path) {
+                        result_string = result_string +
+                            Ext.String.format("<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a><br/>",
+                                file_path,
+                                file_path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''));
+                    });
+                    return result_string;
+                }
+            },
+            {
                 header: 'Compétition',
                 dataIndex: 'libelle_competition',
                 flex: 1
@@ -183,6 +202,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 xtype: 'datecolumn',
                 format: 'D d/m/Y',
                 dataIndex: 'date_original',
+                flex: 1
+            },
+            {
+                header: 'Gymnase',
+                dataIndex: 'gymnasium',
                 flex: 1
             },
             {
