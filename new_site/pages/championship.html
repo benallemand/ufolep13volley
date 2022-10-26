@@ -2,6 +2,9 @@
     <h1>{{ libelle_competition }}
         <small ng-if="code_competition=='c' || code_competition=='kh'">Poule {{ division }}</small>
         <small ng-if="code_competition!='c' && code_competition!='kh'">Division {{ division }}</small>
+        <a href="/rest/action.php/competition/download?code_competition={{code_competition}}&division={{division}}">
+            <i class="fa fa-download"></i>
+        </a>
     </h1>
     <h2> Date limite des matches: {{ limit_date }} </h2>
 </div>

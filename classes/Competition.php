@@ -406,5 +406,43 @@ class Competition extends Generic
         return $data['id_compet_maitre'];
     }
 
+    /**
+     * @throws Exception
+     */
+    public function download($code_competition, $division)
+    {
+        require_once __DIR__ . '/MatchMgr.php';
+        $match = new MatchMgr();
+        $matches = $match->getMatches($code_competition, $division);
+        if (count($matches) == 0) {
+            throw new Exception("Il n'y a pas de match pour cette compétition/division !");
+        }
+        $delimiter = ";";
+        $filename = "matchs_" . $code_competition . "_$division.csv";
+        // Create a file pointer
+        $f = fopen('php://memory', 'w');
+        //add BOM to fix UTF-8 in Excel
+        fputs($f, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+        // Set column headers
+        function filter_hidden_csv_fields($var): bool
+        {
+            return !(Generic::starts_with($var, 'id') || (Generic::ends_with($var, '_raw')));
+        }
+        $fields = array_keys(array_filter($matches[0], 'filter_hidden_csv_fields', ARRAY_FILTER_USE_KEY));
+        fputcsv($f, $fields, $delimiter);
+        // Output each row of the data, format line as csv and write to file pointer
+        foreach ($matches as $match_item) {
+            fputcsv($f, array_values(array_filter($match_item, 'filter_hidden_csv_fields', ARRAY_FILTER_USE_KEY)), $delimiter);
+        }
+        // Move back to beginning of file
+        fseek($f, 0);
+        // Set headers to download file rather than displayed
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        //output all remaining data on a file pointer
+        fpassthru($f);
+        exit;
+    }
+
 
 }
