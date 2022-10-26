@@ -83,11 +83,32 @@ class Files extends Generic
     }
 
     /**
-     * @param $uploadfile
-     * @param $id
+     * @param $file_path
      * @throws Exception
      */
-    function insert_file_in_db($uploadfile)
+    function download_match_file($file_path)
+    {
+        $dir = __DIR__ . '/../match_files';
+        $name = basename($file_path);
+        $file_path = "$dir/$name";
+        if(!file_exists($file_path)) {
+            throw new Exception("Fichier $name introuvable !");
+        }
+        header("Content-type: " . mime_content_type($file_path));
+        header("Content-Disposition: filename=$name");
+        header("Content-length: " . filesize($file_path));
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        readfile($file_path);
+        die();
+    }
+
+    /**
+     * @param $uploadfile
+     * @return array|int|string|null
+     * @throws Exception
+     */
+    function insert_file_in_db($uploadfile): array|int|string|null
     {
         $path_photo = str_replace('../', '', $uploadfile);
         $sql = "INSERT INTO photos SET path_photo = '$path_photo'";
