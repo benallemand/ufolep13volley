@@ -125,6 +125,7 @@ class TimeSlot extends Generic
         $has_time_constraint = null,
         $id = null,
         $id_equipe = null,
+        $dirtyFields = null,
     )
     {
         if (empty($id_equipe)) {
@@ -140,6 +141,7 @@ class TimeSlot extends Generic
             'heure' => $heure,
             'has_time_constraint' => $has_time_constraint,
             'usage_priority' => $usage_priority,
+            'dirtyFields' => $dirtyFields,
         );
         if (empty($inputs['id'])) {
             $sql = "INSERT INTO";
@@ -150,6 +152,7 @@ class TimeSlot extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
+                case 'dirtyFields':
                     break;
                 case 'id_equipe':
                 case 'id_gymnase':
