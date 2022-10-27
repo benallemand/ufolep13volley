@@ -84,14 +84,16 @@ try {
     foreach ($jsonPlayers as $index => $jsonPlayer) {
         $currentIndex = $index;
         $pdf->SetXY(5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
-        if ($jsonPlayer['est_actif'] === "1") {
+        if ($jsonPlayer['est_actif'] === 1) {
             $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + $heightPlayer * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, $heightPlayer - 2);
         } else {
             $pdf->SetFillColor(255, 192, 203);
             $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + $heightPlayer * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, $heightPlayer - 2, 'DF');
             $pdf->SetFillColor(0, 0, 0);
         }
-        $pdf->Image(toWellFormatted($jsonPlayer['path_photo']), null, null, $widthPhoto);
+        if(!empty($jsonPlayer['path_photo'])) {
+            $pdf->Image(toWellFormatted($jsonPlayer['path_photo']), null, null, $widthPhoto);
+        }
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
         $pdf->Cell(50, 5, toWellFormatted($jsonPlayer['prenom']), 0, 1, 'L');
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + 5 + $heightPlayer * ($currentIndex % $NbByColumns));
