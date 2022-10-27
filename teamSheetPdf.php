@@ -122,7 +122,7 @@ try {
             $pdf->SetTextColor(0, 0, 0);
         }
     }
-    $pdf->Output(toWellFormatted($teamSheet['equipe'] . '.pdf'), 'D');
+    $pdf->Output('I', toWellFormatted($teamSheet['equipe'] . '.pdf'));
 } catch (Exception $e) {
     echo "Erreur ! " . $e->getMessage();
 }

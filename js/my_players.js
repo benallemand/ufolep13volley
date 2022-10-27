@@ -26,7 +26,8 @@ Ext.application({
                         {
                             text: "Télécharger la fiche équipe",
                             iconCls: 'fa-solid fa-clipboard-list',
-                            href: '/teamSheetPdf.php'
+                            href: '/teamSheetPdf.php',
+                            target: '_blank',
                         }
                     ]
                 },
