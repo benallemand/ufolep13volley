@@ -138,7 +138,12 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'checkbox',
                     boxLabel: 'Joueurs dans 2 équipes',
                     action: 'filterPlayersWith2TeamsSameCompetition'
-                }
+                },
+                {
+                    xtype: 'checkbox',
+                    boxLabel: 'Joueurs engagés dans au moins une équipe',
+                    action: 'filterPlayersEngaged'
+                },
             ]
         }
     ]
