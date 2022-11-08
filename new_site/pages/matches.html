@@ -102,7 +102,9 @@
                             <span ng-if="x.report_status == 'REFUSED_BY_EXT'">Report refusé par {{ x.equipe_ext }}</span>
                             <span ng-if="x.report_status == 'REFUSED_BY_ADMIN'">Report refusé par la commission</span>
 
-                            <span ng-if="x.sheet_received == 1">Feuilles de match reçues</span>
+                            <span ng-if="x.sheet_received == 1"><span class="glyphicon glyphicon-check"/> Feuilles de match reçues<br/></span>
+                            <span ng-if="x.is_match_player_requested == 1"><span class="glyphicon glyphicon-exclamation-sign"/> Présents non renseignés !</span>
+                            <span ng-if="x.is_match_player_filled == 1"><span class="glyphicon glyphicon-check"/> Présents renseignés</span>
 
                         </td>
                         <td class="text-center" ng-include="'actions/match.php'"></td>
