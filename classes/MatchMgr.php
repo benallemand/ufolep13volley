@@ -1799,9 +1799,9 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
                     throw new Exception("Seuls les responables d'équipes peuvent dire qui était là !");
                 }
-                // allow only RESPONSABLE_EQUIPE
-                if (intval($match['sheet_received']) > 0) {
-                    throw new Exception("La feuille de match a déjà été envoyée, il n'est plus possible de renseigner les présents !");
+                // allow only CONFIRMED matches
+                if ($match['match_status'] !== 'CONFIRMED') {
+                    throw new Exception("Il n'est pas possible de renseigner les présents pour ce match, il faut qu'il soit confirmé !");
                 }
                 break;
             default:
