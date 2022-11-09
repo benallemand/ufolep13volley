@@ -53,9 +53,13 @@ class MatchMgr extends Generic
                         IF(m.id_match IN (  SELECT id_match 
                                             FROM match_player
                                             JOIN joueurs j2 on match_player.id_player = j2.id
-                                            WHERE (j2.date_homologation > m.date_reception 
-                                                   OR j2.date_homologation IS NULL 
-                                                   OR j2.num_licence IS NULL)
+                                            WHERE (
+                                                j2.date_homologation > m.date_reception 
+                                                OR j2.date_homologation IS NULL 
+                                                OR j2.num_licence IS NULL
+                                                OR j2.date_homologation < (SELECT start_date 
+                                                                           FROM competitions 
+                                                                           WHERE code_competition = m.code_competition))
                                          )
                             , 1, 0)                                                                     AS has_forbidden_player,
                         m.code_match,
@@ -1532,9 +1536,15 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function getMatchPlayers($id_match = null)
     {
-        return (new Players())->get_players(
+        $match = $this->get_match($id_match);
+        $results = (new Players())->get_players(
             "j.id IN (SELECT id_player FROM match_player WHERE id_match = $id_match)",
             "club");
+        foreach ($results as $index => $result) {
+            $results[$index]['date_reception'] = $match['date_reception'];
+            $results[$index]['id_match'] = $match['id_match'];
+        }
+        return $results;
     }
 
     /**
