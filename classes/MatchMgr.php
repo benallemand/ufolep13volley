@@ -59,7 +59,7 @@ class MatchMgr extends Generic
                                                 OR j2.num_licence IS NULL
                                                 OR j2.date_homologation < (SELECT start_date 
                                                                            FROM competitions 
-                                                                           WHERE code_competition = m.code_competition))
+                                                                           WHERE code_competition = m.code_competition)  - interval 90 day)
                                          )
                             , 1, 0)                                                                     AS has_forbidden_player,
                         m.code_match,
