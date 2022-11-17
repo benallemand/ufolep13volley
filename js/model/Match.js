@@ -171,6 +171,17 @@ Ext.define('Ufolep13Volley.model.Match', {
             }
         },
         {
+            name: 'is_validation_ready',
+            convert: function (val, record) {
+                return !Ext.isEmpty(record.get('files_paths'))
+                    && record.get('is_match_player_filled')
+                    && !record.get('certif')
+                    && !record.get('is_match_player_requested')
+                    && !record.get('has_forbidden_player')
+                    && record.get('match_status') == 'CONFIRMED';
+            }
+        },
+        {
             name: 'files_paths',
             type: 'string',
         }

@@ -287,6 +287,16 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     xtype: 'segmentedbutton',
                     items: [
                         {
+                            text: 'Prêt à valider',
+                            iconCls: 'fa fa-check green',
+                            handler: function (button) {
+                                var store = button.up('grid').getStore();
+                                store.clearFilter();
+                                store.filter('is_validation_ready', true);
+                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                            }
+                        },
+                        {
                             text: 'Présents à renseigner',
                             iconCls: 'fa fa-exclamation-triangle orange',
                             handler: function (button) {
