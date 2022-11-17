@@ -1446,7 +1446,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $match = $this->get_match($id_match);
         $results = (new Players())->get_players(
             "j.id IN (SELECT id_player FROM match_player WHERE id_match = $id_match)",
-            "club");
+            "club, sexe, nom, prenom");
         foreach ($results as $index => $result) {
             $results[$index]['date_reception'] = $match['date_reception'];
             $results[$index]['id_match'] = $match['id_match'];
