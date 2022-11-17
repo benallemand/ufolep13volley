@@ -109,6 +109,9 @@ class Generic
      */
     public function getActivity($id_team=null): array
     {
+        if(UserManager::isTeamLeader()) {
+            $id_team = $_SESSION['id_equipe'];
+        }
         $sql = "SELECT 
                 DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
                 e.nom_equipe, 
