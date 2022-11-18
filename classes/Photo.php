@@ -19,11 +19,13 @@ class Photo extends Generic
     function get_photo($path_photo)
     {
         header('Content-Type: image/jpeg');
-        if(file_exists(__DIR__ . "/../$path_photo")) {
-            readfile(__DIR__ . "/../$path_photo");
-            exit(0);
+        if(!empty($path_photo)) {
+            if(file_exists(__DIR__ . "/../$path_photo")) {
+                readfile(__DIR__ . "/../$path_photo");
+                exit(0);
+            }
         }
-        readfile(__DIR__ . "/../images/MalePhotoNotAllowed.png");
+        readfile(__DIR__ . "/../images/unknownTeam.png");
         exit(0);
     }
 
