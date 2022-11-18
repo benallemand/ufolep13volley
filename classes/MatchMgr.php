@@ -1474,28 +1474,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $data = $results[0];
         $emailDom = $this->team->getTeamEmail($data['id_equipe_dom']);
         $emailExt = $this->team->getTeamEmail($data['id_equipe_ext']);
-        $emailCtsd = '';
-        $division = $data['division'];
-        switch ($data['code_competition']) {
-            case 'm':
-                $emailCtsd = 'd' . $division . 'm-6x6@ufolep13volley.org';
-                break;
-            case 'f':
-                $emailCtsd = 'd' . $division . 'f-4x4@ufolep13volley.org';
-                break;
-            case 'mo':
-                $emailCtsd = 'd' . $division . 'mi-4x4@ufolep13volley.org';
-                break;
-            case 'kh':
-            case 'kf':
-                $emailCtsd = 'khanna@ufolep13volley.org';
-                break;
-            case 'c':
-            case 'cf':
-                $emailCtsd = 'isoardi@ufolep13volley.org';
-                break;
-        }
-        return array($emailDom, $emailExt, $emailCtsd);
+        // remove ctsd from mails
+        return array($emailDom, $emailExt);
     }
 
     /**
