@@ -1694,7 +1694,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 }
                 // allow only RESPONSABLE_EQUIPE
                 if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
-                    throw new Exception("Seuls les responables d'équipes peuvent dire qui était là !");
+                    throw new Exception("Seuls les responsables d'équipes peuvent dire qui était là !");
                 }
                 // allow only CONFIRMED matches
                 if ($match['match_status'] !== 'CONFIRMED') {
@@ -1771,6 +1771,19 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $bindings[] = array('type' => 's', 'value' => $computed_date),
         );
         return count($this->sql_manager->execute($sql, $bindings)) > 0;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get_match_by_code_match(string $code_match)
+    {
+        $results = $this->get_matches("m.code_match = '$code_match'");
+        $count_results = count($results);
+        if ($count_results !== 1) {
+            throw new Exception("Error while retrieving match data ! Found $count_results match(s) !");
+        }
+        return $results[0];
     }
 
 }

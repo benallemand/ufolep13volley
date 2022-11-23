@@ -306,25 +306,26 @@ class Emails extends Generic
     {
         $teams_emails = $this->match->getTeamsEmailsFromMatch($code_match);
         require_once __DIR__ . "/MatchMgr.php";
-        $matches = $this->match->get_matches("m.code_match = '$code_match'");
-        $id_match = $matches[0]['id_match'];
         $to = implode(';', $teams_emails);
-
+        // fill code match
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
-
-        $match_files = $this->match->get_match_files($id_match);
-        $attached_files = array();
-        foreach ($match_files as $match_file) {
-            $attached_files[] = $match_file['id'];
+        // fill files
+        $files_paths_html = '';
+        $matches = $this->match->get_matches("m.code_match = '$code_match'");
+        $files_paths = $matches[0]['files_paths'];
+        if (!empty($files_paths)) {
+            $files_paths_list = explode('|', $files_paths);
+            foreach ($files_paths_list as $file_path) {
+                $files_paths_html .= "<a href='/rest/action.php/files/download_match_file?file_path=$file_path' target='_blank'>" . basename($file_path) . "</a><br/>" . PHP_EOL;
+            }
         }
+        $message = str_replace('%files_paths%', $files_paths_html, $message);
+        // insert for sending
         $this->insert_email(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
-            $to,
-            "",
-            "",
-            $attached_files
+            $to
         );
     }
 

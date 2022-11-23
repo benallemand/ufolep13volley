@@ -203,6 +203,11 @@ Ext.define('Ufolep13Volley.view.form.match', {
                             name: 'file4',
                             fieldLabel: 'Feuille 4/4',
                         },
+                        {
+                            xtype: 'displayfield',
+                            name: 'files_paths_html',
+                            fieldLabel: "Déjà attaché(s)",
+                        }
                     ]
                 }
             ]

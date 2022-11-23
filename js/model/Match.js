@@ -184,6 +184,22 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'files_paths',
             type: 'string',
+        },
+        {
+            name: 'files_paths_html',
+            type: 'string',
+            convert: function (val, rec) {
+                if (Ext.isEmpty(rec.get('files_paths'))) {
+                    return '';
+                }
+                var files_paths_list = rec.get('files_paths').split('|');
+                var files_paths_html = '';
+                Ext.each(files_paths_list, function (files_path) {
+                    files_paths_html += Ext.String.format("<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a><br/>",
+                        files_path, files_path);
+                });
+                return files_paths_html;
+            }
         }
     ]
 });

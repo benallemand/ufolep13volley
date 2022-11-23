@@ -83,15 +83,44 @@ class Files extends Generic
     }
 
     /**
+     * @throws Exception
+     */
+    private function check_action_allowed(string $function_name, $file_path)
+    {
+        switch ($function_name) {
+            case 'download_match_file':
+                $code_match = $this->get_code_match_from_file_path($file_path);
+                $match_manager = new MatchMgr();
+                $match = $match_manager->get_match_by_code_match($code_match);
+                // allow admin
+                if (UserManager::isAdmin()) {
+                    return;
+                }
+                if (!UserManager::isTeamLeader()) {
+                    throw new Exception("Seuls les responsables d'équipes peuvent télécharger ce fichier !");
+                }
+                // allow only playing teams
+                @session_start();
+                if (!in_array($_SESSION['id_equipe'], array($match['id_equipe_dom'], $match['id_equipe_ext']))) {
+                    throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !");
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * @param $file_path
      * @throws Exception
      */
     function download_match_file($file_path)
     {
+        $this->check_action_allowed(__FUNCTION__, $file_path);
         $dir = __DIR__ . '/../match_files';
         $name = basename($file_path);
         $file_path = "$dir/$name";
-        if(!file_exists($file_path)) {
+        if (!file_exists($file_path)) {
             throw new Exception("Fichier $name introuvable !");
         }
         header("Content-type: " . mime_content_type($file_path));
@@ -125,5 +154,11 @@ class Files extends Generic
         $uploadfile = null;
         $this->upload_file($fileKey, $uploadfile);
         return $this->insert_file_in_db($uploadfile);
+    }
+
+    private function get_code_match_from_file_path($file_path): string
+    {
+        $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+        return substr($file_name, 0, strpos($file_name, "file"));
     }
 }

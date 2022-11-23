@@ -67,6 +67,8 @@ Ext.define('Ufolep13Volley.controller.match', {
                             me.load_match_players(button.up('form'));
                             break;
                         case 'form_match':
+                            me.load_match(button.up('form'));
+                            break;
                         default:
                             return;
                     }
