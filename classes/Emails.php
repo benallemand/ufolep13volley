@@ -314,10 +314,11 @@ class Emails extends Generic
         $files_paths_html = '';
         $matches = $this->match->get_matches("m.code_match = '$code_match'");
         $files_paths = $matches[0]['files_paths'];
+        $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
         if (!empty($files_paths)) {
             $files_paths_list = explode('|', $files_paths);
             foreach ($files_paths_list as $file_path) {
-                $files_paths_html .= "<a href='/rest/action.php/files/download_match_file?file_path=$file_path' target='_blank'>" . basename($file_path) . "</a><br/>" . PHP_EOL;
+                $files_paths_html .= "<a href='$root/rest/action.php/files/download_match_file?file_path=$file_path' target='_blank'>" . basename($file_path) . "</a><br/>" . PHP_EOL;
             }
         }
         $message = str_replace('%files_paths%', $files_paths_html, $message);
