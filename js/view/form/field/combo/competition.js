@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.form.field.combo.competition', {
     fieldLabel: 'Competition',
     displayField: 'libelle',
     valueField: 'id',
-    store: 'Competitions',
+    store: {type: 'Competitions'},
     queryMode: 'local',
     msgTarget: 'under',
     forceSelection: true

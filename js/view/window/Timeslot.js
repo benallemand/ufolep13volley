@@ -39,7 +39,7 @@ Ext.define('Ufolep13Volley.view.window.Timeslot', {
                 name: 'id_gymnase',
                 displayField: 'full_name',
                 valueField: 'id',
-                store: 'Gymnasiums',
+                store: {type: 'Gymnasiums'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

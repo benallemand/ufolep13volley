@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.BlacklistTeam', {
     alias: 'widget.blacklistteam_grid',
     title: 'Dates blacklistées (par équipe)',
     autoScroll: true,
-    store: 'BlacklistTeam',
+    store: {type: 'BlacklistTeam'},
     selType: 'checkboxmodel',
     columns: {
         items: [

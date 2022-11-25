@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
     title: 'Gestion des Gymnases',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Gymnasiums',
+    store: {type: 'Gymnasiums'},
     columns: {
         items: [
             {

@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.Profiles', {
     extend: 'Ext.data.Store',
+    alias: 'store.Profiles',
     config: {
         model: 'Ufolep13Volley.model.Profile',
         proxy: {

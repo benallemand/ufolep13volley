@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.City', {
     extend: 'Ext.data.Store',
+    alias: 'store.City',
     config: {
         model: 'Ufolep13Volley.model.City',
         proxy: {

@@ -99,7 +99,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                         name: 'id_club_1',
                         displayField: 'nom',
                         valueField: 'id',
-                        store: 'Clubs',
+                        store: {type: 'Clubs'},
                         queryMode: 'local',
                         allowBlank: false,
                         forceSelection: true
@@ -110,7 +110,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                         name: 'id_club_2',
                         displayField: 'nom',
                         valueField: 'id',
-                        store: 'Clubs',
+                        store: {type: 'Clubs'},
                         queryMode: 'local',
                         allowBlank: false,
                         forceSelection: true

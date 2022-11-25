@@ -36,7 +36,7 @@ Ext.application({
         var id_match = params['id_match'];
         viewport.down('form').down('hidden[name=id_match]').setValue(id_match);
         viewport.down('form').down('button[action=cancel]').hide();
-        viewport.down('dataview').getStore().load({
+        viewport.down('view_match_players').getStore().load({
             params: {
                 id_match: id_match
             }

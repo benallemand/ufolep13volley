@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
     title: 'Gestion des Journées',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'AdminDays',
+    store: {type: 'AdminDays'},
     columns: {
         items: [
             {

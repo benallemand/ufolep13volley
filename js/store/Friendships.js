@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.Friendships', {
     extend: 'Ext.data.Store',
+    alias: 'store.Friendships',
     config: {
         model: 'Ufolep13Volley.model.Friendships',
         proxy: {

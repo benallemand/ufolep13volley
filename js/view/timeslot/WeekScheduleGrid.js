@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.timeslot.WeekScheduleGrid', {
     alias: 'widget.weekschedulegrid',
     title: 'Planning de la semaine',
     autoScroll: true,
-    store: 'WeekSchedule',
+    store: {type: 'WeekSchedule'},
     features: [
         {
             ftype: 'grouping',

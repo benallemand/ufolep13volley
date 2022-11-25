@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.Competitions', {
     alias: 'widget.competitions_grid',
     title: 'Compétitions',
     autoScroll: true,
-    store: 'Competitions',
+    store: {type: 'Competitions'},
     selType: 'checkboxmodel',
     columns: {
         items: [

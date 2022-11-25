@@ -66,13 +66,13 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
             ]
         });
         this_window.down('form').loadRecord(current_record);
-        this_window.down('dataview').getStore().load({
+        this_window.down('view_match_players').getStore().load({
             params: {
                 id_match: current_record.get('id_match')
             }
         });
         // filter available match players by id_match (known teams)
-        this_window.down('tagfield').getStore().load({
+        this_window.down('tag_field_players').getStore().load({
             params: {
                 id_match: current_record.get('id_match')
             }

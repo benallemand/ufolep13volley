@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.BlacklistByCity', {
     alias: 'widget.blacklist_by_city_grid',
     title: 'Dates interdites par ville (spécial COVID)',
     autoScroll: true,
-    store: 'BlacklistByCity',
+    store: {type: 'BlacklistByCity'},
     selType: 'checkboxmodel',
     columns: {
         items: [

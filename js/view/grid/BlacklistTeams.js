@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.BlacklistTeams', {
     alias: 'widget.blacklistteams_grid',
     title: 'Equipes non autorisées à jouer le même soir',
     autoScroll: true,
-    store: 'BlacklistTeams',
+    store: {type: 'BlacklistTeams'},
     selType: 'checkboxmodel',
     columns: {
         items: [

@@ -27,7 +27,7 @@ Ext.define('Ufolep13Volley.view.profile.Select', {
                 fieldLabel: 'Profil',
                 name: 'id_profile',
                 queryMode: 'local',
-                store: 'Profiles',
+                store: {type: 'Profiles'},
                 displayField: 'name',
                 valueField: 'id'
             }

@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.limitdate.Grid', {
     title: 'Gestion des Dates Limites',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'LimitDates',
+    store: {type: 'LimitDates'},
     columns: {
         items: [
             {

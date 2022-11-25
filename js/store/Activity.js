@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.Activity', {
     extend: 'Ext.data.Store',
+    alias: 'store.Activity',
     config: {
         model: 'Ufolep13Volley.model.Activity',
         proxy: {

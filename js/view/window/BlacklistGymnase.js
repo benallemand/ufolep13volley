@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.window.BlacklistGymnase', {
                 name: 'id_gymnase',
                 displayField: 'full_name',
                 valueField: 'id',
-                store: 'Gymnasiums',
+                store: {type: 'Gymnasiums'},
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true

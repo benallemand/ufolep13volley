@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.BlacklistDate', {
     extend: 'Ext.data.Store',
+    alias: 'store.BlacklistDate',
     config: {
         model: 'Ufolep13Volley.model.BlacklistDate',
         proxy: {

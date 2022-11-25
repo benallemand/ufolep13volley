@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
     title: 'Gestion des utilisateurs',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Users',
+    store: {type: 'Users'},
     columns: {
         items: [
             {

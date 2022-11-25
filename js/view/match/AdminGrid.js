@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
     title: 'Gestion des Matches',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'AdminMatches',
+    store: {type: 'AdminMatches'},
     columns: {
         items: [
             {

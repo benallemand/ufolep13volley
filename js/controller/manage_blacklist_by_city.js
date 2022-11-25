@@ -99,7 +99,7 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
                         name: 'city',
                         displayField: 'name',
                         valueField: 'name',
-                        store: 'City',
+                        store: {type: 'City'},
                         queryMode: 'local',
                         allowBlank: false,
                         forceSelection: true

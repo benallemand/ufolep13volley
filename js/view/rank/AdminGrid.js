@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
     title: 'Gestion des Classements',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'AdminRanks',
+    store: {type: 'AdminRanks'},
     columns: {
         items: [
             {

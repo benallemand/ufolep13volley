@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.Timeslots', {
     alias: 'widget.timeslots_grid',
     title: 'Créneaux',
     autoScroll: true,
-    store: 'Timeslots',
+    store: {type: 'Timeslots'},
     selType: 'checkboxmodel',
     columns: {
         items: [

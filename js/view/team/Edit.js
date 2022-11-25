@@ -28,7 +28,7 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
                 name: 'id_club',
                 displayField: 'nom',
                 valueField: 'id',
-                store: 'Clubs',
+                store: {type: 'Clubs'},
                 queryMode: 'local',
                 forceSelection: true
             },
@@ -38,7 +38,7 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
                 name: 'code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: 'Competitions',
+                store: {type: 'Competitions'},
                 queryMode: 'local'
             },
             {

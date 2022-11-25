@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.LimitDates', {
     extend: 'Ext.data.Store',
+    alias: 'store.LimitDates',
     config: {
         model: 'Ufolep13Volley.model.LimitDate',
         proxy: {

@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.HallOfFame', {
     alias: 'widget.hall_of_fame_grid',
     title: 'Palmarès',
     autoScroll: true,
-    store: 'HallOfFame',
+    store: {type: 'HallOfFame'},
     features: [
         {
             ftype: 'grouping',

@@ -3,7 +3,7 @@ Ext.define('Ufolep13Volley.view.grid.BlacklistDate', {
     alias: 'widget.blacklistdate_grid',
     title: 'Dates blacklistées (fériés)',
     autoScroll: true,
-    store: 'BlacklistDate',
+    store: {type: 'BlacklistDate'},
     selType: 'checkboxmodel',
     columns: {
         items: [

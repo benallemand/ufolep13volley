@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.profile.Grid', {
     title: 'Gestion des profils',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Profiles',
+    store: {type: 'Profiles'},
     columns: {
         items: [
             {

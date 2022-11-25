@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
     title: 'Gestion des joueurs',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Players',
+    store: {type: 'Players'},
     viewConfig: {
         getRowClass: function (record) {
             if (record.get('est_actif') === false) {

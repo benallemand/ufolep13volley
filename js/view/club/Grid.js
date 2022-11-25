@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.club.Grid', {
     title: 'Gestion des Clubs',
     autoScroll: true,
     selType: 'checkboxmodel',
-    store: 'Clubs',
+    store: {type: 'Clubs'},
     columns: {
         items: [
             {

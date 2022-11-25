@@ -27,7 +27,7 @@ Ext.define('Ufolep13Volley.view.club.Select', {
                 fieldLabel: 'Club',
                 name: 'id_club',
                 queryMode: 'local',
-                store: 'Clubs',
+                store: {type: 'Clubs'},
                 displayField: 'nom',
                 valueField: 'id'
             }

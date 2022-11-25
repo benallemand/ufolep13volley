@@ -1,5 +1,6 @@
 Ext.define('Ufolep13Volley.store.BlacklistByCity', {
     extend: 'Ext.data.Store',
+    alias: 'store.BlacklistByCity',
     config: {
         model: 'Ufolep13Volley.model.BlacklistByCity',
         proxy: {

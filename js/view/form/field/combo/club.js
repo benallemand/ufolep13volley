@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.form.field.combo.club', {
     extend: 'Ext.form.field.ComboBox',
     alias: 'widget.combo_club',
     queryMode: 'local',
-    store: 'Clubs',
+    store: {type: 'Clubs'},
     displayField: 'nom',
     valueField: 'id',
     msgTarget: 'under',

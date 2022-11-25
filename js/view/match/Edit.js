@@ -38,7 +38,9 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'parent_code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: 'ParentCompetitions',
+                store: {
+                    type: 'ParentCompetitions'
+                },
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true
@@ -51,7 +53,9 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: 'Competitions',
+                store: {
+                    type: 'Competitions'
+                },
                 queryMode: 'local',
                 allowBlank: false,
                 bind: {
@@ -144,7 +148,9 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_journee',
                 displayField: 'display_combo',
                 valueField: 'id',
-                store: 'AdminDays',
+                store: {
+                    type: 'AdminDays'
+                },
                 queryMode: 'local',
                 allowBlank: false,
                 bind: {

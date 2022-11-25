@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.view.grid.my_players', {
     extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.grid_my_players',
     title: 'Mon équipe',
-    store: 'my_players',
+    store: {type: 'my_players'},
     viewConfig: {
         getRowClass: function (record) {
             if (record.get('est_actif') === false) {
@@ -36,7 +36,7 @@ Ext.define('Ufolep13Volley.view.grid.my_players', {
                     fieldLabel: 'Recherche',
                     width: 400,
                     name: 'add_to_team_player_id',
-                    store: 'Players',
+                    store: {type: 'Players'},
                     queryMode: 'local',
                     displayField: 'full_name',
                     valueField: 'id',
