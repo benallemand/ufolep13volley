@@ -31,6 +31,8 @@ if (!UserManager::isAdmin()) {
     <link
             href="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-neptune/resources/theme-neptune-all.css"
             rel="stylesheet"/>
+    <script type="text/javascript" src="/js/ux/jszip.min.js"></script>
+    <script type="text/javascript" src="/js/ux/FileSaver.js"></script>
     <script
             src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"
             type="text/javascript"></script>
