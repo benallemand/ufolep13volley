@@ -1,3 +1,12 @@
+<script>
+    var parameters = location.hash.substring(8).split("&");
+    var temp = parameters[0].split("=");
+    var redirect = temp[1];
+    var temp = parameters[1].split("=");
+    var reason = temp[1];
+    document.getElementById("redirect").value = redirect;
+    alert(decodeURI(reason));
+</script>
 <div class="container">
     <form class="form-signin" action="../login.php" method="post">
         <h2 class="form-signin-heading">Page de connexion</h2>
@@ -6,11 +15,13 @@
                autofocus>
         <label for="password" class="sr-only">Mot de passe</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Mot de passe" required>
+        <input type="hidden" id="redirect" name="redirect" class="form-control" placeholder="redirect">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Connexion</button>
     </form>
     <div class="jumbotron">
         <h3>Pas encore Inscrit ?</h3>
-        <p><a class="btn btn-success btn-lg btn-block glyphicon glyphicon-plus" href="#register" role="button"> Inscription</a></p>
+        <p><a class="btn btn-success btn-lg btn-block glyphicon glyphicon-plus" href="#register" role="button">
+            Inscription</a></p>
     </div>
 
 </div>

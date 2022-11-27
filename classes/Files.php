@@ -87,6 +87,9 @@ class Files extends Generic
      */
     private function check_action_allowed(string $function_name, $file_path)
     {
+        if (!UserManager::is_connected()) {
+            throw new Exception("Connectez-vous pour télécharger ce(s) fichier(s) !", 401);
+        }
         switch ($function_name) {
             case 'download_match_file':
                 $code_match = $this->get_code_match_from_file_path($file_path);
@@ -97,12 +100,12 @@ class Files extends Generic
                     return;
                 }
                 if (!UserManager::isTeamLeader()) {
-                    throw new Exception("Seuls les responsables d'équipes peuvent télécharger ce fichier !");
+                    throw new Exception("Seuls les responsables d'équipes peuvent télécharger ce fichier !", 401);
                 }
                 // allow only playing teams
                 @session_start();
                 if (!in_array($_SESSION['id_equipe'], array($match['id_equipe_dom'], $match['id_equipe_ext']))) {
-                    throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !");
+                    throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !", 401);
                 }
                 break;
             default:

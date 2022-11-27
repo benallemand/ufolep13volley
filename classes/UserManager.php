@@ -470,20 +470,11 @@ class UserManager extends Generic
         return $this->sql_manager->execute($sql);
     }
 
-//    public function getConnectedUser()
-//    {
-//        if (UserManager::isAdmin()) {
-//            return "Administrateur";
-//        }
-//        if (UserManager::isTeamLeader()) {
-//            $jsonTeamDetails = json_decode($this->team->getMyTeam());
-//            return $jsonTeamDetails[0]->team_full_name;
-//        }
-//        if (isset($_SESSION['login'])) {
-//            return $_SESSION['login'];
-//        }
-//        return "";
-//    }
+    public static function is_connected(): bool
+    {
+        @session_start();
+        return isset($_SESSION['profile_name']);
+    }
 
     public static function isTeamLeader(): bool
     {
@@ -515,6 +506,7 @@ class UserManager extends Generic
     {
         $login = filter_input(INPUT_POST, 'login');
         $password = filter_input(INPUT_POST, 'password');
+        $redirect = filter_input(INPUT_POST, 'redirect');
         if (($login === NULL) || ($password === NULL)) {
             echo json_encode(array(
                 'success' => false,
@@ -548,6 +540,10 @@ class UserManager extends Generic
         $_SESSION['password'] = $data['password'];
         $_SESSION['id_user'] = $data['id_user'];
         $_SESSION['profile_name'] = $data['profile_name'];
+        if (!empty($redirect)) {
+            header('Location: ' . urldecode($redirect));
+            exit(0);
+        }
         header("Location: " . $_SERVER['HTTP_REFERER']);
     }
 
