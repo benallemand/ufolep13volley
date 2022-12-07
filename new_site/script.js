@@ -360,13 +360,11 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         }),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
+                        bootbox.alert("Votre demande a été transmise à l'équipe adverse et au responsable de compétition",
+                            function () {
+                                window.location.reload();
+                            });
+                    }, function (response) {
                         bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
@@ -387,13 +385,11 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         }),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre refus a été transmis à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
+                        bootbox.alert("Votre refus a été transmis à l'équipe adverse et au responsable de compétition",
+                            function () {
+                                window.location.reload();
+                            });
+                    }, function (response) {
                         bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
@@ -413,13 +409,11 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         }),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
+                        bootbox.alert("Votre acceptation a été transmise à l'équipe adverse et au responsable de compétition. Merci d'informer ceux-ci de la nouvelle date de réception.",
+                            function () {
+                                window.location.reload();
+                            });
+                    }, function (response) {
                         bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
@@ -441,13 +435,11 @@ scotchApp.controller('mainController', ['$scope', '$http', 'multipartForm', func
                         }),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).then(function (response) {
-                        if (response.data.success) {
-                            bootbox.alert("La nouvelle date a été transmise à l'équipe adverse et au responsable de compétition",
-                                function () {
-                                    window.location.reload();
-                                });
-                            return;
-                        }
+                        bootbox.alert("La nouvelle date a été transmise à l'équipe adverse et au responsable de compétition",
+                            function () {
+                                window.location.reload();
+                            });
+                    }, function (response) {
                         bootbox.alert("Erreur: " + response.data.message);
                     });
                 }
@@ -474,10 +466,8 @@ scotchApp.controller('myPreferencesController', function ($scope, $http) {
             data: $.param($scope.preferences),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -501,10 +491,8 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -515,10 +503,8 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
             data: $.param($scope.newTimeslot),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -533,10 +519,8 @@ scotchApp.controller('myPasswordController', function ($scope, $http) {
             data: $.param($scope.new_password_model),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -563,10 +547,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
             data: $.param($scope.existingPlayer),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -579,10 +561,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -595,10 +575,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -611,10 +589,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -627,10 +603,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -680,10 +654,8 @@ scotchApp.service('multipartForm', ['$http', function ($http) {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -705,14 +677,12 @@ scotchApp.controller('registerController', function ($scope, $http) {
             data: $.param($scope.newUser),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                bootbox.alert("Votre compte est maintenant créé, veuillez vous connecter avec les identifiants reçus par email." +
-                    " Si vous êtes responsable d'équipe veuillez demander à votre responsable de division les permissions nécessaires.",
-                    function () {
-                        window.location = '/';
-                    });
-                return;
-            }
+            bootbox.alert("Votre compte est maintenant créé, veuillez vous connecter avec les identifiants reçus par email." +
+                " Si vous êtes responsable d'équipe veuillez demander à votre responsable de division les permissions nécessaires.",
+                function () {
+                    window.location = '/';
+                });
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -919,10 +889,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -936,10 +904,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -954,10 +920,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -971,10 +935,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -988,10 +950,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -1005,10 +965,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -1022,10 +980,8 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -1062,10 +1018,8 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -1079,10 +1033,8 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
@@ -1096,10 +1048,8 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
             }),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (response) {
-            if (response.data.success) {
-                window.location.reload();
-                return;
-            }
+            window.location.reload();
+        }, function (response) {
             bootbox.alert("Erreur: " + response.data.message);
         });
     };
