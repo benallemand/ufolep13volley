@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.model.Competition', {
         {name: 'id', type: 'int'},
         'code_competition',
         'libelle',
-        'id_compet_maitre',
+        'id_compet_maitre', // code_parent_competition
         {
             name: 'start_date',
             type: 'date',

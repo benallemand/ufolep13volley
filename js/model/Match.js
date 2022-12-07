@@ -43,11 +43,11 @@ Ext.define('Ufolep13Volley.model.Match', {
         },
         {
             name: 'id_equipe_dom',
-            type: 'string'
+            type: 'int'
         },
         {
             name: 'id_equipe_ext',
-            type: 'string'
+            type: 'int'
         },
         {
             name: 'equipe_dom',
