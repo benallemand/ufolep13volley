@@ -254,22 +254,28 @@ class UserManager extends Generic
     /**
      * @throws Exception
      */
-    public function saveUser()
+    public function saveUser(
+        $id,
+        $login,
+        $password,
+        $email,
+        $id_team,
+        $dirtyFields = null)
     {
         $bindings = array();
         $inputs = array(
-            'id' => filter_input(INPUT_POST, 'id'),
-            'login' => filter_input(INPUT_POST, 'login'),
-            'email' => filter_input(INPUT_POST, 'email'),
-            'password' => filter_input(INPUT_POST, 'password'),
-            'id_team' => filter_input(INPUT_POST, 'id_team')
+            'id' => $id,
+            'login' => $login,
+            'email' => $email,
+            'password' => $password,
+            'id_team' => $id_team,
         );
-        if (empty($inputs['id'])) {
-            if ($this->isUserExists($inputs['login'])) {
+        if (empty($id)) {
+            if ($this->isUserExists($login)) {
                 throw new Exception("L'utilisateur n'existe pas !");
             }
         }
-        if (empty($inputs['id'])) {
+        if (empty($id)) {
             $sql = "INSERT INTO";
         } else {
             $sql = "UPDATE";
@@ -300,32 +306,30 @@ class UserManager extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (!empty($inputs['id'])) {
+        if (!empty($id)) {
             $bindings[] = array(
                 'type' => 'i',
-                'value' => $inputs['id']
+                'value' => $id
             );
             $sql .= " WHERE id = ?";
         }
         $this->sql_manager->execute($sql, $bindings);
-        if (empty($inputs['id'])) {
-            $login = $inputs['login'];
+        if (empty($id)) {
             $comment = "Creation d'un nouvel utilisateur : $login";
             $this->addActivity($comment);
-        } else {
-            $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
-            if ($dirtyFields) {
-                $fieldsArray = explode(',', $dirtyFields);
-                foreach ($fieldsArray as $fieldName) {
-                    $fieldValue = filter_input(INPUT_POST, $fieldName);
-                    $login = $inputs['login'];
-                    $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-                    if ($fieldName === 'password') {
-                        $comment = "$login : Modification du champ $fieldName";
-                    }
-                    $this->addActivity($comment);
-                }
+            return;
+        }
+        if (empty($dirtyFields)) {
+            return;
+        }
+        $fieldsArray = explode(',', $dirtyFields);
+        foreach ($fieldsArray as $fieldName) {
+            $fieldValue = filter_input(INPUT_POST, $fieldName);
+            $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
+            if ($fieldName === 'password') {
+                $comment = "$login : Modification du champ $fieldName";
             }
+            $this->addActivity($comment);
         }
     }
 
