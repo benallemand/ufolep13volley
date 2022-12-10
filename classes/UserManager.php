@@ -46,6 +46,7 @@ class UserManager extends Generic
     {
         $userDetails = $this->getCurrentUserDetails();
         $id_team = $userDetails['id_equipe'];
+        $login = $userDetails['login'];
         $password = $new_password;
         $passwordAgain = $new_password_again;
         if (!isset($password)) {
@@ -57,10 +58,11 @@ class UserManager extends Generic
         if ($password !== $passwordAgain) {
             throw new Exception("Password and password confirmation do not match!");
         }
-        $sql = "UPDATE comptes_acces SET password = ? WHERE id_equipe = ?";
+        $sql = "UPDATE comptes_acces SET password = ? WHERE id_equipe = ? AND login = ?";
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $password);
         $bindings[] = array('type' => 'i', 'value' => $id_team);
+        $bindings[] = array('type' => 's', 'value' => $login);
         $this->sql_manager->execute($sql, $bindings);
         $this->activity->add("Mot de passe modifie");
     }
