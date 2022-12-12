@@ -323,6 +323,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'usersgrid button[action=delete]': {
                     click: this.deleteUsers
                 },
+                'usersgrid button[action=reset_password]': {
+                    click: this.reset_password
+                },
                 'gymnasiumsgrid button[action=delete]': {
                     click: this.deleteGymnasiums
                 },
@@ -1318,6 +1321,32 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     url: '/rest/action.php/usermanager/deleteUsers',
                     params: {
                         ids: ids.join(',')
+                    },
+                    success: function () {
+                        button.up('grid').getStore().load();
+                    }
+                });
+            }
+        });
+    },
+    reset_password: function (button) {
+        var records = button.up('grid').getSelectionModel().getSelection();
+        if (records.length !== 1) {
+            return;
+        }
+        Ext.Msg.show({
+            title: 'Réinitialiser le mot de passe ?',
+            msg: 'Etes-vous certain de vouloir réinitialiser le mot de passe ?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                Ext.Ajax.request({
+                    url: '/rest/action.php/usermanager/reset_password',
+                    params: {
+                        id: records[0].get('id')
                     },
                     success: function () {
                         button.up('grid').getStore().load();

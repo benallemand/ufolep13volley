@@ -178,7 +178,7 @@ class Generic
         $sql = $this->getSql($query);
         $results = $this->sql_manager->execute($sql, $bindings);
         if (empty($results)) {
-            throw new Exception("Unable to find file for $this->id_name $id !");
+            throw new Exception("Unable to find data for $this->id_name $id !");
         }
         return $results[0];
     }

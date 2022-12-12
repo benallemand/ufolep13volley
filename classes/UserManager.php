@@ -17,6 +17,7 @@ class UserManager extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'comptes_acces';
         $this->email = new Emails();
         $this->team = new Team();
         $this->activity = new Activity();
@@ -58,8 +59,12 @@ class UserManager extends Generic
         if ($password !== $passwordAgain) {
             throw new Exception("Password and password confirmation do not match!");
         }
-        $sql = "UPDATE comptes_acces SET password = ? WHERE id_equipe = ? AND login = ?";
+        $sql = "UPDATE comptes_acces 
+                SET password_hash = MD5(CONCAT(?, ?)) 
+                WHERE id_equipe = ? 
+                AND login = ?";
         $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $login);
         $bindings[] = array('type' => 's', 'value' => $password);
         $bindings[] = array('type' => 'i', 'value' => $id_team);
         $bindings[] = array('type' => 's', 'value' => $login);
@@ -78,14 +83,17 @@ class UserManager extends Generic
         $id_user = $userDetails['id_user'];
         if ($this->isRegistryKeyPresent("users.$id_user.is_remind_matches")) {
             $sql = "UPDATE registry 
-                    SET registry_value = '$is_remind_matches' 
-                    WHERE registry_key = 'users.$id_user.is_remind_matches'";
+                    SET registry_value = ? 
+                    WHERE registry_key = ?";
         } else {
             $sql = "INSERT INTO registry 
-                    SET registry_value = '$is_remind_matches', 
-                        registry_key = 'users.$id_user.is_remind_matches'";
+                    SET registry_value = ?, 
+                        registry_key = ?";
         }
-        $this->sql_manager->execute($sql);
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $is_remind_matches);
+        $bindings[] = array('type' => 's', 'value' => "users.$id_user.is_remind_matches");
+        $this->sql_manager->execute($sql, $bindings);
         $this->activity->add("Préférence de réception modifiée: rappel de match");
     }
 
@@ -96,8 +104,10 @@ class UserManager extends Generic
      */
     private function isRegistryKeyPresent($key): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = '$key'";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT COUNT(*) AS cnt FROM registry WHERE registry_key = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $key);
+        $results = $this->sql_manager->execute($sql, $bindings);
         return intval($results[0]['cnt']) > 0;
     }
 
@@ -118,11 +128,12 @@ class UserManager extends Generic
                         id_equipe = ?, 
                         login = ?, 
                         email = ?, 
-                        password = ?";
+                        password_hash = MD5(CONCAT(?, ?))";
         $bindings = array(
             array('type' => 'i', 'value' => $team_id),
             array('type' => 's', 'value' => $login),
             array('type' => 's', 'value' => $email),
+            array('type' => 's', 'value' => $login),
             array('type' => 's', 'value' => $password),
         );
         $id_account = $this->sql_manager->execute($sql, $bindings);
@@ -185,18 +196,17 @@ class UserManager extends Generic
      */
     public function isUserExists($login): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE login = '$login'";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE login = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $login);
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return intval($results[0]['cnt']) > 0;
     }
 
     /**
      * @param $login
      * @param $email
-     * @param $idTeam
+     * @param $id_equipe
      * @throws Exception
      */
     public function createUser($login, $email, $id_equipe)
@@ -208,11 +218,16 @@ class UserManager extends Generic
             $id_equipe = 0;
         }
         $password = Generic::randomPassword();
-        $sql = "INSERT comptes_acces SET id_equipe = ?, login = ?, email = ?, password = ?";
+        $sql = "INSERT INTO comptes_acces SET 
+                    id_equipe = ?, 
+                    login = ?, 
+                    email = ?, 
+                    password_hash = MD5(CONCAT(?, ?))";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_equipe);
         $bindings[] = array('type' => 's', 'value' => $login);
         $bindings[] = array('type' => 's', 'value' => $email);
+        $bindings[] = array('type' => 's', 'value' => $login);
         $bindings[] = array('type' => 's', 'value' => $password);
         $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("Creation du compte $login pour l'equipe " . $this->team->getTeamName($id_equipe));
@@ -242,7 +257,15 @@ class UserManager extends Generic
      */
     public function getUsers(): array|int|string|null
     {
-        $sql = "SELECT ca.id, ca.login, ca.password, ca.email, e.id_equipe AS id_team, e.nom_equipe AS team_name, c.nom AS club_name, up.profile_id AS id_profile, p.name AS profile
+        $sql = "SELECT  ca.id, 
+                        ca.login, 
+                        ca.password_hash,
+                        ca.email,
+                        e.id_equipe AS id_team,
+                        e.nom_equipe AS team_name,
+                        c.nom AS club_name,
+                        up.profile_id AS id_profile,
+                        p.name AS profile
         FROM comptes_acces ca 
         LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe 
         LEFT JOIN clubs c ON c.id=e.id_club 
@@ -257,7 +280,6 @@ class UserManager extends Generic
     public function saveUser(
         $id,
         $login,
-        $password,
         $email,
         $id_team,
         $dirtyFields = null)
@@ -267,7 +289,6 @@ class UserManager extends Generic
             'id' => $id,
             'login' => $login,
             'email' => $email,
-            'password' => $password,
             'id_team' => $id_team,
         );
         if (empty($id)) {
@@ -326,9 +347,6 @@ class UserManager extends Generic
         foreach ($fieldsArray as $fieldName) {
             $fieldValue = filter_input(INPUT_POST, $fieldName);
             $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-            if ($fieldName === 'password') {
-                $comment = "$login : Modification du champ $fieldName";
-            }
             $this->addActivity($comment);
         }
     }
@@ -399,12 +417,11 @@ class UserManager extends Generic
      */
     public function isProfileExists($name): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM profiles WHERE name = '$name'";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        $sql = "SELECT COUNT(*) AS cnt FROM profiles WHERE name = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $name);
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return intval($results[0]['cnt']) > 0;
     }
 
     /**
@@ -520,30 +537,40 @@ class UserManager extends Generic
             ));
             return;
         }
-        $password = addslashes($password);
-        $sql = "SELECT ca.id_equipe, ca.login, ca.password, ca.id AS id_user, p.name AS profile_name FROM comptes_acces ca
-        LEFT JOIN users_profiles up ON up.user_id=ca.id
-        LEFT JOIN profiles p ON p.id=up.profile_id
-        WHERE ca.login = '$login' LIMIT 1";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT  ca.id_equipe, 
+                        ca.login, 
+                        ca.id AS id_user,
+                        p.name AS profile_name 
+                FROM comptes_acces ca
+                LEFT JOIN users_profiles up ON up.user_id=ca.id
+                LEFT JOIN profiles p ON p.id=up.profile_id
+                WHERE ca.login = ?
+                AND ca.password_hash = MD5(CONCAT(?, ?))
+                LIMIT 1";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $login
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $login
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $password
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             echo json_encode(array(
                 'success' => false,
-                'message' => 'Login incorrect'
+                'message' => 'Login ou mot de passe incorrect'
             ));
             return;
         }
         $data = $results[0];
-        if ($data['password'] != $password) {
-            echo json_encode(array(
-                'success' => false,
-                'message' => 'Mot de passe invalide'
-            ));
-            return;
-        }
         $_SESSION['id_equipe'] = $data['id_equipe'];
         $_SESSION['login'] = $data['login'];
-        $_SESSION['password'] = $data['password'];
         $_SESSION['id_user'] = $data['id_user'];
         $_SESSION['profile_name'] = $data['profile_name'];
         if (!empty($redirect)) {
@@ -553,5 +580,29 @@ class UserManager extends Generic
         header("Location: " . $_SERVER['HTTP_REFERER']);
     }
 
+    /**
+     * @param $id
+     * @throws Exception
+     */
+    public function reset_password($id)
+    {
+        $userDetails = $this->get_by_id($id);
+        $id_team = $userDetails['id_equipe'];
+        $email = $userDetails['email'];
+        $login = $userDetails['login'];
+        $password = Generic::randomPassword();
+        $sql = "UPDATE comptes_acces 
+                SET password_hash = MD5(CONCAT(?, ?)) 
+                WHERE id_equipe = ? 
+                AND login = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $login);
+        $bindings[] = array('type' => 's', 'value' => $password);
+        $bindings[] = array('type' => 'i', 'value' => $id_team);
+        $bindings[] = array('type' => 's', 'value' => $login);
+        $this->sql_manager->execute($sql, $bindings);
+        $this->activity->add("Mot de passe modifie");
+        $this->email->sendMailNewUser($email, $login, $password, $id_team);
+    }
 
 }

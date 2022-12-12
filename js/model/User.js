@@ -6,7 +6,7 @@ Ext.define('Ufolep13Volley.model.User', {
             type: 'int'
         },
         'login',
-        'password',
+        'password_hash',
         'email',
         {
             name: 'id_team',

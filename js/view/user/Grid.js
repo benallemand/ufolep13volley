@@ -58,6 +58,10 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                },
+                {
+                    text: 'Reset mot de passe',
+                    action: 'reset_password'
                 }
             ]
         },

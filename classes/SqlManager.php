@@ -7,26 +7,6 @@ class SqlManager
      * @return array
      * @throws Exception
      */
-    public function sql_get_accounts(): array
-    {
-        $sql = "SELECT
-                e.nom_equipe,
-                c.libelle AS competition,
-                ca.login,
-                ca.password,
-                ca.email,
-                ca.id
-                FROM comptes_acces ca
-                JOIN equipes e ON e.id_equipe=ca.id_equipe
-                JOIN competitions c ON c.code_competition=e.code_competition
-                WHERE ca.is_email_sent = 'N'";
-        return $this->execute($sql);
-    }
-
-    /**
-     * @return array
-     * @throws Exception
-     */
     public function sql_get_activity(): array
     {
         $sql = "SELECT

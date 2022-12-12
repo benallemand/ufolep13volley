@@ -29,9 +29,7 @@
     <script>
         <?php
         @session_start();
-        $session = $_SESSION;
-        unset($session['password']);
-        $session = json_encode($session);
+        $session = json_encode($_SESSION);
         ?>
         var user_details = <?php echo($session) ?>;
     </script>

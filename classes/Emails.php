@@ -569,31 +569,6 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_account_recap()
-    {
-        $accounts = $this->sql_manager->sql_get_accounts();
-        foreach ($accounts as $current_data) {
-            $email = $current_data['email'];
-            if (empty($email)) {
-                continue;
-            }
-            $this->insert_generic_email(
-                __DIR__ . '/../templates/emails/sendMailAccountRecap.fr.html',
-                array(
-                    'email' => $current_data['email'],
-                    'login' => $current_data['login'],
-                    'password' => $current_data['password'],
-                    'team' => $current_data['nom_equipe'],
-                    'competition' => $current_data['competition']
-                ),
-                $email
-            );
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
     public function insert_email_activity()
     {
         $activities = $this->sql_manager->sql_get_activity();
