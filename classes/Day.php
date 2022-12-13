@@ -16,6 +16,7 @@ class Day extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'journees';
         $this->limit_date = new LimitDate();
     }
 
@@ -65,8 +66,8 @@ class Day extends Generic
      * @throws Exception
      */
     public function insertDay($code_competition,
-                              $numero,
-                              $competition_start_date,
+        $numero,
+        $competition_start_date,
                               bool $is_extra_day,
                               string $limit_date): int|string
     {
@@ -77,7 +78,7 @@ class Day extends Generic
             $nommage = "Journee bonus";
         }
         error_log($nommage);
-        while(!$this->is_week_allowed($code_competition, $competition_start_date, $week_offset, $limit_date)) {
+        while (!$this->is_week_allowed($code_competition, $competition_start_date, $week_offset, $limit_date)) {
             $week_offset++;
         }
         $sql = "INSERT INTO journees SET 
@@ -240,7 +241,7 @@ class Day extends Generic
      * @throws Exception
      */
     private function is_week_allowed($code_competition,
-                                     $competition_start_date,
+        $competition_start_date,
                                      int $week_offset,
                                      string $limit_date): bool
     {

@@ -9,6 +9,7 @@ class Competition extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'competitions';
     }
 
     public function getSql($query = "1=1"): string
@@ -101,8 +102,19 @@ class Competition extends Generic
      * @param $inputs
      * @throws Exception
      */
-    public function save_friendships($inputs)
+    public function save_friendships(
+        $id,
+        $id_club_1,
+        $id_club_2,
+        $dirtyFields = null
+    )
     {
+        $inputs = array(
+            'id' => $id,
+            'id_club_1' => $id_club_1,
+            'id_club_2' => $id_club_2,
+            'dirtyFields' => $dirtyFields,
+        );
         $bindings = array();
         if (empty($inputs['id'])) {
             $sql = "INSERT INTO";
@@ -183,8 +195,21 @@ class Competition extends Generic
      * @param $inputs
      * @throws Exception
      */
-    public function save_blacklist_by_city($inputs)
+    public function save_blacklist_by_city(
+        $id,
+        $city,
+        $from_date,
+        $to_date,
+        $dirtyFields = null
+    )
     {
+        $inputs = array(
+            'dirtyFields' => $dirtyFields,
+            'id' => $id,
+            'city' => $city,
+            'from_date' => $from_date,
+            'to_date' => $to_date,
+        );
         $bindings = array();
         if (empty($inputs['id'])) {
             $sql = "INSERT INTO";
@@ -428,6 +453,7 @@ class Competition extends Generic
         {
             return !(Generic::starts_with($var, 'id') || (Generic::ends_with($var, '_raw')));
         }
+
         $fields = array_keys(array_filter($matches[0], 'filter_hidden_csv_fields', ARRAY_FILTER_USE_KEY));
         fputcsv($f, $fields, $delimiter);
         // Output each row of the data, format line as csv and write to file pointer

@@ -11,6 +11,39 @@ class Club extends Generic
     }
 
     /**
+     * @throws Exception
+     */
+    public function deleteClubs($ids) {
+        return $this->delete($ids);
+    }
+    /**
+     * @throws Exception
+     */
+    public function saveClub($id,
+                             $nom,
+                             $affiliation_number,
+                             $nom_responsable,
+                             $prenom_responsable,
+                             $tel1_responsable,
+                             $tel2_responsable,
+                             $email_responsable,
+                             $dirtyFields = null
+    ): array|int|string|null
+    {
+        return $this->save(array(
+            'id' => $id,
+            'nom' => $nom,
+            'affiliation_number' => $affiliation_number,
+            'nom_responsable' => $nom_responsable,
+            'prenom_responsable' => $prenom_responsable,
+            'tel1_responsable' => $tel1_responsable,
+            'tel2_responsable' => $tel2_responsable,
+            'email_responsable' => $email_responsable,
+            'dirtyFields' => $dirtyFields,
+        ));
+    }
+
+    /**
      * @param $inputs
      * @throws Exception
      */

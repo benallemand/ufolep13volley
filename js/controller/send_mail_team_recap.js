@@ -34,7 +34,7 @@ Ext.define('Ufolep13Volley.controller.send_mail_team_recap', {
                     return;
                 }
                 Ext.Ajax.request({
-                    url: "/rest/action.php/emails/send_mail_team_recap",
+                    url: "/rest/action.php/emails/insert_email_team_recap",
                     method: 'POST',
                     success: function () {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");

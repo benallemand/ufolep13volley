@@ -9,6 +9,12 @@ require_once __DIR__ . '/Generic.php';
 
 class HallOfFame extends Generic
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->table_name = 'hall_of_fame';
+    }
+
     public function getHallOfFame()
     {
         $sql = "SELECT 
@@ -21,7 +27,6 @@ class HallOfFame extends Generic
         ORDER BY period";
         return $this->sql_manager->execute($sql);
     }
-
 
 
     public function getHallOfFameDisplay()
@@ -63,7 +68,6 @@ class HallOfFame extends Generic
     }
 
 
-
     /**
      * @param $title
      * @param $team_name
@@ -80,6 +84,29 @@ class HallOfFame extends Generic
                 period = '$period',
                 league = '$league'";
         return $this->sql_manager->execute($sql);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function saveHallOfFame(
+        $id,
+        $title,
+        $team_name,
+        $period,
+        $league,
+        $dirtyFields = null
+    ): int|array|string|null
+    {
+        $inputs = array(
+            'id' => $id,
+            'title' => $title,
+            'team_name' => $team_name,
+            'period' => $period,
+            'league' => $league,
+            'dirtyFields' => $dirtyFields,
+        );
+        return $this->save($inputs);
     }
 
     public function save($inputs)
@@ -121,13 +148,12 @@ class HallOfFame extends Generic
      * -- insert into hall of fame the vice-leader
      * @throws Exception
      */
-    public function generateHallOfFame()
+    public function generateHallOfFame($ids)
     {
-        $inputs = filter_input_array(INPUT_POST);
-        if (empty($inputs['ids'])) {
+        if (empty($ids)) {
             throw new Exception("Aucune compétition sélectionnée !");
         }
-        $ids = explode(',', $inputs['ids']);
+        $ids = explode(',', $ids);
         foreach ($ids as $id) {
             require_once __DIR__ . '/../classes/Competition.php';
             $competition_manager = new Competition();

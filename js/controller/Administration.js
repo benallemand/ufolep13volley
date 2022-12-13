@@ -988,7 +988,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/halloffame/deleteHallOfFame',
+                    url: '/rest/action.php/halloffame/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1038,7 +1038,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/timeslot/deleteTimeslot',
+                    url: '/rest/action.php/timeslot/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1088,7 +1088,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/competition/deleteCompetition',
+                    url: '/rest/action.php/competition/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1138,7 +1138,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistcourt/deleteBlacklistGymnase',
+                    url: '/rest/action.php/blacklistcourt/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1188,7 +1188,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistteam/deleteBlacklistTeam',
+                    url: '/rest/action.php/blacklistteam/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1288,7 +1288,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistdate/deleteBlacklistDate',
+                    url: '/rest/action.php/blacklistdate/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1374,7 +1374,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/court/deleteGymnasiums',
+                    url: '/rest/action.php/court/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1594,7 +1594,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/day/deleteDays',
+                    url: '/rest/action.php/day/delete',
                     params: {
                         ids: ids.join(',')
                     },
@@ -1624,7 +1624,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     ids.push(record.get('id_date'));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/limitdate/deleteLimitDates',
+                    url: '/rest/action.php/limitdate/delete',
                     params: {
                         ids: ids.join(',')
                     },

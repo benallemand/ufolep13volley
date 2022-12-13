@@ -40,10 +40,9 @@ class UserManager extends Generic
     /**
      * @param $new_password
      * @param $new_password_again
-     * @return bool
      * @throws Exception
      */
-    public function modifierMonMotDePasse($new_password, $new_password_again): bool
+    public function modifierMonMotDePasse($new_password, $new_password_again)
     {
         $userDetails = $this->getCurrentUserDetails();
         $id_team = $userDetails['id_equipe'];
@@ -354,12 +353,14 @@ class UserManager extends Generic
     /**
      * @throws Exception
      */
-    public function saveProfile()
+    public function saveProfile($id,
+                                $name,
+                                $dirtyFields = null)
     {
         $bindings = array();
         $inputs = array(
-            'id' => filter_input(INPUT_POST, 'id'),
-            'name' => filter_input(INPUT_POST, 'name')
+            'id' => $id,
+            'name' => $name,
         );
         if (empty($inputs['id'])) {
             if ($this->isProfileExists($inputs['name'])) {
@@ -395,12 +396,10 @@ class UserManager extends Generic
         }
         $this->sql_manager->execute($sql, $bindings);
         if (empty($inputs['id'])) {
-            $name = $inputs['name'];
             $comment = "Creation d'un nouveau profil : $name";
             $this->addActivity($comment);
         } else {
-            $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
-            if ($dirtyFields) {
+            if (!empty($dirtyFields)) {
                 $fieldsArray = explode(',', $dirtyFields);
                 foreach ($fieldsArray as $fieldName) {
                     $fieldValue = filter_input(INPUT_POST, $fieldName);
@@ -427,21 +426,21 @@ class UserManager extends Generic
     /**
      * @throws Exception
      */
-    function addProfileToUsers($idProfile, $idUsers)
+    function addProfileToUsers($id_profile, $id_users, $dirtyFields = null)
     {
-        foreach (explode(',', $idUsers) as $idUser) {
+        foreach (explode(',', $id_users) as $idUser) {
             $hasProfile = $this->hasProfile($idUser);
             if ($hasProfile) {
                 $sql = "UPDATE ";
             } else {
                 $sql = "INSERT ";
             }
-            $sql .= "users_profiles SET profile_id = $idProfile, user_id = $idUser ";
+            $sql .= "users_profiles SET profile_id = $id_profile, user_id = $idUser ";
             if ($hasProfile) {
                 $sql .= "WHERE user_id = $idUser";
             }
             $this->sql_manager->execute($sql);
-            $this->addActivity($this->getUserLogin($idUser) . " a obtenu le profil " . $this->getProfileName($idProfile));
+            $this->addActivity($this->getUserLogin($idUser) . " a obtenu le profil " . $this->getProfileName($id_profile));
         }
     }
 

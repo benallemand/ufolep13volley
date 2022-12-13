@@ -545,7 +545,10 @@ class Emails extends Generic
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
-            $message = str_replace("%$data_to_replace_key%", $data_to_replace_value, $message);
+            $message = str_replace(
+                "%$data_to_replace_key%",
+                empty($data_to_replace_value) ? '' : $data_to_replace_value,
+                $message);
         }
         $subject = "[UFOLEP13VOLLEY] " . $this->getH1FromHtmlString($message);
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');

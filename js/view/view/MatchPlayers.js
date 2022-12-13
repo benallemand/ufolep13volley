@@ -27,14 +27,14 @@ Ext.define('Ufolep13Volley.view.view.MatchPlayers', {
                 Ext.Ajax.request({
                     url: "/rest/action.php/matchmgr/delete_match_player",
                     params: {
-                        id_match: id_match,
+                        id_match: record.get('id_match'),
                         id_player: record.get('id'),
                     },
                     method: 'POST',
                     success: function () {
                         view.getStore().load({
                             params: {
-                                id_match: id_match
+                                id_match: record.get('id_match')
                             }
                         });
                     },

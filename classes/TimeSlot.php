@@ -13,6 +13,7 @@ class TimeSlot extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'creneau';
         $this->team = new Team();
     }
 

@@ -44,10 +44,6 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                     xtype: 'tbseparator'
                 },
                 {
-                    text: 'Créer',
-                    action: 'add'
-                },
-                {
                     text: 'Editer',
                     action: 'edit'
                 },
