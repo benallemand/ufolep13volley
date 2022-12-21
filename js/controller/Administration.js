@@ -968,7 +968,26 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var windowEdit = Ext.widget('hall_of_fame_edit');
         windowEdit.down('form').loadRecord(record);
     },
+    manage_failure: function (response) {
+        if (response.status === '404') {
+            Ext.Msg.alert('Erreur', "La page n'a pas été trouvée !");
+            return;
+        }
+        var response_json = Ext.decode(response.responseText);
+        Ext.create('Ext.window.Window', {
+            title: 'Erreur (copiable)',
+            height: 500,
+            width: 700,
+            maximizable: true,
+            layout: 'fit',
+            items: {
+                xtype: 'textarea',
+                value: response_json.message
+            }
+        }).show();
+    },
     deleteHallOfFame: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -994,7 +1013,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1019,6 +1039,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteTimeslot: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1044,7 +1065,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1069,6 +1091,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteCompetition: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1094,7 +1117,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1119,6 +1143,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistGymnase: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1144,7 +1169,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1169,6 +1195,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistTeam: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1194,7 +1221,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1219,6 +1247,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistTeams: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1244,7 +1273,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1269,6 +1299,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistDate: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1294,12 +1325,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteUsers: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1324,12 +1357,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     reset_password: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length !== 1) {
             return;
@@ -1350,12 +1385,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteGymnasiums: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1380,12 +1417,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteClubs: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1410,12 +1449,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteTeams: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1440,12 +1481,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteMatches: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1470,12 +1513,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteRanks: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1500,12 +1545,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     genericRequest: function (button, title, url, is_one_record_allowed) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1538,24 +1585,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
                         grid.getStore().load();
                     },
-                    failure: function (response) {
-                        if (response.status === '404') {
-                            Ext.Msg.alert('Erreur', "La page n'a pas été trouvée !");
-                            return;
-                        }
-                        var response_json = Ext.decode(response.responseText);
-                        Ext.create('Ext.window.Window', {
-                            title: 'Erreur (copiable)',
-                            height: 500,
-                            width: 700,
-                            maximizable: true,
-                            layout: 'fit',
-                            items: {
-                                xtype: 'textarea',
-                                value: response_json.message
-                            }
-                        }).show();
-                    }
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -1576,6 +1606,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
     },
     deleteDays: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1600,12 +1631,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deleteLimitDates: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1630,12 +1663,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     deletePlayers: function (button) {
+        var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
@@ -1660,7 +1695,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
@@ -2128,6 +2164,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
     },
     archiveMatch: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -2153,12 +2190,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     confirmMatch: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -2184,12 +2223,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });
     },
     unconfirmMatch: function (button) {
+        var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -2215,7 +2256,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: this_controller.manage_failure,
                 });
             }
         });

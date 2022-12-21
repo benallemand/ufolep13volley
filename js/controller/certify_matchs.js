@@ -53,7 +53,10 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
                     },
                     success: function () {
                         grid.getStore().load();
-                    }
+                    },
+                    failure: function (form, action) {
+                        Ext.Msg.alert('Erreur', action.result.message);
+                    },
                 });
             }
         });

@@ -181,7 +181,10 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: function (form, action) {
+                        Ext.Msg.alert('Erreur', action.result.message);
+                    },
                 });
             }
         });

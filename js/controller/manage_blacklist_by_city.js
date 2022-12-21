@@ -186,7 +186,10 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
                     },
                     success: function () {
                         button.up('grid').getStore().load();
-                    }
+                    },
+                    failure: function (form, action) {
+                        Ext.Msg.alert('Erreur', action.result.message);
+                    },
                 });
             }
         });
