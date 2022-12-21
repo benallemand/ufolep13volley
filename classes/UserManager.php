@@ -586,13 +586,13 @@ class UserManager extends Generic
     public function reset_password($id)
     {
         $userDetails = $this->get_by_id($id);
-        $id_team = $userDetails['id_equipe'];
+        $id_team = empty($userDetails['id_equipe']) ? 0 : $userDetails['id_equipe'];
         $email = $userDetails['email'];
         $login = $userDetails['login'];
         $password = Generic::randomPassword();
         $sql = "UPDATE comptes_acces 
                 SET password_hash = MD5(CONCAT(?, ?)) 
-                WHERE id_equipe = ? 
+                WHERE (id_equipe IS NULL OR id_equipe = ?) 
                 AND login = ?";
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $login);
