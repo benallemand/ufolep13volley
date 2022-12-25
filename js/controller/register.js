@@ -41,11 +41,11 @@ Ext.define('Ufolep13Volley.controller.register', {
     manage_display: function (selection_model, selected) {
         var form = selection_model.view.ownerCt.up('viewport').down('form');
         if (selected.length === 1) {
-            if(user_details.profile_name === 'ADMINISTRATEUR') {
+            if (user_details.profile_name === 'ADMINISTRATEUR') {
                 form.loadRecord(selected[0]);
                 return;
             }
-            if(Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y')) {
+            if (Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y')) {
                 return;
             }
             Ext.Msg.prompt("Identification",
@@ -90,7 +90,10 @@ Ext.define('Ufolep13Volley.controller.register', {
                 }, success: function () {
                     grid.getStore().load();
                 }, failure: function (form, action) {
-                    Ext.Msg.alert('Erreur', action.result.message);
+                    Ext.Msg.alert('Erreur',
+                        action.result ?
+                            action.result.message :
+                            Ext.decode(action.response.responseText).message);
                 }
             });
         }
