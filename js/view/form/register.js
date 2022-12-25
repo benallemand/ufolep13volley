@@ -1,7 +1,7 @@
 Ext.define('Ufolep13Volley.view.form.register', {
     extend: 'Ext.form.Panel',
     alias: 'widget.form_register',
-    title: "Inscriptions championnats UFOLEP 13 Volley-ball " + saison,
+    title: title,
     layout: 'form',
     url: 'rest/action.php/register/register',
     trackResetOnLoad: true,
@@ -21,7 +21,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
         },
         {
             name: 'new_team_name',
-            fieldLabel: "Nom de l'équipe engagée pour la saison " + saison,
+            fieldLabel: "Nom de l'équipe à engager",
             labelWidth: 400,
             allowBlank: false,
             msgTarget: 'under'
@@ -35,7 +35,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
         {
             xtype: 'combo_club',
             name: 'id_club',
-            fieldLabel: "Club de l'équipe engagée pour la saison " + saison,
+            fieldLabel: "Club de l'équipe à engager",
             labelWidth: 400,
             listeners: {
                 change: function (combo, new_val, old_val) {
@@ -57,6 +57,15 @@ Ext.define('Ufolep13Volley.view.form.register', {
         },
         {
             xtype: 'combo_competition',
+            store: {
+                type: 'Competitions',
+                // sélection des compétitions non démarrées uniquement
+                filters: [
+                    function(item) {
+                        return item.get('start_date') >= Ext.Date.now();
+                    }
+                ]
+            },
             fieldLabel: "Compétition",
             name: 'id_competition',
             allowBlank: false,

@@ -3,6 +3,7 @@ Ext.define('Ufolep13Volley.model.register', {
     fields: [
         {name: 'id', type: 'int'},
         {name: 'new_team_name', type: 'string'},
+        {name: 'competition', type: 'string'},
         {name: 'id_club', type: 'int'},
         {name: 'old_team_id', type: 'int'},
         {name: 'leader_name', type: 'string'},

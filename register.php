@@ -1,13 +1,13 @@
 <?php
-$saison = "2022-2023";
-$limit = "08/10/2022";
+$limit = "27/01/2023";
+$title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
 @session_start();
 $user_details = $_SESSION;
 ?>
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <TITLE>Inscriptions championnats UFOLEP 13 Volley-ball <?php echo $saison; ?></TITLE>
+    <TITLE> <?php echo $title; ?></TITLE>
     <META
             http-equiv="Content-Type"
             content="text/html; charset=utf-8"/>
@@ -36,7 +36,7 @@ $user_details = $_SESSION;
     <script
             type="text/javascript" src="js/register.js"></script>
     <script type="text/javascript">
-        var saison = "<?php echo $saison; ?>";
+        var title = "<?php echo $title; ?>";
         var limit = "<?php echo $limit; ?>";
         var user_details = <?php echo json_encode($user_details); ?>;
     </script>

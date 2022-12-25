@@ -3,6 +3,7 @@ Ext.define('Ufolep13Volley.store.register', {
     alias: 'store.register',
     config: {
         model: 'Ufolep13Volley.model.register',
+        groupField: 'competition',
         proxy: {
             type: 'rest',
             url: 'rest/action.php/register/get_register'
