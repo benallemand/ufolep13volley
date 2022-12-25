@@ -51,13 +51,13 @@ class Register extends Generic
     ): void
     {
         $parameters = array(
-            'new_team_name' => $new_team_name,
+            'new_team_name' => trim($new_team_name),
             'id_club' => $id_club,
             'id_competition' => $id_competition,
             'old_team_id' => $old_team_id,
-            'leader_name' => $leader_name,
-            'leader_first_name' => $leader_first_name,
-            'leader_email' => $leader_email,
+            'leader_name' => trim($leader_name),
+            'leader_first_name' => trim($leader_first_name),
+            'leader_email' => trim($leader_email),
             'leader_phone' => $leader_phone,
             'id_court_1' => $id_court_1,
             'day_court_1' => $day_court_1,
@@ -65,7 +65,7 @@ class Register extends Generic
             'id_court_2' => $id_court_2,
             'day_court_2' => $day_court_2,
             'hour_court_2' => $hour_court_2,
-            'remarks' => $remarks,
+            'remarks' => trim($remarks),
             'division' => $division,
             'rank_start' => $rank_start,
             'dirtyFields' => $dirtyFields,
