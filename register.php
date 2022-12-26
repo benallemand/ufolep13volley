@@ -1,5 +1,5 @@
 <?php
-$limit = "27/01/2023";
+$limit = "20/01/2023";
 $title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
 @session_start();
 $user_details = $_SESSION;
