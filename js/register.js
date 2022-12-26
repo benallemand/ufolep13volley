@@ -23,20 +23,19 @@ Ext.application({
                         },
                         {
                             xtype: 'label',
-                            html: "<h2 style='text-align: center'>DATE LIMITE D'INSCRIPTION: " + (Ext.Date.format(Ext.Date.parse(limit, 'd/m/Y'), 'l d F Y')).toUpperCase() + " !</h2>"
+                            html: limit_html_label
                         }
                     ]
                 },
-                (Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y') && (user_details.profile_name !== 'ADMINISTRATEUR')) ?
-                    null : {
-                        region: 'west',
-                        flex: 2,
-                        split: true,
-                        xtype: 'form_register',
-                    },
+                {
+                    region: 'west',
+                    flex: 2,
+                    split: true,
+                    xtype: 'form_register',
+                },
                 {
                     region: 'center',
-                    flex: 1,
+                    flex: 3,
                     xtype: 'grid_register'
                 }
             ]

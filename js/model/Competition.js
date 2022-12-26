@@ -11,6 +11,11 @@ Ext.define('Ufolep13Volley.model.Competition', {
             dateFormat: 'd/m/Y'
         },
         {
+            name: 'limit_register_date',
+            type: 'date',
+            dateFormat: 'd/m/Y'
+        },
+        {
             name: 'is_home_and_away',
             type: 'bool',
         }

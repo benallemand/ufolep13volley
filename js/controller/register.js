@@ -45,15 +45,19 @@ Ext.define('Ufolep13Volley.controller.register', {
                 form.loadRecord(selected[0]);
                 return;
             }
-            if (Ext.Date.now() > Ext.Date.parse(limit, 'd/m/Y')) {
+            var record = selected[0];
+            var code_competition = record.get('code_competition');
+            var store_competitions = Ext.data.StoreManager.lookup('Competitions');
+            var competition = store_competitions.findRecord('code_competition', code_competition);
+            if (Ext.Date.now() > competition.get('limit_register_date')) {
                 return;
             }
             Ext.Msg.prompt("Identification",
                 "Pour modifier votre inscription, veuillez saisir l'adresse email du responsable d'équipe:",
                 function (btn, text) {
                     if (btn == 'ok') {
-                        if (text == selected[0].get('leader_email')) {
-                            form.loadRecord(selected[0]);
+                        if (text == record.get('leader_email')) {
+                            form.loadRecord(record);
                         } else {
                             Ext.Msg.alert("Erreur",
                                 "Ce n'est pas la bonne adresse email.");

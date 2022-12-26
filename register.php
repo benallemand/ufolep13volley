@@ -1,6 +1,19 @@
 <?php
-$limit = "20/01/2023";
+require_once __DIR__ . '/classes/Competition.php';
 $title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
+$limit_html_label = "<h2 style='text-align: center'>DATES LIMITES D'INSCRIPTION : %dates_limites%</h2>";
+$dates_limites = "";
+$manager = new Competition();
+$competitions = $manager->getCompetitions();
+foreach ($competitions as $competition) {
+    $libelle = $competition['libelle'];
+    $limit_date = $competition['limit_register_date'];
+    if (!empty($limit_date)) {
+        $dates_limites .= "<span>$limit_date ($libelle)</span>";
+    }
+}
+$limit_html_label = str_replace('%dates_limites%', $dates_limites, $limit_html_label);
+
 @session_start();
 $user_details = $_SESSION;
 ?>
@@ -37,7 +50,7 @@ $user_details = $_SESSION;
             type="text/javascript" src="js/register.js"></script>
     <script type="text/javascript">
         var title = "<?php echo $title; ?>";
-        var limit = "<?php echo $limit; ?>";
+        var limit_html_label = "<?php echo $limit_html_label; ?>";
         var user_details = <?php echo json_encode($user_details); ?>;
     </script>
 </HEAD>

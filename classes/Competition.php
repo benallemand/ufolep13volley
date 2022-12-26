@@ -20,6 +20,7 @@ class Competition extends Generic
         c.libelle,
         c.id_compet_maitre,
         DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date,
+        DATE_FORMAT(c.limit_register_date, '%d/%m/%Y') AS limit_register_date,
         c.is_home_and_away+0 AS is_home_and_away,
         d.date_limite AS limit_date
         FROM competitions c
@@ -314,6 +315,7 @@ class Competition extends Generic
         $libelle,
         $id_compet_maitre,
         $start_date,
+        $limit_register_date,
         $is_home_and_away,
         $id = null,
         $dirtyFields = null
@@ -326,6 +328,7 @@ class Competition extends Generic
             'libelle' => $libelle,
             'id_compet_maitre' => $id_compet_maitre,
             'start_date' => $start_date,
+            'limit_register_date' => $limit_register_date,
             'is_home_and_away' => $is_home_and_away,
         );
         return $this->save($inputs);
@@ -346,6 +349,7 @@ class Competition extends Generic
                 case 'dirtyFields':
                     break;
                 case 'start_date':
+                case 'limit_register_date':
                     $bindings[] = array('type' => 's', 'value' => $value);
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
@@ -377,6 +381,7 @@ class Competition extends Generic
         libelle,
         id_compet_maitre,
         IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date,
+        IFNULL(DATE_FORMAT(limit_register_date, '%d/%m/%Y'), '') AS limit_register_date,
         is_home_and_away+0 AS is_home_and_away
         FROM competitions
         WHERE code_competition = '$code_competition'
