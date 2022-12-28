@@ -27,6 +27,7 @@ class News extends Generic
                 n.file_path,
                 DATE_FORMAT(n.news_date, ' %a %d/%m/%Y') AS news_date
             FROM news n
+            WHERE is_disabled = 0 
             ORDER BY n.news_date DESC";
         return $this->sql_manager->execute($sql);
     }
