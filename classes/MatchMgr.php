@@ -14,6 +14,7 @@ require_once __DIR__ . '/Rank.php';
 require_once __DIR__ . '/Register.php';
 require_once __DIR__ . '/Competition.php';
 require_once __DIR__ . '/Day.php';
+require_once __DIR__ . '/UserManager.php';
 
 class MatchMgr extends Generic
 {
@@ -1559,17 +1560,39 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @param $code_match
      * @param $report_date
-     * @return bool
      * @throws Exception
      */
     public function giveReportDate($code_match, $report_date)
     {
+        $match = $this->get_match_by_code_match($code_match);
+        $this->is_action_allowed(__FUNCTION__, $match['id_match']);
+        $report_datetime = DateTime::createFromFormat('Y-m-d', $report_date);
+        if (!$report_datetime) {
+            throw new Exception("Impossible de déterminer la date de report, merci de respecter le format jj/mm/aaaa (exemple: 03/01/2023 pour le 3 Janvier 2023) !");
+        }
+        $date_string = $report_datetime->format('d/m/Y');
+        if ($this->has_match($match['id_equipe_dom'], $date_string)) {
+            throw new Exception("L'équipe " . $match['equipe_dom'] . " a déjà un match ce soir là !");
+        }
+        if ($this->has_match($match['id_equipe_ext'], $date_string)) {
+            throw new Exception("L'équipe " . $match['equipe_ext'] . " a déjà un match ce soir là !");
+        }
+        $sql = "UPDATE matches 
+                SET date_reception = DATE(STR_TO_DATE(?, '%Y-%m-%d')) 
+                WHERE code_match = ?";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $report_date
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $code_match
+        );
+        $this->sql_manager->execute($sql, $bindings);
         $sessionIdEquipe = $_SESSION['id_equipe'];
-        $sql = "UPDATE matches SET date_reception = DATE(STR_TO_DATE('$report_date', '%Y-%m-%d')) WHERE code_match = '$code_match'";
-        $this->sql_manager->execute($sql);
         $this->addActivity("Date de report transmise par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
         (new Emails())->sendMailGiveReportDate($code_match, $report_date, $sessionIdEquipe);
-        return true;
     }
 
     /**
@@ -1679,17 +1702,39 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     private function is_action_allowed(string $function_name, $id_match)
     {
+        $match_manager = new MatchMgr();
+        $match = $match_manager->get_match($id_match);
+        if(!UserManager::is_connected()) {
+            throw new Exception("Utilisateur non connecté !");
+        }
         switch ($function_name) {
-            case 'manage_match_players':
-                $match_manager = new MatchMgr();
-                $match = $match_manager->get_match($id_match);
-                @session_start();
+            case 'giveReportDate':
                 // allow admin
                 if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
                     return;
                 }
                 // allow only playing teams
-                if (!in_array($_SESSION['id_equipe'], array($match['id_equipe_dom'], $match['id_equipe_ext']))) {
+                if (!in_array(
+                    $_SESSION['id_equipe'],
+                    array($match['id_equipe_dom'],
+                        $match['id_equipe_ext']))) {
+                    throw new Exception("Seules les équipes participant au match peuvent donner une date de report !");
+                }
+                // allow only RESPONSABLE_EQUIPE
+                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                    throw new Exception("Seuls les responsables d'équipes peuvent donner une date de report !");
+                }
+                break;
+            case 'manage_match_players':
+                // allow admin
+                if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
+                    return;
+                }
+                // allow only playing teams
+                if (!in_array(
+                    $_SESSION['id_equipe'],
+                    array($match['id_equipe_dom'],
+                        $match['id_equipe_ext']))) {
                     throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !");
                 }
                 // allow only RESPONSABLE_EQUIPE
