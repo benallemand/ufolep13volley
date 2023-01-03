@@ -29,13 +29,13 @@ Ext.application({
                 },
                 {
                     region: 'west',
-                    flex: 2,
+                    flex: 3,
                     split: true,
                     xtype: 'form_register',
                 },
                 {
                     region: 'center',
-                    flex: 3,
+                    flex: 1,
                     xtype: 'grid_register'
                 }
             ]
