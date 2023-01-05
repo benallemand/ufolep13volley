@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/SqlManager.php';
 require_once __DIR__ . '/Emails.php';
+require_once __DIR__ . '/Rank.php';
 require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Players.php';
 require_once __DIR__ . '/UserManager.php';
@@ -119,18 +120,9 @@ class Register extends Generic
 
     }
 
-    /**
-     * @throws Exception
-     */
-    public function get_register($id = null)
+    public function getSql($query = "1=1"): string
     {
-        $where = "1=1";
-        $bindings = array();
-        if (!empty($id)) {
-            $where .= " AND r.id = ?";
-            $bindings[] = array('type' => 'i', 'value' => $id);
-        }
-        $sql = "SELECT 
+        return "SELECT 
                 r.id,
                 r.new_team_name,
                 r.id_club,
@@ -162,8 +154,23 @@ class Register extends Generic
                 LEFT JOIN equipes e on r.old_team_id = e.id_equipe
                 LEFT JOIN gymnase g on g.id = r.id_court_1
                 LEFT JOIN gymnase g2 on g2.id = r.id_court_2
-                WHERE $where
+                WHERE $query
                 ORDER BY competition, division, rank_start";
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public function get_register($id = null)
+    {
+        $where = "1=1";
+        $bindings = array();
+        if (!empty($id)) {
+            $where .= " AND r.id = ?";
+            $bindings[] = array('type' => 'i', 'value' => $id);
+        }
+        $sql = $this->getSql($where);
         $results = $this->sql_manager->execute($sql, $bindings);
         if (!empty($id)) {
             return $results[0];
@@ -174,14 +181,14 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    public function set_up_season(): void
+    public function set_up_season($id_competition): void
     {
         // make a cleanup before new season
-        $this->cleanup_before_start();
+        $this->cleanup_before_start($id_competition);
         // check that all data is ok  in register table
-        $this->check_data();
+        $this->check_data($id_competition);
         // get registered teams
-        $registered_teams = $this->get_register();
+        $registered_teams = $this->get_register_by_competition($id_competition);
         foreach ($registered_teams as $registered_team) {
             $id_team = $this->create_or_update_team($registered_team);
             $team = $this->team->getTeam($id_team);
@@ -190,26 +197,27 @@ class Register extends Generic
             $this->add_leader_informations($registered_team, $id_team);
         }
         // init ranks
-        $this->init_ranks();
+        $this->init_ranks($id_competition);
     }
 
     /**
+     * @param $id_competition
      * @return void
      * @throws Exception
      */
-    public function cleanup_before_start(): void
+    public function cleanup_before_start($id_competition): void
     {
-        // remove all standard and leader accounts
-//        $this->cleanup_accounts();
+        // remove all leader accounts
+        $this->cleanup_accounts($id_competition);
         // remove all timeslots
-        $this->cleanup_timeslots();
+        $this->cleanup_timeslots($id_competition);
         // archive any active match
-        $this->archive_confirmed_matches();
+        $this->archive_confirmed_matches($id_competition);
         // remove matches_files when archived
-        $this->cleanup_files();
-        $this->cleanup_matches_files();
+        $this->cleanup_files($id_competition);
+        $this->cleanup_matches_files($id_competition);
         // remove matches_players when archived
-        $this->cleanup_matches_players();
+        $this->cleanup_matches_players($id_competition);
     }
 
     /**
@@ -330,17 +338,24 @@ class Register extends Generic
         return $id_team;
     }
 
-    private function check_data()
+    /**
+     * @throws Exception
+     */
+    private function check_data($id_competition)
     {
         $sql = "SELECT * 
                 FROM register 
-                WHERE new_team_name IS NULL
-                OR division IS NULL
-                OR rank_start < 1
-                OR (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
-                OR (id_court_2 IS NOT NULL AND day_court_2 IS NULL)
-                OR (id_court_2 IS NOT NULL AND id_court_1 IS NULL)";
-        if (count($this->sql_manager->execute($sql)) > 0) {
+                WHERE id_competition = ?
+                AND (
+                    new_team_name IS NULL
+                    OR division IS NULL
+                    OR rank_start < 1
+                    OR (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
+                    OR (id_court_2 IS NOT NULL AND day_court_2 IS NULL)
+                    OR (id_court_2 IS NOT NULL AND id_court_1 IS NULL))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        if (count($this->sql_manager->execute($sql, $bindings)) > 0) {
             throw new Exception("At least one required condition is missing !");
         }
     }
@@ -348,112 +363,195 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    private function init_ranks()
+    private function init_ranks($id_competition)
     {
-        // first, remove all ranks
-        $sql = "DELETE FROM classements";
-        $this->sql_manager->execute($sql);
-        // then, insert ranks from register table with new teams
+        // first, remove all ranks for competition
+        $sql = "DELETE 
+                FROM classements 
+                WHERE code_competition IN (SELECT code_competition
+                                           FROM competitions 
+                                           WHERE id = ?)";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
+        // if competition registration is automatic, generate ranks from parent competition
+        $competition_manager = new Competition();
+        if($competition_manager->is_automatic_registration($id_competition)) {
+            $competition = $competition_manager->get_by_id($id_competition);
+            $rank_manager = new Rank();
+            $team_manager = new Team();
+            $code_compet_maitre = $competition['id_compet_maitre'];
+            $teams = $team_manager->getTeams("e.code_competition = '$code_compet_maitre'");
+            foreach ($teams as $team) {
+                $rank_manager->insert($competition['code_competition'], '1', $team['id_equipe'], 1);
+            }
+            return;
+        }
+        // else, insert ranks from register table with new teams
         $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
                 SELECT c.code_competition, r.division, e.id_equipe, r.rank_start
                 FROM register r 
                 JOIN competitions c on r.id_competition = c.id
-                JOIN equipes e on 
-                    r.old_team_id IS NULL 
-                        AND r.new_team_name = e.nom_equipe 
-                        AND e.code_competition = c.code_competition";
-        $this->sql_manager->execute($sql);
+                JOIN equipes e on r.old_team_id IS NULL
+                                      AND r.new_team_name = e.nom_equipe
+                                      AND e.code_competition = c.code_competition
+                WHERE r.id_competition = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
         // then, insert ranks from register table with old teams
         $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
                 SELECT c.code_competition, r.division, e.id_equipe, r.rank_start 
                 FROM register r 
                 JOIN competitions c on r.id_competition = c.id
-                JOIN equipes e on 
-                    r.old_team_id = e.id_equipe
-                    AND e.code_competition = c.code_competition";
-        $this->sql_manager->execute($sql);
+                JOIN equipes e on r.old_team_id = e.id_equipe
+                                      AND e.code_competition = c.code_competition
+                WHERE r.id_competition = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function archive_confirmed_matches()
+    private function archive_confirmed_matches($id_competition)
     {
-        $sql = "UPDATE matches SET match_status = 'ARCHIVED' WHERE match_status NOT IN ('NOT_CONFIRMED', 'ARCHIVED')";
-        $this->sql_manager->execute($sql);
+        $sql = "UPDATE matches 
+                SET match_status = 'ARCHIVED' 
+                WHERE match_status NOT IN ('NOT_CONFIRMED', 'ARCHIVED')
+                AND code_competition IN (SELECT code_competition 
+                                         FROM competitions 
+                                         WHERE id = ?)";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function cleanup_accounts()
+    private function cleanup_accounts($id_competition)
     {
-        // delete accounts standard and leader
-        $sql = "DELETE FROM comptes_acces 
-                  WHERE id IN (SELECT user_id 
-                             FROM users_profiles 
+        // delete accounts leader
+        // do not delete accounts if competition is not a parent competition
+        $sql = "DELETE 
+                FROM comptes_acces 
+                WHERE id IN (SELECT user_id
+                             FROM users_profiles
                              WHERE profile_id IN (SELECT id 
                                                   FROM profiles 
-                                                  WHERE name IN ('RESPONSABLE_EQUIPE', 'STANDARD')))";
-        $this->sql_manager->execute($sql);
+                                                  WHERE name IN ('RESPONSABLE_EQUIPE')))
+                AND id_equipe IN (SELECT id_equipe 
+                                  FROM equipes 
+                                  WHERE code_competition IN (SELECT code_competition 
+                                                             FROM competitions 
+                                                             WHERE id = ? AND code_competition = id_compet_maitre))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function cleanup_timeslots()
+    private function cleanup_timeslots($id_competition)
     {
         // delete timeslots
-        $sql = "DELETE FROM creneau 
+        // do not delete timeslots if competition is not a parent competition
+        $sql = "DELETE 
+                FROM creneau 
                 WHERE id_equipe IN (SELECT old_team_id
-                                    FROM register)";
-        $this->sql_manager->execute($sql);
+                                    FROM register)
+                AND id_equipe IN (SELECT id_equipe 
+                                  FROM equipes 
+                                  WHERE code_competition IN (SELECT code_competition 
+                                                             FROM competitions 
+                                                             WHERE id = ? AND code_competition = id_compet_maitre))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
         $sql = "DELETE FROM creneau 
                 WHERE id_equipe IN (SELECT e.id_equipe
                                     FROM register r
                                     JOIN competitions c on r.id_competition = c.id
                                     JOIN equipes e on r.old_team_id IS NULL 
                                                     AND r.new_team_name = e.nom_equipe 
-                                                    AND e.code_competition = c.code_competition)";
-        $this->sql_manager->execute($sql);
+                                                    AND e.code_competition = c.code_competition)
+                AND id_equipe IN (SELECT id_equipe 
+                                  FROM equipes 
+                                  WHERE code_competition IN (SELECT code_competition 
+                                                             FROM competitions 
+                                                             WHERE id = ? AND code_competition = id_compet_maitre))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function cleanup_matches_files()
+    private function cleanup_matches_files($id_competition)
     {
         $sql = "DELETE FROM matches_files 
                 WHERE id_match IN (SELECT id_match 
                                    FROM matches 
-                                   WHERE match_status IN ('ARCHIVED'))";
-        $this->sql_manager->execute($sql);
+                                   WHERE match_status IN ('ARCHIVED')
+                                   AND code_competition IN (SELECT code_competition
+                                                            FROM competitions 
+                                                            WHERE id = ?))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function cleanup_matches_players()
+    private function cleanup_matches_players($id_competition)
     {
         $sql = "DELETE FROM match_player 
                 WHERE id_match IN (SELECT id_match 
                                    FROM matches 
-                                   WHERE match_status IN ('ARCHIVED'))";
-        $this->sql_manager->execute($sql);
+                                   WHERE match_status IN ('ARCHIVED')
+                                   AND code_competition IN (SELECT code_competition 
+                                                            FROM competitions 
+                                                            WHERE id = ?))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
      * @throws Exception
      */
-    private function cleanup_files()
+    private function cleanup_files($id_competition)
     {
         $sql = "DELETE FROM files 
                 WHERE id IN (SELECT id_file 
                              FROM matches_files 
                              WHERE id_match IN (SELECT id_match  
                                                 FROM matches 
-                                                WHERE match_status IN ('ARCHIVED')))";
-        $this->sql_manager->execute($sql);
+                                                WHERE match_status IN ('ARCHIVED')
+                                                AND code_competition IN (SELECT code_competition
+                                                                         FROM competitions 
+                                                                         WHERE id = ?)))";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function get_register_by_competition($id_competition): array|int|string|null
+    {
+        $where = "r.id_competition = ? 
+                  AND c2.code_competition = c2.id_compet_maitre";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $sql = $this->getSql($where);
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
 }

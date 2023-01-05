@@ -427,7 +427,12 @@ class MatchManagerTest extends TestCase
      */
     public function test_generate_all()
     {
-        //221023:PASS
-        $this->match_manager->generateAll();
+        //230105:PASS
+        $competition_mgr = new Competition();
+        $competition_kh = $competition_mgr->getCompetition('kh');
+        $this->match_manager->generateAll($competition_kh['id']);
+        // test for isoardi, where registration is automatic
+        $competition_isoardi = $competition_mgr->getCompetition('c');
+        $this->match_manager->generateAll($competition_isoardi['id']);
     }
 }

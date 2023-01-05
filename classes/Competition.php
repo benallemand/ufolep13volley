@@ -475,5 +475,14 @@ class Competition extends Generic
         exit;
     }
 
+    /**
+     * @throws Exception
+     */
+    public function is_automatic_registration($id_competition): bool
+    {
+        $competition = $this->get_by_id($id_competition);
+        return $competition['code_competition'] == 'c';
+    }
+
 
 }

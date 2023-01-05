@@ -408,5 +408,25 @@ FROM (
         return true;
     }
 
+    /**
+     * @param string $code_competition
+     * @param string $division
+     * @param int $id_equipe
+     * @param int $rank_start
+     * @return array|int|string|null
+     * @throws Exception
+     */
+    public function insert(string $code_competition, string $division, int $id_equipe, int $rank_start): array|int|string|null
+    {
+        $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start)
+                VALUES (?, ?, ?, ?)";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $code_competition);
+        $bindings[] = array('type' => 's', 'value' => $division);
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe);
+        $bindings[] = array('type' => 'i', 'value' => $rank_start);
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
 
 }

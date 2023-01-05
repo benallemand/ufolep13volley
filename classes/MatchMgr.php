@@ -1704,7 +1704,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     {
         $match_manager = new MatchMgr();
         $match = $match_manager->get_match($id_match);
-        if(!UserManager::is_connected()) {
+        if (!UserManager::is_connected()) {
             throw new Exception("Utilisateur non connecté !");
         }
         switch ($function_name) {
@@ -1756,23 +1756,24 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function generateAll($ids = null)
     {
-        // init all gymnasiums etc. from register table
-        (new Register())->set_up_season();
-        // get competitions
-        $competition_mgr = new Competition();
-        $competitions = array(
-            $competition_mgr->getCompetition('m'),
-            $competition_mgr->getCompetition('f'),
-            $competition_mgr->getCompetition('mo'),
-        );
-        foreach ($competitions as $competition) {
-            // reset competition
-            $competition_mgr->resetCompetition($competition['id']);
-            // generate days
-            (new Day())->generateDays($competition['id']);
+        if (empty($ids)) {
+            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
         }
-        $this->delete_matches("match_status = 'NOT_CONFIRMED'");
-        foreach ($competitions as $competition) {
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            // init all gymnasiums etc. from register table
+            (new Register())->set_up_season($id);
+            // get competitions
+            $competition_mgr = new Competition();
+            if($competition_mgr->is_automatic_registration($id)) {
+                continue;
+            }
+            // reset competition
+            $competition_mgr->resetCompetition($id);
+            // generate days
+            (new Day())->generateDays($id);
+            $this->delete_matches("match_status = 'NOT_CONFIRMED'");
+            $competition = $competition_mgr->get_by_id($id);
             $this->generate_matches($competition);
         }
     }
