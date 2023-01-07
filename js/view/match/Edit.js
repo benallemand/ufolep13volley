@@ -38,7 +38,9 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'parent_code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: 'ParentCompetitions',
+                store: {
+                    type: 'ParentCompetitions'
+                },
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true
@@ -51,17 +53,19 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: 'Competitions',
+                store: {
+                    type: 'Competitions'
+                },
                 queryMode: 'local',
                 allowBlank: false,
-                bind: {
-                    visible: '{parent_competition.value}',
-                    filters: {
-                        property: 'id_compet_maitre',
-                        value: '{parent_competition.value}',
-                        exactMatch: true
-                    }
-                },
+                // bind: {
+                //     visible: '{parent_competition.value}',
+                //     filters: {
+                //         property: 'id_compet_maitre',
+                //         value: '{parent_competition.value}',
+                //         exactMatch: true
+                //     }
+                // },
                 forceSelection: true
             },
             {
@@ -71,9 +75,9 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 fieldLabel: 'Division',
                 name: 'division',
                 allowBlank: false,
-                bind: {
-                    visible: '{competition.value}'
-                }
+                // bind: {
+                //     visible: '{competition.value}'
+                // }
             },
             {
                 xtype: 'combo',
@@ -81,24 +85,24 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_equipe_dom',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'RankTeams',
+                store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
-                bind: {
-                    visible: '{division.value}',
-                    filters: [
-                        {
-                            property: 'code_competition',
-                            value: '{competition.value}',
-                            exactMatch: true
-                        },
-                        {
-                            property: 'division',
-                            value: '{division.value}',
-                            exactMatch: true
-                        }
-                    ]
-                },
+                // bind: {
+                //     visible: '{division.value}',
+                //     filters: [
+                //         {
+                //             property: 'code_competition',
+                //             value: '{competition.value}',
+                //             exactMatch: true
+                //         },
+                //         {
+                //             property: 'division',
+                //             value: '{division.value}',
+                //             exactMatch: true
+                //         }
+                //     ]
+                // },
                 forceSelection: true
             },
             {
@@ -107,24 +111,24 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_equipe_ext',
                 displayField: 'team_full_name',
                 valueField: 'id_equipe',
-                store: 'RankTeams',
+                store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
-                bind: {
-                    visible: '{division.value}',
-                    filters: [
-                        {
-                            property: 'code_competition',
-                            value: '{competition.value}',
-                            exactMatch: true
-                        },
-                        {
-                            property: 'division',
-                            value: '{division.value}',
-                            exactMatch: true
-                        }
-                    ]
-                },
+                // bind: {
+                //     visible: '{division.value}',
+                //     filters: [
+                //         {
+                //             property: 'code_competition',
+                //             value: '{competition.value}',
+                //             exactMatch: true
+                //         },
+                //         {
+                //             property: 'division',
+                //             value: '{division.value}',
+                //             exactMatch: true
+                //         }
+                //     ]
+                // },
                 forceSelection: true
             },
             {
@@ -144,17 +148,19 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'id_journee',
                 displayField: 'display_combo',
                 valueField: 'id',
-                store: 'AdminDays',
+                store: {
+                    type: 'AdminDays'
+                },
                 queryMode: 'local',
                 allowBlank: false,
-                bind: {
-                    visible: '{competition.value}',
-                    filters: {
-                        property: 'code_competition',
-                        value: '{competition.value}',
-                        exactMatch: true
-                    }
-                },
+                // bind: {
+                //     visible: '{competition.value}',
+                //     filters: {
+                //         property: 'code_competition',
+                //         value: '{competition.value}',
+                //         exactMatch: true
+                //     }
+                // },
                 forceSelection: true
             },
             {
