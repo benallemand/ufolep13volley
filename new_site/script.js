@@ -790,6 +790,7 @@ scotchApp.controller('commissionController', function ($scope, $http) {
                 $scope.commission[currentIndex]["telephone1_base64"] = Base64.encode($scope.commission[currentIndex]["telephone1"]);
                 $scope.commission[currentIndex]["telephone2_base64"] = Base64.encode($scope.commission[currentIndex]["telephone2"]);
                 $scope.commission[currentIndex]["email_base64"] = Base64.encode($scope.commission[currentIndex]["email"]);
+                $scope.commission[currentIndex]["photo"] = '/' + $scope.commission[currentIndex]["photo"];
             }
         });
 });
