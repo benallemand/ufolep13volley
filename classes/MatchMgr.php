@@ -264,18 +264,22 @@ class MatchMgr extends Generic
                                $set_3_ext,
                                $set_4_ext,
                                $set_5_ext,
+                               $forfait_dom = false,
+                               $forfait_ext = false,
                                $dirtyFields = null)
     {
         return $this->save(array(
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
             'code_match' => $code_match,
+            'forfait_dom' => $forfait_dom,
             'score_equipe_dom' => $score_equipe_dom,
             'set_1_dom' => $set_1_dom,
             'set_2_dom' => $set_2_dom,
             'set_3_dom' => $set_3_dom,
             'set_4_dom' => $set_4_dom,
             'set_5_dom' => $set_5_dom,
+            'forfait_ext' => $forfait_ext,
             'score_equipe_ext' => $score_equipe_ext,
             'set_1_ext' => $set_1_ext,
             'set_2_ext' => $set_2_ext,
@@ -387,13 +391,9 @@ class MatchMgr extends Generic
                     break;
                 case 'certif':
                 case 'sheet_received':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
-                    $sql .= "$key = ?,";
-                    $bindings[] = array('type' => 'i', 'value' => $val);
-                    break;
                 case 'forfait_dom':
                 case 'forfait_ext':
-                    $val = ($value === 'true') ? 1 : 0;
+                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     break;
@@ -1765,7 +1765,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             (new Register())->set_up_season($id);
             // get competitions
             $competition_mgr = new Competition();
-            if($competition_mgr->is_automatic_registration($id)) {
+            if ($competition_mgr->is_automatic_registration($id)) {
                 continue;
             }
             // reset competition
