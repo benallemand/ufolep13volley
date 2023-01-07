@@ -38,9 +38,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 name: 'parent_code_competition',
                 displayField: 'libelle',
                 valueField: 'code_competition',
-                store: {
-                    type: 'ParentCompetitions'
-                },
+                store: 'ParentCompetitions',
                 queryMode: 'local',
                 allowBlank: false,
                 forceSelection: true
