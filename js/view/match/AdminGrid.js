@@ -138,10 +138,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'code_match',
                 flex: 1,
                 renderer: function (value, meta, record) {
-                    if (!record.get('sheet_received')) {
-                        return value;
-                    }
-                    return Ext.String.format("<a href='/rest/action.php/matchmgr/download?id={0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a>",
                         record.get('id_match'),
                         value);
                 }
