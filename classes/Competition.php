@@ -20,6 +20,7 @@ class Competition extends Generic
         c.libelle,
         c.id_compet_maitre,
         DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date,
+        DATE_FORMAT(c.start_register_date, '%d/%m/%Y') AS start_register_date,
         DATE_FORMAT(c.limit_register_date, '%d/%m/%Y') AS limit_register_date,
         c.is_home_and_away+0 AS is_home_and_away,
         d.date_limite AS limit_date
@@ -315,6 +316,7 @@ class Competition extends Generic
         $libelle,
         $id_compet_maitre,
         $start_date,
+        $start_register_date,
         $limit_register_date,
         $is_home_and_away,
         $id = null,
@@ -328,6 +330,7 @@ class Competition extends Generic
             'libelle' => $libelle,
             'id_compet_maitre' => $id_compet_maitre,
             'start_date' => $start_date,
+            'start_register_date' => $start_register_date,
             'limit_register_date' => $limit_register_date,
             'is_home_and_away' => $is_home_and_away,
         );
@@ -349,6 +352,7 @@ class Competition extends Generic
                 case 'dirtyFields':
                     break;
                 case 'start_date':
+                case 'start_register_date':
                 case 'limit_register_date':
                     $bindings[] = array('type' => 's', 'value' => $value);
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
@@ -381,6 +385,7 @@ class Competition extends Generic
         libelle,
         id_compet_maitre,
         IFNULL(DATE_FORMAT(start_date, '%d/%m/%Y'), '') AS start_date,
+        IFNULL(DATE_FORMAT(start_register_date, '%d/%m/%Y'), '') AS limit_register_date,
         IFNULL(DATE_FORMAT(limit_register_date, '%d/%m/%Y'), '') AS limit_register_date,
         is_home_and_away+0 AS is_home_and_away
         FROM competitions
@@ -482,6 +487,19 @@ class Competition extends Generic
     {
         $competition = $this->get_by_id($id_competition);
         return $competition['code_competition'] == 'c';
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function is_registration_available($id_competition): bool
+    {
+        $competition = $this->get_by_id($id_competition);
+        $current_date = date('Y-m-d');
+        $current_date = date('Y-m-d', strtotime($current_date));
+        $start_date = date('Y-m-d', strtotime($competition['start_register_date']));
+        $end_date = date('Y-m-d', strtotime($competition['limit_register_date']));
+        return !(($current_date >= $start_date) && ($current_date <= $end_date));
     }
 
 

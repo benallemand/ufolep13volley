@@ -62,7 +62,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
                 // sélection des compétitions non démarrées uniquement
                 filters: [
                     function(item) {
-                        return item.get('limit_register_date') >= Ext.Date.now();
+                        return item.get('limit_register_date') >= Ext.Date.now() && item.get('start_register_date') < Ext.Date.now();
                     }
                 ]
             },

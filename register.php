@@ -1,15 +1,16 @@
 <?php
 require_once __DIR__ . '/classes/Competition.php';
 $title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
-$limit_html_label = "<h2 style='text-align: center'>DATES LIMITES D'INSCRIPTION : %dates_limites%</h2>";
+$limit_html_label = "<h2 style='text-align: center'>DATES LIMITES D'INSCRIPTION :%dates_limites%</h2>";
 $dates_limites = "";
 $manager = new Competition();
 $competitions = $manager->getCompetitions();
 foreach ($competitions as $competition) {
     $libelle = $competition['libelle'];
-    $limit_date = $competition['limit_register_date'];
-    if (!empty($limit_date)) {
-        $dates_limites .= "<span>$limit_date ($libelle)</span>";
+    $start_date = $competition['start_register_date'];
+    $end_date = $competition['limit_register_date'];
+    if (!empty($start_date) && !empty($end_date)) {
+        $dates_limites .= "<br/><span>$libelle : du $start_date au $end_date</span>";
     }
 }
 $limit_html_label = str_replace('%dates_limites%', $dates_limites, $limit_html_label);

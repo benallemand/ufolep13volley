@@ -49,6 +49,13 @@ Ext.define('Ufolep13Volley.view.window.Competition', {
             },
             {
                 xtype: 'datefield',
+                fieldLabel: "Date d'ouverture des inscriptions",
+                name: 'start_register_date',
+                allowBlank: true,
+                startDay: 1
+            },
+            {
+                xtype: 'datefield',
                 fieldLabel: "Date limite d'inscription",
                 name: 'limit_register_date',
                 allowBlank: true,

@@ -10,6 +10,7 @@ require_once __DIR__ . '/TimeSlot.php';
 class Register extends Generic
 {
     private Team $team;
+    private Competition $competition;
     private Players $player;
     private UserManager $user;
     private TimeSlot $time_slot;
@@ -23,6 +24,7 @@ class Register extends Generic
         $this->team = new Team();
         $this->player = new Players();
         $this->user = new UserManager();
+        $this->competition = new Competition();
         $this->time_slot = new TimeSlot();
     }
 
@@ -51,6 +53,9 @@ class Register extends Generic
         $id = null
     ): void
     {
+        if(!$this->competition->is_registration_available($id_competition)) {
+            throw new Exception("L'enregistrement à cette compétition n'est pas disponible actuellement !");
+        }
         $parameters = array(
             'new_team_name' => trim($new_team_name),
             'id_club' => $id_club,

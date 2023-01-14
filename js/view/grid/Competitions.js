@@ -30,6 +30,13 @@ Ext.define('Ufolep13Volley.view.grid.Competitions', {
                 flex: 1
             },
             {
+                header: "Date début d'inscription",
+                xtype: 'datecolumn',
+                format: 'd/m/Y',
+                dataIndex: 'start_register_date',
+                flex: 1
+            },
+            {
                 header: "Date limite d'inscription",
                 xtype: 'datecolumn',
                 format: 'd/m/Y',

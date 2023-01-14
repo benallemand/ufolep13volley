@@ -49,6 +49,9 @@ Ext.define('Ufolep13Volley.controller.register', {
             var code_competition = record.get('code_competition');
             var store_competitions = Ext.data.StoreManager.lookup('Competitions');
             var competition = store_competitions.findRecord('code_competition', code_competition);
+            if (Ext.Date.now() <= competition.get('start_register_date')) {
+                return;
+            }
             if (Ext.Date.now() > competition.get('limit_register_date')) {
                 return;
             }
