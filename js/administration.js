@@ -37,12 +37,12 @@ Ext.application({
                         defaultButtonUI: 'default',
                         items: [
                             {
+                                xtype: 'button',
                                 text: "RETOUR A L'ACCUEIL",
+                                href: '/',
+                                target: 'blank',
                                 scale: 'medium',
                                 glyph: 'xf015@FontAwesome',
-                                handler: function () {
-                                    window.open('.', '_self', false);
-                                }
                             },
                             {
                                 xtype: 'button',
