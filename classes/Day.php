@@ -247,7 +247,12 @@ class Day extends Generic
     {
         // list forbidden dates
         $forbidden_date = array(
-            "'19/12/2022'", "'26/12/2022'"
+            "'19/12/2022'",
+            "'26/12/2022'",
+            "'13/02/2023'",
+            "'20/02/2023'",
+            "'17/04/2023'",
+            "'24/04/2023'",
         );
         $forbidden_dates = implode(',', $forbidden_date);
         // check if we don't generate an already existing day for the competition
