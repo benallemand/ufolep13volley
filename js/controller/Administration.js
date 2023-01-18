@@ -987,37 +987,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }).show();
     },
     deleteHallOfFame: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/halloffame/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/halloffame/delete', 'id');
     },
     addTimeslot: function (button) {
         var grid = button.up('grid');
@@ -1039,37 +1009,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteTimeslot: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/timeslot/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/timeslot/delete', 'id');
     },
     addCompetition: function (button) {
         var grid = button.up('grid');
@@ -1091,37 +1031,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteCompetition: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/competition/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/competition/delete', 'id');
     },
     addBlacklistGymnase: function (button) {
         var grid = button.up('grid');
@@ -1143,37 +1053,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistGymnase: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistcourt/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/blacklistcourt/delete', 'id');
     },
     addBlacklistTeam: function (button) {
         var grid = button.up('grid');
@@ -1195,37 +1075,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistTeam: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistteam/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/blacklistteam/delete', 'id');
     },
     addBlacklistTeams: function (button) {
         var grid = button.up('grid');
@@ -1247,37 +1097,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistTeams: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistteams/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/blacklistteams/delete', 'id');
     },
     addBlacklistDate: function (button) {
         var grid = button.up('grid');
@@ -1299,69 +1119,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         windowEdit.down('form').loadRecord(record);
     },
     deleteBlacklistDate: function (button) {
-        var this_controller = this;
-        var grid = button.up('grid');
-        var records = grid.getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/blacklistdate/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        grid.getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/blacklistdate/delete', 'id');
     },
     deleteUsers: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/usermanager/deleteUsers',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/usermanager/deleteUsers', 'id');
     },
     reset_password: function (button) {
         var this_controller = this;
@@ -1392,164 +1153,19 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
     },
     deleteGymnasiums: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/court/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/court/delete', 'id');
     },
     deleteClubs: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/club/deleteClubs',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/club/deleteClubs', 'id');
     },
     deleteTeams: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id_equipe'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/team/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/team/delete', 'id_equipe');
     },
     deleteMatches: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id_match'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/matchmgr/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/matchmgr/delete', 'id_match');
     },
     deleteRanks: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/rank/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/rank/delete', 'id');
     },
     genericRequest: function (button, title, url, is_one_record_allowed) {
         var this_controller = this;
@@ -1605,7 +1221,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     generateAll: function (button) {
         this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
     },
-    deleteDays: function (button) {
+    genericDelete: function(button, url, id_field) {
         var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1622,10 +1238,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
                 var ids = [];
                 Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
+                    ids.push(record.get(id_field));
                 });
                 Ext.Ajax.request({
-                    url: '/rest/action.php/day/delete',
+                    url: url,
                     params: {
                         ids: ids.join(',')
                     },
@@ -1636,70 +1252,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 });
             }
         });
+    },
+    deleteDays: function (button) {
+        this.genericDelete(button, '/rest/action.php/day/delete', 'id');
     },
     deleteLimitDates: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id_date'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/limitdate/delete',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/limitdate/delete', 'id_date');
     },
     deletePlayers: function (button) {
-        var this_controller = this;
-        var records = button.up('grid').getSelectionModel().getSelection();
-        if (records.length === 0) {
-            return;
-        }
-        Ext.Msg.show({
-            title: 'Supprimer?',
-            msg: 'Etes-vous certain de vouloir supprimer ces lignes?',
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            fn: function (btn) {
-                if (btn !== 'yes') {
-                    return;
-                }
-                var ids = [];
-                Ext.each(records, function (record) {
-                    ids.push(record.get('id'));
-                });
-                Ext.Ajax.request({
-                    url: '/rest/action.php/player/delete_players',
-                    params: {
-                        ids: ids.join(',')
-                    },
-                    success: function () {
-                        button.up('grid').getStore().load();
-                    },
-                    failure: this_controller.manage_failure,
-                });
-            }
-        });
+        this.genericDelete(button, '/rest/action.php/player/delete_players', 'id');
     },
     cancel: function (button) {
         if (!Ext.isEmpty(button.up('window'))) {
