@@ -174,7 +174,6 @@ class MatchMgr extends Generic
         }
         foreach ($match_files as $match_file) {
             $file_path = __DIR__ . "/../" . $match_file['path_file'];
-            error_log($file_path);
             if (file_exists($file_path))
                 $zip->addFile($file_path, basename($file_path));
         }
