@@ -176,6 +176,7 @@ try {
                 'success' => false,
                 'message' => $exception->getMessage()
             ));
+            error_log($exception->getMessage());
             break;
     }
 
