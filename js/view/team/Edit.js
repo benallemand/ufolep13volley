@@ -46,7 +46,14 @@ Ext.define('Ufolep13Volley.view.team.Edit', {
                 fieldLabel: 'Nom',
                 name: 'nom_equipe',
                 allowBlank: false
-            }
+            },
+            {
+                name: 'is_cup_registered',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Inscrite à la coupe ?',
+                boxLabel: 'Oui',
+                uncheckedValue: 'off'
+            },
         ],
         buttons: [
             {

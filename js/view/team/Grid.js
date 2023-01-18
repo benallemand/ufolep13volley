@@ -21,6 +21,16 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                 header: 'Compétition',
                 dataIndex: 'libelle_competition',
                 width: 300
+            },
+            {
+                header: 'Inscrite à la coupe ?',
+                dataIndex: 'is_cup_registered',
+                xtype: 'checkcolumn',
+                listeners: {
+                    beforecheckchange: function () {
+                        return false;
+                    }
+                }
             }
         ]
     },

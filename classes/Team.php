@@ -42,7 +42,8 @@ class Team extends Generic
         TO_BASE64(jresp.email) AS email_base64,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
-        p.path_photo
+        p.path_photo,
+        e.is_cup_registered
         FROM equipes e 
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
@@ -268,7 +269,14 @@ class Team extends Generic
     /**
      * @throws Exception
      */
-    public function saveTeam($web_site = null, $id_club = null, $id_equipe = null, $dirtyFields = null, $code_competition = null, $nom_equipe = null)
+    public function saveTeam(
+        $web_site = null,
+        $id_club = null,
+        $id_equipe = null,
+        $is_cup_registered = null,
+        $dirtyFields = null,
+        $code_competition = null,
+        $nom_equipe = null)
     {
         $bindings = array();
         $inputs = array();
@@ -280,6 +288,9 @@ class Team extends Generic
         }
         if (!is_null($id_equipe)) {
             $inputs['id_equipe'] = $id_equipe;
+        }
+        if (!is_null($is_cup_registered)) {
+            $inputs['is_cup_registered'] = $is_cup_registered;
         }
         if (!is_null($dirtyFields)) {
             $inputs['dirtyFields'] = $dirtyFields;
@@ -309,6 +320,11 @@ class Team extends Generic
                         'type' => 'i',
                         'value' => $value
                     );
+                    $sql .= "$key = ?,";
+                    break;
+                case 'is_cup_registered':
+                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $bindings[] = array('type' => 'i', 'value' => $val);
                     $sql .= "$key = ?,";
                     break;
                 default:
