@@ -18,7 +18,7 @@ Ext.define('Ufolep13Volley.model.register', {
         {name: 'hour_court_2', type: 'string'},
         {name: 'creation_date', type: 'date', dateFormat: 'd/m/Y H:i:s'},
         {name: 'division', type: 'string'},
-        {name: 'rank_start', type: 'int'},
+        {name: 'rank_start', type: 'int', allowNull: true},
         {name: 'remarks', type: 'string'},
         {
             name: 'leader',
