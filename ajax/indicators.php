@@ -356,6 +356,7 @@ FROM matches m
   JOIN creneau ON creneau.id_equipe = m.id_equipe_dom
   JOIN gymnase ON gymnase.id = creneau.id_gymnase
 WHERE m.match_status != 'ARCHIVED'
+AND m.date_reception > CURRENT_DATE
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), m.date_reception
 HAVING COUNT(DISTINCT m.id_match) > gymnase.nb_terrain
 ORDER BY COUNT(DISTINCT m.id_match) DESC");
