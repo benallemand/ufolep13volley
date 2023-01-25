@@ -713,10 +713,11 @@ class MatchMgr extends Generic
 
     /**
      * @param $id_equipe
+     * @param $code_competition
      * @return array|int|string|null
      * @throws Exception
      */
-    private function get_computed_dates($id_equipe): array|int|string|null
+    private function get_computed_dates($id_equipe, $code_competition): array|int|string|null
     {
         $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(c.jour,
                                                  'Lundi',
@@ -731,13 +732,14 @@ class MatchMgr extends Generic
                        c.id_gymnase,
                        e.code_competition,
                        e.nom_equipe
-                FROM journees j
-                         JOIN equipes e on j.code_competition = e.code_competition
+                FROM journees j, equipes e
                          JOIN creneau c on e.id_equipe = c.id_equipe
-                WHERE c.id_equipe = ?
+                WHERE e.id_equipe = ?
+                AND j.code_competition = ?
                 ORDER BY c.usage_priority, week_number";
         $bindings = array(
             array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $code_competition),
         );
         return $this->sql_manager->execute($sql, $bindings);
     }
@@ -863,7 +865,7 @@ class MatchMgr extends Generic
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
         $is_date_found = false;
-        $computed_dates = $this->get_computed_dates($team_dom['id_equipe']);
+        $computed_dates = $this->get_computed_dates($team_dom['id_equipe'], $code_competition);
         foreach ($computed_dates as $computed_date) {
             // computed date is full (too many matches in same gymnasium)
             if ($this->is_date_filled(
@@ -1011,47 +1013,6 @@ class MatchMgr extends Generic
         }
     }
 
-//    TODO dead code ?
-//    /**
-//     * @param $team
-//     * @return bool
-//     * @throws Exception
-//     */
-//    private function is_flip_allowed($team)
-//    {
-//        $id_team = $team['id_equipe'];
-//        $sql = "SELECT
-//                       SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
-//                       SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
-//                       m.code_competition                           AS competition,
-//                       e.nom_equipe                                 AS equipe
-//                FROM matches m
-//                         JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
-//                WHERE m.match_status != 'ARCHIVED'
-//                AND e.id_equipe = $id_team
-//                GROUP BY competition, equipe
-//                HAVING ABS(domicile - exterieur) > 2
-//                ORDER BY competition, equipe";
-//        $results = $this->sql_manager->execute($sql);
-//        return count($results) === 0;
-//    }
-//
-//    /**
-//     * @param $computed_date
-//     * @param $team_id
-//     * @return bool
-//     * @throws Exception
-//     */
-//    public function are_teams_blacklisted($computed_date, $team_id)
-//    {
-//        $blacklistedTeamIds = $this->get_blacklisted_team_ids($team_id);
-//        foreach ($blacklistedTeamIds as $blacklistedTeamId) {
-//            if ($this->has_match($blacklistedTeamId, $computed_date)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     /**
      * @param $team_id
@@ -1805,9 +1766,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             (new Register())->set_up_season($id);
             // get competitions
             $competition_mgr = new Competition();
-            if ($competition_mgr->is_automatic_registration($id)) {
-                continue;
-            }
             // reset competition
             $competition_mgr->resetCompetition($id);
             // generate days
@@ -1815,33 +1773,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $competition = $competition_mgr->get_by_id($id);
             $code_competition = $competition['code_competition'];
             $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
-            $this->generate_matches($competition);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function dry_run_isoardi($ids = null)
-    {
-        if (empty($ids)) {
-            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
-        }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            // get competitions
-            $competition_mgr = new Competition();
-            if (!$competition_mgr->is_automatic_registration($id)) {
-                continue;
-            }
-            // init classements table
-            $competition_mgr->init_classements_isoardi(true);
-            // reset competition
-            $competition_mgr->resetCompetition($id);
-            // generate days
-            (new Day())->generateDays($id);
-            $this->delete_matches("match_status = 'NOT_CONFIRMED'");
-            $competition = $competition_mgr->get_by_id($id);
             $this->generate_matches($competition);
         }
     }
