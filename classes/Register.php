@@ -26,6 +26,7 @@ class Register extends Generic
         $this->user = new UserManager();
         $this->competition = new Competition();
         $this->time_slot = new TimeSlot();
+        $this->table_name = 'register';
     }
 
     /**
@@ -53,7 +54,7 @@ class Register extends Generic
         $id = null
     ): void
     {
-        if(!$this->competition->is_registration_available($id_competition)) {
+        if (!$this->competition->is_registration_available($id_competition)) {
             throw new Exception("L'enregistrement à cette compétition n'est pas disponible actuellement !");
         }
         $parameters = array(
@@ -190,7 +191,7 @@ class Register extends Generic
     {
         // make a cleanup before new season
         $this->cleanup_before_start($id_competition);
-        // check that all data is ok  in register table
+        // check that all data is ok in register table
         $this->check_data($id_competition);
         // get registered teams
         $registered_teams = $this->get_register_by_competition($id_competition);
@@ -346,15 +347,13 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    private function check_data($id_competition)
+    public function check_data($id_competition)
     {
         $sql = "SELECT * 
                 FROM register 
                 WHERE id_competition = ?
                 AND (
                     new_team_name IS NULL
-                    OR division IS NULL
-                    OR rank_start < 1
                     OR (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
                     OR (id_court_2 IS NOT NULL AND day_court_2 IS NULL)
                     OR (id_court_2 IS NOT NULL AND id_court_1 IS NULL))";
@@ -379,9 +378,13 @@ class Register extends Generic
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
         $this->sql_manager->execute($sql, $bindings);
-        // if competition registration is automatic, generate ranks from parent competition
         $competition_manager = new Competition();
-        if($competition_manager->is_automatic_registration($id_competition)) {
+        // if needed, make a group draw
+        if($competition_manager->is_group_draw_needed($id_competition)) {
+            $this->group_draw($id_competition);
+        }
+        // if competition registration is automatic, generate ranks from parent competition
+        if ($competition_manager->is_automatic_registration($id_competition)) {
             $competition = $competition_manager->get_by_id($id_competition);
             $rank_manager = new Rank();
             $team_manager = new Team();
@@ -558,5 +561,40 @@ class Register extends Generic
         $sql = $this->getSql($where);
         return $this->sql_manager->execute($sql, $bindings);
     }
+
+    public function get_pending_registrations($id_competition)
+    {
+        $where = "r.rank_start IS NULL AND r.division IS NULL AND r.id_competition = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $sql = $this->getSql($where);
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * make a group draw to set 'register.division' and 'register.rank_start' for a dedicated competition
+     * @param $id_competition
+     * @return void
+     * @throws Exception
+     */
+    private function group_draw($id_competition): void
+    {
+        if(!$this->competition->is_group_draw_needed($id_competition)) {
+            throw new Exception("Pas de tirage au sort pour cette compétition !");
+        }
+        $pending_registrations = $this->get_register_by_competition($id_competition);
+        shuffle($pending_registrations);
+        $pools = array_chunk($pending_registrations, 3);
+        foreach ($pools as $pool_index => $pool) {
+            foreach ($pool as $pending_registration_index => $pending_registration) {
+                $this->save(array(
+                    'id' => $pending_registration['id'],
+                    'division' => $pool_index + 1,
+                    'rank_start' => $pending_registration_index + 1,
+                ));
+            }
+        }
+    }
+
 
 }
