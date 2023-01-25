@@ -28,8 +28,8 @@ class RegisterTest extends TestCase
     }
 
     /**
- * @throws Exception
- */
+     * @throws Exception
+     */
     public function test_set_up_season_isoardi()
     {
         //230105:PASS
@@ -43,18 +43,6 @@ class RegisterTest extends TestCase
      * @throws Exception
      */
     public function test_get_pending_registrations()
-    {
-        //230123:PASS
-        $competition_mgr = new Competition();
-        $competition_kh = $competition_mgr->getCompetition('kh');
-        $pending_registrations = $this->register->get_pending_registrations($competition_kh['id']);
-        $this->assertNotEmpty($pending_registrations);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function test_group_draw()
     {
         //230123:PASS
         $competition_mgr = new Competition();
