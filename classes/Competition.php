@@ -5,11 +5,13 @@ require_once __DIR__ . '/../classes/Rank.php';
 
 class Competition extends Generic
 {
+    private Rank $rank;
 
     public function __construct()
     {
         parent::__construct();
         $this->table_name = 'competitions';
+        $this->rank = new Rank();
     }
 
     public function getSql($query = "1=1"): string
@@ -101,7 +103,10 @@ class Competition extends Generic
     }
 
     /**
-     * @param $inputs
+     * @param $id
+     * @param $id_club_1
+     * @param $id_club_2
+     * @param null $dirtyFields
      * @throws Exception
      */
     public function save_friendships(
@@ -194,7 +199,11 @@ class Competition extends Generic
     }
 
     /**
-     * @param $inputs
+     * @param $id
+     * @param $city
+     * @param $from_date
+     * @param $to_date
+     * @param null $dirtyFields
      * @throws Exception
      */
     public function save_blacklist_by_city(
@@ -270,21 +279,11 @@ class Competition extends Generic
      */
     public function generate_menu(string $code_competition): void
     {
-        switch ($code_competition) {
-            case 'm':
-            case 'f':
-            case 'mo':
-                $label = 'Division';
-                break;
-            case 'c':
-            case 'kh':
-                $label = 'Poule';
-                break;
-            default:
-                $label = '?';
-                break;
-        }
-        $rank_manager = new Rank();
+        $label = match ($code_competition) {
+            'm', 'f', 'mo' => 'Division',
+            'c', 'kh' => 'Poule',
+            default => '?',
+        };
         $result_string = "";
         $competitions = $this->getCompetitions("c.code_competition = '$code_competition'");
         foreach ($competitions as $competition) {
@@ -293,7 +292,7 @@ class Competition extends Generic
                 continue;
             }
             $result_string .= "<li class='dropdown-header'><h4>" . $competition['libelle'] . "</h4></li>";
-            $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
+            $divisions = $this->rank->getDivisionsFromCompetition($code_competition);
             foreach ($divisions as $division) {
                 $division_string = $division['division'];
                 $result_string .= "<li><a href='#championship/$code_competition/$division_string'>$label $division_string</a></li>";
@@ -302,7 +301,10 @@ class Competition extends Generic
         echo $result_string;
     }
 
-    public function getTournaments()
+    /**
+     * @throws Exception
+     */
+    public function getTournaments(): array|int|string|null
     {
         $sql = "SELECT c.id, c.code_competition, c.libelle 
         FROM competitions c 
@@ -311,6 +313,9 @@ class Competition extends Generic
         return $this->sql_manager->execute($sql);
     }
 
+    /**
+     * @throws Exception
+     */
     public function saveCompetition(
         $code_competition,
         $libelle,
@@ -321,7 +326,7 @@ class Competition extends Generic
         $is_home_and_away,
         $id = null,
         $dirtyFields = null
-    )
+    ): int|array|string|null
     {
         $inputs = array(
             'dirtyFields' => $dirtyFields,
@@ -337,7 +342,7 @@ class Competition extends Generic
         return $this->save($inputs);
     }
 
-    public function save($inputs)
+    public function save($inputs): int|array|string|null
     {
         $bindings = array();
         if (empty($inputs['id'])) {
@@ -369,14 +374,16 @@ class Competition extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (empty($inputs['id'])) {
-        } else {
+        if (!empty($inputs['id'])) {
             $bindings[] = array('type' => 'i', 'value' => $inputs['id']);
             $sql .= " WHERE id = ?";
         }
         return $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * @throws Exception
+     */
     public function getCompetition($code_competition)
     {
         $sql = "SELECT 
@@ -413,13 +420,15 @@ class Competition extends Generic
                 throw new Exception("La compétition a déjà commencé !!!");
             }
             require_once __DIR__ . '/../classes/Rank.php';
-            $rank_manager = new Rank();
             $competition = $competitions[0];
             $code_competition = $competition['code_competition'];
-            $rank_manager->resetRankPoints($code_competition);
+            $this->rank->resetRankPoints($code_competition);
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function getTournamentName($tournamentCode)
     {
         $sql = "SELECT 
@@ -430,6 +439,9 @@ class Competition extends Generic
         return $results[0]['tournament_name'];
     }
 
+    /**
+     * @throws Exception
+     */
     public function getParentCompetition($compet)
     {
         $sql = "SELECT id_compet_maitre FROM competitions WHERE code_competition = '$compet'";
@@ -500,6 +512,68 @@ class Competition extends Generic
         $start_date = date('Y-m-d', strtotime($competition['start_register_date']));
         $end_date = date('Y-m-d', strtotime($competition['limit_register_date']));
         return !(($current_date >= $start_date) && ($current_date <= $end_date));
+    }
+
+    /**
+     * - take all registered teams ordered by division,current_rank.
+     * - split by 2, to avoid having too much handicap
+     * - randomize each array
+     * - divide to set only 4 teams per pool(division), to get 3 days for pool phase
+     * - insert into classements table
+     * @param bool $is_dry_run
+     * @return void
+     * @throws Exception
+     */
+    public function init_classements_isoardi(bool $is_dry_run): void
+    {
+        // take all registered teams ordered by division,current_rank.
+        $rank_teams = $this->rank->get_full_competition_rank('m');
+        // split by 2, to avoid having too much handicap
+        $group_1_teams = array_slice($rank_teams, 0, count($rank_teams) / 2);
+        $group_2_teams = array_slice($rank_teams, count($rank_teams) / 2);
+        // randomize each array
+        shuffle($group_1_teams);
+        shuffle($group_2_teams);
+        // divide to set only 4 teams per pool(division), to get 3 days for pool phase
+        $group_1_pools = array_chunk($group_1_teams, 3);
+        $group_2_pools = array_chunk($group_2_teams, 3);
+        // insert into classements table
+        foreach ($group_1_pools as $division_index => $group_1_pool) {
+            foreach ($group_1_pool as $team_index => $team) {
+                $team_division = $division_index + 1;
+                $team_rank = $team_index + 1;
+                $team_name = $team['equipe'];
+                $division_champ = $team['division'];
+                if ($is_dry_run) {
+                    error_log("$team_division\t$team_rank\t$team_name\t\t\tdiv $division_champ");
+                } else {
+                    $this->rank->insert('c', $team_division, $team['id_equipe'], $team_rank);
+                }
+            }
+        }
+        foreach ($group_2_pools as $division_index => $group_2_pool) {
+            foreach ($group_2_pool as $team_index => $team) {
+                $team_division = count($group_1_pools) + $division_index + 1;
+                $team_rank = $team_index + 1;
+                $team_name = $team['equipe'];
+                $division_champ = $team['division'];
+                if ($is_dry_run) {
+                    error_log("$team_division\t$team_rank\t$team_name\t\t\tdiv $division_champ");
+                } else {
+                    $this->rank->insert('c', $team_division, $team['id_equipe'], $team_rank);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function is_group_draw_needed($id_competition)
+    {
+        $competition = $this->get_by_id($id_competition);
+        return $competition['code_competition'] == 'kh';
     }
 
 
