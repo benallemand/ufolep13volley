@@ -189,12 +189,17 @@ class Register extends Generic
      */
     public function set_up_season($id_competition): void
     {
+        $this->competition->get_by_id($id_competition);
         // make a cleanup before new season
         $this->cleanup_before_start($id_competition);
         // check that all data is ok in register table
         $this->check_data($id_competition);
         // get registered teams
         $registered_teams = $this->get_register_by_competition($id_competition);
+        // if automatic registration, only take new teams into account
+        if($this->competition->is_automatic_registration($id_competition)) {
+            $registered_teams = $this->get_pending_registrations($id_competition, true);
+        }
         foreach ($registered_teams as $registered_team) {
             $id_team = $this->create_or_update_team($registered_team);
             $team = $this->team->getTeam($id_team);
@@ -202,8 +207,13 @@ class Register extends Generic
             $this->createTimeslots($registered_team, $id_team);
             $this->add_leader_informations($registered_team, $id_team);
         }
-        // init ranks
-        $this->init_ranks($id_competition);
+        if($this->competition->is_automatic_registration($id_competition)) {
+            $this->competition->init_classements_isoardi(false);
+        }
+        else {
+            // init ranks
+            $this->init_ranks($id_competition);
+        }
     }
 
     /**
@@ -369,16 +379,10 @@ class Register extends Generic
      */
     private function init_ranks($id_competition)
     {
-        // first, remove all ranks for competition
-        $sql = "DELETE 
-                FROM classements 
-                WHERE code_competition IN (SELECT code_competition
-                                           FROM competitions 
-                                           WHERE id = ?)";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        $this->sql_manager->execute($sql, $bindings);
+        $rank_manager = new Rank();
         $competition_manager = new Competition();
+        // first, remove all ranks for competition
+        $rank_manager->delete_competition($id_competition);
         // if needed, make a group draw
         if($competition_manager->is_group_draw_needed($id_competition)) {
             $this->group_draw($id_competition);
@@ -386,7 +390,6 @@ class Register extends Generic
         // if competition registration is automatic, generate ranks from parent competition
         if ($competition_manager->is_automatic_registration($id_competition)) {
             $competition = $competition_manager->get_by_id($id_competition);
-            $rank_manager = new Rank();
             $team_manager = new Team();
             $code_compet_maitre = $competition['id_compet_maitre'];
             $teams = $team_manager->getTeams("e.code_competition = '$code_compet_maitre'");
@@ -562,11 +565,21 @@ class Register extends Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
-    public function get_pending_registrations($id_competition)
+    /**
+     * @throws Exception
+     */
+    public function get_pending_registrations($id_competition, $check_parent_competition=false): array|int|string|null
     {
-        $where = "r.rank_start IS NULL AND r.division IS NULL AND r.id_competition = ?";
+        $competition = $this->competition->get_by_id($id_competition);
+        if($check_parent_competition) {
+            $competition = $this->competition->getCompetition($competition['id_compet_maitre']);
+            $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
+        }
+        else {
+            $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
+        }
         $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $bindings[] = array('type' => 'i', 'value' => $competition['id']);
         $sql = $this->getSql($where);
         return $this->sql_manager->execute($sql, $bindings);
     }
