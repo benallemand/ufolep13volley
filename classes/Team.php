@@ -42,6 +42,7 @@ class Team extends Generic
         TO_BASE64(jresp.email) AS email_base64,
         GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
+        e.id_photo,
         p.path_photo,
         e.is_cup_registered
         FROM equipes e 
@@ -547,13 +548,14 @@ class Team extends Generic
         return count($this->sql_manager->execute($sql, $bindings)) > 0;
     }
 
+    /**
+     * @throws Exception
+     */
     public function get_by_name(string $code_competition, string $new_team_name, int $id_club)
     {
-        $sql = "SELECT * 
-                FROM equipes 
-                WHERE code_competition = ?
-                AND nom_equipe = ?
-                AND id_club = ?";
+        $sql = $this->getSql("e.code_competition = ?
+                                    AND e.nom_equipe = ?
+                                    AND e.id_club = ?");
         $bindings = array(
             array('type' => 's', 'value' => $code_competition),
             array('type' => 's', 'value' => $new_team_name),
