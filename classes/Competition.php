@@ -524,13 +524,19 @@ class Competition extends Generic
      * @return void
      * @throws Exception
      */
-    public function init_classements_isoardi(bool $is_dry_run): void
+    public function init_classements_isoardi(bool $is_dry_run = true): void
     {
+        $rank_manager = new Rank();
+        $competition_isoardi = $this->getCompetition('c');
+        // first, remove all ranks for competition
+        $rank_manager->delete_competition($competition_isoardi['id']);
         // take all registered teams ordered by division,current_rank.
         $rank_teams = $this->rank->get_full_competition_rank('m');
+        $rank_teams = $this->append_unranked_teams($rank_teams, 'm');
         // split by 2, to avoid having too much handicap
-        $group_1_teams = array_slice($rank_teams, 0, count($rank_teams) / 2);
-        $group_2_teams = array_slice($rank_teams, count($rank_teams) / 2);
+        $length_pool_1 = intdiv(count($rank_teams), 2);
+        $group_1_teams = array_slice($rank_teams, 0, $length_pool_1);
+        $group_2_teams = array_slice($rank_teams, $length_pool_1);
         // randomize each array
         shuffle($group_1_teams);
         shuffle($group_2_teams);
@@ -570,10 +576,57 @@ class Competition extends Generic
     /**
      * @throws Exception
      */
-    public function is_group_draw_needed($id_competition)
+    public function is_group_draw_needed($id_competition): bool
     {
         $competition = $this->get_by_id($id_competition);
         return $competition['code_competition'] == 'kh';
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function append_unranked_teams(array|int|string|null $rank_teams, string $code_competition)
+    {
+        require_once __DIR__ . '/Register.php';
+        require_once __DIR__ . '/Team.php';
+        $register = new Register();
+        $team = new Team();
+        $competition = $this->getCompetition($code_competition);
+        $pending_registrations = $register->get_pending_registrations($competition['id']);
+        $max_division = $this->get_max_division($competition['id']);
+        foreach ($pending_registrations as $pending_registration) {
+            $team = $team->get_by_name(
+                $pending_registration['code_competition'],
+                $pending_registration['new_team_name'],
+                $pending_registration['id_club']);
+            $rank_teams[] = array(
+                'rang' => 0,
+                'id_equipe' => $team['id_equipe'],
+                'equipe' => $team['nom_equipe'],
+                'division' => $max_division,
+            );
+        }
+        return $rank_teams;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function get_max_division(mixed $id_competition)
+    {
+        $sql = "SELECT MAX(division) as div_max 
+                FROM classements 
+                WHERE code_competition IN (SELECT code_competition 
+                                           FROM competitions 
+                                           WHERE id = ?)";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_competition),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if(count($results) == 0) {
+            return 0;
+        }
+        return $results[0]['div_max'];
     }
 
 
