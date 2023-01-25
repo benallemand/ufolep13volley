@@ -323,13 +323,12 @@ $indicatorTeamLeadersByChamp = new Indicator(
     FROM joueur_equipe je
       JOIN joueurs j ON j.id = je.id_joueur
       JOIN equipes e ON e.id_equipe = je.id_equipe
-      JOIN competitions c ON c.code_competition = e.code_competition
+      JOIN classements c2 on e.id_equipe = c2.id_equipe
+      JOIN competitions c ON c.code_competition = c2.code_competition
     WHERE
       je.is_leader + 0 > 0
       AND j.email IS NOT NULL
-    GROUP BY c.libelle
-    "
-);
+    GROUP BY c.libelle");
 
 $indicatorMatchesByGymnasiumByDate = new Indicator(
     'Nombre de matches par date et par gymnase', "SELECT
