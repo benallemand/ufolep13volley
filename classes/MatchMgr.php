@@ -263,6 +263,7 @@ class MatchMgr extends Generic
                                $set_3_ext,
                                $set_4_ext,
                                $set_5_ext,
+                               $note,
                                $forfait_dom = false,
                                $forfait_ext = false,
                                $dirtyFields = null)
@@ -285,6 +286,7 @@ class MatchMgr extends Generic
             'set_3_ext' => $set_3_ext,
             'set_4_ext' => $set_4_ext,
             'set_5_ext' => $set_5_ext,
+            'note' => $note,
         ));
     }
 
@@ -572,21 +574,6 @@ class MatchMgr extends Generic
             }
             $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
             $rounds = $this->generate_round_robin_rounds($teams_count);
-            // Interleave so that home and away games are fairly evenly dispersed.
-//            $interleaved = array();
-//            for ($i = 0; $i < $totalRounds; $i++) {
-//                $interleaved[$i] = array();
-//            }
-//            $evn = 0;
-//            $odd = ($teams_count / 2);
-//            for ($i = 0; $i < sizeof($rounds); $i++) {
-//                if ($i % 2 == 0) {
-//                    $interleaved[$i] = $rounds[$evn++];
-//                } else {
-//                    $interleaved[$i] = $rounds[$odd++];
-//                }
-//            }
-//            $rounds = $interleaved;
             // Last team can't be away for every game so flip them
             // to home on odd rounds.
             for ($round = 0; $round < sizeof($rounds); $round++) {
@@ -1751,33 +1738,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     }
 
     /**
-     * @throws Exception
-     */
-    public function generateAll($ids = null)
-    {
-        if (empty($ids)) {
-            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
-        }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            // init all gymnasiums etc. from register table
-            (new Register())->set_up_season($id);
-            // get competitions
-            $competition_mgr = new Competition();
-            if ($competition_mgr->is_automatic_registration($id)) {
-                continue;
-            }
-            // reset competition
-            $competition_mgr->resetCompetition($id);
-            // generate days
-            (new Day())->generateDays($id);
-            $this->delete_matches("match_status = 'NOT_CONFIRMED'");
-            $competition = $competition_mgr->get_by_id($id);
-            $this->generate_matches($competition);
-        }
-    }
-
-    /**
      * @param mixed $computed_date
      * @param $id_equipe
      * @return bool
@@ -1831,4 +1791,58 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         return $results[0];
     }
 
+    /**
+     * @throws Exception
+     */
+    public function generateAll($ids = null)
+    {
+        if (empty($ids)) {
+            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
+        }
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            // init all gymnasiums etc. from register table
+            (new Register())->set_up_season($id);
+            // get competitions
+            $competition_mgr = new Competition();
+            if ($competition_mgr->is_automatic_registration($id)) {
+                continue;
+            }
+            // reset competition
+            $competition_mgr->resetCompetition($id);
+            // generate days
+            (new Day())->generateDays($id);
+            $competition = $competition_mgr->get_by_id($id);
+            $code_competition = $competition['code_competition'];
+            $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
+            $this->generate_matches($competition);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function dry_run_isoardi($ids = null)
+    {
+        if (empty($ids)) {
+            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
+        }
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            // get competitions
+            $competition_mgr = new Competition();
+            if (!$competition_mgr->is_automatic_registration($id)) {
+                continue;
+            }
+            // init classements table
+            $competition_mgr->init_classements_isoardi(true);
+            // reset competition
+            $competition_mgr->resetCompetition($id);
+            // generate days
+            (new Day())->generateDays($id);
+            $this->delete_matches("match_status = 'NOT_CONFIRMED'");
+            $competition = $competition_mgr->get_by_id($id);
+            $this->generate_matches($competition);
+        }
+    }
 }
