@@ -22,6 +22,8 @@ try {
 } catch (Exception $e) {
     echo "Erreur ! " . $e->getMessage();
 }
+@session_start();
+$user_details = $_SESSION;
 ?>
 <!DOCTYPE html>
 <HTML>
@@ -56,6 +58,7 @@ try {
             type="text/javascript" src="js/match.js"></script>
     <script type="text/javascript">
         var id_match = <?php echo $id_match; ?>;
+        var user_details = <?php echo json_encode($user_details); ?>;
     </script>
 </HEAD>
 <BODY>

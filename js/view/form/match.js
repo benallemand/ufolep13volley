@@ -219,6 +219,21 @@ Ext.define('Ufolep13Volley.view.form.match', {
                             fieldLabel: "Déjà attaché(s)",
                         }
                     ]
+                },
+                {
+                    region: 'south',
+                    xtype: 'panel',
+                    title: "Commentaire",
+                    layout: 'form',
+                    scrollable: true,
+                    items: [
+                        {
+                            xtype: 'textarea',
+                            name: 'note',
+                            fieldLabel: 'Commentaire',
+                            readOnly: (user_details.profile_name !== 'ADMINISTRATEUR')
+                        }
+                    ]
                 }
             ]
         }
