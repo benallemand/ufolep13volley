@@ -429,7 +429,7 @@ $indicatorMatchesWithInvalidPlayers = new Indicator(
 
 $indicatorMatchesWithInvalidDate = new Indicator(
     "Problèmes dans les dates des matchs",
-    "SELECT m.code_match,
+    "SELECT a.* FROM (SELECT m.code_match,
        m.date_reception,
        edom.nom_equipe  AS domicile,
        eext.nom_equipe  AS exterieur,
@@ -498,7 +498,7 @@ WHERE (m_t1.id_equipe_dom = bt.id_team_1 OR m_t1.id_equipe_ext = bt.id_team_1)
   AND m_t1.match_status != 'ARCHIVED'
   AND m_t2.match_status != 'ARCHIVED'
 GROUP BY date_reception
-order by code_match");
+order by code_match) a WHERE date_reception >= CURRENT_DATE");
 
 $indicatorNotYetRegisteredOldTeam = new Indicator(
     "Equipes non réengagées",
