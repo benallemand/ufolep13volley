@@ -436,7 +436,7 @@ FROM (
     public function get_full_competition_rank(string $code_competition): array|int|string|null
     {
         $sql = "SELECT @r := @r + 1 AS rang,
-                       z.*
+                       z.id_equipe, z.equipe, z.division
                 FROM (SELECT e.id_equipe,
                              'm'                                                                            AS code_competition,
                              c.division,
@@ -477,6 +477,21 @@ FROM (
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $code_competition);
         return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delete_competition($id_competition)
+    {
+        $sql = "DELETE 
+                FROM classements 
+                WHERE code_competition IN (SELECT code_competition
+                                           FROM competitions 
+                                           WHERE id = ?)";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
 
