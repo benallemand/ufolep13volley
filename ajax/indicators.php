@@ -501,6 +501,18 @@ WHERE (m_t1.id_equipe_dom = bt.id_team_1 OR m_t1.id_equipe_ext = bt.id_team_1)
 GROUP BY date_reception
 order by code_match) a WHERE date_reception > CURRENT_DATE");
 
+$indicatorTeamManyMatchesSameDay = new Indicator(
+    "Equipe qui joue plusieurs matchs le même soir",
+    "SELECT GROUP_CONCAT(m.code_match) AS code_match,
+                e.nom_equipe,
+                m.date_reception
+         FROM equipes e
+                  JOIN matches m on e.id_equipe = m.id_equipe_dom OR e.id_equipe = m.id_equipe_ext
+         WHERE m.date_reception > CURRENT_DATE
+         GROUP BY e.id_equipe, m.date_reception
+         HAVING COUNT(m.code_match) > 1
+         ORDER BY date_reception");
+
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
 $results[] = $indicatorPlayersWithTeamButNoClub->getResult();
@@ -527,6 +539,7 @@ $results[] = $indicatorMatchGenerationCriticity->getResult();
 $results[] = $indicatorErrorInEmails->getResult();
 $results[] = $indicatorMatchesWithInvalidPlayers->getResult();
 $results[] = $indicatorMatchesWithInvalidDate->getResult();
+$results[] = $indicatorTeamManyMatchesSameDay->getResult();
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
