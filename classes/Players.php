@@ -85,7 +85,18 @@ class Players extends Generic
     {
         @session_start();
         $id_team = $_SESSION['id_equipe'];
-        return $this->get_players("je.id_equipe = $id_team");
+        $players = $this->get_players("j.id IN 
+        (
+            SELECT id_joueur 
+            FROM joueur_equipe 
+            WHERE id_equipe = $id_team
+        )");
+        foreach ($players as $index => $player) {
+            $players[$index]['is_captain'] = empty($player['id_captain']) ? 0 : in_array($id_team, explode(',', $player['id_captain']));
+            $players[$index]['is_vice_leader'] = empty($player['id_vl']) ? 0 : in_array($id_team, explode(',', $player['id_vl']));
+            $players[$index]['is_leader'] = empty($player['id_l']) ? 0 : in_array($id_team, explode(',', $player['id_l']));
+        }
+        return $players;
     }
 
     /**
@@ -98,10 +109,7 @@ class Players extends Generic
     {
         $sql = "SELECT j.* 
                 FROM players_view j
-                LEFT JOIN joueur_equipe je ON je.id_joueur = j.id
-                LEFT JOIN equipes e ON e.id_equipe = je.id_equipe
                 WHERE $where
-                GROUP BY j.id, j.sexe, UPPER(j.nom)
                 ORDER BY $order_by";
         $results = $this->sql_manager->execute($sql);
         foreach ($results as $index => $result) {
@@ -630,10 +638,18 @@ class Players extends Generic
         }
         // filter available match players by id_match (known teams)
         if (!empty($id_match)) {
-            $where .= " AND (
-                        e.id_equipe IN (SELECT id_equipe_dom FROM matches WHERE id_match = $id_match) 
-                        OR e.id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match)
-                        )";
+            $where .= " AND j.id IN (
+                            SELECT id_joueur 
+                            FROM joueur_equipe 
+                            WHERE id_equipe IN (
+                                SELECT id_equipe_dom 
+                                FROM matches 
+                                WHERE id_match = $id_match)
+                            OR id_equipe IN (
+                                SELECT id_equipe_ext 
+                                FROM matches 
+                                WHERE id_match = $id_match)
+                            )";
         }
         return $this->get_players($where, "j.club IS NULL, j.club, j.nom");
     }
@@ -649,7 +665,18 @@ class Players extends Generic
         if (!$this->team->isTeamSheetAllowedForUser($idTeam)) {
             throw new Exception("Vous n'avez pas la permission de consulter cette équipe !");
         }
-        return $this->get_players("je.id_equipe = $idTeam");
+        $players = $this->get_players("j.id IN 
+        (
+            SELECT id_joueur 
+            FROM joueur_equipe 
+            WHERE id_equipe = $idTeam
+        )");
+        foreach ($players as $index => $player) {
+            $players[$index]['is_captain'] = empty($player['id_captain']) ? 0 : in_array($idTeam, explode(',', $player['id_captain']));
+            $players[$index]['is_vice_leader'] = empty($player['id_vl']) ? 0 : in_array($idTeam, explode(',', $player['id_vl']));
+            $players[$index]['is_leader'] = empty($player['id_l']) ? 0 : in_array($idTeam, explode(',', $player['id_l']));
+        }
+        return $players;
     }
 
     /**

@@ -106,13 +106,13 @@ try {
         $pdf->Cell(5, 5, 'o', 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 8);
         $roles = array();
-        if ($jsonPlayer['is_captain'] === "1") {
+        if ($jsonPlayer['is_captain'] == "1") {
             $roles[] = 'CAP';
         }
-        if ($jsonPlayer['is_leader'] === "1") {
+        if ($jsonPlayer['is_leader'] == "1") {
             $roles[] = 'RESP';
         }
-        if ($jsonPlayer['is_vice_leader'] === "1") {
+        if ($jsonPlayer['is_vice_leader'] == "1") {
             $roles[] = 'SUPP';
         }
         if (count($roles) > 0) {
