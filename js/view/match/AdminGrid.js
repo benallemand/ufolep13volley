@@ -13,92 +13,71 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 items: [
                     {
                         getTip: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return '';
-                            }
-                            if (!record.get('certif')) {
-                                return '';
-                            }
-                            return "Match validé";
-
+                            return record.get('match_status') === 'ARCHIVED' ? 'Match archivé' : '';
                         },
                         getClass: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return 'x-hidden-display';
-                            }
-                            if (!record.get('certif')) {
-                                return 'x-hidden-display';
-                            }
-                            return 'fa fa-check green';
+                            return record.get('match_status') === 'ARCHIVED' ? 'fa fa-box-archive' : 'x-hidden-display';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                         },
                     },
                     {
                         getTip: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return '';
-                            }
-                            if (!record.get('is_match_player_filled')) {
-                                return '';
-                            }
-                            return "Présents renseignés";
-
+                            return record.get('match_status') === 'CONFIRMED' ? 'Match confirmé' : '';
                         },
                         getClass: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return 'x-hidden-display';
-                            }
-                            if (!record.get('is_match_player_filled')) {
-                                return 'x-hidden-display';
-                            }
-                            return 'fa fa-list green';
+                            return record.get('match_status') === 'CONFIRMED' ? 'fa fa-circle green' : 'x-hidden-display';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                         },
                     },
                     {
                         getTip: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return '';
-                            }
-                            if (!record.get('is_forfait')) {
-                                return '';
-                            }
-                            return "Equipe forfait";
-
+                            return record.get('match_status') === 'NOT_CONFIRMED' ? 'Match non confirmé' : '';
                         },
                         getClass: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return 'x-hidden-display';
-                            }
-                            if (!record.get('is_forfait')) {
-                                return 'x-hidden-display';
-                            }
-                            return 'fa fa-f green';
+                            return record.get('match_status') === 'NOT_CONFIRMED' ? 'fa fa-circle red' : 'x-hidden-display';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                         },
                     },
                     {
                         getTip: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return '';
-                            }
-                            if (!record.get('is_match_player_requested')) {
-                                return '';
-                            }
-                            return "Présents non renseignés !";
-
+                            return record.get('certif') ? 'Match validé' : '';
                         },
                         getClass: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return 'x-hidden-display';
-                            }
-                            if (!record.get('is_match_player_requested')) {
-                                return 'x-hidden-display';
-                            }
-                            return 'fa fa-exclamation-triangle orange';
+                            return record.get('certif') ? 'fa fa-check green' : 'x-hidden-display';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
+                            return record.get('is_match_player_filled') ? 'Présents renseignés' : '';
+                        },
+                        getClass: function (value, meta, record) {
+                            return record.get('is_match_player_filled') ? 'fa fa-list green' : 'x-hidden-display';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
+                            return record.get('is_forfait') ? 'Equipe forfait' : '';
+                        },
+                        getClass: function (value, meta, record) {
+                            return record.get('is_forfait') ? 'fa fa-f green' : 'x-hidden-display';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                        },
+                    },
+                    {
+                        getTip: function (value, meta, record) {
+                            return record.get('is_match_player_requested') ? 'Présents non renseignés !' : '';
+                        },
+                        getClass: function (value, meta, record) {
+                            return record.get('is_match_player_requested') ? 'fa fa-exclamation-triangle orange' : 'x-hidden-display';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                             grid.getSelectionModel().select(record);
@@ -107,23 +86,10 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return '';
-                            }
-                            if (!record.get('has_forbidden_player')) {
-                                return '';
-                            }
-                            return "Au moins 1 joueur n'était pas valide !";
-
+                            return record.get('has_forbidden_player') ? 'Au moins 1 joueur n\'était pas valide !' : '';
                         },
                         getClass: function (value, meta, record) {
-                            if (record.get('match_status') === 'ARCHIVED') {
-                                return 'x-hidden-display';
-                            }
-                            if (!record.get('has_forbidden_player')) {
-                                return 'x-hidden-display';
-                            }
-                            return 'fa fa-exclamation-circle red';
+                            return record.get('has_forbidden_player') ? 'fa fa-exclamation-circle red' : 'x-hidden-display';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                             grid.getSelectionModel().select(record);
@@ -131,12 +97,12 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         },
                     }
                 ],
-                flex: 1
+                width: 80,
             },
             {
                 header: 'Code',
                 dataIndex: 'code_match',
-                flex: 1,
+                width: 100,
                 renderer: function (value, meta, record) {
                     return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a>",
                         record.get('id_match'),
@@ -146,7 +112,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             {
                 header: 'Fichiers',
                 dataIndex: 'files_paths',
-                flex: 1,
+                width: 100,
                 renderer: function (value) {
                     if (Ext.isEmpty(value)) {
                         return value;
@@ -163,19 +129,19 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 }
             },
             {
-                header: 'Compétition',
-                dataIndex: 'libelle_competition',
-                flex: 1
+                header: 'Comp',
+                dataIndex: 'code_competition',
+                width: 50,
             },
             {
-                header: 'Division',
+                header: 'Div',
                 dataIndex: 'division',
-                flex: 1
+                width: 50,
             },
             {
                 header: 'Journée',
-                dataIndex: 'journee',
-                flex: 1
+                dataIndex: 'numero_journee',
+                width: 50,
             },
             {
                 header: 'Domicile',
@@ -192,30 +158,32 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 xtype: 'datecolumn',
                 format: 'D d/m/Y',
                 dataIndex: 'date_reception',
-                flex: 1
+                width: 120,
             },
             {
                 header: 'Date originale',
+                hidden: true,
                 xtype: 'datecolumn',
                 format: 'D d/m/Y',
                 dataIndex: 'date_original',
-                flex: 1
+                width: 120,
             },
             {
                 header: 'Gymnase',
+                hidden: true,
                 dataIndex: 'gymnasium',
-                flex: 1
+                width: 120,
             },
             {
                 header: 'Heure',
                 dataIndex: 'heure_reception',
-                flex: 1
+                width: 80,
             },
             {
-                header: 'Statut',
-                dataIndex: 'match_status',
+                header: 'Commentaires',
+                dataIndex: 'note',
                 flex: 1
-            }
+            },
         ]
     },
     dockedItems: [
