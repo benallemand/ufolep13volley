@@ -188,7 +188,7 @@ Ext.define('Ufolep13Volley.view.form.match', {
                         {
                             xtype: 'displayfield',
                             value: "<p style='font-size: small'>Pour rappel, il est nécessaire de fournir:<br>" +
-                                "- Les scans de la feuille de score recto verso(résultat et détail des sets)<br>" +
+                                "- Les scans de la feuille de score (résultat et détail des sets)<br>" +
                                 "- Les 2 fiches équipes<br>" +
                                 "Formats acceptés: ZIP, PDF, JPG (taille raisonnable, merci de ne pas dépasser 3 Mo)<br>" +
                                 "Les champs suivants sont optionnels (uniquement si plus d'1 fichier doit être joint à ce match)</p>"
