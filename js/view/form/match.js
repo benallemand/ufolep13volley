@@ -76,6 +76,20 @@ Ext.define('Ufolep13Volley.view.form.match', {
                                                 checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
                                             }
+                                            else {
+                                                checkbox.up('form').down('field[name=score_equipe_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_1_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_2_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_3_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_4_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=score_equipe_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_1_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_2_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_3_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
+                                            }
                                         }
                                     }
                                 },
@@ -136,7 +150,31 @@ Ext.define('Ufolep13Volley.view.form.match', {
                                             }
                                             if (new_val) {
                                                 checkbox.up('form').down('field[name=score_equipe_dom]').setValue(3);
+                                                checkbox.up('form').down('field[name=set_1_dom]').setValue(25);
+                                                checkbox.up('form').down('field[name=set_2_dom]').setValue(25);
+                                                checkbox.up('form').down('field[name=set_3_dom]').setValue(25);
+                                                checkbox.up('form').down('field[name=set_4_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_dom]').setValue(0);
                                                 checkbox.up('form').down('field[name=score_equipe_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_1_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_2_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_3_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
+                                            }
+                                            else {
+                                                checkbox.up('form').down('field[name=score_equipe_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_1_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_2_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_3_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_4_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_dom]').setValue(0);
+                                                checkbox.up('form').down('field[name=score_equipe_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_1_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_2_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_3_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
+                                                checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
                                             }
                                         }
                                     }
