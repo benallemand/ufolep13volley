@@ -14,6 +14,7 @@ class Register extends Generic
     private Players $player;
     private UserManager $user;
     private TimeSlot $time_slot;
+    private Rank $rank;
 
     /**
      * Match constructor.
@@ -26,6 +27,7 @@ class Register extends Generic
         $this->user = new UserManager();
         $this->competition = new Competition();
         $this->time_slot = new TimeSlot();
+        $this->rank = new Rank();
         $this->table_name = 'register';
     }
 
@@ -189,7 +191,6 @@ class Register extends Generic
      */
     public function set_up_season($id_competition): void
     {
-        $this->competition->get_by_id($id_competition);
         // make a cleanup before new season
         $this->cleanup_before_start($id_competition);
         // check that all data is ok in register table
@@ -197,8 +198,13 @@ class Register extends Generic
         // get registered teams
         $registered_teams = $this->get_register_by_competition($id_competition);
         // if automatic registration, only take new teams into account
-        if($this->competition->is_automatic_registration($id_competition)) {
-            $registered_teams = $this->get_pending_registrations($id_competition, true);
+        if ($this->competition->is_automatic_registration($id_competition)) {
+            // if championship and 2nd half, only register new teams
+            if ($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
+                $registered_teams = $this->get_2nd_half_registrations($id_competition);
+            } else {
+                $registered_teams = $this->get_pending_registrations($id_competition, true);
+            }
         }
         foreach ($registered_teams as $registered_team) {
             $id_team = $this->create_or_update_team($registered_team);
@@ -207,10 +213,10 @@ class Register extends Generic
             $this->createTimeslots($registered_team, $id_team);
             $this->add_leader_informations($registered_team, $id_team);
         }
-        if($this->competition->is_automatic_registration($id_competition)) {
+        // if competition registration is automatic and not a championship, use specific ranking init
+        if ($this->competition->is_automatic_registration($id_competition) && !$this->competition->is_championship($id_competition)) {
             $this->competition->init_classements_isoardi(false);
-        }
-        else {
+        } else {
             // init ranks
             $this->init_ranks($id_competition);
         }
@@ -223,10 +229,6 @@ class Register extends Generic
      */
     public function cleanup_before_start($id_competition): void
     {
-        // remove all leader accounts
-        $this->cleanup_accounts($id_competition);
-        // remove all timeslots
-        $this->cleanup_timeslots($id_competition);
         // archive any active match
         $this->archive_confirmed_matches($id_competition);
         // remove matches_files when archived
@@ -234,6 +236,14 @@ class Register extends Generic
         $this->cleanup_matches_files($id_competition);
         // remove matches_players when archived
         $this->cleanup_matches_players($id_competition);
+        // if championship and 2nd half, nothing else is needed
+        if($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
+            return;
+        }
+        // remove all leader accounts
+        $this->cleanup_accounts($id_competition);
+        // remove all timeslots
+        $this->cleanup_timeslots($id_competition);
     }
 
     /**
@@ -379,48 +389,15 @@ class Register extends Generic
      */
     private function init_ranks($id_competition)
     {
-        $rank_manager = new Rank();
         $competition_manager = new Competition();
         // first, remove all ranks for competition
-        $rank_manager->delete_competition($id_competition);
-        // if needed, make a group draw
-        if($competition_manager->is_group_draw_needed($id_competition)) {
+        $this->rank->delete_competition($id_competition);
+        // if needed, make a group draw: init register.rank_start and register.division
+        if ($competition_manager->is_group_draw_needed($id_competition)) {
             $this->group_draw($id_competition);
         }
-        // if competition registration is automatic, generate ranks from parent competition
-        if ($competition_manager->is_automatic_registration($id_competition)) {
-            $competition = $competition_manager->get_by_id($id_competition);
-            $team_manager = new Team();
-            $code_compet_maitre = $competition['id_compet_maitre'];
-            $teams = $team_manager->getTeams("e.code_competition = '$code_compet_maitre'");
-            foreach ($teams as $team) {
-                $rank_manager->insert($competition['code_competition'], '1', $team['id_equipe'], 1);
-            }
-            return;
-        }
-        // else, insert ranks from register table with new teams
-        $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
-                SELECT c.code_competition, r.division, e.id_equipe, r.rank_start
-                FROM register r 
-                JOIN competitions c on r.id_competition = c.id
-                JOIN equipes e on r.old_team_id IS NULL
-                                      AND r.new_team_name = e.nom_equipe
-                                      AND e.code_competition = c.code_competition
-                WHERE r.id_competition = ?";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        $this->sql_manager->execute($sql, $bindings);
-        // then, insert ranks from register table with old teams
-        $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
-                SELECT c.code_competition, r.division, e.id_equipe, r.rank_start 
-                FROM register r 
-                JOIN competitions c on r.id_competition = c.id
-                JOIN equipes e on r.old_team_id = e.id_equipe
-                                      AND e.code_competition = c.code_competition
-                WHERE r.id_competition = ?";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        $this->sql_manager->execute($sql, $bindings);
+        // insert teams in ranks (find by name and competition) with division/rank_start as defined in register
+        $this->rank->insert_from_register($id_competition);
     }
 
     /**
@@ -568,14 +545,13 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    public function get_pending_registrations($id_competition, $check_parent_competition=false): array|int|string|null
+    public function get_pending_registrations($id_competition, $check_parent_competition = false): array|int|string|null
     {
         $competition = $this->competition->get_by_id($id_competition);
-        if($check_parent_competition) {
+        if ($check_parent_competition) {
             $competition = $this->competition->getCompetition($competition['id_compet_maitre']);
             $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
-        }
-        else {
+        } else {
             $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
         }
         $bindings = array();
@@ -592,7 +568,7 @@ class Register extends Generic
      */
     private function group_draw($id_competition): void
     {
-        if(!$this->competition->is_group_draw_needed($id_competition)) {
+        if (!$this->competition->is_group_draw_needed($id_competition)) {
             throw new Exception("Pas de tirage au sort pour cette compétition !");
         }
         $pending_registrations = $this->get_register_by_competition($id_competition);
@@ -607,6 +583,24 @@ class Register extends Generic
                 ));
             }
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get_2nd_half_registrations($id_competition): array
+    {
+        $where = "new_team_name NOT IN (SELECT nom_equipe
+                            FROM equipes
+                            WHERE code_competition IN (SELECT code_competition
+                                                       FROM competitions
+                                                       WHERE id = ?))
+                  AND id_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_competition),
+            array('type' => 'i', 'value' => $id_competition),
+        );
+        return $this->get($where, $bindings);
     }
 
 

@@ -494,5 +494,23 @@ FROM (
         $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function insert_from_register($id_competition)
+    {
+        $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
+                SELECT c.code_competition, r.division, e.id_equipe, r.rank_start 
+                FROM register r 
+                JOIN competitions c on r.id_competition = c.id
+                JOIN equipes e on e.code_competition = c.code_competition
+                                  AND e.nom_equipe = r.new_team_name
+                WHERE r.id_competition = ?
+                ORDER BY code_competition, division, rank_start";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_competition);
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
 
 }
