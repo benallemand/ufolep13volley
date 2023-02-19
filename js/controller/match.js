@@ -20,6 +20,67 @@ Ext.define('Ufolep13Volley.controller.match', {
             'button[action=save]': {
                 click: this.save_form
             },
+            'button[action=sign_team_sheet]': {
+                click: this.sign_team_sheet
+            },
+            'button[action=sign_match_sheet]': {
+                click: this.sign_match_sheet
+            },
+        });
+    },
+    sign_team_sheet: function (button) {
+        var window_show = Ext.Msg.show({
+            title: "Signer la fiche équipe ?",
+            message: "Je confirme avoir pris connaissance des joueurs/joueuses présent(e)s.<br/>" +
+                "les mêmes personnes ont été déclarées présentes sur le site, sur la page de gestion du match.<br/>" +
+                "En signant numériquement la fiche équipe, il n'est plus nécessaire de fournir de fiche équipe au format papier.<br/>" +
+                "Merci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.",
+            buttons: Ext.Msg.OKCANCEL,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn == 'ok') {
+                    Ext.Ajax.request({
+                        url: 'rest/action.php/matchmgr/sign_team_sheet',
+                        params: {
+                            id_match: id_match
+                        },
+                        success: function () {
+                            window.location.reload();
+                        },
+                        failure: function (form, action) {
+                            Ext.Msg.alert('Erreur', action.result.message);
+                        },
+                    });
+                }
+                window_show.close();
+            }
+        });
+    },
+    sign_match_sheet: function (button) {
+        var window_show = Ext.Msg.show({
+            title: "Signer la feuille de match ?",
+            message: "Je confirme avoir pris connaissance du score saisi sur le site.<br/>" +
+                "En signant numériquement la feuille de match, il n'est plus nécessaire de fournir de feuille de match au format papier.<br/>" +
+                "Merci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.",
+            buttons: Ext.Msg.OKCANCEL,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn == 'ok') {
+                    Ext.Ajax.request({
+                        url: 'rest/action.php/matchmgr/sign_match_sheet',
+                        params: {
+                            id_match: id_match
+                        },
+                        success: function () {
+                            window.location.reload();
+                        },
+                        failure: function (form, action) {
+                            Ext.Msg.alert('Erreur', action.result.message);
+                        },
+                    });
+                }
+                window_show.close();
+            }
         });
     },
     load_match: function (form) {
