@@ -444,4 +444,33 @@ class MatchManagerTest extends TestCase
         $competition_isoardi = $competition_mgr->getCompetition('c');
         $this->match_manager->generateAll($competition_isoardi['id']);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_generate_all_m()
+    {
+        //230219:PASS
+        $competition_mgr = new Competition();
+        $comp = $competition_mgr->getCompetition('m');
+        $this->match_manager->generateAll($comp['id']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_generate_all_championships()
+    {
+        //230219:PASS
+        $competition_mgr = new Competition();
+        $codes = array(
+            'mo',
+            'm',
+            'f',
+        );
+        foreach ($codes as $code) {
+            $comp = $competition_mgr->getCompetition($code);
+            $this->match_manager->generateAll($comp['id']);
+        }
+    }
 }
