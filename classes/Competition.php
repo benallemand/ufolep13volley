@@ -493,12 +493,16 @@ class Competition extends Generic
     }
 
     /**
+     * automatic registration:
+     * - isoardi
+     * - championships when this is 2nd half
      * @throws Exception
      */
     public function is_automatic_registration($id_competition): bool
     {
         $competition = $this->get_by_id($id_competition);
-        return $competition['code_competition'] == 'c';
+        return ($competition['code_competition'] == 'c') ||
+            ($this->is_championship($id_competition) && !$this->is_first_half($id_competition));
     }
 
     /**
@@ -623,10 +627,39 @@ class Competition extends Generic
             array('type' => 'i', 'value' => $id_competition),
         );
         $results = $this->sql_manager->execute($sql, $bindings);
-        if(count($results) == 0) {
+        if (count($results) == 0) {
             return 0;
         }
         return $results[0]['div_max'];
+    }
+
+    /**
+     * @param $id_competition
+     * @return bool
+     * @throws Exception
+     */
+    public function is_championship($id_competition): bool
+    {
+        $competition = $this->get_by_id($id_competition);
+        return in_array($competition['code_competition'], array('f', 'm', 'mo'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function is_first_half($id_competition): bool
+    {
+        $competition_by_id = $this->get_by_id($id_competition);
+        // need to retrieve competition by code, as this sql formats dates
+        $competition = $this->getCompetition($competition_by_id['code_competition']);
+        // format 'd/m/Y' or empty if null
+        $start_date = $competition['start_date'];
+        if (empty($start_date)) {
+            throw new Exception("Unable to determine if first half, date start is empty !");
+        }
+        $start_datetime = DateTime::createFromFormat('d/m/Y', $start_date);
+        $month = intval($start_datetime->format('m'));
+        return $month > 6;
     }
 
 
