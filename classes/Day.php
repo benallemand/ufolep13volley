@@ -65,11 +65,12 @@ class Day extends Generic
      * @return int|string
      * @throws Exception
      */
-    public function insertDay($code_competition,
+    public function insertDay(
+        $code_competition,
         $numero,
         $competition_start_date,
-                              bool $is_extra_day,
-                              string $limit_date): int|string
+        bool $is_extra_day,
+        string $limit_date): int|string
     {
         $numero_padded = str_pad($numero, 2, '0', STR_PAD_LEFT);
         $week_offset = $numero - 1;
@@ -225,16 +226,31 @@ class Day extends Generic
             $bonus_day_start_date->modify('+1 week');
             $bonus_day_number = intval($last_day['numero']);
             while ($bonus_day_start_date < $limit_date) {
-                $this->insertDay(
+                $id_day = $this->insertDay(
                     $code_competition,
                     strval(++$bonus_day_number),
                     $competition['start_date'],
                     true,
                     $this->limit_date->getLimitDate($code_competition)
                 );
+                $new_day = $this->get_by_id($id_day);
+                $bonus_day_start_date = DateTime::createFromFormat('d/m/Y', $new_day['start_date']);
                 $bonus_day_start_date->modify('+1 week');
             }
         }
+    }
+
+    public function get_by_id($id): array
+    {
+        $sql = $this->getSql("j.id = ?");
+        $bindings = array(
+            array('type' => 'i', 'value' => $id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (empty($results)) {
+            throw new Exception("Unable to find data for $id !");
+        }
+        return $results[0];
     }
 
     /**
@@ -253,6 +269,7 @@ class Day extends Generic
             "'20/02/2023'",
             "'17/04/2023'",
             "'24/04/2023'",
+            "'15/05/2023'",
         );
         $forbidden_dates = implode(',', $forbidden_date);
         // check if we don't generate an already existing day for the competition
