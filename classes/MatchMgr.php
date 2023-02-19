@@ -1692,6 +1692,57 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($match['match_status'] !== 'CONFIRMED') {
                     throw new Exception("Il n'est pas possible de renseigner les présents pour ce match, il faut qu'il soit confirmé !");
                 }
+                // allow only if not yet signed by any team
+                //TODO à décommenter quand ça sera implémenté complètement
+//                if ($match['is_sign_team_dom'] == 1 || $match['is_sign_team_ext'] == 1) {
+//                    throw new Exception("Déjà signé par une des équipes !");
+//                }
+                break;
+            case 'sign_team_sheet':
+                // allow only playing teams
+                if (!in_array(
+                    $_SESSION['id_equipe'],
+                    array($match['id_equipe_dom'],
+                        $match['id_equipe_ext']))) {
+                    throw new Exception("Seules les équipes participant au match peuvent signer les fiches équipes !");
+                }
+                // allow only RESPONSABLE_EQUIPE
+                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                    throw new Exception("Seuls les responsables d'équipes signer les fiches équipes !");
+                }
+                // allow only CONFIRMED matches
+                if ($match['match_status'] !== 'CONFIRMED') {
+                    throw new Exception("Match non confirmé !");
+                }
+                // allow only match_player filled matches
+                if ($match['is_match_player_filled'] !== 1) {
+                    throw new Exception("Les présents des 2 équipes n'ont pas été renseignés !");
+                }
+                break;
+            case 'sign_match_sheet':
+                // allow only playing teams
+                if (!in_array(
+                    $_SESSION['id_equipe'],
+                    array($match['id_equipe_dom'],
+                        $match['id_equipe_ext']))) {
+                    throw new Exception("Seules les équipes participant au match peuvent signer la feuille de match !");
+                }
+                // allow only RESPONSABLE_EQUIPE
+                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                    throw new Exception("Seuls les responsables d'équipes signer lla feuille de match !");
+                }
+                // allow only CONFIRMED matches
+                if ($match['match_status'] !== 'CONFIRMED') {
+                    throw new Exception("Match non confirmé !");
+                }
+                // allow only match_player filled matches
+                if ($match['is_match_player_filled'] !== 1) {
+                    throw new Exception("Les présents des 2 équipes n'ont pas été renseignés !");
+                }
+                // allow only score filled matches
+                if ($match['score_equipe_dom'] == 0 && $match['score_equipe_ext'] == 0) {
+                    throw new Exception("Le score n'a pas été renseigné !");
+                }
                 break;
             default:
                 break;
@@ -1728,14 +1779,13 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                         id_team_2 IN (  SELECT id_equipe_ext 
                                         FROM matches 
                                         WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y'))))";
-        $bindings = array(
-            $bindings[] = array('type' => 'i', 'value' => $id_equipe),
-            $bindings[] = array('type' => 's', 'value' => $computed_date),
-            $bindings[] = array('type' => 's', 'value' => $computed_date),
-            $bindings[] = array('type' => 'i', 'value' => $id_equipe),
-            $bindings[] = array('type' => 's', 'value' => $computed_date),
-            $bindings[] = array('type' => 's', 'value' => $computed_date),
-        );
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe);
+        $bindings[] = array('type' => 's', 'value' => $computed_date);
+        $bindings[] = array('type' => 's', 'value' => $computed_date);
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe);
+        $bindings[] = array('type' => 's', 'value' => $computed_date);
+        $bindings[] = array('type' => 's', 'value' => $computed_date);
         return count($this->sql_manager->execute($sql, $bindings)) > 0;
     }
 
@@ -1775,5 +1825,49 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
             $this->generate_matches($competition);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function sign_team_sheet($id_match)
+    {
+        $this->is_action_allowed(__FUNCTION__, $id_match);
+        $match = $this->get_match($id_match);
+        switch ($_SESSION['id_equipe']) {
+            case $match['id_equipe_dom']:
+                $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
+                break;
+            case $match['id_equipe_ext']:
+                $sql = "UPDATE matches set is_sign_team_ext = 1 WHERE id_match = ?";
+                break;
+            default:
+                throw new Exception("Equipe non concernée par ce match !");
+        }
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_match);
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function sign_match_sheet($id_match)
+    {
+        $this->is_action_allowed(__FUNCTION__, $id_match);
+        $match = $this->get_match($id_match);
+        switch ($_SESSION['id_equipe']) {
+            case $match['id_equipe_dom']:
+                $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
+                break;
+            case $match['id_equipe_ext']:
+                $sql = "UPDATE matches set is_sign_match_ext = 1 WHERE id_match = ?";
+                break;
+            default:
+                throw new Exception("Equipe non concernée par ce match !");
+        }
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_match);
+        $this->sql_manager->execute($sql, $bindings);
     }
 }
