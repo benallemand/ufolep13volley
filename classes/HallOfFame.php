@@ -76,14 +76,20 @@ class HallOfFame extends Generic
      * @return int|string
      * @throws Exception
      */
-    public function insert($title, $team_name, $period, $league)
+    public function insert($title, $team_name, $period, $league): int|string
     {
         $sql = "INSERT INTO hall_of_fame SET 
-                title = '$title', 
-                team_name = '$team_name', 
-                period = '$period',
-                league = '$league'";
-        return $this->sql_manager->execute($sql);
+                title = ?, 
+                team_name = ?, 
+                period = ?,
+                league = ?";
+        $bindings = array(
+            array('type' => 's', 'value' => $title),
+            array('type' => 's', 'value' => $team_name),
+            array('type' => 's', 'value' => $period),
+            array('type' => 's', 'value' => $league),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
