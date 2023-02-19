@@ -1825,7 +1825,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $competition = $competition_mgr->get_by_id($id);
             $code_competition = $competition['code_competition'];
             $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
-            $this->generate_matches($competition);
+            $this->generate_matches($competition, true, true);
         }
     }
 
