@@ -153,13 +153,14 @@ class Generic
 
     /**
      * @param string $query
+     * @param array $bindings
      * @return array
      * @throws Exception
      */
-    public function get(string $query = "1=1"): array
+    public function get(string $query = "1=1", array $bindings=array()): array
     {
         $sql = $this->getSql($query);
-        return $this->sql_manager->execute($sql);
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
