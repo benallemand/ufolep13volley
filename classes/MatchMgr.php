@@ -895,11 +895,11 @@ class MatchMgr extends Generic
                 $team_ext['id_equipe'])) {
                 continue;
             }
-            // computed date is not allowed (home team already has a match)
+            // computed date is not allowed (home team already has a match this week)
             if ($this->is_team_busy_for_week($computed_date['week_id'], $team_dom['id_equipe'])) {
                 continue;
             }
-            // computed date is not allowed (away team already has a match)
+            // computed date is not allowed (away team already has a match this week)
             if ($this->is_team_busy_for_week($computed_date['week_id'], $team_ext['id_equipe'])) {
                 continue;
             }
@@ -948,7 +948,9 @@ class MatchMgr extends Generic
     {
         // tested ok
         $sql = "SELECT m.* FROM matches m 
-                WHERE m.id_journee = ?
+                WHERE DATE_FORMAT(m.date_reception, '%v%Y') IN (SELECT DATE_FORMAT(start_date, '%v%Y') 
+                                                                FROM journees 
+                                                                WHERE id = ?)
                 AND (m.id_equipe_dom = ? OR m.id_equipe_ext = ?)";
         $bindings = array(
             array('type' => 'i', 'value' => $week_id),
