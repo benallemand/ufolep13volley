@@ -111,6 +111,7 @@ class SqlManager
                 )
                 AND m.date_reception < CURDATE() - INTERVAL 10 DAY
                 AND m.match_status = 'CONFIRMED'
+                AND m.certif = 0
                 ORDER BY m.code_match";
         return $this->execute($sql);
     }
