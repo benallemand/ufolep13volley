@@ -363,7 +363,7 @@ HAVING COUNT(DISTINCT m.id_match) > gymnase.nb_terrain
 ORDER BY COUNT(DISTINCT m.id_match) DESC");
 
 $indicatorEquityBetweenHomeAndAway = new Indicator(
-    "Equipes avec + d'un match d'écart entre réception et déplacement", "SELECT 
+    "Equipes avec trop d'écart entre réception et déplacement", "SELECT 
        SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
        SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
        m.code_competition                           AS competition,
@@ -374,7 +374,7 @@ FROM matches m
          JOIN classements c on e.id_equipe = c.id_equipe
 WHERE m.match_status != 'ARCHIVED'
 GROUP BY competition, c.division, equipe
-HAVING ABS(domicile - exterieur) > 1
+HAVING ABS(domicile - exterieur) > 2
 ORDER BY competition, division");
 
 $indicatorMatchGenerationCriticity = new Indicator(
