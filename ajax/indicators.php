@@ -366,14 +366,14 @@ $indicatorEquityBetweenHomeAndAway = new Indicator(
     "Equipes avec trop d'écart entre réception et déplacement", "SELECT 
        SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
        SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
-       m.code_competition                           AS competition,
-       e.nom_equipe                                 AS equipe,
-       c.division                                   AS division
+       c.code_competition                           AS competition,
+       c.division                                   AS division,
+       e.nom_equipe                                 AS equipe
 FROM matches m
          JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
          JOIN classements c on e.id_equipe = c.id_equipe
-WHERE m.match_status != 'ARCHIVED'
-GROUP BY competition, c.division, equipe
+WHERE m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED')
+GROUP BY c.code_competition, c.division, e.nom_equipe
 HAVING ABS(domicile - exterieur) > 2
 ORDER BY competition, division");
 
