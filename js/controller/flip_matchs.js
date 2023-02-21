@@ -1,4 +1,4 @@
-Ext.define('Ufolep13Volley.controller.certify_matchs', {
+Ext.define('Ufolep13Volley.controller.flip_matchs', {
     extend: 'Ext.app.Controller',
     stores: [],
     models: [],
@@ -7,8 +7,8 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
     init: function () {
         this.control(
             {
-                'button[action=certify_matchs]': {
-                    click: this.certify_matchs
+                'button[action=flip_matchs]': {
+                    click: this.flip_matchs
                 },
                 'matchesgrid': {
                     selectionchange: this.manage_display
@@ -17,7 +17,7 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
         );
     },
     manage_display: function (selection_model, selected) {
-        var button = selection_model.view.ownerCt.down('button[action=certify_matchs]');
+        var button = selection_model.view.ownerCt.down('button[action=flip_matchs]');
         var is_hidden = false;
         if(Ext.isEmpty(selected)) {
             is_hidden = true;
@@ -27,15 +27,15 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
         }
         button.setHidden(is_hidden);
     },
-    certify_matchs: function (button) {
+    flip_matchs: function (button) {
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
         if (records.length === 0) {
             return;
         }
         Ext.Msg.show({
-            title: 'Certifier ?',
-            msg: 'Etes-vous certain de vouloir certifier ces matchs ?',
+            title: 'Inverser ?',
+            msg: 'Etes-vous certain de vouloir inverser la réception de ces matchs ?',
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {
@@ -47,7 +47,7 @@ Ext.define('Ufolep13Volley.controller.certify_matchs', {
                     ids.push(record.get('id_match'));
                 });
                 Ext.Ajax.request({
-                    url: 'rest/action.php/matchmgr/certify_matchs',
+                    url: 'rest/action.php/matchmgr/flip_matchs',
                     params: {
                         ids: ids.join(',')
                     },

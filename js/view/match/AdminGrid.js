@@ -228,6 +228,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     text: 'Certifier',
                     hidden: true,
                     action: 'certify_matchs'
+                },
+                {
+                    text: 'Flip',
+                    hidden: true,
+                    action: 'flip_matchs'
                 }
             ]
         },
