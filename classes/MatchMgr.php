@@ -620,8 +620,8 @@ class MatchMgr extends Generic
                     if ($forbid_same_home) {
                         // si il y a déjà eu une rencontre dom vs ext la dernière fois
                         if ($this->is_last_match_same_home($team_dom['id_equipe'], $team_ext['id_equipe'])) {
-                            // si le dernier match est assez récent
-                            if ($this->is_last_match_recent($team_dom['id_equipe'], $team_ext['id_equipe'])) {
+                            // si le dernier match inversé n'est pas récent
+                            if (!$this->is_last_match_recent($team_ext['id_equipe'], $team_dom['id_equipe'])) {
                                 // inverser la réception
                                 $dom = $team_ext;
                                 $ext = $team_dom;
@@ -1115,6 +1115,17 @@ class MatchMgr extends Generic
         $ids = explode(',', $ids);
         foreach ($ids as $id) {
             $this->certify_match($id);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function flip_matchs(string $ids)
+    {
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            $this->flip_match($id);
         }
     }
 
@@ -1900,7 +1911,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                           OR (id_equipe_dom = ? AND id_equipe_ext = ?))
                         AND match_status IN ('CONFIRMED', 'ARCHIVED')) a
                 WHERE a.max_date_reception IS NOT NULL
-                  AND a.max_date_reception > DATE_SUB(NOW(), INTERVAL 1 YEAR)";
+                  AND a.max_date_reception > DATE_SUB(NOW(), INTERVAL 9 MONTH)";
         $bindings = array(
             array('type' => 'i', 'value' => $home_id),
             array('type' => 'i', 'value' => $away_id),
@@ -1923,7 +1934,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $match = $matches_home_away_adjust_needed[$offset];
             // if match flip is allowed, flip it
             if (!$this->is_last_match_recent($match['id_equipe_ext'], $match['id_equipe_dom'])) {
-                $this->flip_match($match);
+                $this->flip_match($match['id_match']);
                 $matches_home_away_adjust_needed = $this->get_matches_home_away_adjust_needed($competition['code_competition']);
             }
             $offset++;
@@ -1963,8 +1974,9 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    private function flip_match($match)
+    private function flip_match($id_match)
     {
+        $match = $this->get_match($id_match);
         $update_match = array(
             // mandatory for any update
             'id_match' => $match['id_match'],
@@ -1978,7 +1990,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $timeslots = $tsm->get("c.id_equipe = " . $match['id_equipe_ext']);
         if (count($timeslots) >= 1) {
             // compute reception date and gymnasium
-            $update_match['id_gymnasium'] = $timeslots[0];
+            $update_match['id_gymnasium'] = $timeslots[0]['id_gymnase'];
             $update_match['date_reception'] = $this->get_date($timeslots[0]['id'], $match['id_journee']);
             $this->save($update_match);
         }
