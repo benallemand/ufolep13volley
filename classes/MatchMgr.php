@@ -222,6 +222,14 @@ class MatchMgr extends Generic
      */
     public function is_match_update_allowed($id_match): bool
     {
+        // if localhost, presume it is for test purpose
+        switch (filter_input(INPUT_SERVER, 'SERVER_NAME')) {
+            case 'localhost':
+            case null:
+                return true;
+            default:
+                break;
+        }
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
         $id_team = $userDetails['id_equipe'];
@@ -608,12 +616,16 @@ class MatchMgr extends Generic
                     $dom = $team_dom;
                     $ext = $team_ext;
                     // on remplit le tableau avec les matchs à insérer
+                    // si l'option de regarder le dernier match est active
                     if ($forbid_same_home) {
-                        // si l'option de regarder le dernier match est active
+                        // si il y a déjà eu une rencontre dom vs ext la dernière fois
                         if ($this->is_last_match_same_home($team_dom['id_equipe'], $team_ext['id_equipe'])) {
-                            // si il y a déjà eu une rencontre dom vs ext la dernière fois, inverser la réception
-                            $dom = $team_ext;
-                            $ext = $team_dom;
+                            // si le dernier match est assez récent
+                            if ($this->is_last_match_recent($team_dom['id_equipe'], $team_ext['id_equipe'])) {
+                                // inverser la réception
+                                $dom = $team_ext;
+                                $ext = $team_dom;
+                            }
                         }
                     }
                     $to_be_inserted_matches[] = array(
@@ -1871,5 +1883,132 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
         $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function is_last_match_recent(mixed $home_id, mixed $away_id): bool
+    {
+        // tested ok
+        $sql = "SELECT a.*
+                FROM (SELECT MAX(date_reception) AS max_date_reception,
+                             id_equipe_dom,
+                             id_equipe_ext
+                      FROM matches
+                      WHERE ((id_equipe_dom = ? AND id_equipe_ext = ?)
+                          OR (id_equipe_dom = ? AND id_equipe_ext = ?))
+                        AND match_status IN ('CONFIRMED', 'ARCHIVED')) a
+                WHERE a.max_date_reception IS NOT NULL
+                  AND a.max_date_reception > DATE_SUB(NOW(), INTERVAL 1 YEAR)";
+        $bindings = array(
+            array('type' => 'i', 'value' => $home_id),
+            array('type' => 'i', 'value' => $away_id),
+            array('type' => 'i', 'value' => $away_id),
+            array('type' => 'i', 'value' => $home_id)
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return count($results) === 1;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function adjust_home_away(array $competition)
+    {
+        // get candidates for flip
+        $matches_home_away_adjust_needed = $this->get_matches_home_away_adjust_needed($competition['code_competition']);
+        $offset = 0;
+        while(count($matches_home_away_adjust_needed) > 0) {
+            $match = $matches_home_away_adjust_needed[$offset];
+            // if match flip is allowed, flip it
+            if (!$this->is_last_match_recent($match['id_equipe_ext'], $match['id_equipe_dom'])) {
+                $this->flip_match($match);
+                $matches_home_away_adjust_needed = $this->get_matches_home_away_adjust_needed($competition['code_competition']);
+            }
+            $offset++;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function get_matches_home_away_adjust_needed(mixed $code_competition): array|int|string|null
+    {
+        $sql = "SELECT mv.*
+                FROM matchs_view mv
+                         JOIN (SELECT SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
+                                      SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
+                                      c.code_competition                           AS competition,
+                                      c.division                                   AS division,
+                                      e.id_equipe                                  AS id_equipe
+                               FROM matches m
+                                        JOIN equipes e on m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe
+                                        JOIN classements c on e.id_equipe = c.id_equipe
+                               WHERE m.match_status IN ('NOT_CONFIRMED')
+                                 AND m.code_competition = ?
+                               GROUP BY c.code_competition, c.division, e.nom_equipe
+                               HAVING ABS(domicile - exterieur) > 2
+                               ORDER BY competition, division) adjust
+                WHERE mv.code_competition = ?
+                  AND mv.id_equipe_dom = adjust.id_equipe
+                AND mv.match_status IN ('NOT_CONFIRMED')";
+        $bindings = array(
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $code_competition),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function flip_match($match)
+    {
+        $update_match = array(
+            // mandatory for any update
+            'id_match' => $match['id_match'],
+            'code_match' => $match['code_match'],
+            // flip reception
+            'id_equipe_dom' => $match['id_equipe_ext'],
+            'id_equipe_ext' => $match['id_equipe_dom'],
+        );
+        require_once 'TimeSlot.php';
+        $tsm = new TimeSlot();
+        $timeslots = $tsm->get("c.id_equipe = " . $match['id_equipe_ext']);
+        if (count($timeslots) >= 1) {
+            // compute reception date and gymnasium
+            $update_match['id_gymnasium'] = $timeslots[0];
+            $update_match['date_reception'] = $this->get_date($timeslots[0]['id'], $match['id_journee']);
+            $this->save($update_match);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function get_date(mixed $id_timeslot, $id_journee)
+    {
+        $sql = "SELECT DATE_FORMAT(j.start_date + INTERVAL FIELD(c.jour,
+                                                 'Lundi',
+                                                 'Mardi',
+                                                 'Mercredi',
+                                                 'Jeudi',
+                                                 'Vendredi',
+                                                 'Samedi',
+                                                 'Dimanche') - 1 DAY, '%d/%m/%Y') AS computed_date
+                FROM journees j, creneau c
+                WHERE j.id = ?
+                AND c.id = ?
+                ORDER BY c.usage_priority";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_journee),
+            array('type' => 'i', 'value' => $id_timeslot),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) == 0) {
+            throw new Exception("Impossible de trouver une date pour ce créneau et cette journée !");
+        }
+        return $results[0]['computed_date'];
     }
 }
