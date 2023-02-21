@@ -473,4 +473,19 @@ class MatchManagerTest extends TestCase
             $this->match_manager->generateAll($comp['id']);
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_adjust_home_away()
+    {
+        $competition_mgr = new Competition();
+        $codes = array(
+            'f',
+        );
+        foreach ($codes as $code) {
+            $comp = $competition_mgr->getCompetition($code);
+            $this->match_manager->adjust_home_away($comp);
+        }
+    }
 }
