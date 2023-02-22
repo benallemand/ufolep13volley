@@ -341,20 +341,23 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'rankgrid button[action=delete]': {
                     click: this.deleteRanks
                 },
-                'competitions_grid button[action=generateHallOfFame]': {
+                'competitions_grid menuitem[action=generateHallOfFame]': {
                     click: this.generateHallOfFame
                 },
-                'competitions_grid button[action=resetCompetition]': {
+                'competitions_grid menuitem[action=resetCompetition]': {
                     click: this.resetCompetition
                 },
-                'competitions_grid button[action=generateDays]': {
+                'competitions_grid menuitem[action=generateDays]': {
                     click: this.generateDays
                 },
-                'competitions_grid button[action=generateMatches]': {
+                'competitions_grid menuitem[action=generateMatches]': {
                     click: this.generateMatches
                 },
-                'competitions_grid button[action=generateAll]': {
+                'competitions_grid menuitem[action=generateAll]': {
                     click: this.generateAll
+                },
+                'competitions_grid menuitem[action=generateAllExceptMatches]': {
+                    click: this.generateAllExceptMatches
                 },
                 'daysgrid button[action=delete]': {
                     click: this.deleteDays
@@ -1197,8 +1200,23 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         ids: ids.join(',')
                     },
                     timeout: 600000,
-                    success: function () {
-                        Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
+                    success: function (response) {
+                        if (response.status === 201) {
+                            var response_json = Ext.decode(response.responseText);
+                            Ext.create('Ext.window.Window', {
+                                title: 'Réalisé avec succès',
+                                height: 500,
+                                width: 700,
+                                maximizable: true,
+                                layout: 'fit',
+                                items: {
+                                    xtype: 'textarea',
+                                    value: response_json.message
+                                }
+                            }).show();
+                        } else {
+                            Ext.Msg.alert('Succès', "L'opération a été réalisée avec succès.");
+                        }
                         grid.getStore().load();
                     },
                     failure: this_controller.manage_failure,
@@ -1221,7 +1239,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     generateAll: function (button) {
         this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
     },
-    genericDelete: function(button, url, id_field) {
+    generateAllExceptMatches: function (button) {
+        this.genericRequest(button, 'Générer tout sauf les matchs', '/rest/action.php/matchmgr/generateAllExceptMatches');
+    },
+    genericDelete: function (button, url, id_field) {
         var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
         if (records.length === 0) {
@@ -1499,25 +1520,39 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     action: 'deleteCompetition'
                 },
                 {
-                    text: 'Générer le palmarès...',
-                    action: 'generateHallOfFame'
+                    text: 'Générer',
+                    menu: [
+                        {
+                            text: 'Palmarès...',
+                            action: 'generateHallOfFame'
+                        },
+                        {
+                            text: 'Reset compétition...',
+                            action: 'resetCompetition'
+                        },
+                        {
+                            text: 'Journées...',
+                            action: 'generateDays'
+                        },
+                    ]
                 },
                 {
-                    text: 'Reset compétition...',
-                    action: 'resetCompetition'
+                    text: 'Générer tout',
+                    menu: [
+                        {
+                            text: "Tout d'un coup (trop long)...",
+                            action: 'generateAll'
+                        },
+                        {
+                            text: "Tout sauf les matchs (rapide)...",
+                            action: 'generateAllExceptMatches'
+                        },
+                        {
+                            text: 'Tous les matchs (long)...',
+                            action: 'generateMatches'
+                        },
+                    ]
                 },
-                {
-                    text: 'Générer les journées...',
-                    action: 'generateDays'
-                },
-                {
-                    text: 'Générer les matches...',
-                    action: 'generateMatches'
-                },
-                {
-                    text: "Générer tout d'un coup",
-                    action: 'generateAll'
-                }
             ]
         });
         grid.addDocked({
