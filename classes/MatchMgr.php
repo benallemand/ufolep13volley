@@ -644,7 +644,7 @@ class MatchMgr extends Generic
         $count_inserted_matches = count($this->get_matches("m.code_competition = '$code_competition' AND m.match_status = 'NOT_CONFIRMED'"));
         $message .= "Nombre de matchs à créer : $count_to_be_inserted_matches" . PHP_EOL;
         $message .= "Nombre de matchs créés : $count_inserted_matches" . PHP_EOL;
-        error_log($message);
+        throw new Exception($message, 201);
     }
 
     /**
@@ -1406,7 +1406,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 throw new Exception("La compétition a déjà commencé !!!");
             }
             $competition = $competitions[0];
-            $this->generate_matches($competition);
+            $this->generate_matches($competition, true, true);
         }
     }
 
@@ -1855,6 +1855,30 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
+    public function generateAllExceptMatches($ids = null)
+    {
+        if (empty($ids)) {
+            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
+        }
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            // init all gymnasiums etc. from register table
+            (new Register())->set_up_season($id);
+            // get competitions
+            $competition_mgr = new Competition();
+            // reset competition
+            $competition_mgr->resetCompetition($id);
+            // generate days
+            (new Day())->generateDays($id);
+            $competition = $competition_mgr->get_by_id($id);
+            $code_competition = $competition['code_competition'];
+            $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public function sign_team_sheet($id_match)
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
@@ -1930,7 +1954,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         // get candidates for flip
         $matches_home_away_adjust_needed = $this->get_matches_home_away_adjust_needed($competition['code_competition']);
         $offset = 0;
-        while(count($matches_home_away_adjust_needed) > 0) {
+        while (count($matches_home_away_adjust_needed) > 0) {
             $match = $matches_home_away_adjust_needed[$offset];
             // if match flip is allowed, flip it
             if (!$this->is_last_match_recent($match['id_equipe_ext'], $match['id_equipe_dom'])) {
