@@ -354,8 +354,7 @@ $indicatorTooMuchMatchesByGymnasiumByDate = new Indicator(
   gymnase.nb_terrain AS \"Nombre de terrains\",
   GROUP_CONCAT(DISTINCT m.code_match SEPARATOR ', ') AS \"Liste des matches\"
 FROM matches m
-  JOIN creneau ON creneau.id_equipe = m.id_equipe_dom
-  JOIN gymnase ON gymnase.id = creneau.id_gymnase
+  JOIN gymnase ON gymnase.id = m.id_gymnasium
 WHERE m.match_status != 'ARCHIVED'
 AND m.date_reception > CURRENT_DATE
 GROUP BY CONCAT(gymnase.nom, gymnase.ville), m.date_reception
