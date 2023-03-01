@@ -19,7 +19,7 @@ Ext.application({
                         {
                             text: "RETOUR",
                             iconCls: 'fa-solid fa-arrow-left',
-                            handler: function() {
+                            handler: function () {
                                 history.back();
                             }
                         }
@@ -31,6 +31,14 @@ Ext.application({
                         type: 'hbox',
                         align: 'stretch',
                     },
+                    bbar: [
+                        {
+                            xtype: 'button',
+                            action: 'sign_team_sheet',
+                            iconCls: 'fa-solid fa-signature',
+                            text: 'Signer la fiche équipe'
+                        },
+                    ],
                     items: [
                         {
                             xtype: 'form_match_players',
@@ -50,6 +58,14 @@ Ext.application({
                 {
                     region: 'center',
                     xtype: 'form_match',
+                    bbar: [
+                        {
+                            xtype: 'button',
+                            action: 'sign_match_sheet',
+                            iconCls: 'fa-solid fa-signature',
+                            text: 'Signer la feuille de match'
+                        },
+                    ],
                 },
             ]
         });
