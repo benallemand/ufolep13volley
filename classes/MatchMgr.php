@@ -1718,12 +1718,15 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                     throw new Exception("Il n'est pas possible de renseigner les présents pour ce match, il faut qu'il soit confirmé !");
                 }
                 // allow only if not yet signed by any team
-                //TODO à décommenter quand ça sera implémenté complètement
-//                if ($match['is_sign_team_dom'] == 1 || $match['is_sign_team_ext'] == 1) {
-//                    throw new Exception("Déjà signé par une des équipes !");
-//                }
+                if ($match['is_sign_team_dom'] == 1 || $match['is_sign_team_ext'] == 1) {
+                    throw new Exception("Déjà signé par une des équipes !");
+                }
                 break;
             case 'sign_team_sheet':
+                // allow if ADMINISTRATEUR
+                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR'))) {
+                    return;
+                }
                 // allow only playing teams
                 if (!in_array(
                     $_SESSION['id_equipe'],
@@ -1732,8 +1735,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                     throw new Exception("Seules les équipes participant au match peuvent signer les fiches équipes !");
                 }
                 // allow only RESPONSABLE_EQUIPE
-                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
-                    throw new Exception("Seuls les responsables d'équipes signer les fiches équipes !");
+                if (!in_array($_SESSION['profile_name'], array('RESPONSABLE_EQUIPE'))) {
+                    throw new Exception("Seuls les responsables d'équipes peuvent signer les fiches équipes !");
                 }
                 // allow only CONFIRMED matches
                 if ($match['match_status'] !== 'CONFIRMED') {
@@ -1745,6 +1748,10 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 }
                 break;
             case 'sign_match_sheet':
+                // allow if ADMINISTRATEUR
+                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR'))) {
+                    return;
+                }
                 // allow only playing teams
                 if (!in_array(
                     $_SESSION['id_equipe'],
@@ -1754,15 +1761,15 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 }
                 // allow only RESPONSABLE_EQUIPE
                 if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
-                    throw new Exception("Seuls les responsables d'équipes signer lla feuille de match !");
+                    throw new Exception("Seuls les responsables d'équipes signer la feuille de match !");
                 }
                 // allow only CONFIRMED matches
                 if ($match['match_status'] !== 'CONFIRMED') {
                     throw new Exception("Match non confirmé !");
                 }
-                // allow only match_player filled matches
-                if ($match['is_match_player_filled'] !== 1) {
-                    throw new Exception("Les présents des 2 équipes n'ont pas été renseignés !");
+                // allow only sign_team_xxx filled matches
+                if (($match['is_sign_team_dom'] !== 1) || ($match['is_sign_team_ext'] !== 1)) {
+                    throw new Exception("Les fiches équipes n'ont pas été signées !");
                 }
                 // allow only score filled matches
                 if ($match['score_equipe_dom'] == 0 && $match['score_equipe_ext'] == 0) {
