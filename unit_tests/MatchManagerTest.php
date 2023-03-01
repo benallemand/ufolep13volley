@@ -11,6 +11,7 @@ class MatchManagerTest extends TestCase
 {
     private SqlManager $sql_manager;
     private MatchMgr $match_manager;
+    private Players $players_manager;
 
     /**
      * @return void
@@ -85,6 +86,9 @@ class MatchManagerTest extends TestCase
                         id_gymnasium = $id_court1,
                         date_original = CURRENT_DATE - INTERVAL 30 DAY,
                         match_status = 'CONFIRMED'");
+        // insert players to test teams
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs LIMIT 0,10");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs LIMIT 10,10");
     }
 
     /**
@@ -172,6 +176,7 @@ class MatchManagerTest extends TestCase
         parent::setUp();
         $this->sql_manager = new SqlManager();
         $this->match_manager = new MatchMgr();
+        $this->players_manager = new Players();
         $this->create_test_full_competition();
     }
 
@@ -488,4 +493,73 @@ class MatchManagerTest extends TestCase
             $this->match_manager->adjust_home_away($comp);
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_sign()
+    {
+        //20230223:PASS
+        $matches = $this->get_test_matches();
+        foreach ($matches as $match) {
+            $this->assertEquals(0, $match['is_sign_team_dom']);
+            $this->assertEquals(0, $match['is_sign_team_ext']);
+            $this->assertEquals(0, $match['is_sign_match_dom']);
+            $this->assertEquals(0, $match['is_sign_match_ext']);
+            $this->assertEquals(0, $match['sheet_received']);
+            // fill in players as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // fill in players as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // sign team sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $this->match_manager->sign_team_sheet($match['id_match']);
+            $match = $this->match_manager->get_match($match['id_match']);
+            $this->assertEquals(1, $match['is_sign_team_dom']);
+            // sign team sheet as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $this->match_manager->sign_team_sheet($match['id_match']);
+            $match = $this->match_manager->get_match($match['id_match']);
+            $this->assertEquals(1, $match['is_sign_team_ext']);
+            // fill the score as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $this->match_manager->save(array(
+                'id_match' => $match['id_match'],
+                'score_equipe_dom' => 3,
+                'score_equipe_ext' => 0,
+                'code_match' => $match['code_match'],
+            ));
+            // sign match sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $this->match_manager->sign_match_sheet($match['id_match']);
+            $match = $this->match_manager->get_match($match['id_match']);
+            $this->assertEquals(1, $match['is_sign_match_dom']);
+            // sign match sheet as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $this->match_manager->sign_match_sheet($match['id_match']);
+            $match = $this->match_manager->get_match($match['id_match']);
+            $this->assertEquals(1, $match['is_sign_match_ext']);
+            // check sheet_received
+            $match = $this->match_manager->get_match($match['id_match']);
+            $this->assertEquals(1, $match['sheet_received']);
+        }
+    }
+
+    private function connect_as_team_leader(mixed $id_equipe)
+    {
+        @session_start();
+        $_SESSION['id_equipe'] = $id_equipe;
+        $_SESSION['login'] = 'test_user';
+        $_SESSION['id_user'] = 1;
+        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
+    }
+
 }
