@@ -32,7 +32,7 @@ Ext.define('Ufolep13Volley.controller.match', {
         var window_show = Ext.Msg.show({
             title: "Signer la fiche équipe ?",
             message: "Je confirme avoir pris connaissance des joueurs/joueuses présent(e)s.<br/>" +
-                "les mêmes personnes ont été déclarées présentes sur le site, sur la page de gestion du match.<br/>" +
+                "Les personnes présentes pour ce match ont été déclarées présentes sur le site, sur la page de gestion du match.<br/>" +
                 "En signant numériquement la fiche équipe, il n'est plus nécessaire de fournir de fiche équipe au format papier.<br/>" +
                 "Merci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.",
             buttons: Ext.Msg.OKCANCEL,
@@ -47,8 +47,9 @@ Ext.define('Ufolep13Volley.controller.match', {
                         success: function () {
                             window.location.reload();
                         },
-                        failure: function (form, action) {
-                            Ext.Msg.alert('Erreur', action.result.message);
+                        failure: function (response) {
+                            var resp = Ext.decode(response.responseText);
+                            Ext.Msg.alert('Erreur', resp.message);
                         },
                     });
                 }
@@ -74,8 +75,9 @@ Ext.define('Ufolep13Volley.controller.match', {
                         success: function () {
                             window.location.reload();
                         },
-                        failure: function (form, action) {
-                            Ext.Msg.alert('Erreur', action.result.message);
+                        failure: function (response) {
+                            var resp = Ext.decode(response.responseText);
+                            Ext.Msg.alert('Erreur', resp.message);
                         },
                     });
                 }
