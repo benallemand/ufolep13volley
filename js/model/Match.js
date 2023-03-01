@@ -173,6 +173,15 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'is_validation_ready',
             convert: function (val, record) {
+                if (
+                    record.get('is_sign_team_dom') &&
+                    record.get('is_sign_team_ext') &&
+                    record.get('is_sign_match_dom') &&
+                    record.get('is_sign_match_ext') &&
+                    !record.get('certif')
+                ) {
+                    return true;
+                }
                 return !Ext.isEmpty(record.get('files_paths'))
                     && record.get('is_match_player_filled')
                     && !record.get('certif')
@@ -200,6 +209,12 @@ Ext.define('Ufolep13Volley.model.Match', {
                 });
                 return files_paths_html;
             }
-        }
+        },
+        {name: 'is_sign_team_dom', type: 'bool'},
+        {name: 'is_sign_team_ext', type: 'bool'},
+        {name: 'is_sign_match_dom', type: 'bool'},
+        {name: 'is_sign_match_ext', type: 'bool'},
+        {name: 'email_dom', type: 'string'},
+        {name: 'email_ext', type: 'string'},
     ]
 });

@@ -95,9 +95,20 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             grid.getSelectionModel().select(record);
                             grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
                         },
-                    }
+                    },
+                    {
+                        getTip: function () {
+                            return "Envoyer un mail aux responsables";
+                        },
+                        getClass: function (value, meta, record) {
+                            return 'fa fa-envelope';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            window.location.href = Ext.String.format("mailto:{0},{1}", record.get('email_dom'), record.get('email_ext'));
+                        },
+                    },
                 ],
-                width: 80,
+                width: 100,
             },
             {
                 header: 'Code',
