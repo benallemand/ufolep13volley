@@ -501,16 +501,16 @@ GROUP BY date_reception
 order by code_match) a WHERE date_reception > CURRENT_DATE");
 
 $indicatorTeamManyMatchesSameDay = new Indicator(
-    "Equipe qui joue plusieurs matchs le même soir",
+    "Equipes qui jouent plusieurs matchs la même semaine",
     "SELECT GROUP_CONCAT(m.code_match) AS code_match,
                 e.nom_equipe,
-                m.date_reception
+                DATE_FORMAT(m.date_reception, '%Y_%u') AS annee_semaine
          FROM equipes e
                   JOIN matches m on e.id_equipe = m.id_equipe_dom OR e.id_equipe = m.id_equipe_ext
          WHERE m.date_reception > CURRENT_DATE
-         GROUP BY e.id_equipe, m.date_reception
+         GROUP BY e.id_equipe, annee_semaine
          HAVING COUNT(m.code_match) > 1
-         ORDER BY date_reception");
+         ORDER BY annee_semaine");
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
