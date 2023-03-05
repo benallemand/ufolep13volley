@@ -305,7 +305,6 @@ class Emails extends Generic
     public function sendMailSheetReceived($code_match)
     {
         $teams_emails = $this->match->getTeamsEmailsFromMatch($code_match);
-        require_once __DIR__ . "/MatchMgr.php";
         $to = implode(';', $teams_emails);
         // fill code match
         $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
@@ -326,6 +325,120 @@ class Emails extends Generic
         $this->insert_email(
             "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
             $message,
+            $to
+        );
+    }
+
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws Exception
+     */
+    public function team_sheet_to_be_signed($code_match)
+    {
+        $match = $this->match->get_match_by_code_match($code_match);
+        if ($match['is_sign_team_dom'] == 1) {
+            $to = $match['email_ext'];
+            $cc = $match['email_dom'];
+            $team_name = $match['equipe_dom'];
+        } elseif ($match['is_sign_team_ext'] == 1) {
+            $to = $match['email_dom'];
+            $cc = $match['email_ext'];
+            $team_name = $match['equipe_ext'];
+        } else {
+            throw new Exception("Team sheet not signed by any of the teams !");
+        }
+        $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
+        // insert for sending
+        $this->insert_generic_email(
+            __DIR__ . '/../templates/emails/team_sheet_to_be_signed.fr.html',
+            array(
+                'code_match' => $code_match,
+                'team_name' => $team_name,
+                'url_match' => $url_match,
+            ),
+            $to,
+            $cc
+        );
+    }
+
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws Exception
+     */
+    public function match_sheet_to_be_signed($code_match)
+    {
+        $match = $this->match->get_match_by_code_match($code_match);
+        if ($match['is_sign_match_dom'] == 1) {
+            $to = $match['email_ext'];
+            $cc = $match['email_dom'];
+            $team_name = $match['equipe_dom'];
+        } elseif ($match['is_sign_match_ext'] == 1) {
+            $to = $match['email_dom'];
+            $cc = $match['email_ext'];
+            $team_name = $match['equipe_ext'];
+        } else {
+            throw new Exception("Match sheet not signed by any of the teams !");
+        }
+        $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
+        // insert for sending
+        $this->insert_generic_email(
+            __DIR__ . '/../templates/emails/match_sheet_to_be_signed.fr.html',
+            array(
+                'code_match' => $code_match,
+                'team_name' => $team_name,
+                'url_match' => $url_match,
+            ),
+            $to,
+            $cc
+        );
+    }
+
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws Exception
+     */
+    public function team_sheet_signed($code_match)
+    {
+        $match = $this->match->get_match_by_code_match($code_match);
+        if ($match['is_sign_team_dom'] == 1 && $match['is_sign_team_ext'] == 1) {
+            $to = implode(';', array($match['email_ext'], $match['email_dom']));
+        } else {
+            throw new Exception("Team sheet not signed by both teams !");
+        }
+        $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
+        // insert for sending
+        $this->insert_generic_email(
+            __DIR__ . '/../templates/emails/team_sheet_signed.fr.html',
+            array(
+                'code_match' => $code_match,
+                'url_match' => $url_match,
+            ),
+            $to
+        );
+    }
+
+    /**
+     * @param $code_match
+     * @throws Exception
+     * @throws Exception
+     */
+    public function match_sheet_signed($code_match)
+    {
+        $match = $this->match->get_match_by_code_match($code_match);
+        if ($match['is_sign_match_dom'] == 1) {
+            $to = implode(';', array($match['email_ext'], $match['email_dom']));
+        } else {
+            throw new Exception("Match sheet not signed by both teams !");
+        }
+        // insert for sending
+        $this->insert_generic_email(
+            __DIR__ . '/../templates/emails/match_sheet_signed.fr.html',
+            array(
+                'code_match' => $code_match,
+            ),
             $to
         );
     }
@@ -549,7 +662,7 @@ class Emails extends Generic
      * @param $destination_email
      * @throws Exception
      */
-    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email)
+    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, $cc = "")
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
@@ -565,14 +678,16 @@ class Emails extends Generic
                 $this->insert_email(
                     $subject,
                     $message,
-                    implode(";", array("benallemand@gmail.com"))
+                    implode(";", array("benallemand@gmail.com")),
+                    $cc
                 );
                 break;
             default:
                 $this->insert_email(
                     $subject,
                     $message,
-                    $destination_email);
+                    $destination_email,
+                    $cc);
                 break;
         }
     }
@@ -839,5 +954,15 @@ class Emails extends Generic
                 $email
             );
         }
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     */
+    public function get_last()
+    {
+        $emails = $this->get_emails("id IN (SELECT MAX(id) FROM emails)");
+        return $emails[0];
     }
 }
