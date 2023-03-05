@@ -192,8 +192,68 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             },
             {
                 header: 'Commentaires',
+                width: 160,
                 dataIndex: 'note',
-                flex: 1
+            },
+            {
+                text: 'Signatures',
+                columns: [
+                    {
+                        text: 'Feuilles',
+                        columns: [
+                            {
+                                text: 'D',
+                                width: 50,
+                                dataIndex: 'is_sign_team_dom',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                text: 'E',
+                                width: 50,
+                                dataIndex: 'is_sign_team_ext',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        text: 'Match',
+                        columns: [
+                            {
+                                text: 'D',
+                                width: 50,
+                                dataIndex: 'is_sign_match_dom',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                text: 'E',
+                                width: 50,
+                                dataIndex: 'is_sign_match_ext',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                        ]
+                    },
+                ]
+
             },
         ]
     },
