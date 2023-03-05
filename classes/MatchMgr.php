@@ -1903,6 +1903,12 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
         $this->sql_manager->execute($sql, $bindings);
+        $match = $this->get_match($id_match);
+        if ($match['is_sign_team_dom'] + $match['is_sign_team_ext'] == 1) {
+            (new Emails())->team_sheet_to_be_signed($match['code_match']);
+        } elseif ($match['is_sign_team_dom'] + $match['is_sign_team_ext'] == 2) {
+            (new Emails())->team_sheet_signed($match['code_match']);
+        }
     }
 
     /**
@@ -1925,6 +1931,12 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
         $this->sql_manager->execute($sql, $bindings);
+        $match = $this->get_match($id_match);
+        if ($match['is_sign_match_dom'] + $match['is_sign_match_ext'] == 1) {
+            (new Emails())->match_sheet_to_be_signed($match['code_match']);
+        } elseif ($match['is_sign_match_dom'] + $match['is_sign_match_ext'] == 2) {
+            (new Emails())->match_sheet_signed($match['code_match']);
+        }
     }
 
     /**
