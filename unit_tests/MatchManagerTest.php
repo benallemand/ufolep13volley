@@ -559,8 +559,8 @@ class MatchManagerTest extends TestCase
             $this->match_manager->sign_match_sheet($match['id_match']);
             // check last email
             $email = $this->emails->get_last();
-            $this->assertEquals($email['to_email'], 'c@d.fr');
-            $this->assertEquals($email['cc'], 'a@b.fr');
+            $this->assertEquals('c@d.fr', $email['to_email']);
+            $this->assertEquals('a@b.fr', $email['cc']);
             // check signed
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['is_sign_match_dom']);
