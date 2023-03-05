@@ -4,6 +4,7 @@ require_once __DIR__ . '/../classes/Team.php';
 require_once __DIR__ . '/../classes/Day.php';
 require_once __DIR__ . '/../classes/Competition.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
+require_once __DIR__ . '/../classes/Emails.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -12,6 +13,7 @@ class MatchManagerTest extends TestCase
     private SqlManager $sql_manager;
     private MatchMgr $match_manager;
     private Players $players_manager;
+    private Emails $emails;
 
     /**
      * @return void
@@ -89,6 +91,11 @@ class MatchManagerTest extends TestCase
         // insert players to test teams
         $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs LIMIT 0,10");
         $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs LIMIT 10,10");
+        // add team leader emails
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 1");
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 13");
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'a@b.fr' WHERE id = 1");
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'c@d.fr' WHERE id = 13");
     }
 
     /**
@@ -177,6 +184,7 @@ class MatchManagerTest extends TestCase
         $this->sql_manager = new SqlManager();
         $this->match_manager = new MatchMgr();
         $this->players_manager = new Players();
+        $this->emails = new Emails();
         $this->create_test_full_competition();
     }
 
@@ -522,11 +530,20 @@ class MatchManagerTest extends TestCase
             // sign team sheet as dom
             $this->connect_as_team_leader($match['id_equipe_dom']);
             $this->match_manager->sign_team_sheet($match['id_match']);
+            // check last email
+            $email = $this->emails->get_last();
+            $this->assertEquals($email['to_email'], 'c@d.fr');
+            $this->assertEquals($email['cc'], 'a@b.fr');
+            // check signed
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['is_sign_team_dom']);
             // sign team sheet as ext
             $this->connect_as_team_leader($match['id_equipe_ext']);
             $this->match_manager->sign_team_sheet($match['id_match']);
+            // check last email
+            $email = $this->emails->get_last();
+            $this->assertEquals($email['to_email'], 'c@d.fr;a@b.fr');
+            // check signed
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['is_sign_team_ext']);
             // fill the score as dom
@@ -540,11 +557,20 @@ class MatchManagerTest extends TestCase
             // sign match sheet as dom
             $this->connect_as_team_leader($match['id_equipe_dom']);
             $this->match_manager->sign_match_sheet($match['id_match']);
+            // check last email
+            $email = $this->emails->get_last();
+            $this->assertEquals($email['to_email'], 'c@d.fr');
+            $this->assertEquals($email['cc'], 'a@b.fr');
+            // check signed
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['is_sign_match_dom']);
             // sign match sheet as ext
             $this->connect_as_team_leader($match['id_equipe_ext']);
             $this->match_manager->sign_match_sheet($match['id_match']);
+            // check last email
+            $email = $this->emails->get_last();
+            $this->assertEquals($email['to_email'], 'c@d.fr;a@b.fr');
+            // check signed
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['is_sign_match_ext']);
             // check sheet_received
