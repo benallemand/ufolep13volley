@@ -565,5 +565,66 @@ class Team extends Generic
         return $results[0];
     }
 
+    /**
+     * @throws Exception
+     */
+    public function download_calendar($id=null)
+    {
+        require_once __DIR__ . '/MatchMgr.php';
+        $match = new MatchMgr();
+        if (empty($id)) {
+            @session_start();
+            if (!empty($_SESSION['id_equipe'])) {
+                $id = $_SESSION['id_equipe'];
+            } else {
+                throw new Exception("Utilisateur non connecté ou non associé à une équipe !");
+            }
+        }
+        $matches = $match->get_matches("(id_equipe_dom = $id OR id_equipe_ext = $id) AND match_status NOT IN ('ARCHIVED')");
+        if (count($matches) == 0) {
+            throw new Exception("Il n'y a pas de match pour cette compétition/division !");
+        }
+        $delimiter = ";";
+        $filename = "matchs.csv";
+        // Create a file pointer
+        $f = fopen('php://memory', 'w');
+        //add BOM to fix UTF-8 in Excel
+        fputs($f, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+        // Set column headers
+        function filter_hidden_csv_fields($var): bool
+        {
+            return in_array($var, array(
+                'code_match',
+                'libelle_competition',
+                'division',
+                'journee',
+                'equipe_dom',
+                'equipe_ext',
+                'heure_reception',
+                'gymnasium',
+                'date_reception',
+                'note',
+                'report_status',
+                'match_status',
+                'email_dom',
+                'email_ext',
+            ));
+        }
+        $fields = array_keys(array_filter($matches[0], 'filter_hidden_csv_fields', ARRAY_FILTER_USE_KEY));
+        fputcsv($f, $fields, $delimiter);
+        // Output each row of the data, format line as csv and write to file pointer
+        foreach ($matches as $match_item) {
+            fputcsv($f, array_values(array_filter($match_item, 'filter_hidden_csv_fields', ARRAY_FILTER_USE_KEY)), $delimiter);
+        }
+        // Move back to beginning of file
+        fseek($f, 0);
+        // Set headers to download file rather than displayed
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        //output all remaining data on a file pointer
+        fpassthru($f);
+        exit;
+    }
+
 
 }
