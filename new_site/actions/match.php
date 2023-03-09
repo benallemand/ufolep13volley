@@ -22,7 +22,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
             <span class="glyphicon glyphicon-ok"></span>
         </button>
     </form>
-    <form ng-if="x.sheet_received=='1'
+    <form ng-if="(x.sheet_received=='1' || x.is_forfait=='1')
                  && x.certif != '1'
                  && x.match_status == 'CONFIRMED'"
           style="display: inline-block"
@@ -161,8 +161,7 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
             <span class="glyphicon glyphicon-time"></span>
         </button>
     </form>
-    <div ng-if="today >= x.date_reception_raw
-        && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
+    <div ng-if="(x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
         && x.certif != '1'
         && x.match_status == 'CONFIRMED'">
         <a title="Modifier le match"
