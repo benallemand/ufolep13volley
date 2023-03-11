@@ -45,7 +45,7 @@ Ext.define('Ufolep13Volley.controller.match', {
                             id_match: id_match
                         },
                         success: function () {
-                            window.location.reload();
+                            Ext.Msg.alert('OK', "Signature prise en compte, merci de recharger la page.");
                         },
                         failure: function (response) {
                             var resp = Ext.decode(response.responseText);
@@ -73,7 +73,7 @@ Ext.define('Ufolep13Volley.controller.match', {
                             id_match: id_match
                         },
                         success: function () {
-                            window.location.reload();
+                            Ext.Msg.alert('OK', "Signature prise en compte, merci de recharger la page.");
                         },
                         failure: function (response) {
                             var resp = Ext.decode(response.responseText);
