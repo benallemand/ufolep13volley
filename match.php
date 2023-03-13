@@ -8,7 +8,8 @@ try {
         throw new Exception("Profil responsable d'équipe ou administrateur nécessaire !", 401);
     }
 } catch (Exception $e) {
-    header('Location: login.php', true, 401);
+    header('Location: /new_site/#/login?redirect=' . filter_input(INPUT_SERVER, 'REQUEST_URI') . '&reason=' . $e->getMessage());
+    exit(0);
 }
 try {
     $id_match = filter_input(INPUT_GET, 'id_match');
