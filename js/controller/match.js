@@ -39,15 +39,18 @@ Ext.define('Ufolep13Volley.controller.match', {
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {
                 if (btn == 'ok') {
+                    button.up('viewport').setLoading(true);
                     Ext.Ajax.request({
                         url: 'rest/action.php/matchmgr/sign_team_sheet',
                         params: {
                             id_match: id_match
                         },
                         success: function () {
+                            button.up('viewport').setLoading(false);
                             Ext.Msg.alert('OK', "Signature prise en compte, merci de recharger la page.");
                         },
                         failure: function (response) {
+                            button.up('viewport').setLoading(false);
                             var resp = Ext.decode(response.responseText);
                             Ext.Msg.alert('Erreur', resp.message);
                         },
@@ -67,15 +70,18 @@ Ext.define('Ufolep13Volley.controller.match', {
             icon: Ext.Msg.QUESTION,
             fn: function (btn) {
                 if (btn == 'ok') {
+                    button.up('viewport').setLoading(true);
                     Ext.Ajax.request({
                         url: 'rest/action.php/matchmgr/sign_match_sheet',
                         params: {
                             id_match: id_match
                         },
                         success: function () {
+                            button.up('viewport').setLoading(false);
                             Ext.Msg.alert('OK', "Signature prise en compte, merci de recharger la page.");
                         },
                         failure: function (response) {
+                            button.up('viewport').setLoading(false);
                             var resp = Ext.decode(response.responseText);
                             Ext.Msg.alert('Erreur', resp.message);
                         },
@@ -93,6 +99,7 @@ Ext.define('Ufolep13Volley.controller.match', {
             },
             callback: function (records, operation, success) {
                 form.loadRecord(records[0]);
+                form.up('viewport').down('displayfield[name=confrontation-tbar]').setValue(records[0].get('confrontation'))
             }
         })
     },
