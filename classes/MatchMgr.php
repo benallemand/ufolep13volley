@@ -1173,6 +1173,7 @@ class MatchMgr extends Generic
      */
     public function delete_match_player($id_match, $id_player)
     {
+        $this->is_action_allowed(__FUNCTION__, $id_match);
         $sql = "DELETE FROM match_player 
             WHERE id_match = $id_match
             AND id_player = $id_player";
@@ -1698,6 +1699,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 }
                 break;
             case 'manage_match_players':
+            case 'delete_match_player':
                 // allow admin
                 if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
                     return;
@@ -1746,6 +1748,11 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($match['is_match_player_filled'] !== 1) {
                     throw new Exception("Les présents des 2 équipes n'ont pas été renseignés !");
                 }
+                // allow only if not signed yet
+                if (($_SESSION['id_equipe'] == $match['id_equipe_dom'] && $match['is_sign_team_dom'] == 1) ||
+                    ($_SESSION['id_equipe'] == $match['id_equipe_ext'] && $match['is_sign_team_ext'] == 1)) {
+                    throw new Exception("Signature déjà effectuée !");
+                }
                 break;
             case 'sign_match_sheet':
                 // allow if ADMINISTRATEUR
@@ -1774,6 +1781,11 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 // allow only score filled matches
                 if ($match['score_equipe_dom'] == 0 && $match['score_equipe_ext'] == 0) {
                     throw new Exception("Le score n'a pas été renseigné !");
+                }
+                // allow only if not signed yet
+                if (($_SESSION['id_equipe'] == $match['id_equipe_dom'] && $match['is_sign_match_dom'] == 1) ||
+                    ($_SESSION['id_equipe'] == $match['id_equipe_ext'] && $match['is_sign_match_ext'] == 1)) {
+                    throw new Exception("Signature déjà effectuée !");
                 }
                 break;
             default:
