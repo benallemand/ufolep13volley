@@ -37,10 +37,9 @@ Ext.define('Ufolep13Volley.view.form.match', {
             layout: 'border',
             items: [
                 {
-                    region: 'center',
-                    scrollable: true,
-                    flex: 1,
+                    height: 450,
                     xtype: 'panel',
+                    title: 'Score',
                     layout: {
                         type: 'hbox',
                         align: 'stretch',
@@ -48,8 +47,8 @@ Ext.define('Ufolep13Volley.view.form.match', {
                     items: [
                         {
                             flex: 1,
+                            margin: 5,
                             xtype: 'panel',
-                            scrollable: true,
                             title: 'Domicile',
                             layout: 'anchor',
                             items: [
@@ -134,8 +133,8 @@ Ext.define('Ufolep13Volley.view.form.match', {
                         },
                         {
                             flex: 1,
+                            margin: 5,
                             xtype: 'panel',
-                            scrollable: true,
                             title: 'Extérieur',
                             layout: 'anchor',
                             items: [
@@ -190,38 +189,41 @@ Ext.define('Ufolep13Volley.view.form.match', {
                                     xtype: 'numberfield',
                                     minValue: 0,
                                     name: 'set_1_ext',
+                                    fieldLabel: 'Set 1',
                                 },
                                 {
                                     xtype: 'numberfield',
                                     minValue: 0,
                                     name: 'set_2_ext',
+                                    fieldLabel: 'Set 2',
                                 },
                                 {
                                     xtype: 'numberfield',
                                     minValue: 0,
                                     name: 'set_3_ext',
+                                    fieldLabel: 'Set 3',
                                 },
                                 {
                                     xtype: 'numberfield',
                                     minValue: 0,
                                     name: 'set_4_ext',
+                                    fieldLabel: 'Set 4',
                                 },
                                 {
                                     xtype: 'numberfield',
                                     minValue: 0,
                                     name: 'set_5_ext',
+                                    fieldLabel: 'Set 5',
                                 },
                             ]
                         },
                     ]
                 },
                 {
-                    region: 'east',
-                    flex: 1,
                     xtype: 'panel',
+                    height: 420,
                     title: "Feuilles de match",
                     layout: 'form',
-                    scrollable: true,
                     items: [
                         {
                             xtype: 'displayfield',
@@ -259,8 +261,8 @@ Ext.define('Ufolep13Volley.view.form.match', {
                     ]
                 },
                 {
-                    region: 'south',
                     xtype: 'panel',
+                    height: 180,
                     title: "Commentaire",
                     layout: 'form',
                     scrollable: true,
@@ -272,9 +274,21 @@ Ext.define('Ufolep13Volley.view.form.match', {
                             readOnly: (user_details.profile_name !== 'ADMINISTRATEUR')
                         }
                     ]
+                },
+                {
+                    height: 100,
+                    layout: 'center',
+                    items: [
+                        {
+                            xtype: 'button',
+                            action: 'sign_match_sheet',
+                            iconCls: 'fa-solid fa-signature',
+                            text: 'Signer la feuille de match'
+                        }
+                    ]
                 }
             ]
-        }
+        },
     ],
     buttons: [
         {
