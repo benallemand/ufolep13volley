@@ -21,20 +21,69 @@ Ext.define('Ufolep13Volley.view.form.match', {
             name: 'code_match'
         },
         {
-            region: 'center',
-            flex: 1,
+            region: 'west',
+            width: 200,
             xtype: 'panel',
-            layout: 'center',
-            items: {
-                xtype: 'displayfield',
-                name: 'confrontation'
-            }
+            scrollable: true,
+            title: 'Signatures',
+            layout: 'form',
+            items: [
+                {
+                    xtype: 'fieldset',
+                    title: 'Fiches équipes',
+                    layout: 'vbox',
+                    defaults: {
+                        flex: 1
+                    },
+                    items: [
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_sign_team_dom',
+                            boxLabel: 'Domicile',
+                        },
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_sign_team_ext',
+                            boxLabel: 'Extérieur',
+                        },
+                    ]
+                },
+                {
+                    xtype: 'fieldset',
+                    title: 'Feuille de match',
+                    layout: 'vbox',
+                    defaults: {
+                        flex: 1
+                    },
+                    items: [
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_sign_match_dom',
+                            boxLabel: 'Domicile',
+                        },
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_sign_match_ext',
+                            boxLabel: 'Extérieur',
+                        },
+                    ]
+                }
+            ]
         },
         {
             xtype: 'panel',
-            flex: 4,
-            region: 'south',
-            layout: 'border',
+            flex: 1,
+            region: 'center',
+            layout: 'form',
+            scrollable: true,
             items: [
                 {
                     height: 450,
@@ -74,8 +123,7 @@ Ext.define('Ufolep13Volley.view.form.match', {
                                                 checkbox.up('form').down('field[name=set_3_ext]').setValue(25);
                                                 checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
-                                            }
-                                            else {
+                                            } else {
                                                 checkbox.up('form').down('field[name=score_equipe_dom]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_1_dom]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_2_dom]').setValue(0);
@@ -160,8 +208,7 @@ Ext.define('Ufolep13Volley.view.form.match', {
                                                 checkbox.up('form').down('field[name=set_3_ext]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_4_ext]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_5_ext]').setValue(0);
-                                            }
-                                            else {
+                                            } else {
                                                 checkbox.up('form').down('field[name=score_equipe_dom]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_1_dom]').setValue(0);
                                                 checkbox.up('form').down('field[name=set_2_dom]').setValue(0);
