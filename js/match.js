@@ -4,70 +4,99 @@ Ext.application({
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {
+        var navigate = function (panel, direction) {
+            var layout = panel.getLayout();
+            layout[direction]();
+            Ext.getCmp('move-prev').setDisabled(!layout.getPrev());
+            Ext.getCmp('move-next').setDisabled(!layout.getNext());
+        };
+
         Ext.create('Ext.container.Viewport', {
-            layout: 'border',
-            items: [
-                {
-                    region: 'north',
-                    margin: 10,
-                    defaults: {
+            layout: 'fit',
+            items: {
+                layout: 'card',
+                tbar: [
+                    {
                         xtype: 'button',
                         scale: 'medium',
                         margin: 5,
-                    },
-                    items: [
-                        {
-                            text: "RETOUR",
-                            iconCls: 'fa-solid fa-arrow-left',
-                            handler: function () {
-                                history.back();
-                            }
+                        text: "Fermer",
+                        iconCls: 'fa-solid fa-close',
+                        handler: function () {
+                            history.back();
                         }
-                    ]
-                },
-                {
-                    region: 'north',
-                    layout: {
-                        type: 'hbox',
-                        align: 'stretch',
                     },
-                    bbar: [
-                        {
-                            xtype: 'button',
-                            action: 'sign_team_sheet',
-                            iconCls: 'fa-solid fa-signature',
-                            text: 'Signer la fiche équipe'
+                    {
+                        id: 'move-prev',
+                        text: 'Précédent',
+                        iconCls: 'fa-solid fa-arrow-left',
+                        handler: function (btn) {
+                            navigate(btn.up("panel"), "prev");
                         },
-                    ],
-                    items: [
-                        {
-                            xtype: 'form_match_players',
-                            flex: 1,
-                        },
-                        {
-                            title: 'Présents',
-                            flex: 2,
-                            items: {
-                                xtype: 'view_match_players',
+                        disabled: true
+                    },
+                    '->',
+                    {
+                        xtype: 'displayfield',
+                        name: 'confrontation-tbar'
+                    },
+                    '->', // greedy spacer so that the buttons are aligned to each side
+                    {
+                        id: 'move-next',
+                        text: 'Suivant',
+                        iconCls: 'fa-solid fa-arrow-right',
+                        handler: function (btn) {
+                            navigate(btn.up("panel"), "next");
+                        }
+                    },
+                ],
+                items: [
+                    {
+                        layout: 'fit',
+                        title: 'Fiche équipe',
+                        items: [
+                            {
+                                layout: 'anchor',
                                 scrollable: true,
-                                height: 200
+                                items: [
+                                    {
+                                        xtype: 'form_match_players',
+                                        height: 150,
+                                    },
+                                    {
+                                        title: 'Présents',
+                                        flex: 1,
+                                        items: {
+                                            xtype: 'view_match_players',
+                                        }
+                                    },
+                                    {
+                                        layout: 'center',
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                action: 'sign_team_sheet',
+                                                iconCls: 'fa-solid fa-signature',
+                                                text: 'Signer la fiche équipe'
+                                            },
+                                        ]
+                                    }
+                                ]
                             }
-                        }
-                    ]
-                },
-                {
-                    region: 'center',
-                    xtype: 'form_match',
-                    bbar: [
-                        {
-                            xtype: 'button',
-                            action: 'sign_match_sheet',
-                            iconCls: 'fa-solid fa-signature',
-                            text: 'Signer la feuille de match'
-                        },
-                    ],
-                },
-            ]
+                        ]
+                    },
+                    {
+                        layout: 'fit',
+                        title: 'Feuille de match',
+                        items: [
+                            {
+                                xtype: 'form_match'
+                            }
+                        ]
+                    },
+                ]
+            }
+
         });
     }
 });
