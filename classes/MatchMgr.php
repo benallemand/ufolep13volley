@@ -328,6 +328,10 @@ class MatchMgr extends Generic
         $date_reception,
         $sheet_received,
         $certif,
+        $is_sign_team_dom,
+        $is_sign_team_ext,
+        $is_sign_match_dom,
+        $is_sign_match_ext,
         $note,
         $dirtyFields = null,
         $id_match = null
@@ -345,6 +349,10 @@ class MatchMgr extends Generic
             'date_reception' => $date_reception,
             'sheet_received' => $sheet_received,
             'certif' => $certif,
+            'is_sign_team_dom' => $is_sign_team_dom,
+            'is_sign_team_ext' => $is_sign_team_ext,
+            'is_sign_match_dom' => $is_sign_match_dom,
+            'is_sign_match_ext' => $is_sign_match_ext,
             'note' => $note,
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
@@ -402,6 +410,10 @@ class MatchMgr extends Generic
                 case 'sheet_received':
                 case 'forfait_dom':
                 case 'forfait_ext':
+                case 'is_sign_team_dom':
+                case 'is_sign_team_ext':
+                case 'is_sign_match_dom':
+                case 'is_sign_match_ext':
                     $val = ($value === 'on' || $value === 1) ? 1 : 0;
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
