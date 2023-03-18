@@ -188,6 +188,38 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 uncheckedValue: 'off'
             },
             {
+                name: 'is_sign_team_dom',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Fiches équipes signées (dom) ?',
+                boxLabel: 'Oui',
+                msgTarget: 'under',
+                uncheckedValue: 'off'
+            },
+            {
+                name: 'is_sign_team_ext',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Fiches équipes signées (ext) ?',
+                boxLabel: 'Oui',
+                msgTarget: 'under',
+                uncheckedValue: 'off'
+            },
+            {
+                name: 'is_sign_match_dom',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Feuille de match signée (dom) ?',
+                boxLabel: 'Oui',
+                msgTarget: 'under',
+                uncheckedValue: 'off'
+            },
+            {
+                name: 'is_sign_match_ext',
+                xtype: 'checkboxfield',
+                fieldLabel: 'Feuille de match signée (ext) ?',
+                boxLabel: 'Oui',
+                msgTarget: 'under',
+                uncheckedValue: 'off'
+            },
+            {
                 name: 'note',
                 xtype: 'textarea',
                 fieldLabel: 'Commentaire'
