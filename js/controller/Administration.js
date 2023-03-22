@@ -907,7 +907,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         Ext.widget('limitdateedit');
         this.getFormPanelEditLimitDate().loadRecord(record);
     },
-    addPlayer: function () {
+    addPlayer: function (button) {
         Ext.widget('playeredit');
         this.getImagePlayer().hide();
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
@@ -918,7 +918,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addProfile: function () {
+    addProfile: function (button) {
         Ext.widget('profileedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -927,7 +927,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addUser: function () {
+    addUser: function (button) {
         Ext.widget('useredit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -936,7 +936,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addGymnasium: function () {
+    addGymnasium: function (button) {
         Ext.widget('gymnasiumedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -945,7 +945,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addClub: function () {
+    addClub: function (button) {
         Ext.widget('clubedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -954,7 +954,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addTeam: function () {
+    addTeam: function (button) {
         Ext.widget('teamedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -982,7 +982,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addDay: function () {
+    addDay: function (button) {
         Ext.widget('dayedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -991,7 +991,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         widget.down('form').loadRecord(record);
         widget.down('form').getForm().findField('id').setValue("");
     },
-    addLimitDate: function () {
+    addLimitDate: function (button) {
         Ext.widget('limitdateedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
