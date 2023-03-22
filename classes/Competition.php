@@ -292,6 +292,9 @@ class Competition extends Generic
                 continue;
             }
             $result_string .= "<li class='dropdown-header'><h4>" . $competition['libelle'] . "</h4></li>";
+            if (in_array($code_competition, array('c', 'kh'))) {
+                $result_string .= "<li><a href='/rank_for_cup.php?code_competition=$code_competition'>Classement général</a></li>";
+            }
             $divisions = $this->rank->getDivisionsFromCompetition($code_competition);
             foreach ($divisions as $division) {
                 $division_string = $division['division'];
