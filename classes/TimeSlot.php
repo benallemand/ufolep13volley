@@ -68,7 +68,7 @@ class TimeSlot extends Generic
     {
         $results = $this->getTimeSlots("c.id = $id");
         if (count($results) !== 1) {
-            throw new Exception("Error while retrieving timeslot data");
+            throw new Exception("Erreur pendant la récupération des données du créneau !");
         }
         return $results[0];
     }

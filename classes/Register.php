@@ -380,7 +380,7 @@ class Register extends Generic
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
         if (count($this->sql_manager->execute($sql, $bindings)) > 0) {
-            throw new Exception("At least one required condition is missing !");
+            throw new Exception("Au moins une condition est manquante !");
         }
     }
 

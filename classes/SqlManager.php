@@ -39,7 +39,7 @@ class SqlManager
         mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
         $stmt = mysqli_prepare($db, $sql);
         if ($stmt === FALSE) {
-            throw new Exception("SQL error : " . mysqli_error($db));
+            throw new Exception("Erreur SQL : " . mysqli_error($db));
         }
         if (count($bindings) > 0) {
             $array_params = array($stmt, '');
@@ -50,11 +50,11 @@ class SqlManager
                 $array_params[] = $binding['value'];
             }
             if (call_user_func_array('mysqli_stmt_bind_param', $this->make_values_referenced($array_params)) === FALSE) {
-                throw new Exception("SQL error : " . mysqli_error($db));
+                throw new Exception("Erreur SQL : " . mysqli_error($db));
             }
         }
         if (mysqli_stmt_execute($stmt) === FALSE) {
-            throw new Exception("SQL error : " . mysqli_error($db));
+            throw new Exception("Erreur SQL : " . mysqli_error($db));
         }
         if (str_starts_with($sql, "SELECT") || str_starts_with($sql, "SHOW")) {
             $mysqli_result = mysqli_stmt_get_result($stmt);
@@ -63,7 +63,7 @@ class SqlManager
                 $results[] = $data;
             }
             if (mysqli_stmt_close($stmt) === FALSE) {
-                throw new Exception("SQL error : " . mysqli_error($db));
+                throw new Exception("Erreur SQL : " . mysqli_error($db));
             }
             return $results;
         }
@@ -71,7 +71,7 @@ class SqlManager
             return mysqli_insert_id($db);
         }
         if (mysqli_stmt_close($stmt) === FALSE) {
-            throw new Exception("SQL error : " . mysqli_error($db));
+            throw new Exception("Erreur SQL : " . mysqli_error($db));
         }
         return null;
     }

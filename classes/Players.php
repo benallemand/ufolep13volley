@@ -32,7 +32,7 @@ class Players extends Generic
     {
         $results = $this->get_players("j.id = $player_id");
         if (count($results) !== 1) {
-            throw new Exception("Error during SQL request: 1 and only 1 result is expected");
+            throw new Exception("Erreur, un seul résultat attendu !");
         }
         return $results[0];
     }

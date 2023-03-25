@@ -81,7 +81,7 @@ class Team extends Generic
     {
         $results = $this->getTeams("e.id_equipe = $id");
         if (count($results) < 1) {
-            throw new Exception("Error while retrieving team data");
+            throw new Exception("Erreur pendant la récupération des données de l'équipe !");
         }
         return $results[0];
     }

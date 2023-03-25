@@ -50,13 +50,13 @@ class UserManager extends Generic
         $password = $new_password;
         $passwordAgain = $new_password_again;
         if (!isset($password)) {
-            throw new Exception("Password has not been submitted!");
+            throw new Exception("Le mot de passe n'a pas été soumis !");
         }
         if (!isset($passwordAgain)) {
-            throw new Exception("Password confirmation has not been submitted!");
+            throw new Exception("La confirmation du mot de passe n'a pas été soumise !");
         }
         if ($password !== $passwordAgain) {
-            throw new Exception("Password and password confirmation do not match!");
+            throw new Exception("Les 2 mots de passes ne correspondent pas !");
         }
         $sql = "UPDATE comptes_acces 
                 SET password_hash = MD5(CONCAT(?, ?)) 
@@ -211,7 +211,7 @@ class UserManager extends Generic
     public function createUser($login, $email, $id_equipe)
     {
         if ($this->isUserExists($login)) {
-            throw new Exception("Account already exists ! !");
+            throw new Exception("Ce compte existe déjà !");
         }
         if ($id_equipe === NULL) {
             $id_equipe = 0;
