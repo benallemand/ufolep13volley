@@ -2,16 +2,20 @@
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/Rank.php';
+require_once __DIR__ . '/../classes/Day.php';
+require_once __DIR__ . '/../classes/MatchMgr.php';
 
 class Competition extends Generic
 {
     private Rank $rank;
+    private MatchMgr $match;
 
     public function __construct()
     {
         parent::__construct();
         $this->table_name = 'competitions';
         $this->rank = new Rank();
+        $this->match = new MatchMgr();
     }
 
     public function getSql($query = "1=1"): string
@@ -658,12 +662,36 @@ class Competition extends Generic
         // format 'd/m/Y' or empty if null
         $start_date = $competition['start_date'];
         if (empty($start_date)) {
-            throw new Exception("Unable to determine if first half, date start is empty !");
+            throw new Exception("Impossible de déterminer si c'est la 1ere demi saison, la date de début est vide !");
         }
         $start_datetime = DateTime::createFromFormat('d/m/Y', $start_date);
         $month = intval($start_datetime->format('m'));
         return $month > 6;
     }
 
+    /**
+     * @throws Exception
+     */
+    public function generate_matches_final_phase_cup($ids, $day_number)
+    {
+        $day_mgr = new Day();
+        if (empty($ids)) {
+            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
+        }
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            $competition = $this->get_by_id($id);
+            $code_competition = $competition['code_competition'];
+            if(!in_array($competition['code_competition'], array('kf', 'cf'))) {
+                throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
+            }
+            $day = $day_mgr->get_one("j.code_competition = '$code_competition' AND j.numero = $day_number");
+            if(empty($day)) {
+                throw new Exception("Il faut créer la journée avant de générer cette compétition !");
+            }
+            $this->match->delete_matches("code_competition = '$code_competition' AND division = '1'");
+            $this->match->draw_matches($code_competition, '1', $day['id']);
+        }
+    }
 
 }
