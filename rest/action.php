@@ -12,7 +12,7 @@ try {
     $url = str_replace('/rest/action.php/', '', $url);
     $args = explode('/', $url);
     if (count($args) !== 2) {
-        throw new Exception("Bad format for url $url !");
+        throw new Exception("Mauvais format d'url $url !");
     }
     $class_name = $args[0];
     $action_name = $args[1];
@@ -130,7 +130,7 @@ try {
             $manager = new UserManager();
             break;
         default:
-            throw new Exception("Undefined class for url $url !");
+            throw new Exception("Classe non définie pour l'url $url !");
 
     }
     switch (filter_input(INPUT_SERVER, 'REQUEST_METHOD')) {
@@ -157,7 +157,7 @@ try {
         case 'PUT':
         case 'DELETE':
         default:
-            throw new Exception("Unsupported REQUEST_METHOD !");
+            throw new Exception("Méthode HTTP non définie !");
     }
     echo json_encode(array(
         'success' => true,
