@@ -47,7 +47,7 @@ class Generic
             @session_start();
         }
         if (!(isset($_SESSION['login']))) {
-            throw new Exception("User not logged in");
+            throw new Exception("Utilisateur non connecté !");
         }
         return $_SESSION;
     }
@@ -164,6 +164,15 @@ class Generic
     }
 
     /**
+     * @throws Exception
+     */
+    public function get_one(string $query = "1=1", array $bindings=array()): ?array
+    {
+        $results = $this->get($query, $bindings);
+        return count($results) == 1 ? $results[0] : null;
+    }
+
+    /**
      * @param $id
      * @return array
      * @throws Exception
@@ -179,7 +188,7 @@ class Generic
         $sql = $this->getSql($query);
         $results = $this->sql_manager->execute($sql, $bindings);
         if (empty($results)) {
-            throw new Exception("Unable to find data for $this->id_name $id !");
+            throw new Exception("Pas de donnée dispo pour l'id $id !");
         }
         return $results[0];
     }
