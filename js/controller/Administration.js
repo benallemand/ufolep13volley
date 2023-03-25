@@ -353,6 +353,15 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 'competitions_grid menuitem[action=generateMatches]': {
                     click: this.generateMatches
                 },
+                'competitions_grid menuitem[action=generate_matches_final_phase_cup_8]': {
+                    click: this.generate_matches_final_phase_cup_8
+                },
+                'competitions_grid menuitem[action=generate_matches_final_phase_cup_4]': {
+                    click: this.generate_matches_final_phase_cup_4
+                },
+                'competitions_grid menuitem[action=generate_matches_final_phase_cup_2]': {
+                    click: this.generate_matches_final_phase_cup_2
+                },
                 'competitions_grid menuitem[action=generateAll]': {
                     click: this.generateAll
                 },
@@ -1218,7 +1227,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     deleteRanks: function (button) {
         this.genericDelete(button, '/rest/action.php/rank/delete', 'id');
     },
-    genericRequest: function (button, title, url, is_one_record_allowed) {
+    genericRequest: function (button, title, url, is_one_record_allowed, extra_params = {}) {
         var this_controller = this;
         var grid = button.up('grid');
         var records = grid.getSelectionModel().getSelection();
@@ -1242,11 +1251,13 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 Ext.each(records, function (record) {
                     ids.push(record.get('id'));
                 });
+                var params = {
+                    ids: ids.join(',')
+                };
+                Ext.apply(params, extra_params);
                 Ext.Ajax.request({
                     url: url,
-                    params: {
-                        ids: ids.join(',')
-                    },
+                    params: params,
                     timeout: 600000,
                     success: function (response) {
                         if (response.status === 201) {
@@ -1283,6 +1294,30 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     generateMatches: function (button) {
         this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches', true);
+    },
+    generate_matches_final_phase_cup_8: function (button) {
+        this.genericRequest(
+            button,
+            'Tirer au sort les 1/8e',
+            '/rest/action.php/competition/generate_matches_final_phase_cup',
+            false,
+            {'day_number': 1});
+    },
+    generate_matches_final_phase_cup_4: function (button) {
+        this.genericRequest(
+            button,
+            'Tirer au sort les 1/4',
+            '/rest/action.php/competition/generate_matches_final_phase_cup',
+            false,
+            {'day_number': 2});
+    },
+    generate_matches_final_phase_cup_2: function (button) {
+        this.genericRequest(
+            button,
+            'Tirer au sort les 1/2',
+            '/rest/action.php/competition/generate_matches_final_phase_cup',
+            false,
+            {'day_number': 3});
     },
     generateAll: function (button) {
         this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
@@ -1581,6 +1616,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         {
                             text: 'Journées...',
                             action: 'generateDays'
+                        },
+                        {
+                            text: 'Tirer au sort les 1/8e',
+                            action: 'generate_matches_final_phase_cup_8'
+                        },
+                        {
+                            text: 'Tirer au sort les 1/4',
+                            action: 'generate_matches_final_phase_cup_4'
+                        },
+                        {
+                            text: 'Tirer au sort les 1/2',
+                            action: 'generate_matches_final_phase_cup_2'
                         },
                     ]
                 },
