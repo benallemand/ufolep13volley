@@ -162,7 +162,7 @@ class Emails extends Generic
             }
         }
         if (!$mail->send()) {
-            throw new Exception("Send email error : " . $mail->ErrorInfo);
+            throw new Exception("Erreur dans l'envoi de mail : " . $mail->ErrorInfo);
         }
     }
 
@@ -346,7 +346,7 @@ class Emails extends Generic
             $cc = $match['email_ext'];
             $team_name = $match['equipe_ext'];
         } else {
-            throw new Exception("Team sheet not signed by any of the teams !");
+            throw new Exception("Les fiches équipes n'ont pas été signées !");
         }
         $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
         // insert for sending
@@ -379,7 +379,7 @@ class Emails extends Generic
             $cc = $match['email_ext'];
             $team_name = $match['equipe_ext'];
         } else {
-            throw new Exception("Match sheet not signed by any of the teams !");
+            throw new Exception("Les feuilles de match n'ont pas été signées !");
         }
         $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
         // insert for sending
@@ -406,7 +406,7 @@ class Emails extends Generic
         if ($match['is_sign_team_dom'] == 1 && $match['is_sign_team_ext'] == 1) {
             $to = implode(';', array($match['email_ext'], $match['email_dom']));
         } else {
-            throw new Exception("Team sheet not signed by both teams !");
+            throw new Exception("Les fiches équipes n'ont pas été signées par les 2 équipes !");
         }
         $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
         // insert for sending
@@ -431,7 +431,7 @@ class Emails extends Generic
         if ($match['is_sign_match_dom'] == 1) {
             $to = implode(';', array($match['email_ext'], $match['email_dom']));
         } else {
-            throw new Exception("Match sheet not signed by both teams !");
+            throw new Exception("Les feuilles de match n'ont pas été signées par les 2 équipes !");
         }
         // insert for sending
         $this->insert_generic_email(
@@ -647,11 +647,11 @@ class Emails extends Generic
         $doc = new DomDocument;
         $doc->validateOnParse = true;
         if (!$doc->loadHTML($message)) {
-            throw new Exception("Error while parsing HTML template file");
+            throw new Exception("Erreur de lecture du modèle HTML !");
         }
         $h1NodeList = $doc->getElementsByTagName('h1');
         if ($h1NodeList->length === 0) {
-            throw new Exception("Header not found in template");
+            throw new Exception("Pas d'en-tête dans le modèle HTML !");
         }
         return $h1NodeList->item(0)->textContent;
     }

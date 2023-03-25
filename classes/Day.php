@@ -248,7 +248,7 @@ class Day extends Generic
         );
         $results = $this->sql_manager->execute($sql, $bindings);
         if (empty($results)) {
-            throw new Exception("Unable to find data for $id !");
+            throw new Exception("Pas de donnée dispo pour l'id $id !");
         }
         return $results[0];
     }

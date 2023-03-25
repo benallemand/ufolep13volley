@@ -73,12 +73,12 @@ class Files extends Generic
     function upload_file($fileKey, &$uploadfile)
     {
         if (empty($_FILES[$fileKey]['name'])) {
-            throw new Exception("Unable to find uploaded file");
+            throw new Exception("Impossible de trouver le fichier envoyé !");
         }
         $uploaddir = '../teams_pics/';
         $uploadfile = $uploaddir . time() . '.' . pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
         if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadfile) !== TRUE) {
-            throw new Exception("Unable to move and rename uploaded file");
+            throw new Exception("Impossible de déplacer/renommer le fichier envoyé !");
         }
     }
 
