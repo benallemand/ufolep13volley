@@ -134,7 +134,7 @@ class MatchMgr extends Generic
         $results = $this->get_matches("m.id_match = $id_match");
         $count_results = count($results);
         if ($count_results !== 1) {
-            throw new Exception("Error while retrieving match data ! Found $count_results match(s) !");
+            throw new Exception("Erreur lors de la récupération des données du match ! Trouvé $count_results match(s) !");
         }
         return $results[0];
     }
@@ -157,17 +157,17 @@ class MatchMgr extends Generic
     {
         setlocale(LC_ALL, 'fr_FR.UTF-8');
         if (empty($id)) {
-            throw new Exception("No ID specified\n");
+            throw new Exception("Pas d'id spécifié !");
         }
         if (!$this->is_download_allowed($id)) {
-            throw new Exception("User not allowed to download !");
+            throw new Exception("Utilisateur non autorisé à télécharger !");
         }
         $match = $this->get_match($id);
         $match_files = $this->get_match_files($id);
         $archiveFileName = $match['code_match'] . ".zip";
         $zip = new ZipArchive();
         if ($zip->open($archiveFileName, ZIPARCHIVE::CREATE) !== TRUE) {
-            throw new Exception("Error during zip file creation !");
+            throw new Exception("Erreur pendant la création du fichier ZIP !");
         }
         if (count($match_files) === 0) {
             throw new Exception("Pas de fichier attaché (Attention, ceux envoyés par email ne sont pas téléchargeables) !");
@@ -207,11 +207,11 @@ class MatchMgr extends Generic
                     &&
                     ($id_team != $match['id_equipe_ext'])
                 ) {
-                    throw new Exception("Team not allowed to download this match !");
+                    throw new Exception("Equipe non autorisée à télécharger ce match !");
                 }
                 return true;
             default:
-                throw new Exception("User role not allowed to download !");
+                throw new Exception("Profil utilisateur non autorisé à télécharger !");
         }
     }
 
@@ -1114,7 +1114,7 @@ class MatchMgr extends Generic
         $results = $this->sql_manager->execute($sql, $bindings);
         $count_results = count($results);
         if ($count_results !== 1) {
-            throw new Exception("Unable to find last match between ids $home_id and $away_id ! sql returned $count_results line(s) !");
+            throw new Exception("Impossible de trouver le dernier match entre les ids $home_id et $away_id ! La requête sql a retourné $count_results ligne(s) !");
         }
         return $results[0]['id_equipe_dom'] === $home_id;
     }
@@ -1660,13 +1660,13 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         if (!isset($id_match)) {
-            throw new Exception("Cannot find id_match !");
+            throw new Exception("Impossible de trouver id_match !");
         }
         if (!isset($player_ids)) {
-            throw new Exception("Cannot find player_ids !");
+            throw new Exception("Impossible de trouver player_ids !");
         }
         if (empty($id_match)) {
-            throw new Exception("id_match is empty !");
+            throw new Exception("id_match vide !");
         }
         foreach ($player_ids as $index => $player_id) {
             if (empty($player_id)) {
@@ -1853,7 +1853,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $results = $this->get_matches("m.code_match = '$code_match'");
         $count_results = count($results);
         if ($count_results !== 1) {
-            throw new Exception("Error while retrieving match data ! Found $count_results match(s) !");
+            throw new Exception("Erreur pendant la réception des données du match! Trouvé $count_results match(s) !");
         }
         return $results[0];
     }
@@ -2089,5 +2089,40 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             throw new Exception("Impossible de trouver une date pour ce créneau et cette journée !");
         }
         return $results[0]['computed_date'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function draw_matches($code_competition, $division, $id_journee)
+    {
+        $comp_mgr = new Competition();
+        $competition = $comp_mgr->getCompetition($code_competition);
+        $teams = $this->rank->getTeamsFromDivisionAndCompetition($division, $code_competition);
+        if (count($teams) % 2 != 0) {
+            throw new Exception("Impossible de tirer au sort les matchs, il faut un nombre pair d'équipes !");
+        }
+        shuffle($teams);
+        $match_number = 1;
+        while (count($teams) > 0) {
+            $team_dom = array_pop($teams);
+            $team_ext = array_pop($teams);
+            $year_month = date('ym');
+            $code_match =
+                strtoupper($competition['code_competition']) .
+                $year_month .
+                $division .
+                $match_number;
+            $this->insert_db_match($code_match,
+                $code_competition,
+                $division,
+                $team_dom['id_equipe'],
+                $team_ext['id_equipe'],
+                $id_journee,
+                '',
+                0,
+            );
+            $match_number++;
+        }
     }
 }
