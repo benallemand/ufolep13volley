@@ -1,6 +1,22 @@
 SELECT a.*
 FROM (SELECT m.code_match,
              m.date_reception,
+             edom.nom_equipe          AS domicile,
+             eext.nom_equipe          AS exterieur,
+             m.match_status           AS statut,
+             'autre match ce soir là' AS raison
+      from matches m
+               JOIN equipes edom on m.id_equipe_dom = edom.id_equipe
+               JOIN equipes eext on m.id_equipe_ext = eext.id_equipe
+      WHERE (m.date_reception IN (SELECT date_reception
+                                  FROM matches
+                                  WHERE (id_equipe_dom IN (m.id_equipe_dom, m.id_equipe_ext)
+                                      OR id_equipe_ext IN (m.id_equipe_dom, m.id_equipe_ext))
+                                    AND id_match != m.id_match))
+        AND m.match_status != 'ARCHIVED'
+      UNION ALL
+      SELECT m.code_match,
+             m.date_reception,
              edom.nom_equipe  AS domicile,
              eext.nom_equipe  AS exterieur,
              m.match_status   AS statut,
