@@ -27,7 +27,7 @@ FROM (SELECT m.code_match,
       WHERE (m.date_reception IN (SELECT closed_date FROM blacklist_date))
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match,
+      SELECT DISTINCT m.code_match,
              m.date_reception,
              edom.nom_equipe   AS domicile,
              eext.nom_equipe   AS exterieur,
