@@ -38,7 +38,8 @@ class HallOfFame extends Generic
                       IF(hof.title LIKE '%mi-saison%', 1, 2)                  AS demi_saison,
                       hof_champion.team_name      AS champion,
                       hof_vice_champion.team_name AS vice_champion,
-                      hof.league
+                      hof.league,
+                      CONCAT(hof_champion.id, ',', hof_vice_champion.id) AS ids
                 FROM hall_of_fame hof
                   JOIN  hall_of_fame hof_champion ON    hof_champion.league = hof.league AND
                                                         hof_champion.period = hof.period AND
@@ -230,6 +231,9 @@ class HallOfFame extends Generic
     private function add_diploma($id, FPDF &$pdf): void
     {
         $diploma_data = $this->get_by_id($id);
+        foreach ($diploma_data as $key => $value) {
+            $diploma_data[$key] = utf8_decode($value);
+        }
         // Ajout d'une nouvelle page
         $pdf->AddPage();
         // Définition des coordonnées des coins de la page
@@ -261,10 +265,11 @@ class HallOfFame extends Generic
 
         // Ajout de texte au centre de la page
         $pdf->SetXY(0, $top_left_y +50);
+        $determinant = self::starts_with(strtolower($diploma_data['league']), "championnat") ? 'le' : 'la';
         $centered_text = implode(PHP_EOL, array(
             "Les membres de la Commission Technique",
             "de l'UFOLEP Volley-Ball des Bouches-du-Rhône",
-            "décernent, pour le " . $diploma_data['league'] . ", le titre de",
+            "décernent, pour $determinant " . $diploma_data['league'] . ", le titre de",
         ));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');

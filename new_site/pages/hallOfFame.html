@@ -5,7 +5,7 @@
     <table class="table table-striped table-bordered" ng-repeat="(key, value) in hallOfFame | groupBy:'league'">
         <thead>
         <tr>
-            <th colspan="5"><h2>{{ key }}</h2></th>
+            <th colspan="6"><h2>{{ key }}</h2></th>
         </tr>
         <tr>
             <th>Année</th>
@@ -13,6 +13,7 @@
             <th>Division</th>
             <th>Champion</th>
             <th>Vice-champion</th>
+            <th>Diplômes</th>
         </tr>
         </thead>
         <tbody>
@@ -22,6 +23,7 @@
             <td>{{ x.division }}</td>
             <td>{{ x.champion }}</td>
             <td>{{ x.vice_champion }}</td>
+            <td><a href="/rest/action.php/halloffame/download_diploma?ids={{ x.ids }}" target="_blank">Télécharger</a></td>
         </tr>
         </tbody>
     </table>
