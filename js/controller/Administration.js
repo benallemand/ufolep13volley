@@ -1509,7 +1509,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 {
                     text: 'Supprimer',
                     action: 'deleteHallOfFame'
-                }
+                },
+                {
+                    text: 'Diplôme(s)',
+                    hidden: true,
+                    action: 'download_diploma'
+                },
             ]
         });
         grid.addDocked({

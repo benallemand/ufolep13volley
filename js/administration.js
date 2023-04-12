@@ -16,7 +16,9 @@ Ext.application({
         'certify_matchs',
         'flip_matchs',
         'retry_error_emails',
-        'send_mail_team_recap'],
+        'send_mail_team_recap',
+        'download_diploma',
+    ],
     name: 'Ufolep13Volley',
     appFolder: 'js',
     launch: function () {
