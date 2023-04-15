@@ -318,7 +318,7 @@ Ext.define('Ufolep13Volley.view.form.match', {
                             xtype: 'textarea',
                             name: 'note',
                             fieldLabel: 'Commentaire',
-                            readOnly: (user_details.profile_name !== 'ADMINISTRATEUR')
+                            readOnly: !Ext.Array.contains(['ADMINISTRATEUR', 'RESPONSABLE_EQUIPE'], user_details.profile_name),
                         }
                     ]
                 },
