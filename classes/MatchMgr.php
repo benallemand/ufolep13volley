@@ -1711,6 +1711,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 }
                 break;
             case 'manage_match_players':
+            case 'add_match_player':
             case 'delete_match_player':
                 // allow admin
                 if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
@@ -1786,10 +1787,10 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($match['match_status'] !== 'CONFIRMED') {
                     throw new Exception("Match non confirmé !");
                 }
-                // allow only sign_team_xxx filled matches
-                if (($match['is_sign_team_dom'] !== 1) || ($match['is_sign_team_ext'] !== 1)) {
-                    throw new Exception("Les fiches équipes n'ont pas été signées !");
-                }
+//                // allow only sign_team_xxx filled matches
+//                if (($match['is_sign_team_dom'] !== 1) || ($match['is_sign_team_ext'] !== 1)) {
+//                    throw new Exception("Les fiches équipes n'ont pas été signées !");
+//                }
                 // allow only score filled matches
                 if ($match['score_equipe_dom'] == 0 && $match['score_equipe_ext'] == 0) {
                     throw new Exception("Le score n'a pas été renseigné !");
@@ -1914,15 +1915,21 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
-        switch ($_SESSION['id_equipe']) {
-            case $match['id_equipe_dom']:
-                $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
-                break;
-            case $match['id_equipe_ext']:
-                $sql = "UPDATE matches set is_sign_team_ext = 1 WHERE id_match = ?";
-                break;
-            default:
-                throw new Exception("Equipe non concernée par ce match !");
+        // if admin, sign for both teams
+        if(UserManager::isAdmin()) {
+            $sql = "UPDATE matches set is_sign_team_dom = 1, is_sign_team_ext = 1 WHERE id_match = ?";
+        }
+        else {
+            switch ($_SESSION['id_equipe']) {
+                case $match['id_equipe_dom']:
+                    $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
+                    break;
+                case $match['id_equipe_ext']:
+                    $sql = "UPDATE matches set is_sign_team_ext = 1 WHERE id_match = ?";
+                    break;
+                default:
+                    throw new Exception("Equipe non concernée par ce match !");
+            }
         }
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
@@ -1942,15 +1949,21 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
-        switch ($_SESSION['id_equipe']) {
-            case $match['id_equipe_dom']:
-                $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
-                break;
-            case $match['id_equipe_ext']:
-                $sql = "UPDATE matches set is_sign_match_ext = 1 WHERE id_match = ?";
-                break;
-            default:
-                throw new Exception("Equipe non concernée par ce match !");
+        // if admin, sign for both teams
+        if(UserManager::isAdmin()) {
+            $sql = "UPDATE matches set is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?";
+        }
+        else {
+            switch ($_SESSION['id_equipe']) {
+                case $match['id_equipe_dom']:
+                    $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
+                    break;
+                case $match['id_equipe_ext']:
+                    $sql = "UPDATE matches set is_sign_match_ext = 1 WHERE id_match = ?";
+                    break;
+                default:
+                    throw new Exception("Equipe non concernée par ce match !");
+            }
         }
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
