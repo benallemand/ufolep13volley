@@ -360,6 +360,7 @@ class Emails extends Generic
             $to,
             $cc
         );
+        $this->send_pending_emails();
     }
 
     /**
@@ -393,6 +394,7 @@ class Emails extends Generic
             $to,
             $cc
         );
+        $this->send_pending_emails();
     }
 
     /**
@@ -418,6 +420,7 @@ class Emails extends Generic
             ),
             $to
         );
+        $this->send_pending_emails();
     }
 
     /**
@@ -441,6 +444,7 @@ class Emails extends Generic
             ),
             $to
         );
+        $this->send_pending_emails();
     }
 
     /**
