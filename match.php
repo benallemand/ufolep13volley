@@ -45,6 +45,11 @@ $user_details = $_SESSION;
     <link
             href="/cells.css"
             rel="stylesheet"/>
+    <link
+            href="includes/main.css"
+            rel="stylesheet"
+            type="text/css"
+            media="screen"/>
     <script
             src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"
             type="text/javascript"></script>

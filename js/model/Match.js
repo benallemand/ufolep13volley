@@ -166,7 +166,7 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'confrontation',
             convert: function (val, record) {
-                return Ext.String.format("<h1>{0} contre {1}</h1>", record.get('equipe_dom'), record.get('equipe_ext'))
+                return Ext.String.format("<h2>{0} vs {1}</h2>", record.get('equipe_dom'), record.get('equipe_ext'))
 
             }
         },

@@ -43,7 +43,7 @@ Ext.application({
                     '->', // greedy spacer so that the buttons are aligned to each side
                     {
                         id: 'move-next',
-                        text: 'Suivant',
+                        text: 'Score',
                         iconCls: 'fa-solid fa-arrow-right',
                         handler: function (btn) {
                             navigate(btn.up("panel"), "next");
@@ -56,32 +56,7 @@ Ext.application({
                         title: 'Fiche équipe',
                         items: [
                             {
-                                layout: 'anchor',
-                                scrollable: true,
-                                items: [
-                                    {
-                                        xtype: 'form_match_players',
-                                        height: 150,
-                                    },
-                                    {
-                                        title: 'Présents',
-                                        flex: 1,
-                                        items: {
-                                            xtype: 'view_match_players',
-                                        }
-                                    },
-                                    {
-                                        layout: 'center',
-                                        items: [
-                                            {
-                                                xtype: 'button',
-                                                action: 'sign_team_sheet',
-                                                iconCls: 'fa-solid fa-signature',
-                                                text: 'Signer la fiche équipe'
-                                            },
-                                        ]
-                                    }
-                                ]
+                                xtype: 'form_match_players',
                             }
                         ]
                     },

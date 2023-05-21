@@ -268,8 +268,24 @@ Ext.define('Ufolep13Volley.view.form.match', {
                 },
                 {
                     xtype: 'panel',
-                    height: 420,
-                    title: "Feuilles de match",
+                    height: 180,
+                    title: "Commentaire",
+                    layout: 'form',
+                    scrollable: true,
+                    items: [
+                        {
+                            xtype: 'textarea',
+                            name: 'note',
+                            fieldLabel: 'Commentaire',
+                            readOnly: !Ext.Array.contains(['ADMINISTRATEUR', 'RESPONSABLE_EQUIPE'], user_details.profile_name),
+                        }
+                    ]
+                },
+                {
+                    xtype: 'fieldset',
+                    collapsible: true,
+                    collapsed: true,
+                    title: "Feuilles de match (uniquement si non signées en ligne)",
                     layout: 'form',
                     items: [
                         {
@@ -307,46 +323,21 @@ Ext.define('Ufolep13Volley.view.form.match', {
                         }
                     ]
                 },
-                {
-                    xtype: 'panel',
-                    height: 180,
-                    title: "Commentaire",
-                    layout: 'form',
-                    scrollable: true,
-                    items: [
-                        {
-                            xtype: 'textarea',
-                            name: 'note',
-                            fieldLabel: 'Commentaire',
-                            readOnly: !Ext.Array.contains(['ADMINISTRATEUR', 'RESPONSABLE_EQUIPE'], user_details.profile_name),
-                        }
-                    ]
-                },
-                {
-                    height: 100,
-                    layout: 'center',
-                    items: [
-                        {
-                            xtype: 'button',
-                            action: 'sign_match_sheet',
-                            iconCls: 'fa-solid fa-signature',
-                            text: 'Signer la feuille de match'
-                        }
-                    ]
-                }
             ]
         },
     ],
     buttons: [
         {
-            text: 'Sauver',
-            action: 'save',
+            text: 'Enregistrer le score',
             formBind: true,
-            disabled: true
+            disabled: true,
+            action: 'save',
+            iconCls: 'fa-solid fa-floppy-disk',
         },
         {
-            text: 'Annuler',
-            action: 'cancel',
-        }
+            action: 'sign_match_sheet',
+            iconCls: 'fa-solid fa-signature',
+            text: 'Signer la feuille de match'
+        },
     ]
 });
