@@ -160,6 +160,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 flex: 1
             },
             {
+                header: 'Résultat',
+                dataIndex: 'resultat',
+                width: 200,
+            },
+            {
                 header: 'Extérieur',
                 dataIndex: 'equipe_ext',
                 flex: 1
