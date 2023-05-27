@@ -177,10 +177,10 @@ Ext.define('Ufolep13Volley.model.Match', {
                     record.get('score_equipe_dom'),
                     record.get('score_equipe_ext'),
                     record.get('set_1_dom') + record.get('set_1_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_1_dom'), record.get('set_1_ext')) : '',
-                    record.get('set_2_dom') + record.get('set_2_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_1_dom'), record.get('set_1_ext')) : '',
-                    record.get('set_3_dom') + record.get('set_3_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_1_dom'), record.get('set_1_ext')) : '',
-                    record.get('set_4_dom') + record.get('set_4_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_1_dom'), record.get('set_1_ext')) : '',
-                    record.get('set_5_dom') + record.get('set_5_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_1_dom'), record.get('set_1_ext')) : '',
+                    record.get('set_2_dom') + record.get('set_2_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_2_dom'), record.get('set_2_ext')) : '',
+                    record.get('set_3_dom') + record.get('set_3_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_3_dom'), record.get('set_3_ext')) : '',
+                    record.get('set_4_dom') + record.get('set_4_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_4_dom'), record.get('set_4_ext')) : '',
+                    record.get('set_5_dom') + record.get('set_5_ext') >= 25 ? Ext.String.format(" {0}-{1}", record.get('set_5_dom'), record.get('set_5_ext')) : '',
                 ) : '';
 
             }
