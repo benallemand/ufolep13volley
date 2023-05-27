@@ -88,7 +88,7 @@
                             <span ng-if="x.certif == 0 && x.sheet_received == 1"
                                   title="La feuille de match n'a pas encore été validée par la commission"
                                   class=""></span>
-                            <span ng-if="x.sheet_received == '0' && (x.date_reception_raw < today)"
+                            <span ng-if="x.certif == 0 && x.sheet_received == '0' && (x.date_reception_raw < today)"
                                   title="Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match"
                                   class="glyphicon glyphicon-exclamation-sign text-danger"></span>
                         </td>
