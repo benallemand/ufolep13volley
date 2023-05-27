@@ -283,6 +283,8 @@ Ext.define('Ufolep13Volley.view.form.match', {
                 },
                 {
                     xtype: 'fieldset',
+                    height: 300,
+                    scrollable: true,
                     collapsible: true,
                     collapsed: true,
                     title: "Feuilles de match (uniquement si non signées en ligne)",
