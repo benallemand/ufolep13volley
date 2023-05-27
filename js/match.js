@@ -52,22 +52,10 @@ Ext.application({
                 ],
                 items: [
                     {
-                        layout: 'fit',
-                        title: 'Fiche équipe',
-                        items: [
-                            {
-                                xtype: 'form_match_players',
-                            }
-                        ]
+                        xtype: 'form_match_players',
                     },
                     {
-                        layout: 'fit',
-                        title: 'Feuille de match',
-                        items: [
-                            {
-                                xtype: 'form_match'
-                            }
-                        ]
+                        xtype: 'form_match'
                     },
                 ]
             }

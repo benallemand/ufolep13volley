@@ -21,17 +21,20 @@ Ext.define('Ufolep13Volley.view.form.match', {
             name: 'code_match'
         },
         {
-            region: 'west',
+            region: 'north',
             width: 200,
             xtype: 'panel',
             scrollable: true,
             title: 'Signatures',
-            layout: 'form',
+            layout: 'hbox',
+            defaults: {
+                flex: 1
+            },
             items: [
                 {
-                    xtype: 'fieldset',
+                    xtype: 'panel',
                     title: 'Fiches équipes',
-                    layout: 'vbox',
+                    layout: 'hbox',
                     defaults: {
                         flex: 1
                     },
@@ -53,9 +56,9 @@ Ext.define('Ufolep13Volley.view.form.match', {
                     ]
                 },
                 {
-                    xtype: 'fieldset',
+                    xtype: 'panel',
                     title: 'Feuille de match',
-                    layout: 'vbox',
+                    layout: 'hbox',
                     defaults: {
                         flex: 1
                     },
@@ -282,12 +285,12 @@ Ext.define('Ufolep13Volley.view.form.match', {
                     ]
                 },
                 {
-                    xtype: 'fieldset',
-                    height: 300,
+                    xtype: 'panel',
+                    height: 450,
+                    title: "Feuilles de match (uniquement si non signées en ligne)",
                     scrollable: true,
                     collapsible: true,
                     collapsed: true,
-                    title: "Feuilles de match (uniquement si non signées en ligne)",
                     layout: 'form',
                     items: [
                         {
