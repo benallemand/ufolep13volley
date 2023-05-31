@@ -44,26 +44,11 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
             height: window.innerHeight * 80 / 100,
             width: window.innerWidth * 80 / 100,
             maximizable: true,
-            layout: 'border',
-            items: [
-                {
-                    xtype: 'form_match_players',
-                    region: 'center',
-                    flex: 1,
-                    trackResetOnLoad: true
-                },
-                {
-                    xtype: 'panel',
-                    region: 'south',
-                    autoScroll: true,
-                    flex: 5,
-                    title: 'Actuellement',
-                    layout: 'fit',
-                    items: {
-                        xtype: 'view_match_players'
-                    }
-                }
-            ]
+            layout: 'fit',
+            items: {
+                xtype: 'form_match_players',
+                trackResetOnLoad: true
+            },
         });
         this_window.down('form').loadRecord(current_record);
         this_window.down('view_match_players').getStore().load({
