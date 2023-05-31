@@ -2107,11 +2107,18 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function draw_matches($code_competition, $division, $id_journee)
+    public function draw_matches($code_competition, $division, $id_journee): void
     {
         $comp_mgr = new Competition();
+        $day_mgr = new Day();
         $competition = $comp_mgr->getCompetition($code_competition);
-        $teams = $this->rank->getTeamsFromDivisionAndCompetition($division, $code_competition);
+        $day = $day_mgr->get_by_id($id_journee);
+        if($day['numero'] == 1) {
+            $teams = $this->rank->getTeamsFromDivisionAndCompetition($division, $code_competition);
+        }
+        else {
+            $teams = $this->rank->get_winner_teams_from_previous_day($division, $code_competition, $day['numero'] - 1);
+        }
         if (count($teams) % 2 != 0) {
             throw new Exception("Impossible de tirer au sort les matchs, il faut un nombre pair d'équipes !");
         }

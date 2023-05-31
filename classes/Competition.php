@@ -685,12 +685,13 @@ class Competition extends Generic
             if(!in_array($competition['code_competition'], array('kf', 'cf'))) {
                 throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
             }
-            $day = $day_mgr->get_one("j.code_competition = '$code_competition' AND j.numero = $day_number");
-            if(empty($day)) {
+            $days = $day_mgr->get("j.code_competition = '$code_competition' AND j.numero = $day_number");
+            if(empty($days)) {
                 throw new Exception("Il faut créer la journée avant de générer cette compétition !");
             }
-            $this->match->delete_matches("code_competition = '$code_competition' AND division = '1'");
-            $this->match->draw_matches($code_competition, '1', $day['id']);
+            $days_ids = implode(',', array_values(array_column($days, 'id')));
+            $this->match->delete_matches("code_competition = '$code_competition' AND division = '1' AND id_journee IN ($days_ids)");
+            $this->match->draw_matches($code_competition, '1', $days[0]['id']);
         }
     }
 
