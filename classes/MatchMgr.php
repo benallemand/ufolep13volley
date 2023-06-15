@@ -2132,6 +2132,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 strtoupper($competition['code_competition']) .
                 $year_month .
                 $division .
+                $day['numero'] .
                 $match_number;
             $this->insert_db_match($code_match,
                 $code_competition,
