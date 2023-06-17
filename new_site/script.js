@@ -960,7 +960,7 @@ scotchApp.controller('championshipController', ['$scope', '$routeParams', '$http
     $scope.declareSheetReceived = function (code_match) {
         $http({
             method: 'POST',
-            url: '/rest/action.php/matchmgr/declareSheetReceived',
+            url: '/rest/action.php/matchmgr/declare_sheet_received',
             data: $.param({
                 code_match: code_match
             }),
@@ -1028,7 +1028,7 @@ scotchApp.controller('cupController', ['$scope', '$routeParams', '$http', functi
     $scope.declareSheetReceived = function (code_match) {
         $http({
             method: 'POST',
-            url: '/rest/action.php/matchmgr/declareSheetReceived',
+            url: '/rest/action.php/matchmgr/declare_sheet_received',
             data: $.param({
                 code_match: code_match
             }),
