@@ -10,9 +10,9 @@
             <th>Joués</th>
             <th>Gagnés</th>
             <th>Perdus</th>
+            <th>Différence</th>
             <th>Sets pour</th>
             <th>Sets contre</th>
-            <th>Différence</th>
             <th>Reports</th>
             <th>Actions</th>
 
@@ -26,6 +26,7 @@
             <td class="{{x.exact_deuce == 1 ? 'warning' : ''}} {{x.is_promotion == 1 ? 'success' : ''}} {{x.is_relegation == 1 ? 'danger' : ''}}"
                 title="{{x.exact_deuce == 1 ? 'Egalité parfaite avec une autre équipe, le gagnant de la confrontation directe passe devant !' : ''}}">
                 <a href="#phonebook/{{ x.id_equipe }}">{{ x.equipe }}</a>
+                <span ng-if="x.exact_deuce == 1" class="label label-warning">Vérifier la rencontre directe</span>
             </td>
             <td>{{ x.points }}
                 <span
@@ -43,9 +44,9 @@
                 dont {{ x.matches_lost_by_forfeit_count }} par forfait
             </span>
             </td>
+            <td>{{ x.diff }}</td>
             <td>{{ x.sets_pour }}</td>
             <td>{{ x.sets_contre }}</td>
-            <td>{{ x.diff }}</td>
             <td>{{ x.report_count }}</td>
             <td ng-include src="'actions/rank.php'"></td>
         </tr>
