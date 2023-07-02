@@ -109,7 +109,7 @@ class Generic
      */
     public function getActivity($id_team=null): array
     {
-        if(UserManager::isTeamLeader()) {
+        if(UserManager::is_connected() && !UserManager::isAdmin()) {
             $id_team = $_SESSION['id_equipe'];
         }
         $sql = "SELECT 
