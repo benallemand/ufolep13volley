@@ -187,6 +187,7 @@ class Emails extends Generic
             "[UFOLEP13VOLLEY]Identifiants de connexion",
             $message,
             $email);
+        $this->send_pending_emails();
     }
 
     /**
