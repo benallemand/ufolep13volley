@@ -1,0 +1,19 @@
+[mysqld]
+datadir=/var/lib/mysql
+bind-address=0.0.0.0
+character-set-server=utf8mb4
+server-id=1
+log-bin=mysql-bin
+binlog-format=ROW
+user=mysql
+port=3306
+skip-networking=0
+collation-server=utf8mb4_unicode_ci
+init-connect='SET NAMES utf8mb4'
+default_authentication_plugin=mysql_native_password
+default_password_lifetime=0
+log_bin_trust_function_creators=1
+
+[client]
+user=root
+password=test

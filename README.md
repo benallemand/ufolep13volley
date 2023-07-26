@@ -1,7 +1,19 @@
 This project is intended to manage volleyball championship.
 
+Deploy
+======
+* git clone the repo
+
+        php composer.phar update
+* create .env file from .env.template
+
+        source .env
+
+Notes
+=====
+
 Files has been ignored in GIT : 
-/includes/db_inc.php --> contains :
+/includes/conf.php --> contains :
 
     <?php
 

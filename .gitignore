@@ -3,7 +3,7 @@
 /teams_pics/
 /match_files/
 /classes/Configuration.php
-/classes/Database.php
 /nbproject/private/
 /.idea
 /.env
+/docker-sql/ufolepvocbufolep.sql
