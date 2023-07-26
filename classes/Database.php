@@ -10,7 +10,7 @@ class Database
      * @return false|mysqli|null
      * @throws Exception
      */
-    public static function openDbConnection()
+    public static function openDbConnection(): bool|mysqli|null
     {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
@@ -18,7 +18,8 @@ class Database
         if (!is_null(self::$_db)) {
             return self::$_db;
         }
-        $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+//        $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
+        $serverName = $_SERVER['SERVER_NAME'];
         $user = $_ENV['DB_USER'];
         $base = $_ENV['DB_NAME'];
         $password = $_ENV['DB_PASSWORD'];
