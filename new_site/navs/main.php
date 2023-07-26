@@ -30,7 +30,7 @@ require_once __DIR__ . '/../../classes/Competition.php';
                             $manager->generate_menu('f');
                             $manager->generate_menu('mo');
                         } catch (Exception $e) {
-                            print_r($e->getMessage());
+                            print_r($e);
                         }
                         ?>
                     </ul>
@@ -51,7 +51,7 @@ require_once __DIR__ . '/../../classes/Competition.php';
                             $manager->generate_menu('kh');
                             $manager->generate_menu('kf');
                         } catch (Exception $e) {
-                            print_r($e->getMessage());
+                            print_r($e);
                         }
                         ?>
                     </ul>
