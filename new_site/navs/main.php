@@ -25,9 +25,13 @@ require_once __DIR__ . '/../../classes/Competition.php';
                     <ul class="dropdown-menu">
                         <?php
                         $manager = new Competition();
-                        $manager->generate_menu('m');
-                        $manager->generate_menu('f');
-                        $manager->generate_menu('mo');
+                        try {
+                            $manager->generate_menu('m');
+                            $manager->generate_menu('f');
+                            $manager->generate_menu('mo');
+                        } catch (Exception $e) {
+                            print_r($e->getMessage());
+                        }
                         ?>
                     </ul>
                 </li>
@@ -41,10 +45,14 @@ require_once __DIR__ . '/../../classes/Competition.php';
                     <ul class="dropdown-menu">
                         <?php
                         $manager = new Competition();
-                        $manager->generate_menu('c');
-                        $manager->generate_menu('cf');
-                        $manager->generate_menu('kh');
-                        $manager->generate_menu('kf');
+                        try {
+                            $manager->generate_menu('c');
+                            $manager->generate_menu('cf');
+                            $manager->generate_menu('kh');
+                            $manager->generate_menu('kf');
+                        } catch (Exception $e) {
+                            print_r($e->getMessage());
+                        }
                         ?>
                     </ul>
                 </li>
