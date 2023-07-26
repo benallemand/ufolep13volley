@@ -14,6 +14,7 @@
     "phpunit/phpunit": "^8",
     "ext-mysqli": "*",
     "ext-zip": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "vlucas/phpdotenv":  "*"
   }
 }
