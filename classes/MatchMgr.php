@@ -1429,15 +1429,15 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function getMatchPlayers($id_match = null): int|array|string|null
     {
-        $sql = "SELECT  j.*, 
+        $sql = "SELECT  DISTINCT j.*,
                         e.nom_equipe AS equipe,
                         m.date_reception,
                         m.id_match
                 FROM matches m
-                JOIN match_player mp on mp.id_match = m.id_match
-                JOIN players_view j on mp.id_player = j.id
-                JOIN joueur_equipe je ON je.id_joueur = j.id
-                JOIN equipes e ON (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe) AND je.id_equipe = e.id_equipe
+                         JOIN match_player mp on mp.id_match = m.id_match
+                         JOIN players_view j on mp.id_player = j.id
+                         JOIN joueur_equipe je ON je.id_joueur = j.id AND (je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
+                         JOIN equipes e ON je.id_equipe = e.id_equipe
                 WHERE m.id_match = $id_match
                 ORDER BY equipe, sexe, nom, prenom";
         return $this->sql_manager->execute($sql);
@@ -1448,14 +1448,14 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function getNotMatchPlayers($id_match = null): int|array|string|null
     {
-        $sql = "SELECT j.*, e.nom_equipe AS equipe
+        $sql = "SELECT DISTINCT j.*, e.nom_equipe AS equipe
                 FROM joueur_equipe je
                          JOIN matches m ON (m.id_equipe_dom = je.id_equipe OR m.id_equipe_ext = je.id_equipe)
                          JOIN players_view j on j.id = je.id_joueur
                          JOIN equipes e ON e.id_equipe = je.id_equipe
-                WHERE je.id_joueur NOT IN (SELECT id_player FROM match_player where m.id_match = $id_match)
-                  AND (je.id_equipe IN (SELECT id_equipe_dom FROM matches WHERE m.id_match = $id_match)
-                    OR je.id_equipe IN (SELECT id_equipe_ext FROM matches WHERE m.id_match = $id_match))";
+                WHERE m.id_match = $id_match
+                  AND je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
+                  AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = $id_match)";
         return $this->sql_manager->execute($sql);
     }
 

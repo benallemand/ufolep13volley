@@ -31,7 +31,14 @@ Ext.define('Ufolep13Volley.view.view.MatchPlayers', {
                     },
                     method: 'POST',
                     success: function () {
-                        view.getStore().load({
+                        var store = Ext.data.StoreManager.lookup('MatchPlayers');
+                        store.load({
+                            params: {
+                                id_match: record.get('id_match')
+                            }
+                        });
+                        store = Ext.data.StoreManager.lookup('NotMatchPlayers');
+                        store.load({
                             params: {
                                 id_match: record.get('id_match')
                             }
