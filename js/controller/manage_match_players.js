@@ -2,7 +2,8 @@ Ext.define('Ufolep13Volley.controller.manage_match_players', {
     extend: 'Ext.app.Controller',
     stores: [
         'Players',
-        'MatchPlayers'
+        'MatchPlayers',
+        'NotMatchPlayers',
     ],
     models: [
         'Player'

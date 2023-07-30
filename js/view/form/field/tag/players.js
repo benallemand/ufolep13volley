@@ -4,7 +4,7 @@ Ext.define('Ufolep13Volley.view.form.field.tag.players', {
     fieldLabel: 'Ajouter',
     name: 'player_ids[]',
     store: {
-        type: 'Players',
+        type: 'NotMatchPlayers',
         autoLoad: false,
         sorters: [
             {

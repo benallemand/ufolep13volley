@@ -1,6 +1,6 @@
 Ext.define('Ufolep13Volley.controller.team_sheets', {
     extend: 'Ext.app.Controller',
-    stores: ['match', 'MatchPlayers', 'Players'],
+    stores: ['match', 'MatchPlayers', 'NotMatchPlayers', 'Players'],
     models: ['Match', 'Player'],
     views: [
         'form.MatchPlayers',
@@ -61,6 +61,12 @@ Ext.define('Ufolep13Volley.controller.team_sheets', {
             }
         });
         store = Ext.data.StoreManager.lookup('MatchPlayers');
+        store.load({
+            params: {
+                id_match: id_match
+            }
+        });
+        store = Ext.data.StoreManager.lookup('NotMatchPlayers');
         store.load({
             params: {
                 id_match: id_match
