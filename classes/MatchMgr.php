@@ -1427,18 +1427,38 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function getMatchPlayers($id_match = null)
+    public function getMatchPlayers($id_match = null): int|array|string|null
     {
-        $match = $this->get_match($id_match);
-        $results = (new Players())->get_players(
-            "j.id IN (SELECT id_player FROM match_player WHERE id_match = $id_match)",
-            "club, sexe, nom, prenom");
-        foreach ($results as $index => $result) {
-            $results[$index]['date_reception'] = $match['date_reception'];
-            $results[$index]['id_match'] = $match['id_match'];
-        }
-        return $results;
+        $sql = "SELECT  j.*, 
+                        e.nom_equipe AS equipe,
+                        m.date_reception,
+                        m.id_match
+                FROM matches m
+                JOIN match_player mp on mp.id_match = m.id_match
+                JOIN players_view j on mp.id_player = j.id
+                JOIN joueur_equipe je ON je.id_joueur = j.id
+                JOIN equipes e ON (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe) AND je.id_equipe = e.id_equipe
+                WHERE m.id_match = $id_match
+                ORDER BY equipe, sexe, nom, prenom";
+        return $this->sql_manager->execute($sql);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getNotMatchPlayers($id_match = null): int|array|string|null
+    {
+        $sql = "SELECT j.*, e.nom_equipe AS equipe
+                FROM joueur_equipe je
+                         JOIN matches m ON (m.id_equipe_dom = je.id_equipe OR m.id_equipe_ext = je.id_equipe)
+                         JOIN players_view j on j.id = je.id_joueur
+                         JOIN equipes e ON e.id_equipe = je.id_equipe
+                WHERE je.id_joueur NOT IN (SELECT id_player FROM match_player where m.id_match = $id_match)
+                  AND (je.id_equipe IN (SELECT id_equipe_dom FROM matches WHERE m.id_match = $id_match)
+                    OR je.id_equipe IN (SELECT id_equipe_ext FROM matches WHERE m.id_match = $id_match))";
+        return $this->sql_manager->execute($sql);
+    }
+
 
     /**
      * @throws Exception
@@ -1916,10 +1936,9 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
         // if admin, sign for both teams
-        if(UserManager::isAdmin()) {
+        if (UserManager::isAdmin()) {
             $sql = "UPDATE matches set is_sign_team_dom = 1, is_sign_team_ext = 1 WHERE id_match = ?";
-        }
-        else {
+        } else {
             switch ($_SESSION['id_equipe']) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
@@ -1950,10 +1969,9 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
         // if admin, sign for both teams
-        if(UserManager::isAdmin()) {
+        if (UserManager::isAdmin()) {
             $sql = "UPDATE matches set is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?";
-        }
-        else {
+        } else {
             switch ($_SESSION['id_equipe']) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
@@ -2113,10 +2131,9 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $day_mgr = new Day();
         $competition = $comp_mgr->getCompetition($code_competition);
         $day = $day_mgr->get_by_id($id_journee);
-        if($day['numero'] == 1) {
+        if ($day['numero'] == 1) {
             $teams = $this->rank->getTeamsFromDivisionAndCompetition($division, $code_competition);
-        }
-        else {
+        } else {
             $teams = $this->rank->get_winner_teams_from_previous_day($division, $code_competition, $day['numero'] - 1);
         }
         if (count($teams) % 2 != 0) {
