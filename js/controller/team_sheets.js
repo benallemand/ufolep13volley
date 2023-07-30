@@ -1,29 +1,32 @@
-Ext.define('Ufolep13Volley.controller.match', {
+Ext.define('Ufolep13Volley.controller.team_sheets', {
     extend: 'Ext.app.Controller',
-    stores: ['match',],
-    models: ['Match',],
+    stores: ['match', 'MatchPlayers', 'Players'],
+    models: ['Match', 'Player'],
     views: [
-        'form.match',
+        'form.MatchPlayers',
+        'view.MatchPlayers',
+        'form.field.tag.players',
     ],
     refs: [],
     init: function () {
         this.control({
-            'form_match': {
-                added: this.load_match
+            'form_match_players': {
+                added: this.load_match_players
             },
             'button[action=save]': {
                 click: this.save_form
             },
-            'button[action=sign_match_sheet]': {
-                click: this.sign_match_sheet
+            'button[action=sign_team_sheet]': {
+                click: this.sign_team_sheet
             },
         });
     },
-    sign_match_sheet: function (button) {
+    sign_team_sheet: function (button) {
         var window_show = Ext.Msg.show({
-            title: "Signer la feuille de match ?",
-            message: "Je confirme avoir pris connaissance du score saisi sur le site.<br/>" +
-                "En signant numériquement la feuille de match, il n'est plus nécessaire de fournir de feuille de match au format papier.<br/>" +
+            title: "Signer la fiche équipe ?",
+            message: "Je confirme avoir pris connaissance des joueurs/joueuses présent(e)s.<br/>" +
+                "Les personnes présentes pour ce match ont été déclarées présentes sur le site, sur la page de gestion du match.<br/>" +
+                "En signant numériquement la fiche équipe, il n'est plus nécessaire de fournir de fiche équipe au format papier.<br/>" +
                 "Merci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.",
             buttons: Ext.Msg.OKCANCEL,
             icon: Ext.Msg.QUESTION,
@@ -31,7 +34,7 @@ Ext.define('Ufolep13Volley.controller.match', {
                 if (btn == 'ok') {
                     button.up('viewport').setLoading(true);
                     Ext.Ajax.request({
-                        url: 'rest/action.php/matchmgr/sign_match_sheet',
+                        url: 'rest/action.php/matchmgr/sign_team_sheet',
                         params: {
                             id_match: id_match
                         },
@@ -50,17 +53,29 @@ Ext.define('Ufolep13Volley.controller.match', {
             }
         });
     },
-    load_match: function (form) {
-        var store = Ext.data.StoreManager.lookup('match');
+    load_match_players: function (form) {
+        var store = form.down('tagfield').getStore();
+        store.load({
+            params: {
+                id_match: id_match
+            }
+        });
+        store = Ext.data.StoreManager.lookup('MatchPlayers');
+        store.load({
+            params: {
+                id_match: id_match
+            }
+        });
+        form.down('field[name=id_match]').setValue(id_match);
+        store = Ext.data.StoreManager.lookup('match');
         store.load({
             params: {
                 id_match: id_match
             },
             callback: function (records, operation, success) {
-                form.loadRecord(records[0]);
                 form.up('viewport').down('displayfield[name=confrontation-tbar]').setValue(records[0].get('confrontation'))
             }
-        })
+        });
     },
     save_form: function (button) {
         var me = this;
@@ -76,7 +91,7 @@ Ext.define('Ufolep13Volley.controller.match', {
                     dirtyFields: dirtyFieldsArray.join(',')
                 }, success: function () {
                     Ext.Msg.alert('Info', this.result.message);
-                    me.load_match(button.up('form'));
+                    me.load_match_players(button.up('form'));
                 }, failure: function (form, action) {
                     Ext.Msg.alert('Erreur', action.result.message);
                 }

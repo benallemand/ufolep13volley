@@ -1,5 +1,4 @@
 var match_player_tpl = new Ext.XTemplate(
-    '<table>',
     '<tpl for=".">',
     '<div style="margin: 10px;float: left;width: 80px; height: 180px" class="thumb-wrap">',
     '<p style="text-align: center;"><button type="button" class="ctl-delete">Enlever</button></p>',

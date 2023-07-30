@@ -29,7 +29,7 @@ $user_details = $_SESSION;
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <TITLE>Feuille de match</TITLE>
+    <TITLE>Fiches équipe</TITLE>
     <META
             http-equiv="Content-Type"
             content="text/html; charset=utf-8"/>
@@ -60,7 +60,7 @@ $user_details = $_SESSION;
             src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-crisp-touch/theme-crisp-touch.js"
             type="text/javascript"></script>
     <script
-            type="text/javascript" src="js/match.js"></script>
+            type="text/javascript" src="js/team_sheets.js"></script>
     <script type="text/javascript">
         var id_match = <?php echo $id_match; ?>;
         var user_details = <?php echo json_encode($user_details); ?>;
