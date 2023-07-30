@@ -59,7 +59,14 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
            class="btn btn-sm btn-warning"
            ng-href="/match.php?id_match={{x.id_match}}"
            target="_self">
-            Modifier
+            Modifier match
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+        <a title="Modifier les fiches équipes"
+           class="btn btn-sm btn-info"
+           ng-href="/team_sheets.php?id_match={{x.id_match}}"
+           target="_self">
+            Modifier equipes
             <span class="glyphicon glyphicon-edit"></span>
         </a>
     </div>
@@ -168,7 +175,14 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIP
            class="btn btn-sm btn-warning"
            ng-href="/match.php?id_match={{x.id_match}}"
            target="_self">
-            Modifier
+            Modifier match
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+        <a title="Modifier les fiches équipes"
+           class="btn btn-sm btn-info"
+           ng-href="/team_sheets.php?id_match={{x.id_match}}"
+           target="_self">
+            Modifier equipes
             <span class="glyphicon glyphicon-edit"></span>
         </a>
     </div>

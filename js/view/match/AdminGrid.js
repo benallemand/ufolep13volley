@@ -115,9 +115,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'code_match',
                 width: 100,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a><p><a href='/team_sheets.php?id_match={2}' target='_blank'>Equipes</a></p>",
                         record.get('id_match'),
-                        value);
+                        value,
+                        record.get('id_match'),
+                    );
                 }
             },
             {
