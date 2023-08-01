@@ -6,6 +6,7 @@
  * Date: 17/02/2017
  * Time: 10:33
  */
+require_once __DIR__ . '/Configuration.php';
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/SqlManager.php';
 require_once __DIR__ . '/Team.php';
@@ -20,6 +21,7 @@ class MatchMgr extends Generic
 {
     private Team $team;
     private Rank $rank;
+    private Configuration $configuration;
 
     /**
      * Match constructor.
@@ -29,6 +31,7 @@ class MatchMgr extends Generic
         parent::__construct();
         $this->team = new Team();
         $this->rank = new Rank();
+        $this->configuration = new Configuration();
         ini_set('max_execution_time', 1200);
         ini_set('memory_limit', '512M');
         ini_set('xdebug.max_nesting_level', 2000);
@@ -1533,8 +1536,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $code_competition = $this_match['code_competition'];
         $rank = new Rank();
         $report_count = $rank->get_report_count($team_id, $code_competition);
-        require_once __DIR__ . '/../classes/Configuration.php';
-        if (!Configuration::COVID_MODE) {
+        if (!$this->configuration->covid_mode) {
             if ($report_count > 0) {
                 throw new Exception("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.");
             }

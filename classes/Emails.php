@@ -17,6 +17,8 @@ class Emails extends Generic
     private MatchMgr $match;
     private Team $team;
 
+    private Configuration $configuration;
+
     /**
      * Emails constructor.
      */
@@ -26,6 +28,7 @@ class Emails extends Generic
         $this->file_manager = new Files();
         $this->match = new MatchMgr();
         $this->team = new Team();
+        $this->configuration = new Configuration();
     }
 
     /**
@@ -60,7 +63,7 @@ class Emails extends Generic
         $bindings = array();
         $bindings[] = array(
             'type' => 's',
-            'value' => Configuration::MAIL_USERNAME
+            'value' => $this->configuration->mail_username
         );
         $bindings[] = array(
             'type' => 's',
@@ -127,13 +130,13 @@ class Emails extends Generic
         }
         $mail->isMail();
         $mail->CharSet = "UTF-8";
-        $mail->Host = Configuration::MAIL_HOST;
-        $mail->SMTPAuth = Configuration::MAIL_SMTPAUTH;
-        $mail->Username = Configuration::MAIL_USERNAME;
-        $mail->Password = Configuration::MAIL_PASSWORD;
-        $mail->SMTPSecure = Configuration::MAIL_SMTPSECURE;
-        $mail->Port = Configuration::MAIL_PORT;
-        $mail->setFrom(Configuration::MAIL_USERNAME);
+        $mail->Host = $this->configuration->mail_host;
+        $mail->SMTPAuth = $this->configuration->mail_smtpauth;
+        $mail->Username = $this->configuration->mail_username;
+        $mail->Password = $this->configuration->mail_password;
+        $mail->SMTPSecure = $this->configuration->mail_smtpsecure;
+        $mail->Port = $this->configuration->mail_port;
+        $mail->setFrom($this->configuration->mail_username);
         foreach (explode(';', $to) as $toAddress) {
             $mail->addAddress($toAddress);
         }

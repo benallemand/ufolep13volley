@@ -2,7 +2,6 @@ includes/conf.php
 players_pics
 teams_pics
 match_files
-classes/Configuration.php
 .idea
 .env
 docker-sql/ufolepvocbufolep.sql

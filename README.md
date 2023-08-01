@@ -5,7 +5,7 @@ Deploy
 * git clone the repo
 
         php composer.phar update
-* create .env file from .env.template
+* create .env file from .env.template, update information to fit your needs, then
 
         source .env
 
@@ -18,21 +18,6 @@ Files has been ignored in GIT :
     <?php
 
     $flickr_api_key = "<api key>";
-
-/classes/Configuration.php contains:
-
-    <?php
-    
-    class Configuration
-    {
-        const MAIL_HOST = 'smtp.gmail.com';
-        const MAIL_SMTPAUTH = true;
-        const MAIL_USERNAME = '<email address>';
-        const MAIL_PASSWORD = '<password>';
-        const MAIL_SMTPSECURE = 'tls';
-        const MAIL_PORT = 587;
-    }
-
 
 - /players_pics/ --> contains photos of players
 - /teams_pics/ --> contains photos of teams
