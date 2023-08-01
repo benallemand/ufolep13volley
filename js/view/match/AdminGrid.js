@@ -58,9 +58,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         getClass: function (value, meta, record) {
                             return record.get('is_match_player_filled') ? 'fa fa-list green' : 'x-hidden-display';
                         },
-                        handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
-                        },
                     },
                     {
                         getTip: function (value, meta, record) {
@@ -79,10 +76,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         getClass: function (value, meta, record) {
                             return record.get('is_match_player_requested') ? 'fa fa-exclamation-triangle orange' : 'x-hidden-display';
                         },
-                        handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            grid.getSelectionModel().select(record);
-                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
-                        },
                     },
                     {
                         getTip: function (value, meta, record) {
@@ -90,10 +83,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         },
                         getClass: function (value, meta, record) {
                             return record.get('has_forbidden_player') ? 'fa fa-exclamation-circle red' : 'x-hidden-display';
-                        },
-                        handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            grid.getSelectionModel().select(record);
-                            grid.up('matchesgrid').down('toolbar > button[action=manage_match_players]').click();
                         },
                     },
                     {
