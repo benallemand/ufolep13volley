@@ -30,8 +30,8 @@ class Database
         $base = $_ENV['DB_NAME'];
         $password = $_ENV['DB_PASSWORD'];
         $server = $_ENV['DB_SERVER'];
-        $socket = $_ENV['DB_SOCKET'];
-        $port = $_ENV['DB_PORT'];
+        $socket = empty($_ENV['DB_SOCKET']) ? null : $_ENV['DB_SOCKET'];
+        $port = empty($_ENV['DB_PORT']) ? null : $_ENV['DB_PORT'];
         self::$_db = mysqli_connect($server, $user, $password, $base, $port, $socket);
         if (self::$_db === false) {
             throw new Exception("Impossible de se connecter à la base de données !");
