@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Démarrer le service MariaDB
-service mariadb start
+set -u
 
-# Attendre que le service MariaDB soit en cours d'exécution
-while ! mysqladmin ping -h127.0.0.1 --silent; do
+while ! mysqladmin ping -hmysql --silent; do
+  echo "waiting for mysql server to start..."
   sleep 1
 done
-source .env
-set -u
-# Exécuter les scripts SQL
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "DROP USER IF EXISTS '$DB_USER'@'%';"
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';"
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "DROP DATABASE IF EXISTS $DB_NAME;"
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "CREATE DATABASE $DB_NAME;"
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DB_NAME" < "/docker-entrypoint-initdb.d/$DB_NAME.sql"
-mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'%';"
 
-# Démarrer le serveur Apache en mode foreground
-apachectl -D FOREGROUND
+# Exécuter les scripts SQL
+mysql -hmysql -uroot -ptest -e "DROP USER IF EXISTS '$MYSQL_USER'@'%';"
+mysql -hmysql -uroot -ptest -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -hmysql -uroot -ptest -e "DROP DATABASE IF EXISTS $MYSQL_DATABASE;"
+mysql -hmysql -uroot -ptest -e "CREATE DATABASE $MYSQL_DATABASE;"
+mysql -hmysql -uroot -ptest -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%';"
+mysql -hmysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < "/docker-sql/$MYSQL_DATABASE-structure-only.sql"
+mysql -hmysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < "/docker-sql/$MYSQL_DATABASE-data-only.sql"
