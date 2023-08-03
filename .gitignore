@@ -4,7 +4,9 @@ teams_pics
 match_files
 .idea
 .env
-docker-sql/ufolepvocbufolep.sql
+.env-local
+.env-prod
+docker-sql/ufolepvocbufolep-data-only.sql
 vendor
 composer.lock
 composer.phar
