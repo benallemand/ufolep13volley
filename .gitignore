@@ -6,6 +6,7 @@ match_files
 .env
 .env-local
 .env-prod
+.env-docker
 docker-sql/ufolepvocbufolep-data-only.sql
 vendor
 composer.lock
