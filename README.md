@@ -13,12 +13,6 @@ Notes
 =====
 
 Files has been ignored in GIT : 
-/includes/conf.php --> contains :
-
-    <?php
-
-    $flickr_api_key = "<api key>";
-
 - /players_pics/ --> contains photos of players
 - /teams_pics/ --> contains photos of teams
 - /match_files/ --> contains match sheets
