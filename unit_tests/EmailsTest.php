@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . "/../classes/Emails.php";

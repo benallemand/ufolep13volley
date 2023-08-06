@@ -6,7 +6,9 @@
  * Time: 14:28
  */
 require_once __DIR__ . '/Generic.php';
-require_once __DIR__ . '/../libs/fpdf184/fpdf.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Fpdf\Fpdf;
 
 class HallOfFame extends Generic
 {

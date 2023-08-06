@@ -5,6 +5,7 @@ require_once __DIR__ . '/../classes/Day.php';
 require_once __DIR__ . '/../classes/Competition.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/Emails.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 

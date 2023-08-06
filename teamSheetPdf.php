@@ -4,7 +4,11 @@ function toWellFormatted($string)
 {
     return !empty($string) ? iconv('UTF-8', 'windows-1252', $string) : '';
 }
-require_once __DIR__ . '/libs/fpdf184/fpdf.php';
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Fpdf\Fpdf;
+
 require_once __DIR__ . '/classes/Team.php';
 require_once __DIR__ . '/classes/Players.php';
 
@@ -91,7 +95,7 @@ try {
             $pdf->Rect(2 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers - 2 + $heightPlayer * ($currentIndex % $NbByColumns), $offsetXPlayers - 2, $heightPlayer - 2, 'DF');
             $pdf->SetFillColor(0, 0, 0);
         }
-        if(!empty($jsonPlayer['path_photo'])) {
+        if (!empty($jsonPlayer['path_photo'])) {
             $pdf->Image(toWellFormatted($jsonPlayer['path_photo']), null, null, $widthPhoto);
         }
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
