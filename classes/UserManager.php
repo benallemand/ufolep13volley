@@ -116,7 +116,7 @@ class UserManager extends Generic
      * @param $team_id
      * @throws Exception
      */
-    public function create_leader_account($login, $email, $team_id)
+    public function create_leader_account($login, $email, $team_id): void
     {
         // do not create team account if it already exists
         if ($this->is_existing_user($login, $email, $team_id)) {
@@ -175,7 +175,7 @@ class UserManager extends Generic
     /**
      * @throws Exception
      */
-    public function remove($login, $team_id)
+    public function remove($login, $team_id): void
     {
         $sql = "DELETE 
                 FROM comptes_acces 
@@ -524,7 +524,7 @@ class UserManager extends Generic
     /**
      * @throws Exception
      */
-    public function login()
+    public function login(): void
     {
         $login = filter_input(INPUT_POST, 'login');
         $password = filter_input(INPUT_POST, 'password');
@@ -580,10 +580,29 @@ class UserManager extends Generic
     }
 
     /**
+     * @throws Exception
+     */
+    public function reset_my_password($id, $hash): array
+    {
+        // check hash
+        $user_details = $this->get_by_id($id);
+        $expected_hash = md5($id . $user_details['login'] . $user_details['email'] . date('Y-m-d'));
+        if ($expected_hash !== $hash) {
+            throw new Exception("Le lien n'est pas ou plus valide !");
+        }
+        $this->reset_password($id);
+        // method is GET, display status
+        return array(
+            'Reset password' => 'OK',
+            'Message' => "Reset du mot de passe ok, vous allez recevoir un nouvel email avec vos identifiants.",
+        );
+    }
+
+    /**
      * @param $id
      * @throws Exception
      */
-    public function reset_password($id)
+    public function reset_password($id): void
     {
         $userDetails = $this->get_by_id($id);
         $id_team = empty($userDetails['id_equipe']) ? 0 : $userDetails['id_equipe'];
@@ -602,6 +621,42 @@ class UserManager extends Generic
         $this->sql_manager->execute($sql, $bindings);
         $this->activity->add("Mot de passe modifie");
         $this->email->sendMailNewUser($email, $login, $password, $id_team);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function request_reset_password($user_team_id,
+                                           $user_email,
+                                           $dirtyFields = null): void
+    {
+        $results = $this->get("id_equipe = $user_team_id AND email = '$user_email'");
+        if (count($results) === 0) {
+            throw new Exception("Il n'existe pas de compte avec cette adresse email pour cette équipe !");
+        }
+        $result = $results[0];
+        $url = $this->get_page_url() .
+            '/rest/action.php/usermanager/reset_my_password?' .
+            http_build_query(array(
+                'id' => $result['id'],
+                'hash' => md5($result['id'] . $result['login'] . $result['email'] . date('Y-m-d')),));
+        $this->email->send_reset_password($user_email, $result['login'], $result['id_equipe'], $url);
+        $message = "Demande d'initialisation de mot de passe effectuée.<br/>Vous allez recevoir un email vous indiquant la marche à suivre.";
+        throw new Exception($message, 201);
+    }
+
+    private function get_page_url(): string
+    {
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            $url = "https://";
+        } else {
+            $url = "http://";
+        }
+        // Append the host(domain name, ip) to the URL.
+        $url .= $_SERVER['HTTP_HOST'];
+        // Append the requested resource location to the URL
+//        $url.= $_SERVER['REQUEST_URI'];
+        return $url;
     }
 
 }
