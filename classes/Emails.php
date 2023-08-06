@@ -46,7 +46,7 @@ class Emails extends Generic
                                  string $to,
                                  string $cc = "",
                                  string $bcc = "",
-                                 array $file_ids = array())
+                                 array $file_ids = array()): int|string
     {
         $sql = "INSERT INTO emails (
                     from_email, 
@@ -111,28 +111,24 @@ class Emails extends Generic
      * @param null $attachments
      * @throws Exception
      */
-    public function sendEmail($subject, $body, $to, $cc = null, $bcc = null, $attachments = null)
+    public function sendEmail($subject, $body, $to, $cc = null, $bcc = null, $attachments = null): void
     {
         if (empty($to)) {
             error_log("Email does not have any TO, subject: $subject, body: $body");
             return;
         }
         $mail = new PHPMailer();
-        $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
-        switch ($serverName) {
-            case 'localhost':
-                $to = "benallemand@gmail.com";
-                $cc = "benallemand@gmail.com";
-                $bcc = "benallemand@gmail.com";
-                break;
-            default:
-                break;
-        }
-        $mail->isMail();
+        $this->configuration->mail_function === 'mail' ? $mail->isMail() : $mail->isSMTP();
         $mail->CharSet = "UTF-8";
         $mail->Host = $this->configuration->mail_host;
         $mail->SMTPAuth = $this->configuration->mail_smtpauth;
         $mail->Username = $this->configuration->mail_username;
+        // force email recipients to me, as this is not prod server
+        if ($mail->Username === 'benallemand@gmail.com') {
+            $to = "benallemand@gmail.com";
+            $cc = "benallemand@gmail.com";
+            $bcc = "benallemand@gmail.com";
+        }
         $mail->Password = $this->configuration->mail_password;
         $mail->SMTPSecure = $this->configuration->mail_smtpsecure;
         $mail->Port = $this->configuration->mail_port;
@@ -159,11 +155,6 @@ class Emails extends Generic
         $mail->WordWrap = 50;
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
-        if (empty($serverName)) {
-            if (Generic::ends_with(filter_input(INPUT_SERVER, 'PHP_SELF'), 'phpunit')) {
-                return;
-            }
-        }
         if (!$mail->send()) {
             throw new Exception("Erreur dans l'envoi de mail : " . $mail->ErrorInfo);
         }
@@ -177,7 +168,7 @@ class Emails extends Generic
      * @param $idTeam
      * @throws Exception
      */
-    public function sendMailNewUser($email, $login, $password, $idTeam)
+    public function sendMailNewUser($email, $login, $password, $idTeam): void
     {
         $teamName = $this->team->getTeamName($idTeam);
 
@@ -199,7 +190,7 @@ class Emails extends Generic
      * @param $id_team
      * @throws Exception
      */
-    public function sendMailAskForReport($code_match, $reason, $id_team)
+    public function sendMailAskForReport($code_match, $reason, $id_team): void
     {
         $teamName = $this->team->getTeamName($id_team);
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
@@ -222,7 +213,7 @@ class Emails extends Generic
      * @param $id_team
      * @throws Exception
      */
-    public function sendMailGiveReportDate($code_match, $report_date, $id_team)
+    public function sendMailGiveReportDate($code_match, $report_date, $id_team): void
     {
         $teamName = $this->team->getTeamName($id_team);
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
@@ -245,7 +236,7 @@ class Emails extends Generic
      * @param $id_team
      * @throws Exception
      */
-    public function sendMailRefuseReport($code_match, $reason, $id_team)
+    public function sendMailRefuseReport($code_match, $reason, $id_team): void
     {
         $teamName = $this->team->getTeamName($id_team);
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
@@ -267,7 +258,7 @@ class Emails extends Generic
      * @param $id_team
      * @throws Exception
      */
-    public function sendMailAcceptReport($code_match, $id_team)
+    public function sendMailAcceptReport($code_match, $id_team): void
     {
         $teamName = $this->team->getTeamName($id_team);
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
@@ -287,7 +278,7 @@ class Emails extends Generic
      * @param $code_match
      * @throws Exception
      */
-    public function sendMailRefuseReportAdmin($code_match)
+    public function sendMailRefuseReportAdmin($code_match): void
     {
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
@@ -306,7 +297,7 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function sendMailSheetReceived($code_match)
+    public function sendMailSheetReceived($code_match): void
     {
         $teams_emails = $this->match->getTeamsEmailsFromMatch($code_match);
         $to = implode(';', $teams_emails);
@@ -338,7 +329,7 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function team_sheet_to_be_signed($code_match)
+    public function team_sheet_to_be_signed($code_match): void
     {
         $match = $this->match->get_match_by_code_match($code_match);
         if ($match['is_sign_team_dom'] == 1) {
@@ -372,7 +363,7 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function match_sheet_to_be_signed($code_match)
+    public function match_sheet_to_be_signed($code_match): void
     {
         $match = $this->match->get_match_by_code_match($code_match);
         if ($match['is_sign_match_dom'] == 1) {
@@ -406,7 +397,7 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function team_sheet_signed($code_match)
+    public function team_sheet_signed($code_match): void
     {
         $match = $this->match->get_match_by_code_match($code_match);
         if ($match['is_sign_team_dom'] == 1 && $match['is_sign_team_ext'] == 1) {
@@ -432,7 +423,7 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function match_sheet_signed($code_match)
+    public function match_sheet_signed($code_match): void
     {
         $match = $this->match->get_match_by_code_match($code_match);
         if ($match['is_sign_match_dom'] == 1) {
@@ -455,7 +446,7 @@ class Emails extends Generic
      * @param int $id
      * @throws Exception
      */
-    public function delete_email(int $id)
+    public function delete_email(int $id): void
     {
         $sql = "DELETE FROM emails WHERE id = ?";
         $bindings = array();
@@ -469,7 +460,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function delete_emails($where = "1=1")
+    public function delete_emails($where = "1=1"): void
     {
         $sql = "DELETE FROM emails 
                 WHERE $where";
@@ -493,7 +484,7 @@ class Emails extends Generic
      * @return int|string
      * @throws Exception
      */
-    public function insert_email_notify_activated_player(int $player_id)
+    public function insert_email_notify_activated_player(int $player_id): int|string
     {
         require_once __DIR__ . "/Players.php";
         $players_manager = new Players();
@@ -529,7 +520,7 @@ class Emails extends Generic
      * @param string $status
      * @throws Exception
      */
-    public function set_email_status($id, string $status)
+    public function set_email_status($id, string $status): void
     {
         $sql = "UPDATE emails SET sending_status = ? WHERE id = ?";
         $bindings = array();
@@ -548,7 +539,7 @@ class Emails extends Generic
      * @param $id
      * @throws Exception
      */
-    public function set_sent_date($id)
+    public function set_sent_date($id): void
     {
         $sql = "UPDATE emails SET sent_date = NOW() WHERE id = ?";
         $bindings = array();
@@ -603,7 +594,7 @@ class Emails extends Generic
     /**
      * @throws Exception|Exception
      */
-    public function send_pending_emails()
+    public function send_pending_emails(): void
     {
         $pending_emails = $this->get_emails("sending_status = 'TO_DO' AND creation_date > CURDATE() - INTERVAL 10 DAY LIMIT 50");
         foreach ($pending_emails as $pending_email) {
@@ -637,7 +628,7 @@ class Emails extends Generic
     /**
      * @throws Exception|Exception
      */
-    public function retry_error_emails()
+    public function retry_error_emails(): void
     {
         $sql = "UPDATE emails 
                 SET sending_status = 'TO_DO' 
@@ -668,9 +659,10 @@ class Emails extends Generic
      * @param $template_file_path
      * @param $array_data_to_replace
      * @param $destination_email
+     * @param string $cc
      * @throws Exception
      */
-    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, $cc = "")
+    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = ""): void
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
@@ -703,7 +695,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_activity()
+    public function insert_email_activity(): void
     {
         $activities = $this->sql_manager->sql_get_activity();
         if (count($activities) == 0) {
@@ -734,7 +726,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_matches_not_reported()
+    public function insert_email_matches_not_reported(): void
     {
         $matches_not_reported = $this->sql_manager->sql_get_matches_not_reported();
         if (count($matches_not_reported) == 0) {
@@ -763,7 +755,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_next_matches()
+    public function insert_email_next_matches(): void
     {
         $teams = $this->sql_manager->sql_get_ids_team_requesting_next_matches();
         if (count($teams) == 0) {
@@ -827,7 +819,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_players_without_licence_number()
+    public function insert_email_players_without_licence_number(): void
     {
         $players_without_licence_number = $this->sql_manager->sql_get_players_without_licence_number();
         if (count($players_without_licence_number) == 0) {
@@ -854,7 +846,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_team_leaders_without_email()
+    public function insert_email_team_leaders_without_email(): void
     {
         $team_leaders_without_email = $this->sql_manager->sql_get_team_leaders_without_email();
         if (count($team_leaders_without_email) == 0) {
@@ -881,7 +873,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_team_recap()
+    public function insert_email_team_recap(): void
     {
         $team_recaps = $this->sql_manager->sql_get_team_recaps();
         if (count($team_recaps) == 0) {
@@ -909,7 +901,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_alert_report()
+    public function insert_email_alert_report(): void
     {
         $pending_reports = $this->sql_manager->sql_get_pending_reports();
         if (count($pending_reports) == 0) {
@@ -939,7 +931,7 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function insert_email_missing_licences()
+    public function insert_email_missing_licences(): void
     {
         $teams_with_missing_licences = $this->sql_manager->get_teams_with_missing_licences();
         if (count($teams_with_missing_licences) == 0) {
@@ -968,7 +960,7 @@ class Emails extends Generic
      * @return mixed
      * @throws Exception
      */
-    public function get_last()
+    public function get_last(): mixed
     {
         $emails = $this->get_emails("id IN (SELECT MAX(id) FROM emails)");
         return $emails[0];
