@@ -16,6 +16,7 @@
     "ext-zip": "*",
     "ext-json": "*",
     "vlucas/phpdotenv": "*",
-    "mashape/unirest-php": "3.*"
+    "mashape/unirest-php": "3.*",
+    "ext-dom": "*"
   }
 }
