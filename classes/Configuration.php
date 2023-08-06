@@ -12,6 +12,8 @@ class Configuration
     public string $mail_smtpsecure;
     public int $mail_port;
     public bool $covid_mode;
+    public string $proxy_url;
+    public string $flickr_api_key;
 
     /**
      */
@@ -28,6 +30,8 @@ class Configuration
             'MAIL_SMTPSECURE',
             'MAIL_PORT',
             'COVID_MODE',
+            'FLICKR_API_KEY',
+            'PROXY_URL',
         ]);
         $this->mail_host = $_ENV['MAIL_HOST'];
         $this->mail_function = $_ENV['MAIL_FUNCTION'];
@@ -37,5 +41,7 @@ class Configuration
         $this->mail_smtpsecure = $_ENV['MAIL_SMTPSECURE'];
         $this->mail_port = $_ENV['MAIL_PORT'];
         $this->covid_mode = $_ENV['COVID_MODE'];
+        $this->flickr_api_key = $_ENV['FLICKR_API_KEY'];
+        $this->proxy_url = $_ENV['PROXY_URL'];
     }
 }
