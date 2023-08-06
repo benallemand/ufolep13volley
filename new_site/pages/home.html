@@ -42,3 +42,14 @@
         </tr>
     </table>
 </div>
+<div style="height: 600px" ng-controller="volleyballImagesController">
+    <div uib-carousel active="0"
+         interval="3000"
+         no-wrap="false">
+        <div uib-slide ng-repeat="volleyballImage in volleyballImages track by volleyballImage.index"
+             index="volleyballImage.index">
+            <img ng-src="https://farm{{volleyballImage.farm}}.staticflickr.com/{{volleyballImage.server}}/{{volleyballImage.id}}_{{volleyballImage.secret}}.jpg"
+                 height="100%" alt="">
+        </div>
+    </div>
+</div>
