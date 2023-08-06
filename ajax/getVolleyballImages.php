@@ -3,6 +3,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../classes/Configuration.php';
 $configuration = new Configuration();
 $flickr_api_key = $configuration->flickr_api_key;
+if (empty($flickr_api_key)) {
+    echo json_encode(array());
+    exit(0);
+}
 $proxy_url = $configuration->proxy_url;
 Unirest\Request::verifyPeer(false);
 if (!empty($proxy_url)) {
