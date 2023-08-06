@@ -18,6 +18,7 @@
     "vlucas/phpdotenv": "*",
     "mashape/unirest-php": "3.*",
     "ext-dom": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "fpdf/fpdf": "1.84.0"
   }
 }
