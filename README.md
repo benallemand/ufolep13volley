@@ -5,6 +5,7 @@ Deploy
 * git clone the repo
 
         php composer.phar update
+        php composer.phar install
 * create .env file from .env.template, update information to fit your needs, then
 
         source .env
