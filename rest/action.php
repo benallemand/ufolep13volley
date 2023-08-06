@@ -170,6 +170,12 @@ try {
             // redirect to login page
             header('Location: /new_site/#/login?redirect=' . filter_input(INPUT_SERVER, 'REQUEST_URI') . '&reason=' . $exception->getMessage());
             exit(0);
+        case 201:
+            echo json_encode(array(
+                'success' => true,
+                'message' => $exception->getMessage()
+            ));
+            break;
         default:
             http_response_code($resp_code);
             echo json_encode(array(
