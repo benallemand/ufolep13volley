@@ -185,6 +185,25 @@ class Emails extends Generic
     }
 
     /**
+     * @throws Exception
+     */
+    public function send_reset_password($email, $login, $id_team, $url): void
+    {
+        $teamName = $this->team->getTeamName($id_team);
+
+        $message = file_get_contents('../templates/emails/send_reset_password.fr.html');
+        $message = str_replace('%login%', $login, $message);
+        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%url%', $url, $message);
+
+        $this->insert_email(
+            "[UFOLEP13VOLLEY]Réinitialisation de mot de passe",
+            $message,
+            $email);
+        $this->send_pending_emails();
+    }
+
+    /**
      * @param $code_match
      * @param $reason
      * @param $id_team
@@ -619,7 +638,6 @@ class Emails extends Generic
                 print_r($exception->getMessage());
                 continue;
             }
-            print_r("DONE");
             $this->set_email_status($pending_email['id'], 'DONE');
             $this->set_sent_date($pending_email['id']);
         }
