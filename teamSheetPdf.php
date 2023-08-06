@@ -5,7 +5,7 @@ function toWellFormatted($string)
     return !empty($string) ? iconv('UTF-8', 'windows-1252', $string) : '';
 }
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Fpdf\Fpdf;
 
