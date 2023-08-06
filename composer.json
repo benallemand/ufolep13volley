@@ -17,6 +17,7 @@
     "ext-json": "*",
     "vlucas/phpdotenv": "*",
     "mashape/unirest-php": "3.*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-curl": "*"
   }
 }
