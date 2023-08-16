@@ -6,12 +6,20 @@ class Activity extends Generic
     /**
      * @throws Exception
      */
-    function add($comment): int|array|string|null
+    function add($comment, $id_user = null): int|array|string|null
     {
+        @session_start();
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $comment);
-        if (!empty($_SESSION['id_user'])) {
-            $bindings[] = array('type' => 's', 'value' => $_SESSION['id_user']);
+        $is_user_set = false;
+        if (!empty($id_user)) {
+            $is_user_set = true;
+            $bindings[] = array('type' => 'i', 'value' => $id_user);
+        } elseif (!empty($_SESSION['id_user'])) {
+            $is_user_set = true;
+            $bindings[] = array('type' => 'i', 'value' => $_SESSION['id_user']);
+        }
+        if ($is_user_set) {
             $sql = "INSERT activity SET 
                         comment=?, 
                         activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), 

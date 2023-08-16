@@ -619,7 +619,7 @@ class UserManager extends Generic
         $bindings[] = array('type' => 'i', 'value' => $id_team);
         $bindings[] = array('type' => 's', 'value' => $login);
         $this->sql_manager->execute($sql, $bindings);
-        $this->activity->add("Mot de passe modifie");
+        $this->activity->add("Mot de passe modifie", $id);
         $this->email->sendMailNewUser($email, $login, $password, $id_team);
     }
 
