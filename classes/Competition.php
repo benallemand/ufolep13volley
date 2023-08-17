@@ -25,9 +25,9 @@ class Competition extends Generic
         c.code_competition,
         c.libelle,
         c.id_compet_maitre,
-        DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date,
-        DATE_FORMAT(c.start_register_date, '%d/%m/%Y') AS start_register_date,
-        DATE_FORMAT(c.limit_register_date, '%d/%m/%Y') AS limit_register_date,
+        IF(c.start_date, DATE_FORMAT(c.start_date, '%d/%m/%Y'), NULL) AS start_date,
+        IF(c.start_register_date, DATE_FORMAT(c.start_register_date, '%d/%m/%Y'), NULL) AS start_register_date,
+        IF(c.limit_register_date, DATE_FORMAT(c.limit_register_date, '%d/%m/%Y'), NULL) AS limit_register_date,
         c.is_home_and_away+0 AS is_home_and_away,
         d.date_limite AS limit_date
         FROM competitions c
