@@ -1,8 +1,12 @@
 <?php
 require_once __DIR__ . '/classes/Competition.php';
 $title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
-$limit_html_label = "<h2 style='text-align: center'>DATES LIMITES D'INSCRIPTION :%dates_limites%</h2>";
-$dates_limites = "";
+$limit_html_label = "<table>";
+$limit_html_label .= "<thead>";
+$limit_html_label .= "<tr><th colspan='3'>INSCRIPTIONS</th></tr>";
+$limit_html_label .= "<tr><th>Compétition</th><th>Ouverture</th><th>Fermeture</th></tr>";
+$limit_html_label .= "</thead>";
+$limit_html_label .= "<tbody>";
 $manager = new Competition();
 $competitions = $manager->getCompetitions();
 foreach ($competitions as $competition) {
@@ -10,10 +14,11 @@ foreach ($competitions as $competition) {
     $start_date = $competition['start_register_date'];
     $end_date = $competition['limit_register_date'];
     if (!empty($start_date) && !empty($end_date)) {
-        $dates_limites .= "<br/><span>$libelle : du $start_date au $end_date</span>";
+        $limit_html_label .= "<tr><th style='text-align: left'>$libelle</th><td>$start_date</td><td>$end_date</td></tr>";
     }
 }
-$limit_html_label = str_replace('%dates_limites%', $dates_limites, $limit_html_label);
+$limit_html_label .= "</tbody>";
+$limit_html_label .= "</table>";
 
 @session_start();
 $user_details = $_SESSION;
@@ -38,6 +43,21 @@ $user_details = $_SESSION;
     <link
             href="/cells.css"
             rel="stylesheet"/>
+    <style>
+        table,
+        td {
+            border: 1px solid #333;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        thead,
+        tfoot {
+            background-color: #333;
+            color: #fff;
+        }
+
+    </style>
     <script
             src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"
             type="text/javascript"></script>
