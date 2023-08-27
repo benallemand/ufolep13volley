@@ -316,7 +316,7 @@ class SqlManager
      */
     public function get_teams_with_missing_licences(): array
     {
-        $sql = "SELECT GROUP_CONCAT(CONCAT(j.prenom, ' ', j.nom)) AS joueurs,
+        $sql = "SELECT GROUP_CONCAT(DISTINCT CONCAT(j.prenom, ' ', j.nom)) AS joueurs,
                        c.nom AS club,
                        c.email_responsable AS responsable,
                        e.nom_equipe AS equipe,
@@ -332,6 +332,7 @@ class SqlManager
                          JOIN clubs c ON c.id = e.id_club
                 WHERE j.est_actif = 0
                     AND m.match_status = 'CONFIRMED'
+                AND m.code_competition IN (SELECT code_competition FROM competitions WHERE start_date <= CURRENT_DATE)
                 GROUP BY c.nom, c.email_responsable, e.nom_equipe, jr.email";
         return $this->execute($sql);
     }
