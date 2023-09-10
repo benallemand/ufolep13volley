@@ -12,7 +12,6 @@ Ext.application({
         'manage_friendships',
         'manage_blacklist_by_city',
         'remove_duplicate_files',
-        'manage_match_players',
         'certify_matchs',
         'flip_matchs',
         'retry_error_emails',
