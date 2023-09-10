@@ -1439,8 +1439,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 FROM matches m
                          JOIN match_player mp on mp.id_match = m.id_match
                          JOIN players_view j on mp.id_player = j.id
-                         JOIN joueur_equipe je ON je.id_joueur = j.id AND (je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
-                         JOIN equipes e ON je.id_equipe = e.id_equipe
+                         LEFT JOIN joueur_equipe je ON je.id_joueur = j.id AND (je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
+                         LEFT JOIN equipes e ON je.id_equipe = e.id_equipe
                 WHERE m.id_match = $id_match
                 ORDER BY equipe, sexe, nom, prenom";
         return $this->sql_manager->execute($sql);
@@ -1459,6 +1459,32 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 WHERE m.id_match = $id_match
                   AND je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
                   AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = $id_match)";
+        return $this->sql_manager->execute($sql);
+    }
+
+    /**
+     * @param null $id_match
+     * @param null $query
+     * @return int|array|string|null
+     * @throws Exception
+     */
+    public function getReinforcementPlayers($id_match = null, $query = null): int|array|string|null
+    {
+        if (empty($query)) {
+            throw new Exception("Merci de rechercher un joueur en commençant à taper son nom !");
+        } else {
+            $query = "j.full_name LIKE '%$query%'";
+        }
+        $sql = "SELECT DISTINCT j.*
+                FROM players_view j
+                WHERE $query 
+                AND j.id NOT IN (SELECT id_player 
+                                   FROM match_player 
+                                   WHERE id_match = $id_match)
+                AND j.id NOT IN (SELECT id_joueur 
+                                 FROM joueur_equipe 
+                                 WHERE id_equipe IN (SELECT id_equipe_dom FROM matches WHERE id_match = $id_match)
+                                 OR id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match))";
         return $this->sql_manager->execute($sql);
     }
 
@@ -1678,24 +1704,26 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function manage_match_players($id_match, $player_ids, $dirtyFields = null): void
+    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id, $dirtyFields = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         if (!isset($id_match)) {
             throw new Exception("Impossible de trouver id_match !");
         }
-        if (!isset($player_ids)) {
-            throw new Exception("Impossible de trouver player_ids !");
-        }
         if (empty($id_match)) {
             throw new Exception("id_match vide !");
         }
-        foreach ($player_ids as $index => $player_id) {
-            if (empty($player_id)) {
-                unset($player_ids[$index]);
-                continue;
+        if (!empty($reinforcement_player_id)) {
+            $player_ids[] = $reinforcement_player_id;
+        }
+        if (isset($player_ids)) {
+            foreach ($player_ids as $index => $player_id) {
+                if (empty($player_id)) {
+                    unset($player_ids[$index]);
+                    continue;
+                }
+                $this->add_match_player($id_match, $player_id);
             }
-            $this->add_match_player($id_match, $player_id);
         }
         if (count($player_ids) > 0) {
             $match = $this->get_match($id_match);
