@@ -22,9 +22,34 @@ Ext.define('Ufolep13Volley.view.form.MatchPlayers', {
         {
             title: 'Ajouter',
             layout: 'form',
-            items: {
-                xtype: 'tag_field_players'
-            },
+            items: [
+                {
+                    xtype: 'tag_field_players',
+                },
+                {
+                    xtype: 'combo_player',
+                    fieldLabel: "Déclarer un renfort",
+                    name: 'reinforcement_player_id',
+                    store: {
+                        type: 'ReinforcementPlayers',
+                        sorters: [
+                            {
+                                property: 'id_club',
+                                direction: 'ASC'
+                            },
+                            {
+                                property: 'sexe',
+                                direction: 'ASC'
+                            }
+                        ]
+                    },
+                },
+                {
+                    xtype: 'displayfield',
+                    hideLabel: true,
+                    value: "<small style='font-style: italic'>Renfort: 1 joueur autorisé par match et par équipe. Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison.</small> ",
+                },
+            ],
         },
     ],
     buttons: [
