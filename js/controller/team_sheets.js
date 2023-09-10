@@ -1,11 +1,18 @@
 Ext.define('Ufolep13Volley.controller.team_sheets', {
     extend: 'Ext.app.Controller',
-    stores: ['match', 'MatchPlayers', 'NotMatchPlayers', 'Players'],
+    stores: [
+        'Ufolep',
+        'match',
+        'MatchPlayers',
+        'NotMatchPlayers',
+        'ReinforcementPlayers',
+    ],
     models: ['Match', 'Player'],
     views: [
         'form.MatchPlayers',
         'view.MatchPlayers',
         'form.field.tag.players',
+        'form.field.combo.player',
     ],
     refs: [],
     init: function () {
@@ -54,26 +61,23 @@ Ext.define('Ufolep13Volley.controller.team_sheets', {
         });
     },
     load_match_players: function (form) {
-        var store = form.down('tagfield').getStore();
+        var store = form.down('view_match_players').getStore();
         store.load({
             params: {
                 id_match: id_match
             }
         });
-        store = Ext.data.StoreManager.lookup('MatchPlayers');
+        store = form.down("tagfield[name='player_ids[]']").getStore();
         store.load({
             params: {
                 id_match: id_match
             }
         });
-        store = Ext.data.StoreManager.lookup('NotMatchPlayers');
-        store.load({
-            params: {
-                id_match: id_match
-            }
+        form.down('combo[name=reinforcement_player_id]').getStore().getProxy().setExtraParams({
+            id_match: id_match
         });
         form.down('field[name=id_match]').setValue(id_match);
-        store = Ext.data.StoreManager.lookup('match');
+        var store = Ext.data.StoreManager.lookup('match');
         store.load({
             params: {
                 id_match: id_match
