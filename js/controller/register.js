@@ -6,6 +6,8 @@ Ext.define('Ufolep13Volley.controller.register', {
         'Teams',
         'Gymnasiums',
         'Competitions',
+        'Day',
+        'Hour',
     ],
     models: [
         'register',

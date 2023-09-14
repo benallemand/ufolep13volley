@@ -5,26 +5,9 @@ Ext.define('Ufolep13Volley.view.form.field.combo.day', {
     name: 'day_court',
     displayField: 'name',
     valueField: 'name',
-    store: Ext.create('Ext.data.Store', {
-        fields: ['name'],
-        data: [
-            {
-                "name": "Lundi"
-            },
-            {
-                "name": "Mardi"
-            },
-            {
-                "name": "Mercredi"
-            },
-            {
-                "name": "Jeudi"
-            },
-            {
-                "name": "Vendredi"
-            }
-        ]
-    }),
+    store: {
+        type: 'Day',
+    },
     queryMode: 'local',
     allowBlank: true,
     forceSelection: true
