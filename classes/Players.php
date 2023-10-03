@@ -716,6 +716,9 @@ class Players extends Generic
      */
     public function set_leader($ids, $id_team = null)
     {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
+        }
         if (empty($id_team)) {
             @session_start();
             $id_team = $_SESSION['id_equipe'];
@@ -747,8 +750,8 @@ class Players extends Generic
      */
     function set_captain($ids, $id_team = null)
     {
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Vous n'êtes pas responsable d'équipe, vous ne pouvez pas modifier l'équipe !");
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
         }
         if (empty($id_team)) {
             @session_start();
@@ -781,8 +784,8 @@ class Players extends Generic
      */
     function set_vice_leader($ids, $id_team = null)
     {
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Vous n'êtes pas responsable d'équipe, vous ne pouvez pas modifier l'équipe !");
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
         }
         if (empty($id_team)) {
             @session_start();
@@ -815,8 +818,8 @@ class Players extends Generic
      */
     public function remove_from_team($ids, $id_team = null)
     {
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Vous n'êtes pas responsable d'équipe, vous ne pouvez pas modifier l'équipe !");
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
         }
         if (empty($id_team)) {
             @session_start();
@@ -844,6 +847,9 @@ class Players extends Generic
      */
     public function add_to_team($ids, $id_team = null): void
     {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
+        }
         if (empty($id_team)) {
             @session_start();
             $id_team = $_SESSION['id_equipe'];

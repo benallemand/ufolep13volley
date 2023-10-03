@@ -13,6 +13,7 @@ class RegisterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->connect_as_admin();
         $this->register = new Register();
     }
 
@@ -72,8 +73,8 @@ class RegisterTest extends TestCase
         //230219:PASS
         $competition_mgr = new Competition();
         // test for masc
-        $competition_masc = $competition_mgr->getCompetition('mo');
-        $this->register->set_up_season($competition_masc['id']);
+        $competition = $competition_mgr->getCompetition('mo');
+        $this->register->set_up_season($competition['id']);
     }
 
     /**
@@ -101,6 +102,15 @@ class RegisterTest extends TestCase
         $this->assertCount(1, $this->register->get_2nd_half_registrations($comp['id']));
         $comp = $competition_mgr->getCompetition('m');
         $this->assertCount(0, $this->register->get_2nd_half_registrations($comp['id']));
+    }
+
+    private function connect_as_admin(): void
+    {
+        @session_start();
+        $_SESSION['id_equipe'] = null;
+        $_SESSION['login'] = 'test_user';
+        $_SESSION['id_user'] = 1;
+        $_SESSION['profile_name'] = 'ADMINISTRATEUR';
     }
 
 }

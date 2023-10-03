@@ -129,6 +129,9 @@ class TimeSlot extends Generic
         $dirtyFields = null,
     )
     {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
+        }
         if (empty($id_equipe)) {
             @session_start();
             $id_equipe = $_SESSION['id_equipe'];
@@ -205,11 +208,8 @@ class TimeSlot extends Generic
      */
     public function removeTimeSlot($id)
     {
-        if (UserManager::isAdmin()) {
-            throw new Exception("Un admin ne peut pas effacer un créneau !");
-        }
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Seul un responsable peut effacer un créneau !");
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
         }
         $sql = "DELETE FROM creneau WHERE id = $id";
         $this->sql_manager->execute($sql);
