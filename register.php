@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/classes/Competition.php';
 $title = "Inscriptions aux compétitions UFOLEP 13 Volley-ball";
-$limit_html_label = "<table>";
+$limit_html_label = "<table class='limit_dates'>";
 $limit_html_label .= "<thead>";
 $limit_html_label .= "<tr><th colspan='3'>INSCRIPTIONS</th></tr>";
 $limit_html_label .= "<tr><th>Compétition</th><th>Ouverture</th><th>Fermeture</th></tr>";
@@ -44,8 +44,7 @@ $user_details = $_SESSION;
             href="/cells.css"
             rel="stylesheet"/>
     <style>
-        table,
-        td {
+        table.limit_dates, table.limit_dates td {
             border: 1px solid #333;
             min-width: 200px;
             text-align: center;
