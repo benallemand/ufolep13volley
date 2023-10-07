@@ -52,6 +52,7 @@ class Register extends Generic
         $remarks,
         $division = null,
         $rank_start = null,
+        $is_paid = null,
         $dirtyFields = null,
         $id = null
     ): void
@@ -77,6 +78,7 @@ class Register extends Generic
             'remarks' => trim($remarks),
             'division' => $division,
             'rank_start' => $rank_start,
+            'is_paid' => $is_paid,
             'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
@@ -104,6 +106,17 @@ class Register extends Generic
                         $sql .= "$key = ?,";
                         $bindings[] = array('type' => 'i', 'value' => $value);
                     }
+                    break;
+                case 'is_paid':
+                    if(is_null($value)) {
+                        break;
+                    }
+                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $bindings[] = array(
+                        'type' => 'i',
+                        'value' => $val
+                    );
+                    $sql .= "$key = ?,";
                     break;
                 default:
                     if (empty($value) || $value == 'null') {
@@ -155,7 +168,8 @@ class Register extends Generic
                 r.remarks,
                 DATE_FORMAT(r.creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
                 r.rank_start,
-                r.division
+                r.division,
+                r.is_paid
                 FROM register r
                 JOIN clubs c on c.id = r.id_club
                 JOIN competitions c2 on r.id_competition = c2.id

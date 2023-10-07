@@ -21,6 +21,10 @@ Ext.define('Ufolep13Volley.model.register', {
         {name: 'rank_start', type: 'int', allowNull: true},
         {name: 'remarks', type: 'string'},
         {
+            name: 'is_paid',
+            type: 'bool',
+        },
+        {
             name: 'leader',
             convert: function (val, rec) {
                 return Ext.String.format("{0} {1}", rec.get('leader_first_name'), rec.get('leader_name'));

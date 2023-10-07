@@ -29,6 +29,23 @@ Ext.define('Ufolep13Volley.view.grid.register', {
         {header: 'Gymnase 2', dataIndex: 'court_2', hidden: false, width: 200,},
         {header: 'Jour 2', dataIndex: 'day_court_2', hidden: false, width: 200,},
         {header: 'Heure 2', dataIndex: 'hour_court_2', hidden: false, width: 200,},
-        {header: "Date d'inscription", dataIndex: 'creation_date', xtype: 'datecolumn', format: 'd/m/Y H:i:s', hidden: false, width: 200,},
+        {
+            header: "Date d'inscription",
+            dataIndex: 'creation_date',
+            xtype: 'datecolumn',
+            format: 'd/m/Y H:i:s',
+            hidden: false,
+            width: 200,
+        },
+        {
+            header: 'Adhésion payée ?',
+            dataIndex: 'is_paid',
+            xtype: 'checkcolumn',
+            listeners: {
+                beforecheckchange: function () {
+                    return false;
+                }
+            }
+        },
     ],
 });

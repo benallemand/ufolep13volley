@@ -106,6 +106,13 @@ Ext.define('Ufolep13Volley.view.form.register', {
                 },
             ]
         } : null,
+        user_details.profile_name === 'ADMINISTRATEUR' ? {
+            name: 'is_paid',
+            xtype: 'checkboxfield',
+            fieldLabel: 'Adhésion réglée ?',
+            boxLabel: 'Oui',
+            uncheckedValue: 'off'
+        } : null,
         {
             xtype: 'combo_team',
             fieldLabel: "Nom de l'équipe lors de la saison précédente",
