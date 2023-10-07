@@ -6,6 +6,8 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Get Latest Commits
       run: |
         git log --oneline -n 10 > latest_commits.txt
