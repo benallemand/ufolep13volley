@@ -97,6 +97,7 @@ Ext.define('Ufolep13Volley.controller.register', {
                 params: {
                     dirtyFields: dirtyFieldsArray.join(',')
                 }, success: function () {
+                    Ext.Msg.alert('Info', this.result.message);
                     grid.getStore().load();
                 }, failure: function (form, action) {
                     Ext.Msg.alert('Erreur',

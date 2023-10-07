@@ -6,6 +6,7 @@ require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Players.php';
 require_once __DIR__ . '/UserManager.php';
 require_once __DIR__ . '/TimeSlot.php';
+require_once __DIR__ . '/Constants.php';
 
 class Register extends Generic
 {
@@ -137,6 +138,7 @@ class Register extends Generic
         if (!empty($id)) {
             $email_manager = new Emails();
             $email_manager->insert_email_notify_registration($id);
+            throw new Exception(MESSAGE_REGISTER_DONE, 201);
         }
 
     }
