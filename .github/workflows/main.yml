@@ -1,8 +1,18 @@
-name: get-commit-log
-run-name: get-commit-log
+name: Get Latest Commits
 on: workflow_dispatch
 jobs:
-  get-commit-log:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Get Latest Commits
+      run: |
+        git log --oneline -n 10 > latest_commits.txt
+        echo "Latest commits:"
+        cat latest_commits.txt
+    - name: Upload Latest Commits
+      uses: actions/upload-artifact@v2
+      with:
+        name: latest-commits
+        path: latest_commits.txt
