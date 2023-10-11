@@ -28,6 +28,10 @@ Ext.define('Ufolep13Volley.model.Rank', {
         {
             name: 'rank_start',
             type: 'int'
-        }
+        },
+        {
+            name: 'will_register_again',
+            type: 'bool',
+        },
     ]
 });

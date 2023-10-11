@@ -55,7 +55,15 @@ Ext.define('Ufolep13Volley.view.rank.Edit', {
                 fieldLabel: 'Classement au départ',
                 name: 'rank_start',
                 allowBlank: false
-            }
+            },
+            {
+                name: 'will_register_again',
+                xtype: 'checkboxfield',
+                fieldLabel: "Se réengage l'an prochain ?",
+                boxLabel: 'Oui',
+                msgTarget: 'under',
+                uncheckedValue: 'off'
+            },
         ],
         buttons: [
             {

@@ -22,7 +22,17 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
             {
                 header: 'Classement au début',
                 dataIndex: 'rank_start'
-            }
+            },
+            {
+                header: 'Se réengage ?',
+                dataIndex: 'will_register_again',
+                xtype: 'checkcolumn',
+                listeners: {
+                    beforecheckchange: function () {
+                        return false;
+                    }
+                }
+            },
         ]
     },
     dockedItems: [

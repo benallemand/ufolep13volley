@@ -31,7 +31,8 @@ class Rank extends Generic
                     e.nom_equipe,
                     c.penalite,
                     c.report_count,
-                    c.rank_start
+                    c.rank_start,
+                    c.will_register_again
                 FROM classements c
                 JOIN competitions comp ON comp.code_competition = c.code_competition
                 JOIN equipes e ON e.id_equipe = c.id_equipe
@@ -242,6 +243,7 @@ class Rank extends Generic
                              $division,
                              $id_equipe,
                              $rank_start,
+                             $will_register_again,
                              $dirtyFields): int|array|string|null
     {
         return $this->save(array(
@@ -250,6 +252,7 @@ class Rank extends Generic
             'division' => $division,
             'id_equipe' => $id_equipe,
             'rank_start' => $rank_start,
+            'will_register_again' => $will_register_again,
             'dirtyFields' => $dirtyFields,
         ));
     }
@@ -279,6 +282,14 @@ class Rank extends Generic
                     } else {
                         $bindings[] = array('type' => 's', 'value' => $value);
                     }
+                    $sql .= "$key = ?,";
+                    break;
+                case 'will_register_again':
+                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $bindings[] = array(
+                        'type' => 'i',
+                        'value' => $val
+                    );
                     $sql .= "$key = ?,";
                     break;
                 default:
