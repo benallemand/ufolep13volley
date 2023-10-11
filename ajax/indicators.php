@@ -121,6 +121,9 @@ $indicatorTeamManyMatchesSameDay = new Indicator(
 $indicator_same_reception = new Indicator(
     "Même réception que la fois précédente",
     file_get_contents(__DIR__ . '/../sql/same_reception.sql'));
+$indicator_not_registered_teams = new Indicator(
+    "Equipes non réengagées",
+    file_get_contents(__DIR__ . '/../sql/not_registered_teams.sql'));
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -150,6 +153,7 @@ $results[] = $indicatorMatchesWithInvalidPlayers->getResult();
 $results[] = $indicatorMatchesWithInvalidDate->getResult();
 $results[] = $indicatorTeamManyMatchesSameDay->getResult();
 $results[] = $indicator_same_reception->getResult();
+$results[] = $indicator_not_registered_teams->getResult();
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
