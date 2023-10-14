@@ -353,7 +353,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         }, {
                             xtype: 'button', margin: 10, text: 'Détails', handler: function () {
                                 Ext.create('Ext.window.Window', {
-                                    title: 'Détails',
+                                    title: record.get('fieldLabel'),
                                     height: 500,
                                     width: 700,
                                     maximizable: true,
