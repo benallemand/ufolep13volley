@@ -124,6 +124,12 @@ $indicator_same_reception = new Indicator(
 $indicator_not_registered_teams = new Indicator(
     "Equipes non réengagées",
     file_get_contents(__DIR__ . '/../sql/not_registered_teams.sql'));
+$indicator_will_not_register_teams = new Indicator(
+    "Equipes qui ne s'engageront pas",
+    file_get_contents(__DIR__ . '/../sql/will_not_register_teams.sql'));
+$indicator_newly_registered_teams = new Indicator(
+    "Nouvelles équipes",
+    file_get_contents(__DIR__ . '/../sql/newly_registered_teams.sql'));
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -154,6 +160,8 @@ $results[] = $indicatorMatchesWithInvalidDate->getResult();
 $results[] = $indicatorTeamManyMatchesSameDay->getResult();
 $results[] = $indicator_same_reception->getResult();
 $results[] = $indicator_not_registered_teams->getResult();
+$results[] = $indicator_will_not_register_teams->getResult();
+$results[] = $indicator_newly_registered_teams->getResult();
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
