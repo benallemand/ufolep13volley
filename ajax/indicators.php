@@ -130,6 +130,9 @@ $indicator_will_not_register_teams = new Indicator(
 $indicator_newly_registered_teams = new Indicator(
     "Nouvelles équipes",
     file_get_contents(__DIR__ . '/../sql/newly_registered_teams.sql'));
+$indicator_register_setup_ranks = new Indicator(
+    "Proposition d'organisation",
+    file_get_contents(__DIR__ . '/../sql/register_setup_ranks.sql'));
 
 $results = array();
 $results[] = $indicatorEquipesEngageesChampionnat->getResult();
@@ -162,6 +165,7 @@ $results[] = $indicator_same_reception->getResult();
 $results[] = $indicator_not_registered_teams->getResult();
 $results[] = $indicator_will_not_register_teams->getResult();
 $results[] = $indicator_newly_registered_teams->getResult();
+$results[] = $indicator_register_setup_ranks->getResult();
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
