@@ -359,9 +359,18 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                     maximizable: true,
                                     layout: 'fit',
                                     items: {
-                                        xtype: 'exportablegrid', viewConfig: {
+                                        xtype: 'exportablegrid',
+                                        viewConfig: {
                                             enableTextSelection: true
-                                        }, autoScroll: true, store: Ext.create('Ext.data.Store', {
+                                        },
+                                        autoScroll: true,
+                                        features: [
+                                            {
+                                                ftype: 'grouping',
+                                                groupHeaderTpl: '{name}'
+                                            }
+                                        ],
+                                        store: Ext.create('Ext.data.Store', {
                                             fields: fields, data: {
                                                 'items': detailsData
                                             }, proxy: {
@@ -369,7 +378,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                                     type: 'json', root: 'items'
                                                 }
                                             }
-                                        }), columns: columns
+                                        }),
+                                        columns: columns
                                     },
                                     dockedItems: [{
                                         xtype: 'toolbar', dock: 'bottom', items: [{
