@@ -8,7 +8,7 @@ UNION ALL
 SELECT c.libelle     as competition,
        cl.division,
        cl.rank_start AS rang,
-       null          AS équipe
+       '?'          AS équipe
 from classements cl
          JOIN competitions c ON c.code_competition = cl.code_competition
 WHERE cl.rank_start NOT IN (SELECT r.rank_start
