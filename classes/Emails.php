@@ -155,6 +155,9 @@ class Emails extends Generic
         $mail->WordWrap = 50;
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
+        if ($mail->Username === 'benallemand@gmail.com') {
+            return;
+        }
         if (!$mail->send()) {
             throw new Exception("Erreur dans l'envoi de mail : " . $mail->ErrorInfo);
         }
