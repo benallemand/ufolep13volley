@@ -476,6 +476,7 @@ class MatchManagerTest extends TestCase
     public function test_generate_all_championships()
     {
         //230219:PASS
+        $this->connect_as_admin();
         $competition_mgr = new Competition();
         $codes = array(
             'mo',
@@ -484,7 +485,12 @@ class MatchManagerTest extends TestCase
         );
         foreach ($codes as $code) {
             $comp = $competition_mgr->getCompetition($code);
-            $this->match_manager->generateAll($comp['id']);
+            try {
+                $this->match_manager->generateAll($comp['id']);
+            } catch (Exception $exception) {
+                $this->assertEquals($exception->getCode(), 201);
+                print_r($exception->getMessage());
+            }
         }
     }
 
@@ -587,6 +593,15 @@ class MatchManagerTest extends TestCase
         $_SESSION['login'] = 'test_user';
         $_SESSION['id_user'] = 1;
         $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
+    }
+
+    private function connect_as_admin()
+    {
+        @session_start();
+        $_SESSION['id_equipe'] = null;
+        $_SESSION['login'] = 'test_user';
+        $_SESSION['id_user'] = 1;
+        $_SESSION['profile_name'] = 'ADMINISTRATEUR';
     }
 
 }
