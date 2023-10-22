@@ -161,7 +161,13 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 //         exactMatch: true
                 //     }
                 // },
-                forceSelection: true
+                forceSelection: true,
+                listeners: {
+                    focus: function (combo) {
+                        var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
+                        combo.getStore().filter('code_competition', code_competition);
+                    }
+                }
             },
             {
                 xtype: 'datefield',
