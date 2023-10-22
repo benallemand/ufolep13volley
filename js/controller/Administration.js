@@ -381,13 +381,59 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                         }),
                                         columns: columns
                                     },
-                                    dockedItems: [{
-                                        xtype: 'toolbar', dock: 'bottom', items: [{
-                                            text: 'Télécharger', handler: function (button) {
-                                                button.up('window').down('grid').export('Rapport');
-                                            }
-                                        }]
-                                    }]
+                                    dockedItems: [
+                                        {
+                                            xtype: 'toolbar', dock: 'top', items: [
+                                                {
+                                                    xtype: 'textfield',
+                                                    fieldLabel: 'Recherche',
+                                                    listeners: {
+                                                        change: function (field, new_val, old_val) {
+                                                            var linked_store = field.up('window').down('grid').getStore();
+                                                            if (new_val === old_val) {
+                                                                return;
+                                                            }
+                                                            linked_store.removeFilter('searchInGrid');
+                                                            if (Ext.isEmpty(new_val)) {
+                                                                return;
+                                                            }
+                                                            linked_store.filter({
+                                                                id: 'searchInGrid', filterFn: function (item) {
+                                                                    var fields = linked_store.getModel().getFields();
+                                                                    var queribleFields = [];
+                                                                    Ext.each(fields, function (field) {
+                                                                        if (field.getType() === 'string' || field.getType() === 'auto') {
+                                                                            Ext.Array.push(queribleFields, field.getName());
+                                                                        }
+                                                                    });
+                                                                    var found = false;
+                                                                    var regExp = new RegExp(new_val, "i");
+                                                                    Ext.each(queribleFields, function (queribleField) {
+                                                                        if (!item.get(queribleField)) {
+                                                                            return true;
+                                                                        }
+                                                                        if (regExp.test(item.get(queribleField))) {
+                                                                            found = true;
+                                                                            return false;
+                                                                        }
+                                                                    });
+                                                                    return found;
+                                                                }
+                                                            });
+
+                                                        }
+                                                    }
+                                                },
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'toolbar', dock: 'bottom', items: [{
+                                                text: 'Télécharger', handler: function (button) {
+                                                    button.up('window').down('grid').export('Rapport');
+                                                }
+                                            }]
+                                        }
+                                    ]
                                 }).show();
                             }
                         }]
