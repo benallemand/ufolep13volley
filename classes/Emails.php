@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 
 require_once __DIR__ . '/../classes/Configuration.php';
@@ -973,6 +974,35 @@ class Emails extends Generic
                     'email' => $teams_with_missing_licence['email'],
                 ),
                 $email
+            );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function insert_email_register_not_paid(): void
+    {
+        $result = $this->sql_manager->execute(file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'));
+        if (count($result) == 0) {
+            return;
+        }
+        foreach ($result as $data) {
+            if (empty($data['email_club']) && empty($data['emails_equipes'])) {
+                continue;
+            }
+            $destination = explode(',', $data['emails_equipes']);
+            $destination[] = $data['email_club'];
+            $this->insert_generic_email(
+                __DIR__ . '/../templates/emails/register_not_paid.fr.html',
+                array(
+                    'club' => $data['club'],
+                    'email_club' => $data['email_club'],
+                    'emails_equipes' => $data['emails_equipes'],
+                    'competitions' => $data['competitions'],
+                    'cout' => $data['cout'],
+                ),
+                implode(';', $destination)
             );
         }
     }
