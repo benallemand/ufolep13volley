@@ -429,7 +429,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                         {
                                             xtype: 'toolbar', dock: 'bottom', items: [{
                                                 text: 'Télécharger', handler: function (button) {
-                                                    button.up('window').down('grid').export('Rapport');
+                                                    button.up('window').down('grid').export(record.get('fieldLabel'));
                                                 }
                                             }]
                                         }
