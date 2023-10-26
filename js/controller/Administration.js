@@ -317,7 +317,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
         mainPanel.setActiveTab(tab);
         var storeIndicators = Ext.create('Ext.data.Store', {
-            fields: ['fieldLabel', 'value', 'details'], proxy: {
+            fields: ['fieldLabel', 'value', 'details', 'type'], proxy: {
                 type: 'rest', url: 'ajax/indicators.php', reader: {
                     type: 'json', root: 'results'
                 }
@@ -348,7 +348,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                             margin: 10,
                             fieldLabel: record.get('fieldLabel'),
                             labelWidth: 250,
-                            value: record.get('value'),
+                            value: Ext.String.format(
+                                "<div style='{0}'>{1}</div>",
+                                record.get('type') == 'alert' ? 'color: red; font-weight: bold' : 'color: black',
+                                record.get('value')),
                             width: 300
                         }, {
                             xtype: 'button', margin: 10, text: 'Détails', handler: function () {

@@ -37,139 +37,141 @@ function generateCsv($data, $delimiter = ';', $enclosure = '"')
 
 require_once __DIR__ . '/../classes/Indicator.php';
 
-$indicator_same_reception = new Indicator(
+$indicators = array();
+
+
+$indicators[] = new Indicator(
     "Même réception 2 fois d'affilée",
-    file_get_contents(__DIR__ . '/../sql/same_reception.sql'));
-$indicatorPossibleDuplicatePlayers = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/same_reception.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Joueurs potentiellement en doublon",
-    file_get_contents(__DIR__ . '/../sql/player_duplicates.sql'));
-$indicatorSuspectTransfert = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/player_duplicates.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Transferts suspect de joueurs",
-    file_get_contents(__DIR__ . '/../sql/suspect_transfers.sql'));
-$indicatorPlayersWithoutLicence = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/suspect_transfers.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Joueurs sans numéro de licence",
-    file_get_contents(__DIR__ . '/../sql/no_licence.sql'));
-$indicatorEquipesEngageesChampionnat = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/no_licence.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes",
     file_get_contents(__DIR__ . '/../sql/teams_in_championship.sql'));
-$indicatorPlayersWithTeamButNoClub = new Indicator(
+$indicators[] = new Indicator(
     "Joueurs avec équipe mais sans club",
-    file_get_contents(__DIR__ . '/../sql/no_club.sql'));
-$indicatorNotValidatedPlayers = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/no_club.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Joueurs en attente de validation",
-    file_get_contents(__DIR__ . '/../sql/not_valid_players.sql'));
-$indicatorActivity = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/not_valid_players.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Evènements",
     file_get_contents(__DIR__ . '/../sql/activity.sql'));
-$indicatorComptes = new Indicator(
+$indicators[] = new Indicator(
     "Comptes",
     file_get_contents(__DIR__ . '/../sql/accounts.sql'));
-$indicatorMatchesDupliques = new Indicator(
+$indicators[] = new Indicator(
     "Matches dupliqués",
-    file_get_contents(__DIR__ . '/../sql/match_duplicates.sql'));
-$indicatorEquipesSansClub = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/match_duplicates.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Club non renseigné",
-    file_get_contents(__DIR__ . '/../sql/teams_without_club.sql'));
-$indicatorLicencesDupliquees = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/teams_without_club.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Licences dupliquées",
-    file_get_contents(__DIR__ . '/../sql/licence_duplicates.sql'));
-$indicatorMatchesNonRenseignes = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/licence_duplicates.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Retards",
-    file_get_contents(__DIR__ . '/../sql/delay_match_report.sql'));
-$indicatorActiveTeamWithoutTeamManagerAccount = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/delay_match_report.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes actives sans compte responsable équipe",
-    file_get_contents(__DIR__ . '/../sql/missing_team_leader_account.sql'));
-$indicatorActiveTeamWithoutTeamLeader = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/missing_team_leader_account.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes actives sans responsable",
-    file_get_contents(__DIR__ . '/../sql/no_leader_team.sql'));
-$indicatorActiveTeamWithoutTimeslot = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/no_leader_team.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes actives sans créneau de réception",
     file_get_contents(__DIR__ . '/../sql/no_timeslot_teams.sql'));
-$indicatorPendingMatchesWithWrongTimeSlot = new Indicator(
+$indicators[] = new Indicator(
     "Matches non certifiés dont la date ne correspond pas à un créneau",
     file_get_contents(__DIR__ . '/../sql/matches_without_timeslot.sql'));
-$indicatorTimeSlotWithConstraint = new Indicator(
+$indicators[] = new Indicator(
     "Créneaux avec une contrainte horaire forte",
     file_get_contents(__DIR__ . '/../sql/timeslot_constraints.sql'));
-$indicatorTeamLeadersByChamp = new Indicator(
+$indicators[] = new Indicator(
     "Emails des responsables par compétition",
     file_get_contents(__DIR__ . '/../sql/emails_by_competition.sql'));
-$indicatorMatchesByGymnasiumByDate = new Indicator(
+$indicators[] = new Indicator(
     'Nombre de matches par date et par gymnase',
     file_get_contents(__DIR__ . '/../sql/matches_by_gymnasium.sql'));
-$indicatorTooMuchMatchesByGymnasiumByDate = new Indicator(
+$indicators[] = new Indicator(
     'Nombre de matches trop élevés par date et par gymnase',
-    file_get_contents(__DIR__ . '/../sql/too_many_match_in_gymnasium.sql'));
-$indicatorEquityBetweenHomeAndAway = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/too_many_match_in_gymnasium.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes avec trop d'écart entre réception et déplacement",
-    file_get_contents(__DIR__ . '/../sql/equity_home_away.sql'));
-$indicatorMatchGenerationCriticity = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/equity_home_away.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Criticité de génération des matchs",
     file_get_contents(__DIR__ . '/../sql/match_generation_criticity.sql'));
-$indicatorErrorInEmails = new Indicator(
+$indicators[] = new Indicator(
     "Emails en erreur",
-    file_get_contents(__DIR__ . '/../sql/email_errors.sql'));
-$indicatorMatchesWithInvalidPlayers = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/email_errors.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Matchs avec joueurs non homologués",
-    file_get_contents(__DIR__ . '/../sql/match_invalid_players.sql'));
-$indicatorMatchesWithInvalidDate = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/match_invalid_players.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Problèmes dans les dates des matchs",
-    file_get_contents(__DIR__ . '/../sql/issues_in_match.sql'));
-$indicatorTeamManyMatchesSameDay = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/issues_in_match.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes qui jouent plusieurs matchs la même semaine",
-    file_get_contents(__DIR__ . '/../sql/many_match_same_day.sql'));
-$indicator_same_reception = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/many_match_same_day.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Même réception que la fois précédente",
-    file_get_contents(__DIR__ . '/../sql/same_reception.sql'));
-$indicator_not_registered_teams = new Indicator(
+    file_get_contents(__DIR__ . '/../sql/same_reception.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Equipes non réengagées",
     file_get_contents(__DIR__ . '/../sql/not_registered_teams.sql'));
-$indicator_will_not_register_teams = new Indicator(
+$indicators[] = new Indicator(
     "Equipes qui ne s'engageront pas",
     file_get_contents(__DIR__ . '/../sql/will_not_register_teams.sql'));
-$indicator_newly_registered_teams = new Indicator(
+$indicators[] = new Indicator(
     "Nouvelles équipes",
     file_get_contents(__DIR__ . '/../sql/newly_registered_teams.sql'));
-$indicator_register_setup_ranks = new Indicator(
+$indicators[] = new Indicator(
     "Proposition d'organisation",
     file_get_contents(__DIR__ . '/../sql/register_setup_ranks.sql'));
-$indicator_register_not_paid = new Indicator(
+$indicators[] = new Indicator(
     "Cotisations non réglées",
-    file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'));
+    file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'),
+    'alert');
+
+function info_first($a, $b): int
+{
+    return ($a->getType() == 'info') ? -1 : 1;
+}
+
+usort($indicators, 'info_first');
 
 $results = array();
-$results[] = $indicatorEquipesEngageesChampionnat->getResult();
-$results[] = $indicatorPlayersWithTeamButNoClub->getResult();
-$results[] = $indicatorNotValidatedPlayers->getResult();
-$results[] = $indicatorActivity->getResult();
-$results[] = $indicatorLicencesDupliquees->getResult();
-$results[] = $indicatorMatchesNonRenseignes->getResult();
-$results[] = $indicatorEquipesSansClub->getResult();
-$results[] = $indicatorMatchesDupliques->getResult();
-$results[] = $indicatorComptes->getResult();
-$results[] = $indicatorPlayersWithoutLicence->getResult();
-$results[] = $indicatorSuspectTransfert->getResult();
-$results[] = $indicatorPossibleDuplicatePlayers->getResult();
-$results[] = $indicatorActiveTeamWithoutTeamManagerAccount->getResult();
-$results[] = $indicatorPendingMatchesWithWrongTimeSlot->getResult();
-$results[] = $indicatorTimeSlotWithConstraint->getResult();
-$results[] = $indicatorTeamLeadersByChamp->getResult();
-$results[] = $indicatorActiveTeamWithoutTeamLeader->getResult();
-$results[] = $indicatorMatchesByGymnasiumByDate->getResult();
-$results[] = $indicatorTooMuchMatchesByGymnasiumByDate->getResult();
-$results[] = $indicatorActiveTeamWithoutTimeslot->getResult();
-$results[] = $indicatorEquityBetweenHomeAndAway->getResult();
-$results[] = $indicatorMatchGenerationCriticity->getResult();
-$results[] = $indicatorErrorInEmails->getResult();
-$results[] = $indicatorMatchesWithInvalidPlayers->getResult();
-$results[] = $indicatorMatchesWithInvalidDate->getResult();
-$results[] = $indicatorTeamManyMatchesSameDay->getResult();
-$results[] = $indicator_same_reception->getResult();
-$results[] = $indicator_not_registered_teams->getResult();
-$results[] = $indicator_will_not_register_teams->getResult();
-$results[] = $indicator_newly_registered_teams->getResult();
-$results[] = $indicator_register_setup_ranks->getResult();
-$results[] = $indicator_register_not_paid->getResult();
+foreach ($indicators as $indicator) {
+    $results[] = $indicator->getResult();
+}
+
 
 $indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
