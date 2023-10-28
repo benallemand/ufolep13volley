@@ -274,6 +274,7 @@ class MatchMgr extends Generic
                                $set_3_ext,
                                $set_4_ext,
                                $set_5_ext,
+                               $referee,
                                $note,
                                $forfait_dom = false,
                                $forfait_ext = false,
@@ -297,6 +298,7 @@ class MatchMgr extends Generic
             'set_3_ext' => $set_3_ext,
             'set_4_ext' => $set_4_ext,
             'set_5_ext' => $set_5_ext,
+            'referee' => $referee,
             'note' => $note,
         ));
     }

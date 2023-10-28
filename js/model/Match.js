@@ -231,5 +231,6 @@ Ext.define('Ufolep13Volley.model.Match', {
         {name: 'is_sign_match_ext', type: 'bool'},
         {name: 'email_dom', type: 'string'},
         {name: 'email_ext', type: 'string'},
+        {name: 'referee', type: 'string'},
     ]
 });

@@ -272,6 +272,32 @@ Ext.define('Ufolep13Volley.view.form.match', {
                 {
                     xtype: 'panel',
                     height: 180,
+                    title: "Arbitrage",
+                    layout: 'form',
+                    scrollable: true,
+                    items: [
+                        {
+                            xtype: 'combo',
+                            name: 'referee',
+                            fieldLabel: 'Arbitrage',
+                            displayField: 'label',
+                            valueField: 'value',
+                            store: Ext.create('Ext.data.Store', {
+                                fields: ['value', 'label'],
+                                data : [
+                                    {"value":"HOME", "label":"équipe à domicile"},
+                                    {"value":"AWAY", "label":"équipe à l'extérieur"},
+                                    {"value":"BOTH", "label":"les deux / auto-arbitrage"}
+                                ]
+                            }),
+                            queryMode: 'local',
+                            forceSelection: true,
+                        }
+                    ]
+                },
+                {
+                    xtype: 'panel',
+                    height: 180,
                     title: "Commentaire",
                     layout: 'form',
                     scrollable: true,

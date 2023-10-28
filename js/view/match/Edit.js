@@ -226,6 +226,11 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 uncheckedValue: 'off'
             },
             {
+                name: 'referee',
+                xtype: 'displayfield',
+                fieldLabel: 'Arbitrage'
+            },
+            {
                 name: 'note',
                 xtype: 'textarea',
                 fieldLabel: 'Commentaire'
