@@ -17,6 +17,7 @@ Ext.application({
         'retry_error_emails',
         'send_mail_team_recap',
         'download_diploma',
+        'manage_survey',
     ],
     name: 'Ufolep13Volley',
     appFolder: 'js',

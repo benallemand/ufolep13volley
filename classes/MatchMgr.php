@@ -16,9 +16,12 @@ require_once __DIR__ . '/Register.php';
 require_once __DIR__ . '/Competition.php';
 require_once __DIR__ . '/Day.php';
 require_once __DIR__ . '/UserManager.php';
+require_once __DIR__ . '/Survey.php';
 
 class MatchMgr extends Generic
 {
+    private Survey $survey;
+
     private Team $team;
     private Rank $rank;
     private Configuration $configuration;
@@ -31,6 +34,7 @@ class MatchMgr extends Generic
         parent::__construct();
         $this->team = new Team();
         $this->rank = new Rank();
+        $this->survey = new Survey();
         $this->configuration = new Configuration();
         ini_set('max_execution_time', 1200);
         ini_set('memory_limit', '512M');
@@ -2194,5 +2198,57 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             );
             $match_number++;
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get_survey($id_match=null)
+    {
+        if(empty($id_match)) {
+            return $this->survey->get();
+        }
+        $userDetails = $this->getCurrentUserDetails();
+        $id_user = $userDetails['id_user'];
+        $results = $this->survey->get("s.id_match = $id_match AND s.user_id = $id_user");
+        $count_results = count($results);
+        if($count_results === 0) {
+            $this->save_survey($id_match, 0, 0,0,0,0,'');
+            return $this->get_survey($id_match);
+        }
+        if ($count_results > 1) {
+            throw new Exception("Erreur lors de la récupération des données du sondage ! Trouvé $count_results sondage(s) !");
+        }
+        return $results[0];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function save_survey($id_match,
+                                $on_time,
+                                $spirit,
+                                $referee,
+                                $catering,
+                                $global,
+                                $comment,
+                                $dirtyFields = null,
+                                $id = null): int|array|string|null
+    {
+        $userDetails = $this->getCurrentUserDetails();
+        $id_user = $userDetails['id_user'];
+        $inputs = array(
+            'dirtyFields' => $dirtyFields,
+            'id' => $id,
+            'user_id' => $id_user,
+            'id_match' => $id_match,
+            'on_time' => $on_time,
+            'spirit' => $spirit,
+            'referee' => $referee,
+            'catering' => $catering,
+            'global' => $global,
+            'comment' => $comment,
+        );
+        return $this->survey->save($inputs);
     }
 }
