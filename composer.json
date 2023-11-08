@@ -20,6 +20,7 @@
     "ext-dom": "*",
     "ext-curl": "*",
     "fpdf/fpdf": "1.84.0",
-    "smalot/pdfparser": "@stable"
+    "smalot/pdfparser": "@stable",
+    "ext-fileinfo": "*"
   }
 }
