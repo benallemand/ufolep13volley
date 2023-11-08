@@ -98,6 +98,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.addPlayer
             }, 'button[action=editPlayer]': {
                 click: this.editPlayer
+            }, 'button[action=display_import_licence_file]': {
+                click: this.display_import_licence_file
             }, 'button[action=addProfile]': {
                 click: this.addProfile
             }, 'button[action=editProfile]': {
@@ -573,6 +575,57 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.getImagePlayer().show();
         this.getImagePlayer().setSrc(record.get('path_photo'));
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
+    },
+    display_import_licence_file: function (button) {
+        var this_window = Ext.create('Ext.window.Window', {
+            title: "Import d'un fichier de licences",
+            height: 500,
+            width: 700,
+            maximizable: true,
+            layout: 'fit',
+            items: {
+                xtype: 'form',
+                trackResetOnLoad: true,
+                layout: 'form',
+                url: '/rest/action.php/player/update_from_licence_file',
+                items: [
+                    {
+                        name: 'licences',
+                        allowBlank: false,
+                        xtype: 'filefield',
+                        fieldLabel: 'Fichier PDF',
+                        buttonText: 'Sélection PDF...',
+                        msgTarget: 'under'
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        action: 'cancel',
+                    },
+                    {
+                        text: 'Importer',
+                        formBind: true,
+                        disabled: true,
+                        handler: function (form_button) {
+                            var form = form_button.up('form').getForm();
+                            if (form.isValid()) {
+                                form.submit({
+                                    success: function () {
+                                        button.up('grid').getStore().load();
+                                        form_button.up('window').close();
+                                    },
+                                    failure: function (form, action) {
+                                        Ext.Msg.alert('Erreur', action.result.message);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+        this_window.show();
     },
     editProfile: function (button) {
         var record = button.up('grid').getSelectionModel().getSelection()[0];

@@ -89,7 +89,11 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
-                }
+                },
+                {
+                    text: 'Importer un fichier de licences',
+                    action: 'display_import_licence_file'
+                },
             ]
         },
         {
