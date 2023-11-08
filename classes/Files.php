@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Smalot\PdfParser\Parser;
 
 class Files extends Generic
 {
@@ -13,7 +16,7 @@ class Files extends Generic
     /**
      * @throws Exception
      */
-    public function cleanup_files()
+    public function cleanup_files(): void
     {
         // Detect files without hash written in database
         $results_select = $this->get("hash IS NULL");
@@ -53,7 +56,7 @@ class Files extends Generic
     /**
      * @throws Exception
      */
-    private function delete_duplicates()
+    private function delete_duplicates(): void
     {
         $sql = "DELETE f1
                 FROM files f1,
@@ -70,7 +73,7 @@ class Files extends Generic
      * @param $uploadfile
      * @throws Exception
      */
-    function upload_file($fileKey, &$uploadfile)
+    function upload_file($fileKey, &$uploadfile): void
     {
         if (empty($_FILES[$fileKey]['name'])) {
             throw new Exception("Impossible de trouver le fichier envoyé !");
@@ -85,7 +88,7 @@ class Files extends Generic
     /**
      * @throws Exception
      */
-    private function check_action_allowed(string $function_name, $file_path)
+    private function check_action_allowed(string $function_name, $file_path): void
     {
         if (!UserManager::is_connected()) {
             throw new Exception("Connectez-vous pour télécharger ce(s) fichier(s) !", 401);
@@ -117,7 +120,7 @@ class Files extends Generic
      * @param $file_path
      * @throws Exception
      */
-    function download_match_file($file_path)
+    function download_match_file($file_path): void
     {
         $this->check_action_allowed(__FUNCTION__, $file_path);
         $dir = __DIR__ . '/../match_files';
@@ -149,10 +152,10 @@ class Files extends Generic
 
     /**
      * @param $fileKey
-     * @param $id
+     * @return array|int|string|null
      * @throws Exception
      */
-    function upload_and_insert_file_in_db($fileKey)
+    function upload_and_insert_file_in_db($fileKey): array|int|string|null
     {
         $uploadfile = null;
         $this->upload_file($fileKey, $uploadfile);
@@ -163,5 +166,72 @@ class Files extends Generic
     {
         $file_name = pathinfo($file_path, PATHINFO_FILENAME);
         return substr($file_name, 0, strpos($file_name, "file"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get_licences_data_from_pdf($input_pdf_path): array
+    {
+        $parser = new Parser();
+        $pdf = $parser->parseFile($input_pdf_path);
+        $extractedText = $pdf->getText();
+        $raw_licences = explode("Plus d'informations sur www.ufolep.org", $extractedText);
+        $results = array();
+        foreach ($raw_licences as $raw_licence) {
+            if (strlen($raw_licence) == 0) {
+                continue;
+            }
+            $raw_data = explode("\n", trim($raw_licence));
+            $result = array();
+            foreach ($raw_data as $index => $item) {
+                $item = trim($item);
+                if (self::starts_with($item, "LICENCE N°")) {
+                    if (!preg_match('/LICENCE N°0(\d{2})_(\d+)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['departement'] = $matches[1];
+                    $result['licence_number'] = $matches[2];
+                    $result['last_first_name'] = $raw_data[$index + 2];
+                } elseif (self::starts_with($item, "Né(e) le")) {
+                    if (!preg_match('/Né\(e\) le (\d{2}\/\d{2}\/\d{4}).*/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['date_of_birth'] = $matches[1];
+                } elseif (str_contains($item, "- Sexe :")) {
+                    if (!preg_match('/(\d+) ans - Sexe : (\w)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['age'] = $matches[1];
+                    $result['sexe'] = $matches[2] == 'H' ? 'M' : 'F';
+                } elseif (self::starts_with($item, "Asso")) {
+                    if (!preg_match('/Asso (.*)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['club'] = $matches[1];
+                } elseif (self::starts_with($item, "N°") && strlen($item) == 12) {
+                    if (!preg_match('/N°(\d+)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['licence_club'] = $matches[1];
+                } elseif (self::starts_with($item, "N°") && strlen($item) == 15) {
+                    if (!preg_match('/N°(.+)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['licence_number_2'] = $matches[1];
+                } elseif (self::starts_with($item, "Homologuée :")) {
+                    if (!preg_match('/Homologuée : (\d{2}\/\d{2}\/\d{4})/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['homologation_date'] = $matches[1];
+                }
+            }
+            if (count($result) != 10) {
+                print_r($result);
+                continue;
+            }
+            $results[] = $result;
+        }
+        return $results;
     }
 }
