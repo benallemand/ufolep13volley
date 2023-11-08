@@ -5,10 +5,12 @@ require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Club.php';
 require_once __DIR__ . '/Photo.php';
+require_once __DIR__ . '/Files.php';
 
 
 class Players extends Generic
 {
+    private Files $files;
     private Club $club;
     private Team $team;
     private Photo $photo;
@@ -20,8 +22,16 @@ class Players extends Generic
         $this->team = new Team();
         $this->club = new Club();
         $this->photo = new Photo();
+        $this->files = new Files();
     }
 
+
+    public function getSql($query = "1=1"): string
+    {
+        return "SELECT j.* 
+                FROM players_view j
+                WHERE $query";
+    }
 
     /**
      * @param int $player_id
@@ -350,6 +360,16 @@ class Players extends Generic
             'telephone2' => $telephone2,
             'email2' => $email2,
         );
+        $this->save($inputs);
+    }
+
+    /**
+     * @param $inputs
+     * @return void
+     * @throws Exception
+     */
+    public function save($inputs): void
+    {
         $bindings = array();
         if (empty($inputs['id'])) {
             if (!empty($inputs['num_licence'])) {
@@ -460,6 +480,20 @@ class Players extends Generic
             return false;
         }
         return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function update_from_licence_file(): void
+    {
+        if (empty($_FILES['licences']['name'])) {
+            return;
+        }
+        $licences = $this->files->get_licences_data_from_pdf($_FILES['licences']['tmp_name']);
+        foreach ($licences as $licence) {
+            $this->search_player_and_save_from_licence($licence);
+        }
     }
 
     /**
@@ -946,5 +980,59 @@ class Players extends Generic
         $this->sql_manager->execute($sql);
         $this->addActivity("L'equipe " . $this->team->getTeamName($idTeam) . " a un nouveau suppleant : " . $this->getPlayerFullName($idPlayer));
         return true;
+    }
+
+    /**
+     * @param mixed $licence
+     * @return void
+     * @throws Exception
+     */
+    public function search_player_and_save_from_licence(mixed $licence): void
+    {
+        // chercher si la licence ou le joueur existe déjà en base
+        $query = "(
+                        j.departement_affiliation = ? AND j.num_licence = ?) 
+                        OR (CONCAT(UPPER(j.nom), ' ', UPPER(j.prenom)) = ?
+                      )";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => intval($licence['departement'])
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $licence['licence_number']
+        );
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $licence['last_first_name']
+        );
+        $current_player = $this->get_one($query, $bindings);
+        // s'il n'existe pas, le créer
+        if (empty($current_player)) {
+            $cur_club = $this->club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => $licence['licence_club'])));
+            if (empty($cur_club)) {
+                throw new Exception("Pas de club avec le numéro d'affiliation " . $licence['licence_club'] . " !");
+            }
+            $this->save(array(
+                'prenom' => explode(' ', $licence['last_first_name'])[1],
+                'nom' => explode(' ', $licence['last_first_name'])[0],
+                'num_licence' => $licence['licence_number'],
+                'sexe' => $licence['sexe'],
+                'departement_affiliation' => $licence['departement'],
+                'id_club' => $cur_club['id'],
+                'date_homologation' => $licence['homologation_date'],
+                'show_photo' => 'on'
+            ));
+        } else {
+            // s'il existe, le mettre à jour
+            $this->save(array(
+                'id' => $current_player['id'],
+                'num_licence' => $licence['licence_number'],
+                'sexe' => $licence['sexe'],
+                'departement_affiliation' => $licence['departement'],
+                'date_homologation' => $licence['homologation_date'],
+            ));
+        }
     }
 }
