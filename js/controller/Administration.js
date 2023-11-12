@@ -527,8 +527,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     searchInGrid: function (textfield, searchText) {
         var searchTerms = searchText.split(',');
         var store = textfield.up('grid').getStore();
+        store.removeFilter('searchInGrid');
         if (Ext.isEmpty(searchText)) {
-            store.removeFilter('searchInGrid');
             this.getDisplayFilteredCount().setValue(store.getCount());
             return;
         }
