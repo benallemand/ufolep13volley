@@ -11,7 +11,7 @@
                 <table class="table"
                        ng-repeat="y in lastResults | filter:{ competition: x.competition }:true | unique:'division_journee'">
                     <tr class="info">
-                        <th>{{ y.division_journee }}</th>
+                        <th colspan="6">{{ y.division_journee }}</th>
                     </tr>
                     <tr>
                         <th>Date</th>
@@ -19,7 +19,7 @@
                         <th></th>
                         <th></th>
                         <th>Extérieur</th>
-                        <th colspan="5">Score</th>
+                        <th>Score</th>
                     </tr>
                     <tr ng-repeat="z in lastResults | filter:{ competition: y.competition }:true | filter:{ division_journee: y.division_journee }:true">
                         <td>{{ z.date_reception | parseDate | date:'dd/MM/yyyy'}}</td>
@@ -27,11 +27,13 @@
                         <td>{{ z.score_equipe_dom }}</td>
                         <td>{{ z.score_equipe_ext }}</td>
                         <td ng-class="z.score_equipe_ext == '3' ? 'success' : ''">{{ z.equipe_exterieur }}</td>
-                        <td ng-if="z.set1 != '0-0'">{{ z.set1 }}</td>
-                        <td ng-if="z.set2 != '0-0'">{{ z.set2 }}</td>
-                        <td ng-if="z.set3 != '0-0'">{{ z.set3 }}</td>
-                        <td ng-if="z.set4 != '0-0'">{{ z.set4 }}</td>
-                        <td ng-if="z.set5 != '0-0'">{{ z.set5 }}</td>
+                        <td>
+                            <span ng-if="z.set1 != '0-0'">{{ z.set1 }} </span>
+                            <span ng-if="z.set2 != '0-0'">{{ z.set2 }} </span>
+                            <span ng-if="z.set3 != '0-0'">{{ z.set3 }} </span>
+                            <span ng-if="z.set4 != '0-0'">{{ z.set4 }} </span>
+                            <span ng-if="z.set5 != '0-0'">{{ z.set5 }} </span>
+                        </td>
                     </tr>
                 </table>
             </td>
