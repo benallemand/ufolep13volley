@@ -168,7 +168,7 @@ try {
     switch($resp_code) {
         case 401:
             // redirect to login page
-            header('Location: /new_site/#/login?redirect=' . filter_input(INPUT_SERVER, 'REQUEST_URI') . '&reason=' . $exception->getMessage());
+            header('Location: /new_site/#/login?redirect=' . urlencode(filter_input(INPUT_SERVER, 'REQUEST_URI')) . '&reason=' . $exception->getMessage());
             exit(0);
         case 201:
             echo json_encode(array(
