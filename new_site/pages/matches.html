@@ -25,7 +25,6 @@
                         <th>Score</th>
                         <th>Equipe extérieur</th>
                         <th>Sets</th>
-                        <th>Statut</th>
                         <th>Commentaires</th>
                         <th>Actions</th>
                     </tr>
@@ -80,17 +79,6 @@
                             <span ng-if="x.set_3_dom != '0' || x.set_3_ext != '0'">{{ x.set_3_dom }}/{{ x.set_3_ext }} </span>
                             <span ng-if="x.set_4_dom != '0' || x.set_4_ext != '0'">{{ x.set_4_dom }}/{{ x.set_4_ext }} </span>
                             <span ng-if="x.set_5_dom != '0' || x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
-                        </td>
-                        <td class="text-center">
-                <span ng-if="x.certif == 1"
-                      title="Feuille de match reçue et certifiée"
-                      class="glyphicon glyphicon-ok text-success"></span>
-                            <span ng-if="x.certif == 0 && x.sheet_received == 1"
-                                  title="La feuille de match n'a pas encore été validée par la commission"
-                                  class=""></span>
-                            <span ng-if="x.certif == 0 && x.sheet_received == '0' && (x.date_reception_raw < today)"
-                                  title="Merci au responsable de l'équipe victorieuse de s'assurer qu'il a fait parvenir la feuille de match"
-                                  class="glyphicon glyphicon-exclamation-sign text-danger"></span>
                         </td>
                         <td class="text-center">
                             {{ x.note }}
