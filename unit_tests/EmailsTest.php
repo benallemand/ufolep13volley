@@ -104,9 +104,10 @@ class EmailsTest extends TestCase
      * @doesNotPerformAssertions
      * @throws Exception
      */
-    public function test_sendMailMissingLicences()
+    public function test_send_some_mails()
     {
         $email_manager = new Emails();
         $email_manager->insert_email_missing_licences();
+        $email_manager->insert_email_register_not_paid();
     }
 }
