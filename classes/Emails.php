@@ -686,7 +686,7 @@ class Emails extends Generic
      * @param string $cc
      * @throws Exception
      */
-    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = ""): void
+    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = "", string $bcc = ""): void
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
@@ -703,7 +703,8 @@ class Emails extends Generic
                     $subject,
                     $message,
                     implode(";", array("benallemand@gmail.com")),
-                    $cc
+                    $cc,
+                    $bcc
                 );
                 break;
             default:
@@ -711,7 +712,8 @@ class Emails extends Generic
                     $subject,
                     $message,
                     $destination_email,
-                    $cc);
+                    $cc,
+                    $bcc);
                 break;
         }
     }
@@ -989,24 +991,35 @@ class Emails extends Generic
         if (count($result) == 0) {
             return;
         }
+        $destination = array();
+        $trs_club_compet_cout = "";
         foreach ($result as $data) {
             if (empty($data['email_club']) && empty($data['emails_equipes'])) {
                 continue;
             }
-            $destination = explode(',', $data['emails_equipes']);
+            $destination = array_merge($destination, explode(',', $data['emails_equipes']));
             $destination[] = $data['email_club'];
-            $this->insert_generic_email(
-                __DIR__ . '/../templates/emails/register_not_paid.fr.html',
-                array(
-                    'club' => $data['club'],
-                    'email_club' => $data['email_club'],
-                    'emails_equipes' => $data['emails_equipes'],
-                    'competitions' => $data['competitions'],
-                    'cout' => $data['cout'],
-                ),
-                implode(';', $destination)
-            );
+            $club = $data['club'];
+            $compet = $data['competitions'];
+            $cout = $data['cout'];
+            $trs_club_compet_cout .= "<tr><td>$club</td><td>$compet</td><td>$cout</td></tr>";
         }
+        $destination = array_unique($destination);
+        $coordonnees_ufolep13 = "UFOLEP13 CAL DE LA BUSSERADE 58 RUE CAVAIGNAC 13003 MARSEILLE";
+        $coordonnees_ctsd = "BENJAMIN ALLEMAND 76 BOULEVARD DANTON 13300 SALON DE PROVENCE";
+        $url_rib = "https://www.ufolep13volley.org/infos_utiles/Media/rib.pdf";
+        $this->insert_generic_email(
+            __DIR__ . '/../templates/emails/register_not_paid.fr.html',
+            array(
+                'trs_club_compet_cout' => $trs_club_compet_cout,
+                'coordonnees_ctsd' => $coordonnees_ctsd,
+                'coordonnees_ufolep13' => $coordonnees_ufolep13,
+                'url_rib' => $url_rib,
+            ),
+            "contact@ufolep13volley.org",
+            "",
+            implode(';', $destination)
+        );
     }
 
     /**
