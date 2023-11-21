@@ -1670,7 +1670,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $this->sql_manager->execute($sql);
             $this->addActivity("Report refusé par la commission" .
                 " pour le match $code_match, raison: " . $reason);
-            (new Emails())->sendMailRefuseReportAdmin($code_match);
+            (new Emails())->sendMailRefuseReportAdmin($code_match, $reason);
         }
         return true;
     }

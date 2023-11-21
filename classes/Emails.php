@@ -301,13 +301,14 @@ class Emails extends Generic
      * @param $code_match
      * @throws Exception
      */
-    public function sendMailRefuseReportAdmin($code_match): void
+    public function sendMailRefuseReportAdmin($code_match, $reason): void
     {
         $teams_emails = $this->match->getTeamsEmailsFromMatchReport($code_match);
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReportAdmin.fr.html');
         $message = str_replace('%code_match%', $code_match, $message);
+        $message = str_replace('%reason%', $reason, $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match",
