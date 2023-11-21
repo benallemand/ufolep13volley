@@ -1442,7 +1442,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                         e.nom_equipe AS equipe,
                         m.date_reception,
                         m.id_match
-                FROM matches m
+                FROM matchs_view m
                          JOIN match_player mp on mp.id_match = m.id_match
                          JOIN players_view j on mp.id_player = j.id
                          LEFT JOIN joueur_equipe je ON je.id_joueur = j.id AND (je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
