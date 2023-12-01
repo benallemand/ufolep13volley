@@ -10,3 +10,4 @@ WHERE e2.id_equipe IN (SELECT je.id_equipe
                        GROUP BY je.id_equipe, e.code_competition
                        HAVING COUNT(*) < (CASE WHEN e.code_competition IN ('f', 'mo', 'kh', 'kf') THEN 4 ELSE 6 END))
   AND nom_equipe != 'equipe de test'
+  AND e2.id_equipe IN (SELECT id_equipe FROM classements)
