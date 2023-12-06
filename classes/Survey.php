@@ -63,7 +63,11 @@ class Survey extends Generic
                 s.catering,
                 s.global,
                 s.comment,
-                u.login
+                u.login,
+                CASE 
+                    WHEN u.id_equipe = m.id_equipe_dom THEN m.equipe_ext
+                    WHEN u.id_equipe = m.id_equipe_ext THEN m.equipe_dom 
+                END AS team_surveyed 
                 FROM matchs_view m
                 JOIN survey s ON s.id_match = m.id_match
                 JOIN comptes_acces u ON u.id = s.user_id

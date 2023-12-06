@@ -6,10 +6,19 @@ Ext.define('Ufolep13Volley.model.survey', {
             type: 'int'
         },
         {
+            name: 'code_match',
+            type: 'string'
+        },
+        {
             name: 'confrontation',
             convert: function (val, record) {
-                return Ext.String.format("<h2>{0} vs {1}</h2>", record.get('equipe_dom'), record.get('equipe_ext'))
-
+                return Ext.String.format("<h2>{0} vs {1}</h2>", record.get('equipe_dom'), record.get('equipe_ext'));
+            }
+        },
+        {
+            name: 'match',
+            convert: function (val, record) {
+                return Ext.String.format("{0} ({1} vs {2})", record.get('code_match'), record.get('equipe_dom'), record.get('equipe_ext'));
             }
         },
         {
@@ -42,6 +51,10 @@ Ext.define('Ufolep13Volley.model.survey', {
         },
         {
             name: 'comment',
+            type: 'string',
+        },
+        {
+            name: 'team_surveyed',
             type: 'string',
         },
     ]

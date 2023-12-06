@@ -3,7 +3,18 @@ Ext.define('Ufolep13Volley.view.grid.survey', {
     alias: 'widget.survey_grid',
     title: 'Sondages',
     autoScroll: true,
-    store: {type: 'survey'},
+    store: {
+        type: 'survey',
+        filters: [
+            function (item) {
+                return (item.get('on_time')
+                    + item.get('spirit')
+                    + item.get('referee')
+                    + item.get('catering')
+                    + item.get('global') > 0) || !Ext.isEmpty(item.get('comment'));
+            }
+        ],
+    },
     selType: 'checkboxmodel',
     columns: {
         items: [
@@ -13,8 +24,13 @@ Ext.define('Ufolep13Volley.view.grid.survey', {
                 flex: 1
             },
             {
+                header: 'Equipe sondée',
+                dataIndex: 'team_surveyed',
+                flex: 1
+            },
+            {
                 header: 'Match',
-                dataIndex: 'code_match',
+                dataIndex: 'match',
                 flex: 1
             },
             {
