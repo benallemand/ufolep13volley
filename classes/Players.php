@@ -122,35 +122,7 @@ class Players extends Generic
                 WHERE $where
                 ORDER BY $order_by";
         $results = $this->sql_manager->execute($sql);
-        foreach ($results as $index => $result) {
-            if ($result['show_photo'] === 1) {
-                $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
-                if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
-                    switch ($result['sexe']) {
-                        case 'M':
-                            $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
-                            break;
-                        case 'F':
-                            $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } else {
-                switch ($result['sexe']) {
-                    case 'M':
-                        $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
-                        break;
-                    case 'F':
-                        $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        return $results;
+        return Players::adjust_photo_path_from_results($results);
     }
 
     /**
@@ -1034,5 +1006,42 @@ class Players extends Generic
                 'date_homologation' => $licence['homologation_date'],
             ));
         }
+    }
+
+    /**
+     * @param int|array|string|null $results
+     * @return array|int|string|null
+     */
+    public static function adjust_photo_path_from_results(int|array|string|null $results): string|array|int|null
+    {
+        foreach ($results as $index => $result) {
+            if ($result['show_photo'] === 1) {
+                $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
+                if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
+                    switch ($result['sexe']) {
+                        case 'M':
+                            $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
+                            break;
+                        case 'F':
+                            $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } else {
+                switch ($result['sexe']) {
+                    case 'M':
+                        $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
+                        break;
+                    case 'F':
+                        $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return $results;
     }
 }

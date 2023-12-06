@@ -1449,7 +1449,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                          LEFT JOIN equipes e ON je.id_equipe = e.id_equipe
                 WHERE m.id_match = $id_match
                 ORDER BY equipe, sexe, nom, prenom";
-        return $this->sql_manager->execute($sql);
+        $results = $this->sql_manager->execute($sql);
+        return Players::adjust_photo_path_from_results($results);
     }
 
     /**
