@@ -7,5 +7,6 @@ FROM register r
          JOIN competitions c on r.id_competition = c.id
          JOIN clubs c2 on r.id_club = c2.id
 WHERE r.is_paid = 0
+AND UPPER(c.libelle) LIKE ('%CHAMPIONNAT%')
 GROUP BY club
 ORDER BY club
