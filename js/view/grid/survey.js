@@ -14,6 +14,7 @@ Ext.define('Ufolep13Volley.view.grid.survey', {
                     + item.get('global') > 0) || !Ext.isEmpty(item.get('comment'));
             }
         ],
+        autoLoad: true,
     },
     selType: 'checkboxmodel',
     columns: {
@@ -21,46 +22,47 @@ Ext.define('Ufolep13Volley.view.grid.survey', {
             {
                 header: 'Compte',
                 dataIndex: 'login',
-                flex: 1
+                width: 180,
             },
             {
                 header: 'Equipe sondée',
                 dataIndex: 'team_surveyed',
-                flex: 1
+                width: 180,
             },
             {
                 header: 'Match',
                 dataIndex: 'match',
-                flex: 1
+                width: 380,
             },
             {
                 header: 'Ponctualité',
                 dataIndex: 'on_time',
-                flex: 1
+                width: 95,
             },
             {
                 header: "Etat d'esprit",
                 dataIndex: 'spirit',
-                flex: 1
+                width: 105,
             },
             {
                 header: "Arbitrage",
                 dataIndex: 'referee',
-                flex: 1
+                width: 95,
             },
             {
                 header: "Apéro",
                 dataIndex: 'catering',
-                flex: 1
+                width: 95,
             },
             {
                 header: "Global",
                 dataIndex: 'global',
-                flex: 1
+                width: 95,
             },
             {
                 header: "Commentaires",
                 dataIndex: 'comment',
+                cellWrap: true,
                 flex: 1
             },
 
