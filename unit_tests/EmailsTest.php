@@ -109,5 +109,6 @@ class EmailsTest extends TestCase
         $email_manager = new Emails();
         $email_manager->insert_email_missing_licences();
         $email_manager->insert_email_register_not_paid();
+        $email_manager->insert_mail_match_not_fully_signed();
     }
 }
