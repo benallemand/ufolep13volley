@@ -870,6 +870,43 @@ class Emails extends Generic
         }
     }
 
+/**
+     * @throws Exception
+     */
+    public function insert_mail_match_not_fully_signed(): void
+    {
+        $result = $this->sql_manager->execute(file_get_contents(__DIR__ . '/../sql/match_missing_sheets.sql'));
+        if (count($result) == 0) {
+            return;
+        }
+        foreach ($result as $data) {
+            $target_mails = array();
+            if($data['is_sign_team_dom'] != 'ok' || $data['is_sign_match_dom'] != 'ok') {
+                $target_mails[] = $data['email_dom'];
+            }
+            if($data['is_sign_team_ext'] != 'ok' || $data['is_sign_match_ext'] != 'ok') {
+                $target_mails[] = $data['email_ext'];
+            }
+            $email = implode(';', $target_mails);
+            if (empty($email)) {
+                continue;
+            }
+            $this->insert_generic_email(
+                __DIR__ . '/../templates/emails/send_mail_match_not_fully_signed.fr.html',
+                array(
+                    'code_match' => $data['code_match'],
+                    'equipe_dom' => $data['equipe_dom'],
+                    'equipe_ext' => $data['equipe_ext'],
+                    'is_sign_team_dom' => $data['is_sign_team_dom'],
+                    'is_sign_match_dom' => $data['is_sign_match_dom'],
+                    'is_sign_team_ext' => $data['is_sign_team_ext'],
+                    'is_sign_match_ext' => $data['is_sign_match_ext'],
+                ),
+                $email
+            );
+        }
+    }
+
     /**
      * @throws Exception
      */
