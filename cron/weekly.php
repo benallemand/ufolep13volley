@@ -11,6 +11,7 @@ try {
     $email->insert_email_alert_report();
     $email->insert_email_missing_licences();
     $email->insert_email_register_not_paid();
+    $email->insert_mail_match_not_fully_signed();
     $files->cleanup_files();
 } catch (Exception $exception) {
     echo json_encode(array(
