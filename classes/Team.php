@@ -44,7 +44,8 @@ class Team extends Generic
         e.web_site,
         e.id_photo,
         p.path_photo,
-        e.is_cup_registered
+        e.is_cup_registered,
+        IF(cl.id IS NULL, 0, 1) AS is_active_team
         FROM equipes e 
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo

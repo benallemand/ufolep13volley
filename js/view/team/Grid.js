@@ -5,22 +5,32 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
     autoScroll: true,
     selType: 'checkboxmodel',
     store: {type: 'Teams'},
+    plugins: 'gridfilters',
     columns: {
         items: [
             {
                 header: 'Equipe',
                 dataIndex: 'nom_equipe',
-                width: 300
+                width: 300,
+                filter: {
+                    type: 'string',
+                },
             },
             {
                 header: 'Club',
                 dataIndex: 'club',
-                width: 300
+                width: 300,
+                filter: {
+                    type: 'string',
+                },
             },
             {
                 header: 'Compétition',
                 dataIndex: 'libelle_competition',
-                width: 300
+                width: 300,
+                filter: {
+                    type: 'string',
+                },
             },
             {
                 header: 'Inscrite à la coupe ?',
@@ -30,8 +40,24 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                     beforecheckchange: function () {
                         return false;
                     }
-                }
-            }
+                },
+                filter: {
+                    type: 'boolean',
+                },
+            },
+            {
+                header: 'Engagée ?',
+                dataIndex: 'is_active_team',
+                xtype: 'checkcolumn',
+                listeners: {
+                    beforecheckchange: function () {
+                        return false;
+                    }
+                },
+                filter: {
+                    type: 'boolean',
+                },
+            },
         ]
     },
     dockedItems: [

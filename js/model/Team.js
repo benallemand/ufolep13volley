@@ -15,6 +15,7 @@ Ext.define('Ufolep13Volley.model.Team', {
         'email',
         'gymnasiums_list',
         'web_site',
-        'path_photo'
+        'path_photo',
+        {name: 'is_active_team', type: 'bool'},
     ]
 });
