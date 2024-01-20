@@ -104,11 +104,11 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'code_match',
                 width: 100,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a><p><a href='/team_sheets.php?id_match={2}' target='_blank'>Equipes</a></p>",
-                        record.get('id_match'),
+                    var span = '<span><i class="fa-solid fa-users"></i></span>';
+                    return Ext.String.format("{0} <a href='/team_sheets.php?id_match={1}' target='_blank'>{2}</a></p>",
                         value,
                         record.get('id_match'),
-                    );
+                        span);
                 }
             },
             {
@@ -121,11 +121,13 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     }
                     value = value.split('|');
                     var result_string = '';
+                    var span = '<span><i class="fa-solid fa-paperclip"></i></span>';
                     Ext.each(value, function (file_path) {
                         result_string = result_string +
-                            Ext.String.format("<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a><br/>",
+                            Ext.String.format(
+                                "<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a> ",
                                 file_path,
-                                file_path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, ''));
+                                span);
                     });
                     return result_string;
                 }
@@ -139,6 +141,13 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 header: 'Div',
                 dataIndex: 'division',
                 width: 50,
+                renderer: function (value, meta, record) {
+                    return Ext.String.format("<a href='/new_site/#/championship/{0}/{1}' target='_blank'>{2}</a>",
+                        record.get('code_competition'),
+                        value,
+                        value,
+                    );
+                },
             },
             {
                 header: 'Journée',
@@ -148,17 +157,35 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             {
                 header: 'Domicile',
                 dataIndex: 'equipe_dom',
-                flex: 1
+                flex: 1,
+                renderer: function (value, meta, record) {
+                    return Ext.String.format("<a href='/new_site/#/phonebook/{0}' target='_blank'>{1}</a>",
+                        record.get('id_equipe_dom'),
+                        value,
+                    );
+                },
             },
             {
                 header: 'Résultat',
                 dataIndex: 'resultat',
                 width: 200,
+                renderer: function (value, meta, record) {
+                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a>",
+                        record.get('id_match'),
+                        value,
+                    );
+                },
             },
             {
                 header: 'Extérieur',
                 dataIndex: 'equipe_ext',
-                flex: 1
+                flex: 1,
+                renderer: function (value, meta, record) {
+                    return Ext.String.format("<a href='/new_site/#/phonebook/{0}' target='_blank'>{1}</a>",
+                        record.get('id_equipe_ext'),
+                        value,
+                    );
+                },
             },
             {
                 header: 'Date',
