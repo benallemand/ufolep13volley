@@ -8,5 +8,6 @@ FROM register r
          JOIN clubs c2 on r.id_club = c2.id
 WHERE r.is_paid = 0
 AND UPPER(c.libelle) LIKE ('%CHAMPIONNAT%')
+AND MONTH(r.creation_date) IN (7,8,9,10,11)
 GROUP BY club
 ORDER BY club
