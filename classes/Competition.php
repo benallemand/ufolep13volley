@@ -553,7 +553,37 @@ class Competition extends Generic
         shuffle($group_2_teams);
         // divide to set only 4 teams per pool(division), to get 3 days for pool phase
         $group_1_pools = array_chunk($group_1_teams, 3);
+        if (count($group_1_pools[array_key_last($group_1_pools)]) == 2) {
+            $group_1_pools[array_key_last($group_1_pools) - 2] = array_merge(
+                $group_1_pools[array_key_last($group_1_pools) - 2],
+                array($group_1_pools[array_key_last($group_1_pools)][0]));
+            $group_1_pools[array_key_last($group_1_pools) - 1] = array_merge(
+                $group_1_pools[array_key_last($group_1_pools) - 1],
+                array($group_1_pools[array_key_last($group_1_pools)][1]));
+            unset($group_1_pools[array_key_last($group_1_pools)]);
+        }
+        elseif (count($group_1_pools[array_key_last($group_1_pools)]) == 1) {
+            $group_1_pools[array_key_last($group_1_pools) - 1] = array_merge(
+                $group_1_pools[array_key_last($group_1_pools) - 1],
+                array($group_1_pools[array_key_last($group_1_pools)][0]));
+            unset($group_1_pools[array_key_last($group_1_pools)]);
+        }
         $group_2_pools = array_chunk($group_2_teams, 3);
+        if (count($group_2_pools[array_key_last($group_2_pools)]) == 2) {
+            $group_2_pools[array_key_last($group_2_pools) - 2] = array_merge(
+                $group_2_pools[array_key_last($group_2_pools) - 2],
+                $group_2_pools[array_key_last($group_2_pools)][0]);
+            $group_2_pools[array_key_last($group_2_pools) - 1] = array_merge(
+                $group_2_pools[array_key_last($group_2_pools) - 1],
+                array($group_2_pools[array_key_last($group_2_pools)][1]));
+            unset($group_2_pools[array_key_last($group_2_pools)]);
+        }
+        elseif (count($group_2_pools[array_key_last($group_2_pools)]) == 1) {
+            $group_2_pools[array_key_last($group_2_pools) - 1] = array_merge(
+                $group_2_pools[array_key_last($group_2_pools) - 1],
+                array($group_2_pools[array_key_last($group_2_pools)][0]));
+            unset($group_2_pools[array_key_last($group_2_pools)]);
+        }
         // insert into classements table
         foreach ($group_1_pools as $division_index => $group_1_pool) {
             foreach ($group_1_pool as $team_index => $team) {
@@ -682,11 +712,11 @@ class Competition extends Generic
         foreach ($ids as $id) {
             $competition = $this->get_by_id($id);
             $code_competition = $competition['code_competition'];
-            if(!in_array($competition['code_competition'], array('kf', 'cf'))) {
+            if (!in_array($competition['code_competition'], array('kf', 'cf'))) {
                 throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
             }
             $days = $day_mgr->get("j.code_competition = '$code_competition' AND j.numero = $day_number");
-            if(empty($days)) {
+            if (empty($days)) {
                 throw new Exception("Il faut créer la journée avant de générer cette compétition !");
             }
             $days_ids = implode(',', array_values(array_column($days, 'id')));
