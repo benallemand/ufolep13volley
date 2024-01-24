@@ -7,6 +7,7 @@ require_once __DIR__ . '/Players.php';
 require_once __DIR__ . '/UserManager.php';
 require_once __DIR__ . '/TimeSlot.php';
 require_once __DIR__ . '/Constants.php';
+require_once __DIR__ . '/Competition.php';
 
 class Register extends Generic
 {
@@ -589,7 +590,7 @@ class Register extends Generic
         }
         $pending_registrations = $this->get_register_by_competition($id_competition);
         shuffle($pending_registrations);
-        $pools = array_chunk($pending_registrations, 3);
+        $pools = Competition::make_pools_of_3($pending_registrations);
         foreach ($pools as $pool_index => $pool) {
             foreach ($pool as $pending_registration_index => $pending_registration) {
                 $this->save(array(

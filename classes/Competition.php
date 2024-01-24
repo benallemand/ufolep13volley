@@ -551,39 +551,9 @@ class Competition extends Generic
         // randomize each array
         shuffle($group_1_teams);
         shuffle($group_2_teams);
-        // divide to set only 4 teams per pool(division), to get 3 days for pool phase
-        $group_1_pools = array_chunk($group_1_teams, 3);
-        if (count($group_1_pools[array_key_last($group_1_pools)]) == 2) {
-            $group_1_pools[array_key_last($group_1_pools) - 2] = array_merge(
-                $group_1_pools[array_key_last($group_1_pools) - 2],
-                array($group_1_pools[array_key_last($group_1_pools)][0]));
-            $group_1_pools[array_key_last($group_1_pools) - 1] = array_merge(
-                $group_1_pools[array_key_last($group_1_pools) - 1],
-                array($group_1_pools[array_key_last($group_1_pools)][1]));
-            unset($group_1_pools[array_key_last($group_1_pools)]);
-        }
-        elseif (count($group_1_pools[array_key_last($group_1_pools)]) == 1) {
-            $group_1_pools[array_key_last($group_1_pools) - 1] = array_merge(
-                $group_1_pools[array_key_last($group_1_pools) - 1],
-                array($group_1_pools[array_key_last($group_1_pools)][0]));
-            unset($group_1_pools[array_key_last($group_1_pools)]);
-        }
-        $group_2_pools = array_chunk($group_2_teams, 3);
-        if (count($group_2_pools[array_key_last($group_2_pools)]) == 2) {
-            $group_2_pools[array_key_last($group_2_pools) - 2] = array_merge(
-                $group_2_pools[array_key_last($group_2_pools) - 2],
-                $group_2_pools[array_key_last($group_2_pools)][0]);
-            $group_2_pools[array_key_last($group_2_pools) - 1] = array_merge(
-                $group_2_pools[array_key_last($group_2_pools) - 1],
-                array($group_2_pools[array_key_last($group_2_pools)][1]));
-            unset($group_2_pools[array_key_last($group_2_pools)]);
-        }
-        elseif (count($group_2_pools[array_key_last($group_2_pools)]) == 1) {
-            $group_2_pools[array_key_last($group_2_pools) - 1] = array_merge(
-                $group_2_pools[array_key_last($group_2_pools) - 1],
-                array($group_2_pools[array_key_last($group_2_pools)][0]));
-            unset($group_2_pools[array_key_last($group_2_pools)]);
-        }
+        // make pools of 3
+        $group_1_pools = $this->make_pools_of_3($group_1_teams);
+        $group_2_pools = $this->make_pools_of_3($group_2_teams);
         // insert into classements table
         foreach ($group_1_pools as $division_index => $group_1_pool) {
             foreach ($group_1_pool as $team_index => $team) {
@@ -723,6 +693,31 @@ class Competition extends Generic
             $this->match->delete_matches("code_competition = '$code_competition' AND division = '1' AND id_journee IN ($days_ids)");
             $this->match->draw_matches($code_competition, '1', $days[0]['id']);
         }
+    }
+
+    /**
+     * @param array|int|string|null $group_teams
+     * @return array
+     */
+    public static function make_pools_of_3(array|int|string|null $group_teams): array
+    {
+        $group_pools = array_chunk($group_teams, 3);
+        if (count($group_pools[array_key_last($group_pools)]) == 2) {
+            $group_pools[array_key_last($group_pools) - 2] = array_merge(
+                $group_pools[array_key_last($group_pools) - 2],
+                array($group_pools[array_key_last($group_pools)][0]));
+            $group_pools[array_key_last($group_pools) - 1] = array_merge(
+                $group_pools[array_key_last($group_pools) - 1],
+                array($group_pools[array_key_last($group_pools)][1]));
+            unset($group_pools[array_key_last($group_pools)]);
+        }
+        elseif (count($group_pools[array_key_last($group_pools)]) == 1) {
+            $group_pools[array_key_last($group_pools) - 1] = array_merge(
+                $group_pools[array_key_last($group_pools) - 1],
+                array($group_pools[array_key_last($group_pools)][0]));
+            unset($group_pools[array_key_last($group_pools)]);
+        }
+        return $group_pools;
     }
 
 }
