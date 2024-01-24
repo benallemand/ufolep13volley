@@ -118,6 +118,10 @@ class UserManager extends Generic
      */
     public function create_leader_account($login, $email, $team_id): void
     {
+        $login = strtolower(
+            str_replace('.', '',
+                str_replace(' ', '',
+                    Generic::accentedToNonAccented($login))));
         // do not create team account if it already exists
         if ($this->is_existing_user($login, $email, $team_id)) {
             return;
