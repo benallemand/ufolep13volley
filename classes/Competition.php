@@ -548,12 +548,18 @@ class Competition extends Generic
         $length_pool_1 = intdiv(count($rank_teams), 2);
         $group_1_teams = array_slice($rank_teams, 0, $length_pool_1);
         $group_2_teams = array_slice($rank_teams, $length_pool_1);
-        // randomize each array
-        shuffle($group_1_teams);
-        shuffle($group_2_teams);
+        $hats_1 = $this->make_hats($group_1_teams);
+        $hats_2 = $this->make_hats($group_2_teams);
+        // randomize each hat
+        foreach ($hats_1 as $index => $hat) {
+            shuffle($hats_1[$index]);
+        }
+        foreach ($hats_2 as $index => $hat) {
+            shuffle($hats_2[$index]);
+        }
         // make pools of 3
-        $group_1_pools = $this->make_pools_of_3($group_1_teams);
-        $group_2_pools = $this->make_pools_of_3($group_2_teams);
+        $group_1_pools = $this->make_pools_of_3($hats_1);
+        $group_2_pools = $this->make_pools_of_3($hats_2);
         // insert into classements table
         foreach ($group_1_pools as $division_index => $group_1_pool) {
             foreach ($group_1_pool as $team_index => $team) {
@@ -695,29 +701,75 @@ class Competition extends Generic
         }
     }
 
-    /**
-     * @param array|int|string|null $group_teams
-     * @return array
-     */
-    public static function make_pools_of_3(array|int|string|null $group_teams): array
+
+    public function make_hats(array|int|string|null $group_teams): array
     {
-        $group_pools = array_chunk($group_teams, 3);
-        if (count($group_pools[array_key_last($group_pools)]) == 2) {
-            $group_pools[array_key_last($group_pools) - 2] = array_merge(
-                $group_pools[array_key_last($group_pools) - 2],
-                array($group_pools[array_key_last($group_pools)][0]));
-            $group_pools[array_key_last($group_pools) - 1] = array_merge(
-                $group_pools[array_key_last($group_pools) - 1],
-                array($group_pools[array_key_last($group_pools)][1]));
-            unset($group_pools[array_key_last($group_pools)]);
+        $hats = array();
+        foreach ($group_teams as $team) {
+            $division = $team['division'];
+            $hats[$division][] = $team;
         }
-        elseif (count($group_pools[array_key_last($group_pools)]) == 1) {
-            $group_pools[array_key_last($group_pools) - 1] = array_merge(
-                $group_pools[array_key_last($group_pools) - 1],
-                array($group_pools[array_key_last($group_pools)][0]));
-            unset($group_pools[array_key_last($group_pools)]);
+        return array_values($hats);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function make_pools_of_3(array $hats): array
+    {
+        $n = 3;
+        $pools = array();
+        while (count($hats, COUNT_RECURSIVE) > 0) {
+            $pools[] = $this->pick_n_from_hats($hats, $n);
         }
-        return $group_pools;
+        $last = $pools[count($pools) - 1];
+        if (count($last) === $n) {
+            return $pools;
+        }
+        if (count($last) === 1) {
+            if (count($pools) <= 1) {
+                return $pools;
+            }
+            $pools[count($pools) - 2][] = array_pop($last);
+            unset($pools[count($pools) - 1]);
+            return array_values($pools);
+        }
+        if (count($last) === 2) {
+            if (count($pools) <= 2) {
+                return $pools;
+            }
+            $pools[count($pools) - 3][] = array_pop($last);
+            $pools[count($pools) - 2][] = array_pop($last);
+            unset($pools[count($pools) - 1]);
+            return array_values($pools);
+        }
+        throw new Exception("Impossible de déterminer les poules...");
+    }
+
+    private function pick_n_from_hats(array &$hats, int $n): array
+    {
+        $result = array();
+        $nb_hats = count($hats);
+        $index_hat = 0;
+        while (count($result) < $n) {
+            if (!empty($hats[$index_hat])) {
+                if ($index_hat < $nb_hats) {
+                    $result[] = array_pop($hats[$index_hat]);
+                    if (empty($hats[$index_hat])) {
+                        unset($hats[$index_hat]);
+                        $hats = array_values($hats);
+                    }
+                }
+            }
+            $index_hat++;
+            if ($index_hat == $nb_hats) {
+                $index_hat = 0;
+            }
+            if (count($hats, COUNT_RECURSIVE) === 0) {
+                break;
+            }
+        }
+        return $result;
     }
 
 }
