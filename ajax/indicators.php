@@ -163,6 +163,10 @@ $indicators[] = new Indicator(
     "Equipes incomplètes",
     file_get_contents(__DIR__ . '/../sql/teams_incomplete.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Décalage des créneaux d'inscription",
+    file_get_contents(__DIR__ . '/../sql/mismatch_register_timeslots.sql'),
+    'alert');
 
 function info_first($a, $b): int
 {
