@@ -13,60 +13,114 @@ Ext.define('Ufolep13Volley.view.grid.rank_for_cup', {
         }
     },
     columns: {
-        defaults: {
-            width: 100,
-        },
         items: [
             {
-                header: 'Rang',
+                header: 'Classement',
                 dataIndex: 'rang',
             },
             {
                 header: 'Equipe',
                 dataIndex: 'equipe',
-                width: 250,
+                width: 200,
                 tdCls: 'x-style-cell',
             },
             {
-                header: 'Pts',
-                dataIndex: 'points',
+                header: 'Poule',
+                flex: 1,
+                columns: [
+                    {
+                        text: 'rang',
+                        width: 80,
+                        dataIndex: 'rang_poule',
+                    },
+                    {
+                        header: 'nb matchs',
+                        width: 120,
+                        dataIndex: 'nb_matchs',
+                    },
+                    {
+                        text: 'poule',
+                        width: 80,
+                        dataIndex: 'division',
+                    },
+                ]
             },
             {
-                header: 'Joués',
-                dataIndex: 'joues',
+                header: 'Pondération',
+                flex: 1,
+                columns: [
+                    {
+                        header: 'Pts',
+                        width: 100,
+                        xtype: 'numbercolumn',
+                        format: '0.0',
+                        dataIndex: 'points_ponderes',
+                    },
+                    {
+                        header: 'Diff Sets',
+                        width: 100,
+                        xtype: 'numbercolumn',
+                        format: '0.0',
+                        dataIndex: 'diff_sets_ponderes',
+                    },
+                    {
+                        header: 'Diff Points',
+                        width: 100,
+                        xtype: 'numbercolumn',
+                        format: '0.0',
+                        dataIndex: 'diff_points_ponderes',
+                    },
+                ]
             },
             {
-                header: 'Gagnés',
-                dataIndex: 'gagnes',
-            },
-            {
-                header: 'Perdus',
-                dataIndex: 'perdus',
-            },
-            {
-                header: 'Sets pour',
-                dataIndex: 'sets_pour',
-            },
-            {
-                header: 'Sets contre',
-                dataIndex: 'sets_contre',
-            },
-            {
-                header: 'Diff sets',
-                dataIndex: 'diff_sets',
-            },
-            {
-                header: 'Pts pour',
-                dataIndex: 'points_pour',
-            },
-            {
-                header: 'Pts contre',
-                dataIndex: 'points_contre',
-            },
-            {
-                header: 'Diff pts',
-                dataIndex: 'diff_points',
-            },
+                header: 'Détails',
+                flex: 1,
+                defaults: {
+                    flex: 1,
+                },
+                columns: [
+                    {
+                        header: 'Pts',
+                        dataIndex: 'points',
+                    },
+                    {
+                        header: 'Diff sets',
+                        dataIndex: 'diff_sets',
+                    },
+                    {
+                        header: 'Diff pts',
+                        dataIndex: 'diff_points',
+                    },
+                    {
+                        header: 'Joués',
+                        dataIndex: 'joues',
+                    },
+                    {
+                        header: 'Gagnés',
+                        dataIndex: 'gagnes',
+                    },
+                    {
+                        header: 'Perdus',
+                        dataIndex: 'perdus',
+                    },
+                    {
+                        header: 'Sets pour',
+                        dataIndex: 'sets_pour',
+                    },
+                    {
+                        header: 'Sets contre',
+                        dataIndex: 'sets_contre',
+                    },
+                    {
+                        header: 'Pts pour',
+                        dataIndex: 'points_pour',
+                    },
+                    {
+                        header: 'Pts contre',
+                        dataIndex: 'points_contre',
+                    },
+                ]
+            }
         ]
     },
 });

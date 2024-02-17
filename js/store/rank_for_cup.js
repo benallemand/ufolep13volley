@@ -5,7 +5,7 @@ Ext.define('Ufolep13Volley.store.rank_for_cup', {
         model: 'Ufolep13Volley.model.rank_for_cup',
         proxy: {
             type: 'ajax',
-            url: '/rest/action.php/rank/get_rank_for_cup',
+            url: '/rest/action.php/rank/sort_cup_rank',
             reader: {
                 type: 'json',
                 root: 'results'
