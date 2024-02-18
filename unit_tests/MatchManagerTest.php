@@ -90,13 +90,15 @@ class MatchManagerTest extends TestCase
                         date_original = CURRENT_DATE - INTERVAL 30 DAY,
                         match_status = 'CONFIRMED'");
         // insert players to test teams
-        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs LIMIT 0,10");
-        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs LIMIT 10,10");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs WHERE sexe = 'M' LIMIT 0,5");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs WHERE sexe = 'F' LIMIT 0,5");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs WHERE sexe = 'M' LIMIT 10,5");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs WHERE sexe = 'F' LIMIT 10,5");
         // add team leader emails
         $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 1");
-        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 13");
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 17");
         $this->sql_manager->execute("UPDATE joueurs SET email = 'a@b.fr' WHERE id = 1");
-        $this->sql_manager->execute("UPDATE joueurs SET email = 'c@d.fr' WHERE id = 13");
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'c@d.fr' WHERE id = 17");
     }
 
     /**
@@ -195,12 +197,12 @@ class MatchManagerTest extends TestCase
     public function test_get_count_matches_per_day()
     {
         //20220828:PASS
-        $week = $this->get_test_day();
+        $test_day = $this->get_test_day();
         $this->assertEquals(1,
-            $this->match_manager->get_count_matches_per_day('ut', '1', $week['id']));
+            $this->match_manager->get_count_matches_per_day('ut', '1', $test_day['id']));
         $this->delete_test_matches();
         $this->assertEquals(0,
-            $this->match_manager->get_count_matches_per_day('ut', '1', $week['id']));
+            $this->match_manager->get_count_matches_per_day('ut', '1', $test_day['id']));
     }
 
     /**
@@ -209,14 +211,14 @@ class MatchManagerTest extends TestCase
     public function test_is_team_busy_for_week()
     {
         //20220828:PASS
-        $week = $this->get_test_day();
+        $test_day = $this->get_test_day();
         $teams = $this->get_test_teams();
         foreach ($teams as $team) {
-            $this->assertTrue($this->match_manager->is_team_busy_for_week($week['id'], $team['id_equipe']));
+            $this->assertTrue($this->match_manager->is_team_busy_for_week($test_day['id'], $team['id_equipe']));
         }
         $this->delete_test_matches();
         foreach ($teams as $team) {
-            $this->assertFalse($this->match_manager->is_team_busy_for_week($week['id'], $team['id_equipe']));
+            $this->assertFalse($this->match_manager->is_team_busy_for_week($test_day['id'], $team['id_equipe']));
         }
     }
 
@@ -583,6 +585,157 @@ class MatchManagerTest extends TestCase
             // check sheet_received
             $match = $this->match_manager->get_match($match['id_match']);
             $this->assertEquals(1, $match['sheet_received']);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_sign_error_count()
+    {
+        //240218:PASS
+        // error 1
+        $matches = $this->get_test_matches();
+        foreach ($matches as $match) {
+            $this->assertEquals(0, $match['is_sign_team_dom']);
+            $this->assertEquals(0, $match['is_sign_team_ext']);
+            $this->assertEquals(0, $match['sheet_received']);
+            // fill in players as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                if ($player['sexe'] == 'F') {
+                    continue;
+                }
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // fill in players as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // sign team sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: pas assez de filles à domicile !", $exception->getMessage());
+            }
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: pas assez de filles à domicile !", $exception->getMessage());
+            }
+        }
+        // error 2
+        $this->create_test_full_competition();
+        $matches = $this->get_test_matches();
+        foreach ($matches as $match) {
+            $this->assertEquals(0, $match['is_sign_team_dom']);
+            $this->assertEquals(0, $match['is_sign_team_ext']);
+            $this->assertEquals(0, $match['sheet_received']);
+            // fill in players as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // fill in players as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                if ($player['sexe'] == 'F') {
+                    continue;
+                }
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // sign team sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: pas assez de filles à l'extérieur !", $exception->getMessage());
+            }
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: pas assez de filles à l'extérieur !", $exception->getMessage());
+            }
+        }
+        // error 3
+        $this->create_test_full_competition();
+        $matches = $this->get_test_matches();
+        foreach ($matches as $match) {
+            $this->assertEquals(0, $match['is_sign_team_dom']);
+            $this->assertEquals(0, $match['is_sign_team_ext']);
+            $this->assertEquals(0, $match['sheet_received']);
+            // fill in players as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                if ($player['sexe'] == 'M') {
+                    continue;
+                }
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // fill in players as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // sign team sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: mixité obligatoire à domicile non respectée !", $exception->getMessage());
+            }
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: mixité obligatoire à domicile non respectée !", $exception->getMessage());
+            }
+        }
+        // error 4
+        $this->create_test_full_competition();
+        $matches = $this->get_test_matches();
+        foreach ($matches as $match) {
+            $this->assertEquals(0, $match['is_sign_team_dom']);
+            $this->assertEquals(0, $match['is_sign_team_ext']);
+            $this->assertEquals(0, $match['sheet_received']);
+            // fill in players as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // fill in players as ext
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            $players = $this->players_manager->getMyPlayers();
+            foreach ($players as $player) {
+                if ($player['sexe'] == 'M') {
+                    continue;
+                }
+                $this->match_manager->add_match_player($match['id_match'], $player['id']);
+            }
+            // sign team sheet as dom
+            $this->connect_as_team_leader($match['id_equipe_dom']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: mixité obligatoire à l'extérieur non respectée !", $exception->getMessage());
+            }
+            $this->connect_as_team_leader($match['id_equipe_ext']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exception) {
+                $this->assertEquals("Il y a un souci dans la saisie: mixité obligatoire à l'extérieur non respectée !", $exception->getMessage());
+            }
         }
     }
 

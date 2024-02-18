@@ -128,6 +128,10 @@ Ext.define('Ufolep13Volley.model.Match', {
             type: 'bool',
         },
         {
+            name: 'count_status',
+            type: 'string',
+        },
+        {
             name: 'is_forfait',
             type: 'bool',
         },
@@ -202,7 +206,8 @@ Ext.define('Ufolep13Volley.model.Match', {
                     && !record.get('certif')
                     && !record.get('is_match_player_requested')
                     && !record.get('has_forbidden_player')
-                    && record.get('match_status') == 'CONFIRMED';
+                    && !Ext.isEmpty(record.get('count_status'))
+                    && record.get('match_status') === 'CONFIRMED';
             }
         },
         {

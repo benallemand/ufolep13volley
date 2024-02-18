@@ -1818,6 +1818,10 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($match['is_match_player_filled'] !== 1) {
                     throw new Exception("Les présents des 2 équipes n'ont pas été renseignés !");
                 }
+                if (!empty($match['count_status'])) {
+                    $count_status = $match['count_status'];
+                    throw new Exception("Il y a un souci dans la saisie: $count_status !");
+                }
                 // allow only if not signed yet
                 if (($_SESSION['id_equipe'] == $match['id_equipe_dom'] && $match['is_sign_team_dom'] == 1) ||
                     ($_SESSION['id_equipe'] == $match['id_equipe_ext'] && $match['is_sign_team_ext'] == 1)) {
@@ -2204,17 +2208,17 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function get_survey($id_match=null)
+    public function get_survey($id_match = null)
     {
-        if(empty($id_match)) {
+        if (empty($id_match)) {
             return $this->survey->get();
         }
         $userDetails = $this->getCurrentUserDetails();
         $id_user = $userDetails['id_user'];
         $results = $this->survey->get("s.id_match = $id_match AND s.user_id = $id_user");
         $count_results = count($results);
-        if($count_results === 0) {
-            $this->save_survey($id_match, 0, 0,0,0,0,'');
+        if ($count_results === 0) {
+            $this->save_survey($id_match, 0, 0, 0, 0, 0, '');
             return $this->get_survey($id_match);
         }
         if ($count_results > 1) {
