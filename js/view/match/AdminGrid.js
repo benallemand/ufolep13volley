@@ -86,6 +86,14 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         },
                     },
                     {
+                        getTip: function (value, meta, record) {
+                            return !Ext.isEmpty(record.get('count_status')) ? record.get('count_status') : '';
+                        },
+                        getClass: function (value, meta, record) {
+                            return !Ext.isEmpty(record.get('count_status')) ? 'fa fa-exclamation-circle red' : 'x-hidden-display';
+                        },
+                    },
+                    {
                         getTip: function () {
                             return "Envoyer un mail aux responsables";
                         },
