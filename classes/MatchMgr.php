@@ -563,104 +563,49 @@ class MatchMgr extends Generic
     }
 
     /**
-     * @param $competition
-     * @param bool $try_flip
-     * @param bool $forbid_same_home
      * @throws Exception
      */
-    public function generate_matches($competition, bool $try_flip = false, bool $forbid_same_home = false)
+    public function generate_matches_v2($competition): void
+    {
+        $code_competition = $competition['code_competition'];
+        $this->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        $message = "";
+        $expected_matches = $this->get_expected_matches($competition, null, $message);
+        foreach ($expected_matches as $index => $match) {
+            error_log($index + 1 . " / " . count($expected_matches));
+            $this->insert_match($match);
+        }
+    }
+    /**
+     * @param $competition
+     * @throws Exception
+     */
+    public function generate_matches($competition)
     {
         if (empty($competition)) {
             throw new Exception("Compétition non trouvée !");
         }
-        // aller/retour pour le championnat 4x4 mixte
+        // delete previous generation attempts
         $code_competition = $competition['code_competition'];
-        $is_mirror_needed = ($competition['is_home_and_away'] === 1);
-        // supprimer les matchs générés et non confirmés pour la compétition (on préserve les matchs archivés)
         $this->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
-        require_once __DIR__ . '/Rank.php';
-        $rank_manager = new Rank();
-        $divisions = $rank_manager->getDivisionsFromCompetition($competition['code_competition']);
+        // home and away if needed
+        $divisions = $this->rank->getDivisionsFromCompetition($competition['code_competition']);
         $message = "Nombre de divisions : " . count($divisions) . PHP_EOL;
         $count_to_be_inserted_matches = 0;
+        $all_expected_matches = array();
         foreach ($divisions as $division) {
-            $message .= "Division : " . $division['division'] . PHP_EOL;
-            $teams = $rank_manager->getTeamsFromDivisionAndCompetition(
-                $division['division'],
-                $competition['code_competition']);
-            $teams_count = count($teams);
-            $message .= "Nombre d'équipes : " . $teams_count . PHP_EOL;
-            if ($teams_count % 2 == 1) {
-                $teams_count++;
+            $message_division = "";
+            $expected_matches = $this->get_expected_matches($competition, $division, $message_division);
+            $all_expected_matches[] = $expected_matches;
+            $message .= $message_division;
+            $count_to_be_inserted_matches += count($expected_matches);
+        }
+        $all_expected_matches = array_merge(...$all_expected_matches);
+        foreach ($all_expected_matches as $expected_matches) {
+            if (count($expected_matches) === 0) {
+                continue;
             }
-            // Generate the fixtures using the round-robin cyclic algorithm.
-            $totalRounds = $teams_count - 1;
-            $matchesPerRound = $teams_count / 2;
-            if ($is_mirror_needed) {
-                $message .= "Nombre de journées : " . (2 * $totalRounds) . PHP_EOL;
-            } else {
-                $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
-            }
-            $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
-            $rounds = $this->generate_round_robin_rounds($teams_count);
-            // Last team can't be away for every game so flip them
-            // to home on odd rounds.
-            for ($round = 0; $round < sizeof($rounds); $round++) {
-                if ($round % 2 == 1) {
-                    $rounds[$round][0] = $this->flip($rounds[$round][0]);
-                }
-            }
-            // si matchs aller/retour, on prend le tableau et on inverse chaque élément
-            if ($is_mirror_needed) {
-                $mirror_rounds = array();
-                foreach ($rounds as $round) {
-                    $mirror_matchs = array();
-                    foreach ($round as $match) {
-                        $mirror_matchs[] = $this->flip($match);
-                    }
-                    $mirror_rounds[] = $mirror_matchs;
-                }
-                foreach ($mirror_rounds as $mirror_round) {
-                    $rounds[] = $mirror_round;
-                }
-            }
-            $to_be_inserted_matches = array();
-            foreach ($rounds as $round) {
-                foreach ($round as $match) {
-                    $index_teams = explode('v', $match);
-                    if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
-                        continue;
-                    }
-                    // on récupère les équipes correspondantes selon leur position de départ dans la division
-                    $team_dom = $teams[intval($index_teams[0])];
-                    $team_ext = $teams[intval($index_teams[1])];
-                    $dom = $team_dom;
-                    $ext = $team_ext;
-                    // on remplit le tableau avec les matchs à insérer
-                    // si l'option de regarder le dernier match est active
-                    if ($forbid_same_home) {
-                        // si il y a déjà eu une rencontre dom vs ext la dernière fois
-                        if ($this->is_last_match_same_home($team_dom['id_equipe'], $team_ext['id_equipe'])) {
-                            // si le dernier match inversé n'est pas récent
-                            if (!$this->is_last_match_recent($team_ext['id_equipe'], $team_dom['id_equipe'])) {
-                                // inverser la réception
-                                $dom = $team_ext;
-                                $ext = $team_dom;
-                            }
-                        }
-                    }
-                    $to_be_inserted_matches[] = array(
-                        'dom' => $dom,
-                        'ext' => $ext,
-                        'competition' => $competition,
-                        'division' => $division
-                    );
-                }
-            }
-            $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
-            $count_to_be_inserted_matches += count($to_be_inserted_matches);
-            error_log($division['division']);
-            $this->insert_matches($to_be_inserted_matches, $code_competition, $division['division'], 0, 0, $try_flip);
+            $this->insert_matches($expected_matches, 0, 0);
         }
         $count_inserted_matches = count($this->get_matches("m.code_competition = '$code_competition' AND m.match_status = 'NOT_CONFIRMED'"));
         $message .= "Nombre de matchs à créer : $count_to_be_inserted_matches" . PHP_EOL;
@@ -679,27 +624,27 @@ class MatchMgr extends Generic
     }
 
     /**
-     * @param string $code_match
      * @param string $code_competition
      * @param $division
      * @param int $id_equipe_dom
      * @param int $id_equipe_ext
-     * @param int $id_journee
-     * @param string $date_match , format '%d/%m/%Y'
-     * @param int $id_gymnase
+     * @param string|null $code_match
+     * @param int|null $id_journee
+     * @param string|null $date_match , format '%d/%m/%Y'
+     * @param int|null $id_gymnase
      * @param string|null $note
-     * @return int|string
+     * @return void
      * @throws Exception
      */
-    private function insert_db_match(string $code_match,
-                                     string $code_competition,
+    private function insert_db_match(string $code_competition,
                                             $division,
                                      int    $id_equipe_dom,
                                      int    $id_equipe_ext,
-                                     int    $id_journee,
-                                     string $date_match,
-                                     int    $id_gymnase,
-                                     string $note = null)
+                                     string $code_match = null,
+                                     int    $id_journee = null,
+                                     string $date_match = null,
+                                     int    $id_gymnase = null,
+                                     string $note = null): void
     {
         $bindings = array();
         $code_match_string = "code_match = NULL";
@@ -741,7 +686,7 @@ class MatchMgr extends Generic
                 $gymnasium_string,
                 $date_reception_string,
                 $note_string";
-        return $this->sql_manager->execute($sql, $bindings);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -805,7 +750,7 @@ class MatchMgr extends Generic
      * @param string $query
      * @throws Exception
      */
-    public function delete_matches(string $query = "1=1")
+    public function delete_matches(string $query = "1=1"): void
     {
         $sql = "DELETE FROM matches WHERE $query";
         $this->sql_manager->execute($sql);
@@ -838,27 +783,6 @@ class MatchMgr extends Generic
         return (count($results) > 0);
     }
 
-//    TODO dead code ?
-//    /**
-//     * @param $computed_date
-//     * @param $team_id
-//     * @return bool
-//     * @throws Exception
-//     */
-//    private function is_team_blacklisted($computed_date, $team_id): bool
-//    {
-//        $sql = "SELECT *
-//                FROM blacklist_team
-//                WHERE closed_date = STR_TO_DATE(?, '%d/%m/%Y')
-//                AND id_team = ?";
-//        $bindings = array(
-//            array('type' => 's', 'value' => $computed_date),
-//            array('type' => 'i', 'value' => $team_id),
-//        );
-//        $results = $this->sql_manager->execute($sql, $bindings);
-//        return (count($results) > 0);
-//    }
-
     /**
      * @param $code_competition
      * @param $division_number
@@ -886,18 +810,17 @@ class MatchMgr extends Generic
 
     /**
      * @param $to_be_inserted_match
-     * @param bool $try_flip
+     * @param bool $is_flip_requested
      * @return bool
      * @throws Exception
      */
-    private function insert_match($to_be_inserted_match, bool $try_flip = false): bool
+    public function insert_match($to_be_inserted_match, bool $is_flip_requested = false): bool
     {
         $team_dom = $to_be_inserted_match['dom'];
         $team_ext = $to_be_inserted_match['ext'];
         $competition = $to_be_inserted_match['competition'];
         $division = $to_be_inserted_match['division'];
         $code_competition = $competition['code_competition'];
-        $is_date_found = false;
         $computed_dates = $this->get_computed_dates($team_dom['id_equipe'], $code_competition);
         foreach ($computed_dates as $computed_date) {
             // computed date is full (too many matches in same gymnasium)
@@ -936,7 +859,6 @@ class MatchMgr extends Generic
             if ($this->is_team_busy_for_week($computed_date['week_id'], $team_ext['id_equipe'])) {
                 continue;
             }
-            $is_date_found = true;
             $found_date = $computed_date['computed_date'];
             $round_number = $computed_date['week_number'];
             $match_number = $this->get_count_matches_per_day($competition['code_competition'], $division['division'], $computed_date['week_id']) + 1;
@@ -948,27 +870,43 @@ class MatchMgr extends Generic
                 $round_number .
                 $match_number;
             $this->insert_db_match(
-                $code_match,
                 $competition['code_competition'],
                 $division['division'],
                 $team_dom['id_equipe'],
                 $team_ext['id_equipe'],
+                $code_match,
                 $computed_date['week_id'],
                 $found_date,
                 $computed_date['id_gymnase']);
-            break;
+            return true;
         }
-        if (!$is_date_found) {
-            if ($try_flip) {
-                return $this->insert_match(array(
-                    'dom' => $to_be_inserted_match['ext'],
-                    'ext' => $to_be_inserted_match['dom'],
-                    'competition' => $to_be_inserted_match['competition'],
-                    'division' => $to_be_inserted_match['division']
-                ));
-            }
+        // pas de date trouvée
+        // si le dernier match entre les 2 équipes n'est pas récent
+        if (!$is_flip_requested
+            && !$this->is_last_match_recent($team_dom['id_equipe'], $team_ext['id_equipe'])
+            && $this->has_timeslot($team_ext['id_equipe'])) {
+            // inverser la réception, et trouver une nouvelle date
+            return $this->insert_match(array(
+                'dom' => $to_be_inserted_match['ext'],
+                'ext' => $to_be_inserted_match['dom'],
+                'competition' => $to_be_inserted_match['competition'],
+                'division' => $to_be_inserted_match['division']
+            ),
+                true);
         }
-        return $is_date_found;
+        // pas de date trouvée
+        // créer le match sans date
+        $this->insert_db_match(
+            $competition['code_competition'],
+            $division['division'],
+            $team_dom['id_equipe'],
+            $team_ext['id_equipe'],
+            null,
+            null,
+            null,
+            null,
+            "date non trouvée");
+        return false;
     }
 
     /**
@@ -1004,21 +942,21 @@ class MatchMgr extends Generic
 
     /**
      * @param array $to_be_inserted_matches
-     * @param $code_competition
-     * @param $division
      * @param $index_match
      * @param $index_place
-     * @param $try_flip
      * @return void
      * @throws Exception
      */
     public function insert_matches(array $to_be_inserted_matches,
-                                         $code_competition,
-                                         $division,
                                          $index_match,
-                                         $index_place,
-                                         $try_flip): void
+                                         $index_place
+    ): void
     {
+        if (count($to_be_inserted_matches) === 0) {
+            throw new Exception("Il n'y a pas de match à insérer !");
+        }
+        $code_competition = $to_be_inserted_matches[0]['competition']['code_competition'];
+        $division = $to_be_inserted_matches[0]['division']['division'];
         $matches = $this->get_matches("m.code_competition = '$code_competition' 
                                              AND m.division = '$division' 
                                              AND m.match_status = 'NOT_CONFIRMED'");
@@ -1032,19 +970,19 @@ class MatchMgr extends Generic
             return;
         }
         if ($index_place === count($to_be_inserted_matches)) {
-            $this->insert_matches($to_be_inserted_matches, $code_competition, $division, $index_match + 1, 0, $try_flip);
+            $this->insert_matches($to_be_inserted_matches, $index_match + 1, 0);
             return;
         }
         $to_be_inserted_matches = $this->move_element($to_be_inserted_matches, $index_match, $index_place);
         $is_successful = true;
         foreach ($to_be_inserted_matches as $to_be_inserted_match) {
-            if (!$this->insert_match($to_be_inserted_match, $try_flip)) {
+            if (!$this->insert_match($to_be_inserted_match)) {
                 $is_successful = false;
                 break;
             }
         }
         if (!$is_successful) {
-            $this->insert_matches($to_be_inserted_matches, $code_competition, $division, $index_match, $index_place + 1, $try_flip);
+            $this->insert_matches($to_be_inserted_matches, $index_match, $index_place + 1);
         }
     }
 
@@ -1411,7 +1349,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function generateMatches($ids)
+    public function generateMatches($ids): void
     {
         if (empty($ids)) {
             throw new Exception("Aucune compétition sélectionnée !");
@@ -1428,7 +1366,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 throw new Exception("La compétition a déjà commencé !!!");
             }
             $competition = $competitions[0];
-            $this->generate_matches($competition, true, true);
+            $this->generate_matches_v2($competition);
         }
     }
 
@@ -1941,14 +1879,14 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $competition = $competition_mgr->get_by_id($id);
             $code_competition = $competition['code_competition'];
             $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
-            $this->generate_matches($competition, true, true);
+            $this->generate_matches_v2($competition);
         }
     }
 
     /**
      * @throws Exception
      */
-    public function generateAllExceptMatches($ids = null)
+    public function generateAllExceptMatches($ids = null): void
     {
         if (empty($ids)) {
             throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
@@ -1972,7 +1910,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function sign_team_sheet($id_match)
+    public function sign_team_sheet($id_match): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
@@ -2005,7 +1943,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function sign_match_sheet($id_match)
+    public function sign_match_sheet($id_match): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
@@ -2192,11 +2130,11 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 $division .
                 $day['numero'] .
                 $match_number;
-            $this->insert_db_match($code_match,
-                $code_competition,
+            $this->insert_db_match($code_competition,
                 $division,
                 $team_dom['id_equipe'],
                 $team_ext['id_equipe'],
+                $code_match,
                 $id_journee,
                 '',
                 0,
@@ -2255,5 +2193,115 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             'comment' => $comment,
         );
         return $this->survey->save($inputs);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function has_timeslot($id_equipe): bool
+    {
+        $sql = "SELECT id 
+                FROM creneau 
+                WHERE id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+        );
+        return count($this->sql_manager->execute($sql, $bindings)) > 0;
+
+    }
+
+    /**
+     * @param array $competition
+     * @param array|null $division
+     * @param string|null $message
+     * @return array
+     * @throws Exception
+     */
+    public function get_expected_matches(array $competition, array $division = null, string &$message = null): array
+    {
+        $is_mirror_needed = ($competition['is_home_and_away'] === 1);
+        if (is_null($division)) {
+            $divisions = $this->rank->getDivisionsFromCompetition($competition['code_competition']);
+        } else {
+            $divisions[] = $division;
+        }
+        $all_expected_matches = array();
+        foreach ($divisions as $division) {
+            $message .= "Division : " . $division['division'] . PHP_EOL;
+            $teams = $this->rank->getTeamsFromDivisionAndCompetition(
+                $division['division'],
+                $competition['code_competition']);
+            $teams_count = count($teams);
+            $message .= "Nombre d'équipes : " . $teams_count . PHP_EOL;
+            if ($teams_count % 2 == 1) {
+                $teams_count++;
+            }
+            // Generate the fixtures using the round-robin cyclic algorithm.
+            $totalRounds = $teams_count - 1;
+            $matchesPerRound = $teams_count / 2;
+            if ($is_mirror_needed) {
+                $message .= "Nombre de journées : " . (2 * $totalRounds) . PHP_EOL;
+            } else {
+                $message .= "Nombre de journées : " . $totalRounds . PHP_EOL;
+            }
+            $message .= "Nombre de matches par journée : " . $matchesPerRound . PHP_EOL;
+            $rounds = $this->generate_round_robin_rounds($teams_count);
+            // Last team can't be away for every game so flip them
+            // to home on odd rounds.
+            for ($round = 0; $round < sizeof($rounds); $round++) {
+                if ($round % 2 == 1) {
+                    $rounds[$round][0] = $this->flip($rounds[$round][0]);
+                }
+            }
+            // si matchs aller/retour, on prend le tableau et on inverse chaque élément
+            if ($is_mirror_needed) {
+                $mirror_rounds = array();
+                foreach ($rounds as $round) {
+                    $mirror_matchs = array();
+                    foreach ($round as $match) {
+                        $mirror_matchs[] = $this->flip($match);
+                    }
+                    $mirror_rounds[] = $mirror_matchs;
+                }
+                foreach ($mirror_rounds as $mirror_round) {
+                    $rounds[] = $mirror_round;
+                }
+            }
+            $to_be_inserted_matches = array();
+            foreach ($rounds as $round) {
+                foreach ($round as $match) {
+                    $index_teams = explode('v', $match);
+                    if (empty($teams[intval($index_teams[0])]) || empty($teams[intval($index_teams[1])])) {
+                        continue;
+                    }
+                    // on récupère les équipes correspondantes selon leur position de départ dans la division
+                    $team_dom = $teams[intval($index_teams[0])];
+                    $team_ext = $teams[intval($index_teams[1])];
+                    $dom = $team_dom;
+                    $ext = $team_ext;
+                    // on remplit le tableau avec les matchs à insérer
+                    // s'il y a déjà eu une rencontre dom vs ext la dernière fois, et que ça date de moins de 9 mois
+                    $note = '';
+                    if ($this->is_last_match_same_home($team_dom['id_equipe'], $team_ext['id_equipe'])
+                        && $this->is_last_match_recent($team_dom['id_equipe'], $team_ext['id_equipe'])
+                        && $this->has_timeslot($team_ext['id_equipe'])) {
+                        // inverser la réception
+                        $dom = $team_ext;
+                        $ext = $team_dom;
+                        $note = "inversion de réception nécessaire";
+                    }
+                    $to_be_inserted_matches[] = array(
+                        'dom' => $dom,
+                        'ext' => $ext,
+                        'competition' => $competition,
+                        'division' => $division,
+                        'note' => $note
+                    );
+                }
+            }
+            $message .= "Nombre de matchs à créer : " . count($to_be_inserted_matches) . PHP_EOL;
+            $all_expected_matches[] = $to_be_inserted_matches;
+        }
+        return array_merge(...$all_expected_matches);
     }
 }

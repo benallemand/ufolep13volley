@@ -13,6 +13,8 @@ class MatchManagerTest extends TestCase
 {
     private SqlManager $sql_manager;
     private MatchMgr $match_manager;
+    private Competition $competition;
+    private Day $day;
     private Players $players_manager;
     private Emails $emails;
 
@@ -187,6 +189,8 @@ class MatchManagerTest extends TestCase
         $this->sql_manager = new SqlManager();
         $this->match_manager = new MatchMgr();
         $this->players_manager = new Players();
+        $this->competition = new Competition();
+        $this->day = new Day();
         $this->emails = new Emails();
         $this->create_test_full_competition();
     }
@@ -399,20 +403,21 @@ class MatchManagerTest extends TestCase
         return $this->match_manager->get_matches("m.code_competition = 'ut'");
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_generate_days()
     {
         //221022:PASS
-        $competition_mgr = new Competition();
-        $day_mgr = new Day();
-        $competition_m = $competition_mgr->getCompetition('m');
-        $competition_f = $competition_mgr->getCompetition('f');
-        $competition_mo = $competition_mgr->getCompetition('mo');
-        $competition_mgr->resetCompetition(implode(',', array(
+        $competition_m = $this->competition->getCompetition('m');
+        $competition_f = $this->competition->getCompetition('f');
+        $competition_mo = $this->competition->getCompetition('mo');
+        $this->competition->resetCompetition(implode(',', array(
             $competition_m['id'],
             $competition_f['id'],
             $competition_mo['id'],
         )));
-        $day_mgr->generateDays(implode(',', array(
+        $this->day->generateDays(implode(',', array(
             $competition_m['id'],
             $competition_f['id'],
             $competition_mo['id'],
@@ -425,23 +430,47 @@ class MatchManagerTest extends TestCase
     public function test_generate_matches()
     {
         //221022:PASS
-        $competition_mgr = new Competition();
         $competitions = array(
-            $competition_mgr->getCompetition('mo'),
-            $competition_mgr->getCompetition('m'),
-            $competition_mgr->getCompetition('f'),
+            $this->competition->getCompetition('mo'),
+            $this->competition->getCompetition('m'),
+            $this->competition->getCompetition('f'),
         );
         $this->match_manager->delete_matches("match_status = 'NOT_CONFIRMED'");
         foreach ($competitions as $competition) {
             error_log($competition['libelle']);
             try {
                 $this->match_manager->generate_matches($competition);
-            }
-            catch (Exception $exception) {
+            } catch (Exception $exception) {
                 error_log($exception->getMessage());
                 continue;
             }
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_generate_matches_v2()
+    {
+        $this->match_manager->delete_matches("match_status = 'NOT_CONFIRMED'");
+        //240221:PASS
+        $competitions = array(
+            $this->competition->getCompetition('mo'),
+            $this->competition->getCompetition('m'),
+            $this->competition->getCompetition('f'),
+        );
+        foreach ($competitions as $competition) {
+            error_log($competition['libelle']);
+            $message = "";
+            $expected_matches[] = $this->match_manager->get_expected_matches($competition, null, $message);
+            error_log($message);
+        }
+        $expected_matches = array_merge(...$expected_matches);
+        foreach ($expected_matches as $index => $match) {
+            error_log($index + 1 . " / " . count($expected_matches));
+            $this->match_manager->insert_match($match);
+        }
+
     }
 
     /**
