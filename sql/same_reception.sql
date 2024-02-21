@@ -31,4 +31,5 @@ WHERE last_match.id_match <> previous_match.id_match
                    AND date_reception BETWEEN previous_match.date_reception AND last_match.date_reception)
   AND STR_TO_DATE(previous_match.date_reception, '%d/%m/%Y') > DATE_SUB(NOW(), INTERVAL 9 MONTH)
   AND STR_TO_DATE(last_match.date_reception, '%d/%m/%Y') > DATE_SUB(NOW(), INTERVAL 9 MONTH)
+  AND last_match.id_equipe_ext IN (SELECT id_equipe FROM creneau)
 ORDER BY equipe_dom, prev_date
