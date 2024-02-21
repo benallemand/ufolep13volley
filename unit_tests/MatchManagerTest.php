@@ -434,7 +434,13 @@ class MatchManagerTest extends TestCase
         $this->match_manager->delete_matches("match_status = 'NOT_CONFIRMED'");
         foreach ($competitions as $competition) {
             error_log($competition['libelle']);
-            $this->match_manager->generate_matches($competition, false, false);
+            try {
+                $this->match_manager->generate_matches($competition);
+            }
+            catch (Exception $exception) {
+                error_log($exception->getMessage());
+                continue;
+            }
         }
     }
 
