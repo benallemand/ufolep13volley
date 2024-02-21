@@ -41,10 +41,6 @@ $indicators = array();
 
 
 $indicators[] = new Indicator(
-    "Même réception 2 fois d'affilée",
-    file_get_contents(__DIR__ . '/../sql/same_reception.sql'),
-    'alert');
-$indicators[] = new Indicator(
     "Joueurs potentiellement en doublon",
     file_get_contents(__DIR__ . '/../sql/player_duplicates.sql'),
     'alert');
