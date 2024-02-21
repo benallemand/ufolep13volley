@@ -1062,7 +1062,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.genericRequest(button, 'Générer les journées', '/rest/action.php/day/generateDays');
     },
     generateMatches: function (button) {
-        this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches', true);
+        this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches');
     },
     generate_matches_final_phase_cup_8: function (button) {
         this.genericRequest(button, 'Tirer au sort les 1/8e', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'day_number': 1});
