@@ -171,6 +171,7 @@ try {
             header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
             exit(0);
         case 201:
+            http_response_code($resp_code);
             echo json_encode(array(
                 'success' => true,
                 'message' => $exception->getMessage()
