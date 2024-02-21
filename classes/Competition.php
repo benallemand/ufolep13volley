@@ -665,7 +665,7 @@ class Competition extends Generic
         $competition_by_id = $this->get_by_id($id_competition);
         // need to retrieve competition by code, as this sql formats dates
         $competition = $this->getCompetition($competition_by_id['code_competition']);
-        // format 'd/m/Y' or empty if null
+        // format d/m/Y or empty if null
         $start_date = $competition['start_date'];
         if (empty($start_date)) {
             throw new Exception("Impossible de déterminer si c'est la 1ere demi saison, la date de début est vide !");
