@@ -8,5 +8,5 @@ FROM matches m
          JOIN classements c on e.id_equipe = c.id_equipe AND c.code_competition = m.code_competition
 WHERE m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED', 'ARCHIVED')
 GROUP BY c.code_competition, c.division, e.nom_equipe
-HAVING ABS(domicile - exterieur) > 1
+HAVING ABS(domicile - exterieur) > 2
 ORDER BY competition, division
