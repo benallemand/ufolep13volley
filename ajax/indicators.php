@@ -163,6 +163,10 @@ $indicators[] = new Indicator(
     "Décalage des créneaux d'inscription",
     file_get_contents(__DIR__ . '/../sql/mismatch_register_timeslots.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Equilibre Réceptions/Déplacements sur l'année",
+    file_get_contents(__DIR__ . '/../sql/overall_equity_home_away.sql'),
+    'alert');
 
 function info_first($a, $b): int
 {
