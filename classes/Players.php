@@ -165,7 +165,8 @@ class Players extends Generic
         if (empty($parameters['id'])) {
             if (!empty($parameters['num_licence'])) {
                 if ($this->isPlayerExists($parameters['num_licence'])) {
-                    throw new Exception("Un joueur avec le même numéro de licence existe déjà !");
+                    throw new Exception($parameters['num_licence'] .
+                        " : Un joueur avec le même numéro de licence existe déjà !");
                 }
             }
         }
@@ -346,7 +347,8 @@ class Players extends Generic
         if (empty($inputs['id'])) {
             if (!empty($inputs['num_licence'])) {
                 if ($this->isPlayerExists($inputs['num_licence'])) {
-                    throw new Exception("Un joueur avec le même numéro de licence existe déjà !");
+                    throw new Exception($inputs['num_licence'] .
+                        " : Un joueur avec le même numéro de licence existe déjà !");
                 }
             }
         }
