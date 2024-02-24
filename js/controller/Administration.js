@@ -352,7 +352,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                             labelWidth: 250,
                             value: Ext.String.format(
                                 "<div style='{0}'>{1}</div>",
-                                record.get('type') == 'alert' ? 'color: red; font-weight: bold' : 'color: black',
+                                record.get('type') === 'alert' ? 'color: red; font-weight: bold' : 'color: black',
                                 record.get('value')),
                             width: 300
                         }, {

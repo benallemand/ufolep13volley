@@ -167,6 +167,10 @@ $indicators[] = new Indicator(
     "Equilibre Réceptions/Déplacements sur l'année",
     file_get_contents(__DIR__ . '/../sql/overall_equity_home_away.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Joueurs requis le même soir",
+    file_get_contents(__DIR__ . '/../sql/players_many_match_same_date.sql'),
+    'alert');
 
 function info_first($a, $b): int
 {
