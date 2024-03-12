@@ -429,7 +429,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les fiches équipes n'ont pas été signées par les 2 équipes !");
         }
-        $url_match = 'https://www.ufolep13volley.org/team_sheets.php?id_match=' . $match['id_match'];
+        $url_match = 'https://www.ufolep13volley.org/match.php?id_match=' . $match['id_match'];
         // insert for sending
         $this->insert_generic_email(
             __DIR__ . '/../templates/emails/team_sheet_signed.fr.html',
