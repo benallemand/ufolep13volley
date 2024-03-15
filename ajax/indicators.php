@@ -171,6 +171,9 @@ $indicators[] = new Indicator(
     "Joueurs requis le même soir",
     file_get_contents(__DIR__ . '/../sql/players_many_match_same_date.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Joueurs dans plusieurs équipes",
+    file_get_contents(__DIR__ . '/../sql/players_in_many_teams.sql'));
 
 function info_first($a, $b): int
 {
