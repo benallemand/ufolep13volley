@@ -96,7 +96,17 @@ try {
             $pdf->SetFillColor(0, 0, 0);
         }
         if (!empty($jsonPlayer['path_photo'])) {
-            $pdf->Image(toWellFormatted($jsonPlayer['path_photo']), null, null, $widthPhoto);
+            $key_photo = 'path_photo';
+            if (!file_exists($jsonPlayer['path_photo_low'])) {
+                $player->generateLowPhoto($jsonPlayer['path_photo']);
+            }
+            if (file_exists($jsonPlayer['path_photo_low'])) {
+                $key_photo = 'path_photo_low';
+            }
+            $pdf->Image(toWellFormatted($jsonPlayer[$key_photo]),
+                null,
+                null,
+                $widthPhoto);
         }
         $pdf->SetXY($widthPhoto + 5 + $offsetXPlayers * floor($currentIndex / $NbByColumns), $offsetYPlayers + $heightPlayer * ($currentIndex % $NbByColumns));
         $pdf->Cell(50, 5, toWellFormatted($jsonPlayer['prenom']), 0, 1, 'L');

@@ -21,6 +21,7 @@
     "ext-curl": "*",
     "fpdf/fpdf": "1.84.0",
     "smalot/pdfparser": "@stable",
-    "ext-fileinfo": "*"
+    "ext-fileinfo": "*",
+    "ext-gd": "*"
   }
 }

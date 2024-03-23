@@ -1046,4 +1046,21 @@ class Players extends Generic
         }
         return $results;
     }
+
+    public function generateLowPhoto(mixed $path_photo)
+    {
+        $compression_rate = 50;
+        $source_file = __DIR__ . '/../' . $path_photo;
+        $low_photos_folder = __DIR__ . '/../players_pics_low/';
+        if (!is_dir($low_photos_folder)) {
+            mkdir($low_photos_folder, 0777, true);
+        }
+        if (in_array(pathinfo($source_file, PATHINFO_EXTENSION), array('jpg', 'jpeg', 'png', 'gif'))) {
+            $image = imagecreatefromstring(file_get_contents($source_file));
+            // apply quality
+            imagejpeg($image, $low_photos_folder . basename($source_file), $compression_rate);
+            // flush memory
+            imagedestroy($image);
+        }
+    }
 }
