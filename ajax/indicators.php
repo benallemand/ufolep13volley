@@ -174,6 +174,9 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Joueurs dans plusieurs équipes",
     file_get_contents(__DIR__ . '/../sql/players_in_many_teams.sql'));
+$indicators[] = new Indicator(
+    "Nombre de matchs par joueur",
+    file_get_contents(__DIR__ . '/../sql/nb_matchs_per_player.sql'));
 
 function info_first($a, $b): int
 {
