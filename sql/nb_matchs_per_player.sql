@@ -9,6 +9,7 @@ FROM match_player mp
          JOIN joueur_equipe je ON je.id_joueur = p.id
          JOIN equipes e ON je.id_equipe = e.id_equipe
          JOIN clubs c ON c.id = p.id_club
+WHERE mp.id_match IN (SELECT id_match FROM matches)
 GROUP BY CONCAT(p.prenom, ' ', p.nom), c.nom, e.nom_equipe
 ORDER BY nb_matchs_joues,
          club,
