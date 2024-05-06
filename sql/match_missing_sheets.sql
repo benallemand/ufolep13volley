@@ -19,6 +19,10 @@ from matchs_view m
 WHERE m.match_status = 'CONFIRMED'
   AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') < CURRENT_DATE
   AND m.id_match NOT IN (SELECT id_match FROM matches_files)
-  AND (m.is_sign_team_dom + m.is_sign_team_ext + m.is_sign_match_dom + m.is_sign_match_ext < 4)
+  AND (
+    (m.is_forfait = 0 AND m.is_sign_team_dom + m.is_sign_team_ext + m.is_sign_match_dom + m.is_sign_match_ext < 4)
+        OR
+    (m.is_forfait = 1 AND m.is_sign_match_dom + m.is_sign_match_ext < 2)
+    )
   AND m.certif = 0
 order by date_reception, code_match
