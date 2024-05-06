@@ -1044,13 +1044,11 @@ class Emails extends Generic
         }
         $destination = array_unique($destination);
         $coordonnees_ufolep13 = "UFOLEP13 CAL DE LA BUSSERADE 58 RUE CAVAIGNAC 13003 MARSEILLE";
-        $coordonnees_ctsd = "BENJAMIN ALLEMAND 76 BOULEVARD DANTON 13300 SALON DE PROVENCE";
         $url_rib = "https://www.ufolep13volley.org/infos_utiles/Media/rib.pdf";
         $this->insert_generic_email(
             __DIR__ . '/../templates/emails/register_not_paid.fr.html',
             array(
                 'trs_club_compet_cout' => $trs_club_compet_cout,
-                'coordonnees_ctsd' => $coordonnees_ctsd,
                 'coordonnees_ufolep13' => $coordonnees_ufolep13,
                 'url_rib' => $url_rib,
             ),
