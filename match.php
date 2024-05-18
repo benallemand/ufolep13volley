@@ -12,11 +12,16 @@ try {
     exit(0);
 }
 try {
+    $manager = new MatchMgr();
     $id_match = filter_input(INPUT_GET, 'id_match');
     if (empty($id_match)) {
-        throw new Exception("id_match non défini !");
+        $code_match = filter_input(INPUT_GET, 'code_match');
+        if (empty($code_match)) {
+            throw new Exception("id_match non défini !");
+        }
+        $match = $manager->get_match_by_code_match($code_match);
+        $id_match = $match['id_match'];
     }
-    $manager = new MatchMgr();
     if (!$manager->is_match_update_allowed($id_match)) {
         throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
     }

@@ -1,4 +1,4 @@
-SELECT GROUP_CONCAT(m.code_match)             AS code_match,
+SELECT GROUP_CONCAT(m.code_match)             AS codes_match,
        e.nom_equipe,
        DATE_FORMAT(m.date_reception, '%Y_%u') AS annee_semaine
 FROM equipes e

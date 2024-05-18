@@ -309,7 +309,34 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
+    getIndicatorColumn(field_key) {
+        switch (field_key) {
+            case 'codes_match':
+                return {
+                    header: field_key, dataIndex: field_key, flex: 1,
+                    renderer: function (val) {
+                        return val.split(',').map(function (code_match) {
+                            return Ext.String.format("<a href='/match.php?code_match={0}' target='_blank'>{1}</a>", code_match, code_match);
+                        }).join(',');
+                    }
+                };
+            case 'code_match':
+            case 'prev_code_match':
+            case 'last_code_match':
+                return {
+                    header: field_key, dataIndex: field_key, flex: 1,
+                    renderer: function (val) {
+                        return Ext.String.format("<a href='/match.php?code_match={0}' target='_blank'>{1}</a>", val, val);
+                    }
+                };
+            default:
+                return {
+                    header: field_key, dataIndex: field_key, flex: 1
+                };
+        }
+    },
     displayIndicators: function () {
+        var me = this;
         var mainPanel = this.getMainPanel();
         mainPanel.setAutoScroll(true);
         var tab = mainPanel.add({
@@ -336,9 +363,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     var columns = [];
                     for (var k in detailsData[0]) {
                         fields.push(k);
-                        columns.push({
-                            header: k, dataIndex: k, flex: 1
-                        });
+                        columns.push(me.getIndicatorColumn(k));
                     }
                     var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
                     if (record.get('value') === 0) {

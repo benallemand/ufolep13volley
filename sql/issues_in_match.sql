@@ -1,5 +1,5 @@
 SELECT a.*
-FROM (SELECT m.code_match,
+FROM (SELECT m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe          AS domicile,
              eext.nom_equipe          AS exterieur,
@@ -15,7 +15,7 @@ FROM (SELECT m.code_match,
                                     AND id_match != m.id_match))
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match,
+      SELECT m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe  AS domicile,
              eext.nom_equipe  AS exterieur,
@@ -27,7 +27,7 @@ FROM (SELECT m.code_match,
       WHERE (m.date_reception IN (SELECT closed_date FROM blacklist_date))
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT DISTINCT m.code_match,
+      SELECT DISTINCT m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe   AS domicile,
              eext.nom_equipe   AS exterieur,
@@ -41,7 +41,7 @@ FROM (SELECT m.code_match,
       WHERE bg.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match,
+      SELECT m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe           AS domicile,
              eext.nom_equipe           AS exterieur,
@@ -54,7 +54,7 @@ FROM (SELECT m.code_match,
       WHERE bt.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match,
+      SELECT m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe            AS domicile,
              eext.nom_equipe            AS exterieur,
@@ -67,7 +67,7 @@ FROM (SELECT m.code_match,
       WHERE bt.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT CONCAT(m_t1.code_match, ' et ', m_t2.code_match) AS code_match,
+      SELECT CONCAT(m_t1.code_match, ',', m_t2.code_match) AS codes_match,
              m_t1.date_reception,
              edom.nom_equipe                                  AS domicile,
              eext.nom_equipe                                  AS exterieur,
@@ -84,5 +84,5 @@ FROM (SELECT m.code_match,
         AND m_t1.match_status != 'ARCHIVED'
         AND m_t2.match_status != 'ARCHIVED'
       GROUP BY date_reception
-      order by code_match) a
+      order by codes_match) a
 WHERE date_reception > CURRENT_DATE

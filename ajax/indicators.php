@@ -177,6 +177,10 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Nombre de matchs par joueur",
     file_get_contents(__DIR__ . '/../sql/nb_matchs_per_player.sql'));
+$indicators[] = new Indicator(
+    "Incohérence score vs sets",
+    file_get_contents(__DIR__ . '/../sql/score_insconsistency.sql'),
+    'alert');
 
 function info_first($a, $b): int
 {
