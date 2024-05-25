@@ -549,6 +549,15 @@ class MatchManagerTest extends TestCase
     /**
      * @throws Exception
      */
+    public function test_draw_matches()
+    {
+        $days = $this->day->get("j.code_competition = 'cf' AND j.numero = 2");
+        $this->match_manager->draw_matches('cf', '1', $days[0]['id']);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function test_sign()
     {
         //20230223:PASS

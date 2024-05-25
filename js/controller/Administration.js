@@ -1090,13 +1090,13 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches');
     },
     generate_matches_final_phase_cup_8: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/8e', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'day_number': 1});
+        this.genericRequest(button, 'Tirer au sort les 1/8e', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/8e'});
     },
     generate_matches_final_phase_cup_4: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/4', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'day_number': 2});
+        this.genericRequest(button, 'Tirer au sort les 1/4', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/4'});
     },
     generate_matches_final_phase_cup_2: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/2', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'day_number': 3});
+        this.genericRequest(button, 'Tirer au sort les 1/2', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/2'});
     },
     generateAll: function (button) {
         this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);

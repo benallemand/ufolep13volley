@@ -678,7 +678,7 @@ class Competition extends Generic
     /**
      * @throws Exception
      */
-    public function generate_matches_final_phase_cup($ids, $day_number)
+    public function generate_matches_final_phase_cup($ids, $nommage)
     {
         $day_mgr = new Day();
         if (empty($ids)) {
@@ -691,7 +691,7 @@ class Competition extends Generic
             if (!in_array($competition['code_competition'], array('kf', 'cf'))) {
                 throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
             }
-            $days = $day_mgr->get("j.code_competition = '$code_competition' AND j.numero = $day_number");
+            $days = $day_mgr->get("j.code_competition = '$code_competition' AND j.nommage = '$nommage'");
             if (empty($days)) {
                 throw new Exception("Il faut créer la journée avant de générer cette compétition !");
             }

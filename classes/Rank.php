@@ -533,38 +533,38 @@ class Rank extends Generic
     /**
      * @throws Exception
      */
-    public function get_winner_teams_from_previous_day($division, $code_competition, $previous_day_number): int|array|string|null
+    public function get_winner_teams_from_previous_day($division, $code_competition, $previous_day_nommage): int|array|string|null
     {
         $sql = "SELECT DISTINCT c.id_equipe,
-                e.nom_equipe,
-                CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', c.division, ')'), '')) AS team_full_name,
-                IF(cr.id IS NULL, '0', '1') AS has_timeslot
+                                e.nom_equipe,
+                                CONCAT(e.nom_equipe, ' (', cl.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', c.division, ')'), '')) AS team_full_name,
+                                IF(cr.id IS NULL, '0', '1') AS has_timeslot
                 FROM classements c
-                JOIN equipes e ON e.id_equipe = c.id_equipe
-                JOIN clubs cl ON cl.id = e.id_club
-                JOIN competitions comp ON comp.code_competition = e.code_competition
-                LEFT JOIN creneau cr ON cr.id_equipe = c.id_equipe
-                WHERE c.code_competition = '$code_competition' 
-                AND c.division = '$division'
-                AND (
-                    e.id_equipe IN (SELECT id_equipe_dom 
-                                    FROM matches 
+                         JOIN equipes e ON e.id_equipe = c.id_equipe
+                         JOIN clubs cl ON cl.id = e.id_club
+                         JOIN competitions comp ON comp.code_competition = e.code_competition
+                         LEFT JOIN creneau cr ON cr.id_equipe = c.id_equipe
+                WHERE c.code_competition = '$code_competition'
+                  AND c.division = '$division'
+                  AND (
+                    e.id_equipe IN (SELECT id_equipe_dom
+                                    FROM matches
                                     WHERE code_competition = '$code_competition'
-                                    AND score_equipe_dom = 3
-                                    AND id_journee IN (SELECT id 
-                                                       FROM journees 
-                                                       WHERE code_competition = '$code_competition'
-                                                       AND numero = $previous_day_number))
-                    OR
-                    e.id_equipe IN (SELECT id_equipe_ext 
-                                    FROM matches 
+                                      AND score_equipe_dom = 3
+                                      AND id_journee IN (SELECT id
+                                                         FROM journees
+                                                         WHERE code_competition = '$code_competition'
+                                                           AND nommage = '$previous_day_nommage'))
+                        OR
+                    e.id_equipe IN (SELECT id_equipe_ext
+                                    FROM matches
                                     WHERE code_competition = '$code_competition'
-                                    AND score_equipe_ext = 3
-                                    AND id_journee IN (SELECT id 
-                                                       FROM journees 
-                                                       WHERE code_competition = '$code_competition'
-                                                       AND numero = $previous_day_number))
-                )
+                                      AND score_equipe_ext = 3
+                                      AND id_journee IN (SELECT id
+                                                         FROM journees
+                                                         WHERE code_competition = '$code_competition'
+                                                           AND nommage = '$previous_day_nommage'))
+                    )
                 ORDER BY c.rank_start";
         return $this->sql_manager->execute($sql);
     }

@@ -2113,7 +2113,13 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         if ($day['numero'] == 1) {
             $teams = $this->rank->getTeamsFromDivisionAndCompetition($division, $code_competition);
         } else {
-            $teams = $this->rank->get_winner_teams_from_previous_day($division, $code_competition, $day['numero'] - 1);
+            $previous_day = $day_mgr->get_one(
+                "j.code_competition = ? AND j.numero = ?",
+                array(
+                    array('type' => 's', 'value' => $code_competition),
+                    array('type' => 'i', 'value' => $day['numero'] - 1),
+                    ));
+            $teams = $this->rank->get_winner_teams_from_previous_day($division, $code_competition, $previous_day['nommage']);
         }
         if (count($teams) % 2 != 0) {
             throw new Exception("Impossible de tirer au sort les matchs, il faut un nombre pair d'équipes !");
