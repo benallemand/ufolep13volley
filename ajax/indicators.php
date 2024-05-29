@@ -181,6 +181,10 @@ $indicators[] = new Indicator(
     "Incohérence score vs sets",
     file_get_contents(__DIR__ . '/../sql/score_insconsistency.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Délais non respectés pour transmettre une date de report",
+    file_get_contents(__DIR__ . '/../sql/report_match_with_too_long_date_delay.sql'),
+    'alert');
 
 function info_first($a, $b): int
 {
