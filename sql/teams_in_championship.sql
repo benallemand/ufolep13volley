@@ -1,15 +1,15 @@
-SELECT e.nom_equipe,
-       ''                                   AS my_trim,
-       clubs.nom                            AS club,
-       e.id_equipe                          AS id,
-       e.code_competition                   AS compet,
+SELECT clubs.nom                                      AS club,
+       e.nom_equipe,
+       e.code_competition                             AS competition,
        c.division,
-       GROUP_CONCAT(cr.jour SEPARATOR ',')  AS jour,
-       GROUP_CONCAT(cr.heure SEPARATOR ',') AS heure,
-       CONCAT(jresp.prenom, ' ', jresp.nom) AS responsable,
+       GROUP_CONCAT(DISTINCT cr.jour ORDER BY cr.usage_priority SEPARATOR ',')   AS jour,
+       GROUP_CONCAT(DISTINCT cr.heure ORDER BY cr.usage_priority SEPARATOR ',')  AS heure,
+       CONCAT(jresp.prenom, ' ', jresp.nom)           AS responsable,
        jresp.email,
        jresp.telephone,
-       GROUP_CONCAT(gym.nom SEPARATOR ',')  AS gymnase
+       GROUP_CONCAT(DISTINCT gym.nom SEPARATOR ',')   AS gymnase,
+       GROUP_CONCAT(DISTINCT gym.ville SEPARATOR ',') AS ville
+
 FROM equipes e
          JOIN joueur_equipe je ON je.id_equipe = e.id_equipe
          JOIN joueurs jresp ON jresp.id = je.id_joueur AND je.is_leader + 0 = 1
