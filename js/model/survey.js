@@ -54,7 +54,15 @@ Ext.define('Ufolep13Volley.model.survey', {
             type: 'string',
         },
         {
-            name: 'team_surveyed',
+            name: 'surveyed',
+            type: 'string',
+        },
+        {
+            name: 'surveyed_club',
+            type: 'string',
+        },
+        {
+            name: 'surveyor',
             type: 'string',
         },
     ]

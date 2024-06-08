@@ -25,8 +25,18 @@ Ext.define('Ufolep13Volley.view.grid.survey', {
                 width: 180,
             },
             {
+                header: 'Equipe',
+                dataIndex: 'surveyor',
+                width: 180,
+            },
+            {
                 header: 'Equipe sondée',
-                dataIndex: 'team_surveyed',
+                dataIndex: 'surveyed',
+                width: 180,
+            },
+            {
+                header: 'Club',
+                dataIndex: 'surveyed_club',
                 width: 180,
             },
             {

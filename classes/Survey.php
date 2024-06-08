@@ -41,7 +41,7 @@ class Survey extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (empty($inputs['id'])) {
+        if(empty($inputs['id'])) {
         } else {
             $bindings[] = array('type' => 'i', 'value' => $inputs['id']);
             $sql .= " WHERE id = ?";
@@ -53,7 +53,10 @@ class Survey extends Generic
     {
         return "SELECT 
                 s.id,    
-                m.id_match, 
+                m.id_match,
+                e_sondeuse.nom_equipe AS surveyor,
+                e_sondee.nom_equipe AS surveyed,
+                e_sondee_club.nom AS surveyed_club,
                 m.code_match, 
                 m.equipe_dom, 
                 m.equipe_ext,
@@ -63,14 +66,14 @@ class Survey extends Generic
                 s.catering,
                 s.global,
                 s.comment,
-                u.login,
-                CASE 
-                    WHEN u.id_equipe = m.id_equipe_dom THEN m.equipe_ext
-                    WHEN u.id_equipe = m.id_equipe_ext THEN m.equipe_dom 
-                END AS team_surveyed 
+                u.login
                 FROM matchs_view m
                 JOIN survey s ON s.id_match = m.id_match
                 JOIN comptes_acces u ON u.id = s.user_id
-                WHERE $query";
+                JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = u.id_equipe
+                JOIN equipes e_sondee ON e_sondee.id_equipe = IF(u.id_equipe = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
+                JOIN clubs e_sondee_club ON e_sondee_club.id = e_sondee.id_club
+                WHERE $query
+                ORDER BY id DESC";
     }
 }
