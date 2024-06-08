@@ -178,6 +178,9 @@ $indicators[] = new Indicator(
     "Nombre de matchs par joueur",
     file_get_contents(__DIR__ . '/../sql/nb_matchs_per_player.sql'));
 $indicators[] = new Indicator(
+    "Classement du fair play",
+    file_get_contents(__DIR__ . '/../sql/fairplay_ranks.sql'));
+$indicators[] = new Indicator(
     "Incohérence score vs sets",
     file_get_contents(__DIR__ . '/../sql/score_insconsistency.sql'),
     'alert');
