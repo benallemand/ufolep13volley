@@ -171,6 +171,7 @@ try {
             header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
             exit(0);
         case 201:
+        case 200:
             http_response_code($resp_code);
             echo json_encode(array(
                 'success' => true,
@@ -186,5 +187,13 @@ try {
             error_log($exception->getMessage());
             break;
     }
+
+}
+catch (ArgumentCountError $argumentCountError) {
+    http_response_code(500);
+    echo json_encode(array(
+        'success' => false,
+        'message' => $argumentCountError->getMessage()
+    ));
 
 }
