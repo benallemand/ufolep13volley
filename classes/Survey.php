@@ -70,8 +70,8 @@ class Survey extends Generic
                 FROM matchs_view m
                 JOIN survey s ON s.id_match = m.id_match
                 JOIN comptes_acces u ON u.id = s.user_id
-                JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = u.id_equipe
-                JOIN equipes e_sondee ON e_sondee.id_equipe = IF(u.id_equipe = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
+                LEFT JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = u.id_equipe
+                LEFT JOIN equipes e_sondee ON e_sondee.id_equipe = IF(u.id_equipe = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
                 JOIN clubs e_sondee_club ON e_sondee_club.id = e_sondee.id_club
                 WHERE $query
                 ORDER BY id DESC";

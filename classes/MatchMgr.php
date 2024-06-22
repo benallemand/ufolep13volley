@@ -576,6 +576,7 @@ class MatchMgr extends Generic
             $this->insert_match($match);
         }
     }
+
     /**
      * @param $competition
      * @throws Exception
@@ -1973,7 +1974,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         } elseif ($match['is_sign_match_dom'] + $match['is_sign_match_ext'] == 2) {
             (new Emails())->match_sheet_signed($match['code_match']);
         }
-        throw new Exception("Signature prise en compte",200);
+        throw new Exception("Signature prise en compte", 200);
     }
 
     /**
@@ -2121,7 +2122,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 array(
                     array('type' => 's', 'value' => $code_competition),
                     array('type' => 'i', 'value' => $day['numero'] - 1),
-                    ));
+                ));
             $teams = $this->rank->get_winner_teams_from_previous_day($division, $code_competition, $previous_day['nommage']);
         }
         if (count($teams) % 2 != 0) {
@@ -2165,8 +2166,17 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $results = $this->survey->get("s.id_match = $id_match AND s.user_id = $id_user");
         $count_results = count($results);
         if ($count_results === 0) {
-            $this->save_survey($id_match, 0, 0, 0, 0, 0, '');
-            return $this->get_survey($id_match);
+            return array(
+                'id' => null,
+                'user_id' => $id_user,
+                'id_match' => $id_match,
+                'on_time' => 0,
+                'spirit' => 0,
+                'referee' => 0,
+                'catering' => 0,
+                'global' => 0,
+                'comment' => null,
+            );
         }
         if ($count_results > 1) {
             throw new Exception("Erreur lors de la récupération des données du sondage ! Trouvé $count_results sondage(s) !");
@@ -2183,7 +2193,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                                 $referee,
                                 $catering,
                                 $global,
-                                $comment,
+                                $comment = null,
                                 $dirtyFields = null,
                                 $id = null): int|array|string|null
     {

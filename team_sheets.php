@@ -73,6 +73,11 @@ $user_details = $_SESSION;
                 <i class="fa-solid fa-volleyball"></i>
             </a>
         </li>
+        <li>
+            <a href="/survey.php?id_match=<?php echo $id_match; ?>">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+            </a>
+        </li>
     </ul>
     <div class="flex justify-center items-center m-4">
         <img src="/images/ufolep-logo-cmjn-BOUCHES-DU.jpg" class="rounded-lg border-4 border-gray-300 shadow-lg"
