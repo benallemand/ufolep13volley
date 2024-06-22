@@ -88,6 +88,7 @@ $user_details = $_SESSION;
                             <div class="mb-4">
                                 <div class="flex items-center">
                                     <select v-model="selectedPlayers" multiple class="select flex-1">
+                                        <option disabled selected>sélectionnez puis ajoutez</option>
                                         <option v-for="player in availablePlayers"
                                                 v-if="player.equipe === matchData.equipe_dom"
                                                 :key="player.id"
@@ -105,6 +106,7 @@ $user_details = $_SESSION;
                             <div class="mb-4">
                                 <div class="flex items-center">
                                     <select v-model="selectedPlayers" multiple class="select flex-1">
+                                        <option disabled selected>sélectionnez puis ajoutez</option>
                                         <option v-for="player in availablePlayers"
                                                 v-if="player.equipe === matchData.equipe_ext"
                                                 :key="player.id" :value="player">
@@ -207,8 +209,12 @@ $user_details = $_SESSION;
                     </div>
                 </div>
             </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-success">Enregistrer</button>
+            <div class="flex flex-row w-full">
+                <button class="btn btn-primary w-2/3" type="submit"><i class="fas fa-pencil mr-1"></i>Enregistrer
+                </button>
+                <button class="btn btn-secondary w-1/3" type="button" @click="signTeamSheets()"><i
+                            class="fas fa-signature mr-1"></i>Signer
+                </button>
             </div>
         </form>
     </div>

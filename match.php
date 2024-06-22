@@ -157,10 +157,9 @@ $user_details = $_SESSION;
             </p>
         </div>
         <div class="flex flex-row w-full">
-            <button class="btn btn-primary w-2/3" type="submit"><i class="fas fa-pencil mr-2"></i>Modifier le score
-            </button>
+            <button class="btn btn-primary w-2/3" type="submit"><i class="fas fa-pencil mr-1"></i>Enregistrer</button>
             <button class="btn btn-secondary w-1/3" type="button" @click="signMatch()"><i
-                        class="fas fa-signature mr-2"></i>Signer
+                        class="fas fa-signature mr-1"></i>Signer
             </button>
         </div>
     </form>
