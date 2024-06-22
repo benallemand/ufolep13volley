@@ -133,9 +133,9 @@ $user_details = $_SESSION;
                         Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison
                     </div>
                     <ul>
-                        <li v-for="player in renforts" :key="player.id">
+                        <li v-for="player in renforts" :key="player.id" class="flex items-center mb-3">
                             {{ player.prenom }} {{ player.nom }} ({{player.club}})
-                            <button @click="addPlayers" type="button" class="btn btn-success ml-2">
+                            <button @click="addPlayers" type="button" class="btn btn-success ml-auto">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </li>
