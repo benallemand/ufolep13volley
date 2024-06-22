@@ -1404,7 +1404,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 WHERE m.id_match = $id_match
                   AND je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
                   AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = $id_match)";
-        return $this->sql_manager->execute($sql);
+        $results = $this->sql_manager->execute($sql);
+        return Players::adjust_photo_path_from_results($results);
     }
 
     /**
@@ -1430,7 +1431,8 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                                  FROM joueur_equipe 
                                  WHERE id_equipe IN (SELECT id_equipe_dom FROM matches WHERE id_match = $id_match)
                                  OR id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match))";
-        return $this->sql_manager->execute($sql);
+        $results = $this->sql_manager->execute($sql);
+        return Players::adjust_photo_path_from_results($results);
     }
 
 
@@ -1649,7 +1651,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id, $dirtyFields = null): void
+    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null, $dirtyFields = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         if (!isset($id_match)) {

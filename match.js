@@ -5,41 +5,23 @@ new Vue({
         isLoading: false,
     },
     mounted() {
-        this.loadMatchData();
+        this.reloadData();
     },
     methods: {
-        onSuccess(response) {
-            this.isLoading = false;
-            Toastify({
-                text: response.data.message,
-                duration: 3000,
-                close: true,
-                gravity: "bottom",
-                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)", // Couleur de fond du toast
-            }).showToast();
-        },
-        onError(error) {
-            this.isLoading = false;
-            Toastify({
-                text: error.response.data.message,
-                duration: 3000,
-                close: true,
-                gravity: "bottom",
-                backgroundColor: "linear-gradient(to right, #ff0000, #ff6666)",
-            }).showToast();
-            console.error('Erreur lors du chargement des données:', error);
+        reloadData() {
+            this.isLoading = true;
+            Promise.all([this.loadMatchData()])
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         loadMatchData() {
-            this.isLoading = true;
-            axios.get(`/rest/action.php/matchmgr/get_match?id_match=${id_match}`) // Remplacez par l'URL de votre API
-                .then(
-                    response => {
-                        this.matchData = response.data;
-                        this.isLoading = false;
-                    }
-                )
+            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${id_match}`)
+                .then(response => {
+                    this.matchData = response.data;
+                })
                 .catch(error => {
-                    this.onError(error)
+                    onError(error)
                 });
         },
         signMatch() {
@@ -53,12 +35,12 @@ new Vue({
                 axios.post('/rest/action.php/matchmgr/sign_match_sheet', formData)
                     .then(
                         response => {
-                            this.onSuccess(response)
-                            this.loadMatchData();
+                            onSuccess(response)
+                            this.reloadData();
                         }
                     )
                     .catch(error => {
-                        this.onError(error)
+                        onError(error)
                     });
             }
         },
@@ -96,12 +78,12 @@ new Vue({
             axios.post('/rest/action.php/matchmgr/save_match', formData)
                 .then(
                     response => {
-                        this.onSuccess(response)
-                        this.loadMatchData()
+                        onSuccess(response)
+                        this.reloadData();
                     }
                 )
                 .catch(error => {
-                    this.onError(error)
+                    onError(error)
                 });
         },
         setScores() {

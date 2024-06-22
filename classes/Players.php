@@ -1031,13 +1031,27 @@ class Players extends Generic
                             break;
                     }
                 }
+                if (($results[$index]['path_photo_low'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo_low']) === FALSE)) {
+                    switch ($result['sexe']) {
+                        case 'M':
+                            $results[$index]['path_photo_low'] = 'images/MaleMissingPhoto.png';
+                            break;
+                        case 'F':
+                            $results[$index]['path_photo_low'] = 'images/FemaleMissingPhoto.png';
+                            break;
+                        default:
+                            break;
+                    }
+                }
             } else {
                 switch ($result['sexe']) {
                     case 'M':
                         $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
+                        $results[$index]['path_photo_low'] = 'images/MalePhotoNotAllowed.png';
                         break;
                     case 'F':
                         $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
+                        $results[$index]['path_photo_low'] = 'images/FemalePhotoNotAllowed.png';
                         break;
                     default:
                         break;

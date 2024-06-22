@@ -36,7 +36,6 @@ $user_details = $_SESSION;
 <HEAD>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <TITLE>Feuille de match</TITLE>
     <!--TOASTER-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -166,6 +165,7 @@ $user_details = $_SESSION;
         </div>
     </form>
 </div>
+<script src="/common_vue.js"></script>
 <script src="/match.js"></script>
 </BODY>
 </HTML>
