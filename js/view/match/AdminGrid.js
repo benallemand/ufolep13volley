@@ -8,6 +8,76 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
     columns: {
         items: [
             {
+                header: 'Liens',
+                xtype: 'actioncolumn',
+                items: [
+                    {
+                        getTip: function () {
+                            return "Feuille de match";
+                        },
+                        getClass: function (value, meta, record) {
+                            return (
+                                record.get('match_status') !== 'ARCHIVED'
+                                && record.get('is_sign_match_dom')
+                                && record.get('is_sign_match_ext')) ? 'fa fa-volleyball green' : 'fa fa-volleyball red';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            window.open(`${location.origin}/match.php?id_match=${record.get('id_match')}`, '_blank');
+                        },
+                    },
+                    {
+                        getTip: function () {
+                            return "Fiche équipes";
+                        },
+                        getClass: function (value, meta, record) {
+                            return (
+                                record.get('match_status') !== 'ARCHIVED'
+                                && record.get('is_match_player_filled')
+                                && record.get('is_sign_team_dom')
+                                && record.get('is_sign_team_ext')) ? 'fa fa-user green' : 'fa fa-user red';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            window.open(`${location.origin}/team_sheets.php?id_match=${record.get('id_match')}`, '_blank');
+                        },
+                    },
+                    {
+                        getTip: function () {
+                            return "Envoyer un mail aux responsables";
+                        },
+                        getClass: function (value, meta, record) {
+                            return 'fa fa-envelope';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            window.location.href = Ext.String.format("mailto:{0},{1}", record.get('email_dom'), record.get('email_ext'));
+                        },
+                    },
+                    {
+                        getTip: function () {
+                            return "Sondage";
+                        },
+                        getClass: function (value, meta, record) {
+                            return 'fa fa-square-poll-vertical';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            grid.up('tabpanel').add({
+                                xtype: 'survey_grid',
+                                store: {
+                                    type: 'survey',
+                                    autoLoad: true,
+                                    remoteFilter: false,
+                                    filters: [
+                                        {
+                                            property: 'id_match',
+                                            value: record.get('id_match'),
+                                        }
+                                    ]
+                                }
+                            });
+                        },
+                    },
+                ]
+            },
+            {
                 header: 'Statut',
                 xtype: 'actioncolumn',
                 items: [
@@ -53,14 +123,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function (value, meta, record) {
-                            return record.get('is_match_player_filled') ? 'Présents renseignés' : '';
-                        },
-                        getClass: function (value, meta, record) {
-                            return record.get('is_match_player_filled') ? 'fa fa-list green' : 'x-hidden-display';
-                        },
-                    },
-                    {
-                        getTip: function (value, meta, record) {
                             return record.get('is_forfait') ? 'Equipe forfait' : '';
                         },
                         getClass: function (value, meta, record) {
@@ -93,17 +155,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                             return !Ext.isEmpty(record.get('count_status')) ? 'fa fa-exclamation-circle red' : 'x-hidden-display';
                         },
                     },
-                    {
-                        getTip: function () {
-                            return "Envoyer un mail aux responsables";
-                        },
-                        getClass: function (value, meta, record) {
-                            return 'fa fa-envelope';
-                        },
-                        handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            window.location.href = Ext.String.format("mailto:{0},{1}", record.get('email_dom'), record.get('email_ext'));
-                        },
-                    },
                 ],
                 width: 100,
             },
@@ -111,13 +162,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 header: 'Code',
                 dataIndex: 'code_match',
                 width: 100,
-                renderer: function (value, meta, record) {
-                    var span = '<span><i class="fa-solid fa-users"></i></span>';
-                    return Ext.String.format("{0} <a href='/team_sheets.php?id_match={1}' target='_blank'>{2}</a></p>",
-                        value,
-                        record.get('id_match'),
-                        span);
-                }
             },
             {
                 header: 'Fichiers',
