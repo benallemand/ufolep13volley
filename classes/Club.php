@@ -10,6 +10,14 @@ class Club extends Generic
         $this->table_name = 'clubs';
     }
 
+    public function getSql($query = "1=1"): string
+    {
+        return "SELECT * 
+                FROM $this->table_name
+                WHERE $query
+                ORDER BY nom";
+    }
+
     /**
      * @throws Exception
      */

@@ -59,7 +59,6 @@ Ext.define('Ufolep13Volley.view.form.register', {
             xtype: 'combo_competition',
             store: {
                 type: 'Competitions',
-                // sélection des compétitions non démarrées uniquement
                 filters: [
                     function (item) {
                         return user_details.profile_name === 'ADMINISTRATEUR' ? true : item.get('limit_register_date') >= Ext.Date.now() && item.get('start_register_date') < Ext.Date.now();
@@ -118,6 +117,28 @@ Ext.define('Ufolep13Volley.view.form.register', {
             fieldLabel: "Nom de l'équipe lors de la saison précédente",
             labelWidth: 400,
             name: 'old_team_id',
+            listeners: {
+                select: function (combo, record) {
+                    Ext.Msg.prompt("Identification",
+                        "Pour pré-remplir les informations de l'an dernier, veuillez saisir l'adresse email du responsable d'équipe:",
+                        function (btn, text) {
+                            if (btn === 'ok') {
+                                Ext.Ajax.request({
+                                    url: "/rest/action.php/team/load_register",
+                                    params: {
+                                        id_team: combo.getValue(),
+                                        email: text,
+                                    },
+                                    method: 'GET',
+                                    success: function (response) {
+                                        var resp = Ext.decode(response.responseText);
+                                        combo.up('form').getForm().setValues(resp);
+                                    },
+                                });
+                            }
+                        });
+                }
+            }
         },
         {
             xtype: 'fieldset',

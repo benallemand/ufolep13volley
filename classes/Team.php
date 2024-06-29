@@ -24,11 +24,11 @@ class Team extends Generic
 
     public function getSql($query = "1=1"): string
     {
-        return "SELECT 
+        return "SELECT
         e.code_competition, 
         comp.libelle AS libelle_competition, 
         e.nom_equipe, 
-        CONCAT(e.nom_equipe, ' (', c.nom, ') (', comp.libelle, ')', IFNULL(CONCAT('(', cl.division, ')'), '')) AS team_full_name,
+        CONCAT(e.nom_equipe, ' (', c.nom, ') - ', GROUP_CONCAT(DISTINCT CONCAT(comp.libelle, IFNULL(CONCAT('(', cl.division, ')'), '')) ORDER BY comp.libelle)) AS team_full_name,
         e.id_club,
         c.nom AS club,
         e.id_equipe,
@@ -50,7 +50,7 @@ class Team extends Generic
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=e.code_competition
+        JOIN competitions comp ON comp.code_competition=cl.code_competition
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
@@ -58,8 +58,8 @@ class Team extends Generic
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
         WHERE $query
-        GROUP BY team_full_name, comp.libelle, c.nom, nom_equipe
-        ORDER BY comp.libelle, c.nom, nom_equipe";
+        GROUP BY id_equipe, nom_equipe
+        ORDER BY nom_equipe";
     }
 
     /**
@@ -625,6 +625,56 @@ class Team extends Generic
         //output all remaining data on a file pointer
         fpassthru($f);
         exit;
+    }
+
+    /**
+     * @param $id_team
+     * @param $email
+     * @return array
+     * @throws Exception
+     */
+    public function load_register($id_team, $email): array
+    {
+        $team = $this->getRegisterTeamInfo($id_team);
+        if(strtolower($team['leader_email']) !== strtolower(trim($email))) {
+            throw new Exception("l'email saisi ne correspond pas à l'email de contact de l'équipe !");
+        }
+        return $team;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getRegisterTeamInfo($id_team): array|int|string|null
+    {
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_team);
+        $results = $this->sql_manager->execute("
+        SELECT
+            jresp.nom AS leader_name,
+            jresp.prenom AS leader_first_name,
+            jresp.email AS leader_email,
+            jresp.telephone AS leader_phone,
+            g1.id AS id_court_1,
+            cr1.jour AS day_court_1,
+            cr1.heure AS hour_court_1,
+            g2.id AS id_court_2,
+            cr2.jour AS day_court_2,
+            cr2.heure AS hour_court_2
+        FROM equipes e 
+        JOIN clubs c ON c.id=e.id_club
+        LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
+        LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
+        LEFT JOIN creneau cr1 ON cr1.id_equipe = e.id_equipe AND cr1.usage_priority=1
+        LEFT JOIN creneau cr2 ON cr2.id_equipe = e.id_equipe AND cr2.usage_priority=2
+        LEFT JOIN gymnase g1 ON g1.id=cr1.id_gymnase
+        LEFT JOIN gymnase g2 ON g2.id=cr2.id_gymnase
+        WHERE e.id_equipe = ?
+        ORDER BY nom_equipe", $bindings);
+        if(count($results) !== 1) {
+            throw new Exception("Pas d'informations trouvées pour cette équipe !");
+        }
+        return $results[0];
     }
 
 
