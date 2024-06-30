@@ -35,12 +35,12 @@ class Configuration
         ]);
         $this->mail_host = $_ENV['MAIL_HOST'];
         $this->mail_function = $_ENV['MAIL_FUNCTION'];
-        $this->mail_smtpauth = $_ENV['MAIL_SMTPAUTH'];
+        $this->mail_smtpauth = $_ENV['MAIL_SMTPAUTH'] === 'true';
         $this->mail_username = $_ENV['MAIL_USERNAME'];
         $this->mail_password = $_ENV['MAIL_PASSWORD'];
         $this->mail_smtpsecure = $_ENV['MAIL_SMTPSECURE'];
         $this->mail_port = $_ENV['MAIL_PORT'];
-        $this->covid_mode = $_ENV['COVID_MODE'];
+        $this->covid_mode = $_ENV['COVID_MODE'] === 'true';
         $this->flickr_api_key = $_ENV['FLICKR_API_KEY'];
         $this->proxy_url = $_ENV['PROXY_URL'];
     }
