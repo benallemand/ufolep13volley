@@ -1941,6 +1941,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         } elseif ($match['is_sign_team_dom'] + $match['is_sign_team_ext'] == 2) {
             (new Emails())->team_sheet_signed($match['code_match']);
         }
+        throw new Exception("Signature prise en compte", 200);
     }
 
     /**
