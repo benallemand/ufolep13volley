@@ -1,3 +1,6 @@
+import {onSuccess, onError} from "./toaster.js";
+import {genericSignMatch, genericSignSheet} from "./signer.js";
+
 new Vue({
     el: '#app',
     data: {
@@ -21,28 +24,14 @@ new Vue({
                     this.matchData = response.data;
                 })
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
         signMatch() {
-            const message = "Je confirme avoir pris connaissance du score saisi sur le site." +
-                "\nEn signant numériquement la feuille de match, il n'est plus nécessaire de fournir de feuille de match au format papier." +
-                "\nMerci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.";
-            if (window.confirm(message)) {
-                this.isLoading = true;
-                const formData = new FormData();
-                formData.append('id_match', id_match);
-                axios.post('/rest/action.php/matchmgr/sign_match_sheet', formData)
-                    .then(
-                        response => {
-                            onSuccess(response)
-                            this.reloadData();
-                        }
-                    )
-                    .catch(error => {
-                        onError(error)
-                    });
-            }
+            genericSignMatch(this, id_match);
+        },
+        signTeamSheets() {
+            genericSignSheet(this, id_match);
         },
         submitForm() {
             this.setScores();
@@ -78,12 +67,12 @@ new Vue({
             axios.post('/rest/action.php/matchmgr/save_match', formData)
                 .then(
                     response => {
-                        onSuccess(response)
+                        onSuccess(this, response)
                         this.reloadData();
                     }
                 )
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
         setScores() {

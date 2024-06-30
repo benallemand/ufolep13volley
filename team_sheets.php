@@ -57,32 +57,8 @@ $user_details = $_SESSION;
     <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
-    <ul class="menu menu-horizontal bg-base-200 rounded-box">
-        <li>
-            <a href="javascript:history.back()">
-                <i class="fa-solid fa-xmark"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/match.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-volleyball"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/survey.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-square-poll-vertical"></i>
-            </a>
-        </li>
-    </ul>
-    <div class="flex justify-center items-center m-4">
-        <img src="/images/ufolep-logo-cmjn-BOUCHES-DU.jpg" class="rounded-lg border-4 border-gray-300 shadow-lg"
-             alt=""/>
-    </div>
+    <?php include __DIR__ . '/menu.php'; ?>
+    <?php include __DIR__ . '/summary.php'; ?>
     <div class="flex justify-center items-center m-4">
         <form @submit.prevent="submitForm">
             <div class="flex flex-col">
@@ -150,27 +126,25 @@ $user_details = $_SESSION;
                 </div>
                 <div>
                     <h1>Joueurs présents</h1>
-                    <div class="flex flex-col">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
-                                <ul class="list-disc pl-5">
-                                    <li v-for="(player, index) in matchPlayers"
-                                        v-if="player.equipe == matchData.equipe_dom"
-                                        :key="index"
-                                        class="flex justify-between items-center mb-2">
-                                        <div class="flex items-center">
-                                            <img :src="player.path_photo_low" alt="Photo"
-                                                 class="w-12 h-12 rounded-full mr-4">
-                                            <p>{{ player.prenom }} {{ player.nom }}</p>
-                                        </div>
-                                        <button @click="removePlayer(player.id)" type="button"
-                                                class="btn btn-error ml-2">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </label>
-                        </div>
+                    <div class="flex flex-col mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
+                            <ul class="list-disc pl-5">
+                                <li v-for="(player, index) in matchPlayers"
+                                    v-if="player.equipe == matchData.equipe_dom"
+                                    :key="index"
+                                    class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center">
+                                        <img :src="player.path_photo_low" alt="Photo"
+                                             class="w-12 h-12 rounded-full mr-4">
+                                        <p>{{ player.prenom }} {{ player.nom }}</p>
+                                    </div>
+                                    <button @click="removePlayer(player.id)" type="button"
+                                            class="btn btn-error ml-2">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </label>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_ext}}
                                 <ul class="list-disc pl-5">
@@ -214,18 +188,15 @@ $user_details = $_SESSION;
                     </div>
                 </div>
             </div>
-            <div class="flex flex-row w-full">
-                <button class="btn btn-primary w-2/3" type="submit"><i class="fas fa-pencil mr-1"></i>Enregistrer
-                </button>
-                <button class="btn btn-secondary w-1/3" type="button" @click="signTeamSheets()"><i
-                            class="fas fa-signature mr-1"></i>Signer
+            <div class="flex justify-center items-center m-4">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-pencil mr-1"></i><span>Enregistrer</span>
                 </button>
             </div>
         </form>
     </div>
 
 </div>
-<script src="/common_vue.js"></script>
-<script src="/team_sheets.js"></script>
+<script src="/team_sheets.js" type="module"></script>
 </BODY>
 </HTML>

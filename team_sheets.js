@@ -1,3 +1,6 @@
+import { onSuccess, onError} from "./toaster.js";
+import {genericSignMatch, genericSignSheet} from "./signer.js";
+
 new Vue({
     el: '#app',
     data: {
@@ -20,7 +23,7 @@ new Vue({
                         this.renforts = response.data;
                     })
                     .catch(error => {
-                        onError(error)
+                        onError(this, error)
                     });
             }
             this.renforts = [];
@@ -31,7 +34,7 @@ new Vue({
                     this.matchData = response.data;
                 })
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
         loadAvailablePlayers() {
@@ -40,7 +43,7 @@ new Vue({
                     this.availablePlayers = response.data;
                 })
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
         loadMatchPlayers() {
@@ -49,29 +52,14 @@ new Vue({
                     this.matchPlayers = response.data;
                 })
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
+        signMatch() {
+            genericSignMatch(this, id_match);
+        },
         signTeamSheets() {
-            const message = "Je confirme avoir pris connaissance des joueurs/joueuses présent(e)s." +
-                "\nLes personnes présentes pour ce match ont été déclarées présentes sur le site, sur la page de gestion du match." +
-                "\nEn signant numériquement la fiche équipe, il n'est plus nécessaire de fournir de fiche équipe au format papier." +
-                "\nMerci de signer en cliquant sur OK, ou de passer par un format papier en cliquant sur Annuler.";
-            if (window.confirm(message)) {
-                this.isLoading = true;
-                const formData = new FormData();
-                formData.append('id_match', id_match);
-                axios.post('/rest/action.php/matchmgr/sign_team_sheet', formData)
-                    .then(
-                        response => {
-                            onSuccess(response)
-                            this.reloadData();
-                        }
-                    )
-                    .catch(error => {
-                        onError(error)
-                    });
-            }
+            genericSignSheet(this, id_match);
         },
         addPlayers() {
             this.selectedPlayers.forEach(player => {
@@ -94,12 +82,12 @@ new Vue({
             axios.post('/rest/action.php/matchmgr/delete_match_player', formData)
                 .then(
                     response => {
-                        onSuccess(response)
+                        onSuccess(this, response)
                         this.reloadData();
                     }
                 )
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         },
         reloadData() {
@@ -119,12 +107,12 @@ new Vue({
             axios.post('/rest/action.php/matchmgr/manage_match_players', formData)
                 .then(
                     response => {
-                        onSuccess(response)
+                        onSuccess(this, response)
                         this.reloadData()
                     }
                 )
                 .catch(error => {
-                    onError(error)
+                    onError(this, error)
                 });
         }
     }

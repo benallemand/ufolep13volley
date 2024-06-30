@@ -62,65 +62,9 @@ $user_details = $_SESSION;
     <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
-    <ul class="menu menu-horizontal bg-base-200 rounded-box">
-        <li>
-            <a href="javascript:history.back()">
-                <i class="fa-solid fa-xmark"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/team_sheets.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-user"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/survey.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-square-poll-vertical"></i>
-            </a>
-        </li>
-    </ul>
-    <div class="flex justify-center items-center m-4">
-        <img src="/images/ufolep-logo-cmjn-BOUCHES-DU.jpg" class="rounded-lg border-4 border-gray-300 shadow-lg"
-             alt=""/>
-    </div>
-    <div class="flex items-center justify-between mb-4">
-        <div class="text-center text-l font-bold">{{matchData.libelle_competition}}</div>
-        <div class="text-center text-l font-bold">
-            <p>Journée {{matchData.numero_journee}}</p>
-            <p>
-                <span>{{matchData.date_reception}}</span>
-                <span>{{matchData.heure_reception}}</span>
-                <span>{{matchData.gymnasium}}</span>
-            </p>
-        </div>
-        <div class="text-center text-l font-bold">Division {{matchData.division}}</div>
-
-    </div>
-    <h2 class="text-center text-2xl font-bold mb-4">{{matchData.code_match}} : {{ matchData.equipe_dom }} vs
-        {{ matchData.equipe_ext }}</h2>
+    <?php include __DIR__ . '/menu.php'; ?>
+    <?php include __DIR__ . '/summary.php'; ?>
     <form @submit.prevent="submitForm">
-        <div class="form-group mb-4 p-4 border">
-            <h3 class="text-xl font-bold mb-4">Signatures</h3>
-            <h4 class="text-l font-bold mb-4">Fiche équipes</h4>
-            <div class="grid grid-cols-4 gap-4 items-center">
-                <label class="col-span-1 text-lg">{{ matchData.equipe_dom }}</label>
-                <input class="checkbox" type="checkbox" v-model="matchData.is_sign_team_dom" disabled/>
-                <label class="col-span-1 text-lg">{{ matchData.equipe_ext }}</label>
-                <input class="checkbox" type="checkbox" v-model="matchData.is_sign_team_ext" disabled/>
-            </div>
-            <h4 class="text-l font-bold mb-4">Feuille de match</h4>
-            <div class="grid grid-cols-4 gap-4 items-center">
-                <label class="col-span-1 text-lg">{{ matchData.equipe_dom }}</label>
-                <input class="checkbox" type="checkbox" v-model="matchData.is_sign_match_dom" disabled/>
-                <label class="col-span-1 text-lg">{{ matchData.equipe_ext }}</label>
-                <input class="checkbox" type="checkbox" v-model="matchData.is_sign_match_ext" disabled/>
-            </div>
-        </div>
         <div>
             <div class="grid grid-cols-3 gap-4 flex items-center border mb-4">
                 <h3 class="text-center text-xl font-bold mb-4">Score</h3>
@@ -161,15 +105,13 @@ $user_details = $_SESSION;
                 Le scan des feuilles peut, si besoin, être envoyé directement par email à la commission.
             </p>
         </div>
-        <div class="flex flex-row w-full">
-            <button class="btn btn-primary w-2/3" type="submit"><i class="fas fa-pencil mr-1"></i>Enregistrer</button>
-            <button class="btn btn-secondary w-1/3" type="button" @click="signMatch()"><i
-                        class="fas fa-signature mr-1"></i>Signer
+        <div class="flex justify-center items-center m-4">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-pencil mr-1"></i><span>Enregistrer</span>
             </button>
         </div>
     </form>
 </div>
-<script src="/common_vue.js"></script>
-<script src="/match.js"></script>
+<script src="/match.js" type="module"></script>
 </BODY>
 </HTML>

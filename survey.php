@@ -57,97 +57,64 @@ $user_details = $_SESSION;
     <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
-    <ul class="menu menu-horizontal bg-base-200 rounded-box">
-        <li>
-            <a href="javascript:history.back()">
-                <i class="fa-solid fa-xmark"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/match.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-volleyball"></i>
-            </a>
-        </li>
-        <li>
-            <a href="/team_sheets.php?id_match=<?php echo $id_match; ?>">
-                <i class="fa-solid fa-user"></i>
-            </a>
-        </li>
-    </ul>
-    <div class="flex justify-center items-center m-4">
-        <img src="/images/ufolep-logo-cmjn-BOUCHES-DU.jpg" class="rounded-lg border-4 border-gray-300 shadow-lg"
-             alt=""/>
-    </div>
-    <div class="flex items-center justify-between mb-4">
-        <div class="text-center text-l font-bold">{{matchData.libelle_competition}}</div>
-        <div class="text-center text-l font-bold">
-            <p>Journée {{matchData.numero_journee}}</p>
-            <p>
-                <span>{{matchData.date_reception}}</span>
-                <span>{{matchData.heure_reception}}</span>
-                <span>{{matchData.gymnasium}}</span>
-            </p>
-        </div>
-        <div class="text-center text-l font-bold">Division {{matchData.division}}</div>
-    </div>
-    <h2 class="text-center text-2xl font-bold mb-4">{{matchData.code_match}} : {{ matchData.equipe_dom }} vs
-        {{ matchData.equipe_ext }}</h2>
+    <?php include __DIR__ . '/menu.php'; ?>
+    <?php include __DIR__ . '/summary.php'; ?>
     <form @submit.prevent="submitForm">
         <div class="mb-4 p-4 border flex flex-col">
-            <div class="rating">
-                <label>Ponctualité
-                    <input type="radio" v-model="surveyData.on_time" :value="0" class="rating-hidden"/>
+            <div class="rating flex">
+                <label class="basis-1/3 cursor-pointer" for="star1-0">Ponctualité</label>
+                <div class="basis-2/3">
+                    <input type="radio" id="star1-0" v-model="surveyData.on_time" :value="0" class="rating-hidden"/>
                     <input type="radio" v-model="surveyData.on_time" :value="1" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="2" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="5" class="mask mask-star"/>
-                </label>
+                </div>
             </div>
-            <div class="rating">
-                <label>Etat d'esprit
-                    <input type="radio" v-model="surveyData.spirit" :value="0" class="rating-hidden"/>
+            <div class="rating flex">
+                <label class="basis-1/3 cursor-pointer" for="star2-0">Etat d'esprit</label>
+                <div class="basis-2/3">
+                    <input type="radio" id="star2-0" v-model="surveyData.spirit" :value="0" class="rating-hidden"/>
                     <input type="radio" v-model="surveyData.spirit" :value="1" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="2" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="5" class="mask mask-star"/>
-                </label>
+                </div>
             </div>
-            <div class="rating">
-                <label>Arbitrage
-                    <input type="radio" v-model="surveyData.referee" :value="0" class="rating-hidden"/>
+            <div class="rating flex">
+                <label class="basis-1/3 cursor-pointer" for="star3-0">Arbitrage</label>
+                <div class="basis-2/3">
+                    <input type="radio" id="star3-0" v-model="surveyData.referee" :value="0" class="rating-hidden"/>
                     <input type="radio" v-model="surveyData.referee" :value="1" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="2" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="5" class="mask mask-star"/>
-                </label>
+                </div>
             </div>
-            <div class="rating">
-                <label>Apéro
-                    <input type="radio" v-model="surveyData.catering" :value="0" class="rating-hidden"/>
+            <div class="rating flex">
+                <label class="basis-1/3 cursor-pointer" for="star4-0">Apéro</label>
+                <div class="basis-2/3">
+                    <input type="radio" id="star4-0" v-model="surveyData.catering" :value="0" class="rating-hidden"/>
                     <input type="radio" v-model="surveyData.catering" :value="1" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="2" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="5" class="mask mask-star"/>
-                </label>
+                </div>
             </div>
-            <div class="rating">
-                <label>Global
-                    <input type="radio" v-model="surveyData.global" :value="0" class="rating-hidden"/>
+            <div class="rating flex">
+                <label class="basis-1/3 cursor-pointer" for="star5-0">Global</label>
+                <div class="basis-2/3">
+                    <input type="radio" id="star5-0" v-model="surveyData.global" :value="0" class="rating-hidden"/>
                     <input type="radio" v-model="surveyData.global" :value="1" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="2" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="5" class="mask mask-star"/>
-                </label>
+                </div>
             </div>
         </div>
         <div class="form-group mb-4">
@@ -160,9 +127,7 @@ $user_details = $_SESSION;
             </button>
         </div>
     </form>
-
 </div>
-<script src="/common_vue.js"></script>
-<script src="/survey.js"></script>
+<script src="/survey.js" type="module"></script>
 </BODY>
 </HTML>
