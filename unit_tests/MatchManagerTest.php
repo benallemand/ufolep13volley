@@ -801,4 +801,26 @@ class MatchManagerTest extends TestCase
         $_SESSION['profile_name'] = 'ADMINISTRATEUR';
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_check_team_allowed_to_ask_report()
+    {
+        $teams = $this->get_test_teams();
+        $matches = $this->get_test_matches();
+        $id_equipe = $teams[0]['id_equipe'];
+        $code_match = $matches[0]['code_match'];
+        $this->connect_as_team_leader($id_equipe);
+        $this->match_manager->check_team_allowed_to_ask_report($id_equipe, $code_match);
+        $sql = "UPDATE classements SET report_count = 1 WHERE id_equipe = ? AND code_competition = 'ut'";
+        $bindings = array();
+        $bindings[] = array('type' => 'i', 'value' => $id_equipe);
+        $this->sql_manager->execute($sql, $bindings);
+        try {
+            $this->match_manager->check_team_allowed_to_ask_report($id_equipe, $code_match);
+        } catch (Exception $exception) {
+            $this->assertEquals("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.", $exception->getMessage());
+        }
+    }
+
 }
