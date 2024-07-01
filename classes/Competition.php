@@ -522,7 +522,7 @@ class Competition extends Generic
         $current_date = date('Y-m-d', strtotime($current_date));
         $start_date = date('Y-m-d', strtotime($competition['start_register_date']));
         $end_date = date('Y-m-d', strtotime($competition['limit_register_date']));
-        return !(($current_date >= $start_date) && ($current_date <= $end_date));
+        return ($current_date >= $start_date) && ($current_date <= $end_date);
     }
 
     /**
