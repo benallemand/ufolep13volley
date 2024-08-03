@@ -50,7 +50,7 @@ class Team extends Generic
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=cl.code_competition
+        JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
@@ -113,8 +113,8 @@ class Team extends Generic
         DATE_FORMAT(NOW(), '%d/%m/%Y') AS date_visa_ctsd
         FROM equipes e
         JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=e.code_competition
         LEFT JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
+        JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
@@ -183,7 +183,7 @@ class Team extends Generic
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=e.code_competition
+        JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
@@ -233,7 +233,7 @@ class Team extends Generic
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
         JOIN clubs c ON c.id=e.id_club
-        JOIN competitions comp ON comp.code_competition=cl.code_competition
+        JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
@@ -454,7 +454,7 @@ class Team extends Generic
                 LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
                 LEFT JOIN photos p ON p.id = e.id_photo
                 JOIN clubs c ON c.id=e.id_club
-                JOIN competitions comp ON comp.code_competition=e.code_competition
+                JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
                 LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
                 LEFT JOIN joueur_equipe jesupp ON jesupp.id_equipe=e.id_equipe AND jesupp.is_vice_leader+0 > 0
                 LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
