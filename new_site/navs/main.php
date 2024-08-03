@@ -83,6 +83,7 @@ require_once __DIR__ . '/../../classes/Competition.php';
                         <li><a href="mailto:contact@ufolep13volley.org"><span
                                         class="glyphicon glyphicon-envelope"></span>
                                 contact@ufolep13volley.org</a></li>
+                        <li><a href="#accident">Déclaration de sinistre</a></li>
                         <li class="dropdown-header"><h4>Liens</h4></li>
                         <li><a href="#webSites" target="_blank"><span class="glyphicon glyphicon-link"></span> Sites web
                                 des clubs</a>
@@ -107,10 +108,6 @@ require_once __DIR__ . '/../../classes/Competition.php';
                         <li><a href="../infos_utiles/Media/ReglementIsoardi.pdf" target="_blank">Coupe Isoardi</a></li>
                         <li><a href="../infos_utiles/Media/ReglementCoupeFeminine6x6.pdf" target="_blank">Coupe Féminine
                                 6x6</a></li>
-                        <li class="dropdown-header"><h4>Bonus</h4></li>
-                        <li><a href="../infos_utiles/Media/FeuilleMatch1page.pdf" target="_blank">Feuille de match</a>
-                        </li>
-                        <li><a href="#accident">Déclaration de sinistre</a></li>
                     </ul>
                 </li>
             </ul>
