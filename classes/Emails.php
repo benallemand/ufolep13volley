@@ -1043,7 +1043,7 @@ class Emails extends Generic
             $trs_club_compet_cout .= "<tr><td>$club</td><td>$compet</td><td>$cout</td></tr>";
         }
         $destination = array_unique($destination);
-        $coordonnees_ufolep13 = "UFOLEP13 CAL DE LA BUSSERADE 58 RUE CAVAIGNAC 13003 MARSEILLE";
+        $coordonnees_ufolep13 = "UFOLEP13 81 RUE DE LA MAURELLE 13013 MARSEILLE";
         $url_rib = "https://www.ufolep13volley.org/infos_utiles/Media/rib.pdf";
         $this->insert_generic_email(
             __DIR__ . '/../templates/emails/register_not_paid.fr.html',
