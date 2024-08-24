@@ -43,5 +43,6 @@ class Configuration
         $this->covid_mode = $_ENV['COVID_MODE'] === 'true';
         $this->flickr_api_key = $_ENV['FLICKR_API_KEY'];
         $this->proxy_url = $_ENV['PROXY_URL'];
+        $this->seeding_tournament_week = $_ENV['SEEDING_TOURNAMENT_WEEK'];
     }
 }

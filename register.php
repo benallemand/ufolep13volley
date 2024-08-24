@@ -9,6 +9,8 @@ $limit_html_label .= "</thead>";
 $limit_html_label .= "<tbody>";
 $manager = new Competition();
 $competitions = $manager->getCompetitions();
+$configuration = new Configuration();
+
 foreach ($competitions as $competition) {
     $libelle = $competition['libelle'];
     $start_date = $competition['start_register_date'];
@@ -71,6 +73,7 @@ $user_details = $_SESSION;
     <script type="text/javascript">
         var title = "<?php echo $title; ?>";
         var limit_html_label = "<?php echo $limit_html_label; ?>";
+        var week_seeding_tournament = "<?php echo $configuration->seeding_tournament_week ?>";
         var user_details = <?php echo json_encode($user_details); ?>;
     </script>
 </HEAD>

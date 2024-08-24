@@ -518,10 +518,9 @@ class Competition extends Generic
     public function is_registration_available($id_competition): bool
     {
         $competition = $this->get_by_id($id_competition);
-        $current_date = date('Y-m-d');
-        $current_date = date('Y-m-d', strtotime($current_date));
-        $start_date = date('Y-m-d', strtotime($competition['start_register_date']));
-        $end_date = date('Y-m-d', strtotime($competition['limit_register_date']));
+        $current_date = strtotime(date('Y-m-d'));
+        $start_date = DateTime::createFromFormat('d/m/Y', $competition['start_register_date'])->getTimestamp();
+        $end_date = DateTime::createFromFormat('d/m/Y', $competition['limit_register_date'])->getTimestamp();
         return ($current_date >= $start_date) && ($current_date <= $end_date);
     }
 

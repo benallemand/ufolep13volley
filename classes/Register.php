@@ -55,6 +55,8 @@ class Register extends Generic
         $division = null,
         $rank_start = null,
         $is_paid = null,
+        $is_seeding_tournament_requested = null,
+        $can_seeding_tournament_setup = null,
         $dirtyFields = null,
         $id = null
     ): void
@@ -81,6 +83,8 @@ class Register extends Generic
             'division' => $division,
             'rank_start' => $rank_start,
             'is_paid' => $is_paid,
+            'is_seeding_tournament_requested' => $is_seeding_tournament_requested,
+            'can_seeding_tournament_setup' => $can_seeding_tournament_setup,
             'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
@@ -110,7 +114,9 @@ class Register extends Generic
                     }
                     break;
                 case 'is_paid':
-                    if(is_null($value)) {
+                case 'is_seeding_tournament_requested':
+                case 'can_seeding_tournament_setup':
+                    if (is_null($value)) {
                         break;
                     }
                     $val = ($value === 'on' || $value === 1) ? 1 : 0;
@@ -172,7 +178,9 @@ class Register extends Generic
                 DATE_FORMAT(r.creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
                 r.rank_start,
                 r.division,
-                r.is_paid
+                r.is_paid,
+                r.is_seeding_tournament_requested,
+                r.can_seeding_tournament_setup
                 FROM register r
                 JOIN clubs c on c.id = r.id_club
                 JOIN competitions c2 on r.id_competition = c2.id
