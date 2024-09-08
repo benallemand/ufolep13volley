@@ -881,10 +881,15 @@ class Emails extends Generic
         }
         foreach ($result as $data) {
             $target_mails = array();
-            if($data['is_sign_team_dom'] != 'ok' || $data['is_sign_match_dom'] != 'ok') {
+            if($data['is_sign_team_dom'] != 'ok'
+                || $data['is_sign_match_dom'] != 'ok'
+                || $data['is_survey_filled_dom'] != 'ok') {
                 $target_mails[] = $data['email_dom'];
             }
-            if($data['is_sign_team_ext'] != 'ok' || $data['is_sign_match_ext'] != 'ok') {
+            if($data['is_sign_team_ext'] != 'ok'
+                || $data['is_sign_match_ext'] != 'ok'
+                || $data['is_survey_filled_ext'] != 'ok'
+            ) {
                 $target_mails[] = $data['email_ext'];
             }
             $email = implode(';', $target_mails);
@@ -899,8 +904,10 @@ class Emails extends Generic
                     'equipe_ext' => $data['equipe_ext'],
                     'is_sign_team_dom' => $data['is_sign_team_dom'],
                     'is_sign_match_dom' => $data['is_sign_match_dom'],
+                    'is_survey_filled_dom' => $data['is_survey_filled_dom'],
                     'is_sign_team_ext' => $data['is_sign_team_ext'],
                     'is_sign_match_ext' => $data['is_sign_match_ext'],
+                    'is_survey_filled_ext' => $data['is_survey_filled_ext'],
                 ),
                 $email
             );

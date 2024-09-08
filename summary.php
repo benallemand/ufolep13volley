@@ -102,4 +102,33 @@
                    disabled/>
         </div>
     </div>
+    <div class="flex flex-row mb-4">
+        <span class="basis-1/3">Fair-play</span>
+        <div class="basis-1/3 flex gap-4 items-center">
+            <a v-if="!matchData.is_survey_filled_dom"
+               :href="'/survey.php?id_match=' + matchData.id_match">
+                <button
+                        class="btn btn-primary"
+                        type="button">
+                    <i class="fa-solid fa-square-poll-vertical"></i><span>remplir</span>
+                </button>
+            </a>
+            <input v-if="matchData.is_survey_filled_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
+                   v-model="matchData.is_survey_filled_dom"
+                   disabled/>
+        </div>
+        <div class="basis-1/3 flex gap-4 items-center">
+            <a v-if="!matchData.is_survey_filled_ext"
+               :href="'/survey.php?id_match=' + matchData.id_match">
+                <button
+                        class="btn btn-primary"
+                        type="button">
+                    <i class="fa-solid fa-square-poll-vertical"></i><span>remplir</span>
+                </button>
+            </a>
+            <input v-if="matchData.is_survey_filled_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
+                   v-model="matchData.is_survey_filled_ext"
+                   disabled/>
+        </div>
+    </div>
 </div>

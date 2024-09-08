@@ -42,6 +42,20 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                     },
                     {
                         getTip: function () {
+                            return "Sondages";
+                        },
+                        getClass: function (value, meta, record) {
+                            return (
+                                record.get('match_status') !== 'ARCHIVED'
+                                && record.get('is_survey_filled_dom')
+                                && record.get('is_survey_filled_ext')) ? 'fa fa-square-poll-vertical green' : 'fa fa-square-poll-vertical red';
+                        },
+                        handler: function (grid, rowIndex, colIndex, item, e, record) {
+                            window.open(`${location.origin}/survey.php?id_match=${record.get('id_match')}`, '_blank');
+                        },
+                    },
+                    {
+                        getTip: function () {
                             return "Envoyer un mail aux responsables";
                         },
                         getClass: function (value, meta, record) {
@@ -49,30 +63,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
                             window.location.href = Ext.String.format("mailto:{0},{1}", record.get('email_dom'), record.get('email_ext'));
-                        },
-                    },
-                    {
-                        getTip: function () {
-                            return "Sondage";
-                        },
-                        getClass: function (value, meta, record) {
-                            return 'fa fa-square-poll-vertical';
-                        },
-                        handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            grid.up('tabpanel').add({
-                                xtype: 'survey_grid',
-                                store: {
-                                    type: 'survey',
-                                    autoLoad: true,
-                                    remoteFilter: false,
-                                    filters: [
-                                        {
-                                            property: 'id_match',
-                                            value: record.get('id_match'),
-                                        }
-                                    ]
-                                }
-                            });
                         },
                     },
                 ]
@@ -318,6 +308,33 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                 text: 'E',
                                 width: 50,
                                 dataIndex: 'is_sign_match_ext',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        text: 'Sondage',
+                        columns: [
+                            {
+                                text: 'D',
+                                width: 50,
+                                dataIndex: 'is_survey_filled_dom',
+                                xtype: 'checkcolumn',
+                                listeners: {
+                                    beforecheckchange: function () {
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                text: 'E',
+                                width: 50,
+                                dataIndex: 'is_survey_filled_ext',
                                 xtype: 'checkcolumn',
                                 listeners: {
                                     beforecheckchange: function () {

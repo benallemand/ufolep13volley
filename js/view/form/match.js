@@ -78,7 +78,31 @@ Ext.define('Ufolep13Volley.view.form.match', {
                             boxLabel: 'Extérieur',
                         },
                     ]
-                }
+                },
+                {
+                    xtype: 'panel',
+                    title: 'Sondage',
+                    layout: 'hbox',
+                    defaults: {
+                        flex: 1
+                    },
+                    items: [
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_survey_filled_dom',
+                            boxLabel: 'Domicile',
+                        },
+                        {
+                            xtype: 'checkbox',
+                            submitValue: false,
+                            readOnly: true,
+                            name: 'is_survey_filled_ext',
+                            boxLabel: 'Extérieur',
+                        },
+                    ]
+                },
             ]
         },
         {

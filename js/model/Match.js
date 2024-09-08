@@ -197,6 +197,8 @@ Ext.define('Ufolep13Volley.model.Match', {
                     record.get('is_sign_team_ext') &&
                     record.get('is_sign_match_dom') &&
                     record.get('is_sign_match_ext') &&
+                    record.get('is_survey_filled_dom') &&
+                    record.get('is_survey_filled_ext') &&
                     !record.get('certif')
                 ) {
                     return true;
@@ -234,6 +236,8 @@ Ext.define('Ufolep13Volley.model.Match', {
         {name: 'is_sign_team_ext', type: 'bool'},
         {name: 'is_sign_match_dom', type: 'bool'},
         {name: 'is_sign_match_ext', type: 'bool'},
+        {name: 'is_survey_filled_dom', type: 'bool'},
+        {name: 'is_survey_filled_ext', type: 'bool'},
         {name: 'email_dom', type: 'string'},
         {name: 'email_ext', type: 'string'},
         {name: 'referee', type: 'string'},
