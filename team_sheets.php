@@ -67,36 +67,27 @@ $user_details = $_SESSION;
                     <div class="flex flex-col">
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
                             <div class="mb-4">
-                                <div class="flex items-center">
-                                    <select v-model="selectedPlayers" multiple class="select flex-1">
-                                        <option disabled selected>sélectionnez puis ajoutez</option>
-                                        <option v-for="player in availablePlayers"
-                                                v-if="player.equipe === matchData.equipe_dom"
-                                                :key="player.id"
-                                                :value="player">
-                                            {{ player.prenom }} {{ player.nom }}
-                                        </option>
-                                    </select>
-                                    <button @click="addPlayers" type="button" class="btn btn-success ml-auto">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+                                <div v-for="player in availablePlayersDom"
+                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                                     role="button"
+                                     @click="addPlayer(player)">
+                                    <img :src="player.path_photo_low" alt="photo"
+                                         class="w-12 h-12 rounded-full mr-3"/>
+                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
                                 </div>
                             </div>
                         </label>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_ext}}
                             <div class="mb-4">
-                                <div class="flex items-center">
-                                    <select v-model="selectedPlayers" multiple class="select flex-1">
-                                        <option disabled selected>sélectionnez puis ajoutez</option>
-                                        <option v-for="player in availablePlayers"
-                                                v-if="player.equipe === matchData.equipe_ext"
-                                                :key="player.id" :value="player">
-                                            {{ player.prenom }} {{ player.nom }}
-                                        </option>
-                                    </select>
-                                    <button @click="addPlayers" type="button" class="btn btn-success ml-auto">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+                                <div v-for="player in availablePlayersExt"
+                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                                     role="button"
+                                     @click="addPlayer(player)">
+                                    <img :src="player.path_photo_low" alt="photo"
+                                         class="w-12 h-12 rounded-full mr-3"/>
+                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
                                 </div>
                             </div>
                         </label>
@@ -115,74 +106,65 @@ $user_details = $_SESSION;
                         1 joueur autorisé par match et par équipe. <br/>
                         Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison
                     </div>
-                    <ul>
-                        <li v-for="player in renforts" :key="player.id" class="flex items-center mb-3">
-                            {{ player.prenom }} {{ player.nom }} ({{player.club}})
-                            <button @click="addPlayers" type="button" class="btn btn-success ml-auto">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </li>
-                    </ul>
+                    <div
+                            v-for="player in renforts"
+                            class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                            role="button"
+                            v-if="!matchPlayers.includes(player)"
+                            @click="addPlayer(player)">
+                        <img :src="player.path_photo_low" alt="photo"
+                             class="w-12 h-12 rounded-full mr-3"/>
+                        {{ player.prenom }} {{ player.nom }} ({{player.club}})
+                        <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
+                    </div>
                 </div>
                 <div>
                     <h1>Joueurs présents</h1>
                     <div class="flex flex-col mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
-                            <ul class="list-disc pl-5">
-                                <li v-for="(player, index) in matchPlayers"
-                                    v-if="player.equipe == matchData.equipe_dom"
-                                    :key="index"
-                                    class="flex justify-between items-center mb-2">
-                                    <div class="flex items-center">
-                                        <img :src="player.path_photo_low" alt="Photo"
-                                             class="w-12 h-12 rounded-full mr-4">
-                                        <p>{{ player.prenom }} {{ player.nom }}</p>
-                                    </div>
-                                    <button @click="removePlayer(player.id)" type="button"
-                                            class="btn btn-error ml-2">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </li>
-                            </ul>
+                            <div class="mb-4">
+                                <div v-for="player in matchPlayers"
+                                     v-if="player.equipe == matchData.equipe_dom"
+                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                                     role="button"
+                                     @click="removePlayer(player)">
+                                    <img :src="player.path_photo_low" alt="photo"
+                                         class="w-12 h-12 rounded-full mr-3"/>
+                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
+                                </div>
+                            </div>
                         </label>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_ext}}
-                                <ul class="list-disc pl-5">
-                                    <li v-for="(player, index) in matchPlayers"
-                                        v-if="player.equipe == matchData.equipe_ext"
-                                        :key="index"
-                                        class="flex justify-between items-center mb-2">
-                                        <div class="flex items-center">
-                                            <img :src="player.path_photo_low" alt="Photo"
-                                                 class="w-12 h-12 rounded-full mr-4">
-                                            <p>{{ player.prenom }} {{ player.nom }}</p>
-                                        </div>
-                                        <button @click="removePlayer(player.id)" type="button"
-                                                class="btn btn-error ml-2">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </li>
-                                </ul>
+                                <div class="mb-4">
+                                    <div v-for="player in matchPlayers"
+                                         v-if="player.equipe == matchData.equipe_ext"
+                                         class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                                         role="button"
+                                         @click="removePlayer(player)">
+                                        <img :src="player.path_photo_low" alt="photo"
+                                             class="w-12 h-12 rounded-full mr-3"/>
+                                        <span>{{ player.prenom }} {{ player.nom }}</span>
+                                        <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
+                                    </div>
+                                </div>
                             </label>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Renfort
-                                <ul class="list-disc pl-5">
-                                    <li v-for="(player, index) in matchPlayers"
-                                        v-if="player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom"
-                                        :key="index"
-                                        class="flex justify-between items-center mb-2">
-                                        <div class="flex items-center">
-                                            <img :src="player.path_photo_low" alt="Photo"
-                                                 class="w-12 h-12 rounded-full mr-4">
-                                            <p> {{ player.prenom }} {{ player.nom }} ({{player.club}}) </p>
-                                        </div>
-                                        <button @click="removePlayer(player.id)" type="button"
-                                                class="btn btn-error ml-2">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </li>
-                                </ul>
+                                <div class="mb-4">
+                                    <div v-for="player in matchPlayers"
+                                         v-if="player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom"
+                                         class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
+                                         role="button"
+                                         @click="removePlayer(player)">
+                                        <img :src="player.path_photo_low" alt="photo"
+                                             class="w-12 h-12 rounded-full mr-3"/>
+                                        <span>{{ player.prenom }} {{ player.nom }}</span>
+                                        <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
+                                    </div>
+                                </div>
                             </label>
                         </div>
                     </div>

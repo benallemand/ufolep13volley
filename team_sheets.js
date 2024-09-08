@@ -1,4 +1,4 @@
-import { onSuccess, onError} from "./toaster.js";
+import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 
 new Vue({
@@ -7,10 +7,17 @@ new Vue({
         matchData: {},
         availablePlayers: [],
         matchPlayers: [],
-        selectedPlayers: [],
         isLoading: false,
         query: '',
         renforts: [],
+    },
+    computed: {
+        availablePlayersDom() {
+            return this.availablePlayers.filter(player => player.equipe === this.matchData.equipe_dom && !this.matchPlayers.includes(player));
+        },
+        availablePlayersExt() {
+            return this.availablePlayers.filter(player => player.equipe === this.matchData.equipe_ext && !this.matchPlayers.includes(player));
+        },
     },
     mounted() {
         this.reloadData()
@@ -61,34 +68,13 @@ new Vue({
         signTeamSheets() {
             genericSignSheet(this, id_match);
         },
-        addPlayers() {
-            this.selectedPlayers.forEach(player => {
-                if (!this.matchPlayers.includes(player)) {
-                    this.matchPlayers.push(player);
-                }
-            });
-            this.renforts.forEach(player => {
-                if (!this.matchPlayers.includes(player)) {
-                    this.matchPlayers.push(player);
-                }
-            });
-            this.selectedPlayers = [];
+        addPlayer(player) {
+            if (!this.matchPlayers.includes(player)) {
+                this.matchPlayers.push(player);
+            }
         },
-        removePlayer(id) {
-            const formData = new FormData()
-            formData.append('id_match', id_match)
-            formData.append('id_player', id)
-            this.isLoading = true;
-            axios.post('/rest/action.php/matchmgr/delete_match_player', formData)
-                .then(
-                    response => {
-                        onSuccess(this, response)
-                        this.reloadData();
-                    }
-                )
-                .catch(error => {
-                    onError(this, error)
-                });
+        removePlayer(player) {
+            this.matchPlayers = this.matchPlayers.filter(matchPlayer => matchPlayer !== player);
         },
         reloadData() {
             this.isLoading = true;
