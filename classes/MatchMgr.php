@@ -1661,6 +1661,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         if (empty($id_match)) {
             throw new Exception("id_match vide !");
         }
+        $this->delete_match_players($id_match);
         if (!empty($reinforcement_player_id)) {
             $player_ids[] = $reinforcement_player_id;
         }
@@ -2323,5 +2324,16 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $all_expected_matches[] = $to_be_inserted_matches;
         }
         return array_merge(...$all_expected_matches);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delete_match_players($id_match): void
+    {
+        $sql = "DELETE FROM match_player 
+            WHERE id_match = $id_match";
+        $this->sql_manager->execute($sql);
+
     }
 }
