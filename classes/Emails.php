@@ -655,9 +655,7 @@ class Emails extends Generic
      */
     public function retry_error_emails(): void
     {
-        $sql = "UPDATE emails 
-                SET sending_status = 'TO_DO' 
-                WHERE sending_status = 'ERROR'";
+        $sql = file_get_contents(__DIR__ . '/../sql/retry_error_emails.sql');
         $this->sql_manager->execute($sql);
     }
 
@@ -724,7 +722,7 @@ class Emails extends Generic
      */
     public function insert_email_activity(): void
     {
-        $activities = $this->sql_manager->sql_get_activity();
+        $activities = $this->sql_manager->sql_get_last_day_activity();
         if (count($activities) == 0) {
             return;
         }
@@ -870,7 +868,7 @@ class Emails extends Generic
         }
     }
 
-/**
+    /**
      * @throws Exception
      */
     public function insert_mail_match_not_fully_signed(): void
@@ -881,12 +879,12 @@ class Emails extends Generic
         }
         foreach ($result as $data) {
             $target_mails = array();
-            if($data['is_sign_team_dom'] != 'ok'
+            if ($data['is_sign_team_dom'] != 'ok'
                 || $data['is_sign_match_dom'] != 'ok'
                 || $data['is_survey_filled_dom'] != 'ok') {
                 $target_mails[] = $data['email_dom'];
             }
-            if($data['is_sign_team_ext'] != 'ok'
+            if ($data['is_sign_team_ext'] != 'ok'
                 || $data['is_sign_match_ext'] != 'ok'
                 || $data['is_survey_filled_ext'] != 'ok'
             ) {
