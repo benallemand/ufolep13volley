@@ -78,7 +78,7 @@ class Team extends Generic
      * @return mixed
      * @throws Exception
      */
-    public function getTeam($id)
+    public function getTeam($id): mixed
     {
         $results = $this->getTeams("e.id_equipe = $id");
         if (count($results) < 1) {

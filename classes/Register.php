@@ -262,7 +262,7 @@ class Register extends Generic
         // remove matches_players when archived
         $this->cleanup_matches_players($id_competition);
         // if championship and 2nd half, nothing else is needed
-        if($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
+        if ($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
             return;
         }
         // remove all leader accounts
@@ -628,5 +628,46 @@ class Register extends Generic
         return $this->get($where, $bindings);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function fill_ranks(string $ids): void
+    {
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            $this->fill_rank($id);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function fill_rank(string $id): void
+    {
+        $register = $this->get_register($id);
+        if (empty($register['old_team_id'])) {
+            return;
+        }
+        try {
+            $competition = $this->competition->get_by_id($register['id_competition']);
+            $division = $this->rank->getTeamDivision(
+                $competition['code_competition'],
+                $register['old_team_id']
+            );
+            $rank = $this->rank->getTeamRank(
+                $competition['code_competition'],
+                $division,
+                $register['old_team_id']
+            );
+        } catch (Exception) {
+            return;
+        }
+        $update_register = array(
+            'id' => $register['id'],
+            'division' => $division,
+            'rank_start' => $rank,
+        );
+        $this->save($update_register);
+    }
 
 }

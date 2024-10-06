@@ -339,7 +339,7 @@ class Rank extends Generic
     /**
      * @throws Exception
      */
-    public function getRank($competition, $division)
+    public function getRank($competition, $division): array|int|string|null
     {
         $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
         $bindings = array();
@@ -567,6 +567,21 @@ class Rank extends Generic
                     )
                 ORDER BY c.rank_start";
         return $this->sql_manager->execute($sql);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getTeamDivision(mixed $code_competition, mixed $id_equipe)
+    {
+        $result = $this->sql_manager->execute(
+            $this->getSql("c.code_competition = '$code_competition' AND c.id_equipe = $id_equipe"));
+        if (count($result) !== 1) {
+            $team = $this->team->getTeam($id_equipe);
+            $team_name = $team['nom_equipe'];
+            throw new Exception("division non trouvée pour l'équipe $team_name dans la compétition $code_competition !");
+        }
+        return $result[0]['division'];
     }
 
 
