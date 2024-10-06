@@ -114,7 +114,7 @@ class Team extends Generic
         FROM equipes e
         JOIN clubs c ON c.id=e.id_club
         LEFT JOIN classements cla ON cla.code_competition=e.code_competition AND cla.id_equipe=e.id_equipe
-        JOIN competitions comp ON comp.code_competition=IFNULL(cl.code_competition, e.code_competition)
+        JOIN competitions comp ON comp.code_competition=IFNULL(cla.code_competition, e.code_competition)
         LEFT JOIN joueur_equipe jeresp ON jeresp.id_equipe=e.id_equipe AND jeresp.is_leader+0 > 0
         LEFT JOIN joueurs jresp ON jresp.id=jeresp.id_joueur
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe

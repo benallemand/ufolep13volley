@@ -183,7 +183,7 @@ class CompetitionTest extends TestCase
             array(2, 2, 2),
             array(3, 3, 3),
         );
-        $pools = $this->competition->make_pools_of_3($hats);
+        $pools = Competition::make_pools_of_3($hats);
         $this->assertEquals(
             array(
                 array(1, 2, 3),
@@ -196,7 +196,7 @@ class CompetitionTest extends TestCase
             array(2, 2,),
             array(3, 3, 3),
         );
-        $pools = $this->competition->make_pools_of_3($hats);
+        $pools = Competition::make_pools_of_3($hats);
         $this->assertEquals(
             array(
                 array(1, 2, 3, 3),
@@ -208,7 +208,7 @@ class CompetitionTest extends TestCase
             array(2, 2,),
             array(3, 3,),
         );
-        $pools = $this->competition->make_pools_of_3($hats);
+        $pools = Competition::make_pools_of_3($hats);
         $this->assertEquals(
             array(
                 array(1, 2, 3,),

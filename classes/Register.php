@@ -398,8 +398,7 @@ class Register extends Generic
                 FROM register 
                 WHERE id_competition = ?
                 AND (
-                    new_team_name IS NULL
-                    OR (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
+                    (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
                     OR (id_court_2 IS NOT NULL AND day_court_2 IS NULL)
                     OR (id_court_2 IS NOT NULL AND id_court_1 IS NULL))";
         $bindings = array();

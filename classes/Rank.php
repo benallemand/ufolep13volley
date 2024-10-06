@@ -299,8 +299,7 @@ class Rank extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (empty($inputs['id'])) {
-        } else {
+        if (!empty($inputs['id'])) {
             $bindings[] = array('type' => 'i', 'value' => $inputs['id']);
             $sql .= " WHERE id = ?";
         }

@@ -557,8 +557,8 @@ class Competition extends Generic
             shuffle($hats_2[$index]);
         }
         // make pools of 3
-        $group_1_pools = $this->make_pools_of_3($hats_1);
-        $group_2_pools = $this->make_pools_of_3($hats_2);
+        $group_1_pools = Competition::make_pools_of_3($hats_1);
+        $group_2_pools = Competition::make_pools_of_3($hats_2);
         // insert into classements table
         foreach ($group_1_pools as $division_index => $group_1_pool) {
             foreach ($group_1_pool as $team_index => $team) {
@@ -714,12 +714,12 @@ class Competition extends Generic
     /**
      * @throws Exception
      */
-    public function make_pools_of_3(array $hats): array
+    public static function make_pools_of_3(array $hats): array
     {
         $n = 3;
         $pools = array();
         while (count($hats, COUNT_RECURSIVE) > 0) {
-            $pools[] = $this->pick_n_from_hats($hats, $n);
+            $pools[] = Competition::pick_n_from_hats($hats, $n);
         }
         $last = $pools[count($pools) - 1];
         if (count($last) === $n) {
@@ -745,7 +745,7 @@ class Competition extends Generic
         throw new Exception("Impossible de déterminer les poules...");
     }
 
-    private function pick_n_from_hats(array &$hats, int $n): array
+    private static function pick_n_from_hats(array &$hats, int $n): array
     {
         $result = array();
         $nb_hats = count($hats);
