@@ -156,6 +156,9 @@ $indicators[] = new Indicator(
     file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'),
     'alert');
 $indicators[] = new Indicator(
+    "Facture par club",
+    file_get_contents(__DIR__ . '/../sql/register_invoices.sql'));
+$indicators[] = new Indicator(
     "Equipes incomplètes",
     file_get_contents(__DIR__ . '/../sql/teams_incomplete.sql'),
     'alert');
