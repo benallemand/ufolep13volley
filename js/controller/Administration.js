@@ -340,9 +340,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var mainPanel = this.getMainPanel();
         mainPanel.setAutoScroll(true);
         var tab = mainPanel.add({
-            title: 'Indicateurs', layout: {
-                type: 'vbox', align: 'stretch'
-            }, autoScroll: true, items: []
+            title: 'Indicateurs', layout: 'hbox', autoScroll: true, items: []
         });
         mainPanel.setActiveTab(tab);
         var storeIndicators = Ext.create('Ext.data.Store', {
@@ -354,121 +352,31 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
         storeIndicators.load({
             callback: function (records) {
-                Ext.each(records, function (record) {
-                    var detailsData = record.get('details');
-                    if (!detailsData) {
-                        return;
-                    }
-                    var fields = [];
-                    var columns = [];
-                    for (var k in detailsData[0]) {
-                        fields.push(k);
-                        columns.push(me.getIndicatorColumn(k));
-                    }
-                    var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
-                    if (record.get('value') === 0) {
-                        return;
-                    }
+                let alert_records = Ext.Array.filter(records, function(record) {
+                    return record.get('type') === 'alert'
+                })
+                let info_records = Ext.Array.filter(records, function(record) {
+                    return record.get('type') === 'info'
+                })
+                var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
+                if(alert_records.length > 0) {
+                    var alert_items = me.get_indicator_items(me, alert_records);
                     indicatorPanel.add({
-                        layout: 'hbox', items: [{
-                            xtype: 'displayfield',
-                            margin: 10,
-                            fieldLabel: record.get('fieldLabel'),
-                            labelWidth: 250,
-                            value: Ext.String.format(
-                                "<div style='{0}'>{1}</div>",
-                                record.get('type') === 'alert' ? 'color: red; font-weight: bold' : 'color: black',
-                                record.get('value')),
-                            width: 300
-                        }, {
-                            xtype: 'button', margin: 10, text: 'Détails', handler: function () {
-                                Ext.create('Ext.window.Window', {
-                                    title: record.get('fieldLabel'),
-                                    height: 500,
-                                    width: 700,
-                                    maximizable: true,
-                                    layout: 'fit',
-                                    items: {
-                                        xtype: 'exportablegrid',
-                                        viewConfig: {
-                                            enableTextSelection: true
-                                        },
-                                        autoScroll: true,
-                                        features: [
-                                            {
-                                                ftype: 'grouping',
-                                                groupHeaderTpl: '{name}'
-                                            }
-                                        ],
-                                        store: Ext.create('Ext.data.Store', {
-                                            fields: fields, data: {
-                                                'items': detailsData
-                                            }, proxy: {
-                                                type: 'memory', reader: {
-                                                    type: 'json', root: 'items'
-                                                }
-                                            }
-                                        }),
-                                        columns: columns
-                                    },
-                                    dockedItems: [
-                                        {
-                                            xtype: 'toolbar', dock: 'top', items: [
-                                                {
-                                                    xtype: 'textfield',
-                                                    fieldLabel: 'Recherche',
-                                                    listeners: {
-                                                        change: function (field, new_val, old_val) {
-                                                            var linked_store = field.up('window').down('grid').getStore();
-                                                            if (new_val === old_val) {
-                                                                return;
-                                                            }
-                                                            linked_store.removeFilter('searchInGrid');
-                                                            if (Ext.isEmpty(new_val)) {
-                                                                return;
-                                                            }
-                                                            linked_store.filter({
-                                                                id: 'searchInGrid', filterFn: function (item) {
-                                                                    var fields = linked_store.getModel().getFields();
-                                                                    var queribleFields = [];
-                                                                    Ext.each(fields, function (field) {
-                                                                        if (field.getType() === 'string' || field.getType() === 'auto') {
-                                                                            Ext.Array.push(queribleFields, field.getName());
-                                                                        }
-                                                                    });
-                                                                    var found = false;
-                                                                    var regExp = new RegExp(new_val, "i");
-                                                                    Ext.each(queribleFields, function (queribleField) {
-                                                                        if (!item.get(queribleField)) {
-                                                                            return true;
-                                                                        }
-                                                                        if (regExp.test(item.get(queribleField))) {
-                                                                            found = true;
-                                                                            return false;
-                                                                        }
-                                                                    });
-                                                                    return found;
-                                                                }
-                                                            });
-
-                                                        }
-                                                    }
-                                                },
-                                            ]
-                                        },
-                                        {
-                                            xtype: 'toolbar', dock: 'bottom', items: [{
-                                                text: 'Télécharger', handler: function (button) {
-                                                    button.up('window').down('grid').export(record.get('fieldLabel'));
-                                                }
-                                            }]
-                                        }
-                                    ]
-                                }).show();
-                            }
-                        }]
-                    });
-                });
+                        title: 'Alertes',
+                        flex: 1,
+                        layout: 'vbox',
+                        items: alert_items
+                    })
+                }
+                if(info_records.length > 0) {
+                    var info_items = me.get_indicator_items(me, info_records);
+                    indicatorPanel.add({
+                        title: 'Infos',
+                        flex: 1,
+                        layout: 'vbox',
+                        items: info_items
+                    })
+                }
             }
         });
     },
@@ -1548,5 +1456,123 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 });
             }
         });
+    },
+    get_indicator_items(me, records) {
+        var indicator_items = [];
+        Ext.each(records, function (record) {
+            var detailsData = record.get('details');
+            if (!detailsData) {
+                return;
+            }
+            var fields = [];
+            var columns = [];
+            for (var k in detailsData[0]) {
+                fields.push(k);
+                columns.push(me.getIndicatorColumn(k));
+            }
+            if (record.get('value') === 0) {
+                return;
+            }
+            indicator_items.push({
+                layout: 'hbox', items: [{
+                    xtype: 'displayfield',
+                    margin: 10,
+                    fieldLabel: record.get('fieldLabel'),
+                    labelWidth: 250,
+                    value: Ext.String.format(
+                        "<div style='{0}'>{1}</div>",
+                        record.get('type') === 'alert' ? 'color: red; font-weight: bold' : 'color: black',
+                        record.get('value')),
+                    width: 300
+                }, {
+                    xtype: 'button', margin: 10, text: 'Détails', handler: function () {
+                        Ext.create('Ext.window.Window', {
+                            title: record.get('fieldLabel'),
+                            height: 500,
+                            width: 700,
+                            maximizable: true,
+                            layout: 'fit',
+                            items: {
+                                xtype: 'exportablegrid',
+                                viewConfig: {
+                                    enableTextSelection: true
+                                },
+                                autoScroll: true,
+                                features: [
+                                    {
+                                        ftype: 'grouping',
+                                        groupHeaderTpl: '{name}'
+                                    }
+                                ],
+                                store: Ext.create('Ext.data.Store', {
+                                    fields: fields, data: {
+                                        'items': detailsData
+                                    }, proxy: {
+                                        type: 'memory', reader: {
+                                            type: 'json', root: 'items'
+                                        }
+                                    }
+                                }),
+                                columns: columns
+                            },
+                            dockedItems: [
+                                {
+                                    xtype: 'toolbar', dock: 'top', items: [
+                                        {
+                                            xtype: 'textfield',
+                                            fieldLabel: 'Recherche',
+                                            listeners: {
+                                                change: function (field, new_val, old_val) {
+                                                    var linked_store = field.up('window').down('grid').getStore();
+                                                    if (new_val === old_val) {
+                                                        return;
+                                                    }
+                                                    linked_store.removeFilter('searchInGrid');
+                                                    if (Ext.isEmpty(new_val)) {
+                                                        return;
+                                                    }
+                                                    linked_store.filter({
+                                                        id: 'searchInGrid', filterFn: function (item) {
+                                                            var fields = linked_store.getModel().getFields();
+                                                            var queribleFields = [];
+                                                            Ext.each(fields, function (field) {
+                                                                if (field.getType() === 'string' || field.getType() === 'auto') {
+                                                                    Ext.Array.push(queribleFields, field.getName());
+                                                                }
+                                                            });
+                                                            var found = false;
+                                                            var regExp = new RegExp(new_val, "i");
+                                                            Ext.each(queribleFields, function (queribleField) {
+                                                                if (!item.get(queribleField)) {
+                                                                    return true;
+                                                                }
+                                                                if (regExp.test(item.get(queribleField))) {
+                                                                    found = true;
+                                                                    return false;
+                                                                }
+                                                            });
+                                                            return found;
+                                                        }
+                                                    });
+
+                                                }
+                                            }
+                                        },
+                                    ]
+                                },
+                                {
+                                    xtype: 'toolbar', dock: 'bottom', items: [{
+                                        text: 'Télécharger', handler: function (button) {
+                                            button.up('window').down('grid').export(record.get('fieldLabel'));
+                                        }
+                                    }]
+                                }
+                            ]
+                        }).show();
+                    }
+                }]
+            });
+        });
+        return indicator_items;
     }
 });
