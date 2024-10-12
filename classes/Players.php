@@ -464,7 +464,7 @@ class Players extends Generic
         if (empty($_FILES['licences']['name'])) {
             return;
         }
-        $licences = $this->files->get_licences_data_from_pdf($_FILES['licences']['tmp_name']);
+        $licences = $this->files->get_licences_data_from_pdf_2024($_FILES['licences']['tmp_name']);
         foreach ($licences as $licence) {
             $this->search_player_and_save_from_licence($licence);
         }

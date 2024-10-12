@@ -115,4 +115,29 @@ class FilesTest extends TestCase
             ),
             $mgr->get_licences_data_from_pdf(__DIR__ . '/files/licences/bbavb.pdf'));
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_get_licences_data_from_pdf_2024()
+    {
+        $mgr = new Files();
+        $this->assertEquals(
+            array(
+                0 =>
+                    array(
+                        'departement' => '13',
+                        'licence_number' => '96641287',
+                        'last_first_name' => 'SERRE SABRINA',
+                        'date_of_birth' => '19/08/1984',
+                        'age' => '40',
+                        'sexe' => 'F',
+                        'club' => 'ASS SP PERSONNEL',
+                        'licence_club' => '013001234',
+                        'homologation_date' => '02/10/2024',
+                        'licence_number_2' => '013_96641287',
+                    ),),
+            $mgr->get_licences_data_from_pdf_2024(__DIR__ . '/files/licences/2024.pdf'));
+
+    }
 }

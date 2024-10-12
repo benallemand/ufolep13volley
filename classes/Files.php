@@ -234,4 +234,60 @@ class Files extends Generic
         }
         return $results;
     }
+
+    public function get_licences_data_from_pdf_2024(string $input_pdf_path): array
+    {
+        $parser = new Parser();
+        $pdf = $parser->parseFile($input_pdf_path);
+        $extractedText = $pdf->getText();
+        $raw_licences = explode("Plus d'informations sur www.ufolep.org", $extractedText);
+        $results = array();
+        foreach ($raw_licences as $raw_licence) {
+            if (strlen($raw_licence) == 0) {
+                continue;
+            }
+            $raw_data = explode("\n", trim($raw_licence));
+            $result = array();
+            foreach ($raw_data as $index => $item) {
+                $item = trim($item);
+                if (self::starts_with($item, "N°")) {
+                    if (!preg_match('/N°0(\d{2})_(\d+)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['departement'] = $matches[1];
+                    $result['licence_number'] = $matches[2];
+                    $result['last_first_name'] = $raw_data[$index + 1];
+                } elseif (self::starts_with($item, "Né(e) le")) {
+                    if (!preg_match('/Né\(e\) le (\d{2}\/\d{2}\/\d{4}) - (\d+) ans - ([A-Za-z]+).*/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['date_of_birth'] = $matches[1];
+                    $result['age'] = $matches[2];
+                    $result['sexe'] = $matches[3] == 'Femme' ? 'F' : 'M';
+                } elseif (self::starts_with($item, "Asso")) {
+                    if (!preg_match('/Asso (\d+) - (.+)/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['licence_club'] = $matches[1];
+                    $result['club'] = $matches[2];
+                } elseif (self::starts_with($item, "votre identifiant")) {
+                    if (!preg_match('/votre identifiant (0\d{2}_\d+).*/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['licence_number_2'] = $matches[1];
+                } elseif (self::starts_with($item, "Délivrée le : ")) {
+                    if (!preg_match('/Délivrée le : (\d{2}\/\d{2}\/\d{4})/', $item, $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
+                    }
+                    $result['homologation_date'] = $matches[1];
+                }
+            }
+            if (count($result) != 10) {
+                print_r($result);
+                continue;
+            }
+            $results[] = $result;
+        }
+        return $results;
+    }
 }
