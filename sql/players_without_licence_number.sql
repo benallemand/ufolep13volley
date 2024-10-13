@@ -11,5 +11,6 @@ FROM joueur_equipe je
          JOIN clubs c ON c.id = j.id_club
 WHERE (j.num_licence = '' OR j.num_licence IS NULL)
   AND e.id_equipe IN (SELECT id_equipe FROM classements)
+  AND comp.start_date <= CURRENT_DATE
 GROUP BY jresp.email
 ORDER BY equipe
