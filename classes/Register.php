@@ -214,36 +214,40 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    public function set_up_season($id_competition): void
+    public function set_up_season($ids): void
     {
-        // make a cleanup before new season
-        $this->cleanup_before_start($id_competition);
-        // check that all data is ok in register table
-        $this->check_data($id_competition);
-        // get registered teams
-        $registered_teams = $this->get_register_by_competition($id_competition);
-        // if automatic registration, only take new teams into account
-        if ($this->competition->is_automatic_registration($id_competition)) {
-            // if championship and 2nd half, only register new teams
-            if ($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
-                $registered_teams = $this->get_2nd_half_registrations($id_competition);
-            } else {
-                $registered_teams = $this->get_pending_registrations($id_competition, true);
+        if (empty($ids)) {
+            throw new Exception("Aucune compétition sélectionnée !");
+        }
+        $ids = explode(',', $ids);
+        foreach ($ids as $id_competition) {
+            // make a cleanup before new season
+            $this->cleanup_before_start($id_competition);
+            // get registered teams
+            $registered_teams = $this->get_register_by_competition($id_competition);
+            // if automatic registration, only take new teams into account
+            if ($this->competition->is_automatic_registration($id_competition)) {
+                // if championship and 2nd half, only register new teams
+                if ($this->competition->is_championship($id_competition) && !$this->competition->is_first_half($id_competition)) {
+                    $registered_teams = $this->get_2nd_half_registrations($id_competition);
+                } else {
+                    $registered_teams = $this->get_pending_registrations($id_competition, true);
+                }
             }
-        }
-        foreach ($registered_teams as $registered_team) {
-            $id_team = $this->create_or_update_team($registered_team);
-            $team = $this->team->getTeam($id_team);
-            $this->user->create_leader_account($team['nom_equipe'], $registered_team['leader_email'], $id_team);
-            $this->createTimeslots($registered_team, $id_team);
-            $this->add_leader_informations($registered_team, $id_team);
-        }
-        // if competition registration is automatic and not a championship, use specific ranking init
-        if ($this->competition->is_automatic_registration($id_competition) && !$this->competition->is_championship($id_competition)) {
-            $this->competition->init_classements_isoardi(false);
-        } else {
-            // init ranks
-            $this->init_ranks($id_competition);
+            foreach ($registered_teams as $registered_team) {
+                $id_team = $this->create_or_update_team($registered_team);
+                $team = $this->team->getTeam($id_team);
+                $this->user->create_leader_account($team['nom_equipe'], $registered_team['leader_email'], $id_team);
+                $this->createTimeslots($registered_team, $id_team);
+                $this->add_leader_informations($registered_team, $id_team);
+            }
+            // if competition registration is automatic and not a championship, use specific ranking init
+            if ($this->competition->is_automatic_registration($id_competition) && !$this->competition->is_championship($id_competition)) {
+                $this->competition->init_classements_isoardi(false);
+            } else {
+                // init ranks
+                $this->init_ranks($id_competition);
+            }
         }
     }
 

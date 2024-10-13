@@ -1865,7 +1865,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
     /**
      * @throws Exception
      */
-    public function generateAll($ids = null)
+    public function generateAll($ids = null, $do_reinit = 'on', $generate_days = 'on', $generate_matches = 'on'): void
     {
         if (empty($ids)) {
             throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
@@ -1884,30 +1884,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             $code_competition = $competition['code_competition'];
             $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
             $this->generate_matches_v2($competition);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function generateAllExceptMatches($ids = null): void
-    {
-        if (empty($ids)) {
-            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
-        }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            // init all gymnasiums etc. from register table
-            (new Register())->set_up_season($id);
-            // get competitions
-            $competition_mgr = new Competition();
-            // reset competition
-            $competition_mgr->resetCompetition($id);
-            // generate days
-            (new Day())->generateDays($id);
-            $competition = $competition_mgr->get_by_id($id);
-            $code_competition = $competition['code_competition'];
-            $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
         }
     }
 

@@ -516,8 +516,15 @@ class Rank extends Generic
      */
     public function insert_from_register($id_competition)
     {
-        $sql = "INSERT INTO classements(code_competition, division, id_equipe, rank_start) 
-                SELECT c.code_competition, r.division, e.id_equipe, r.rank_start 
+        $sql = "INSERT INTO classements(
+                        code_competition,
+                        division,
+                        id_equipe,
+                        rank_start) 
+                SELECT c.code_competition, 
+                       CASE WHEN r.division IS NULL THEN 'X' ELSE r.division END AS division, 
+                       e.id_equipe, 
+                       CASE WHEN r.rank_start IS NULL THEN 1 ELSE r.rank_start END AS rank_start  
                 FROM register r 
                 JOIN competitions c on r.id_competition = c.id
                 JOIN equipes e on e.code_competition = c.code_competition

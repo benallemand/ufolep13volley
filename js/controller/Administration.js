@@ -162,10 +162,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.generate_matches_final_phase_cup_4
             }, 'competitions_grid menuitem[action=generate_matches_final_phase_cup_2]': {
                 click: this.generate_matches_final_phase_cup_2
-            }, 'competitions_grid menuitem[action=generateAll]': {
-                click: this.generateAll
-            }, 'competitions_grid menuitem[action=generateAllExceptMatches]': {
-                click: this.generateAllExceptMatches
             }, 'daysgrid button[action=delete]': {
                 click: this.deleteDays
             }, 'limitdatesgrid button[action=delete]': {
@@ -352,14 +348,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
         storeIndicators.load({
             callback: function (records) {
-                let alert_records = Ext.Array.filter(records, function(record) {
+                let alert_records = Ext.Array.filter(records, function (record) {
                     return record.get('type') === 'alert'
                 })
-                let info_records = Ext.Array.filter(records, function(record) {
+                let info_records = Ext.Array.filter(records, function (record) {
                     return record.get('type') === 'info'
                 })
                 var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
-                if(alert_records.length > 0) {
+                if (alert_records.length > 0) {
                     var alert_items = me.get_indicator_items(me, alert_records);
                     indicatorPanel.add({
                         title: 'Alertes',
@@ -368,7 +364,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                         items: alert_items
                     })
                 }
-                if(info_records.length > 0) {
+                if (info_records.length > 0) {
                     var info_items = me.get_indicator_items(me, info_records);
                     indicatorPanel.add({
                         title: 'Infos',
@@ -1006,12 +1002,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     generate_matches_final_phase_cup_2: function (button) {
         this.genericRequest(button, 'Tirer au sort les 1/2', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/2'});
     },
-    generateAll: function (button) {
-        this.genericRequest(button, 'Générer tout', '/rest/action.php/matchmgr/generateAll', true);
-    },
-    generateAllExceptMatches: function (button) {
-        this.genericRequest(button, 'Générer tout sauf les matchs', '/rest/action.php/matchmgr/generateAllExceptMatches');
-    },
     genericDelete: function (button, url, id_field) {
         var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
@@ -1247,15 +1237,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }, {
                     text: 'Tirer au sort les 1/2', action: 'generate_matches_final_phase_cup_2'
                 },]
-            }, {
-                text: 'Générer tout', menu: [{
-                    text: "Tout d'un coup (trop long)...", action: 'generateAll'
-                }, {
-                    text: "Tout sauf les matchs (rapide)...", action: 'generateAllExceptMatches'
-                }, {
-                    text: 'Tous les matchs (long)...', action: 'generateMatches'
-                },]
-            },]
+            },
+            ]
         });
         grid.addDocked({
             xtype: 'toolbar', dock: 'top', items: ['FILTRES', {

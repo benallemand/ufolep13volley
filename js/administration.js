@@ -19,6 +19,7 @@ Ext.application({
         'download_diploma',
         'manage_survey',
         'manage_register',
+        'generate_competition',
     ],
     name: 'Ufolep13Volley',
     appFolder: 'js',
