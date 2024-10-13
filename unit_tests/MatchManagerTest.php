@@ -510,6 +510,18 @@ class MatchManagerTest extends TestCase
     /**
      * @throws Exception
      */
+    public function test_generate_with_params()
+    {
+        //230219:PASS
+        $this->connect_as_admin();
+        $competition_mgr = new Competition();
+        $comp = $competition_mgr->getCompetition('m');
+        $this->match_manager->generateAll($comp['id'], 'on', 'off', 'off');
+    }
+
+    /**
+     * @throws Exception
+     */
     public function test_generate_all_championships()
     {
         //230219:PASS

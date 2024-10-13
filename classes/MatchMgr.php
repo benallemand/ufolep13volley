@@ -1867,23 +1867,34 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function generateAll($ids = null, $do_reinit = 'on', $generate_days = 'on', $generate_matches = 'on'): void
     {
+        $do_reinit = $do_reinit === 'on';
+        $generate_days = $generate_days === 'on';
+        $generate_matches = $generate_matches === 'on';
         if (empty($ids)) {
             throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
         }
         $ids = explode(',', $ids);
         foreach ($ids as $id) {
-            // init all gymnasiums etc. from register table
-            (new Register())->set_up_season($id);
-            // get competitions
-            $competition_mgr = new Competition();
-            // reset competition
-            $competition_mgr->resetCompetition($id);
-            // generate days
-            (new Day())->generateDays($id);
-            $competition = $competition_mgr->get_by_id($id);
-            $code_competition = $competition['code_competition'];
-            $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
-            $this->generate_matches_v2($competition);
+            if ($do_reinit) {
+                // init all gymnasiums etc. from register table
+                (new Register())->set_up_season($id);
+                // get competitions
+                $competition_mgr = new Competition();
+                // reset competition
+                $competition_mgr->resetCompetition($id);
+            }
+            if ($generate_days) {
+                // generate days
+                (new Day())->generateDays($id);
+            }
+            if ($generate_matches) {
+                // delete previously generated matchs
+                $competition = $competition_mgr->get_by_id($id);
+                $code_competition = $competition['code_competition'];
+                $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
+                // generate matches
+                $this->generate_matches_v2($competition);
+            }
         }
     }
 

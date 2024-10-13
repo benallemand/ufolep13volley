@@ -415,7 +415,7 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    private function init_ranks($id_competition)
+    private function init_ranks($id_competition): void
     {
         $competition_manager = new Competition();
         // first, remove all ranks for competition
