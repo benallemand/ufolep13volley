@@ -1031,18 +1031,6 @@ class Players extends Generic
                             break;
                     }
                 }
-                if (($results[$index]['path_photo_low'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo_low']) === FALSE)) {
-                    switch ($result['sexe']) {
-                        case 'M':
-                            $results[$index]['path_photo_low'] = 'images/MaleMissingPhoto.png';
-                            break;
-                        case 'F':
-                            $results[$index]['path_photo_low'] = 'images/FemaleMissingPhoto.png';
-                            break;
-                        default:
-                            break;
-                    }
-                }
             } else {
                 switch ($result['sexe']) {
                     case 'M':
@@ -1070,11 +1058,11 @@ class Players extends Generic
             mkdir($low_photos_folder, 0777, true);
         }
         if (in_array(pathinfo($source_file, PATHINFO_EXTENSION), array('jpg', 'jpeg', 'png', 'gif'))) {
-            $image = imagecreatefromstring(file_get_contents($source_file));
+            $image = @imagecreatefromstring(file_get_contents($source_file));
             // apply quality
-            imagejpeg($image, $low_photos_folder . basename($source_file), $compression_rate);
+            @imagejpeg($image, $low_photos_folder . basename($source_file), $compression_rate);
             // flush memory
-            imagedestroy($image);
+            @imagedestroy($image);
         }
     }
 }
