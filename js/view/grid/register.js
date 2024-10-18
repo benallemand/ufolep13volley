@@ -37,7 +37,7 @@ Ext.define('Ufolep13Volley.view.grid.register', {
                 {header: 'Rang de départ', dataIndex: 'rank_start',},
             ],
         },
-        {header: 'Remarques', dataIndex: 'remarks', width: 200,},
+        {header: 'Remarques', dataIndex: 'remarks', width: 200, cellWrap: true,},
         {header: 'Responsable', dataIndex: 'leader', width: 200,},
         {
             header: 'Créneaux(x)',
