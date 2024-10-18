@@ -1867,6 +1867,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
      */
     public function generateAll($ids = null, $do_reinit = 'on', $generate_days = 'on', $generate_matches = 'on'): void
     {
+        $competition_mgr = new Competition();
         $do_reinit = $do_reinit === 'on';
         $generate_days = $generate_days === 'on';
         $generate_matches = $generate_matches === 'on';
@@ -1878,8 +1879,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             if ($do_reinit) {
                 // init all gymnasiums etc. from register table
                 (new Register())->set_up_season($id);
-                // get competitions
-                $competition_mgr = new Competition();
                 // reset competition
                 $competition_mgr->resetCompetition($id);
             }
