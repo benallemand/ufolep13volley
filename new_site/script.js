@@ -477,6 +477,8 @@ scotchApp.controller('myTimeslotsController', function ($scope, $http) {
     $http.get("/rest/action.php/timeslot/get_my_timeslots")
         .then(function (response) {
             $scope.timeslots = response.data;
+        }, function (response) {
+            bootbox.alert("Erreur: " + response.data.message);
         });
     $http.get("/rest/action.php/court/getGymnasiums")
         .then(function (response) {
@@ -531,6 +533,8 @@ scotchApp.controller('myPlayersController', ['$scope', '$http', function ($scope
     $http.get("/rest/action.php/player/getMyPlayers")
         .then(function (response) {
             $scope.players = response.data;
+        }, function (response) {
+            bootbox.alert("Erreur: " + response.data.message);
         });
     $http.get("/rest/action.php/player/getPlayers")
         .then(function (response) {
@@ -616,10 +620,14 @@ scotchApp.controller('myTeamController', ['$scope', '$http', 'multipartForm', fu
             $scope.team = response.data[0];
             $scope.modify_my_team.web_site = $scope.team.web_site;
             $scope.modify_my_team.id_club = $scope.team.id_club;
-        });
+        }, function (response) {
+        bootbox.alert("Erreur: " + response.data.message);
+    });
     $http.get("/rest/action.php/club/get")
         .then(function (response) {
             $scope.all_clubs = response.data;
+        }, function (response) {
+            bootbox.alert("Erreur: " + response.data.message);
         });
     $scope.Submit = function () {
         var uploadUrl = '/rest/action.php/team/saveTeam';
@@ -753,6 +761,8 @@ scotchApp.controller('myPageController', function ($scope, $http) {
     $http.get("/rest/action.php/team/getMyTeam")
         .then(function (response) {
             $scope.team = response.data[0];
+        }, function (response) {
+            bootbox.alert("Erreur: " + response.data.message);
         });
 });
 

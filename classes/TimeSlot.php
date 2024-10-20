@@ -44,6 +44,12 @@ class TimeSlot extends Generic
     public function get_my_timeslots()
     {
         @session_start();
+        if (UserManager::isAdmin()) {
+            throw new Exception("Un administrateur ne peut pas faire ça !");
+        }
+        if (!UserManager::isTeamLeader()) {
+            throw new Exception("Seul un responsable d'équipe peut faire ça !");
+        }
         $id_team = $_SESSION['id_equipe'];
         return $this->getTimeSlots("c.id_equipe = $id_team");
     }

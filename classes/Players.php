@@ -94,6 +94,12 @@ class Players extends Generic
     public function getMyPlayers()
     {
         @session_start();
+        if (UserManager::isAdmin()) {
+            throw new Exception("Un administrateur ne peut pas faire ça !");
+        }
+        if (!UserManager::isTeamLeader()) {
+            throw new Exception("Seul un responsable d'équipe peut faire ça !");
+        }
         $id_team = $_SESSION['id_equipe'];
         $players = $this->get_players("j.id IN 
         (

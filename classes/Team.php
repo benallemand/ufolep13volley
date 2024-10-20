@@ -425,10 +425,10 @@ class Team extends Generic
     public function getMyTeam()
     {
         if (UserManager::isAdmin()) {
-            return false;
+            throw new Exception("Un administrateur ne peut pas faire ça !");
         }
         if (!UserManager::isTeamLeader()) {
-            return false;
+            throw new Exception("Seul un responsable d'équipe peut faire ça !");
         }
         $sessionIdEquipe = $_SESSION['id_equipe'];
         $sql = "SELECT 
