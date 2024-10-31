@@ -835,4 +835,12 @@ class MatchManagerTest extends TestCase
         }
     }
 
+    public function test_getMatchPlayers()
+    {
+        $results = $this->match_manager->getNotMatchPlayers(77866);
+        print_r($results);
+        $results = $this->players_manager->get_player(1925);
+        print_r($results);
+    }
+
 }

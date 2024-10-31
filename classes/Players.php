@@ -1025,13 +1025,16 @@ class Players extends Generic
         foreach ($results as $index => $result) {
             if ($result['show_photo'] === 1) {
                 $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
+                $results[$index]['path_photo_low'] = Generic::accentedToNonAccented($result['path_photo_low']);
                 if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
                     switch ($result['sexe']) {
                         case 'M':
                             $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
+                            $results[$index]['path_photo_low'] = 'images/MaleMissingPhoto.png';
                             break;
                         case 'F':
                             $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
+                            $results[$index]['path_photo_low'] = 'images/FemaleMissingPhoto.png';
                             break;
                         default:
                             break;
