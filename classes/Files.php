@@ -256,7 +256,10 @@ class Files extends Generic
                     }
                     $result['departement'] = $matches[1];
                     $result['licence_number'] = $matches[2];
-                    $result['last_first_name'] = $raw_data[$index + 1];
+                    if (!preg_match('/^([a-zA-ZÀ-ÖØ-öø-ÿ\s-]+?)(?=\s*Volley ball|$)/m', $raw_data[$index + 1], $matches)) {
+                        throw new Exception("Impossible de déchiffrer cette chaîne: " . $raw_data[$index + 1] . " !");
+                    }
+                    $result['last_first_name'] = $matches[1];
                 } elseif (self::starts_with($item, "Né(e) le")) {
                     if (!preg_match('/Né\(e\) le (\d{2}\/\d{2}\/\d{4}) - (\d+) ans - ([A-Za-z]+).*/', $item, $matches)) {
                         throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
