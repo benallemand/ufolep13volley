@@ -45,8 +45,14 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                 flex: 1
             },
             {
-                header: 'Equipes',
-                dataIndex: 'teams_list',
+                header: 'Equipes actives',
+                dataIndex: 'active_teams_list',
+                flex: 1
+            },
+            {
+                header: 'Equipes inactives',
+                hidden: true,
+                dataIndex: 'inactive_teams_list',
                 flex: 1
             },
             {

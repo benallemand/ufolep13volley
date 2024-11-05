@@ -75,6 +75,8 @@ Ext.define('Ufolep13Volley.model.Player', {
             name: 'id',
             type: 'int'
         },
+        'active_teams_list',
+        'inactive_teams_list',
         'teams_list',
         {
             name: 'date_homologation',

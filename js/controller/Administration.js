@@ -385,7 +385,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.filter({
             id: 'filterPlayersWithoutClub', filterFn: function (item) {
-                return (!Ext.isEmpty(item.get('teams_list'))) && (Ext.isEmpty(item.get('id_club')));
+                return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('id_club')));
             }
         });
         this.getDisplayFilteredCount().setValue(store.getCount());
@@ -399,7 +399,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.filter({
             id: 'filterPlayersWithoutLicence', filterFn: function (item) {
-                return (!Ext.isEmpty(item.get('teams_list'))) && (Ext.isEmpty(item.get('num_licence')));
+                return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('num_licence')));
             }
         });
         this.getDisplayFilteredCount().setValue(store.getCount());
@@ -413,11 +413,11 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.filter({
             id: 'filterPlayersWith2TeamsSameCompetition', filterFn: function (item) {
-                if (item.get('teams_list') !== null) {
-                    var countM = (item.get('teams_list').match(/\(m\)/g) || []).length;
-                    var countF = (item.get('teams_list').match(/\(f\)/g) || []).length;
-                    var countKH = (item.get('teams_list').match(/\(kh\)/g) || []).length;
-                    var countC = (item.get('teams_list').match(/\(c\)/g) || []).length;
+                if (item.get('active_teams_list') !== null) {
+                    var countM = (item.get('active_teams_list').match(/\(m\)/g) || []).length;
+                    var countF = (item.get('active_teams_list').match(/\(f\)/g) || []).length;
+                    var countKH = (item.get('active_teams_list').match(/\(kh\)/g) || []).length;
+                    var countC = (item.get('active_teams_list').match(/\(c\)/g) || []).length;
                     return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
                 }
                 return false;
@@ -434,7 +434,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.filter({
             id: 'filterPlayersEngaged', filterFn: function (item) {
-                return !Ext.isEmpty(item.get('teams_list'));
+                return !Ext.isEmpty(item.get('active_teams_list'));
             }
         });
         this.getDisplayFilteredCount().setValue(store.getCount());
@@ -448,7 +448,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
         store.filter({
             id: 'filterInactivePlayers', filterFn: function (item) {
-                return (!item.get('est_actif')) && (!Ext.isEmpty(item.get('teams_list')));
+                return (!item.get('est_actif')) && (!Ext.isEmpty(item.get('active_teams_list')));
             }
         });
         this.getDisplayFilteredCount().setValue(store.getCount());
