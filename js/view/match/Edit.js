@@ -58,14 +58,16 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 },
                 queryMode: 'local',
                 allowBlank: false,
-                // bind: {
-                //     visible: '{parent_competition.value}',
-                //     filters: {
-                //         property: 'id_compet_maitre',
-                //         value: '{parent_competition.value}',
-                //         exactMatch: true
-                //     }
-                // },
+                listeners: {
+                    focus: function (combo) {
+                        var parent_code_competition = combo.up('form').down('combo[name=parent_code_competition]').getValue();
+                        combo.getStore().filter([{
+                            property: 'id_compet_maitre',
+                            value: parent_code_competition,
+                            exactMatch: true
+                        }]);
+                    }
+                },
                 forceSelection: true
             },
             {
@@ -75,9 +77,6 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 fieldLabel: 'Division',
                 name: 'division',
                 allowBlank: false,
-                // bind: {
-                //     visible: '{competition.value}'
-                // }
             },
             {
                 xtype: 'combo',
@@ -88,21 +87,22 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
-                // bind: {
-                //     visible: '{division.value}',
-                //     filters: [
-                //         {
-                //             property: 'code_competition',
-                //             value: '{competition.value}',
-                //             exactMatch: true
-                //         },
-                //         {
-                //             property: 'division',
-                //             value: '{division.value}',
-                //             exactMatch: true
-                //         }
-                //     ]
-                // },
+                listeners: {
+                    focus: function (combo) {
+                        var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
+                        var division = combo.up('form').down('textfield[name=division]').getValue();
+                        combo.getStore().filter([{
+                            property: 'code_competition',
+                            value: code_competition,
+                            exactMatch: true
+                        },
+                            {
+                                property: 'division',
+                                value: division,
+                                exactMatch: true
+                            }]);
+                    }
+                },
                 forceSelection: true
             },
             {
@@ -114,21 +114,22 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 store: {type: 'RankTeams'},
                 queryMode: 'local',
                 allowBlank: false,
-                // bind: {
-                //     visible: '{division.value}',
-                //     filters: [
-                //         {
-                //             property: 'code_competition',
-                //             value: '{competition.value}',
-                //             exactMatch: true
-                //         },
-                //         {
-                //             property: 'division',
-                //             value: '{division.value}',
-                //             exactMatch: true
-                //         }
-                //     ]
-                // },
+                listeners: {
+                    focus: function (combo) {
+                        var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
+                        var division = combo.up('form').down('textfield[name=division]').getValue();
+                        combo.getStore().filter([{
+                            property: 'code_competition',
+                            value: code_competition,
+                            exactMatch: true
+                        },
+                            {
+                                property: 'division',
+                                value: division,
+                                exactMatch: true
+                            }]);
+                    }
+                },
                 forceSelection: true
             },
             {
@@ -153,19 +154,15 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 },
                 queryMode: 'local',
                 allowBlank: false,
-                // bind: {
-                //     visible: '{competition.value}',
-                //     filters: {
-                //         property: 'code_competition',
-                //         value: '{competition.value}',
-                //         exactMatch: true
-                //     }
-                // },
                 forceSelection: true,
                 listeners: {
                     focus: function (combo) {
                         var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
-                        combo.getStore().filter('code_competition', code_competition);
+                        combo.getStore().filter({
+                            property: 'code_competition',
+                            value: code_competition,
+                            exactMatch: true
+                        });
                     }
                 }
             },
