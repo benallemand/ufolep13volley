@@ -102,12 +102,18 @@ new Vue({
                 });
         },
         parseDate(dateString) {
+            if (!dateString) {
+                return null;
+            }
             const [day, month, year] = dateString.split('/');
             return new Date(`${year}-${month}-${day}`);
         },
         compareDates(date1, date2) {
             const d1 = this.parseDate(date1);
             const d2 = this.parseDate(date2);
+            if (!d1 || !d2) {
+                return false;
+            }
             return d1 < d2;
         },
     }
