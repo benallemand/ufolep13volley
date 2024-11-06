@@ -73,7 +73,11 @@ $user_details = $_SESSION;
                                      @click="addPlayer(player)">
                                     <img :src="player.path_photo_low" alt="photo"
                                          class="w-12 h-12 rounded-full mr-3"/>
-                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
+                                          class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }}
+                                    </span>
+                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
                                     <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
                                 </div>
                             </div>
@@ -86,7 +90,11 @@ $user_details = $_SESSION;
                                      @click="addPlayer(player)">
                                     <img :src="player.path_photo_low" alt="photo"
                                          class="w-12 h-12 rounded-full mr-3"/>
-                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
+                                          class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }}
+                                    </span>
+                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
                                     <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
                                 </div>
                             </div>
@@ -114,7 +122,11 @@ $user_details = $_SESSION;
                             @click="addPlayer(player)">
                         <img :src="player.path_photo_low" alt="photo"
                              class="w-12 h-12 rounded-full mr-3"/>
-                        {{ player.prenom }} {{ player.nom }} ({{player.club}})
+                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
+                              class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }} ({{player.club}})
+                        </span>
+                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
                         <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
                     </div>
                 </div>
@@ -130,7 +142,13 @@ $user_details = $_SESSION;
                                      @click="removePlayer(player)">
                                     <img :src="player.path_photo_low" alt="photo"
                                          class="w-12 h-12 rounded-full mr-3"/>
-                                    <span>{{ player.prenom }} {{ player.nom }}</span>
+                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
+                                          class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }}
+                                    </span>
+                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
+                                    <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
+                                          class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
                                     <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
                                 </div>
                             </div>
@@ -145,7 +163,13 @@ $user_details = $_SESSION;
                                          @click="removePlayer(player)">
                                         <img :src="player.path_photo_low" alt="photo"
                                              class="w-12 h-12 rounded-full mr-3"/>
-                                        <span>{{ player.prenom }} {{ player.nom }}</span>
+                                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
+                                              class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }}
+                                    </span>
+                                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
+                                        <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
+                                              class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
                                         <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
                                     </div>
                                 </div>
@@ -161,7 +185,13 @@ $user_details = $_SESSION;
                                          @click="removePlayer(player)">
                                         <img :src="player.path_photo_low" alt="photo"
                                              class="w-12 h-12 rounded-full mr-3"/>
-                                        <span>{{ player.prenom }} {{ player.nom }}</span>
+                                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
+                                              class="px-2 py-1 rounded">
+                                        {{ player.prenom }} {{ player.nom }}
+                                    </span>
+                                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
+                                        <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
+                                              class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
                                         <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
                                     </div>
                                 </div>

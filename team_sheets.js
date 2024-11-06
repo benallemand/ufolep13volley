@@ -100,6 +100,15 @@ new Vue({
                 .catch(error => {
                     onError(this, error)
                 });
-        }
+        },
+        parseDate(dateString) {
+            const [day, month, year] = dateString.split('/');
+            return new Date(`${year}-${month}-${day}`);
+        },
+        compareDates(date1, date2) {
+            const d1 = this.parseDate(date1);
+            const d2 = this.parseDate(date2);
+            return d1 < d2;
+        },
     }
 });
