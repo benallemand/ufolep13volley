@@ -1,3 +1,12 @@
+WITH first_responsable AS (
+    SELECT ca.id,
+           ca.id_equipe,
+           ROW_NUMBER() OVER (PARTITION BY ca.id_equipe ORDER BY ca.id) AS rn
+    FROM comptes_acces ca
+             JOIN users_profiles up ON ca.id = up.user_id
+             JOIN profiles p ON up.profile_id = p.id
+    WHERE p.name = 'RESPONSABLE_EQUIPE'
+)
 SELECT e.nom_equipe                     AS equipe,
        c.libelle                        AS competition,
        COALESCE(ca.email,
@@ -9,14 +18,13 @@ SELECT e.nom_equipe                     AS equipe,
                 j_cap.email2,
                 club.email_responsable) AS contact_email,
        COUNT(j_masc.id)                 AS garcons,
-       count(j_fem.id)                  AS filles,
-       count(j_resp.id)                 AS reponsable_ok,
-       count(j_resp2.id)                AS reponsable2_ok,
-       count(j_cap.id)                  AS capitaine_ok
+       COUNT(j_fem.id)                  AS filles,
+       COUNT(j_resp.id)                 AS reponsable_ok,
+       COUNT(j_resp2.id)                AS reponsable2_ok,
+       COUNT(j_cap.id)                  AS capitaine_ok
 FROM equipes e
-         JOIN comptes_acces ca ON ca.id_equipe = e.id_equipe
-         JOIN users_profiles up on ca.id = up.user_id
-         JOIN profiles p on up.profile_id = p.id AND p.name = 'RESPONSABLE_EQUIPE'
+         JOIN first_responsable fr ON fr.id_equipe = e.id_equipe AND fr.rn = 1
+         JOIN comptes_acces ca ON fr.id = ca.id
          JOIN clubs club ON e.id_club = club.id
          JOIN competitions c ON c.code_competition = e.code_competition
          JOIN joueur_equipe je ON e.id_equipe = je.id_equipe

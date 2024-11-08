@@ -33,7 +33,7 @@ class SqlManager
         if (mysqli_stmt_execute($stmt) === FALSE) {
             throw new Exception("Erreur SQL : " . mysqli_error($db));
         }
-        if (str_starts_with($sql, "SELECT") || str_starts_with($sql, "SHOW")) {
+        if (str_starts_with($sql, "SELECT") || str_starts_with($sql, "SHOW") || str_starts_with($sql, "WITH")) {
             $mysqli_result = mysqli_stmt_get_result($stmt);
             $results = array();
             while ($data = mysqli_fetch_assoc($mysqli_result)) {
