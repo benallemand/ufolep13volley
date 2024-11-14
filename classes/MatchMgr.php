@@ -1480,21 +1480,7 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
         $data = $results[0];
         $emailDom = $this->team->getTeamEmail($data['id_equipe_dom']);
         $emailExt = $this->team->getTeamEmail($data['id_equipe_ext']);
-        $emailReport = '';
-        switch ($data['code_competition']) {
-            case 'm':
-                $emailReport = 'report-6x6-mmx@ufolep13volley.org';
-                break;
-            case 'f':
-                $emailReport = 'report-4x4-fem@ufolep13volley.org';
-                break;
-            case 'mo':
-                $emailReport = 'report-4x4-mxt@ufolep13volley.org';
-                break;
-            case 'kh':
-                $emailReport = 'report-4x4-ckh@ufolep13volley.org';
-                break;
-        }
+        $emailReport = 'report@ufolep13volley.org';
         return array($emailDom, $emailExt, $emailReport);
     }
 
