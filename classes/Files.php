@@ -256,7 +256,7 @@ class Files extends Generic
                     }
                     $result['departement'] = $matches[1];
                     $result['licence_number'] = $matches[2];
-                    if (!preg_match('/^([a-zA-ZÀ-ÖØ-öø-ÿ\s-]+?)(?=\s*Volley ball|$)/m', $raw_data[$index + 1], $matches)) {
+                    if (!preg_match('/^([\'a-zA-ZÀ-ÖØ-öø-ÿ\s-]+?)(?=\s*Volley ball|$)/m', $raw_data[$index + 1], $matches)) {
                         throw new Exception("Impossible de déchiffrer cette chaîne: " . $raw_data[$index + 1] . " !");
                     }
                     $result['last_first_name'] = $matches[1];
