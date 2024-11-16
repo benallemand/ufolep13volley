@@ -20,16 +20,16 @@ Ext.define('Ufolep13Volley.controller.manage_commission', {
                 'menuitem[action=display_commission]': {
                     click: this.show_grid
                 },
-                'button[action=set_attribution]': {
+                'grid_commission > toolbar > button[action=set_attribution]': {
                     click: this.set_attribution
                 },
-                'button[action=create]': {
+                'grid_commission > toolbar > button[action=create]': {
                     click: this.create
                 },
-                'button[action=edit]': {
+                'grid_commission > toolbar > button[action=edit]': {
                     click: this.edit
                 },
-                'button[action=delete]': {
+                'grid_commission > toolbar > button[action=delete]': {
                     click: this.delete
                 },
                 'grid_commission': {
