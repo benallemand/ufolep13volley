@@ -53,10 +53,15 @@ new Vue({
                     case 'set_4_ext':
                     case 'set_5_ext':
                     case 'referee':
-                    case 'note':
                     case 'forfait_dom':
                     case 'forfait_ext':
                     case 'dirtyFields':
+                        formData.append(key, this.matchData[key]);
+                        break;
+                    case 'note':
+                        if (this.matchData[key] === null) {
+                            this.matchData[key] = '';
+                        }
                         formData.append(key, this.matchData[key]);
                         break;
                     default:
