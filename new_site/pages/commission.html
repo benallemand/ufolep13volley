@@ -15,21 +15,25 @@
                     <tr>
                         <th>Nom</th>
                         <th>Rôle</th>
+                        <th>Divisions</th>
                         <th>Téléphone 1</th>
                         <th>Téléphone 2</th>
                         <th>Email</th>
-                        <th>Photo</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="x in commission | filter:{type:'membre'}:true">
-                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
-                                src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/>
+                            <img src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/>
+                            <p>
+                                <img src="{{ x.photo }}" height="100px">
+                            </p>
+                        </td>
                         <td>{{ x.fonction }}</td>
+                        <td>{{ x.attribution | uppercase }}</td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
-                        <td><img src="{{ x.photo }}" height="150px"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -45,21 +49,26 @@
                     <tr>
                         <th>Nom</th>
                         <th>Rôle</th>
+                        <th>Divisions</th>
                         <th>Téléphone 1</th>
                         <th>Téléphone 2</th>
                         <th>Email</th>
-                        <th>Photo</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="x in commission | filter:{type:'support'}:true">
-                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/> <img
-                                src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/></td>
+                        <td><img src="../ajax/getImageFromText.php?text={{ x.prenom_base64 }}"/>
+                            <img src="../ajax/getImageFromText.php?text={{ x.nom_base64 }}"/>
+                            <p>
+                                <img src="{{ x.photo }}" height="100px">
+                            </p>
+                        </td>
                         <td>{{ x.fonction }}</td>
+                        <td>{{ x.attribution | uppercase }}</td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.telephone1_base64 }}"/></td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.telephone2_base64 }}"/></td>
                         <td><img src="../ajax/getImageFromText.php?text={{ x.email_base64 }}"/></td>
-                        <td><img src="{{ x.photo }}" height="150px"></td>
+                        <td><img src="{{ x.photo }}" height="100px"></td>
                     </tr>
                     </tbody>
                 </table>

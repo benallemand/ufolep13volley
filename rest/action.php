@@ -129,6 +129,10 @@ try {
             require_once __DIR__ . "/../classes/UserManager.php";
             $manager = new UserManager();
             break;
+        case 'commission':
+            require_once __DIR__ . "/../classes/Commission.php";
+            $manager = new Commission();
+            break;
         default:
             throw new Exception("Classe non définie pour l'url $url !");
 

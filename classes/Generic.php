@@ -242,4 +242,17 @@ class Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * @param ...$args
+     * @return array|int|string|null
+     * @throws Exception
+     */
+    public function save_with_args(...$args) {
+        if (count($args) === 1 && is_array($args[0])) {
+            $inputs = $args[0]; // Les arguments sont déjà sous forme de tableau associatif
+        } else {
+            $inputs = $args; // Sinon, utilisez directement les arguments
+        }
+        return $this->save($inputs);
+    }
 }

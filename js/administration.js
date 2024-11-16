@@ -20,6 +20,7 @@ Ext.application({
         'manage_survey',
         'manage_register',
         'generate_competition',
+        'manage_commission',
     ],
     name: 'Ufolep13Volley',
     appFolder: 'js',

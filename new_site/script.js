@@ -789,9 +789,9 @@ scotchApp.controller('phonebooksController', function ($scope, $http) {
 });
 
 scotchApp.controller('commissionController', function ($scope, $http) {
-    $http.get("../ajax/commission.php")
+    $http.get("/rest/action.php/commission/get")
         .then(function (response) {
-            $scope.commission = response.data.results;
+            $scope.commission = response.data;
             var commission_team = $scope.commission;
             var commission_team_count = commission_team.length;
             for (var currentIndex = 0; currentIndex < commission_team_count; currentIndex++) {
