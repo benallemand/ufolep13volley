@@ -74,15 +74,12 @@ if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') 
 }
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'RESPONSABLE_EQUIPE') {
     ?>
-    <a ng-if="x.sheet_received == 1
-        && (x.id_equipe_dom == <?php echo $_SESSION['id_equipe'] ?> || x.id_equipe_ext == <?php echo $_SESSION['id_equipe'] ?>)
-        && x.is_file_attached == 1
-        && x.match_status == 'CONFIRMED'"
-       href="/rest/action.php/matchmgr/download?id={{x.id_match}}"
-       role="button"
-       class="btn btn-sm btn-primary">
-        <span class="glyphicon glyphicon-download-alt"></span>
-        Télécharger les fichiers attachés
+    <a title="Contacter le responsable"
+       class="btn btn-sm btn-info"
+       ng-href="mailto:{{x.contact_com}};{{x.email_dom}};{{x.email_ext}}"
+       target="_self">
+        Contact
+        <span class="glyphicon glyphicon-envelope"></span>
     </a>
     <form ng-if="x.report_status == 'NOT_ASKED'
         && x.certif != '1'
