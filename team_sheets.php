@@ -62,145 +62,65 @@ $user_details = $_SESSION;
     <div class="flex justify-center items-center m-4">
         <form @submit.prevent="submitForm">
             <div class="flex flex-col">
-                <div class="border border-2 border-black">
+                <div v-if="!(matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1)">
                     <h1>Joueurs disponibles</h1>
-                    <div class="flex flex-col">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
-                            <div class="mb-4">
-                                <div v-for="player in availablePlayersDom"
-                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                                     role="button"
-                                     @click="addPlayer(player)">
-                                    <img :src="player.path_photo_low" alt="photo"
-                                         class="w-12 h-12 rounded-full mr-3"/>
-                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
-                                          class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }}
-                                    </span>
-                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                                    <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
-                                </div>
-                            </div>
+                    <player-list
+                            :players="availablePlayersDom"
+                            :team-name="matchData.equipe_dom"
+                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            @add-player="addPlayer">
+                    </player-list>
+
+                    <player-list
+                            :players="availablePlayersExt"
+                            :team-name="matchData.equipe_ext"
+                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            @add-player="addPlayer">
+                    </player-list>
+                    <div class="border border-2 border-black">
+                        <label>Renfort
+                            <input v-model="query"
+                                   @input="search"
+                                   type="text"
+                                   placeholder="taper pour chercher un joueur"
+                                   class="input input-bordered w-full max-w-xs"
+                            />
                         </label>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_ext}}
-                            <div class="mb-4">
-                                <div v-for="player in availablePlayersExt"
-                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                                     role="button"
-                                     @click="addPlayer(player)">
-                                    <img :src="player.path_photo_low" alt="photo"
-                                         class="w-12 h-12 rounded-full mr-3"/>
-                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
-                                          class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }}
-                                    </span>
-                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                                    <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                <div class="border border-2 border-black">
-                    <label>Renfort
-                        <input v-model="query"
-                               @input="search"
-                               type="text"
-                               placeholder="taper pour chercher un joueur"
-                               class="input input-bordered w-full max-w-xs"
-                        />
-                    </label>
-                    <div role="alert" class="alert">
-                        1 joueur autorisé par match et par équipe. <br/>
-                        Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison
-                    </div>
-                    <div
-                            v-for="player in renforts"
-                            class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                            role="button"
-                            v-if="!matchPlayers.includes(player)"
-                            @click="addPlayer(player)">
-                        <img :src="player.path_photo_low" alt="photo"
-                             class="w-12 h-12 rounded-full mr-3"/>
-                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0}"
-                              class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }} ({{player.club}})
-                        </span>
-                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                        <span class="btn btn-success ml-auto"><i class="fa-solid fa-plus"></i></span>
+                        <div role="alert" class="alert">
+                            1 joueur autorisé par match et par équipe. <br/>
+                            Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison
+                        </div>
+                        <player-list
+                                :players="renforts.filter(player => !matchPlayers.includes(player))"
+                                team-name="Renfort"
+                                :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                                @add-player="addPlayer">
+                        </player-list>
                     </div>
                 </div>
                 <div>
                     <h1>Joueurs présents</h1>
-                    <div class="flex flex-col mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_dom}}
-                            <div class="mb-4">
-                                <div v-for="player in matchPlayers"
-                                     v-if="player.equipe == matchData.equipe_dom"
-                                     class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                                     role="button"
-                                     @click="removePlayer(player)">
-                                    <img :src="player.path_photo_low" alt="photo"
-                                         class="w-12 h-12 rounded-full mr-3"/>
-                                    <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
-                                          class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }}
-                                    </span>
-                                    <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                                    <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
-                                          class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
-                                    <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
-                                </div>
-                            </div>
-                        </label>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">{{matchData.equipe_ext}}
-                                <div class="mb-4">
-                                    <div v-for="player in matchPlayers"
-                                         v-if="player.equipe == matchData.equipe_ext"
-                                         class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                                         role="button"
-                                         @click="removePlayer(player)">
-                                        <img :src="player.path_photo_low" alt="photo"
-                                             class="w-12 h-12 rounded-full mr-3"/>
-                                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
-                                              class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }}
-                                    </span>
-                                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                                        <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
-                                              class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
-                                        <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Renfort
-                                <div class="mb-4">
-                                    <div v-for="player in matchPlayers"
-                                         v-if="player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom"
-                                         class="flex items-center mb-2 cursor-pointer hover:bg-gray-100"
-                                         role="button"
-                                         @click="removePlayer(player)">
-                                        <img :src="player.path_photo_low" alt="photo"
-                                             class="w-12 h-12 rounded-full mr-3"/>
-                                        <span :class="{'bg-pink-500 text-white': player.est_actif === 0 || (player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation))}"
-                                              class="px-2 py-1 rounded">
-                                        {{ player.prenom }} {{ player.nom }}
-                                    </span>
-                                        <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
-                                        <span v-if="player.est_actif === 1 && compareDates(player.date_reception, player.date_homologation)"
-                                              class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
-                                        <span class="btn btn-error ml-auto"><i class="fa-solid fa-trash"></i></span>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+                    <player-list
+                            :players="matchPlayers.filter(player => player.equipe === matchData.equipe_dom)"
+                            :team-name="matchData.equipe_dom"
+                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            @remove-player="removePlayer">
+                    </player-list>
+                    <player-list
+                            :players="matchPlayers.filter(player => player.equipe === matchData.equipe_ext)"
+                            :team-name="matchData.equipe_ext"
+                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            @remove-player="removePlayer">
+                    </player-list>
+                    <player-list
+                            :players="matchPlayers.filter(player => player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom)"
+                            team-name="Renfort"
+                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            @remove-player="removePlayer">
+                    </player-list>
                 </div>
             </div>
-            <div class="flex justify-center items-center m-4">
+            <div class="flex justify-center items-center m-4" v-if="!(matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1)">
                 <button class="btn btn-primary" type="submit">
                     <i class="fas fa-pencil mr-1"></i><span>Enregistrer</span>
                 </button>
