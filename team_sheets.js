@@ -33,6 +33,7 @@ Vue.component('player-list', {
 new Vue({
     el: '#app',
     data: {
+        id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         availablePlayers: [],
         matchPlayers: [],
@@ -54,7 +55,7 @@ new Vue({
     methods: {
         search() {
             if (this.query.length > 3) {
-                return axios.get(`/rest/action.php/matchmgr/getReinforcementPlayers?id_match=${id_match}&query=${this.query}`)
+                return axios.get(`/rest/action.php/matchmgr/getReinforcementPlayers?id_match=${this.id_match}&query=${this.query}`)
                     .then(response => {
                         this.renforts = response.data;
                     })
@@ -66,7 +67,7 @@ new Vue({
             this.renforts = [];
         },
         loadMatchData() {
-            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`)
                 .then(response => {
                     this.matchData = response.data;
                 })
@@ -75,7 +76,7 @@ new Vue({
                 });
         },
         loadAvailablePlayers() {
-            return axios.get(`/rest/action.php/matchmgr/getNotMatchPlayers?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/getNotMatchPlayers?id_match=${this.id_match}`)
                 .then(response => {
                     this.availablePlayers = response.data;
                 })
@@ -84,7 +85,7 @@ new Vue({
                 });
         },
         loadMatchPlayers() {
-            return axios.get(`/rest/action.php/matchmgr/getMatchPlayers?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/getMatchPlayers?id_match=${this.id_match}`)
                 .then(response => {
                     this.matchPlayers = response.data;
                 })
@@ -93,10 +94,10 @@ new Vue({
                 });
         },
         signMatch() {
-            genericSignMatch(this, id_match);
+            genericSignMatch(this, this.id_match);
         },
         signTeamSheets() {
-            genericSignSheet(this, id_match);
+            genericSignSheet(this, this.id_match);
         },
         addPlayer(player) {
             if (!this.matchPlayers.includes(player)) {
@@ -115,7 +116,7 @@ new Vue({
         },
         submitForm() {
             const formData = new FormData()
-            formData.append('id_match', id_match)
+            formData.append('id_match', this.id_match)
             this.matchPlayers.forEach((player) => {
                 formData.append('player_ids[]', player.id)
             })

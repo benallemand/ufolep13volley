@@ -243,6 +243,7 @@ class MatchMgr extends Generic
         $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
+            case 'SUPPORT':
                 return true;
             case 'RESPONSABLE_EQUIPE':
                 if (
@@ -1092,8 +1093,9 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function certify_match(string $id)
+    public function certify_match(string $id): void
     {
+        $this->is_action_allowed(__FUNCTION__, $id);
         $sql = "UPDATE matches 
                 SET certif = 1
                 WHERE id_match = ?";
@@ -1678,6 +1680,11 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
             throw new Exception("Utilisateur non connecté !");
         }
         switch ($function_name) {
+            case 'certify_match':
+                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR', 'SUPPORT'))) {
+                    return;
+                }
+                throw new Exception("Seule la commission est autorisée à valider un match !");
             case 'giveReportDate':
                 // allow admin
                 if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
@@ -1776,10 +1783,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 if ($match['match_status'] !== 'CONFIRMED') {
                     throw new Exception("Match non confirmé !");
                 }
-//                // allow only sign_team_xxx filled matches
-//                if (($match['is_sign_team_dom'] !== 1) || ($match['is_sign_team_ext'] !== 1)) {
-//                    throw new Exception("Les fiches équipes n'ont pas été signées !");
-//                }
                 // allow only score filled matches
                 if ($match['score_equipe_dom'] == 0 && $match['score_equipe_ext'] == 0) {
                     throw new Exception("Le score n'a pas été renseigné !");

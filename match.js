@@ -4,6 +4,7 @@ import {genericSignMatch, genericSignSheet} from "./signer.js";
 new Vue({
     el: '#app',
     data: {
+        id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         isLoading: false,
     },
@@ -19,7 +20,7 @@ new Vue({
                 });
         },
         loadMatchData() {
-            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`)
                 .then(response => {
                     this.matchData = response.data;
                 })
@@ -28,10 +29,10 @@ new Vue({
                 });
         },
         signMatch() {
-            genericSignMatch(this, id_match);
+            genericSignMatch(this, this.id_match);
         },
         signTeamSheets() {
-            genericSignSheet(this, id_match);
+            genericSignSheet(this, this.id_match);
         },
         submitForm() {
             this.setScores();

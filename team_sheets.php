@@ -4,24 +4,20 @@ require_once __DIR__ . '/classes/MatchMgr.php';
 try {
     $generic = new Generic();
     $user_details = $generic->getCurrentUserDetails();
-    if (!in_array($user_details['profile_name'], array('RESPONSABLE_EQUIPE', 'ADMINISTRATEUR'))) {
-        throw new Exception("Profil responsable d'équipe ou administrateur nécessaire !", 401);
+    if (!in_array($user_details['profile_name'], array('RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT'))) {
+        throw new Exception("Vous n'avez pas le profil suffisant pour accéder à cette page !", 401);
+    }
+    $id_match = filter_input(INPUT_GET, 'id_match');
+    if (empty($id_match)) {
+        throw new Exception("id_match non défini !", 404);
+    }
+    $manager = new MatchMgr();
+    if (!$manager->is_match_update_allowed($id_match)) {
+        throw new Exception("Vous n'êtes pas autorisé à modifier ce match !", 401);
     }
 } catch (Exception $e) {
     header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
     exit(0);
-}
-try {
-    $id_match = filter_input(INPUT_GET, 'id_match');
-    if (empty($id_match)) {
-        throw new Exception("id_match non défini !");
-    }
-    $manager = new MatchMgr();
-    if (!$manager->is_match_update_allowed($id_match)) {
-        throw new Exception("Vous n'êtes pas autorisé à modifier ce match !");
-    }
-} catch (Exception $e) {
-    echo "Erreur ! " . $e->getMessage();
 }
 @session_start();
 $user_details = $_SESSION;
@@ -47,10 +43,6 @@ $user_details = $_SESSION;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
           integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <script type="text/javascript">
-        var id_match = <?php echo $id_match; ?>;
-        var user_details = <?php echo json_encode($user_details); ?>;
-    </script>
 </HEAD>
 <BODY>
 <div id="app" class="max-w-3xl mx-auto p-6">
