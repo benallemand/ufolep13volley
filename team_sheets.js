@@ -7,7 +7,23 @@ Vue.component('player-list', {
     methods: {
         handleClick(player) {
             this.$emit(this.$listeners['add-player'] ? 'add-player' : 'remove-player', player);
-        }
+        },
+        parseDate(dateString) {
+            if (!dateString) {
+                return null;
+            }
+            const [day, month, year] = dateString.split('/');
+            return new Date(`${year}-${month}-${day}`);
+        },
+        compareDates(date1, date2) {
+            const d1 = this.parseDate(date1);
+            const d2 = this.parseDate(date2);
+            if (!d1 || !d2) {
+                return false;
+            }
+            return d1 < d2;
+        },
+
     },
     template: `
       <div class="border border-2 border-black p-4">
@@ -18,6 +34,9 @@ Vue.component('player-list', {
                         {{ player.prenom }} {{ player.nom }}
                     </span>
           <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
+          <span
+              v-if="player.est_actif === 1 && player.date_reception && player.date_homologation && compareDates(player.date_reception, player.date_homologation)"
+              class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
           <button v-if="!isSigned"
                   class="btn ml-auto"
                   :class="{'btn-success': $listeners['add-player'], 'btn-error': $listeners['remove-player']}"
@@ -131,21 +150,6 @@ new Vue({
                 .catch(error => {
                     onError(this, error)
                 });
-        },
-        parseDate(dateString) {
-            if (!dateString) {
-                return null;
-            }
-            const [day, month, year] = dateString.split('/');
-            return new Date(`${year}-${month}-${day}`);
-        },
-        compareDates(date1, date2) {
-            const d1 = this.parseDate(date1);
-            const d2 = this.parseDate(date2);
-            if (!d1 || !d2) {
-                return false;
-            }
-            return d1 < d2;
         },
     }
 });
