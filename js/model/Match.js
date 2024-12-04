@@ -203,7 +203,7 @@ Ext.define('Ufolep13Volley.model.Match', {
                     && record.get('is_match_player_filled')
                     && !record.get('is_match_player_requested')
                     && !record.get('has_forbidden_player')
-                    && !Ext.isEmpty(record.get('count_status'))
+                    && Ext.isEmpty(record.get('count_status'))
                     && record.get('match_status') === 'CONFIRMED');
             }
         },
