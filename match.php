@@ -16,6 +16,8 @@ try {
         }
         $match = $manager->get_match_by_code_match($code_match);
         $id_match = $match['id_match'];
+        header("Location:/match.php?id_match=$id_match");
+        die();
     }
     if (!$manager->is_match_update_allowed($id_match)) {
         throw new Exception("Vous n'êtes pas autorisé à modifier ce match !", 401);
