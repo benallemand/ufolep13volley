@@ -4,7 +4,7 @@ SELECT m.code_match                              AS match_reference,
        e2.nom_equipe                             AS team_guest,
        jresp2.email                              AS email_guest,
        DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS original_match_date
-FROM matches m
+FROM matchs_view m
          JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
          JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
          JOIN joueur_equipe jeresp1 ON jeresp1.id_equipe = e1.id_equipe AND jeresp1.is_leader + 0 > 0

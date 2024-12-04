@@ -26,7 +26,7 @@ FROM (SELECT e.id_equipe,
              c.report_count
       FROM classements c
                JOIN equipes e ON e.id_equipe = c.id_equipe
-               LEFT JOIN matches m ON
+               LEFT JOIN matchs_view m ON
           m.code_competition = c.code_competition
               AND m.division = c.division
               AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
