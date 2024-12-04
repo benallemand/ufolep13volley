@@ -175,14 +175,6 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 startDay: 1
             },
             {
-                name: 'sheet_received',
-                xtype: 'checkboxfield',
-                fieldLabel: 'Feuille de match reçue ?',
-                boxLabel: 'Oui',
-                msgTarget: 'under',
-                uncheckedValue: 'off'
-            },
-            {
                 name: 'certif',
                 xtype: 'checkboxfield',
                 fieldLabel: 'Certifié ?',
