@@ -69,23 +69,6 @@ class Files extends Generic
     }
 
     /**
-     * @param $fileKey
-     * @param $uploadfile
-     * @throws Exception
-     */
-    function upload_file($fileKey, &$uploadfile): void
-    {
-        if (empty($_FILES[$fileKey]['name'])) {
-            throw new Exception("Impossible de trouver le fichier envoyé !");
-        }
-        $uploaddir = '../teams_pics/';
-        $uploadfile = $uploaddir . time() . '.' . pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
-        if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadfile) !== TRUE) {
-            throw new Exception("Impossible de déplacer/renommer le fichier envoyé !");
-        }
-    }
-
-    /**
      * @throws Exception
      */
     private function check_action_allowed(string $function_name, $file_path): void
@@ -136,30 +119,6 @@ class Files extends Generic
         header("Expires: 0");
         readfile($file_path);
         die();
-    }
-
-    /**
-     * @param $uploadfile
-     * @return array|int|string|null
-     * @throws Exception
-     */
-    function insert_file_in_db($uploadfile): array|int|string|null
-    {
-        $path_photo = str_replace('../', '', $uploadfile);
-        $sql = "INSERT INTO photos SET path_photo = '$path_photo'";
-        return $this->sql_manager->execute($sql);
-    }
-
-    /**
-     * @param $fileKey
-     * @return array|int|string|null
-     * @throws Exception
-     */
-    function upload_and_insert_file_in_db($fileKey): array|int|string|null
-    {
-        $uploadfile = null;
-        $this->upload_file($fileKey, $uploadfile);
-        return $this->insert_file_in_db($uploadfile);
     }
 
     private function get_code_match_from_file_path($file_path): string
@@ -235,6 +194,9 @@ class Files extends Generic
         return $results;
     }
 
+    /**
+     * @throws Exception
+     */
     public function get_licences_data_from_pdf_2024(string $input_pdf_path): array
     {
         $parser = new Parser();

@@ -267,13 +267,11 @@ class MatchMgr extends Generic
      */
     public function save_match($id_match,
                                $code_match,
-                               $score_equipe_dom,
                                $set_1_dom,
                                $set_2_dom,
                                $set_3_dom,
                                $set_4_dom,
                                $set_5_dom,
-                               $score_equipe_ext,
                                $set_1_ext,
                                $set_2_ext,
                                $set_3_ext,
@@ -281,23 +279,17 @@ class MatchMgr extends Generic
                                $set_5_ext,
                                $referee,
                                $note,
-                               $forfait_dom = false,
-                               $forfait_ext = false,
                                $dirtyFields = null)
     {
-        return $this->save(array(
+        $this->save(array(
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
             'code_match' => $code_match,
-            'forfait_dom' => $forfait_dom,
-            'score_equipe_dom' => $score_equipe_dom,
             'set_1_dom' => $set_1_dom,
             'set_2_dom' => $set_2_dom,
             'set_3_dom' => $set_3_dom,
             'set_4_dom' => $set_4_dom,
             'set_5_dom' => $set_5_dom,
-            'forfait_ext' => $forfait_ext,
-            'score_equipe_ext' => $score_equipe_ext,
             'set_1_ext' => $set_1_ext,
             'set_2_ext' => $set_2_ext,
             'set_3_ext' => $set_3_ext,
@@ -318,12 +310,14 @@ class MatchMgr extends Generic
      * @param $id_gymnasium
      * @param $id_journee
      * @param $date_reception
-     * @param $sheet_received
      * @param $certif
+     * @param $is_sign_team_dom
+     * @param $is_sign_team_ext
+     * @param $is_sign_match_dom
+     * @param $is_sign_match_ext
      * @param $note
      * @param null $dirtyFields
      * @param null $id_match
-     * @return array|int|string|null
      * @throws Exception
      */
     public function saveMatch(
@@ -336,7 +330,6 @@ class MatchMgr extends Generic
         $id_gymnasium,
         $id_journee,
         $date_reception,
-        $sheet_received,
         $certif,
         $is_sign_team_dom,
         $is_sign_team_ext,
@@ -345,7 +338,7 @@ class MatchMgr extends Generic
         $note,
         $dirtyFields = null,
         $id_match = null
-    ): array|int|string|null
+    )
     {
         $inputs = array(
             'code_match' => $code_match,
@@ -357,7 +350,6 @@ class MatchMgr extends Generic
             'id_gymnasium' => $id_gymnasium,
             'id_journee' => $id_journee,
             'date_reception' => $date_reception,
-            'sheet_received' => $sheet_received,
             'certif' => $certif,
             'is_sign_team_dom' => $is_sign_team_dom,
             'is_sign_team_ext' => $is_sign_team_ext,
@@ -367,13 +359,13 @@ class MatchMgr extends Generic
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
         );
-        return $this->save($inputs);
+        $this->save($inputs);
     }
 
     /**
      * @throws Exception
      */
-    public function save($inputs)
+    public function save($inputs): void
     {
         $bindings = array();
         if (empty($inputs['id_match'])) {
@@ -407,8 +399,6 @@ class MatchMgr extends Generic
                 case 'set_4_ext':
                 case 'set_5_dom':
                 case 'set_5_ext':
-                case 'score_equipe_dom':
-                case 'score_equipe_ext':
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $value);
                     break;
@@ -418,8 +408,6 @@ class MatchMgr extends Generic
                     break;
                 case 'certif':
                 case 'sheet_received':
-                case 'forfait_dom':
-                case 'forfait_ext':
                 case 'is_sign_team_dom':
                 case 'is_sign_team_ext':
                 case 'is_sign_match_dom':
@@ -443,45 +431,8 @@ class MatchMgr extends Generic
         if (empty($inputs['id_match'])) {
             return;
         }
-        $this->save_match_files($inputs);
         $code_match = $inputs['code_match'];
         $this->addActivity("Le match $code_match a ete modifie");
-    }
-
-    /**
-     * @param $match
-     * @throws Exception
-     */
-    private function save_match_files($match)
-    {
-        $uploaddir = '../match_files/';
-        $code_match = $match['code_match'];
-        $file_iteration = array('file1', 'file2', 'file3', 'file4');
-        $mark_sheet_received = false;
-        foreach ($file_iteration as $current_file_iteration) {
-            if (empty($_FILES[$current_file_iteration]['name'])) {
-                continue;
-            }
-            $mark_sheet_received = true;
-            $iteration = 1;
-            $extension = pathinfo($_FILES[$current_file_iteration]['name'], PATHINFO_EXTENSION);
-            $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
-            while (file_exists($uploadfile)) {
-                $iteration++;
-                $uploadfile = "$uploaddir$code_match$current_file_iteration$iteration.$extension";
-            }
-            $file_hash = md5_file($_FILES[$current_file_iteration]['tmp_name']);
-            $id_file = $this->insert_file(substr($uploadfile, 3), $file_hash);
-            $id_match = $match['id_match'];
-            $this->link_match_to_file($id_match, $id_file);
-            if (move_uploaded_file($_FILES[$current_file_iteration]['tmp_name'], Generic::accentedToNonAccented($uploadfile))) {
-                $this->addActivity("Un nouveau fichier a ete transmis pour le match $code_match.");
-            }
-        }
-        if ($mark_sheet_received) {
-            $this->declare_sheet_received($code_match);
-            (new Emails())->sendMailSheetReceived($code_match);
-        }
     }
 
     /**
@@ -514,20 +465,6 @@ class MatchMgr extends Generic
             array('type' => 'i', 'value' => $idMatch),
         );
         return $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @param $code_match
-     * @throws Exception
-     */
-    public function declare_sheet_received($code_match)
-    {
-        $sql = "UPDATE matches SET sheet_received = 1 WHERE code_match = ?";
-        $bindings = array(
-            array('type' => 's', 'value' => $code_match),
-        );
-        $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("La feuille du match $code_match a ete reçue");
     }
 
     /**

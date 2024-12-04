@@ -321,38 +321,6 @@ class Emails extends Generic
      * @throws Exception
      * @throws Exception
      */
-    public function sendMailSheetReceived($code_match): void
-    {
-        $teams_emails = $this->match->getTeamsEmailsFromMatch($code_match);
-        $to = implode(';', $teams_emails);
-        // fill code match
-        $message = file_get_contents('../templates/emails/sendMailSheetReceived.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        // fill files
-        $files_paths_html = '';
-        $matches = $this->match->get_matches("m.code_match = '$code_match'");
-        $files_paths = $matches[0]['files_paths'];
-        $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-        if (!empty($files_paths)) {
-            $files_paths_list = explode('|', $files_paths);
-            foreach ($files_paths_list as $file_path) {
-                $files_paths_html .= "<a href='$root/rest/action.php/files/download_match_file?file_path=$file_path' target='_blank'>" . basename($file_path) . "</a><br/>" . PHP_EOL;
-            }
-        }
-        $message = str_replace('%files_paths%', $files_paths_html, $message);
-        // insert for sending
-        $this->insert_email(
-            "[UFOLEP13VOLLEY]Feuilles du match $code_match reçues",
-            $message,
-            $to
-        );
-    }
-
-    /**
-     * @param $code_match
-     * @throws Exception
-     * @throws Exception
-     */
     public function team_sheet_to_be_signed($code_match): void
     {
         $match = $this->match->get_match_by_code_match($code_match);
