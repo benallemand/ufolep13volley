@@ -192,44 +192,19 @@ Ext.define('Ufolep13Volley.model.Match', {
         {
             name: 'is_validation_ready',
             convert: function (val, record) {
-                if (
-                    record.get('is_sign_team_dom') &&
-                    record.get('is_sign_team_ext') &&
-                    record.get('is_sign_match_dom') &&
-                    record.get('is_sign_match_ext') &&
-                    record.get('is_survey_filled_dom') &&
-                    record.get('is_survey_filled_ext') &&
+                return (
                     !record.get('certif')
-                ) {
-                    return true;
-                }
-                return !Ext.isEmpty(record.get('files_paths'))
+                    && record.get('is_sign_team_dom')
+                    && record.get('is_sign_team_ext')
+                    && record.get('is_sign_match_dom')
+                    && record.get('is_sign_match_ext')
+                    && record.get('is_survey_filled_dom')
+                    && record.get('is_survey_filled_ext')
                     && record.get('is_match_player_filled')
-                    && !record.get('certif')
                     && !record.get('is_match_player_requested')
                     && !record.get('has_forbidden_player')
                     && !Ext.isEmpty(record.get('count_status'))
-                    && record.get('match_status') === 'CONFIRMED';
-            }
-        },
-        {
-            name: 'files_paths',
-            type: 'string',
-        },
-        {
-            name: 'files_paths_html',
-            type: 'string',
-            convert: function (val, rec) {
-                if (Ext.isEmpty(rec.get('files_paths'))) {
-                    return '';
-                }
-                var files_paths_list = rec.get('files_paths').split('|');
-                var files_paths_html = '';
-                Ext.each(files_paths_list, function (files_path) {
-                    files_paths_html += Ext.String.format("<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a><br/>",
-                        files_path, files_path);
-                });
-                return files_paths_html;
+                    && record.get('match_status') === 'CONFIRMED');
             }
         },
         {name: 'is_sign_team_dom', type: 'bool'},
