@@ -41,21 +41,17 @@ new Vue({
                 switch (key) {
                     case 'id_match':
                     case 'code_match':
-                    case 'score_equipe_dom':
                     case 'set_1_dom':
                     case 'set_2_dom':
                     case 'set_3_dom':
                     case 'set_4_dom':
                     case 'set_5_dom':
-                    case 'score_equipe_ext':
                     case 'set_1_ext':
                     case 'set_2_ext':
                     case 'set_3_ext':
                     case 'set_4_ext':
                     case 'set_5_ext':
                     case 'referee':
-                    case 'forfait_dom':
-                    case 'forfait_ext':
                     case 'dirtyFields':
                         formData.append(key, this.matchData[key]);
                         break;
