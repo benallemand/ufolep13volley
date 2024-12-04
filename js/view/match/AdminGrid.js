@@ -68,7 +68,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 ]
             },
             {
-                header: 'Statut',
+                header: 'Statu²t',
                 xtype: 'actioncolumn',
                 items: [
                     {
@@ -152,27 +152,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 header: 'Code',
                 dataIndex: 'code_match',
                 width: 100,
-            },
-            {
-                header: 'Fichiers',
-                dataIndex: 'files_paths',
-                width: 100,
-                renderer: function (value) {
-                    if (Ext.isEmpty(value)) {
-                        return value;
-                    }
-                    value = value.split('|');
-                    var result_string = '';
-                    var span = '<span><i class="fa-solid fa-paperclip"></i></span>';
-                    Ext.each(value, function (file_path) {
-                        result_string = result_string +
-                            Ext.String.format(
-                                "<a href='/rest/action.php/files/download_match_file?file_path={0}' target='_blank'>{1}</a> ",
-                                file_path,
-                                span);
-                    });
-                    return result_string;
-                }
             },
             {
                 header: 'Comp',
