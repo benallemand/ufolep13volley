@@ -1090,14 +1090,6 @@ class MatchMgr extends Generic
                 case 'px':
                     $division = $result['division'];
                     $results[$index]['url'] = "championship.php?d=$division&c=$code_competition";
-                    $results[$index]['rang_dom'] = $this->rank->getTeamRank(
-                        $result['code_competition'],
-                        $result['division'],
-                        $result['id_dom']);
-                    $results[$index]['rang_ext'] = $this->rank->getTeamRank(
-                        $result['code_competition'],
-                        $result['division'],
-                        $result['id_ext']);
                     break;
                 case 'kf':
                 case 'cf':
