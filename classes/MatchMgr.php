@@ -1076,38 +1076,7 @@ class MatchMgr extends Generic
      */
     public function getLastResults()
     {
-        $sql = "SELECT DISTINCT 
-    c.libelle AS competition, 
-    IF(c.code_competition='f' OR c.code_competition='m' OR c.code_competition='mo', CONCAT('Division ', m.division, ' - ', j.nommage), CONCAT('Poule ', m.division, ' - ', j.nommage)) AS division_journee, 
-    c.code_competition AS code_competition,
-    m.division AS division,
-    e1.id_equipe AS id_dom,
-    e1.nom_equipe AS equipe_domicile,
-    m.score_equipe_dom+0 AS score_equipe_dom, 
-    m.score_equipe_ext+0 AS score_equipe_ext, 
-    e2.id_equipe AS id_ext,
-    e2.nom_equipe AS equipe_exterieur, 
-    CONCAT(m.set_1_dom, '-', set_1_ext) AS set1, 
-    CONCAT(m.set_2_dom, '-', set_2_ext) AS set2, 
-    CONCAT(m.set_3_dom, '-', set_3_ext) AS set3, 
-    CONCAT(m.set_4_dom, '-', set_4_ext) AS set4, 
-    CONCAT(m.set_5_dom, '-', set_5_ext) AS set5, 
-    m.date_reception
-    FROM matches m
-    LEFT JOIN activity a_modif ON (a_modif.comment LIKE 'Le match % a ete modifie' AND SPLIT_STRING(a_modif.comment, ' ', 3) = m.code_match)
-    LEFT JOIN activity a_sheet_received ON (a_sheet_received.comment LIKE 'La feuille du match % a ete reçue' AND SPLIT_STRING(a_sheet_received.comment, ' ', 5) = m.code_match)
-    JOIN journees j ON j.id=m.id_journee
-    JOIN competitions c ON c.code_competition =  m.code_competition
-    JOIN equipes e1 ON e1.id_equipe =  m.id_equipe_dom
-    JOIN equipes e2 ON e2.id_equipe =  m.id_equipe_ext
-    WHERE (
-    (m.score_equipe_dom!=0 OR m.score_equipe_ext!=0)
-    AND m.match_status = 'CONFIRMED'
-    AND (m.date_reception <= CURDATE())
-    AND (m.date_reception >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) )
-    AND (a_modif.activity_date >= m.date_reception OR a_sheet_received.activity_date >= m.date_reception)
-    )
-    ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
+        $sql = file_get_contents(__DIR__ . '/../sql/get_last_results.sql');
         $results = $this->sql_manager->execute($sql);
         foreach ($results as $index => $result) {
             $code_competition = $result['code_competition'];
@@ -1149,37 +1118,10 @@ class MatchMgr extends Generic
         if (empty($date_string)) {
             $date_string = date('d/m/Y');
         }
-        $sql = "SELECT DISTINCT c.libelle                                                                                             AS competition,
-                IF(c.code_competition = 'f' OR c.code_competition = 'm' OR c.code_competition = 'mo',
-                   CONCAT('Division ', m.division, ' - ', j.nommage),
-                   CONCAT('Poule ', m.division, ' - ', j.nommage))                                                    AS division_journee,
-                c.code_competition                                                                                    AS code_competition,
-                m.division                                                                                            AS division,
-                e1.id_equipe                                                                                          AS id_dom,
-                e1.nom_equipe                                                                                         AS equipe_domicile,
-                m.score_equipe_dom + 0                                                                                AS score_equipe_dom,
-                m.score_equipe_ext + 0                                                                                AS score_equipe_ext,
-                e2.id_equipe                                                                                          AS id_ext,
-                e2.nom_equipe                                                                                         AS equipe_exterieur,
-                CONCAT(m.set_1_dom, '-', set_1_ext)                                                                   AS set1,
-                CONCAT(m.set_2_dom, '-', set_2_ext)                                                                   AS set2,
-                CONCAT(m.set_3_dom, '-', set_3_ext)                                                                   AS set3,
-                CONCAT(m.set_4_dom, '-', set_4_ext)                                                                   AS set4,
-                CONCAT(m.set_5_dom, '-', set_5_ext)                                                                   AS set5,
-                m.date_reception
-FROM matches m
-         LEFT JOIN activity a_modif ON (a_modif.comment LIKE 'Le match % a ete modifie' AND
-                                        SPLIT_STRING(a_modif.comment, ' ', 3) = m.code_match)
-         LEFT JOIN activity a_sheet_received ON (a_sheet_received.comment LIKE 'La feuille du match % a ete reçue' AND
-                                                 SPLIT_STRING(a_sheet_received.comment, ' ', 5) = m.code_match)
-         JOIN journees j ON j.id = m.id_journee
-         JOIN competitions c ON c.code_competition = m.code_competition
-         JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
-         JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
-WHERE WEEK(m.date_reception) = WEEK(STR_TO_DATE('$date_string', '%d/%m/%Y'))
-AND m.match_status = 'CONFIRMED'
-ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
-        $results = $this->sql_manager->execute($sql);
+        $sql = file_get_contents(__DIR__. '/../sql/get_week_matchs.sql');
+        $bindings=array();
+        $bindings[] = array('type' => 's', 'value' => $date_string);
+        $results = $this->sql_manager->execute($sql, $bindings);
         foreach ($results as $index => $result) {
             $code_competition = $result['code_competition'];
             switch ($code_competition) {
@@ -1192,10 +1134,6 @@ ORDER BY c.libelle , m.division , j.nommage , m.date_reception DESC";
                 case 'px':
                     $division = $result['division'];
                     $results[$index]['url'] = "championship.php?d=$division&c=$code_competition";
-                    $results[$index]['rang_dom'] = $this->rank->getTeamRank(
-                        $result['code_competition'], $result['division'], $result['id_dom']);
-                    $results[$index]['rang_ext'] = $this->rank->getTeamRank(
-                        $result['code_competition'], $result['division'], $result['id_ext']);
                     break;
                 case 'kf':
                 case 'cf':
