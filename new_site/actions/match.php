@@ -2,15 +2,6 @@
 @session_start();
 if (isset($_SESSION['login']) && $_SESSION['profile_name'] == 'ADMINISTRATEUR') {
     ?>
-    <a ng-if="x.sheet_received == 1
-    && x.is_file_attached == 1
-    && x.match_status == 'CONFIRMED'"
-       href="/rest/action.php/matchmgr/download?id={{x.id_match}}"
-       role="button"
-       class="btn btn-sm btn-primary">
-        <span class="glyphicon glyphicon-download-alt"></span>
-        Télécharger les fichiers attachés
-    </a>
     <form ng-if="x.certif != '1'
         && x.sheet_received != '1'
         && x.date_reception_raw < today
