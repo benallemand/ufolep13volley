@@ -30,4 +30,12 @@ class RankTest extends TestCase
         $results = $this->rank->getRank('c', '14');
     }
 
+    public function test_get()
+    {
+        $result = $this->rank->getLeader('m', '1');
+        print_r($result);
+        $result = $this->rank->getViceLeader('m', '1');
+        print_r($result);
+    }
+
 }

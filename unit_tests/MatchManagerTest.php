@@ -572,7 +572,7 @@ class MatchManagerTest extends TestCase
      */
     public function test_sign()
     {
-        //20230223:PASS
+        //20241205:PASS
         $matches = $this->get_test_matches();
         foreach ($matches as $match) {
             $this->assertEquals(0, $match['is_sign_team_dom']);
@@ -594,7 +594,11 @@ class MatchManagerTest extends TestCase
             }
             // sign team sheet as dom
             $this->connect_as_team_leader($match['id_equipe_dom']);
-            $this->match_manager->sign_team_sheet($match['id_match']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exc) {
+                $this->assertEquals("Signature prise en compte", $exc->getMessage());
+            }
             // check last email
             $email = $this->emails->get_last();
             $this->assertEquals($email['to_email'], 'c@d.fr');
@@ -604,7 +608,11 @@ class MatchManagerTest extends TestCase
             $this->assertEquals(1, $match['is_sign_team_dom']);
             // sign team sheet as ext
             $this->connect_as_team_leader($match['id_equipe_ext']);
-            $this->match_manager->sign_team_sheet($match['id_match']);
+            try {
+                $this->match_manager->sign_team_sheet($match['id_match']);
+            } catch (Exception $exc) {
+                $this->assertEquals("Signature prise en compte", $exc->getMessage());
+            }
             // check last email
             $email = $this->emails->get_last();
             $this->assertEquals($email['to_email'], 'c@d.fr;a@b.fr');
@@ -615,13 +623,21 @@ class MatchManagerTest extends TestCase
             $this->connect_as_team_leader($match['id_equipe_dom']);
             $this->match_manager->save(array(
                 'id_match' => $match['id_match'],
-                'score_equipe_dom' => 3,
-                'score_equipe_ext' => 0,
+                'set_1_dom' => 25,
+                'set_1_ext' => 1,
+                'set_2_dom' => 25,
+                'set_2_ext' => 2,
+                'set_3_dom' => 25,
+                'set_3_ext' => 3,
                 'code_match' => $match['code_match'],
             ));
             // sign match sheet as dom
             $this->connect_as_team_leader($match['id_equipe_dom']);
-            $this->match_manager->sign_match_sheet($match['id_match']);
+            try {
+                $this->match_manager->sign_match_sheet($match['id_match']);
+            } catch (Exception $exc) {
+                $this->assertEquals("Signature prise en compte", $exc->getMessage());
+            }
             // check last email
             $email = $this->emails->get_last();
             $this->assertEquals('c@d.fr', $email['to_email']);
@@ -631,7 +647,11 @@ class MatchManagerTest extends TestCase
             $this->assertEquals(1, $match['is_sign_match_dom']);
             // sign match sheet as ext
             $this->connect_as_team_leader($match['id_equipe_ext']);
-            $this->match_manager->sign_match_sheet($match['id_match']);
+            try {
+                $this->match_manager->sign_match_sheet($match['id_match']);
+            } catch (Exception $exc) {
+                $this->assertEquals("Signature prise en compte", $exc->getMessage());
+            }
             // check last email
             $email = $this->emails->get_last();
             $this->assertEquals($email['to_email'], 'c@d.fr;a@b.fr');
@@ -843,4 +863,13 @@ class MatchManagerTest extends TestCase
         print_r($results);
     }
 
+
+    public function test_get()
+    {
+        $results = $this->match_manager->getLastResults();
+        print_r($results);
+        $results = $this->match_manager->getWeekMatches('25/11/2024');
+        print_r($results);
+
+    }
 }
