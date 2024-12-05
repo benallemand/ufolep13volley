@@ -10,4 +10,4 @@ FROM players_view j
 WHERE j.est_actif = 0
   AND je.id_equipe IN (SELECT id_equipe FROM classements)
   AND CURRENT_DATE >= c2.start_date
-ORDER BY j.id ASC
+ORDER BY j.id

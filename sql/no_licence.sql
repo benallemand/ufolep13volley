@@ -13,4 +13,4 @@ WHERE (j.num_licence IS NULL
     OR j.num_licence = '')
   AND e.id_equipe IN (SELECT id_equipe FROM classements)
   AND CURRENT_DATE >= comp.start_date
-ORDER BY equipe ASC
+ORDER BY equipe

@@ -7,4 +7,4 @@ FROM joueurs j,
 WHERE j.id != j2.id
   AND REPLACE(UPPER(j.nom), ' ', '') = REPLACE(UPPER(j2.nom), ' ', '')
   AND REPLACE(UPPER(j.prenom), ' ', '') = REPLACE(UPPER(j2.prenom), ' ', '')
-ORDER BY j.nom ASC
+ORDER BY j.nom

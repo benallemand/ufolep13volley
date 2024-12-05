@@ -407,7 +407,6 @@ class MatchMgr extends Generic
                     $bindings[] = array('type' => 's', 'value' => $value);
                     break;
                 case 'certif':
-                case 'sheet_received':
                 case 'is_sign_team_dom':
                 case 'is_sign_team_ext':
                 case 'is_sign_match_dom':
@@ -670,14 +669,7 @@ class MatchMgr extends Generic
     private function is_date_filled($computed_date, $id_gymnase): bool
     {
         // si le gymnase est complet, retourner true
-        $sql = "SELECT id_gymnasium, date_reception, COUNT(*)
-                FROM matches m
-                         JOIN gymnase g on m.id_gymnasium = g.id
-                WHERE id_gymnasium = ?
-                  AND m.date_reception = STR_TO_DATE(?, '%d/%m/%Y')
-                  AND m.match_status != 'ARCHIVED'
-                GROUP BY id_gymnasium, g.nb_terrain
-                HAVING COUNT(*) >= g.nb_terrain";
+        $sql = file_get_contents(__DIR__ . '/../sql/is_gymnasium_full.sql');
         $bindings = array(
             array('type' => 'i', 'value' => $id_gymnase),
             array('type' => 's', 'value' => $computed_date),

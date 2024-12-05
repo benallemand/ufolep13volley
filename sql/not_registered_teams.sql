@@ -7,8 +7,7 @@ FROM classements c
          JOIN clubs cl ON cl.id = e.id_club
          JOIN joueur_equipe je ON e.id_equipe = je.id_equipe AND je.is_leader = 1
          JOIN joueurs j ON je.id_joueur = j.id
-WHERE 1 = 1
-  AND c.will_register_again = 1
+WHERE c.will_register_again = 1
   AND c.id_equipe NOT IN (SELECT old_team_id FROM register WHERE old_team_id IS NOT NULL)
   AND c.code_competition IN ('m', 'f', 'mo')
 ORDER BY club, ancien_nom, competition

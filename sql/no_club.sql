@@ -6,4 +6,4 @@ FROM joueurs j
          JOIN joueur_equipe je ON je.id_joueur = j.id
          JOIN equipes e ON e.id_equipe = je.id_equipe
 WHERE j.id_club = 0
-ORDER BY j.id ASC
+ORDER BY j.id

@@ -108,49 +108,8 @@ class Rank extends Generic
      */
     public function getLeader($code_competition, $division)
     {
-        $sql = "SELECT
-              @r := @r + 1 AS rang,
-              z.*
-            FROM (
-                   SELECT
-                     e.id_equipe,
-                     '$code_competition'                                                                    AS code_competition,
-                     e.nom_equipe                                                                           AS equipe,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0)) - 
-                    c.penalite                                                                              AS points,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) +
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS joues,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0))                 AS gagnes,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS perdus,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext))          AS sets_pour,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))          AS sets_contre,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) - 
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))          AS diff,
-                    c.penalite                                                                              AS penalites,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1, 1, 0))                      AS matches_lost_by_forfeit_count,
-                    c.report_count
-                   FROM
-                     classements c
-                     JOIN equipes e ON e.id_equipe = c.id_equipe
-                     LEFT JOIN matches m ON 
-                       m.code_competition = c.code_competition
-                         AND m.division = c.division 
-                         AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
-                         AND m.match_status != 'ARCHIVED'
-                   WHERE c.code_competition = '$code_competition' AND c.division = '$division'
-                   GROUP BY e.id_equipe
-                   ORDER BY points DESC, diff DESC
-                 ) z, (SELECT @r := 0) y LIMIT 0, 1";
-        $results = $this->sql_manager->execute($sql);
-        if (count($results) !== 1) {
+        $results = $this->getRank($code_competition, $division);
+        if (count($results) === 0) {
             throw new Exception("Le champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
         }
         return $results[0];
@@ -164,52 +123,11 @@ class Rank extends Generic
      */
     public function getViceLeader($code_competition, $division): mixed
     {
-        $sql = "SELECT
-              @r := @r + 1 AS rang,
-              z.*
-            FROM (
-                   SELECT
-                     e.id_equipe,
-                     '$code_competition' AS code_competition,
-                     e.nom_equipe                      AS equipe,
-                     SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) + 
-                     SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
-                     SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) + 
-                     SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0)) - 
-                     c.penalite                      AS points,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) +
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))                 AS joues,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) AS gagnes,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0)) AS perdus,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext))  AS sets_pour,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))  AS sets_contre,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) - 
-                    SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom))         AS diff,
-                    c.penalite                        AS penalites,
-                    SUM(IF(e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1, 1, 0)) + 
-                    SUM(IF(e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1, 1, 0)) AS matches_lost_by_forfeit_count,
-                    c.report_count
-                   FROM
-                     classements c
-                     JOIN equipes e ON e.id_equipe = c.id_equipe
-                     LEFT JOIN matches m ON 
-                       m.code_competition = c.code_competition 
-                         AND m.division = c.division 
-                         AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
-                         AND m.match_status != 'ARCHIVED'
-                   WHERE c.code_competition = '$code_competition' AND c.division = '$division'
-                   GROUP BY e.id_equipe
-                   ORDER BY points DESC, diff DESC
-                 ) z, (SELECT @r := 0) y LIMIT 1, 1";
-        $results = $this->sql_manager->execute($sql);
-        if (count($results) !== 1) {
-            throw new Exception("Le champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
+        $results = $this->getRank($code_competition, $division);
+        if (count($results) <= 1) {
+            throw new Exception("Le vice-champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
         }
-        return $results[0];
+        return $results[1];
     }
 
     /**
@@ -452,46 +370,9 @@ class Rank extends Generic
      */
     public function get_full_competition_rank(string $code_competition): array|int|string|null
     {
-        $sql = "SELECT @r := @r + 1 AS rang,
-                       z.id_equipe, z.equipe, z.division
-                FROM (SELECT e.id_equipe,
-                             'm'                                                                            AS code_competition,
-                             c.division,
-                             e.nom_equipe                                                                   AS equipe,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0))
-                                 - c.penalite                                                               AS points,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))        AS joues,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 1, 0))        AS gagnes,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3, 1, 0))        AS perdus,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) AS sets_pour,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom)) AS sets_contre,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_dom, m.score_equipe_ext)) -
-                             SUM(IF(e.id_equipe = m.id_equipe_dom, m.score_equipe_ext, m.score_equipe_dom)) AS diff,
-                             c.penalite                                                                     AS penalites,
-                             SUM(IF(e.id_equipe = m.id_equipe_dom AND m.forfait_dom = 1, 1, 0)) +
-                             SUM(IF(e.id_equipe = m.id_equipe_ext AND m.forfait_ext = 1, 1, 0))             AS matches_lost_by_forfeit_count,
-                             c.report_count
-                      FROM classements c
-                               JOIN equipes e ON e.id_equipe = c.id_equipe
-                               LEFT JOIN matches m ON
-                                  m.code_competition = c.code_competition
-                              AND m.division = c.division
-                              AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
-                              AND m.match_status != 'ARCHIVED'
-                      WHERE c.code_competition = ?
-                      AND e.is_cup_registered = 1
-                      GROUP BY e.id_equipe, '%name', e.nom_equipe, c.penalite, c.report_count
-                      ORDER BY division, points DESC, diff DESC, c.rank_start) z,
-                     (SELECT @r := 0) y";
+        $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition.sql');
         $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $code_competition);
         $bindings[] = array('type' => 's', 'value' => $code_competition);
         return $this->sql_manager->execute($sql, $bindings);
     }
@@ -554,7 +435,7 @@ class Rank extends Generic
                   AND c.division = '$division'
                   AND (
                     e.id_equipe IN (SELECT id_equipe_dom
-                                    FROM matches
+                                    FROM matchs_view
                                     WHERE code_competition = '$code_competition'
                                       AND score_equipe_dom = 3
                                       AND id_journee IN (SELECT id
@@ -563,7 +444,7 @@ class Rank extends Generic
                                                            AND nommage = '$previous_day_nommage'))
                         OR
                     e.id_equipe IN (SELECT id_equipe_ext
-                                    FROM matches
+                                    FROM matchs_view
                                     WHERE code_competition = '$code_competition'
                                       AND score_equipe_ext = 3
                                       AND id_journee IN (SELECT id

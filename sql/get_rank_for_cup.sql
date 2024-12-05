@@ -10,8 +10,7 @@ FROM (SELECT e.id_equipe,
              SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
              SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
              SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_dom = 3 AND m.forfait_ext = 0, 1, 0))
-                 -
-             c.penalite                                                                     AS points,
+                 - c.penalite                                                               AS points,
              (SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) +
               SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
               SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
@@ -61,7 +60,7 @@ FROM (SELECT e.id_equipe,
              c.report_count
       FROM classements c
                JOIN equipes e ON e.id_equipe = c.id_equipe
-               LEFT JOIN matches m ON
+               LEFT JOIN matchs_view m ON
           m.code_competition = c.code_competition
               AND m.division = c.division
               AND (m.id_equipe_dom = e.id_equipe OR m.id_equipe_ext = e.id_equipe)
