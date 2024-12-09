@@ -22,6 +22,25 @@
     <!-- Barre de recherche et filtres -->
     <div class="flex flex-wrap gap-4 mb-6">
         <label class="flex items-center gap-2">
+            <span>compétition</span>
+            <select v-model="filter.selectedCompetition" @change="updateAvailableDivisions"
+                    class="select select-bordered select-sm ml-2">
+                <option value="">toutes</option>
+                <option v-for="competition in availableCompetitions" :key="competition" :value="competition">
+                    {{ competition }}
+                </option>
+            </select>
+        </label>
+        <label class="flex items-center gap-2" v-if="filter.selectedCompetition">
+            <span>division</span>
+            <select v-model="filter.selectedDivision" class="select select-bordered select-sm ml-2">
+                <option value="">toutes</option>
+                <option v-for="division in availableDivisions" :key="division" :value="division">
+                    {{ division }}
+                </option>
+            </select>
+        </label>
+        <label class="flex items-center gap-2">
             <input
                     type="checkbox"
                     v-model="filter.showPlayedMatchesOnly"
@@ -71,6 +90,9 @@
                         <a :href="`/match.php?id_match=${match.id_match}`" target="_blank">
                             <i class="fas fa-external-link-alt ml-1"></i>
                         </a>
+                        <a :href="`mailto:${match.email_dom},${match.email_ext}`" target="_blank">
+                            <i class="fas fa-envelope ml-1"></i>
+                        </a>
                     </span>
                 </h2>
                 <p class="text-sm text-gray-600 font-medium">
@@ -80,7 +102,17 @@
                     <span class="text-gray-800">Division :</span> {{ match.division }}
                 </p>
                 <p class="text-sm text-gray-600 font-medium">
-                    <span class="text-gray-800">Rencontre :</span> {{ match.equipe_dom }} vs {{ match.equipe_ext }}
+                    <span class="text-gray-800">Rencontre :</span>
+                    <span>{{ match.equipe_dom }} <span class="text-blue-500 font-medium"><a
+                            :href="`mailto:${match.email_dom}`" target="_blank">
+                            <i class="fas fa-envelope ml-1"></i>
+                    </a></span>
+                    </span>
+                    vs
+                    <span>{{ match.equipe_ext }} <span class="text-blue-500 font-medium"><a
+                            :href="`mailto:${match.email_ext}`" target="_blank">
+                            <i class="fas fa-envelope ml-1"></i>
+                    </a></span></span>
                 </p>
                 <p class="text-sm text-gray-600 font-medium">
                     <span class="text-gray-800">Score :</span> {{ match.score_equipe_dom }} - {{
