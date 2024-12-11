@@ -426,7 +426,6 @@ class Competition extends Generic
             if ($this->isCompetitionStarted($competitions[0]['id'])) {
                 throw new Exception("La compétition a déjà commencé !!!");
             }
-            require_once __DIR__ . '/../classes/Rank.php';
             $competition = $competitions[0];
             $code_competition = $competition['code_competition'];
             $this->rank->resetRankPoints($code_competition);
@@ -465,9 +464,7 @@ class Competition extends Generic
      */
     public function download($code_competition, $division)
     {
-        require_once __DIR__ . '/MatchMgr.php';
-        $match = new MatchMgr();
-        $matches = $match->getMatches($code_competition, $division);
+        $matches = $this->match->getMatches($code_competition, $division);
         if (count($matches) == 0) {
             throw new Exception("Il n'y a pas de match pour cette compétition/division !");
         }
@@ -606,12 +603,12 @@ class Competition extends Generic
         require_once __DIR__ . '/Register.php';
         require_once __DIR__ . '/Team.php';
         $register = new Register();
-        $team = new Team();
+        $team_class = new Team();
         $competition = $this->getCompetition($code_competition);
         $pending_registrations = $register->get_pending_registrations($competition['id']);
         $max_division = $this->get_max_division($competition['id']);
         foreach ($pending_registrations as $pending_registration) {
-            $team = $team->get_by_name(
+            $team = $team_class->get_by_name(
                 $pending_registration['code_competition'],
                 $pending_registration['new_team_name'],
                 $pending_registration['id_club']);
