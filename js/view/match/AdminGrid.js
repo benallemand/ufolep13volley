@@ -68,7 +68,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 ]
             },
             {
-                header: 'Statu²t',
+                header: 'Statut',
                 xtype: 'actioncolumn',
                 items: [
                     {
