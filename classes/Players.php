@@ -200,7 +200,7 @@ class Players extends Generic
                     break;
                 case 'est_responsable_club':
                 case 'show_photo':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = ($value === 'on' || $value == 1) ? 1 : 0;
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     break;
