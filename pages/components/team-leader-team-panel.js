@@ -5,7 +5,7 @@ export default {
           <thead>
           <tr>
             <th>{{ team.nom_equipe }}</th>
-            <td><img :src="'/rest/action.php/photo/get_photo?path_photo='+team.path_photo" class="max-h-64"/></td>
+            <td><img :src="'/rest/action.php/photo/get_photo?path_photo='+team.path_photo" class="max-h-64" alt=""/></td>
           </tr>
           </thead>
           <tbody>

@@ -477,6 +477,15 @@ class Players extends Generic
         }
     }
 
+    public function uploadPhoto($id, $nom,$prenom) {
+        $this->savePhoto(array(
+            'id' => $id,
+            'nom' => $nom,
+            'prenom' => $prenom
+        ));
+        $player = $this->get_player($id);
+        //TODO retourner le path_photo
+    }
     /**
      * @param $inputs
      * @param int $newId
