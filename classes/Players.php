@@ -483,8 +483,6 @@ class Players extends Generic
             'nom' => $nom,
             'prenom' => $prenom
         ));
-        $player = $this->get_player($id);
-        //TODO retourner le path_photo
     }
     /**
      * @param $inputs
