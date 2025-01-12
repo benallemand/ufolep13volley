@@ -9,6 +9,15 @@ class Alerts extends Generic
         parent::__construct();
     }
 
+    public function getInfos()
+    {
+        return array(
+            array(
+                'description' => "Rejoindre le groupe WhatsApp pour se tenir informé tout au long de la saison",
+                'img_src' => '/images/teams-whatsapp.jpeg',),
+        );
+    }
+
     public function getAlerts()
     {
         $results = array();
