@@ -38,8 +38,14 @@ export default {
             <td>{{ team.web_site }}</td>
           </tr>
           <tr>
-            <td colspan="2" class="text-center"><a :href="'/teamSheetPdf.php?id='+team.id_equipe" target="_blank" role="button"
-                               class="btn btn-info mr-2">Télécharger la fiche équipe</a></td>
+            <td colspan="2" class="text-center">
+              <a :href="'/teamSheetPdf.php?id='+team.id_equipe" target="_blank" role="button"
+                               class="btn btn-info mr-2">Télécharger la fiche équipe</a>
+              <router-link :to="'/edit'"
+                           class="btn btn-primary">
+                <i class="fas fa-edit"></i> Modifier
+              </router-link>
+            </td>
           </tr>
           </tbody>
         </table>
