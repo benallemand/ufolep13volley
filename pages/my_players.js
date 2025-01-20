@@ -1,14 +1,18 @@
 import TeamLeaderNavbar from './components/team-leader-navbar.js';
-import TeamLeaderPlayersPanel from "./components/team-leader-players-panel.js";
-import TeamLeaderPlayerEditPanel from "./components/team-leader-player-edit-panel.js";
+import PlayersPanel from "./components/players-panel.js";
+import PlayerEditPanel from "./components/player-edit-panel.js";
 
-Vue.component('team-leader-players-panel', TeamLeaderPlayersPanel);
-Vue.component('team-leader-player-edit-panel', TeamLeaderPlayerEditPanel);
+Vue.component('players-panel', PlayersPanel);
+Vue.component('player-edit-panel', PlayerEditPanel);
 Vue.component('team-leader-navbar', TeamLeaderNavbar);
 
 const routes = [
-    {path: "/", component: TeamLeaderPlayersPanel},
-    {path: "/player/:id", component: TeamLeaderPlayerEditPanel},
+    {
+        path: "/",
+        component: PlayersPanel,
+        props: {fetchUrl: "/rest/action.php/player/getMyPlayers"}
+    },
+    {path: "/player/:id", component: PlayerEditPanel},
 ];
 const router = new VueRouter({
     mode: "hash",
