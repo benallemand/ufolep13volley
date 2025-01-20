@@ -147,7 +147,6 @@ class Emails extends Generic
                 $mail->addBCC($bccAddress);
             }
         }
-        $mail->addBCC("benallemand@gmail.com");
         if (is_array($attachments)) {
             foreach ($attachments as $fileName) {
                 $mail->addAttachment($fileName, basename($fileName));
