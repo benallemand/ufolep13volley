@@ -3,11 +3,12 @@ new Vue({
     data: {
         searchQuery: "",
         matches: [],
-        loadingMatch: null, // ID du match en cours de validation
+        loadingMatch: null,
         filter: {
             selectedCompetition: "",
             selectedDivision: "",
             showCertified: false,
+            showNotCertified: false,
             showForbiddenPlayer: false,
             showPlayedMatchesOnly: false,
             showCertifiable: false,
@@ -36,6 +37,8 @@ new Vue({
                     !this.filter.selectedDivision || match.division === this.filter.selectedDivision;
                 const matchesCertif =
                     !this.filter.showCertified || match.certif === 1;
+                const matchesNotCertif =
+                    !this.filter.showNotCertified || match.certif !== 1;
                 const matchesForbiddenPlayers =
                     !this.filter.showForbiddenPlayer ||
                     match.has_forbidden_player === 1;
@@ -60,6 +63,7 @@ new Vue({
                     && matchesCompetition
                     && matchesDivision
                     && matchesCertif
+                    && matchesNotCertif
                     && matchesForbiddenPlayers
                     && matchesPlayed
                     && matchesCertifiable;
@@ -82,7 +86,7 @@ new Vue({
             } else {
                 this.availableDivisions = [];
             }
-            this.filter.selectedDivision = ""; // Réinitialise le filtre division si la compétition change
+            this.filter.selectedDivision = "";
         },
         fetchMatches() {
             axios
@@ -128,12 +132,15 @@ new Vue({
                     alert(`Erreur lors de la validation du match ${idMatch}.`);
                 })
                 .finally(() => {
-                    this.loadingMatch = null; // Réinitialise l'état de chargement
+                    this.loadingMatch = null;
                 });
         },
         resetFilters() {
+            this.filter.showNotCertified = false;
             this.filter.showCertified = false;
             this.filter.showForbiddenPlayer = false;
+            this.filter.showCertifiable = false;
+            this.filter.showPlayedMatchesOnly = false;
             this.searchQuery = "";
         },
     },
