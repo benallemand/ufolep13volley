@@ -13,6 +13,7 @@ const routes = [
         props: {fetchUrl: "/rest/action.php/player/getMyPlayers"}
     },
     {path: "/player/:id", component: PlayerEditPanel},
+    {path: "/player/new", component: PlayerEditPanel},
 ];
 const router = new VueRouter({
     mode: "hash",

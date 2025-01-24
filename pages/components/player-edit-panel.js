@@ -103,9 +103,11 @@ export default {
         };
     },
     created() {
-        const playerId = this.$route.params.id;
         this.fetchClubs();
-        this.fetchPlayer(playerId);
+        if(this.$route.params.id) {
+            const playerId = this.$route.params.id;
+            this.fetchPlayer(playerId);
+        }
     },
     methods: {
         fetchPlayer(playerId) {
