@@ -366,6 +366,10 @@ class Competition extends Generic
                 case 'start_date':
                 case 'start_register_date':
                 case 'limit_register_date':
+                    if(empty($value)) {
+                        $sql .= "$key = NULL,";
+                        break;
+                    }
                     $bindings[] = array('type' => 's', 'value' => $value);
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
