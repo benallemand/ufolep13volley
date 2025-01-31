@@ -748,28 +748,7 @@ class Competition extends Generic
 
     private static function pick_n_from_hats(array &$hats, int $n): array
     {
-        $result = array();
-        $nb_hats = count($hats);
-        $index_hat = 0;
-        while (count($result) < $n) {
-            if (!empty($hats[$index_hat])) {
-                if ($index_hat < $nb_hats) {
-                    $result[] = array_pop($hats[$index_hat]);
-                    if (empty($hats[$index_hat])) {
-                        unset($hats[$index_hat]);
-                        $hats = array_values($hats);
-                    }
-                }
-            }
-            $index_hat++;
-            if ($index_hat == $nb_hats) {
-                $index_hat = 0;
-            }
-            if (count($hats, COUNT_RECURSIVE) === 0) {
-                break;
-            }
-        }
-        return $result;
+        return array_splice($hats, 0, $n);
     }
 
 }
