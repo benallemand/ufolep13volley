@@ -22,12 +22,12 @@ class RankTest extends TestCase
      */
     public function test_sort_cup_rank()
     {
-        $results = $this->rank->sort_cup_rank('c');
+        print_r($this->rank->sort_cup_rank('c'));
     }
 
     public function test_get_rank_by_comp_div()
     {
-        $results = $this->rank->getRank('c', '14');
+        print_r($this->rank->getRank('c', '14'));
     }
 
     public function test_get()
