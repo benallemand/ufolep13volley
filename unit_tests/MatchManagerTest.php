@@ -479,6 +479,7 @@ class MatchManagerTest extends TestCase
     public function test_generate_all_kh()
     {
         //230105:PASS
+        $this->connect_as_admin();
         $competition_mgr = new Competition();
         $competition_kh = $competition_mgr->getCompetition('kh');
         $this->match_manager->generateAll($competition_kh['id']);

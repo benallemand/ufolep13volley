@@ -603,7 +603,7 @@ class Register extends Generic
         }
         $pending_registrations = $this->get_register_by_competition($id_competition);
         shuffle($pending_registrations);
-        $pools = Competition::make_pools_of_3($pending_registrations);
+        $pools = Competition::make_pools_of_3(array($pending_registrations));
         foreach ($pools as $pool_index => $pool) {
             foreach ($pool as $pending_registration_index => $pending_registration) {
                 $this->save(array(

@@ -366,6 +366,10 @@ class Competition extends Generic
                 case 'start_date':
                 case 'start_register_date':
                 case 'limit_register_date':
+                    if (empty($value)) {
+                        $sql .= "$key = NULL,";
+                        break;
+                    }
                     $bindings[] = array('type' => 's', 'value' => $value);
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
@@ -539,7 +543,7 @@ class Competition extends Generic
         $rank_manager->delete_competition($competition_isoardi['id']);
         // take all registered teams ordered by division,current_rank.
         $rank_teams = $this->rank->get_full_competition_rank('m');
-        $rank_teams = $this->append_unranked_teams($rank_teams, 'm');
+//        $rank_teams = $this->append_unranked_teams($rank_teams, 'm');
         // split by 2, to avoid having too much handicap
         $length_pool_1 = intdiv(count($rank_teams), 2);
         $group_1_teams = array_slice($rank_teams, 0, $length_pool_1);

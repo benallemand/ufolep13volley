@@ -256,13 +256,17 @@ class Rank extends Generic
     /**
      * @throws Exception
      */
-    public function getRank($competition, $division): array|int|string|null
+    public function getRank($competition, $division, $id_team = null): array|int|string|null
     {
-        $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $competition);
-        $bindings[] = array('type' => 's', 'value' => $competition);
         $bindings[] = array('type' => 's', 'value' => $division);
+        if (empty($id_team)) {
+            $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
+        } else {
+            $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division_id_team.sql');
+            $bindings[] = array('type' => 'i', 'value' => $id_team);
+        }
         return $this->sql_manager->execute($sql, $bindings);
     }
 
@@ -280,13 +284,11 @@ class Rank extends Generic
      */
     public function getTeamRank($competition, $division, $idTeam)
     {
-        $results = $this->getRank($competition, $division);
-        foreach ($results as $data) {
-            if ($data['id_equipe'] === $idTeam) {
-                return $data['rang'];
-            }
+        $results = $this->getRank($competition, $division, $idTeam);
+        if (count($results) !== 1) {
+            return '';
         }
-        return '';
+        return $results[0]['rang'];
     }
 
     /**

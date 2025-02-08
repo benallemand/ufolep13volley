@@ -129,6 +129,9 @@
                             <i class="fas fa-envelope ml-1"></i>
                     </a></span></span>
                 </p>
+                <p class="text-sm text-gray-600 font-medium">
+                    <span class="text-gray-800">Date :</span> {{ match.date_reception }}
+                </p>
                 <p class="text-sm text-gray-600 font-medium"
                    v-if="match.score_equipe_dom > 0 || match.score_equipe_ext > 0">
                     <span class="text-gray-800">Score :</span>
@@ -144,10 +147,8 @@
                     <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}
                     </span>
                 </p>
-                <p class="text-sm text-gray-600 font-medium">
+                <div class="text-sm flex flex-col gap-2">
                     <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
-                </p>
-                <p class="text-sm">
                     <span
                             class="badge"
                             :class="match.is_sign_team_dom + match.is_sign_team_ext === 2 ? 'badge-success' : 'badge-error'">
@@ -160,8 +161,6 @@
                             </a>
                         </span>
                     </span>
-                </p>
-                <p class="text-sm">
                     <span
                             class="badge"
                             :class="match.is_sign_match_dom + match.is_sign_match_ext === 2 ? 'badge-success' : 'badge-error'">
@@ -174,8 +173,6 @@
                             </a>
                         </span>
                     </span>
-                </p>
-                <p class="text-sm">
                     <span
                             class="badge"
                             :class="match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'badge-success' : 'badge-error'">
@@ -183,9 +180,7 @@
                             match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'sondage rempli' : 'sondage non rempli'
                         }}
                     </span>
-                </p>
-                <p class="text-sm" v-if="match.has_forbidden_player === 1">
-                    <span class="badge badge-error">
+                    <span v-if="match.has_forbidden_player === 1" class="badge badge-error">
                         pb licence(s)
                         <span class="text-blue-500 font-medium">
                             <a :href="`/team_sheets.php?id_match=${match.id_match}`" target="_blank">
@@ -193,24 +188,22 @@
                             </a>
                         </span>
                     </span>
-                </p>
-                <p class="text-sm" v-if="['ASKED_BY_DOM', 'ASKED_BY_EXT'].includes(match.report_status)">
-                    <span class="badge badge-neutral">report demandé</span>
-                </p>
-                <p class="text-sm" v-if="['ACCEPTED_BY_DOM', 'ACCEPTED_BY_EXT'].includes(match.report_status)">
-                    <span class="badge badge-accent">report accepté</span>
-                </p>
-                <p class="text-sm"
-                   v-if="['REFUSED_BY_DOM', 'REFUSED_BY_EXT', 'REFUSED_BY_ADMIN'].includes(match.report_status)">
-                    <span class="badge badge-error">report refusé</span>
-                </p>
-                <p class="text-sm"
-                   v-if="match.is_forfait === 1">
-                    <span class="badge badge-error">forfait</span>
-                </p>
-                <p class="text-sm text-gray-600 font-medium">
-                    <span class="text-gray-800">Date :</span> {{ match.date_reception }}
-                </p>
+                    <span class="badge badge-neutral"
+                          v-if="['ASKED_BY_DOM', 'ASKED_BY_EXT'].includes(match.report_status)">report demandé
+                    </span>
+                    <span v-if="['ACCEPTED_BY_DOM', 'ACCEPTED_BY_EXT'].includes(match.report_status)"
+                          class="badge badge-accent">report accepté</span>
+                    <span v-if="['REFUSED_BY_DOM', 'REFUSED_BY_EXT', 'REFUSED_BY_ADMIN'].includes(match.report_status)"
+                          class="badge badge-error">report refusé</span>
+                    <span class="badge badge-error" v-if="match.is_forfait === 1">forfait</span>
+                    <div v-if="!['null', ''].includes(match.note)" class="collapse">
+                        <input type="checkbox"/>
+                        <div class="collapse-title text-sm font-medium">voir les commentaires</div>
+                        <div class="collapse-content">
+                            <p>{{ match.note }}</p>
+                        </div>
+                    </div>
+                </div>
                 <button
                         v-if="canValidate"
                         @click="validateMatch(match.id_match)"
