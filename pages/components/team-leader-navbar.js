@@ -50,15 +50,7 @@ export default {
                   </ul>
                 </details>
               </li>
-              <li>
-                <details>
-                  <summary>preferences</summary>
-                  <ul class="p-2">
-                    <li><a href="/pages/my_password.html"><span><i class="mr-2 fas fa-lock"></i>mot de passe</span></a></li>
-                    <li><a href="/pages/my_preferences.html"><span><i class="mr-2 fas fa-gear"></i>rappel</span></a></li>
-                  </ul>
-                </details>
-              </li>
+              <li><a href="/pages/my_preferences.html"><span><i class="mr-2 fas fa-gear"></i>préférences</span></a></li>
             </ul>
           </div>
         </div>
@@ -98,15 +90,7 @@ export default {
                 </ul>
               </details>
             </li>
-            <li>
-              <details>
-                <summary>preferences</summary>
-                <ul class="p-2">
-                  <li><a href="/pages/my_password.html"><span><i class="mr-2 fas fa-lock"></i>mot de passe</span></a></li>
-                  <li><a href="/pages/my_preferences.html"><span><i class="mr-2 fas fa-gear"></i>rappel</span></a></li>
-                </ul>
-              </details>
-            </li>
+            <li><a href="/pages/my_preferences.html"><span><i class="mr-2 fas fa-gear"></i>préférences</span></a></li>
           </ul>
         </div>
         <div class="navbar-end">

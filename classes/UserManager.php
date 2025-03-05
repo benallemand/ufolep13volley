@@ -34,7 +34,12 @@ class UserManager extends Generic
         $sql = "SELECT r.registry_value AS is_remind_matches 
                 FROM registry r
                 WHERE r.registry_key = 'users.$user_id.is_remind_matches'";
-        return $this->sql_manager->execute($sql);
+        $results = $this->sql_manager->execute($sql);
+        if (count($results) === 0) {
+            return array('is_remind_matches' => false);
+        } else {
+            return array('is_remind_matches' => $results[0]['is_remind_matches'] == 'on');
+        }
     }
 
     /**
@@ -90,7 +95,7 @@ class UserManager extends Generic
                         registry_key = ?";
         }
         $bindings = array();
-        $bindings[] = array('type' => 's', 'value' => $is_remind_matches);
+        $bindings[] = array('type' => 's', 'value' => in_array($is_remind_matches, array('on', '1', 'true')) ? 'on' : 'off');
         $bindings[] = array('type' => 's', 'value' => "users.$id_user.is_remind_matches");
         $this->sql_manager->execute($sql, $bindings);
         $this->activity->add("Préférence de réception modifiée: rappel de match");
