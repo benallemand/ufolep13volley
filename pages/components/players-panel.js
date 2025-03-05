@@ -3,9 +3,9 @@ import {onError, onSuccess} from "../../toaster.js";
 export default {
     template: `
       <div>
-        <div class="bg-base-200 border border-2 border-base-300 p-4 flex">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 flex gap-1">
           <div>
-          <span class="label-text">Ajouter un joueur existant</span>
+            <span class="label-text">Ajouter un joueur existant</span>
             <select class="select select-bordered"
                     @change="addPlayer">
               <option v-for="player in all_players" :key="player.id" :value="player.id">
@@ -13,10 +13,12 @@ export default {
               </option>
             </select>
           </div>
-          <router-link :to="'/player/new'"
-                       class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i>créer...
-          </router-link>
+          <div>
+              <router-link :to="'/player/new'"
+                           class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i>créer...
+              </router-link>
+          </div>
         </div>
         <div class="bg-base-200 border border-2 border-base-300 p-4">
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
