@@ -3,21 +3,30 @@ import {onError, onSuccess} from "../../toaster.js";
 export default {
     template: `
       <div>
-        <div class="bg-base-200 border border-2 border-base-300 p-4 flex gap-1">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-1">
+          <span class="label-text">Ajouter un joueur existant</span>
+          <input
+              type="text"
+              v-model="searchTerm"
+              placeholder="Rechercher un joueur..."
+              @input="fetchPlayers"
+              class="input input-bordered w-full"
+          />
+          <ul v-if="filteredPlayers.length" class="bg-white border w-full mt-1 z-10 shadow-md">
+            <li
+                v-for="player in filteredPlayers"
+                :key="player.id"
+                @click="addPlayer(player)"
+                class="p-2 hover:bg-gray-200 cursor-pointer"
+            >
+              {{ player.full_name }}
+            </li>
+          </ul>
           <div>
-            <span class="label-text">Ajouter un joueur existant</span>
-            <select class="select select-bordered"
-                    @change="addPlayer">
-              <option v-for="player in all_players" :key="player.id" :value="player.id">
-                {{ player.full_name }}
-              </option>
-            </select>
-          </div>
-          <div>
-              <router-link :to="'/player/new'"
-                           class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i>créer...
-              </router-link>
+            <router-link :to="'/player/new'"
+                         class="btn btn-primary">
+              <i class="fas fa-plus mr-2"></i>créer...
+            </router-link>
           </div>
         </div>
         <div class="bg-base-200 border border-2 border-base-300 p-4">
@@ -108,11 +117,23 @@ export default {
         return {
             team_players: [],
             all_players: [],
+            searchTerm: '',
+            filteredPlayers: [],
         };
     },
     methods: {
-        addPlayer(event) {
-            const playerId = event.target.value;
+        fetchPlayers() {
+            if (this.searchTerm.length < 2) {
+                this.filteredPlayers = [];
+                return;
+            }
+            this.filteredPlayers = this.all_players.filter(player =>
+                player.full_name.toLowerCase().includes(this.searchTerm.toLowerCase())
+                && !this.team_players.map(teamPlayer => teamPlayer.id).includes(player.id)
+            );
+        },
+        addPlayer(player) {
+            const playerId = player.id;
             if (confirm("Voulez-vous vraiment ajouter ce joueur à votre équipe ?")) {
                 const formData = new FormData();
                 formData.append('idPlayer', playerId);
@@ -121,6 +142,8 @@ export default {
                     .then(
                         response => {
                             onSuccess(this, response)
+                            this.filteredPlayers = [];
+                            this.searchTerm = '';
                             this.fetchTeamPlayers();
                         }
                     )
