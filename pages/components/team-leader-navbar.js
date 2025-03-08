@@ -23,7 +23,7 @@ export default {
               <li><a href="/"><span><i class="mr-2 fas fa-arrow-left"></i>retour</span></a></li>
               <li><a href="/pages/my_page.html"><span><i class="mr-2 fas fa-home"></i>ma page</span></a></li>
               <li>
-                <details>
+                <details open>
                   <summary>gestion</summary>
                   <ul class="p-2">
                     <li><a href="/pages/my_players.html"><span><i class="mr-2 fas fa-user"></i>effectif</span></a></li>
@@ -32,7 +32,7 @@ export default {
                 </details>
               </li>
               <li>
-                <details>
+                <details open>
                   <summary>infos</summary>
                   <ul class="p-2">
                     <li><a href="/rest/action.php/team/download_calendar"><span><i class="mr-2 fas fa-calendar"></i>calendrier</span></a></li>
@@ -42,11 +42,11 @@ export default {
                 </details>
               </li>
               <li>
-                <details>
+                <details open>
                   <summary>matchs</summary>
                   <ul class="p-2">
-                    <li><a href="/pages/my_team_matchs.html"><span><i class="mr-2 fas fa-home"></i>equipe</span></a></li>
-                    <li><a href="/pages/my_club_matchs.html"><span><i class="mr-2 fas fa-home"></i>club</span></a></li>
+                    <li><a href="/pages/my_team_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>equipe</span></a></li>
+                    <li><a href="/pages/my_club_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>club</span></a></li>
                   </ul>
                 </details>
               </li>
@@ -85,8 +85,8 @@ export default {
               <details>
                 <summary>matchs</summary>
                 <ul class="p-2">
-                  <li><a href="/pages/my_team_matchs.html"><span><i class="mr-2 fas fa-home"></i>equipe</span></a></li>
-                  <li><a href="/pages/my_club_matchs.html"><span><i class="mr-2 fas fa-home"></i>club</span></a></li>
+                    <li><a href="/pages/my_team_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>equipe</span></a></li>
+                    <li><a href="/pages/my_club_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>club</span></a></li>
                 </ul>
               </details>
             </li>
@@ -98,7 +98,7 @@ export default {
             <li>
                 <a href="/rest/action.php/usermanager/logout">
                     <button type="button" class="btn btn-error">
-                        <span class="glyphicon glyphicon-log-out"></span> déconnexion
+                        <span><i class="mr-2 fas fa-right-from-bracket"/>déconnexion</span>
                     </button>
                 </a>
             </li>
