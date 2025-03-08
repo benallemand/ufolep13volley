@@ -7,7 +7,7 @@ export default {
         <div class="flex flex-wrap gap-2">
           <div v-if="timeslots.length > 0">
             <div class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-2">
-              <div v-for="timeslot in timeslots" :key="timeslot.id" class="card w-96 shadow-xl">
+              <div v-for="timeslot in timeslots" :key="timeslot.id" class="card shadow-xl w-full">
                 <div class="card-body">
                   <h2 class="card-title">{{ timeslot.jour }} {{ timeslot.heure }}</h2>
                   <p>à {{ timeslot.gymnasium_full_name }}</p>
@@ -23,7 +23,7 @@ export default {
               </div>
             </div>
           </div>
-          <div>
+          <div class="w-full">
             <form class="flex flex-col gap-4 p-4 max-w-md mx-auto border rounded-lg shadow-lg"
                   @submit.prevent="handleSubmit">
               <label class="font-bold" for="gymnase">Gymnase</label>
