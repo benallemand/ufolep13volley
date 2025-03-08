@@ -138,16 +138,16 @@ class Players extends Generic
         $id_team,
         $prenom,
         $nom,
-        $num_licence,
-        $date_homologation,
         $sexe,
         $departement_affiliation,
         $id_club,
         $show_photo,
-        $telephone,
-        $email,
-        $telephone2,
-        $email2,
+        $num_licence = null,
+        $date_homologation = null,
+        $telephone = null,
+        $email = null,
+        $telephone2 = null,
+        $email2 = null,
         $id = null,
         $dirtyFields = null): array|int|string|null
     {
@@ -176,77 +176,7 @@ class Players extends Generic
                 }
             }
         }
-        $bindings = array();
-        if (empty($parameters['id'])) {
-            $sql = "INSERT INTO";
-        } else {
-            $sql = "UPDATE";
-        }
-        $sql .= " joueurs SET ";
-        foreach ($parameters as $key => $value) {
-            switch ($key) {
-                case 'id':
-                case 'id_team':
-                case 'dirtyFields':
-                    break;
-                case 'departement_affiliation':
-                case 'id_club':
-                    $sql .= "$key = ?,";
-                    $bindings[] = array('type' => 'i', 'value' => $value);
-                    break;
-                case 'date_homologation':
-                    $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
-                    $bindings[] = array('type' => 's', 'value' => $value);
-                    break;
-                case 'est_responsable_club':
-                case 'show_photo':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
-                    $sql .= "$key = ?,";
-                    $bindings[] = array('type' => 'i', 'value' => $val);
-                    break;
-                default:
-                    if (empty($value) || $value == 'null') {
-                        $sql .= "$key = NULL,";
-                    } else {
-                        $sql .= "$key = ?,";
-                        $bindings[] = array('type' => 's', 'value' => $value);
-                    }
-                    break;
-            }
-        }
-        $sql = trim($sql, ',');
-        if (!empty($parameters['id'])) {
-            $sql .= " WHERE id = ?";
-            $bindings[] = array('type' => 'i', 'value' => $parameters['id']);
-        }
-        $newId = $this->sql_manager->execute($sql, $bindings);
-        if (empty($parameters['id'])) {
-            if (UserManager::isTeamLeader()) {
-                if ($newId > 0) {
-                    if (!$this->addPlayerToMyTeam($newId)) {
-                        throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
-                    }
-                }
-            }
-            $firstName = $parameters['prenom'];
-            $name = $parameters['nom'];
-            $comment = "Creation d'un nouveau joueur : $firstName $name";
-            $this->addActivity($comment);
-        } else {
-            $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
-            if ($dirtyFields) {
-                $fieldsArray = explode(',', $dirtyFields);
-                foreach ($fieldsArray as $fieldName) {
-                    $fieldValue = filter_input(INPUT_POST, $fieldName);
-                    $firstName = $parameters['prenom'];
-                    $name = $parameters['nom'];
-                    $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-                    $this->addActivity($comment);
-                }
-            }
-        }
-        $this->savePhoto($parameters, $newId);
-        return $newId;
+        return $this->save($parameters);
     }
 
     /**
@@ -260,14 +190,12 @@ class Players extends Generic
             $last_name,
             null,
             null,
-            null,
-            null,
             $id_club,
             null,
-            $leader_phone,
-            $leader_email,
             null,
-            null);
+            null,
+            $leader_phone,
+            $leader_email);
     }
 
     /**
@@ -344,10 +272,10 @@ class Players extends Generic
 
     /**
      * @param $inputs
-     * @return void
+     * @return int|array|string|null
      * @throws Exception
      */
-    public function save($inputs): void
+    public function save($inputs): int|array|string|null
     {
         $bindings = array();
         if (empty($inputs['id'])) {
@@ -365,11 +293,17 @@ class Players extends Generic
         }
         $sql .= " joueurs SET ";
         foreach ($inputs as $key => $value) {
+            if (in_array($key, array(
+                'id',
+                'id_team',
+                'dirtyFields'))) {
+                continue;
+            }
+            if (empty($value) || $value == 'null') {
+                $sql .= "$key = NULL,";
+                continue;
+            }
             switch ($key) {
-                case 'id':
-                case 'id_team':
-                case 'dirtyFields':
-                    break;
                 case 'departement_affiliation':
                 case 'id_club':
                     $bindings[] = array(
@@ -387,7 +321,7 @@ class Players extends Generic
                     break;
                 case 'est_responsable_club':
                 case 'show_photo':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = ($value === 'on' || $value === 1 || $value === '1') ? 1 : 0;
                     $bindings[] = array(
                         'type' => 'i',
                         'value' => $val
@@ -395,15 +329,11 @@ class Players extends Generic
                     $sql .= "$key = ?,";
                     break;
                 default:
-                    if (empty($value) || $value == 'null') {
-                        $sql .= "$key = NULL,";
-                    } else {
-                        $bindings[] = array(
-                            'type' => 's',
-                            'value' => $value
-                        );
-                        $sql .= "$key = ?,";
-                    }
+                    $bindings[] = array(
+                        'type' => 's',
+                        'value' => $value
+                    );
+                    $sql .= "$key = ?,";
                     break;
             }
         }
@@ -444,6 +374,7 @@ class Players extends Generic
             }
         }
         $this->savePhoto($inputs, $newId);
+        return $newId;
     }
 
     /**
@@ -475,6 +406,15 @@ class Players extends Generic
         foreach ($licences as $licence) {
             $this->search_player_and_save_from_licence($licence);
         }
+    }
+
+    public function uploadPhoto($id, $nom, $prenom)
+    {
+        $this->savePhoto(array(
+            'id' => $id,
+            'nom' => $nom,
+            'prenom' => $prenom
+        ));
     }
 
     /**

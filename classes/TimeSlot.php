@@ -174,7 +174,7 @@ class TimeSlot extends Generic
                     $sql .= "$key = ?,";
                     break;
                 case 'has_time_constraint':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = ($value === 'on' || $value === 1 || $value === true || $value === 'true' || $value === '1') ? 1 : 0;
                     $bindings[] = array(
                         'type' => 'i',
                         'value' => $val
