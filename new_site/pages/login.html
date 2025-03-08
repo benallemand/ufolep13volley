@@ -1,11 +1,13 @@
 <script>
-    var parameters = location.hash.substring(8).split("&");
-    var temp = parameters[0].split("=");
-    var redirect = temp[1];
-    var temp = parameters[1].split("=");
-    var reason = temp[1];
-    document.getElementById("redirect").value = redirect;
-    alert(decodeURI(reason));
+    if (location.hash.substring(8)) {
+        var parameters = location.hash.substring(8).split("&");
+        var temp = parameters[0].split("=");
+        var redirect = temp[1];
+        var temp = parameters[1].split("=");
+        var reason = temp[1];
+        document.getElementById("redirect").value = redirect;
+        alert(decodeURI(reason));
+    }
 </script>
 <div class="container">
     <form class="form-signin" action="../login.php" method="post">
@@ -27,7 +29,8 @@
     <div class="jumbotron">
         <h3>Inscrire une équipe</h3>
         <strong>(Uniquement en période d'inscription)</strong>
-        <p><a class="btn btn-info btn-lg btn-block glyphicon glyphicon-list-alt" href="/register.php" target="_blank" role="button">
+        <p><a class="btn btn-info btn-lg btn-block glyphicon glyphicon-list-alt" href="/register.php" target="_blank"
+              role="button">
             Formulaire d'inscription</a></p>
     </div>
 

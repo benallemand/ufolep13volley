@@ -527,7 +527,7 @@ class UserManager extends Generic
     {
         @session_start();
         @session_destroy();
-        die('<META HTTP-equiv="refresh" content=0;URL=' . filter_input(INPUT_SERVER, 'HTTP_REFERER') . '>');
+        die('<META HTTP-equiv="refresh" content=0;URL=/>');
     }
 
     /**
