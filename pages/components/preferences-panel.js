@@ -5,7 +5,7 @@ export default {
       <div>
         <p class="text-xl">Préférences</p>
         <div class="flex flex-wrap gap-2">
-          <div>
+          <div class="w-full">
             <form class="flex flex-col gap-4 p-4 max-w-md mx-auto border rounded-lg shadow-lg"
                   @submit.prevent="handleSubmitPassword">
               <label class="font-bold" for="new_password">Nouveau mot de passe</label>
@@ -15,7 +15,7 @@ export default {
               <button type="submit" class="btn btn-primary">changer</button>
             </form>
           </div>
-          <div>
+          <div class="w-full">
             <form class="flex flex-col gap-4 p-4 max-w-md mx-auto border rounded-lg shadow-lg"
                   @submit.prevent="handleSubmitSettings">
               <div class="flex items-center gap-2">
