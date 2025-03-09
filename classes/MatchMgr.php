@@ -227,6 +227,43 @@ class MatchMgr extends Generic
      * @return bool
      * @throws Exception
      */
+    public function is_match_read_allowed($id_match): bool
+    {
+        // if localhost, presume it is for test purpose
+        switch (filter_input(INPUT_SERVER, 'SERVER_NAME')) {
+            case 'localhost':
+            case null:
+                return true;
+            default:
+                break;
+        }
+        $userDetails = $this->getCurrentUserDetails();
+        $profile = $userDetails['profile_name'];
+        $id_team = $userDetails['id_equipe'];
+        $match = $this->get_match($id_match);
+        switch ($profile) {
+            case 'ADMINISTRATEUR':
+            case 'SUPPORT':
+                return true;
+            case 'RESPONSABLE_EQUIPE':
+                if (
+                    ($id_team != $match['id_equipe_dom'])
+                    &&
+                    ($id_team != $match['id_equipe_ext'])
+                ) {
+                    return false;
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * @param $id_match
+     * @return bool
+     * @throws Exception
+     */
     public function is_match_update_allowed($id_match): bool
     {
         // if localhost, presume it is for test purpose
@@ -254,6 +291,9 @@ class MatchMgr extends Generic
                     return false;
                 }
                 if ($match['certif'] == 1) {
+                    return false;
+                }
+                if ($match['is_sign_match_dom'] == 1 && $match['is_sign_match_ext'] == 1) {
                     return false;
                 }
                 return true;

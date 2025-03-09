@@ -20,7 +20,6 @@ switch ($_SESSION['profile_name']) {
     case 'RESPONSABLE_EQUIPE':
         $userName = $_SESSION['login'];
         $team = (new Team())->getTeam($_SESSION['id_equipe']);
-        $menu_source = 'navs/my_page.html';
         $nav_title = $userName . " - " . $team['team_full_name'];
         break;
     case 'ADMINISTRATEUR':
