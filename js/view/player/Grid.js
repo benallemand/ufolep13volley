@@ -118,16 +118,6 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'displayfield',
                     fieldLabel: 'Total',
                     action: 'displayFilteredCount'
-                }
-            ]
-        },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES +',
-                {
-                    xtype: 'tbseparator'
                 },
                 {
                     xtype: 'checkbox',
@@ -153,7 +143,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     xtype: 'checkbox',
                     boxLabel: 'Joueurs engagés dans au moins une équipe',
                     action: 'filterPlayersEngaged'
-                },
+                }
             ]
         }
     ]

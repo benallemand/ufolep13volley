@@ -79,8 +79,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         ref: 'windowEditDay', selector: 'dayedit'
     }, {
         ref: 'windowEditLimitDate', selector: 'limitdateedit'
-    }, {
-        ref: 'displayFilteredCount', selector: 'displayfield[action=displayFilteredCount]'
     }],
     init: function () {
         this.control({
@@ -380,90 +378,92 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var store = checkbox.up('grid').getStore();
         if (newValue !== true) {
             store.removeFilter('filterPlayersWithoutClub');
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
         }
-        store.filter({
-            id: 'filterPlayersWithoutClub', filterFn: function (item) {
-                return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('id_club')));
-            }
-        });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+        else {
+            store.filter({
+                id: 'filterPlayersWithoutClub', filterFn: function (item) {
+                    return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('id_club')));
+                }
+            });
+        }
+        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersWithoutLicence: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
         if (newValue !== true) {
             store.removeFilter('filterPlayersWithoutLicence');
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
         }
-        store.filter({
-            id: 'filterPlayersWithoutLicence', filterFn: function (item) {
-                return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('num_licence')));
-            }
-        });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+        else {
+            store.filter({
+                id: 'filterPlayersWithoutLicence', filterFn: function (item) {
+                    return (!Ext.isEmpty(item.get('active_teams_list'))) && (Ext.isEmpty(item.get('num_licence')));
+                }
+            });
+        }
+        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersWith2TeamsSameCompetition: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
         if (newValue !== true) {
             store.removeFilter('filterPlayersWith2TeamsSameCompetition');
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
         }
-        store.filter({
-            id: 'filterPlayersWith2TeamsSameCompetition', filterFn: function (item) {
-                if (item.get('active_teams_list') !== null) {
-                    var countM = (item.get('active_teams_list').match(/\(m\)/g) || []).length;
-                    var countF = (item.get('active_teams_list').match(/\(f\)/g) || []).length;
-                    var countKH = (item.get('active_teams_list').match(/\(kh\)/g) || []).length;
-                    var countC = (item.get('active_teams_list').match(/\(c\)/g) || []).length;
-                    return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
+        else {
+
+            store.filter({
+                id: 'filterPlayersWith2TeamsSameCompetition', filterFn: function (item) {
+                    if (item.get('active_teams_list') !== null) {
+                        var countM = (item.get('active_teams_list').match(/\(m\)/g) || []).length;
+                        var countF = (item.get('active_teams_list').match(/\(f\)/g) || []).length;
+                        var countKH = (item.get('active_teams_list').match(/\(kh\)/g) || []).length;
+                        var countC = (item.get('active_teams_list').match(/\(c\)/g) || []).length;
+                        return ((countM > 1) || (countF > 1) || (countKH > 1) || (countC > 1));
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+            });
+        }
+        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersEngaged: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
         if (newValue !== true) {
             store.removeFilter('filterPlayersEngaged');
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
         }
-        store.filter({
-            id: 'filterPlayersEngaged', filterFn: function (item) {
-                return !Ext.isEmpty(item.get('active_teams_list'));
-            }
-        });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+        else {
+            store.filter({
+                id: 'filterPlayersEngaged', filterFn: function (item) {
+                    return !Ext.isEmpty(item.get('active_teams_list'));
+                }
+            });
+        }
+        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+
     },
     filterInactivePlayers: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
         if (newValue !== true) {
             store.removeFilter('filterInactivePlayers');
-            this.getDisplayFilteredCount().setValue(store.getCount());
-            return;
         }
-        store.filter({
-            id: 'filterInactivePlayers', filterFn: function (item) {
-                return (!item.get('est_actif')) && (!Ext.isEmpty(item.get('active_teams_list')));
-            }
-        });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+        else {
+            store.filter({
+                id: 'filterInactivePlayers', filterFn: function (item) {
+                    return (!item.get('est_actif')) && (!Ext.isEmpty(item.get('active_teams_list')));
+                }
+            });
+        }
+        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     searchInGrid: function (textfield, searchText) {
         var searchTerms = searchText.split(',');
         var store = textfield.up('grid').getStore();
         store.removeFilter('searchInGrid');
         if (Ext.isEmpty(searchText)) {
-            this.getDisplayFilteredCount().setValue(store.getCount());
+            textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
             return;
         }
         var model = store.first();
         if (!model) {
-            this.getDisplayFilteredCount().setValue(store.getCount());
+            textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
             return;
         }
         store.filter({
@@ -492,7 +492,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 return found;
             }
         });
-        this.getDisplayFilteredCount().setValue(store.getCount());
+        textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     editPlayer: function (button) {
         var record = button.up('grid').getSelectionModel().getSelection()[0];
