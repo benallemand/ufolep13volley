@@ -12,7 +12,7 @@ try {
         throw new Exception("id_match non défini !", 404);
     }
     $manager = new MatchMgr();
-    if (!$manager->is_match_update_allowed($id_match)) {
+    if (!$manager->is_match_read_allowed($id_match)) {
         throw new Exception("Vous n'êtes pas autorisé à modifier ce match !", 401);
     }
 } catch (Exception $e) {
