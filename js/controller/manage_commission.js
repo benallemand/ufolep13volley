@@ -211,7 +211,6 @@ Ext.define('Ufolep13Volley.controller.manage_commission', {
     show_grid: function (button) {
         var tab = button.up('tabpanel').add({
             xtype: 'grid_commission',
-            selType: 'checkboxmodel',
             layout: 'fit'
         });
         button.up('tabpanel').setActiveTab(tab);

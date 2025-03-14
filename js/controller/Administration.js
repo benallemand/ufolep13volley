@@ -386,7 +386,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+        checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersWithoutLicence: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
@@ -400,7 +400,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+        checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersWith2TeamsSameCompetition: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
@@ -422,7 +422,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+        checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     filterPlayersEngaged: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
@@ -436,7 +436,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+        checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
 
     },
     filterInactivePlayers: function (checkbox, newValue) {
@@ -451,7 +451,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 }
             });
         }
-        checkbox.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+        checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     searchInGrid: function (textfield, searchText) {
         var searchTerms = searchText.split(',');
@@ -1175,15 +1175,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Diplôme(s)', hidden: true, action: 'download_diploma'
             },]
         });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
-            }]
-        });
     },
     displayTimeslots: function () {
         this.showAdministrationGrid('timeslots_grid');
@@ -1198,15 +1189,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Modifier', action: 'editTimeslot'
             }, {
                 text: 'Supprimer', action: 'deleteTimeslot'
-            }]
-        });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
             }]
         });
     },
@@ -1240,15 +1222,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             },
             ]
         });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
-            }]
-        });
     },
     displayBlacklistGymnase: function () {
         this.showAdministrationGrid('blacklistgymnase_grid');
@@ -1263,15 +1236,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Modifier', action: 'editBlacklistGymnase'
             }, {
                 text: 'Supprimer', action: 'deleteBlacklistGymnase'
-            }]
-        });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
             }]
         });
     },
@@ -1293,15 +1257,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Supprimer', action: 'deleteBlacklistTeam'
             }]
         });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
-            }]
-        });
     },
     addToolbarBlacklistTeams: function (grid) {
         grid.addDocked({
@@ -1313,15 +1268,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Modifier', action: 'editBlacklistTeams'
             }, {
                 text: 'Supprimer', action: 'deleteBlacklistTeams'
-            }]
-        });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
             }]
         });
     },
@@ -1338,15 +1284,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 text: 'Modifier', action: 'editBlacklistDate'
             }, {
                 text: 'Supprimer', action: 'deleteBlacklistDate'
-            }]
-        });
-        grid.addDocked({
-            xtype: 'toolbar', dock: 'top', items: ['FILTRES', {
-                xtype: 'tbseparator'
-            }, {
-                xtype: 'textfield', fieldLabel: 'Recherche'
-            }, {
-                xtype: 'displayfield', fieldLabel: 'Total', action: 'displayFilteredCount'
             }]
         });
     },

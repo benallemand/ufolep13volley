@@ -1,8 +1,7 @@
 Ext.define('Ufolep13Volley.view.grid.rank_for_cup', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.rank_for_cup_grid',
     title: 'Classement général',
-    autoScroll: true,
     store: {type: 'rank_for_cup'},
     viewConfig: {
         getRowClass: function (record) {

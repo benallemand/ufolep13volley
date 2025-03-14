@@ -1,15 +1,13 @@
 Ext.define('Ufolep13Volley.view.grid.HallOfFame', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.hall_of_fame_grid',
     title: 'Palmarès',
-    autoScroll: true,
     store: {type: 'HallOfFame'},
     features: [
         {
             ftype: 'grouping',
         }
     ],
-    selType: 'checkboxmodel',
     columns: {
         items: [
             {

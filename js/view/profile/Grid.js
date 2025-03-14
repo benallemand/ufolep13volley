@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.profile.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.profilesgrid',
     title: 'Gestion des profils',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'Profiles'},
     columns: {
         items: [
@@ -33,24 +31,5 @@ Ext.define('Ufolep13Volley.view.profile.Grid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

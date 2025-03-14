@@ -13,7 +13,6 @@ Ext.define('Ufolep13Volley.view.grid.register', {
             type: 'register',
         },
     selType: 'rowmodel',
-    autoScroll: true,
     columns: [
         {
             header: "Date d'inscription",

@@ -1,8 +1,7 @@
 Ext.define('Ufolep13Volley.view.activity.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.activitygrid',
     title: 'Activité',
-    autoScroll: true,
     store: {type: 'Activity'},
     columns: {
         items: [
@@ -40,25 +39,4 @@ Ext.define('Ufolep13Volley.view.activity.Grid', {
             }
         ]
     },
-    dockedItems: [
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
-    ]
 });

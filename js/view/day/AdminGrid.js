@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.day.AdminGrid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.daysgrid',
     title: 'Gestion des Journées',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'AdminDays'},
     columns: {
         items: [
@@ -48,24 +46,5 @@ Ext.define('Ufolep13Volley.view.day.AdminGrid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

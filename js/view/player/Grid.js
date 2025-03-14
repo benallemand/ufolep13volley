@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.player.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.playersgrid',
     title: 'Gestion des joueurs',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'Players'},
     viewConfig: {
         getRowClass: function (record) {
@@ -63,7 +61,10 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
                     beforecheckchange: function () {
                         return false;
                     }
-                }
+                },
+                filter: {
+                    type: 'boolean',
+                },
             }
         ]
     },
@@ -107,18 +108,6 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
             dock: 'top',
             items: [
                 'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                },
                 {
                     xtype: 'checkbox',
                     boxLabel: 'Joueurs sans club',

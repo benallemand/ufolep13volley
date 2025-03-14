@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.gymnasiumsgrid',
     title: 'Gestion des Gymnases',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'Gymnasiums'},
     columns: {
         items: [
@@ -52,24 +50,5 @@ Ext.define('Ufolep13Volley.view.gymnasium.Grid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

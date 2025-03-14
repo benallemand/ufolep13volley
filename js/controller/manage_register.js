@@ -97,7 +97,6 @@ Ext.define('Ufolep13Volley.controller.manage_register', {
     show_grid: function (button) {
         button.up('tabpanel').add({
             xtype: 'grid_register',
-            selType: 'checkboxmodel',
             layout: 'fit'
         });
     },

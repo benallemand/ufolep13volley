@@ -1,11 +1,8 @@
 Ext.define('Ufolep13Volley.view.team.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.teamsgrid',
     title: 'Gestion des Equipes',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'Teams'},
-    plugins: 'gridfilters',
     columns: {
         items: [
             {
@@ -83,24 +80,5 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

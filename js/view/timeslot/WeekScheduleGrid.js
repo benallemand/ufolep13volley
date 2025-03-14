@@ -1,8 +1,7 @@
 Ext.define('Ufolep13Volley.view.timeslot.WeekScheduleGrid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.weekschedulegrid',
     title: 'Planning de la semaine',
-    autoScroll: true,
     store: {type: 'WeekSchedule'},
     features: [
         {
@@ -34,25 +33,4 @@ Ext.define('Ufolep13Volley.view.timeslot.WeekScheduleGrid', {
             }
         ]
     },
-    dockedItems: [
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
-    ]
 });

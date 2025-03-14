@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.rankgrid',
     title: 'Gestion des Classements',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'AdminRanks'},
     columns: {
         items: [
@@ -58,24 +56,5 @@ Ext.define('Ufolep13Volley.view.rank.AdminGrid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

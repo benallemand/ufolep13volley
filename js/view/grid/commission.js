@@ -13,8 +13,6 @@ Ext.define('Ufolep13Volley.view.grid.commission', {
             type: 'commission',
             autoLoad: true,
         },
-    selType: 'rowmodel',
-    autoScroll: true,
     columns: [
         {header: 'nom', dataIndex: 'nom', flex: 1,},
         {header: 'prenom', dataIndex: 'prenom', flex: 1,},

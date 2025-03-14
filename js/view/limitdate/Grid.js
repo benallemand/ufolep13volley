@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.limitdate.Grid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.limitdatesgrid',
     title: 'Gestion des Dates Limites',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'LimitDates'},
     columns: {
         items: [
@@ -40,24 +38,5 @@ Ext.define('Ufolep13Volley.view.limitdate.Grid', {
                 }
             ]
         },
-        {
-            xtype: 'toolbar',
-            dock: 'top',
-            items: [
-                'FILTRES',
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                }
-            ]
-        }
     ]
 });

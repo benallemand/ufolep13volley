@@ -1,10 +1,8 @@
 Ext.define('Ufolep13Volley.view.grid.Friendships', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.friendships_grid',
     title: 'Ententes entre clubs',
-    autoScroll: true,
     store: {type: 'Friendships'},
-    selType: 'checkboxmodel',
     columns: {
         items: [
             {

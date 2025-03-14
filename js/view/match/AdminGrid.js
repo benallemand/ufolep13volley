@@ -1,9 +1,7 @@
 Ext.define('Ufolep13Volley.view.match.AdminGrid', {
-    extend: 'Ext.grid.Panel',
+    extend: 'Ufolep13Volley.view.grid.ufolep',
     alias: 'widget.matchesgrid',
     title: 'Gestion des Matches',
-    autoScroll: true,
-    selType: 'checkboxmodel',
     store: {type: 'AdminMatches'},
     columns: {
         items: [
@@ -379,18 +377,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
             items: [
                 'FILTRES',
                 {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Recherche'
-                },
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: 'Total',
-                    action: 'displayFilteredCount'
-                },
-                {
                     xtype: 'segmentedbutton',
                     items: [
                         {
@@ -400,7 +386,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                 var store = button.up('grid').getStore();
                                 store.clearFilter();
                                 store.filter('is_validation_ready', true);
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
@@ -415,7 +401,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                     value: ['CONFIRMED', 'NOT_CONFIRMED'],
                                 });
                                 store.filter('is_match_player_requested', true);
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
@@ -430,7 +416,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                     value: ['CONFIRMED', 'NOT_CONFIRMED'],
                                 });
                                 store.filter('has_forbidden_player', true);
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
@@ -445,7 +431,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                     value: ['CONFIRMED', 'NOT_CONFIRMED'],
                                 });
                                 store.filter('certif', false);
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
@@ -459,7 +445,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                     operator: 'in',
                                     value: ['CONFIRMED', 'NOT_CONFIRMED'],
                                 });
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         },
                         {
@@ -473,7 +459,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                     operator: 'in',
                                     value: ['ARCHIVED'],
                                 });
-                                button.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
+                                button.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
                             }
                         }
                     ]
