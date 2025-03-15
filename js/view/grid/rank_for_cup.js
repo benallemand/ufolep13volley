@@ -4,6 +4,7 @@ Ext.define('Ufolep13Volley.view.grid.rank_for_cup', {
     title: 'Classement général',
     store: {type: 'rank_for_cup'},
     viewConfig: {
+        enableTextSelection: true,
         getRowClass: function (record) {
             if (record.get('rang') <= 16) {
                 return 'grid-green';

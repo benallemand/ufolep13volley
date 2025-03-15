@@ -12,7 +12,7 @@ Ext.define('Ufolep13Volley.view.grid.register', {
         {
             type: 'register',
         },
-    selType: 'rowmodel',
+    selModel: 'rowmodel',
     columns: [
         {
             header: "Date d'inscription",

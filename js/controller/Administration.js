@@ -222,8 +222,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.deletePlayers
             }, 'menuitem[action=displayIndicators]': {
                 click: this.displayIndicators
-            }, 'grid > toolbar[dock=top] > textfield[fieldLabel=Recherche]': {
-                change: this.searchInGrid
             }, 'menuitem[action=displayHallOfFame]': {
                 click: this.displayHallOfFame
             }, 'hall_of_fame_grid': {
@@ -452,47 +450,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             });
         }
         checkbox.up('grid').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
-    },
-    searchInGrid: function (textfield, searchText) {
-        var searchTerms = searchText.split(',');
-        var store = textfield.up('grid').getStore();
-        store.removeFilter('searchInGrid');
-        if (Ext.isEmpty(searchText)) {
-            textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
-            return;
-        }
-        var model = store.first();
-        if (!model) {
-            textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
-            return;
-        }
-        store.filter({
-            id: 'searchInGrid', filterFn: function (item) {
-                var fields = model.getFields();
-                var queribleFields = [];
-                Ext.each(fields, function (field) {
-                    if (field.getType() === 'string' || field.getType() === 'auto') {
-                        Ext.Array.push(queribleFields, field.getName());
-                    }
-                });
-                var found = false;
-                Ext.each(searchTerms, function (searchTerm) {
-                    var regExp = new RegExp(searchTerm, "i");
-                    Ext.each(queribleFields, function (queribleField) {
-                        if (!item.get(queribleField)) {
-                            return true;
-                        }
-                        if (regExp.test(item.get(queribleField))) {
-                            found = true;
-                            return false;
-                        }
-                    });
-                    return !found;
-                });
-                return found;
-            }
-        });
-        textfield.up('toolbar').down('displayfield[action=displayFilteredCount]').setValue(store.getCount());
     },
     editPlayer: function (button) {
         var record = button.up('grid').getSelectionModel().getSelection()[0];
@@ -1413,17 +1370,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                             maximizable: true,
                             layout: 'fit',
                             items: {
-                                xtype: 'exportablegrid',
-                                viewConfig: {
-                                    enableTextSelection: true
-                                },
-                                autoScroll: true,
-                                features: [
-                                    {
-                                        ftype: 'grouping',
-                                        groupHeaderTpl: '{name}'
-                                    }
-                                ],
+                                xtype: 'grid_ufolep',
+                                selModel: 'rowmodel',
                                 store: Ext.create('Ext.data.Store', {
                                     fields: fields, data: {
                                         'items': detailsData
@@ -1436,50 +1384,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                                 columns: columns
                             },
                             dockedItems: [
-                                {
-                                    xtype: 'toolbar', dock: 'top', items: [
-                                        {
-                                            xtype: 'textfield',
-                                            fieldLabel: 'Recherche',
-                                            listeners: {
-                                                change: function (field, new_val, old_val) {
-                                                    var linked_store = field.up('window').down('grid').getStore();
-                                                    if (new_val === old_val) {
-                                                        return;
-                                                    }
-                                                    linked_store.removeFilter('searchInGrid');
-                                                    if (Ext.isEmpty(new_val)) {
-                                                        return;
-                                                    }
-                                                    linked_store.filter({
-                                                        id: 'searchInGrid', filterFn: function (item) {
-                                                            var fields = linked_store.getModel().getFields();
-                                                            var queribleFields = [];
-                                                            Ext.each(fields, function (field) {
-                                                                if (field.getType() === 'string' || field.getType() === 'auto') {
-                                                                    Ext.Array.push(queribleFields, field.getName());
-                                                                }
-                                                            });
-                                                            var found = false;
-                                                            var regExp = new RegExp(new_val, "i");
-                                                            Ext.each(queribleFields, function (queribleField) {
-                                                                if (!item.get(queribleField)) {
-                                                                    return true;
-                                                                }
-                                                                if (regExp.test(item.get(queribleField))) {
-                                                                    found = true;
-                                                                    return false;
-                                                                }
-                                                            });
-                                                            return found;
-                                                        }
-                                                    });
-
-                                                }
-                                            }
-                                        },
-                                    ]
-                                },
                                 {
                                     xtype: 'toolbar', dock: 'bottom', items: [{
                                         text: 'Télécharger', handler: function (button) {

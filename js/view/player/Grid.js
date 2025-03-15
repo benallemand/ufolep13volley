@@ -4,6 +4,7 @@ Ext.define('Ufolep13Volley.view.player.Grid', {
     title: 'Gestion des joueurs',
     store: {type: 'Players'},
     viewConfig: {
+        enableTextSelection: true,
         getRowClass: function (record) {
             if (record.get('est_actif') === false) {
                 return 'grid-red';
