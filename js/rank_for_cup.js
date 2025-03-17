@@ -1,3 +1,9 @@
+Ext.Loader.setConfig({
+    enabled: true,
+    paths: {
+        'Ext.ux': 'js/ux' //Should be the path to the ux folder.
+    }
+});
 Ext.application({
     requires: ['Ext.container.Viewport', 'Ext.ux.ExportableGrid'],
     controllers: ['rank_for_cup'],
