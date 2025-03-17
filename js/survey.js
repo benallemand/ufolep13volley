@@ -1,5 +1,5 @@
 Ext.application({
-    requires: ['Ext.container.Viewport'],
+    requires: ['Ext.container.Viewport', 'Ext.ux.ExportableGrid'],
     controllers: ['survey'],
     name: 'Ufolep13Volley',
     appFolder: 'js',

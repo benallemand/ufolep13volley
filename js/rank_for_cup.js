@@ -1,5 +1,5 @@
 Ext.application({
-    requires: ['Ext.container.Viewport'],
+    requires: ['Ext.container.Viewport', 'Ext.ux.ExportableGrid'],
     controllers: ['rank_for_cup'],
     name: 'Ufolep13Volley',
     appFolder: 'js',
