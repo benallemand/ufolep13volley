@@ -22,6 +22,8 @@ $code_competition = filter_input(INPUT_GET, 'code_competition');
     <link
             href="/cells.css"
             rel="stylesheet"/>
+    <script type="text/javascript" src="/js/ux/jszip.min.js"></script>
+    <script type="text/javascript" src="/js/ux/FileSaver.js"></script>
     <script
             src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"
             type="text/javascript"></script>
