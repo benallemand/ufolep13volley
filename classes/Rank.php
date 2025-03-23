@@ -274,8 +274,10 @@ class Rank extends Generic
     {
         $sql = "SELECT
         DISTINCT c.division,
-        c.code_competition
-      FROM classements c";
+        c.code_competition,
+        comp.libelle AS libelle_competition
+      FROM classements c
+      JOIN competitions comp ON comp.code_competition = c.code_competition";
         return $this->sql_manager->execute($sql);
     }
 
