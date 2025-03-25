@@ -40,7 +40,7 @@ class Team extends Generic
         TO_BASE64(jsupp.telephone) AS telephone_2_base64,
         jresp.email,
         TO_BASE64(jresp.email) AS email_base64,
-        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        GROUP_CONCAT(DISTINCT CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         e.id_photo,
         p.path_photo,
@@ -176,7 +176,7 @@ class Team extends Generic
             jresp.telephone AS telephone_1,
             jsupp.telephone AS telephone_2,
             jresp.email,
-            GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR '\n') AS gymnasiums_list,
+            GROUP_CONCAT(DISTINCT CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR '\n') AS gymnasiums_list,
             e.web_site,
             p.path_photo
         FROM equipes e 
@@ -226,7 +226,7 @@ class Team extends Generic
         jresp.telephone AS telephone_1,
         jsupp.telephone AS telephone_2,
         jresp.email,
-        GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+        GROUP_CONCAT(DISTINCT CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
         e.web_site,
         p.path_photo
         FROM equipes e 
@@ -447,7 +447,7 @@ class Team extends Generic
                     TO_BASE64(jsupp.telephone) AS telephone_2_base64,
                     jresp.email,
                     TO_BASE64(jresp.email) AS email_base64,
-                    GROUP_CONCAT(CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
+                    GROUP_CONCAT(DISTINCT CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (',cr.jour, ' à ', cr.heure,')', IF(cr.has_time_constraint > 0, ' (CONTRAINTE HORAIRE FORTE)', '')) SEPARATOR ', ') AS gymnasiums_list,
                     e.web_site,
                     p.path_photo
                 FROM equipes e 

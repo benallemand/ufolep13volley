@@ -7,7 +7,7 @@ SELECT m.equipe_dom                         AS equipe_domicile,
        jresp.telephone,
        jresp.email,
        GROUP_CONCAT(
-               CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (', cr.jour, ' à ', cr.heure,
+               DISTINCT CONCAT(CONCAT(g.ville, ' - ', g.nom, ' - ', g.adresse, ' - ', g.gps), ' (', cr.jour, ' à ', cr.heure,
                       ')')
                SEPARATOR ', ')
                                             AS creneaux
