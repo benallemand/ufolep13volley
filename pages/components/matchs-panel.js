@@ -69,10 +69,20 @@ export default {
                             <i class="fas fa-envelope ml-1"></i>
                     </a></span></span>
                 </p>
-                <p class="text-sm font-medium">
-                  <span class="">Score :</span> {{ match.score_equipe_dom }} - {{
-                    match.score_equipe_ext
-                  }}
+                <p class="text-sm text-gray-600 font-medium"
+                   v-if="match.score_equipe_dom > 0 || match.score_equipe_ext > 0">
+                  <span class="text-gray-800">Score :</span>
+                  <span class="text-xl">{{ match.score_equipe_dom }} - {{ match.score_equipe_ext }}</span>
+                  <span v-if="match.set_1_dom > 0 || match.set_1_ext > 0">{{ match.set_1_dom }}/{{ match.set_1_ext }}
+                    </span>
+                  <span v-if="match.set_2_dom > 0 || match.set_2_ext > 0">{{ match.set_2_dom }}/{{ match.set_2_ext }}
+                    </span>
+                  <span v-if="match.set_3_dom > 0 || match.set_3_ext > 0">{{ match.set_3_dom }}/{{ match.set_3_ext }}
+                    </span>
+                  <span v-if="match.set_4_dom > 0 || match.set_4_ext > 0">{{ match.set_4_dom }}/{{ match.set_4_ext }}
+                    </span>
+                  <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}
+                    </span>
                 </p>
                 <p class="text-sm font-medium">
                   <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
@@ -194,16 +204,16 @@ export default {
                 .get("/session_user.php")
                 .then((response) => {
                     if (response.data.error) {
-                        console.error("Erreur de session :", response.data.error);
+                        this.user = null;
                     } else {
                         this.user = response.data;
                     }
                 })
-                .catch((error) => {
-                    console.error("Erreur lors du chargement des détails utilisateur :", error);
+                .catch(() => {
                 });
         },
         resetFilters() {
+            this.filter.showPlayedMatchesOnly = false;
             this.filter.showCertified = false;
             this.filter.showForbiddenPlayer = false;
             this.searchQuery = "";
