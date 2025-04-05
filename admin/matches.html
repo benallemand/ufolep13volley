@@ -89,7 +89,6 @@
         />
         <button @click="resetFilters" class="btn btn-outline">Réinitialiser</button>
     </div>
-
     <!-- Liste des matchs -->
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <li v-for="match in filteredMatches" :key="match.id_match" class="card shadow-md bg-white">
@@ -147,38 +146,65 @@
                     <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}
                     </span>
                 </p>
-                <div class="text-sm flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
                     <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
-                    <span
-                            class="badge"
-                            :class="match.is_sign_team_dom + match.is_sign_team_ext === 2 ? 'badge-success' : 'badge-error'">
-                        {{
-                            match.is_sign_team_dom + match.is_sign_team_ext === 2 ? 'fiche équipe signée' : 'fiche équipe non signée'
-                        }}
+                    <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
+                        fiche équipe signée
                         <span class="text-blue-500 font-medium">
                             <a :href="`/team_sheets.php?id_match=${match.id_match}`" target="_blank">
                                 <i class="fas fa-external-link-alt ml-1"></i>
                             </a>
                         </span>
                     </span>
-                    <span
-                            class="badge"
-                            :class="match.is_sign_match_dom + match.is_sign_match_ext === 2 ? 'badge-success' : 'badge-error'">
-                        {{
-                            match.is_sign_match_dom + match.is_sign_match_ext === 2 ? 'feuille de match signée' : 'feuille de match non signée'
-                        }}
+                    <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_dom }} fiche équipe non signée
+                        <span class="text-blue-500 font-medium">
+                            <a :href="`/team_sheets.php?id_match=${match.id_match}`" target="_blank">
+                                <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </span>
+                    </span>
+                    <span v-if="match.is_sign_team_ext === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_ext }} fiche équipe non signée
+                        <span class="text-blue-500 font-medium">
+                            <a :href="`/team_sheets.php?id_match=${match.id_match}`" target="_blank">
+                                <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </span>
+                    </span>
+                    <span v-if="match.is_sign_match_dom + match.is_sign_match_ext === 2" class="badge badge-success">
+                        feuille de match signée
                         <span class="text-blue-500 font-medium">
                             <a :href="`/match.php?id_match=${match.id_match}`" target="_blank">
                                 <i class="fas fa-external-link-alt ml-1"></i>
                             </a>
                         </span>
                     </span>
-                    <span
-                            class="badge"
-                            :class="match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'badge-success' : 'badge-error'">
-                        {{
-                            match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'sondage rempli' : 'sondage non rempli'
-                        }}
+                    <span v-if="match.is_sign_match_dom === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_dom }} feuille de match non signée
+                        <span class="text-blue-500 font-medium">
+                            <a :href="`/match.php?id_match=${match.id_match}`" target="_blank">
+                                <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </span>
+                    </span>
+                    <span v-if="match.is_sign_match_ext === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_ext }} feuille de match non signée
+                        <span class="text-blue-500 font-medium">
+                            <a :href="`/match.php?id_match=${match.id_match}`" target="_blank">
+                                <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </span>
+                    </span>
+                    <span v-if="match.is_survey_filled_dom + match.is_survey_filled_ext === 2"
+                          class="badge badge-success">
+                        sondage rempli
+                    </span>
+                    <span v-if="match.is_survey_filled_dom === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_dom }} sondage non rempli
+                    </span>
+                    <span v-if="match.is_survey_filled_ext === 0" class="badge badge-error text-xs">
+                        {{ match.equipe_ext }} sondage non rempli
                     </span>
                     <span v-if="match.has_forbidden_player === 1" class="badge badge-error">
                         pb licence(s)
@@ -198,7 +224,7 @@
                     <span class="badge badge-error" v-if="match.is_forfait === 1">forfait</span>
                     <div v-if="!['null', ''].includes(match.note)" class="collapse">
                         <input type="checkbox"/>
-                        <div class="collapse-title text-sm font-medium">voir les commentaires</div>
+                        <div class="collapse-title text-xs font-medium">voir les commentaires</div>
                         <div class="collapse-content">
                             <p>{{ match.note }}</p>
                         </div>
