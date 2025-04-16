@@ -20,9 +20,14 @@ class RankTest extends TestCase
     /**
      * @throws Exception
      */
-    public function test_sort_cup_rank()
+    public function test_sort_cup_rank_isoardi()
     {
         print_r($this->rank->sort_cup_rank('c'));
+    }
+
+    public function test_sort_cup_rank_khoury_hanna()
+    {
+        print_r($this->rank->sort_cup_rank('kh'));
     }
 
     public function test_get_rank_by_comp_div()
