@@ -1,5 +1,11 @@
+// Import du composant admin-match-card
+import AdminMatchCard from './components/admin-match-card.js';
+
 new Vue({
     el: '#match-app',
+    components: {
+        'admin-match-card': AdminMatchCard
+    },
     data: {
         searchQuery: "",
         matches: [],

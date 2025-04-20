@@ -17,7 +17,14 @@ export default {
           <span class="">Compétition :</span> {{ match.libelle_competition }}
         </p>
         <p class="text-sm font-medium">
-          <span class="">Division :</span> {{ match.division }}
+          <span class="">Division :</span>
+          <span>
+            <a :href="'/new_site/#/championship/'+match.code_competition+'/'+match.division"
+               class="link link-info hover:underline"
+               target="_blank">
+                 <span>{{ match.division }}</span><i class="fas fa-external-link-alt ml-1"></i>
+            </a>
+          </span>
         </p>
         <p class="text-sm font-medium">
           <span class="">Rencontre :</span>
@@ -49,62 +56,101 @@ export default {
         </p>
         <p class="text-sm font-medium">
           <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
-        </p>
-        <p class="text-sm">
-          <span
-              class="badge"
-              :class="match.is_sign_team_dom + match.is_sign_team_ext === 2 ? 'badge-success' : 'badge-error'">
-              {{
-              match.is_sign_team_dom + match.is_sign_team_ext === 2 ? 'fiche équipe signée' : 'fiche équipe non signée'
-            }}
-            <span class="font-medium">
-                  <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
-                     class="link link-info hover:underline">
+          <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
+            fiche équipe signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
+                    <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </span>
+          </span>
+          <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
+            {{ match.equipe_dom }} fiche équipe non signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/team_sheets.php?id_match='+match.id_match"
+                   target="_blank"
+                   class="link link-info hover:underline">
                       <i class="fas fa-external-link-alt ml-1"></i>
                   </a>
               </span>
           </span>
-        </p>
-        <p class="text-sm">
-          <span
-              class="badge"
-              :class="match.is_sign_match_dom + match.is_sign_match_ext === 2 ? 'badge-success' : 'badge-error'">
-              {{
-              match.is_sign_match_dom + match.is_sign_match_ext === 2 ? 'feuille de match signée' : 'feuille de match non signée'
-            }}
-            <span class="font-medium">
-                  <a :href="'/match.php?id_match='+match.id_match" target="_blank"
-                     class="link link-info hover:underline">
+          <span v-if="match.is_sign_team_ext === 0" class="badge badge-error text-xs">
+            {{ match.equipe_ext }} fiche équipe non signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
                       <i class="fas fa-external-link-alt ml-1"></i>
                   </a>
               </span>
           </span>
-        </p>
-        <p class="text-sm">
-          <span
-              class="badge"
-              :class="match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'badge-success' : 'badge-error'">
-              {{
-              match.is_survey_filled_dom + match.is_survey_filled_ext === 2 ? 'sondage rempli' : 'sondage non rempli'
-            }}
+          <span v-if="match.is_sign_match_dom + match.is_sign_match_ext === 2" class="badge badge-success">
+            feuille de match signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
+                    <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </span>
           </span>
-        </p>
-        <p class="text-sm">
-          <span
-              class="badge badge-error"
-              v-if="match.has_forbidden_player === 1">
+          <span v-if="match.is_sign_match_dom === 0" class="badge badge-error text-xs">
+            {{ match.equipe_dom }} feuille de match non signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
+                    <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </span>
+          </span>
+          <span v-if="match.is_sign_match_ext === 0" class="badge badge-error text-xs">
+            {{ match.equipe_ext }} feuille de match non signée
+            <span class="text-blue-500 font-medium">
+                <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
+                    <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </span>
+          </span>
+          <span v-if="match.is_survey_filled_dom + match.is_survey_filled_ext === 2"
+                class="badge badge-success">
+            sondage rempli
+          </span>
+          <span v-if="match.is_survey_filled_dom === 0" class="badge badge-error text-xs">
+            {{ match.equipe_dom }} sondage non rempli
+          </span>
+          <span v-if="match.is_survey_filled_ext === 0" class="badge badge-error text-xs">
+            {{ match.equipe_ext }} sondage non rempli
+          </span>
+          <span v-if="match.has_forbidden_player === 1" class="badge badge-error">
               pb licence(s)
-              <span class="font-medium">
-                  <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
-                     class="link link-info hover:underline">
+            <span class="text-blue-500 font-medium">
+                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
                       <i class="fas fa-external-link-alt ml-1"></i>
                   </a>
               </span>
           </span>
+          <span class="badge badge-neutral"
+                v-if="['ASKED_BY_DOM', 'ASKED_BY_EXT'].includes(match.report_status)">report demandé
+          </span>
+          <span v-if="['ACCEPTED_BY_DOM', 'ACCEPTED_BY_EXT'].includes(match.report_status)"
+                class="badge badge-accent">report accepté</span>
+          <span v-if="['REFUSED_BY_DOM', 'REFUSED_BY_EXT', 'REFUSED_BY_ADMIN'].includes(match.report_status)"
+                class="badge badge-error">report refusé</span>
+          <span class="badge badge-error" v-if="match.is_forfait === 1">forfait</span>
         </p>
         <p class="text-sm font-medium">
           <span class="">Date :</span> {{ match.date_reception }}
         </p>
+        <div v-if="!['null', ''].includes(match.note)" class="collapse">
+          <input type="checkbox"/>
+          <div class="collapse-title text-xs font-medium">voir les commentaires</div>
+          <div class="collapse-content">
+            <p>{{ match.note }}</p>
+          </div>
+        </div>
+        <!-- Actions supplémentaires (pour admin) -->
+        <slot name="actions"></slot>
       </div>
     `,
     props: {
