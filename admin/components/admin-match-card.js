@@ -9,7 +9,7 @@ export default {
         <template v-slot:actions>
           <div class="card-actions">
             <button
-                v-if="canValidate"
+                v-if="canValidate(match)"
                 @click="validateMatch(match.id_match)"
                 :disabled="loadingMatch === match.id_match || match.certif === 1"
                 class="btn btn-primary">
@@ -25,8 +25,8 @@ export default {
             required: true,
         },
         canValidate: {
-            type: Boolean,
-            default: false
+            type: Function,
+            default: () => false
         },
         loadingMatch: {
             type: [Number, String, null],

@@ -118,7 +118,7 @@ export default {
           <span class="badge badge-error" v-if="match.is_forfait === 1">forfait</span>
         </p>
         <p>Date : {{ match.date_reception }}</p>
-        <div v-if="!['null', ''].includes(match.note)" class="collapse">
+        <div v-if="!['null', '', null].includes(match.note)" class="collapse">
           <input type="checkbox"/>
           <div class="collapse-title text-xs font-medium">voir les commentaires</div>
           <div class="collapse-content">
