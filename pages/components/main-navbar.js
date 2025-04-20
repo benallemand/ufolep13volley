@@ -29,19 +29,20 @@ export default {
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
               <template v-for="group in groupedPools">
                 <li class="menu-title">{{ group.libelle }}</li>
+                <li>
+                  <a :href="'/pages/finals.html?code_competition=' + group.code_competition_finals">phases finales</a>
+                </li>
+                <li>
+                  <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
+                    classement général
+                  </a>
+                </li>
                 <li v-for="division in group.divisions" :key="division.code_competition+division.division">
                   <a :href="'/pages/division.html?division=' + division.division + '&code_competition=' + division.code_competition">
                     poule {{ division.division }}
                   </a>
                 </li>
               </template>
-            </ul>
-          </div>
-          <div class="dropdown">
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-              <li><a>Profile</a></li>
-              <li><a>Settings</a></li>
-              <li><a>Logout</a></li>
             </ul>
           </div>
           <div class="dropdown">
@@ -112,6 +113,7 @@ export default {
                 if (!acc[division.code_competition]) {
                     acc[division.code_competition] = {
                         libelle: division.libelle_competition,
+                        code_competition: division.code_competition,
                         divisions: [],
                     };
                 }
@@ -126,6 +128,8 @@ export default {
                 if (!acc[division.code_competition]) {
                     acc[division.code_competition] = {
                         libelle: division.libelle_competition,
+                        code_competition: division.code_competition,
+                        code_competition_finals: division.code_competition === 'c' ? 'cf' : 'kf',
                         divisions: [],
                     };
                 }
