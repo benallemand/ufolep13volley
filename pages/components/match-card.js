@@ -44,15 +44,7 @@ export default {
           <span v-if="match.set_4_dom > 0 || match.set_4_ext > 0">{{ match.set_4_dom }}/{{ match.set_4_ext }}</span>
           <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}</span>
         </p>
-        <p>
-          <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
-          <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
-            fiche équipe signée
-                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
-                   class="link link-info hover:underline">
-                    <i class="fas fa-external-link-alt ml-1"></i>
-                </a>
-          </span>
+        <p v-if="isMatchDatePassed">
           <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} fiche équipe non signée
             <a :href="'/team_sheets.php?id_match='+match.id_match"
@@ -66,13 +58,6 @@ export default {
             <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
                   <i class="fas fa-external-link-alt ml-1"></i>
-            </a>
-          </span>
-          <span v-if="match.is_sign_match_dom + match.is_sign_match_ext === 2" class="badge badge-success">
-            feuille de match signée
-            <a :href="'/match.php?id_match='+match.id_match" target="_blank"
-               class="link link-info hover:underline">
-                <i class="fas fa-external-link-alt ml-1"></i>
             </a>
           </span>
           <span v-if="match.is_sign_match_dom === 0" class="badge badge-error text-xs">
@@ -89,10 +74,6 @@ export default {
                 <i class="fas fa-external-link-alt ml-1"></i>
             </a>
           </span>
-          <span v-if="match.is_survey_filled_dom + match.is_survey_filled_ext === 2"
-                class="badge badge-success">
-            sondage rempli
-          </span>
           <span v-if="match.is_survey_filled_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} sondage non rempli
           </span>
@@ -105,6 +86,27 @@ export default {
                class="link link-info hover:underline">
               <i class="fas fa-external-link-alt ml-1"></i>
             </a>
+          </span>
+        </p>
+        <p>
+          <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
+          <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
+            fiche équipe signée
+                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+                   class="link link-info hover:underline">
+                    <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+          </span>
+          <span v-if="match.is_sign_match_dom + match.is_sign_match_ext === 2" class="badge badge-success">
+            feuille de match signée
+            <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+               class="link link-info hover:underline">
+                <i class="fas fa-external-link-alt ml-1"></i>
+            </a>
+          </span>
+          <span v-if="match.is_survey_filled_dom + match.is_survey_filled_ext === 2"
+                class="badge badge-success">
+            sondage rempli
           </span>
           <span class="badge badge-neutral"
                 v-if="['ASKED_BY_DOM', 'ASKED_BY_EXT'].includes(match.report_status)">report demandé
@@ -130,6 +132,15 @@ export default {
         match: {
             type: Object,
             required: true,
+        }
+    },
+    computed: {
+        isMatchDatePassed() {
+            const [day, month, year] = this.match.date_reception.split('/');
+            const matchDate = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return matchDate <= today;
         }
     }
 };
