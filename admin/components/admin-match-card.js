@@ -11,7 +11,7 @@ export default {
             <button
                 v-if="canValidate(match)"
                 @click="validateMatch(match.id_match)"
-                :disabled="loadingMatch === match.id_match || match.certif === 1"
+                :disabled="loadingMatch === match.id_match"
                 class="btn btn-primary">
               {{ loadingMatch === match.id_match ? 'Validation en cours...' : 'Valider le match' }}
             </button>
