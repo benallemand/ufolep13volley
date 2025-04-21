@@ -23,5 +23,6 @@ Used code is
 - PHP/MySQL for server side
 - Sencha for admin client side.
 - AngularJS for client side.
+- Vue.js / tailwind / daisyui migration in progress for client side.
 
 Any contribution is welcome :)
