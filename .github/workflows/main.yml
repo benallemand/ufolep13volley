@@ -7,30 +7,10 @@ on:
       - '*'  # Se déclenche sur n'importe quel tag
 
 jobs:
-  get-latest-commits:
-    name: Get Latest Commits
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Get Latest Commits
-      run: |
-        git log --oneline -n 10 > latest_commits.txt
-        echo "Latest commits:"
-        cat latest_commits.txt
-    - name: Upload Latest Commits
-      uses: actions/upload-artifact@v2
-      with:
-        name: latest-commits
-        path: latest_commits.txt
-
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')  # Exécute uniquement si déclenché par un tag
-    needs: get-latest-commits  # S'assure que le job précédent est terminé
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
