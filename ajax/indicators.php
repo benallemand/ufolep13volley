@@ -187,6 +187,9 @@ $indicators[] = new Indicator(
     "Délais non respectés pour transmettre une date de report",
     file_get_contents(__DIR__ . '/../sql/report_match_with_too_long_date_delay.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Matchs avec des renforts",
+    file_get_contents(__DIR__ . '/../sql/matchs_with_reinforcement.sql'));
 
 function info_first($a, $b): int
 {
