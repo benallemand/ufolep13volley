@@ -1434,11 +1434,11 @@ class MatchMgr extends Generic
     {
         $match = $this->get_match_by_code_match($code_match);
         $this->is_action_allowed(__FUNCTION__, $match['id_match']);
-        $report_datetime = DateTime::createFromFormat('Y-m-d', $report_date);
+        $report_datetime = DateTime::createFromFormat('d/m/Y', $report_date);
         if (!$report_datetime) {
             throw new Exception("Impossible de déterminer la date de report, merci de respecter le format jj/mm/aaaa (exemple: 03/01/2023 pour le 3 Janvier 2023) !");
         }
-        $date_string = $report_datetime->format('d/m/Y');
+        $date_string = $report_date;
         if ($this->has_match($match['id_equipe_dom'], $date_string)) {
             throw new Exception("L'équipe " . $match['equipe_dom'] . " a déjà un match ce soir là !");
         }
@@ -1446,12 +1446,12 @@ class MatchMgr extends Generic
             throw new Exception("L'équipe " . $match['equipe_ext'] . " a déjà un match ce soir là !");
         }
         $sql = "UPDATE matches 
-                SET date_reception = DATE(STR_TO_DATE(?, '%Y-%m-%d')) 
+                SET date_reception = DATE(STR_TO_DATE(?, '%d/%m/%Y')) 
                 WHERE code_match = ?";
         $bindings = array();
         $bindings[] = array(
             'type' => 's',
-            'value' => $report_date
+            'value' => $date_string
         );
         $bindings[] = array(
             'type' => 's',
