@@ -9,14 +9,14 @@
     </div>
     <table class="table table-bordered" ng-repeat="current_competition in matches | unique:'libelle_competition'">
         <tr class="info">
-            <th colspan="9"><h1>{{current_competition.libelle_competition}}</h1></th>
+            <th colspan="9"><h1>{{ current_competition.libelle_competition }}</h1></th>
         </tr>
         <tr>
             <td>
                 <table class="table table-bordered"
                        ng-repeat="current_journee in matches | filter:{ libelle_competition: current_competition.libelle_competition }:true | unique:'journee'">
                     <tr class="info">
-                        <th colspan="9"><h4>{{current_journee.journee}}</h4></th>
+                        <th colspan="9"><h4>{{ current_journee.journee }}</h4></th>
                     </tr>
                     <tr>
                         <th>Code</th>
@@ -47,51 +47,76 @@
                                     <img src="/images/add_to_calendar.png" width="16"/>
                                 </a>
                                 <var class="atc_event">
-                                    <var class="atc_date_start">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
-                                    <var class="atc_date_end">{{x.date_reception_raw | date:'yyyy-MM-dd'}} {{x.heure_reception}}</var>
+                                    <var class="atc_date_start">{{ x.date_reception_raw | date:'yyyy-MM-dd' }} {{ x.heure_reception }}</var>
+                                    <var class="atc_date_end">{{ x.date_reception_raw | date:'yyyy-MM-dd' }} {{ x.heure_reception }}</var>
                                     <var class="atc_timezone">Europe/Paris</var>
                                     <var class="atc_title">{{ x.equipe_dom }} contre {{ x.equipe_ext }}</var>
                                     <var class="atc_description">Compétition Ufolep 13 Volley</var>
-                                    <var class="atc_location">https://www.ufolep13volley.org/new_site/#/phonebook/{{x.id_equipe_dom}}</var>
+                                    <var class="atc_location">https://www.ufolep13volley.org/new_site/#/phonebook/{{ x.id_equipe_dom }}</var>
                                     <var class="atc_organizer">Ufolep 13 Volley</var>
                                     <var class="atc_organizer_email">contact@ufolep13volley.org</var>
                                 </var>
                             </span>
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
-                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_dom }}" target="_blank">{{ x.equipe_dom }}</a></span>
+                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_dom }}" target="_blank">{{
+                                    x.equipe_dom
+                                }}</a></span>
                             <span ng-if="x.forfait_dom == 1"
                                   class="label label-info">perdu par forfait
                             </span>
                         </td>
                         <td class="text-center">
-                            <span ng-if="x.score_equipe_dom == '3' || x.score_equipe_ext == '3'">{{ x.score_equipe_dom }}/{{ x.score_equipe_ext }}</span>
+                            <span ng-if="x.score_equipe_dom == '3' || x.score_equipe_ext == '3'">{{
+                                    x.score_equipe_dom
+                                }}/{{ x.score_equipe_ext }}</span>
                         </td>
                         <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
-                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_ext }}" target="_blank">{{ x.equipe_ext }}</a></span>
+                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_ext }}" target="_blank">{{
+                                    x.equipe_ext
+                                }}</a></span>
                             <span ng-if="x.forfait_ext == 1"
                                   class="label label-info">perdu par forfait
                             </span>
                         </td>
                         <td class="">
-                            <span ng-if="x.set_1_dom != '0' || x.set_1_ext != '0'">{{ x.set_1_dom }}/{{ x.set_1_ext }} </span>
-                            <span ng-if="x.set_2_dom != '0' || x.set_2_ext != '0'">{{ x.set_2_dom }}/{{ x.set_2_ext }} </span>
-                            <span ng-if="x.set_3_dom != '0' || x.set_3_ext != '0'">{{ x.set_3_dom }}/{{ x.set_3_ext }} </span>
-                            <span ng-if="x.set_4_dom != '0' || x.set_4_ext != '0'">{{ x.set_4_dom }}/{{ x.set_4_ext }} </span>
-                            <span ng-if="x.set_5_dom != '0' || x.set_5_ext != '0'">{{ x.set_5_dom }}/{{ x.set_5_ext }} </span>
+                            <span ng-if="x.set_1_dom != '0' || x.set_1_ext != '0'">{{ x.set_1_dom }}/{{
+                                    x.set_1_ext
+                                }} </span>
+                            <span ng-if="x.set_2_dom != '0' || x.set_2_ext != '0'">{{ x.set_2_dom }}/{{
+                                    x.set_2_ext
+                                }} </span>
+                            <span ng-if="x.set_3_dom != '0' || x.set_3_ext != '0'">{{ x.set_3_dom }}/{{
+                                    x.set_3_ext
+                                }} </span>
+                            <span ng-if="x.set_4_dom != '0' || x.set_4_ext != '0'">{{ x.set_4_dom }}/{{
+                                    x.set_4_ext
+                                }} </span>
+                            <span ng-if="x.set_5_dom != '0' || x.set_5_ext != '0'">{{ x.set_5_dom }}/{{
+                                    x.set_5_ext
+                                }} </span>
                         </td>
                         <td class="text-center">
                             {{ x.note }}
-                            <span ng-if="x.report_status == 'ACCEPTED_BY_DOM'">Report accepté par {{ x.equipe_dom }}</span>
-                            <span ng-if="x.report_status == 'ACCEPTED_BY_EXT'">Report accepté par {{ x.equipe_ext }}</span>
+                            <span ng-if="x.report_status == 'ACCEPTED_BY_DOM'">Report accepté par {{
+                                    x.equipe_dom
+                                }}</span>
+                            <span ng-if="x.report_status == 'ACCEPTED_BY_EXT'">Report accepté par {{
+                                    x.equipe_ext
+                                }}</span>
                             <span ng-if="x.report_status == 'ASKED_BY_DOM'">Report demandé par {{ x.equipe_dom }}</span>
                             <span ng-if="x.report_status == 'ASKED_BY_EXT'">Report demandé par {{ x.equipe_ext }}</span>
-                            <span ng-if="x.report_status == 'REFUSED_BY_DOM'">Report refusé par {{ x.equipe_dom }}</span>
-                            <span ng-if="x.report_status == 'REFUSED_BY_EXT'">Report refusé par {{ x.equipe_ext }}</span>
+                            <span ng-if="x.report_status == 'REFUSED_BY_DOM'">Report refusé par {{
+                                    x.equipe_dom
+                                }}</span>
+                            <span ng-if="x.report_status == 'REFUSED_BY_EXT'">Report refusé par {{
+                                    x.equipe_ext
+                                }}</span>
                             <span ng-if="x.report_status == 'REFUSED_BY_ADMIN'">Report refusé par la commission</span>
 
                             <span ng-if="x.sheet_received == 1"><span class="glyphicon glyphicon-check"/> Feuilles de match reçues<br/></span>
-                            <span ng-if="x.is_match_player_requested == 1"><span class="glyphicon glyphicon-exclamation-sign"/> Présents non renseignés !</span>
+                            <span ng-if="x.is_match_player_requested == 1 && is_match_score_filled == 1"><span
+                                    class="glyphicon glyphicon-exclamation-sign"/> Présents non renseignés !</span>
                             <span ng-if="x.is_match_player_filled == 1"><span class="glyphicon glyphicon-check"/> Présents renseignés</span>
 
                         </td>
