@@ -67,25 +67,25 @@ export default {
                         v-if="canAskReport(match)"
                         @click="postReportAction(match.code_match, 'askForReport')"
                         class="btn btn-primary">
-                      Demander un report
+                      <i class="fas fa-calendar mr-2"/>Demander un report
                     </button>
                     <button
                         v-if="canAcceptReport(match)"
                         @click="postReportAction(match.code_match, 'acceptReport')"
                         class="btn btn-success">
-                      Accepter le report
+                      <i class="fas fa-calendar mr-2"/>Accepter le report
                     </button>
                     <button
                         v-if="canRefuseReport(match)"
                         @click="postReportAction(match.code_match, 'refuseReport')"
                         class="btn btn-error">
-                      Refuser le report
+                      <i class="fas fa-calendar mr-2"/>Refuser le report
                     </button>
                     <button
                         v-if="canGiveReportDate(match)"
                         @click="postReportAction(match.code_match, 'giveReportDate')"
                         class="btn btn-success">
-                      Donner une date de report
+                      <i class="fas fa-calendar mr-2"/>Donner une date de report
                     </button>
                   </div>
                 </template>
