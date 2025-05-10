@@ -13,6 +13,14 @@ export default {
             />
             <span>joués</span>
           </label>
+          <label class="flex items-center gap-2">
+            <input
+                type="checkbox"
+                v-model="filter.showNonPlayedMatchesOnly"
+                class="checkbox checkbox-primary"
+            />
+            <span>non joués</span>
+          </label>
           <label class="flex items-center space-x-2">
             <input
                 type="checkbox"
@@ -28,6 +36,14 @@ export default {
                 class="checkbox checkbox-primary"
             />
             <span>certifiés</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input
+                type="checkbox"
+                v-model="filter.showNotCertified"
+                class="checkbox checkbox-primary"
+            />
+            <span>non certifiés</span>
           </label>
           <input
               type="text"
@@ -64,8 +80,10 @@ export default {
             searchQuery: "",
             filter: {
                 showCertified: false,
+                showNotCertified: true,
                 showForbiddenPlayer: false,
                 showPlayedMatchesOnly: false,
+                showNonPlayedMatchesOnly: false,
             },
             user: null,
         };
@@ -79,16 +97,23 @@ export default {
                     match.code_match.toLowerCase().includes(this.searchQuery.toLowerCase());
                 const matchesCertif =
                     !this.filter.showCertified || match.certif === 1;
+                const matchesNotCertif =
+                    !this.filter.showNotCertified || match.certif === 0;
                 const matchesForbiddenPlayers =
                     !this.filter.showForbiddenPlayer ||
                     match.has_forbidden_player === 1;
                 const matchesPlayed =
                     !this.filter.showPlayedMatchesOnly ||
                     match.is_match_score_filled === 1;
+                const matchesNonPlayed =
+                    !this.filter.showNonPlayedMatchesOnly ||
+                    match.is_match_score_filled === 0;
                 return matchesSearch
                     && matchesCertif
+                    && matchesNotCertif
                     && matchesForbiddenPlayers
-                    && matchesPlayed;
+                    && matchesPlayed
+                    && matchesNonPlayed;
             }).sort((a, b) => a.date_reception_raw - b.date_reception_raw);
         },
         matchesByJournee() {
@@ -132,7 +157,9 @@ export default {
         },
         resetFilters() {
             this.filter.showPlayedMatchesOnly = false;
+            this.filter.showNonPlayedMatchesOnly = false;
             this.filter.showCertified = false;
+            this.filter.showNotCertified = false;
             this.filter.showForbiddenPlayer = false;
             this.searchQuery = "";
         },
