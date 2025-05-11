@@ -2,7 +2,7 @@ export default {
     template: `
       <div>
         <p class="text-xl">Se tenir informé</p>
-        <div class="bg-base-200 border border-2 border-base-300 p-4 flex gap-2">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 flex justify-center gap-2">
           <div v-for="info in infos" :key="info.description">
             <div class="card w-96 shadow-xl">
               <a href="https://chat.whatsapp.com/Hk08bFipoTMDL0dUYtQLo9" target="_blank">

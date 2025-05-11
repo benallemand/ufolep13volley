@@ -2,7 +2,7 @@ export default {
     template: `
       <div v-if="alerts.length > 0">
         <p class="text-xl">Alertes</p>
-        <div class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-2">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 flex justify-center flex-wrap gap-2">
           <div v-for="alert in alerts" :key="alert.issue" class="card w-96 shadow-xl">
             <div class="card-body">
               <h2 class="card-title">{{ alert.title }}</h2>
