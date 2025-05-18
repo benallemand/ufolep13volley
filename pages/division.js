@@ -1,8 +1,10 @@
 import MainNavbar from "./components/main-navbar.js";
+import NavbarLimitDate from "./components/navbar/limitDate.js";
 import RankPanel from "./components/rank-panel.js";
 import MatchsPanel from "./components/matchs-panel.js";
 
 Vue.component('main-navbar', MainNavbar);
+Vue.component('navbar-limit-date', NavbarLimitDate);
 Vue.component('rank-panel', RankPanel);
 Vue.component('matchs-panel', MatchsPanel);
 

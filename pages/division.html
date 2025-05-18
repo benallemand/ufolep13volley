@@ -13,10 +13,12 @@
 <body class="bg-base-100">
 <div id="my-page-app" class="container mx-auto p-4">
     <main-navbar></main-navbar>
+    <navbar-limit-date :code_competition="code_competition"></navbar-limit-date>
     <rank-panel :division="division" :code_competition="code_competition"></rank-panel>
     <matchs-panel :fetch-url="matchesFetchUrl"></matchs-panel>
 </div>
 <script src="/pages/components/main-navbar.js" type="module"></script>
+<script src="/pages/components/navbar/limitDate.js" type="module"></script>
 <script src="/pages/components/rank-panel.js" type="module"></script>
 <script src="/pages/components/matchs-panel.js" type="module"></script>
 <script src="/pages/division.js" type="module"></script>
