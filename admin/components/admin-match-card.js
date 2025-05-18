@@ -1,4 +1,4 @@
-import MatchCard from '../../pages/components/match-card.js';
+import MatchCard from '../../pages/components/card/Match.js';
 
 export default {
     components: {

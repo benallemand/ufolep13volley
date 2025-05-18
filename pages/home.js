@@ -1,7 +1,8 @@
-import MainNavbar from "./components/main-navbar.js";
+// Import du layout pour les pages team leader
+import AppLayout from './components/layout/AppLayout.js';
 
-Vue.component('main-navbar', MainNavbar);
-
+// Montage de l'application Vue
 new Vue({
-    el: '#my-page-app',
+    el: '#app',
+    render: h => h(AppLayout)
 });

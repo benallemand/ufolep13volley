@@ -1,13 +1,8 @@
-import TeamLeaderAlertsPanel from './components/team-leader-alerts-panel.js';
-import TeamLeaderInfosPanel from './components/team-leader-infos-panel.js';
-import TeamLeaderNavbar from './components/team-leader-navbar.js';
-import TeamLeaderTeamPanel from './components/team-leader-team-panel.js';
+// Import du layout pour les pages team leader
+import TeamLeaderLayout from './components/layout/TeamLeaderLayout.js';
 
-Vue.component('team-leader-alerts-panel', TeamLeaderAlertsPanel);
-Vue.component('team-leader-infos-panel', TeamLeaderInfosPanel);
-Vue.component('team-leader-navbar', TeamLeaderNavbar);
-Vue.component('team-leader-team-panel', TeamLeaderTeamPanel);
-
+// Montage de l'application Vue
 new Vue({
-    el: '#my-page-app',
+  el: '#app',
+  render: h => h(TeamLeaderLayout)
 });

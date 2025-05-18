@@ -1,6 +1,6 @@
 export default {
     components: {
-        'match-card': () => import('./match-card.js')
+        'match-card': () => import('../card/Match.js')
     }, template: `
     <div>
       <div class="flex flex-wrap gap-4 m-2">

@@ -15,11 +15,11 @@ export default {
             </a>
           </div>
           <div class="navbar-center flex gap-2">
-            <a href="/pages/my_page.html">
+            <router-link to="/dashboard">
               <div tabindex="0" role="button" class="btn btn-ghost">
                 <span><i class="mr-2 fas fa-home"></i>ma page</span>
               </div>
-            </a>
+            </router-link>
             <div class="dropdown">
               <div tabindex="0" role="button" class="btn btn-ghost">
                 <span>gestion<i class="ml-1 fas fa-chevron-down"/></span>
@@ -27,8 +27,12 @@ export default {
               <ul
                   tabindex="0"
                   class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 w-52 p-2 shadow">
-                <li><a href="/pages/my_players.html"><span><i class="mr-2 fas fa-user"></i>effectif</span></a></li>
-                <li><a href="/pages/my_timeslots.html"><span><i class="mr-2 fas fa-clock"></i>créneaux</span></a></li>
+                <li>
+                  <router-link to="/players"><span><i class="mr-2 fas fa-user"></i>effectif</span></router-link>
+                </li>
+                <li>
+                  <router-link to="/timeslots"><span><i class="mr-2 fas fa-clock"></i>créneaux</span></router-link>
+                </li>
               </ul>
             </div>
             <div class="dropdown">
@@ -40,8 +44,11 @@ export default {
                   class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 w-52 p-2 shadow">
                 <li><a href="/rest/action.php/team/download_calendar"><span><i class="mr-2 fas fa-download"></i>calendrier</span></a>
                 </li>
-                <li><a href="/pages/my_team.html"><span><i class="mr-2 fas fa-edit"></i>coordonnées</span></a></li>
-                <li><a href="/pages/my_history.html"><span><i class="mr-2 fas fa-calendar"></i>historique</span></a>
+                <li>
+                  <router-link to="/team"><span><i class="mr-2 fas fa-edit"></i>coordonnées</span></router-link>
+                </li>
+                <li>
+                  <router-link to="/history"><span><i class="mr-2 fas fa-calendar"></i>historique</span></router-link>
                 </li>
               </ul>
             </div>
@@ -52,18 +59,21 @@ export default {
               <ul
                   tabindex="0"
                   class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 w-52 p-2 shadow">
-                <li><a href="/pages/my_team_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>
-                  equipe</span></a>
+                <li>
+                  <router-link to="/team_matchs"><span><i class="fas fa-volleyball mr-2"></i>
+                    equipe</span></router-link>
                 </li>
-                <li><a href="/pages/my_club_matchs.html"><span><i class="fas fa-volleyball mr-2"></i></i>club</span></a>
+                <li>
+                  <router-link to="/club_matchs"><span><i class="fas fa-volleyball mr-2"></i>club</span>
+                  </router-link>
                 </li>
               </ul>
             </div>
-            <a href="/pages/my_preferences.html">
+            <router-link to="/preferences">
               <div tabindex="0" role="button" class="btn btn-ghost">
                 <span><i class="mr-2 fas fa-gear"></i>préférences</span>
               </div>
-            </a>
+            </router-link>
           </div>
           <div class="navbar-end">
             <a href="/rest/action.php/usermanager/logout">

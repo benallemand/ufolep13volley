@@ -1,4 +1,4 @@
-import {onError, onSuccess} from "../../toaster.js";
+import {onError, onSuccess} from "../../../toaster.js";
 
 export default {
     template: `

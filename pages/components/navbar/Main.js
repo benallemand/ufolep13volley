@@ -21,9 +21,9 @@ export default {
                 <template v-for="group in groupedDivisions">
                   <li class="menu-title">{{ group.libelle }}</li>
                   <li v-for="division in group.divisions" :key="division.code_competition+division.division">
-                    <a :href="'/pages/division.html?division=' + division.division + '&code_competition=' + division.code_competition">
+                    <router-link :to="'/divisions/'+division.code_competition+'/'+ division.division">
                       division {{ division.division }}
-                    </a>
+                    </router-link>
                   </li>
                 </template>
               </ul>
@@ -36,7 +36,9 @@ export default {
                 <template v-for="group in groupedPools">
                   <li class="menu-title">{{ group.libelle }}</li>
                   <li>
-                    <a :href="'/pages/finals.html?code_competition=' + group.code_competition_finals">phases finales</a>
+                    <router-link :to="'/finals/'+group.code_competition_finals">
+                      phases finales
+                    </router-link>
                   </li>
                   <li>
                     <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
@@ -44,9 +46,9 @@ export default {
                     </a>
                   </li>
                   <li v-for="division in group.divisions" :key="division.code_competition+division.division">
-                    <a :href="'/pages/division.html?division=' + division.division + '&code_competition=' + division.code_competition">
+                    <router-link :to="'/divisions/'+division.code_competition+'/'+ division.division">
                       poule {{ division.division }}
-                    </a>
+                    </router-link>
                   </li>
                 </template>
               </ul>
@@ -56,33 +58,33 @@ export default {
                 <span><i class="fas fa-info-circle mr-2"/>Informations<i class="ml-1 fas fa-chevron-down"/></span>
               </div>
               <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-64 p-2 shadow">
-                <li><a href="/new_site/#weekMatches" target="_blank"><i class="fas fa-fire mr-2"/>Matchs de la
+                <li><a href="/new_site#weekMatches" target="_blank"><i class="fas fa-fire mr-2"/>Matchs de la
                   semaine</a>
                 </li>
-                <li><a href="/new_site/#lastResults" target="_blank"><i class="fas fa-fire mr-2"/>Derniers résultats</a>
+                <li><a href="/new_site#lastResults" target="_blank"><i class="fas fa-fire mr-2"/>Derniers résultats</a>
                 </li>
-                <li><a href="/new_site/#hallOfFame" target="_blank"><i class="fas fa-dollar-sign mr-2"/>Palmarès</a>
+                <li><a href="/new_site#hallOfFame" target="_blank"><i class="fas fa-dollar-sign mr-2"/>Palmarès</a>
                 </li>
-                <li><a href="/new_site/#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
-                <li><a href="/new_site/#gymnasiums" target="_blank"><i class="fas fa-map mr-2"/>Gymnases</a></li>
+                <li><a href="/new_site#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
+                <li><a href="/new_site#gymnasiums" target="_blank"><i class="fas fa-map mr-2"/>Gymnases</a></li>
                 <li>
                   <a href="https://docs.google.com/document/d/1jhAsF6npsuR7Qgf9v0Yw_30NT26Mz4sjTlSrYvyDnGQ/edit?usp=sharing"
                      target="_blank"><i class="fas fa-info-circle mr-2"/>Tuto Responsable
                     d'équipe</a></li>
-                <li><a href="/new_site/#usefulInformations" target="_blank"><i class="fas fa-info-circle mr-2"/>Infos
+                <li><a href="/new_site#usefulInformations" target="_blank"><i class="fas fa-info-circle mr-2"/>Infos
                   utiles</a></li>
-                <li><a href="/new_site/#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
+                <li><a href="/new_site#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
                 </li>
                 <li>
                   <a href="mailto:contact@ufolep13volley.org">
                     <i class="fas fa-envelope mr-2"/>contact@ufolep13volley.org
                   </a>
                 </li>
-                <li><a href="/new_site/#accident" target="_blank"><i class="fas fa-hospital mr-2"/>Déclaration de
+                <li><a href="/new_site#accident" target="_blank"><i class="fas fa-hospital mr-2"/>Déclaration de
                   sinistre</a>
                 </li>
                 <li class="menu-title">Liens</li>
-                <li><a href="/new_site/#webSites" target="_blank"><i class="fas fa-link mr-2"/> Sites web des clubs</a>
+                <li><a href="/new_site#webSites" target="_blank"><i class="fas fa-link mr-2"/> Sites web des clubs</a>
                 </li>
                 <li>
                   <a href="http://ufolep13.org/" target="_blank"><i class="fas fa-link mr-2"/>Site de l'UFOLEP 13</a>
@@ -94,7 +96,7 @@ export default {
                     FIVB
                   </a>
                 </li>
-                <li><a href="/new_site/#generalRules" target="_blank">Général</a></li>
+                <li><a href="/new_site#generalRules" target="_blank">Général</a></li>
                 <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank">Championnat féminin</a></li>
                 <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank">Championnat masculin</a></li>
                 <li>
@@ -106,7 +108,7 @@ export default {
             </div>
           </div>
           <div class="navbar-end">
-            <a class="btn btn-ghost" href="/new_site/#login">
+            <a class="btn btn-ghost" href="/new_site#login">
               <span><i class="fas fa-right-from-bracket mr-2"/>Connexion</span>
             </a>
           </div>

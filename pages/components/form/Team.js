@@ -1,4 +1,4 @@
-import {onError, onSuccess} from "../../toaster.js";
+import {onError, onSuccess} from "../../../toaster.js";
 
 export default {
     template: `
@@ -29,7 +29,7 @@ export default {
           </div>
           <div class="flex justify-between">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Enregistrer</button>
-            <router-link :to="'/'"
+            <router-link :to="'/team'"
                          class="btn btn-error">
               <i class="fas fa-xmark"></i> Annuler
             </router-link>
