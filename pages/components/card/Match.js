@@ -45,6 +45,14 @@ export default {
           <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}</span>
         </p>
         <p v-if="isMatchDatePassed">
+          <span v-if="match.count_status !== null && match.is_forfait !== 1" class="badge badge-error text-xs">
+            {{ match.count_status }}
+            <a :href="'/team_sheets.php?id_match='+match.id_match"
+               target="_blank"
+               class="link link-info hover:underline">
+                <i class="fas fa-external-link-alt ml-1"></i>
+            </a>
+          </span>
           <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} fiche équipe non signée
             <a :href="'/team_sheets.php?id_match='+match.id_match"
