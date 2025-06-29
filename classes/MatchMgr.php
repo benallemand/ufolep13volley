@@ -1145,7 +1145,7 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function getWeekMatches($date_string = null)
+    public function getWeekMatches(): array|int|string|null
     {
         if (empty($date_string)) {
             $date_string = date('d/m/Y');
