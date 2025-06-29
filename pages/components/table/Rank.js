@@ -33,11 +33,21 @@ export default {
                 {{ Number(team.points) + team.penalites }} - {{ team.penalites }} pts de pénalité
               </span>
               </div>
+              <div v-if="isExactDeuce(team)">
+              <span class="badge badge-warning text-[8px]">
+                vérifier la rencontre directe
+              </span>
+              </div>
             </div>
           </td>
           <td class="text-center">{{ team.joues }}</td>
           <td class="text-center text-green-500">{{ team.gagnes }}</td>
-          <td class="text-center text-red-500">{{ team.perdus }}</td>
+          <td class="text-center text-red-500">
+            {{ team.perdus }}
+            <span v-if="team.matches_lost_by_forfeit_count > 0" class="badge badge-info text-[8px]">
+                dont {{ team.matches_lost_by_forfeit_count }} par forfait
+            </span>
+          </td>
           <td class="text-center">{{ team.diff }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_pour }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_contre }}</td>
@@ -99,6 +109,9 @@ export default {
                 .catch(() => {
                 });
         },
+        isExactDeuce(rank) {
+            return this.ranks.filter((curRank) => curRank.points === rank.points && curRank.diff === rank.diff).length > 1;
+        }
     },
     created() {
         this.fetchUserDetails();
