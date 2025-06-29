@@ -12,6 +12,18 @@ const routes = [
         path: '/finals/:code_competition',
         component: () => import('../panel/Finals.js'),
     },
+    {
+        path: '/last-results',
+        component: () => import('../panel/LastResults.js'),
+    },
+    {
+        path: '/week-matchs',
+        component: () => import('../panel/WeekMatchs.js'),
+    },
+    {
+        path: '/hall-of-fame',
+        component: () => import('../panel/HallOfFame.js'),
+    },
 
     {path: '*', redirect: '/home'}
 

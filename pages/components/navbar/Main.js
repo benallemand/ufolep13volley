@@ -6,7 +6,7 @@ export default {
             <img alt="Ufolep" src="/images/svg/logo-ufolep-vectorizer-no-background.svg" style="max-height:150px;">
           </a>
         </div>
-        <div class="navbar bg-base-200 shadow-sm flex flex-wrap">
+        <div class="navbar bg-base-200 shadow-sm flex flex-wrap justify-center">
           <a class="btn btn-ghost" href="/">
             <span><i class="fas fa-home mr-2"/>Accueil</span>
           </a>
@@ -55,33 +55,41 @@ export default {
               <span><i class="fas fa-info-circle mr-2"/>Informations<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-64 p-2 shadow">
-              <li><a href="/new_site#weekMatches" target="_blank"><i class="fas fa-fire mr-2"/>Matchs de la
-                semaine</a>
+              <li>
+                <router-link :to="'/week-matchs'">
+                  <i class="fas fa-fire mr-2"/>matchs de la semaine
+                </router-link>
               </li>
-              <li><a href="/new_site#lastResults" target="_blank"><i class="fas fa-fire mr-2"/>Derniers résultats</a>
+              <li>
+                <router-link :to="'/last-results'">
+                  <i class="fas fa-fire mr-2"/>derniers résultats
+                </router-link>
               </li>
-              <li><a href="/new_site#hallOfFame" target="_blank"><i class="fas fa-dollar-sign mr-2"/>Palmarès</a>
+              <li>
+                <router-link :to="'/hall-of-fame'">
+                  <i class="fas fa-dollar-sign mr-2"/>palmarès
+                </router-link>
               </li>
-              <li><a href="/new_site#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
-              <li><a href="/new_site#gymnasiums" target="_blank"><i class="fas fa-map mr-2"/>Gymnases</a></li>
+              <li><a href="/new_site/#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
+              <li><a href="/new_site/#gymnasiums" target="_blank"><i class="fas fa-map mr-2"/>Gymnases</a></li>
               <li>
                 <a href="https://docs.google.com/document/d/1jhAsF6npsuR7Qgf9v0Yw_30NT26Mz4sjTlSrYvyDnGQ/edit?usp=sharing"
                    target="_blank"><i class="fas fa-info-circle mr-2"/>Tuto Responsable
                   d'équipe</a></li>
-              <li><a href="/new_site#usefulInformations" target="_blank"><i class="fas fa-info-circle mr-2"/>Infos
+              <li><a href="/new_site/#usefulInformations" target="_blank"><i class="fas fa-info-circle mr-2"/>Infos
                 utiles</a></li>
-              <li><a href="/new_site#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
+              <li><a href="/new_site/#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
               </li>
               <li>
                 <a href="mailto:contact@ufolep13volley.org">
                   <i class="fas fa-envelope mr-2"/>contact@ufolep13volley.org
                 </a>
               </li>
-              <li><a href="/new_site#accident" target="_blank"><i class="fas fa-hospital mr-2"/>Déclaration de
+              <li><a href="/new_site/#accident" target="_blank"><i class="fas fa-hospital mr-2"/>Déclaration de
                 sinistre</a>
               </li>
               <li class="menu-title">Liens</li>
-              <li><a href="/new_site#webSites" target="_blank"><i class="fas fa-link mr-2"/> Sites web des clubs</a>
+              <li><a href="/new_site/#webSites" target="_blank"><i class="fas fa-link mr-2"/> Sites web des clubs</a>
               </li>
               <li>
                 <a href="http://ufolep13.org/" target="_blank"><i class="fas fa-link mr-2"/>Site de l'UFOLEP 13</a>
@@ -93,7 +101,7 @@ export default {
                   FIVB
                 </a>
               </li>
-              <li><a href="/new_site#generalRules" target="_blank">Général</a></li>
+              <li><a href="/new_site/#generalRules" target="_blank">Général</a></li>
               <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank">Championnat féminin</a></li>
               <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank">Championnat masculin</a></li>
               <li>
@@ -103,7 +111,7 @@ export default {
               <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank">Coupe Isoardi</a></li>
             </ul>
           </div>
-          <a class="btn btn-ghost" href="/new_site#login">
+          <a class="btn btn-ghost" href="/new_site/#login">
             <span><i class="fas fa-right-from-bracket mr-2"/>Connexion</span>
           </a>
         </div>
