@@ -7,7 +7,7 @@ const routes = [
     },
     {
         path: '/history',
-        component: () => import('../panel/History.js')
+        component: () => import('../table/History.js')
     },
     {
         path: '/preferences',
@@ -30,12 +30,12 @@ const routes = [
     {path: '/team/edit', component: () => import('../form/Team.js')},
     {
         path: '/team_matchs',
-        component: () => import('../panel/Matchs.js'),
+        component: () => import('../list/Matchs.js'),
         props: () => ({fetchUrl: "/rest/action.php/matchmgr/getMesMatches"})
     },
     {
         path: '/club_matchs',
-        component: () => import('../panel/Matchs.js'),
+        component: () => import('../list/Matchs.js'),
         props: () => ({fetchUrl: "/rest/action.php/matchmgr/getMyClubMatches"})
     },
     {path: '*', redirect: '/dashboard'}

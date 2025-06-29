@@ -1,12 +1,12 @@
 export default {
     components: {
-        'navbar-limit-date': () => import('../navbar/LimitDate.js'),
-        'matchs-panel': () => import('./Matchs.js'),
+        'limit-date-navbar': () => import('../navbar/LimitDate.js'),
+        'matchs-list': () => import('../list/Matchs.js'),
     },
     template: `
       <div>
-        <navbar-limit-date :key="'navbar-' + code_competition" :code_competition="code_competition"></navbar-limit-date>
-        <matchs-panel :key="'matchs-' + code_competition + '-' + division" :fetch-url="matchesFetchUrl"></matchs-panel>
+        <limit-date-navbar :key="'navbar-' + code_competition" :code_competition="code_competition"></limit-date-navbar>
+        <matchs-list :key="'matchs-' + code_competition + '-' + division" :fetch-url="matchesFetchUrl"></matchs-list>
       </div>
     `,
     data() {
