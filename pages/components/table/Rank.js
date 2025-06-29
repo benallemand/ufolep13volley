@@ -1,21 +1,19 @@
 export default {
     template: `
-      <table class="table w-full">
+      <table class="table table-pin-rows">
         <thead>
         <tr>
           <th class="text-center">#</th>
           <th>Équipe</th>
           <th class="text-center">Pts</th>
-          <template v-if="!light">
-            <th class="text-center">MJ</th>
-            <th class="text-center">G</th>
-            <th class="text-center">P</th>
-            <th class="text-center">Diff. Sets</th>
-            <th class="text-center">Sets Pour</th>
-            <th class="text-center">Sets Contre</th>
-            <th class="text-center">Reports</th>
-            <th v-if="canManagePoints" class="text-center">Actions</th>
-          </template>
+          <th class="text-center">MJ</th>
+          <th class="text-center">G</th>
+          <th class="text-center">P</th>
+          <th class="text-center">Diff. Sets</th>
+          <th class="hidden md:table-cell text-center">Sets Pour</th>
+          <th class="hidden md:table-cell text-center">Sets Contre</th>
+          <th class="hidden md:table-cell text-center">Reports</th>
+          <th v-if="canManagePoints" class="hidden md:table-cell text-center">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -37,19 +35,17 @@ export default {
               </div>
             </div>
           </td>
-          <template v-if="!light">
-            <td class="text-center">{{ team.joues }}</td>
-            <td class="text-center text-green-500">{{ team.gagnes }}</td>
-            <td class="text-center text-red-500">{{ team.perdus }}</td>
-            <td class="text-center">{{ team.diff }}</td>
-            <td class="text-center">{{ team.sets_pour }}</td>
-            <td class="text-center">{{ team.sets_contre }}</td>
-            <td class="text-center">{{ team.report_count }}</td>
-            <td v-if="canManagePoints" class="text-center">
-              <button class="btn btn-xs btn-error mx-1" @click="modifierPoints(team, -1)">-1</button>
-              <button class="btn btn-xs btn-success mx-1" @click="modifierPoints(team, 1)">+1</button>
-            </td>
-          </template>
+          <td class="text-center">{{ team.joues }}</td>
+          <td class="text-center text-green-500">{{ team.gagnes }}</td>
+          <td class="text-center text-red-500">{{ team.perdus }}</td>
+          <td class="text-center">{{ team.diff }}</td>
+          <td class="hidden md:table-cell text-center">{{ team.sets_pour }}</td>
+          <td class="hidden md:table-cell text-center">{{ team.sets_contre }}</td>
+          <td class="hidden md:table-cell text-center">{{ team.report_count }}</td>
+          <td v-if="canManagePoints" class="hidden md:table-cell text-center">
+            <button class="btn btn-xs btn-error mx-1" @click="modifierPoints(team, -1)">-1</button>
+            <button class="btn btn-xs btn-success mx-1" @click="modifierPoints(team, 1)">+1</button>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -63,11 +59,6 @@ export default {
             type: String,
             required: true,
         },
-        light: {
-            type: Boolean,
-            required: false,
-            default: false,
-        }
     },
     data() {
         return {
