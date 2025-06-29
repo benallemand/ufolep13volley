@@ -1,6 +1,6 @@
 export default {
     template: `
-      <table class="table mt-2 table-pin-rows bg-base-200">
+      <table class="table mt-2 table-pin-rows bg-base-100">
         <thead>
         <tr>
           <th class="hidden md:table-cell">code</th>
@@ -16,7 +16,7 @@ export default {
         <tbody>
         <tr v-for="match in matchs" :key="match.id_match">
           <td class="hidden md:table-cell">{{ match.code_match }}</td>
-          <td class="hidden md:table-cell">{{ match.numero_journee }}</td>
+          <td class="hidden md:table-cell">{{ match.nommage ? match.nommage : match.numero_journee }}</td>
           <td class="hidden md:table-cell">{{ match.date_reception }}</td>
           <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''">{{ match.equipe_dom }}</td>
           <td>
