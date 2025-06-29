@@ -869,7 +869,7 @@ class MatchManagerTest extends TestCase
     {
         $results = $this->match_manager->getLastResults();
         print_r($results);
-        $results = $this->match_manager->getWeekMatches('25/11/2024');
+        $results = $this->match_manager->getWeekMatches();
         print_r($results);
 
     }
