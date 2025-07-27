@@ -52,8 +52,17 @@ Ext.application({
                             },
                             {
                                 xtype: 'button',
-                                text: 'Menu',
+                                text: "validation des matchs",
+                                href: '/admin/matches.html',
+                                target: 'blank',
                                 scale: 'medium',
+                                glyph: 'xf00c@FontAwesome',
+                            },
+                            {
+                                xtype: 'button',
+                                text: 'administration',
+                                scale: 'medium',
+                                glyph: 'xf013@FontAwesome',
                                 menu: [
                                     {
                                         text: 'Activité',
