@@ -40,13 +40,15 @@ const router = new VueRouter({
 
 export default {
     components: {
-        'main-navbar': () => import('../navbar/Main.js')
+        'main-navbar': () => import('../navbar/Main.js'),
+        'main-footer': () => import('../footer/Main.js'),
     },
     router,
     template: `
-      <div class="container mx-auto p-4">
+      <div class="p-2">
         <main-navbar></main-navbar>
         <router-view></router-view>
+        <main-footer/>
       </div>
     `
 };
