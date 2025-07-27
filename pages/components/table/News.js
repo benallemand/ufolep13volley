@@ -1,6 +1,9 @@
 export default {
     template: `
       <div class="bg-base-100">
+        <div class="text-center mt-4">
+          <div class="text-2xl font-bold text-primary">dernières nouvelles</div>
+        </div>
         <table class="table table-pin-rows">
           <thead>
           <tr>
