@@ -15,10 +15,11 @@ if (!empty($proxy_url)) {
 $headers = array('Accept' => 'application/json');
 $query = array(
     'method' => 'flickr.photos.search',
-    'sort' => 'relevance',
-    'per_page' => '10',
+    'sort' => 'date-posted-desc',
+    'per_page' => '30',
     'api_key' => $flickr_api_key,
-    'text' => 'volleyball',
+    'text' => 'ufolep volley',
+    'orientation' => 'landscape',
     'format' => 'json',
     'nojsoncallback' => 1,
 );
