@@ -452,19 +452,8 @@ class Register extends Generic
     private function cleanup_accounts($id_competition)
     {
         // delete accounts leader
-        // do not delete accounts if competition is not a parent competition
-        $sql = "DELETE 
-                FROM comptes_acces 
-                WHERE id IN (SELECT user_id
-                             FROM users_profiles
-                             WHERE profile_id IN (SELECT id 
-                                                  FROM profiles 
-                                                  WHERE name IN ('RESPONSABLE_EQUIPE')))
-                AND id_equipe IN (SELECT id_equipe 
-                                  FROM equipes 
-                                  WHERE code_competition IN (SELECT code_competition 
-                                                             FROM competitions 
-                                                             WHERE id = ? AND code_competition = id_compet_maitre))";
+        // delete accounts only if competition is a parent competition
+        $sql = file_get_contents(__DIR__ . '/../sql/cleanup_accounts.sql');
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
         $this->sql_manager->execute($sql, $bindings);

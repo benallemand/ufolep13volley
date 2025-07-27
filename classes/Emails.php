@@ -168,17 +168,20 @@ class Emails extends Generic
      * @param $email
      * @param $login
      * @param $password
-     * @param $idTeam
      * @throws Exception
      */
-    public function sendMailNewUser($email, $login, $password, $idTeam): void
+    public function sendMailNewUser($email, $login, $password): void
     {
-        $teamName = $this->team->getTeamName($idTeam);
+        $users_teams = $this->team->get_user_team_by_user($login);
+        $team_names = array();
+        foreach ($users_teams as $user_team) {
+            $team_names[] = $this->team->getTeamName($user_team['team_id']);
+        }
 
-        $message = file_get_contents('../templates/emails/sendMailNewUser.fr.html');
+        $message = file_get_contents(__DIR__ . '/../templates/emails/sendMailNewUser.fr.html');
         $message = str_replace('%login%', $login, $message);
-        $message = str_replace('%password%', $password, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%password%', $password ?: '', $message);
+        $message = str_replace('%team_name%', implode(',', $team_names), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Identifiants de connexion",
@@ -190,13 +193,17 @@ class Emails extends Generic
     /**
      * @throws Exception
      */
-    public function send_reset_password($email, $login, $id_team, $url): void
+    public function send_reset_password($email, $login, $url): void
     {
-        $teamName = $this->team->getTeamName($id_team);
+        $user_teams = $this->team->get_user_team_by_user($login);
+        $team_names = array();
+        foreach ($user_teams as $user_team) {
+            $team_names[] = $this->team->getTeamName($user_team['team_id']);
+        }
 
         $message = file_get_contents('../templates/emails/send_reset_password.fr.html');
         $message = str_replace('%login%', $login, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%team_name%', implode(',', $team_names), $message);
         $message = str_replace('%url%', $url, $message);
 
         $this->insert_email(
@@ -298,6 +305,7 @@ class Emails extends Generic
 
     /**
      * @param $code_match
+     * @param $reason
      * @throws Exception
      */
     public function sendMailRefuseReportAdmin($code_match, $reason): void
@@ -489,7 +497,7 @@ class Emails extends Generic
         $message = file_get_contents(__DIR__ . '/../templates/emails/notify_activated_player.fr.html');
         $message = str_replace('%full_name%', $player['full_name'], $message);
         $message = str_replace('%date_homologation%', $player['date_homologation'], $message);
-        $message = str_replace('%teams_list%', $player['teams_list'], $message);
+        $message = str_replace('%teams_list%', $player['teams_list'] === null ? '' : $player['teams_list'], $message);
         return $this->insert_email(
             "[UFOLEP13VOLLEY]La licence de " . $player['full_name'] . " a été validée par la commission",
             $message,
@@ -553,7 +561,7 @@ class Emails extends Generic
         require_once __DIR__ . "/Register.php";
         $manager = new Register();
         $register = $manager->get_register($register_id);
-        $message = file_get_contents('../templates/emails/notify_registration.fr.html');
+        $message = file_get_contents(__DIR__ . '/../templates/emails/notify_registration.fr.html');
         $params = array(
             'new_team_name',
             'club',
@@ -650,6 +658,7 @@ class Emails extends Generic
      * @param $array_data_to_replace
      * @param $destination_email
      * @param string $cc
+     * @param string $bcc
      * @throws Exception
      */
     public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = "", string $bcc = ""): void

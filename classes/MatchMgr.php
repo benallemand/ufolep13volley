@@ -50,7 +50,7 @@ class MatchMgr extends Generic
      */
     private function get_sql(?string $query = "1=1", string $order = "code_competition, division, numero_journee, code_match"): string
     {
-        return "SELECT m.* FROM matchs_view m WHERE $query ORDER BY $order";
+        return "SELECT m.id_match AS id, m.* FROM matchs_view m WHERE $query ORDER BY $order";
     }
 
     /**
@@ -614,7 +614,7 @@ class MatchMgr extends Generic
      * @return void
      * @throws Exception
      */
-    private function insert_db_match(string $code_competition,
+    public function insert_db_match(string $code_competition,
                                             $division,
                                      int    $id_equipe_dom,
                                      int    $id_equipe_ext,
@@ -1147,12 +1147,8 @@ class MatchMgr extends Generic
      */
     public function getWeekMatches(): array|int|string|null
     {
-        if (empty($date_string)) {
-            $date_string = date('d/m/Y');
-        }
-        $sql = file_get_contents(__DIR__. '/../sql/get_week_matchs.sql');
-        $bindings=array();
-        $bindings[] = array('type' => 's', 'value' => $date_string);
+        $sql = file_get_contents(__DIR__ . '/../sql/get_week_matchs.sql');
+        $bindings = array();
         $results = $this->sql_manager->execute($sql, $bindings);
         foreach ($results as $index => $result) {
             $code_competition = $result['code_competition'];
@@ -1887,7 +1883,7 @@ class MatchMgr extends Generic
         // get candidates for flip
         $matches_home_away_adjust_needed = $this->get_matches_home_away_adjust_needed($competition['code_competition']);
         $offset = 0;
-        while (count($matches_home_away_adjust_needed) > 0) {
+        while (count($matches_home_away_adjust_needed) > 0 && $offset < count($matches_home_away_adjust_needed)) {
             $match = $matches_home_away_adjust_needed[$offset];
             // if match flip is allowed, flip it
             if (!$this->is_last_match_recent($match['id_equipe_ext'], $match['id_equipe_dom'])) {

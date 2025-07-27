@@ -1,12 +1,11 @@
-WITH first_responsable AS (
-    SELECT ca.id,
-           ca.id_equipe,
-           ROW_NUMBER() OVER (PARTITION BY ca.id_equipe ORDER BY ca.id) AS rn
-    FROM comptes_acces ca
-             JOIN users_profiles up ON ca.id = up.user_id
-             JOIN profiles p ON up.profile_id = p.id
-    WHERE p.name = 'RESPONSABLE_EQUIPE'
-)
+WITH first_responsable AS (SELECT ca.id,
+                                  ut.team_id                                                 AS id_equipe,
+                                  ROW_NUMBER() OVER (PARTITION BY ut.team_id ORDER BY ca.id) AS rn
+                           FROM comptes_acces ca
+                                    JOIN users_teams ut ON ca.id = ut.user_id
+                                    JOIN users_profiles up ON ca.id = up.user_id
+                                    JOIN profiles p ON up.profile_id = p.id
+                           WHERE p.name = 'RESPONSABLE_EQUIPE')
 SELECT e.nom_equipe                     AS equipe,
        c.libelle                        AS competition,
        COALESCE(ca.email,
@@ -43,7 +42,7 @@ HAVING reponsable_ok != 1
         WHEN c.code_competition IN ('f') THEN (garcons > 0 OR filles < 4)
         WHEN c.code_competition IN ('mo') THEN (garcons < 1 OR filles < 1) OR (garcons + filles < 4)
         WHEN c.code_competition IN ('kh', 'kf') THEN (garcons < 2 OR filles < 2) OR (garcons + filles < 4)
-        ELSE 1 = 1
+        ELSE true
         END
     )
 ORDER BY c.code_competition, nom_equipe

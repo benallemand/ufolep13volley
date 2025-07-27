@@ -121,7 +121,8 @@ class Generic
                 ca.email AS email_utilisateur 
             FROM activity a
             LEFT JOIN comptes_acces ca ON ca.id=a.user_id
-            LEFT JOIN equipes e ON e.id_equipe=ca.id_equipe
+            LEFT JOIN users_teams ut ON ca.id = ut.user_id
+            LEFT JOIN equipes e ON e.id_equipe=ut.team_id
             LEFT JOIN competitions c ON c.code_competition=e.code_competition";
         if (!empty($id_team)) {
             $sql .= " WHERE e.id_equipe = $id_team";

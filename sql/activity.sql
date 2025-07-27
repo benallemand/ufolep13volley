@@ -6,6 +6,7 @@ SELECT DATE_FORMAT(a.activity_date, '%d/%m/%Y') AS date,
        ca.email                                 AS email_utilisateur
 FROM activity a
          LEFT JOIN comptes_acces ca ON ca.id = a.user_id
-         LEFT JOIN equipes e ON e.id_equipe = ca.id_equipe
+         LEFT JOIN users_teams ut ON ca.id = ut.user_id
+         LEFT JOIN equipes e ON ut.team_id = e.id_equipe
          LEFT JOIN competitions c ON c.code_competition = e.code_competition
 ORDER BY a.id DESC

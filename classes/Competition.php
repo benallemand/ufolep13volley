@@ -543,11 +543,20 @@ class Competition extends Generic
         $rank_manager->delete_competition($competition_isoardi['id']);
         // take all registered teams ordered by division,current_rank.
         $rank_teams = $this->rank->get_full_competition_rank('m');
+        if (count($rank_teams) === 0) {
+            throw new Exception("Aucune équipe trouvée dans les divisions !");
+        }
 //        $rank_teams = $this->append_unranked_teams($rank_teams, 'm');
         // split by 2, to avoid having too much handicap
         $length_pool_1 = intdiv(count($rank_teams), 2);
         $group_1_teams = array_slice($rank_teams, 0, $length_pool_1);
+        if (count($group_1_teams) === 0) {
+            throw new Exception("Aucune équipe trouvée dans le groupe 1 !");
+        }
         $group_2_teams = array_slice($rank_teams, $length_pool_1);
+        if (count($group_2_teams) === 0) {
+            throw new Exception("Aucune équipe trouvée dans le groupe 2 !");
+        }
         $hats_1 = $this->make_hats($group_1_teams);
         $hats_2 = $this->make_hats($group_2_teams);
         // randomize each hat
@@ -719,6 +728,9 @@ class Competition extends Generic
     {
         $n = 3;
         $pools = array();
+        if (count($hats) === 0) {
+            throw new Exception("il n'y a pas de chapeau pour faire les poules de 3 !");
+        }
         while (count($hats, COUNT_RECURSIVE) > 0) {
             $pools[] = Competition::pick_n_from_hats($hats, $n);
         }

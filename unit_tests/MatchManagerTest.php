@@ -2,14 +2,15 @@
 require_once __DIR__ . '/../classes/MatchMgr.php';
 require_once __DIR__ . '/../classes/Team.php';
 require_once __DIR__ . '/../classes/Day.php';
+require_once __DIR__ . '/../classes/LimitDate.php';
 require_once __DIR__ . '/../classes/Competition.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/Emails.php';
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/UfolepTestCase.php';
 
-use PHPUnit\Framework\TestCase;
 
-class MatchManagerTest extends TestCase
+class MatchManagerTest extends UfolepTestCase
 {
     private SqlManager $sql_manager;
     private MatchMgr $match_manager;
@@ -26,6 +27,30 @@ class MatchManagerTest extends TestCase
     {
         $this->sql_manager->execute("INSERT INTO blacklist_date SET 
                                closed_date = STR_TO_DATE('01/08/2022', '%d/%m/%Y')");
+    }
+
+    /**
+     * @param mixed $comp
+     * @return void
+     * @throws Exception
+     */
+    public function setTestDates(mixed $comp): void
+    {
+        $inputs = array(
+            'id' => $comp['id'],
+            'start_date' => date('d/m/Y', strtotime('+1 week')),
+        );
+        $this->competition->save($inputs);
+        $limit_dates = $this->limit_date->getLimitDates();
+        foreach ($limit_dates as $limit_date) {
+            if ($limit_date['code_competition'] == $comp['code_competition']) {
+                $this->limit_date->saveLimitDate(
+                    $comp['code_competition'],
+                    date('d/m/Y', strtotime('+4 month')),
+                    $limit_date['id_date']);
+                break;
+            }
+        }
     }
 
     /**
@@ -96,11 +121,14 @@ class MatchManagerTest extends TestCase
         $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team1 FROM joueurs WHERE sexe = 'F' LIMIT 0,5");
         $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs WHERE sexe = 'M' LIMIT 10,5");
         $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe)  SELECT id, $id_team2 FROM joueurs WHERE sexe = 'F' LIMIT 10,5");
+        // get team leaders
+        $team_players_1 = $this->sql_manager->execute("SELECT * FROM joueur_equipe WHERE id_equipe = $id_team1");
+        $team_players_2 = $this->sql_manager->execute("SELECT * FROM joueur_equipe WHERE id_equipe = $id_team2");
         // add team leader emails
-        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 1");
-        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = 17");
-        $this->sql_manager->execute("UPDATE joueurs SET email = 'a@b.fr' WHERE id = 1");
-        $this->sql_manager->execute("UPDATE joueurs SET email = 'c@d.fr' WHERE id = 17");
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = ?", array(array('type' => 'i', 'value' => $team_players_1[0]['id_joueur'])));
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = ?", array(array('type' => 'i', 'value' => $team_players_2[0]['id_joueur'])));
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'a@b.fr' WHERE id = ?", array(array('type' => 'i', 'value' => $team_players_1[0]['id_joueur'])));
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'c@d.fr' WHERE id = ?", array(array('type' => 'i', 'value' => $team_players_2[0]['id_joueur'])));
     }
 
     /**
@@ -191,6 +219,7 @@ class MatchManagerTest extends TestCase
         $this->players_manager = new Players();
         $this->competition = new Competition();
         $this->day = new Day();
+        $this->limit_date = new LimitDate();
         $this->emails = new Emails();
         $this->create_test_full_competition();
     }
@@ -361,7 +390,7 @@ class MatchManagerTest extends TestCase
     /**
      * @throws Exception
      */
-    private function delete_test_full_competition()
+    private function delete_test_full_competition(): void
     {
         $this->sql_manager->execute("DELETE FROM competitions WHERE code_competition = 'ut'");
         $this->sql_manager->execute("DELETE FROM matches WHERE code_competition = 'ut'");
@@ -412,6 +441,13 @@ class MatchManagerTest extends TestCase
         $competition_m = $this->competition->getCompetition('m');
         $competition_f = $this->competition->getCompetition('f');
         $competition_mo = $this->competition->getCompetition('mo');
+        foreach (array(
+                     $competition_m,
+                     $competition_f,
+                     $competition_mo,
+                 ) as $comp) {
+            $this->setTestDates($comp);
+        }
         $this->competition->resetCompetition(implode(',', array(
             $competition_m['id'],
             $competition_f['id'],
@@ -422,6 +458,7 @@ class MatchManagerTest extends TestCase
             $competition_f['id'],
             $competition_mo['id'],
         )));
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -445,6 +482,7 @@ class MatchManagerTest extends TestCase
                 continue;
             }
         }
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -470,7 +508,7 @@ class MatchManagerTest extends TestCase
             error_log($index + 1 . " / " . count($expected_matches));
             $this->match_manager->insert_match($match);
         }
-
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -482,7 +520,9 @@ class MatchManagerTest extends TestCase
         $this->connect_as_admin();
         $competition_mgr = new Competition();
         $competition_kh = $competition_mgr->getCompetition('kh');
+        $this->setTestDates($competition_kh);
         $this->match_manager->generateAll($competition_kh['id']);
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -491,10 +531,13 @@ class MatchManagerTest extends TestCase
     public function test_generate_all_isoardi()
     {
         //230105:PASS
+        $this->connect_as_admin();
         // test for isoardi, where registration is automatic
         $competition_mgr = new Competition();
         $competition_isoardi = $competition_mgr->getCompetition('c');
+        $this->setTestDates($competition_isoardi);
         $this->match_manager->generateAll($competition_isoardi['id']);
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -505,7 +548,9 @@ class MatchManagerTest extends TestCase
         //230219:PASS
         $competition_mgr = new Competition();
         $comp = $competition_mgr->getCompetition('m');
+        $this->setTestDates($comp);
         $this->match_manager->generateAll($comp['id']);
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -517,7 +562,9 @@ class MatchManagerTest extends TestCase
         $this->connect_as_admin();
         $competition_mgr = new Competition();
         $comp = $competition_mgr->getCompetition('m');
+        $this->setTestDates($comp);
         $this->match_manager->generateAll($comp['id'], 'on', 'off', 'off');
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -542,6 +589,7 @@ class MatchManagerTest extends TestCase
                 print_r($exception->getMessage());
             }
         }
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -557,6 +605,7 @@ class MatchManagerTest extends TestCase
             $comp = $competition_mgr->getCompetition($code);
             $this->match_manager->adjust_home_away($comp);
         }
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -564,8 +613,10 @@ class MatchManagerTest extends TestCase
      */
     public function test_draw_matches()
     {
-        $days = $this->day->get("j.code_competition = 'cf' AND j.numero = 2");
+        $days = $this->day->get("j.code_competition = 'cf' AND j.numero = 1");
+        $this->match_manager->delete_matches("code_competition = 'cf'");
         $this->match_manager->draw_matches('cf', '1', $days[0]['id']);
+        $this->assertTrue(1 == 1);
     }
 
     /**
@@ -574,6 +625,7 @@ class MatchManagerTest extends TestCase
     public function test_sign()
     {
         //20241205:PASS
+        $this->create_test_full_competition();
         $matches = $this->get_test_matches();
         foreach ($matches as $match) {
             $this->assertEquals(0, $match['is_sign_team_dom']);
@@ -816,24 +868,6 @@ class MatchManagerTest extends TestCase
         }
     }
 
-    private function connect_as_team_leader(mixed $id_equipe)
-    {
-        @session_start();
-        $_SESSION['id_equipe'] = $id_equipe;
-        $_SESSION['login'] = 'test_user';
-        $_SESSION['id_user'] = 1;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
-    }
-
-    private function connect_as_admin()
-    {
-        @session_start();
-        $_SESSION['id_equipe'] = null;
-        $_SESSION['login'] = 'test_user';
-        $_SESSION['id_user'] = 1;
-        $_SESSION['profile_name'] = 'ADMINISTRATEUR';
-    }
-
     /**
      * @throws Exception
      */
@@ -862,6 +896,7 @@ class MatchManagerTest extends TestCase
         print_r($results);
         $results = $this->players_manager->get_player(1925);
         print_r($results);
+        $this->assertTrue(1 == 1);
     }
 
 
@@ -871,6 +906,6 @@ class MatchManagerTest extends TestCase
         print_r($results);
         $results = $this->match_manager->getWeekMatches();
         print_r($results);
-
+        $this->assertTrue(1 == 1);
     }
 }

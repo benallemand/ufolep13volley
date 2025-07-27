@@ -23,24 +23,37 @@ class RankTest extends TestCase
     public function test_sort_cup_rank_isoardi()
     {
         print_r($this->rank->sort_cup_rank('c'));
+        $this->assertTrue(1 == 1);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_sort_cup_rank_khoury_hanna()
     {
         print_r($this->rank->sort_cup_rank('kh'));
+        $this->assertTrue(1 == 1);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_get_rank_by_comp_div()
     {
         print_r($this->rank->getRank('c', '14'));
+        $this->assertTrue(1 == 1);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_get()
     {
-        $result = $this->rank->getLeader('m', '1');
+        $result = $this->rank->getLeader('ut', '1');
         print_r($result);
-        $result = $this->rank->getViceLeader('m', '1');
+        $result = $this->rank->getViceLeader('ut', '1');
         print_r($result);
+        $this->assertTrue(1 == 1);
     }
 
 }

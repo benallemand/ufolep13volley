@@ -677,5 +677,17 @@ class Team extends Generic
         return $results[0];
     }
 
+    /**
+     * @throws Exception
+     */
+    public function get_user_team_by_user($login): array|int|string|null
+    {
+        $sql = "SELECT * FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = ?) ";
+        $bindings = array(
+            array('type' => 's', 'value' => $login),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
 
 }

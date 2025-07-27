@@ -125,7 +125,7 @@ class Rank extends Generic
     {
         $results = $this->getRank($code_competition, $division);
         if (count($results) <= 1) {
-            throw new Exception("Le vice-champion de la division $division de la compétition $code_competition n'a pas pus être déterminé !");
+            throw new Exception("Le vice-champion de la division $division de la compétition $code_competition n'a pas pu être déterminé !");
         }
         return $results[1];
     }
@@ -241,9 +241,7 @@ class Rank extends Generic
     public function sort_cup_rank($code_competition): array|int|string
     {
         $results = $this->get_rank_for_cup($code_competition);
-        foreach ($results as $index => $result) {
-            $results[$index]['rang_poule'] = $this->getTeamRank($code_competition, $result['division'], $result['id_equipe']);
-        }
+        // Le rang_poule est maintenant directement inclus dans les résultats
         $rangs_poules = array_column($results, 'rang_poule');
 
         array_multisort($rangs_poules, SORT_ASC, $results);

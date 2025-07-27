@@ -110,8 +110,7 @@ class HallOfFame extends Generic
             }
         }
         $sql = trim($sql, ',');
-        if (empty($inputs['id'])) {
-        } else {
+        if (!empty($inputs['id'])) {
             $bindings[] = array('type' => 'i', 'value' => $inputs['id']);
             $sql .= " WHERE id = ?";
         }
@@ -131,7 +130,7 @@ class HallOfFame extends Generic
     public function generateHallOfFame($ids)
     {
         if (empty($ids)) {
-            throw new Exception("Aucune compétition sélectionnée !");
+            throw new Exception("Aucune compÃ©tition sÃ©lectionnÃ©e !");
         }
         $ids = explode(',', $ids);
         foreach ($ids as $id) {
@@ -139,10 +138,10 @@ class HallOfFame extends Generic
             $competition_manager = new Competition();
             $competitions = $competition_manager->getCompetitions("c.id = $id");
             if (count($competitions) !== 1) {
-                throw new Exception("Une seule compétition doit être trouvée !");
+                throw new Exception("Une seule compÃ©tition doit Ãªtre trouvÃ©e !");
             }
             if (!$competition_manager->isCompetitionOver($competitions[0]['id'])) {
-                throw new Exception("La compétition n'est pas terminée !!!");
+                throw new Exception("La compÃ©tition n'est pas terminÃ©e !!!");
             }
             $competition_date = DateTime::createFromFormat("d/m/Y", $competitions[0]['start_date']);
             require_once __DIR__ . '/../classes/Rank.php';
@@ -182,7 +181,7 @@ class HallOfFame extends Generic
     public function download_diploma($ids): void
     {
         if (empty($ids)) {
-            throw new Exception("Aucune ligne sélectionnée !");
+            throw new Exception("Aucune ligne sÃ©lectionnÃ©e !");
         }
         $ids = explode(',', $ids);
         // L = landscape
@@ -208,7 +207,7 @@ class HallOfFame extends Generic
         }
         // Ajout d'une nouvelle page
         $pdf->AddPage();
-        // Définition des coordonnées des coins de la page
+        // DÃ©finition des coordonnÃ©es des coins de la page
         $top_left_x = 10;
         $top_left_y = 10;
         $top_right_x = $pdf->GetPageWidth() - 50;
@@ -224,12 +223,12 @@ class HallOfFame extends Generic
         $pdf->Image(__DIR__ . '/../images/hall-of-fame/Coin_01_basgauche.png', $bottom_left_x, $bottom_left_y, 40);
         $pdf->Image(__DIR__ . '/../images/hall-of-fame/Coin_01_basdroite.png', $bottom_right_x, $bottom_right_y, 40);
 
-        // Placement de la photo en haut à gauche, juste à côté de l'image déjà dessinée
+        // Placement de la photo en haut Ã  gauche, juste Ã  cÃ´tÃ© de l'image dÃ©jÃ  dessinÃ©e
         $photo_x = $top_left_x + 50;
         $photo_y = $top_left_y;
         $pdf->Image(__DIR__ . '/../images/hall-of-fame/logo-ufolep-13-volley.png', $photo_x, $photo_y, 100);
 
-        // Ajout de texte en haut à droite, juste à côté de l'image déjà dessinée
+        // Ajout de texte en haut Ã  droite, juste Ã  cÃ´tÃ© de l'image dÃ©jÃ  dessinÃ©e
         $pdf->SetFont('Arial', '', 24);
         $texte_x = $top_right_x - 70;
         $texte_y = $top_right_y + 10;
@@ -240,8 +239,8 @@ class HallOfFame extends Generic
         $determinant = self::starts_with(strtolower($diploma_data['league']), "championnat") ? 'le' : 'la';
         $centered_text = implode(PHP_EOL, array(
             "Les membres de la Commission Technique",
-            "de l'UFOLEP Volley-Ball des Bouches-du-Rhône",
-            "décernent, pour $determinant " . $diploma_data['league'] . ", le titre de",
+            "de l'UFOLEP Volley-Ball des Bouches-du-RhÃ´ne",
+            "dÃ©cernent, pour $determinant " . $diploma_data['league'] . ", le titre de",
         ));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
@@ -253,7 +252,7 @@ class HallOfFame extends Generic
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
         $this->pdf_add_separator($pdf);
         $centered_text = implode(PHP_EOL, array(
-            "à l’équipe de",
+            "Ã  lâ€™Ã©quipe de",
         ));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
@@ -268,7 +267,7 @@ class HallOfFame extends Generic
 
     private function pdf_add_separator(FPDF &$pdf): void
     {
-        // séparateur
+        // sÃ©parateur
         $image_width = 50; // Largeur de l'image en pixels
         $image_x = ($pdf->GetPageWidth() - $image_width) / 2; // Position horizontale de l'image
         $image_y = $pdf->GetY(); // Position verticale de l'image

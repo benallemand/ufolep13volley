@@ -4,6 +4,11 @@ FROM (SELECT e.id_equipe,
              e.nom_equipe                                                                   AS equipe,
              c.code_competition,
              c.division,
+             (SELECT rv.rang 
+              FROM ranks_view rv 
+              WHERE rv.code_competition = c.code_competition 
+                AND rv.division = c.division 
+                AND rv.id_equipe = e.id_equipe)                                             AS rang_poule,
              (SUM(IF(e.id_equipe = m.id_equipe_dom, 1, 0)) +
               SUM(IF(e.id_equipe = m.id_equipe_ext, 1, 0)))                                 AS nb_matchs,
              SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) +
