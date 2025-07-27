@@ -112,16 +112,28 @@ export default {
             </ul>
           </div>
           <div v-if="isConnected" class="flex gap-1">
-            <a class="btn btn-primary" href="/pages/my_page.html">
+            <a class="btn btn-primary"
+               v-if="['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name)"
+               href="/admin.php">
+              <span><i class="fas fa-gear mr-2"/>administration</span>
+            </a>
+            <a class="btn btn-primary"
+               v-if="!['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name)"
+               href="/pages/my_page.html">
               <span><i class="fas fa-user mr-2"/>{{ this.user.login }}</span>
             </a>
             <a class="btn btn-error" href="/rest/action.php/usermanager/logout">
               <span><i class="fas fa-right-from-bracket mr-2"/>déconnexion</span>
             </a>
           </div>
-          <div v-if="!isConnected">
-            <a class="btn btn-info" href="/new_site/#login">
-              <span><i class="fas fa-right-to-bracket mr-2"/>connexion</span>
+          <div v-if="!isConnected" class="flex gap-1">
+            <router-link :to="'/login'">
+              <a class="btn btn-info">
+                <span><i class="fas fa-right-to-bracket mr-2"/>connexion</span>
+              </a>
+            </router-link>
+            <a class="btn btn-secondary" href="/register.php">
+              <span><i class="fas fa-user-plus mr-2"/>inscrire une équipe</span>
             </a>
           </div>
         </div>
