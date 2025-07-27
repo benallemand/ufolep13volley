@@ -1,16 +1,14 @@
 export default {
     components: {
+        'news': () => import('../table/News.js')
     },
     template: `
-      <div>
+      <div class="container mx-auto p-4">
+        <news/>
       </div>
     `,
     data() {
-        return {
-        };
+        return {};
     },
-    computed: {
-        matchesFetchUrl() {
-        }
-    }
+    computed: {}
 };
