@@ -6,7 +6,7 @@ export default {
             <img alt="Ufolep" src="/images/svg/logo-ufolep-vectorizer-no-background.svg" style="max-height:150px;">
           </a>
         </div>
-        <div class="navbar bg-base-200 shadow-sm flex flex-wrap justify-center">
+        <div class="navbar bg-base-200 shadow-sm flex flex-wrap justify-center gap-2">
           <a class="btn btn-ghost" href="/">
             <span><i class="fas fa-home mr-2"/>Accueil</span>
           </a>
@@ -111,14 +111,25 @@ export default {
               <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank">Coupe Isoardi</a></li>
             </ul>
           </div>
-          <a class="btn btn-ghost" href="/new_site/#login">
-            <span><i class="fas fa-right-from-bracket mr-2"/>Connexion</span>
-          </a>
+          <div v-if="isConnected" class="flex gap-1">
+            <a class="btn btn-primary" href="/pages/my_page.html">
+              <span><i class="fas fa-user mr-2"/>{{ this.user.login }}</span>
+            </a>
+            <a class="btn btn-error" href="/rest/action.php/usermanager/logout">
+              <span><i class="fas fa-right-from-bracket mr-2"/>déconnexion</span>
+            </a>
+          </div>
+          <div v-if="!isConnected">
+            <a class="btn btn-info" href="/new_site/#login">
+              <span><i class="fas fa-right-to-bracket mr-2"/>connexion</span>
+            </a>
+          </div>
         </div>
       </div>`,
     data() {
         return {
             divisions: [],
+            user: null,
         };
     },
     computed: {
@@ -152,6 +163,8 @@ export default {
                 acc[division.code_competition].divisions.push(division);
                 return acc;
             }, {});
+        }, isConnected() {
+            return this.user !== null;
         },
     },
     methods: {
@@ -164,9 +177,23 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement :", error);
                 });
+        }, fetchUserDetails() {
+            axios
+                .get("/session_user.php")
+                .then((response) => {
+                    if (response.data.error) {
+                        this.user = null;
+                    } else {
+                        this.user = response.data;
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
         },
     },
     created() {
+        this.fetchUserDetails();
         this.fetch();
     },
 };
