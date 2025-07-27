@@ -5,6 +5,10 @@ const routes = [
         component: () => import('../panel/Home.js')
     },
     {
+        path: '/login',
+        component: () => import('../form/Login.js')
+    },
+    {
         path: '/divisions/:code_competition/:division',
         component: () => import('../panel/Division.js')
     },
