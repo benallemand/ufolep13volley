@@ -477,7 +477,8 @@ class UserManager extends Generic
     public static function isAdmin(): bool
     {
         @session_start();
-        return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "ADMINISTRATEUR");
+        return (isset($_SESSION['profile_name'])
+            && in_array($_SESSION['profile_name'], array("ADMINISTRATEUR", "COMMISSION", "SUPPORT")));
     }
 
 
