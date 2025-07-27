@@ -89,7 +89,10 @@ export default {
                 sinistre</a>
               </li>
               <li class="menu-title">Liens</li>
-              <li><a href="/new_site/#webSites" target="_blank"><i class="fas fa-link mr-2"/> Sites web des clubs</a>
+              <li>
+                <router-link :to="'/web-sites'">
+                  <i class="fas fa-link mr-2"/>sites web des clubs
+                </router-link>
               </li>
               <li>
                 <a href="http://ufolep13.org/" target="_blank"><i class="fas fa-link mr-2"/>Site de l'UFOLEP 13</a>

@@ -28,6 +28,10 @@ const routes = [
         path: '/hall-of-fame',
         component: () => import('../panel/HallOfFame.js'),
     },
+    {
+        path: '/web-sites',
+        component: () => import('../table/WebSites.js'),
+    },
 
     {path: '*', redirect: '/home'}
 
