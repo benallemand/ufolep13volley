@@ -1,3 +1,3 @@
 <?php
-header("Location: ./new_site/");
+header("Location: /pages/home.html");
 die();
