@@ -1,10 +1,12 @@
 export default {
     components: {
-        'news': () => import('../table/News.js')
+        'news': () => import('../table/News.js'),
+        'photos': () => import('../carousel/Photos.js'),
     },
     template: `
-      <div class="container mx-auto p-4">
+      <div class="flex flex-col items-center">
         <news/>
+        <photos/>
       </div>
     `,
     data() {
