@@ -71,7 +71,11 @@ export default {
                 </router-link>
               </li>
               <li><a href="/new_site/#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
-              <li><a href="/new_site/#gymnasiums" target="_blank"><i class="fas fa-map mr-2"/>Gymnases</a></li>
+              <li>
+                <router-link :to="'/gymnasiums'">
+                  <i class="fas fa-map mr-2"/>gymnases
+                </router-link>
+              </li>
               <li>
                 <a href="https://docs.google.com/document/d/1jhAsF6npsuR7Qgf9v0Yw_30NT26Mz4sjTlSrYvyDnGQ/edit?usp=sharing"
                    target="_blank"><i class="fas fa-info-circle mr-2"/>Tuto Responsable

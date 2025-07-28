@@ -32,6 +32,10 @@ const routes = [
         path: '/web-sites',
         component: () => import('../table/WebSites.js'),
     },
+    {
+        path: '/gymnasiums',
+        component: () => import('../table/Gymnasiums.js'),
+    },
 
     {path: '*', redirect: '/home'}
 
