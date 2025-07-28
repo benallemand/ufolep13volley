@@ -40,6 +40,10 @@ const routes = [
         path: '/information',
         component: () => import('../panel/Info.js'),
     },
+    {
+        path: '/commission',
+        component: () => import('../table/Commission.js'),
+    },
 
     {path: '*', redirect: '/home'}
 

@@ -85,7 +85,10 @@ export default {
                   <i class="fas fa-info-circle mr-2"/>infos utiles
                 </router-link>
               </li>
-              <li><a href="/new_site/#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
+              <li>
+                <router-link :to="'/commission'">
+                  <i class="fas fa-certificate mr-2"/>commission
+                </router-link>
               </li>
               <li>
                 <a href="mailto:contact@ufolep13volley.org">
