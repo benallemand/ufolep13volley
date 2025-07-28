@@ -36,6 +36,10 @@ const routes = [
         path: '/gymnasiums',
         component: () => import('../table/Gymnasiums.js'),
     },
+    {
+        path: '/information',
+        component: () => import('../panel/Info.js'),
+    },
 
     {path: '*', redirect: '/home'}
 

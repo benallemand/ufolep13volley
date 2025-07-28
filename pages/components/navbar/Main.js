@@ -80,8 +80,11 @@ export default {
                 <a href="https://docs.google.com/document/d/1jhAsF6npsuR7Qgf9v0Yw_30NT26Mz4sjTlSrYvyDnGQ/edit?usp=sharing"
                    target="_blank"><i class="fas fa-info-circle mr-2"/>Tuto Responsable
                   d'équipe</a></li>
-              <li><a href="/new_site/#usefulInformations" target="_blank"><i class="fas fa-info-circle mr-2"/>Infos
-                utiles</a></li>
+              <li>
+                <router-link :to="'/information'">
+                  <i class="fas fa-info-circle mr-2"/>infos utiles
+                </router-link>
+              </li>
               <li><a href="/new_site/#commission" target="_blank"><i class="fas fa-certificate mr-2"/>Commission</a>
               </li>
               <li>
