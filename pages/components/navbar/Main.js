@@ -95,8 +95,10 @@ export default {
                   <i class="fas fa-envelope mr-2"/>contact@ufolep13volley.org
                 </a>
               </li>
-              <li><a href="/new_site/#accident" target="_blank"><i class="fas fa-hospital mr-2"/>Déclaration de
-                sinistre</a>
+              <li>
+                <router-link :to="'/accident'">
+                  <i class="fas fa-hospital mr-2"/>déclaration de sinistre
+                </router-link>
               </li>
               <li class="menu-title">Liens</li>
               <li>

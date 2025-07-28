@@ -44,6 +44,10 @@ const routes = [
         path: '/commission',
         component: () => import('../table/Commission.js'),
     },
+    {
+        path: '/accident',
+        component: () => import('../panel/Accident.js'),
+    },
 
     {path: '*', redirect: '/home'}
 
