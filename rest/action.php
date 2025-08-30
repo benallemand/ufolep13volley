@@ -172,7 +172,7 @@ try {
     switch($resp_code) {
         case 401:
             // redirect to login page
-            header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
+            header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
             exit(0);
         case 201:
         case 200:
