@@ -41,7 +41,9 @@ export default {
               <td>{{ item.division }}</td>
               <td>
                 <div class="flex items-center justify-between">
-                  <span class="font-medium">{{ item.nom_equipe }}</span>
+                  <router-link :to="'/teams/' + item.id_equipe" class="font-medium link link-primary hover:link-hover">
+                    {{ item.nom_equipe }}
+                  </router-link>
                   <div class="flex gap-1">
                     <div v-if="item.gymnasiums_list" class="badge badge-primary badge-xs">📍</div>
                     <div v-if="item.web_site" class="badge badge-info badge-xs">🌐</div>
@@ -53,12 +55,12 @@ export default {
                 <div class="text-xs text-base-content/50">{{ item.club }}</div>
               </td>
             </tr>
-            
+
             <!-- Ligne extensible avec les détails -->
             <tr v-if="expandedRows.has(index)" class="bg-base-100">
               <td colspan="5" class="p-4">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
+
                   <!-- Informations de contact -->
                   <div class="space-y-3">
                     <h4 class="font-semibold text-sm flex items-center gap-2">
@@ -95,7 +97,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Créneaux -->
                   <div v-if="item.gymnasiums_list" class="space-y-3">
                     <h4 class="font-semibold text-sm flex items-center gap-2">
@@ -122,7 +124,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Autres informations -->
                   <div class="space-y-4">
                     <!-- Site web -->
@@ -133,16 +135,17 @@ export default {
                       </h4>
                       <a :href="item.web_site" target="_blank" class="link link-primary">{{ item.web_site }}</a>
                     </div>
-                    
+
                     <!-- Photo -->
                     <div v-if="item.path_photo">
                       <h4 class="font-semibold text-sm flex items-center gap-2 mb-2">
                         <span class="badge badge-success badge-sm">📷</span>
                         Photo
                       </h4>
-                      <img :src="'/'+item.path_photo" alt="photo équipe" class="max-h-32 rounded-lg border border-base-300"/>
+                      <img :src="'/'+item.path_photo" alt="photo équipe"
+                           class="max-h-32 rounded-lg border border-base-300"/>
                     </div>
-                    
+
                     <!-- Fiche équipe -->
                     <div>
                       <h4 class="font-semibold text-sm flex items-center gap-2 mb-2">
@@ -154,7 +157,7 @@ export default {
                       </a>
                     </div>
                   </div>
-                  
+
                 </div>
               </td>
             </tr>

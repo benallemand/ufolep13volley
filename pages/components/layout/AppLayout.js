@@ -49,6 +49,10 @@ const routes = [
         component: () => import('../table/Teams.js'),
     },
     {
+        path: '/teams/:id',
+        component: () => import('../detail/TeamDetail.js'),
+    },
+    {
         path: '/accident',
         component: () => import('../panel/Accident.js'),
     },
