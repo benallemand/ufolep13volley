@@ -104,10 +104,9 @@ export default {
                   <i class="fas fa-hospital mr-2"/>déclaration de sinistre
                 </router-link>
               </li>
-              <li class="menu-title">Liens</li>
               <li>
                 <router-link :to="'/web-sites'">
-                  <i class="fas fa-link mr-2"/>sites web des clubs
+                  <i class="fas fa-home mr-2"/>sites web des clubs
                 </router-link>
               </li>
               <li>
@@ -116,23 +115,23 @@ export default {
               </li>
               <li class="menu-title">Règlements</li>
               <li>
-                <a href="https://www.fivb.com/wp-content/uploads/2024/03/FIVB-Volleyball_Rules2021_2024-FR-v2a.pdf"
+                <a href="https://www.fivb.com/wp-content/uploads/2025/06/FIVB-Volleyball_Rules2025_2028-FR-v04.pdf"
                    target="_blank">
                   <i class="fas fa-link mr-2"/>FIVB
                 </a>
               </li>
               <li>
                 <router-link :to="'/general-rules'">
-                  général
+                  <i class="fas fa-scale-balanced mr-2"/>général
                 </router-link>
               </li>
-              <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank">Championnat féminin</a></li>
-              <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank">Championnat masculin</a></li>
+              <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat féminin</a></li>
+              <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat masculin</a></li>
               <li>
-                <a href="/infos_utiles/Media/ReglementChampionnatMixte.pdf" target="_blank">Championnat mixte</a>
+                <a href="/infos_utiles/Media/ReglementChampionnatMixte.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat mixte</a>
               </li>
-              <li><a href="/infos_utiles/Media/ReglementKouryHanna.pdf" target="_blank">Coupe Khoury Hanna</a></li>
-              <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank">Coupe Isoardi</a></li>
+              <li><a href="/infos_utiles/Media/ReglementKouryHanna.pdf" target="_blank"><i class="fas fa-link mr-2"/>Coupe Khoury Hanna</a></li>
+              <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank"><i class="fas fa-link mr-2"/>Coupe Isoardi</a></li>
             </ul>
           </div>
           <div v-if="isConnected" class="flex gap-1">
