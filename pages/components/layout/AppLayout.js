@@ -45,6 +45,10 @@ const routes = [
         component: () => import('../table/Commission.js'),
     },
     {
+        path: '/teams',
+        component: () => import('../table/Teams.js'),
+    },
+    {
         path: '/accident',
         component: () => import('../panel/Accident.js'),
     },

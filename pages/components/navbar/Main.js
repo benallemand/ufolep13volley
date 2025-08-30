@@ -70,7 +70,11 @@ export default {
                   <i class="fas fa-dollar-sign mr-2"/>palmarès
                 </router-link>
               </li>
-              <li><a href="/new_site/#phonebooks" target="_blank"><i class="fas fa-book mr-2"/>Annuaire</a></li>
+              <li>
+                <router-link :to="'/teams'">
+                  <i class="fas fa-book mr-2"/>annuaire
+                </router-link>
+              </li>
               <li>
                 <router-link :to="'/gymnasiums'">
                   <i class="fas fa-map mr-2"/>gymnases
@@ -107,7 +111,8 @@ export default {
                 </router-link>
               </li>
               <li>
-                <a href="https://cd.ufolep.org/bouchesdurhone/" target="_blank"><i class="fas fa-link mr-2"/>site de l'UFOLEP 13</a>
+                <a href="https://cd.ufolep.org/bouchesdurhone/" target="_blank"><i class="fas fa-link mr-2"/>site de
+                  l'UFOLEP 13</a>
               </li>
               <li class="menu-title">Règlements</li>
               <li>
