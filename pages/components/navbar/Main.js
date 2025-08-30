@@ -107,16 +107,20 @@ export default {
                 </router-link>
               </li>
               <li>
-                <a href="http://ufolep13.org/" target="_blank"><i class="fas fa-link mr-2"/>Site de l'UFOLEP 13</a>
+                <a href="https://cd.ufolep.org/bouchesdurhone/" target="_blank"><i class="fas fa-link mr-2"/>site de l'UFOLEP 13</a>
               </li>
               <li class="menu-title">Règlements</li>
               <li>
                 <a href="https://www.fivb.com/wp-content/uploads/2024/03/FIVB-Volleyball_Rules2021_2024-FR-v2a.pdf"
                    target="_blank">
-                  FIVB
+                  <i class="fas fa-link mr-2"/>FIVB
                 </a>
               </li>
-              <li><a href="/new_site/#generalRules" target="_blank">Général</a></li>
+              <li>
+                <router-link :to="'/general-rules'">
+                  général
+                </router-link>
+              </li>
               <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank">Championnat féminin</a></li>
               <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank">Championnat masculin</a></li>
               <li>

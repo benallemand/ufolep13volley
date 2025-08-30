@@ -48,6 +48,10 @@ const routes = [
         path: '/accident',
         component: () => import('../panel/Accident.js'),
     },
+    {
+        path: '/general-rules',
+        component: () => import('../panel/GeneralRules.js'),
+    },
 
     {path: '*', redirect: '/home'}
 
