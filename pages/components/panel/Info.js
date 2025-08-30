@@ -85,7 +85,7 @@ export default {
               <div class="p-2">
                 <p class="bg-success text-center p-2 rounded-lg font-bold">Le jour du match</p>
                 <ul class="list-disc pl-5 mt-2">
-                  <li>Se connecter et se rendre sur sa page <a class="link link-primary" href="/new_site/#/myPage"
+                  <li>Se connecter et se rendre sur sa page <a class="link link-primary" href="/pages/my_page.html"
                                                                target="_blank">ufolep13volley</a></li>
                   <li>Un lien sur le match du jour permet de saisir les joueurs présents au match</li>
                   <li><b>S'il n'y a pas de photo, prévoir une pièce d'identité permettant d'identifier la personne</b>

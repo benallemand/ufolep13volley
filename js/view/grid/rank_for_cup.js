@@ -43,7 +43,7 @@ Ext.define('Ufolep13Volley.view.grid.rank_for_cup', {
                         width: 80,
                         dataIndex: 'division',
                         renderer: function (value, meta, record) {
-                            return Ext.String.format("<a href='/new_site/#/championship/{0}/{1}' target='_blank'>{2}</a>",
+                            return Ext.String.format("<a href='/pages/home.html#/divisions/{0}/{1}' target='_blank'>{2}</a>",
                                 record.get('code_competition'),
                                 value,
                                 value,

@@ -14,7 +14,7 @@ export default {
         </h2>
         <p>Compétition : {{ match.libelle_competition }} </p>
         <p v-if="!['kf', 'cf'].includes(match.code_competition)">Division :
-          <a :href="'/new_site/#/championship/'+match.code_competition+'/'+match.division"
+          <a :href="'/pages/home.html#/divisions/'+match.code_competition+'/'+match.division"
              class="link link-info hover:underline"
              target="_blank">
             <span>{{ match.division }}</span><i class="fas fa-external-link-alt ml-1"></i>

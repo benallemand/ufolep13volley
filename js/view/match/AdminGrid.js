@@ -161,7 +161,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'division',
                 width: 50,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/new_site/#/championship/{0}/{1}' target='_blank'>{2}</a>",
+                    return Ext.String.format("<a href='/pages/home.html#/divisions/{0}/{1}' target='_blank'>{2}</a>",
                         record.get('code_competition'),
                         value,
                         value,
