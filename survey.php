@@ -8,7 +8,7 @@ try {
         throw new Exception("Profil responsable d'équipe ou administrateur nécessaire !", 401);
     }
 } catch (Exception $e) {
-    header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
+    header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
     exit(0);
 }
 try {

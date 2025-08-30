@@ -16,7 +16,7 @@ try {
         throw new Exception("Vous n'êtes pas autorisé à modifier ce match !", 401);
     }
 } catch (Exception $e) {
-    header('Location: /new_site/#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
+    header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
     exit(0);
 }
 @session_start();
