@@ -55,6 +55,7 @@ class Register extends Generic
         $division = null,
         $rank_start = null,
         $is_paid = null,
+        $is_cup_registered = null,
         $is_seeding_tournament_requested = null,
         $can_seeding_tournament_setup = null,
         $dirtyFields = null,
@@ -85,6 +86,7 @@ class Register extends Generic
             'division' => $division,
             'rank_start' => $rank_start,
             'is_paid' => $is_paid,
+            'is_cup_registered' => $is_cup_registered,
             'is_seeding_tournament_requested' => $is_seeding_tournament_requested,
             'can_seeding_tournament_setup' => $can_seeding_tournament_setup,
             'dirtyFields' => $dirtyFields,
@@ -116,6 +118,7 @@ class Register extends Generic
                     }
                     break;
                 case 'is_paid':
+                case 'is_cup_registered':
                 case 'is_seeding_tournament_requested':
                 case 'can_seeding_tournament_setup':
                     if (is_null($value)) {
@@ -181,6 +184,7 @@ class Register extends Generic
                 r.rank_start,
                 r.division,
                 r.is_paid,
+                r.is_cup_registered,
                 r.is_seeding_tournament_requested,
                 r.can_seeding_tournament_setup
                 FROM register r

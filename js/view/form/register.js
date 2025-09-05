@@ -85,6 +85,14 @@ Ext.define('Ufolep13Volley.view.form.register', {
                                     value: record.get('code_competition'),
                                     exactMatch: true,
                                 });
+                            if(record.get('code_competition') === 'm') {
+                                combo.up('form').down('checkboxfield[name=is_cup_registered]').show();
+                                combo.up('form').down('checkboxfield[name=is_cup_registered]').setValue('on');
+                            }
+                            else {
+                                combo.up('form').down('checkboxfield[name=is_cup_registered]').setValue('off');
+                                combo.up('form').down('checkboxfield[name=is_cup_registered]').hide();
+                            }
                         }
                     },
                 },
@@ -114,6 +122,15 @@ Ext.define('Ufolep13Volley.view.form.register', {
                                 });
                         }
                     }
+                },
+                {
+                    name: 'is_cup_registered',
+                    hidden: true,
+                    xtype: 'checkboxfield',
+                    fieldLabel: "Mon équipe souhaite participer à la coupe 6x6 Isoardi",
+                    boxLabel: "Oui",
+                    msgTarget: 'under',
+                    uncheckedValue: 'off'
                 },
                 !Ext.isEmpty(week_seeding_tournament) ? {
                     name: 'is_seeding_tournament_requested',
