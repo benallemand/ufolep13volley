@@ -65,6 +65,14 @@ Ext.define('Ufolep13Volley.view.form.register', {
                     }
                 },
                 {
+                    xtype: 'label',
+                    width: 400,
+                    html: "<small style='font-style: italic'>Le nombre d'équipes que vous pouvez inscrire <br/>" +
+                        "est limité au nombre de terrains que votre club fournit pour les matchs: 1 terrain par semaine => 2 équipes maximum<br/>" +
+                        "par exemple, si vous avez un terrain le mardi et un terrain le vendredi, ça fait 2 terrains par semaine, donc 4 équipes maximum.<br/>" +
+                        "Une vérification sera faite avant d'établir les divisions.</small>",
+                },
+                {
                     xtype: 'combo_competition',
                     store: {
                         type: 'Competitions',
