@@ -35,16 +35,16 @@ class Configuration
             'FLICKR_API_KEY',
             'PROXY_URL',
         ]);
-        $this->mail_host = getenv('MAIL_HOST');
-        $this->mail_function = getenv('MAIL_FUNCTION');
-        $this->mail_smtpauth = getenv('MAIL_SMTPAUTH') === 'true';
-        $this->mail_username = getenv('MAIL_USERNAME');
-        $this->mail_password = getenv('MAIL_PASSWORD');
-        $this->mail_smtpsecure = getenv('MAIL_SMTPSECURE');
-        $this->mail_port = getenv('MAIL_PORT');
-        $this->covid_mode = getenv('COVID_MODE') === 'false';
-        $this->flickr_api_key = getenv('FLICKR_API_KEY');
-        $this->proxy_url = getenv('PROXY_URL');
-        $this->seeding_tournament_week = getenv('SEEDING_TOURNAMENT_WEEK');
+        $this->mail_host = $_ENV['MAIL_HOST'] ?? '';
+        $this->mail_function = $_ENV['MAIL_FUNCTION'] ?? 'mail';
+        $this->mail_smtpauth = ($_ENV['MAIL_SMTPAUTH'] ?? 'false') === 'true';
+        $this->mail_username = $_ENV['MAIL_USERNAME'] ?? '';
+        $this->mail_password = $_ENV['MAIL_PASSWORD'] ?? '';
+        $this->mail_smtpsecure = $_ENV['MAIL_SMTPSECURE'] ?? '';
+        $this->mail_port = (int)($_ENV['MAIL_PORT'] ?? 25);
+        $this->covid_mode = ($_ENV['COVID_MODE'] ?? 'false') === 'true';
+        $this->flickr_api_key = $_ENV['FLICKR_API_KEY'] ?? '';
+        $this->proxy_url = $_ENV['PROXY_URL'] ?? '';
+        $this->seeding_tournament_week = $_ENV['SEEDING_TOURNAMENT_WEEK'] ?? '';
     }
 }
