@@ -52,14 +52,14 @@
                                     <var class="atc_timezone">Europe/Paris</var>
                                     <var class="atc_title">{{ x.equipe_dom }} contre {{ x.equipe_ext }}</var>
                                     <var class="atc_description">Compétition Ufolep 13 Volley</var>
-                                    <var class="atc_location">https://www.ufolep13volley.org/new_site/#/phonebook/{{ x.id_equipe_dom }}</var>
+                                    <var class="atc_location">https://www.ufolep13volley.org/pages/home.html#/teams/{{ x.id_equipe_dom }}</var>
                                     <var class="atc_organizer">Ufolep 13 Volley</var>
                                     <var class="atc_organizer_email">contact@ufolep13volley.org</var>
                                 </var>
                             </span>
                         </td>
                         <td class="text-center {{x.score_equipe_dom == '3' ? 'success' : ''}}">
-                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_dom }}" target="_blank">{{
+                            <span><a href="/pages/home.html#/teams/{{ x.id_equipe_dom }}" target="_blank">{{
                                     x.equipe_dom
                                 }}</a></span>
                             <span ng-if="x.forfait_dom == 1"
@@ -72,7 +72,7 @@
                                 }}/{{ x.score_equipe_ext }}</span>
                         </td>
                         <td class="text-center {{x.score_equipe_ext == '3' ? 'success' : ''}}">
-                            <span><a href="/new_site/#/phonebook/{{ x.id_equipe_ext }}" target="_blank">{{
+                            <span><a href="/pages/home.html#/teams/{{ x.id_equipe_ext }}" target="_blank">{{
                                     x.equipe_ext
                                 }}</a></span>
                             <span ng-if="x.forfait_ext == 1"

@@ -178,7 +178,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'equipe_dom',
                 flex: 1,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/new_site/#/phonebook/{0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/pages/home.html#/teams/{0}' target='_blank'>{1}</a>",
                         record.get('id_equipe_dom'),
                         value,
                     );
@@ -200,7 +200,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'equipe_ext',
                 flex: 1,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/new_site/#/phonebook/{0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/pages/home.html#/teams/{0}' target='_blank'>{1}</a>",
                         record.get('id_equipe_ext'),
                         value,
                     );
