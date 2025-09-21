@@ -95,6 +95,90 @@ var Base64 = {
 // create the module and name it scotchApp
 var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'angular.filter', 'angular-loading-bar', 'filters', 'ngSanitize']);
 
+// Redirection automatique vers la nouvelle application Vue.js
+scotchApp.run(function($location, $window) {
+    // Mapping des anciennes routes vers les nouvelles routes
+    var routeMapping = {
+        '/championship': function(params) {
+            // Ancienne route: /championship/:competition/:division
+            // Nouvelle route: /divisions/:competition/:division
+            var competition = params[0] || '';
+            var division = params[1] || '';
+            return '/divisions/' + competition + '/' + division;
+        },
+        '/matches': function(params) {
+            // Ancienne route: /matches/:competition
+            // Nouvelle route: /finals/:competition
+            var competition = params[0] || '';
+            return '/finals/' + competition;
+        },
+        '/phonebooks': function() {
+            return '/teams';
+        },
+        '/phonebook': function(params) {
+            var id = params[0] || '';
+            return '/teams/' + id;
+        },
+        '/lastResults': function() {
+            return '/last-results';
+        },
+        '/weekMatches': function() {
+            return '/week-matchs';
+        },
+        '/webSites': function() {
+            return '/web-sites';
+        },
+        '/hallOfFame': function() {
+            return '/hall-of-fame';
+        },
+        '/gymnasiums': function() {
+            return '/gymnasiums';
+        },
+        '/commission': function() {
+            return '/commission';
+        },
+        '/accident': function() {
+            return '/accident';
+        },
+        '/generalRules': function() {
+            return '/general-rules';
+        },
+        '/usefulInformations': function() {
+            return '/information';
+        },
+        '/login': function() {
+            return '/login';
+        },
+        '/': function() {
+            return '/home';
+        }
+    };
+    
+    // Fonction pour rediriger vers la nouvelle application
+    function redirectToNewApp() {
+        var currentPath = $location.path();
+        var pathParts = currentPath.split('/').filter(function(part) { return part !== ''; });
+        var basePath = '/' + (pathParts[0] || '');
+        
+        // Chercher le mapping correspondant
+        var newRoute = '/home'; // route par défaut
+        
+        if (routeMapping[basePath]) {
+            var params = pathParts.slice(1);
+            newRoute = routeMapping[basePath](params);
+        } else if (routeMapping[currentPath]) {
+            newRoute = routeMapping[currentPath]();
+        }
+        
+        // Rediriger vers la nouvelle application Vue.js
+        var newUrl = '/pages/home.html#' + newRoute;
+        $window.location.href = newUrl;
+    }
+    
+    // Exécuter la redirection immédiatement
+    setTimeout(redirectToNewApp, 100);
+});
+
 
 angular.module('filters', []).filter('zpad', function () {
     return function (input, n) {
