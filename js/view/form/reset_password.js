@@ -12,10 +12,9 @@ Ext.define('Ufolep13Volley.view.form.reset_password', {
     autoScroll: true,
     items: [
         {
-            xtype: 'combo_team',
-            fieldLabel: "Nom de l'équipe",
+            name: 'login',
+            fieldLabel: "Login",
             allowBlank: false,
-            name: 'user_team_id',
         },
         {
             name: 'user_email',

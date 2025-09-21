@@ -599,7 +599,7 @@ class UserManager extends Generic
                                            $user_email,
                                            $dirtyFields = null): void
     {
-        $results = $this->get("login = $login AND email = '$user_email'");
+        $results = $this->get("login = '$login' AND email = '$user_email'");
         if (count($results) === 0) {
             throw new Exception("Il n'existe pas de compte avec cette adresse email et ce login !");
         }
