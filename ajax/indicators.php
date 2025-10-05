@@ -190,6 +190,9 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Matchs avec des renforts",
     file_get_contents(__DIR__ . '/../sql/matchs_with_reinforcement.sql'));
+$indicators[] = new Indicator(
+    "Inscriptions - Terrains vs Equipes",
+    file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'));
 
 function info_first($a, $b): int
 {
