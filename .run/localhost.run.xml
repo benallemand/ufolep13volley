@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="localhost" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" document_root="$PROJECT_DIR$" port="8080">
+    <option name="envFilePaths">
+      <list>
+        <option value="$PROJECT_DIR$/.env" />
+      </list>
+    </option>
+    <method v="2" />
+  </configuration>
+</component>
