@@ -20,3 +20,4 @@ composer.phar
 unit_tests/files/do_not_version/*.pdf
 
 github-actions-deploy*
+/.phpunit.result.cache
