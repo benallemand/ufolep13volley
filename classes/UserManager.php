@@ -485,7 +485,8 @@ class UserManager extends Generic
     /**
      * @return void
      */
-    #[NoReturn] public function logout(): void
+    #[NoReturn]
+    public function logout(): void
     {
         @session_start();
         @session_destroy();
@@ -692,5 +693,37 @@ class UserManager extends Generic
         );
         $this->sql_manager->execute($sql, $bindings);
     }
+
+
+    /**
+     * @throws Exception
+     */
+    public function getUserTeams($user_id): array|int|string|null
+    {
+        $sql = file_get_contents(__DIR__ . '/../sql/get_user_teams.sql');
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    public function switchCurrentUserTeam($id_equipe): void
+    {
+        if (!(isset($_SESSION['login']))) {
+            @session_start();
+        }
+        if (!(isset($_SESSION['login']))) {
+            throw new Exception("Utilisateur non connecté !");
+        }
+        $available_teams = $this->getUserTeams($_SESSION['id_user']);
+        foreach ($available_teams as $available_team) {
+            if ($available_team['id_equipe'] == $id_equipe) {
+                $_SESSION['id_equipe'] = $id_equipe;
+                return;
+            }
+        }
+        throw new Exception("Equipe non autorisée !");
+    }
+
 
 }
