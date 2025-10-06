@@ -13,7 +13,7 @@ Ext.define('Ufolep13Volley.controller.manage_register', {
     init: function () {
         this.control(
             {
-                'button[text=Menu]': {
+                'button[text=administration]': {
                     added: this.add_menu_register
                 },
                 'menuitem[action=display_register]': {
@@ -97,7 +97,8 @@ Ext.define('Ufolep13Volley.controller.manage_register', {
     show_grid: function (button) {
         button.up('tabpanel').add({
             xtype: 'grid_register',
-            layout: 'fit'
+            layout: 'fit',
+            selModel: 'checkboxmodel',
         });
     },
 });

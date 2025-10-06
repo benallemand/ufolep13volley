@@ -13,7 +13,7 @@ Ext.define('Ufolep13Volley.controller.manage_survey', {
     init: function () {
         this.control(
             {
-                'button[text=Menu]': {
+                'button[text=administration]': {
                     added: this.add_menu_survey
                 },
                 'menuitem[action=display_survey]': {

@@ -14,7 +14,7 @@ Ext.define('Ufolep13Volley.controller.manage_commission', {
     init: function () {
         this.control(
             {
-                'button[text=Menu]': {
+                'button[text=administration]': {
                     added: this.add_menu_commission
                 },
                 'menuitem[action=display_commission]': {

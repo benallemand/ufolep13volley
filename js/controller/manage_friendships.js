@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.controller.manage_friendships', {
     init: function () {
         this.control(
             {
-                'button[text=Menu]': {
+                'button[text=administration]': {
                     added: this.add_menu_friendships
                 },
                 'menuitem[action=display_friendships]': {

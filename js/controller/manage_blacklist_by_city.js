@@ -15,7 +15,7 @@ Ext.define('Ufolep13Volley.controller.manage_blacklist_by_city', {
     init: function () {
         this.control(
             {
-                'button[text=Menu]': {
+                'button[text=administration]': {
                     added: this.add_menu_blacklist_by_city
                 },
                 'menuitem[action=display_blacklist_by_city]': {
