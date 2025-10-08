@@ -24,7 +24,11 @@ export default {
                 'bg-error/5': ranks.length > 0 && team.rang > ranks.length - 2
             }">
           <td class="text-center">{{ team.rang }}</td>
-          <td>{{ team.equipe }}</td>
+          <td>
+            <router-link :to="'/teams/' + team.id_equipe" class="font-medium link link-primary hover:link-hover">
+              {{ team.equipe }}
+            </router-link>
+          </td>
           <td class="text-center font-bold">
             <div class="flex flex-col">
               <span>{{ team.points }}</span>
