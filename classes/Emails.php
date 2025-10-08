@@ -172,22 +172,13 @@ class Emails extends Generic
      */
     public function sendMailNewUser($email, $login, $password): void
     {
-        $users_teams = $this->team->get_user_team_by_user($login);
-        $team_names = array();
-        foreach ($users_teams as $user_team) {
-            $team_names[] = $this->team->getTeamName($user_team['team_id']);
-        }
-
         $message = file_get_contents(__DIR__ . '/../templates/emails/sendMailNewUser.fr.html');
         $message = str_replace('%login%', $login, $message);
         $message = str_replace('%password%', $password ?: '', $message);
-        $message = str_replace('%team_name%', implode(',', $team_names), $message);
-
         $this->insert_email(
             "[UFOLEP13VOLLEY]Identifiants de connexion",
             $message,
             $email);
-        $this->send_pending_emails();
     }
 
     /**

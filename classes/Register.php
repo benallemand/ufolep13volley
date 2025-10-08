@@ -243,7 +243,7 @@ class Register extends Generic
             foreach ($registered_teams as $registered_team) {
                 $id_team = $this->create_or_update_team($registered_team);
                 $team = $this->team->getTeam($id_team);
-                $this->user->create_leader_account($team['nom_equipe'], $registered_team['leader_email'], $id_team);
+                $this->user->create_or_update_leader_account($team['nom_equipe'], $registered_team['leader_email'], $id_team);
                 $this->createTimeslots($registered_team, $id_team);
                 $this->add_leader_informations($registered_team, $id_team);
             }

@@ -119,12 +119,9 @@ class UserManager extends Generic
      * @param $team_id
      * @throws Exception
      */
-    public function create_leader_account($login, $email, $team_id): void
+    public function create_or_update_leader_account($login, $email, $team_id): void
     {
-        $login = strtolower(
-            str_replace('.', '',
-                str_replace(' ', '',
-                    Generic::accentedToNonAccented($login))));
+        $login = strtolower($email);
         // create leader user account if it does not exist
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $login);
@@ -135,6 +132,7 @@ class UserManager extends Generic
             $user_id = $this->insert_user($login, $email, $password);
             $this->insert_user_profile($user_id, 'RESPONSABLE_EQUIPE');
             $user = $this->get_one("login = ?", $bindings);
+            $this->email->sendMailNewUser($email, $login, $password);
         }
         if (!$user) {
             throw new Exception("Impossible de créer le compte $login !");
@@ -145,8 +143,7 @@ class UserManager extends Generic
         }
         $team = $this->team->getTeam($team_id);
         $team_name = $team['nom_equipe'];
-        $this->activity->add("Creation du compte $login responsable de l'equipe $team_name");
-        $this->email->sendMailNewUser($email, $login, $password);
+        $this->activity->add("Compte $login responsable de l'equipe $team_name");
     }
 
     /**
