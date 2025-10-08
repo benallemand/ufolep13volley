@@ -15,7 +15,11 @@ export default {
         </thead>
         <tbody>
         <tr v-for="match in matchs" :key="match.id_match">
-          <td class="hidden md:table-cell">{{ match.code_match }}</td>
+          <td class="hidden md:table-cell">
+            <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
+               target="_blank">{{ match.code_match }}
+            </a>
+          </td>
           <td class="hidden md:table-cell">{{ match.nommage ? match.nommage : match.numero_journee }}</td>
           <td class="hidden md:table-cell">{{ match.date_reception }}</td>
           <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''">{{ match.equipe_dom }}</td>
