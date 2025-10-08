@@ -1,6 +1,5 @@
 SELECT *
 FROM matchs_view m
-         JOIN journees j ON j.id = m.id_journee
 WHERE (m.score_equipe_dom != 0 OR m.score_equipe_ext != 0)
   AND m.match_status = 'CONFIRMED'
   AND m.date_reception IS NOT NULL
