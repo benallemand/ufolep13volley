@@ -155,10 +155,10 @@ export default {
                 <span><i class="fas fa-right-to-bracket mr-2"/>connexion</span>
               </a>
             </router-link>
-            <a class="btn btn-secondary" href="/register.php">
-              <span><i class="fas fa-user-plus mr-2"/>inscrire une équipe</span>
-            </a>
           </div>
+          <a class="btn btn-secondary" href="/register.php">
+            <span><i class="fas fa-user-plus mr-2"/>inscrire une équipe</span>
+          </a>
         </div>
       </div>`,
     data() {
