@@ -615,14 +615,14 @@ class MatchMgr extends Generic
      * @throws Exception
      */
     public function insert_db_match(string $code_competition,
-                                            $division,
-                                     int    $id_equipe_dom,
-                                     int    $id_equipe_ext,
-                                     string $code_match = null,
-                                     int    $id_journee = null,
-                                     string $date_match = null,
-                                     int    $id_gymnase = null,
-                                     string $note = null): void
+                                           $division,
+                                    int    $id_equipe_dom,
+                                    int    $id_equipe_ext,
+                                    string $code_match = null,
+                                    int    $id_journee = null,
+                                    string $date_match = null,
+                                    int    $id_gymnase = null,
+                                    string $note = null): void
     {
         $bindings = array();
         $code_match_string = "code_match = NULL";
@@ -1930,21 +1930,28 @@ class MatchMgr extends Generic
     private function flip_match($id_match)
     {
         $match = $this->get_match($id_match);
-        $update_match = array(
-            // mandatory for any update
+        
+        // Créer la date à partir du format français
+        $originalDate = DateTime::createFromFormat('d/m/Y', $match['date_reception']);
+        if ($originalDate === false) {
+            $originalDate = new DateTime($match['date_reception']);
+        }
+        $weekStart = (clone $originalDate)->modify('monday this week');
+        $update_match = [
             'id_match' => $match['id_match'],
             'code_match' => $match['code_match'],
-            // flip reception
             'id_equipe_dom' => $match['id_equipe_ext'],
             'id_equipe_ext' => $match['id_equipe_dom'],
-        );
+        ];
         require_once 'TimeSlot.php';
         $tsm = new TimeSlot();
         $timeslots = $tsm->get("c.id_equipe = " . $match['id_equipe_ext']);
         if (count($timeslots) >= 1) {
-            // compute reception date and gymnasium
-            $update_match['id_gymnasium'] = $timeslots[0]['id_gymnase'];
-            $update_match['date_reception'] = $this->get_date($timeslots[0]['id'], $match['id_journee']);
+            $timeslot = $timeslots[0];
+            $update_match['id_gymnasium'] = $timeslot['id_gymnase'];
+            $dayOfWeek = date('w', strtotime($timeslot['jour']));
+            $newDate = (clone $weekStart)->modify("+{$dayOfWeek} days");
+            $update_match['date_reception'] = $newDate->format('d/m/Y');
             $this->save($update_match);
         }
     }
