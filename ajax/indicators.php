@@ -194,6 +194,10 @@ $indicators[] = new Indicator(
     "Inscriptions - Terrains vs Equipes",
     file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'));
 
+$indicators[] = new Indicator(
+    "Inscriptions - Infos incomplètes",
+    file_get_contents(__DIR__ . '/../sql/indicator-register-incomplete-teams.sql'));
+
 function info_first($a, $b): int
 {
     return ($a->getType() == 'info') ? -1 : 1;
