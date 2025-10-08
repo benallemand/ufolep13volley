@@ -14,7 +14,12 @@
         {{ matchData.equipe_ext }}</span>
 </div>
 <div class="flex items-center justify-between mb-4">
-    <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{{matchData.gymnasium}}</span>
+    <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+            <a :href="'/pages/home.html#/teams/' + matchData.id_equipe_dom"
+               class="link">
+                {{matchData.gymnasium}}
+            </a>
+    </span>
     <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{{matchData.date_reception}} {{matchData.heure_reception}}</span>
 </div>
 
