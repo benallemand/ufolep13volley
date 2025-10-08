@@ -33,7 +33,7 @@ export default {
                 {{ Number(team.points) + team.penalites }} - {{ team.penalites }} pts de pénalité
               </span>
               </div>
-              <div v-if="isExactDeuce(team)">
+              <div v-if="isCompetitionFinished() && isExactDeuce(team)">
               <span class="badge badge-warning text-[8px]">
                 vérifier la rencontre directe
               </span>
@@ -75,6 +75,7 @@ export default {
             ranks: [],
             searchQuery: "",
             user: null,
+            limitDate: '',
         };
     },
     computed: {
@@ -84,6 +85,18 @@ export default {
         },
     },
     methods: {
+        fetchLimitDate() {
+            axios
+                .get(
+                    `/rest/action.php/limitdate/getLimitDates`
+                )
+                .then((response) => {
+                    this.limitDate = response.data.find(limitDate => limitDate.code_competition === this.code_competition).date_limite;
+                })
+                .catch((error) => {
+                    console.error("Erreur lors du chargement :", error);
+                });
+        },
         fetch() {
             axios
                 .get(
@@ -111,10 +124,14 @@ export default {
         },
         isExactDeuce(rank) {
             return this.ranks.filter((curRank) => curRank.points === rank.points && curRank.diff === rank.diff).length > 1;
+        },
+        isCompetitionFinished() {
+            return this.limitDate && new Date() > new Date(this.limitDate.split('/').reverse().join('-'));
         }
     },
     created() {
         this.fetchUserDetails();
         this.fetch();
+        this.fetchLimitDate();
     },
 };
