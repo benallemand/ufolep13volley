@@ -5,7 +5,7 @@ export default {
         <tr>
           <th class="hidden md:table-cell">code</th>
           <th class="hidden md:table-cell">journée</th>
-          <th class="hidden md:table-cell">date</th>
+          <th>date</th>
           <th></th>
           <th>résultat</th>
           <th></th>
@@ -21,7 +21,7 @@ export default {
             </a>
           </td>
           <td class="hidden md:table-cell">{{ match.nommage ? match.nommage : match.numero_journee }}</td>
-          <td class="hidden md:table-cell">{{ match.date_reception }}</td>
+          <td>{{ match.date_reception }} {{ match.heure_reception }}</td>
           <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''">{{ match.equipe_dom }}</td>
           <td>
             <span :class="match.score_equipe_dom === 3 ? 'text-success':''">{{ match.score_equipe_dom }}</span>
