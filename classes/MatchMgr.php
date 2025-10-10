@@ -439,6 +439,10 @@ class MatchMgr extends Generic
                 case 'set_4_ext':
                 case 'set_5_dom':
                 case 'set_5_ext':
+                    if (empty($value)) {
+                        $sql .= "$key = NULL,";
+                        break;
+                    }
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $value);
                     break;
@@ -1930,7 +1934,7 @@ class MatchMgr extends Generic
     private function flip_match($id_match)
     {
         $match = $this->get_match($id_match);
-        
+
         // Créer la date à partir du format français
         $originalDate = DateTime::createFromFormat('d/m/Y', $match['date_reception']);
         if ($originalDate === false) {

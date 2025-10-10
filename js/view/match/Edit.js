@@ -153,7 +153,7 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     type: 'AdminDays'
                 },
                 queryMode: 'local',
-                allowBlank: false,
+                allowBlank: true,
                 forceSelection: true,
                 listeners: {
                     focus: function (combo) {
