@@ -4,7 +4,6 @@ export default {
         <thead>
         <tr>
           <th class="hidden md:table-cell">code</th>
-          <th class="hidden md:table-cell">journée</th>
           <th>date</th>
           <th></th>
           <th>résultat</th>
@@ -20,8 +19,7 @@ export default {
                target="_blank">{{ match.code_match }}
             </a>
           </td>
-          <td class="hidden md:table-cell">{{ match.nommage ? match.nommage : match.numero_journee }}</td>
-          <td>{{ match.date_reception }} {{ match.heure_reception }}</td>
+          <td>{{ match.date_reception }} {{ match.heure_reception }}<span :if="match.match_status == 'NOT_CONFIRMED'" class="ml-1 badge badge-warning">date non confirmée</span></td>
           <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''">{{ match.equipe_dom }}</td>
           <td>
             <span :class="match.score_equipe_dom === 3 ? 'text-success':''">{{ match.score_equipe_dom }}</span>
