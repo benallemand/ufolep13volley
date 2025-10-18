@@ -120,14 +120,6 @@ Ext.define('Ufolep13Volley.view.form.player', {
             html: "<small style='font-style: italic'>A modifier uniquement si le joueur vient d'un autre club (prêt, changement de club)</small>",
         },
         {
-            name: 'show_photo',
-            xtype: 'checkboxfield',
-            fieldLabel: 'Diffusion photo autorisée ?',
-            boxLabel: 'Oui',
-            msgTarget: 'under',
-            uncheckedValue: 'off'
-        },
-        {
             name: 'photo',
             xtype: 'filefield',
             fieldLabel: 'Photo',

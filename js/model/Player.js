@@ -8,23 +8,7 @@ Ext.define('Ufolep13Volley.model.Player', {
         'email',
         'num_licence',
         'num_licence_ext',
-        {
-            name: 'path_photo',
-            type: 'string',
-            convert: function (val, rec) {
-                if (!rec.get('show_photo')) {
-                    switch (rec.get('sexe')) {
-                        case 'M':
-                            return 'images/MalePhotoNotAllowed.png';
-                        case 'F':
-                            return 'images/FemalePhotoNotAllowed.png';
-                        default:
-                            break;
-                    }
-                }
-                return val;
-            }
-        },
+        'path_photo',
         {
             name: 'photo',
             type: 'string',
@@ -65,10 +49,6 @@ Ext.define('Ufolep13Volley.model.Player', {
         },
         {
             name: 'is_vice_leader',
-            type: 'bool',
-        },
-        {
-            name: 'show_photo',
             type: 'bool',
         },
         {

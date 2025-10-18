@@ -141,7 +141,6 @@ class Players extends Generic
         $sexe,
         $departement_affiliation,
         $id_club,
-        $show_photo,
         $num_licence = null,
         $date_homologation = null,
         $telephone = null,
@@ -160,7 +159,6 @@ class Players extends Generic
             'sexe' => $sexe,
             'departement_affiliation' => $departement_affiliation,
             'id_club' => $id_club,
-            'show_photo' => $show_photo,
             'telephone' => $telephone,
             'email' => $email,
             'telephone2' => $telephone2,
@@ -241,7 +239,6 @@ class Players extends Generic
         $sexe,
         $departement_affiliation,
         $id_club,
-        $show_photo,
         $est_responsable_club,
         $telephone,
         $email,
@@ -260,7 +257,6 @@ class Players extends Generic
             'sexe' => $sexe,
             'departement_affiliation' => $departement_affiliation,
             'id_club' => $id_club,
-            'show_photo' => $show_photo,
             'est_responsable_club' => $est_responsable_club,
             'telephone' => $telephone,
             'email' => $email,
@@ -320,7 +316,6 @@ class Players extends Generic
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
                 case 'est_responsable_club':
-                case 'show_photo':
                     $val = ($value === 'on' || $value === 1 || $value === '1') ? 1 : 0;
                     $bindings[] = array(
                         'type' => 'i',
@@ -658,7 +653,6 @@ class Players extends Generic
         je.is_vice_leader, 
         je.is_leader, 
         j.id, 
-        j.show_photo,
         j.date_homologation 
         FROM joueur_equipe je
         LEFT JOIN players_view j ON j.id=je.id_joueur
@@ -943,7 +937,6 @@ class Players extends Generic
                 'departement_affiliation' => $licence['departement'],
                 'id_club' => $cur_club['id'],
                 'date_homologation' => $licence['homologation_date'],
-                'show_photo' => 'on'
             ));
         } else {
             // s'il existe, le mettre à jour
@@ -964,32 +957,17 @@ class Players extends Generic
     public static function adjust_photo_path_from_results(int|array|string|null $results): string|array|int|null
     {
         foreach ($results as $index => $result) {
-            if ($result['show_photo'] === 1) {
-                $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
-                $results[$index]['path_photo_low'] = Generic::accentedToNonAccented($result['path_photo_low']);
-                if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
-                    switch ($result['sexe']) {
-                        case 'M':
-                            $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
-                            $results[$index]['path_photo_low'] = 'images/MaleMissingPhoto.png';
-                            break;
-                        case 'F':
-                            $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
-                            $results[$index]['path_photo_low'] = 'images/FemaleMissingPhoto.png';
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } else {
+            $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
+            $results[$index]['path_photo_low'] = Generic::accentedToNonAccented($result['path_photo_low']);
+            if (($results[$index]['path_photo'] == '') || (file_exists(__DIR__ . '/../' . $results[$index]['path_photo']) === FALSE)) {
                 switch ($result['sexe']) {
                     case 'M':
-                        $results[$index]['path_photo'] = 'images/MalePhotoNotAllowed.png';
-                        $results[$index]['path_photo_low'] = 'images/MalePhotoNotAllowed.png';
+                        $results[$index]['path_photo'] = 'images/MaleMissingPhoto.png';
+                        $results[$index]['path_photo_low'] = 'images/MaleMissingPhoto.png';
                         break;
                     case 'F':
-                        $results[$index]['path_photo'] = 'images/FemalePhotoNotAllowed.png';
-                        $results[$index]['path_photo_low'] = 'images/FemalePhotoNotAllowed.png';
+                        $results[$index]['path_photo'] = 'images/FemaleMissingPhoto.png';
+                        $results[$index]['path_photo_low'] = 'images/FemaleMissingPhoto.png';
                         break;
                     default:
                         break;

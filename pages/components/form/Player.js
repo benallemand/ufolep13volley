@@ -51,17 +51,6 @@ export default {
               <option value="83">83 - var</option>
             </select>
           </div>
-          <div class="flex">
-            <label class="cursor-pointer label">
-              <span class="label-text mr-2">Afficher la photo sur la fiche équipe</span>
-              <input v-model="form.show_photo"
-                     type="checkbox"
-                     class="checkbox"
-                     true-value="1"
-                     false-value="0"
-              />
-            </label>
-          </div>
           <div class="form-control">
             <label class="label">
               <span class="label-text">Téléphone</span>
@@ -142,7 +131,6 @@ export default {
                     case 'sexe':
                     case 'departement_affiliation':
                     case 'id_club':
-                    case 'show_photo':
                     case 'telephone':
                     case 'email':
                     case 'telephone2':

@@ -347,7 +347,6 @@ class Register extends Generic
                 $player['sexe'],
                 $player['departement_affiliation'],
                 $player['id_club'],
-                $player['show_photo'],
                 $player['num_licence'],
                 $player['date_homologation'],
                 $player['telephone'],

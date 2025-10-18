@@ -127,14 +127,6 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 ]
             },
             {
-                name: 'show_photo',
-                xtype: 'checkboxfield',
-                fieldLabel: 'Diffusion photo autorisée ?',
-                boxLabel: 'Oui',
-                msgTarget: 'under',
-                uncheckedValue: 'off'
-            },
-            {
                 name: 'photo',
                 xtype: 'filefield',
                 fieldLabel: 'Photo',
