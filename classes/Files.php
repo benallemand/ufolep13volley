@@ -209,6 +209,11 @@ class Files extends Generic
                 continue;
             }
             $raw_data = explode("\n", trim($raw_licence));
+            // Filtrer les lignes qui commencent par "Vos activités" ou "Volley ball" pour simplifier le parsing
+            $raw_data = array_values(array_filter($raw_data, function($line) {
+                $trimmed = trim($line);
+                return !self::starts_with($trimmed, "Vos activités") && !self::starts_with($trimmed, "Volley ball");
+            }));
             $result = array();
             foreach ($raw_data as $index => $item) {
                 $item = trim($item);

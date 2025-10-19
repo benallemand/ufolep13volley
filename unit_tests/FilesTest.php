@@ -134,4 +134,26 @@ class FilesTest extends UfolepTestCase
             $mgr->get_licences_data_from_pdf_2024(__DIR__ . '/files/licences/2024.pdf'));
 
     }
+
+    public function test_get_licence_bad_naming()
+    {
+        $mgr = new Files();
+        $this->assertEquals(
+            array(
+                0 =>
+                    array(
+                        'departement' => '13',
+                        'licence_number' => '96756847',
+                        'last_first_name' => 'ZOUITEN SOFIANE',
+                        'date_of_birth' => '11/07/2001',
+                        'age' => '24',
+                        'sexe' => 'M',
+                        'club' => 'MARSEILLE VOLLEY 13',
+                        'licence_club' => '013212122',
+                        'homologation_date' => '16/10/2025',
+                        'licence_number_2' => '013_96756847',
+                    ),),
+            $mgr->get_licences_data_from_pdf_2024(__DIR__ . '/files/licences/licences-vos-activites.pdf'));
+
+    }
 }
