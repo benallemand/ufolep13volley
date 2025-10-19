@@ -22,13 +22,49 @@ export default {
               {{ player.full_name }}
             </li>
           </ul>
-          <div>
+          <div class="flex gap-2">
             <router-link :to="'/player/new'"
                          class="btn btn-primary">
               <i class="fas fa-plus mr-2"></i>créer...
             </router-link>
+            <button class="btn btn-secondary" @click="openImportModal">
+              <i class="fas fa-upload mr-2"></i>importer depuis le pdf...
+            </button>
           </div>
         </div>
+        
+        <!-- Modal d'import PDF -->
+        <dialog ref="importModal" class="modal">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Importer les licences depuis un PDF</h3>
+            <form @submit.prevent="handleImportSubmit">
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">Fichier PDF</span>
+                </label>
+                <input 
+                  type="file" 
+                  accept="application/pdf"
+                  ref="pdfFileInput"
+                  @change="onPdfFileChange"
+                  class="file-input file-input-bordered w-full" 
+                  required
+                />
+              </div>
+              <div class="modal-action">
+                <button type="button" class="btn" @click="closeImportModal">Annuler</button>
+                <button type="submit" class="btn btn-primary" :disabled="!selectedPdfFile || isUploading">
+                  <span v-if="isUploading" class="loading loading-spinner"></span>
+                  {{ isUploading ? 'Import en cours...' : 'Importer' }}
+                </button>
+              </div>
+            </form>
+          </div>
+          <form method="dialog" class="modal-backdrop">
+            <button @click="closeImportModal">close</button>
+          </form>
+        </dialog>
+        
         <div class="bg-base-200 border border-2 border-base-300 p-4">
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <li v-for="player in team_players" :key="player.id" class="card shadow-md bg-base-100">
@@ -119,6 +155,8 @@ export default {
             all_players: [],
             searchTerm: '',
             filteredPlayers: [],
+            selectedPdfFile: null,
+            isUploading: false,
         };
     },
     methods: {
@@ -241,6 +279,48 @@ export default {
                 })
                 .catch((error) => {
                     onError(this, error)
+                });
+        },
+        openImportModal() {
+            this.$refs.importModal.showModal();
+        },
+        closeImportModal() {
+            this.$refs.importModal.close();
+            this.selectedPdfFile = null;
+            if (this.$refs.pdfFileInput) {
+                this.$refs.pdfFileInput.value = '';
+            }
+        },
+        onPdfFileChange(event) {
+            this.selectedPdfFile = event.target.files[0];
+        },
+        handleImportSubmit() {
+            if (!this.selectedPdfFile) {
+                alert("Veuillez sélectionner un fichier PDF");
+                return;
+            }
+            
+            this.isUploading = true;
+            const formData = new FormData();
+            formData.append('licences', this.selectedPdfFile);
+            
+            axios
+                .post('/rest/action.php/player/update_from_licence_file', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                .then((response) => {
+                    onSuccess(this, response);
+                    this.closeImportModal();
+                    this.fetchTeamPlayers();
+                    this.fetchAllPlayers();
+                })
+                .catch((error) => {
+                    onError(this, error);
+                })
+                .finally(() => {
+                    this.isUploading = false;
                 });
         },
         isValidFile(file) {
