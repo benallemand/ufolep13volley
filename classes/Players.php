@@ -341,13 +341,9 @@ class Players extends Generic
             $sql .= " WHERE id = ?";
         }
         $newId = $this->sql_manager->execute($sql, $bindings);
-        if (empty($inputs['id'])) {
-            if (UserManager::isTeamLeader()) {
-                if ($newId > 0) {
-                    if (!$this->addPlayerToMyTeam($newId)) {
-                        throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
-                    }
-                }
+        if (UserManager::isTeamLeader()) {
+            if (!$this->addPlayerToMyTeam(!empty($newId) ? $newId : $inputs['id'])) {
+                throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
             }
         }
         if (empty($inputs['id'])) {
