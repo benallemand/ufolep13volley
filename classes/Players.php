@@ -406,6 +406,10 @@ class Players extends Generic
             'nom' => $nom,
             'prenom' => $prenom
         ));
+        $player = $this->get_player($id);
+        if (!file_exists($player['path_photo_low'])) {
+            $this->generateLowPhoto($player['path_photo']);
+        }
     }
 
     /**
