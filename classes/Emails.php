@@ -133,7 +133,7 @@ class Emails extends Generic
         $mail->Password = $this->configuration->mail_password;
         $mail->SMTPSecure = $this->configuration->mail_smtpsecure;
         $mail->Port = $this->configuration->mail_port;
-        $mail->setFrom($this->configuration->mail_username);
+        $mail->setFrom($this->configuration->mail_username, 'UFOLEP 13 Volleyball');
         foreach (explode(';', $to) as $toAddress) {
             $mail->addAddress($toAddress);
         }
@@ -152,6 +152,7 @@ class Emails extends Generic
                 $mail->addAttachment($fileName, basename($fileName));
             }
         }
+        $mail->addReplyTo('contact@ufolep13volley.org', 'UFOLEP 13 Volleyball');
         $mail->WordWrap = 50;
         $mail->Subject = $subject;
         $mail->Body = $mail->msgHTML($body);
