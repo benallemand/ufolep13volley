@@ -393,7 +393,7 @@ class Players extends Generic
             return;
         }
         set_time_limit(60);
-        $licences = $this->files->get_licences_data_from_pdf_2024($_FILES['licences']['tmp_name']);
+        $licences = $this->files->get_licences_data($_FILES['licences']['tmp_name']);
         foreach ($licences as $licence) {
             $this->search_player_and_save_from_licence($licence);
         }
@@ -923,13 +923,20 @@ class Players extends Generic
             'value' => $licence['last_first_name']
         );
         $current_player = $this->get_one($query, $bindings);
+        
+        // Gérer la photo si présente
+        $idPhoto = null;
+        if (isset($licence['photo']) && $licence['photo'] !== null) {
+            $idPhoto = $this->savePlayerPhotoFromLicence($licence);
+        }
+        
         // s'il n'existe pas, le créer
         if (empty($current_player)) {
             $cur_club = $this->club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => $licence['licence_club'])));
             if (empty($cur_club)) {
                 throw new Exception("Pas de club avec le numéro d'affiliation " . $licence['licence_club'] . " !");
             }
-            $this->save(array(
+            $newPlayerId = $this->save(array(
                 'prenom' => explode(' ', $licence['last_first_name'])[1],
                 'nom' => explode(' ', $licence['last_first_name'])[0],
                 'num_licence' => $licence['licence_number'],
@@ -938,6 +945,11 @@ class Players extends Generic
                 'id_club' => $cur_club['id'],
                 'date_homologation' => $licence['homologation_date'],
             ));
+            
+            // Lier la photo au joueur nouvellement créé
+            if ($idPhoto !== null && $newPlayerId) {
+                $this->linkPlayerToPhoto($newPlayerId, $idPhoto);
+            }
         } else {
             // s'il existe, le mettre à jour
             $this->save(array(
@@ -947,6 +959,88 @@ class Players extends Generic
                 'departement_affiliation' => $licence['departement'],
                 'date_homologation' => $licence['homologation_date'],
             ));
+            
+            // Lier la photo au joueur existant (mettre à jour si nouvelle photo)
+            if ($idPhoto !== null) {
+                $this->linkPlayerToPhoto($current_player['id'], $idPhoto);
+            }
+        }
+    }
+
+    /**
+     * Sauvegarde la photo d'un joueur depuis les données de licence
+     * @param array $licence Données de licence avec 'photo', 'licence_number', 'departement'
+     * @return int|null L'ID de la photo dans la table photos, ou null si échec
+     * @throws Exception
+     */
+    private function savePlayerPhotoFromLicence(array $licence): ?int
+    {
+        if (!isset($licence['photo']) || $licence['photo'] === null) {
+            return null;
+        }
+        
+        // Créer le nom de fichier basé sur le numéro de licence
+        $licenceNumber = $licence['licence_number'];
+        $departement = $licence['departement'];
+        $uploaddir = __DIR__ . '/../players_pics/';
+        
+        // S'assurer que le dossier existe
+        if (!is_dir($uploaddir)) {
+            mkdir($uploaddir, 0755, true);
+        }
+        
+        // Format: 0[departement]_[licence_number].jpg (ex: 013_96742776.jpg)
+        $filename = sprintf('%02d_%s.jpg', $departement, $licenceNumber);
+        $uploadfile = $uploaddir . $filename;
+        $relativePath = 'players_pics/' . $filename;
+        
+        // Sauvegarder le contenu JPEG sur disque
+        if (file_put_contents($uploadfile, $licence['photo']) === false) {
+            error_log("Échec de sauvegarde de la photo du joueur: $uploadfile");
+            return null;
+        }
+        
+        // Insérer dans la table photos et récupérer l'ID
+        $idPhoto = $this->photo->insertPhoto($relativePath);
+        
+        // Créer une version basse résolution pour les performances web
+        $this->createLowResPhoto($relativePath);
+        
+        return $idPhoto;
+    }
+    
+    /**
+     * Créer une version basse résolution de la photo pour l'affichage web
+     * @param string $path_photo Chemin relatif vers la photo (ex: 'players_pics/013_96742776.jpg')
+     * @return void
+     */
+    private function createLowResPhoto(string $path_photo): void
+    {
+        try {
+            $compression_rate = 50;
+            $source_file = __DIR__ . '/../' . $path_photo;
+            $low_photos_folder = __DIR__ . '/../players_pics_low/';
+            
+            if (!is_dir($low_photos_folder)) {
+                mkdir($low_photos_folder, 0755, true);
+            }
+            
+            $filename = basename($path_photo);
+            $destination_file = $low_photos_folder . $filename;
+            
+            // Charger l'image originale
+            $img = imagecreatefromjpeg($source_file);
+            if ($img === false) {
+                return;
+            }
+            
+            // Sauvegarder la version compressée
+            imagejpeg($img, $destination_file, $compression_rate);
+            imagedestroy($img);
+            
+        } catch (Exception $e) {
+            // Échec silencieux - la photo basse résolution est optionnelle
+            error_log("Échec de création de la photo basse résolution pour $path_photo: " . $e->getMessage());
         }
     }
 
