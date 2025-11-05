@@ -3,18 +3,18 @@ export default {
       <table class="table mt-2 table-pin-rows bg-base-100">
         <thead>
         <tr>
-          <th class="hidden md:table-cell">code</th>
+          <th>code</th>
           <th>date</th>
           <th></th>
           <th>résultat</th>
           <th></th>
           <th>score</th>
-          <th class="hidden md:table-cell">commentaires</th>
+          <th>commentaires</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="match in matchs" :key="match.id_match">
-          <td class="hidden md:table-cell">
+          <td>
             <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
                target="_blank">{{ match.code_match }}
             </a>
@@ -39,7 +39,7 @@ export default {
             <span v-if="match.score_equipe_dom+match.score_equipe_ext >=5">{{ match.set_5_dom }}/
               {{ match.set_5_ext }}</span>
           </td>
-          <td class="hidden md:table-cell">{{ match.note }}</td>
+          <td>{{ match.note }}</td>
         </tr>
         </tbody>
       </table>
