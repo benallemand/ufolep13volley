@@ -19,7 +19,9 @@ export default {
                target="_blank">{{ match.code_match }}
             </a>
           </td>
-          <td>{{ match.date_reception }} {{ match.heure_reception }}<span v-if="match.match_status == 'NOT_CONFIRMED'" class="ml-1 badge badge-warning">date non confirmée</span></td>
+          <td>{{ match.date_reception }} {{ match.heure_reception }}<span v-if="match.match_status == 'NOT_CONFIRMED'"
+                                                                          class="ml-1 badge badge-warning">date non confirmée</span>
+          </td>
           <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''">{{ match.equipe_dom }}</td>
           <td>
             <span :class="match.score_equipe_dom === 3 ? 'text-success':''">{{ match.score_equipe_dom }}</span>
@@ -28,16 +30,16 @@ export default {
           </td>
           <td :class="match.score_equipe_ext === 3 ? 'bg-success/5':''">{{ match.equipe_ext }}</td>
           <td>
-                <span v-if="match.score_equipe_dom+match.score_equipe_ext >=1">{{ match.set_1_dom }}/
-                  {{ match.set_1_ext }}</span>
-            <span v-if="match.score_equipe_dom+match.score_equipe_ext >=2">{{ match.set_2_dom }}/
-              {{ match.set_2_ext }}</span>
-            <span v-if="match.score_equipe_dom+match.score_equipe_ext >=3">{{ match.set_3_dom }}/
-              {{ match.set_3_ext }}</span>
-            <span v-if="match.score_equipe_dom+match.score_equipe_ext >=4">{{ match.set_4_dom }}/
-              {{ match.set_4_ext }}</span>
-            <span v-if="match.score_equipe_dom+match.score_equipe_ext >=5">{{ match.set_5_dom }}/
-              {{ match.set_5_ext }}</span>
+            <span
+                v-if="match.score_equipe_dom+match.score_equipe_ext >=1"><span>{{ match.set_1_dom }}</span>/<span>{{ match.set_1_ext }}</span></span>
+            <span
+                v-if="match.score_equipe_dom+match.score_equipe_ext >=2"><span>{{ match.set_2_dom }}</span>/<span>{{ match.set_2_ext }}</span></span>
+            <span
+                v-if="match.score_equipe_dom+match.score_equipe_ext >=3"><span>{{ match.set_3_dom }}</span>/<span>{{ match.set_3_ext }}</span></span>
+            <span
+                v-if="match.score_equipe_dom+match.score_equipe_ext >=4"><span>{{ match.set_4_dom }}</span>/<span>{{ match.set_4_ext }}</span></span>
+            <span
+                v-if="match.score_equipe_dom+match.score_equipe_ext >=5"><span>{{ match.set_5_dom }}</span>/<span>{{ match.set_5_ext }}</span></span>
           </td>
           <td>{{ match.note }}</td>
         </tr>
