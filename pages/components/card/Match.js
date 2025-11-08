@@ -7,7 +7,7 @@ export default {
              class="link link-info hover:underline">
             <i class="fas fa-external-link-alt ml-1"></i>
           </a>
-          <a :href="'mailto:'+match.email_dom+','+match.email_ext" target="_blank"
+          <a :href="getMailtoLink()" target="_blank"
              class="link link-info hover:underline">
             <i class="fas fa-envelope ml-1"></i>
           </a>
@@ -149,6 +149,16 @@ export default {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             return matchDate <= today;
+        }
+    },
+    methods: {
+        getMailtoLink() {
+            const emails = [this.match.email_dom, this.match.email_ext, this.match.contact_com].filter(email => email);
+            const to = emails.join(',');
+            const divisionPart = this.match.division ? ` D${this.match.division}` : '';
+            const subject = `${this.match.libelle_competition}${divisionPart} - ${this.match.code_match} - ${this.match.equipe_dom} vs ${this.match.equipe_ext}`;
+            const body = "Bonjour,\n\n[Votre message ici]\n\nCordialement";
+            return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
     }
 };
