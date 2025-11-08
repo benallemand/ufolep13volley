@@ -18,6 +18,9 @@ export default {
             <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
                target="_blank">{{ match.code_match }}
             </a>
+            <a @click="addToGoogleCalendar(match)" class="btn btn-xs btn-primary ml-2" title="Ajouter à Google Calendar">
+              <i class="fas fa-calendar-plus"/>
+            </a>
           </td>
           <td>{{ match.date_reception }} {{ match.heure_reception }}<span v-if="match.match_status == 'NOT_CONFIRMED'"
                                                                           class="ml-1 badge badge-warning">date non confirmée</span>
@@ -63,6 +66,44 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement des matchs :", error);
                 });
+        },
+        addToGoogleCalendar(match) {
+            // Convertir le timestamp en date
+            const matchDate = new Date(match.date_reception_raw);
+            
+            // Parser l'heure (format "HH:MM")
+            const [hours, minutes] = match.heure_reception.split(':');
+            matchDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // Date de fin (+ 2 heures)
+            const endDate = new Date(matchDate);
+            endDate.setHours(endDate.getHours() + 2);
+            
+            // Format pour Google Calendar (YYYYMMDDTHHMMSS)
+            const formatGoogleDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hour = String(date.getHours()).padStart(2, '0');
+                const minute = String(date.getMinutes()).padStart(2, '0');
+                return `${year}${month}${day}T${hour}${minute}00`;
+            };
+
+            const startDate = formatGoogleDate(matchDate);
+            const endDateFormatted = formatGoogleDate(endDate);
+
+            const title = `${match.equipe_dom} contre ${match.equipe_ext}`;
+            const details = 'Compétition Ufolep 13 Volley';
+            const location = `https://www.ufolep13volley.org/pages/home.html#/teams/${match.id_equipe_dom}`;
+
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+                `&text=${encodeURIComponent(title)}` +
+                `&dates=${startDate}/${endDateFormatted}` +
+                `&details=${encodeURIComponent(details)}` +
+                `&location=${encodeURIComponent(location)}` +
+                `&ctz=Europe/Paris`;
+
+            window.open(url, '_blank');
         },
     }, created() {
         this.fetch();
