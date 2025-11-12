@@ -70,9 +70,14 @@ class Survey extends Generic
                 JOIN survey s ON s.id_match = m.id_match
                 JOIN comptes_acces u ON u.id = s.user_id
                 JOIN users_teams ut ON u.id = ut.user_id
-                LEFT JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = ut.team_id
-                LEFT JOIN equipes e_sondee ON e_sondee.id_equipe = IF(ut.team_id = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
+                JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = ut.team_id AND e_sondeuse.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
+                JOIN equipes e_sondee ON e_sondee.id_equipe = IF(ut.team_id = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
                 JOIN clubs e_sondee_club ON e_sondee_club.id = e_sondee.id_club
+                JOIN (
+                    SELECT id_match, user_id, MAX(id) as max_id
+                    FROM survey
+                    GROUP BY id_match, user_id
+                ) latest ON s.id = latest.max_id
                 WHERE $query
                 ORDER BY id DESC";
     }
