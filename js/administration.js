@@ -19,6 +19,7 @@ Ext.application({
         'download_diploma',
         'manage_survey',
         'manage_register',
+        'manage_email',
         'generate_competition',
         'manage_commission',
     ],

@@ -26,6 +26,7 @@ class Emails extends Generic
     public function __construct()
     {
         parent::__construct();
+        $this->table_name = 'emails';
         $this->file_manager = new Files();
         $this->match = new MatchMgr();
         $this->team = new Team();
@@ -1039,5 +1040,23 @@ class Emails extends Generic
     {
         $emails = $this->get_emails("id IN (SELECT MAX(id) FROM emails)");
         return $emails[0];
+    }
+
+    public function getSql($query = "1=1"): string
+    {
+        return "SELECT 
+                    id,
+                    from_email,
+                    to_email,
+                    cc,
+                    bcc,
+                    subject,
+                    body,
+                    DATE_FORMAT(creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
+                    DATE_FORMAT(sent_date, '%d/%m/%Y %H:%i:%s') AS sent_date,
+                    sending_status
+                FROM emails
+                WHERE $query
+                ORDER BY id DESC";
     }
 }
