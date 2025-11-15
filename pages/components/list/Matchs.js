@@ -174,20 +174,20 @@ export default {
         },
         canAcceptReport(match) {
             return this.isLeader
-                && ((match.id_equipe_dom == this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
-                    || (match.id_equipe_ext == this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
+                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
+                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
                 && match.is_match_score_filled === 0;
         },
         canRefuseReport(match) {
             return this.isLeader
-                && ((match.id_equipe_dom == this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
-                    || (match.id_equipe_ext == this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
+                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
+                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
                 && match.is_match_score_filled === 0;
         },
         canGiveReportDate(match) {
             return this.isLeader
-                && ((match.id_equipe_dom == this.user.id_equipe && match.report_status === 'ACCEPTED_BY_DOM')
-                    || (match.id_equipe_ext == this.user.id_equipe && match.report_status === 'ACCEPTED_BY_EXT'))
+                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ACCEPTED_BY_DOM')
+                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ACCEPTED_BY_EXT'))
                 && match.is_match_score_filled === 0;
         },
         postReportAction(code_match, actionName) {

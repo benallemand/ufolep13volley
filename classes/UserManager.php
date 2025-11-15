@@ -538,9 +538,9 @@ class UserManager extends Generic
             return;
         }
         $data = $results[0];
-        $_SESSION['id_equipe'] = $data['id_equipe'];
+        $_SESSION['id_equipe'] = (int)$data['id_equipe'];
         $_SESSION['login'] = $data['login'];
-        $_SESSION['id_user'] = $data['id_user'];
+        $_SESSION['id_user'] = (int)$data['id_user'];
         $_SESSION['profile_name'] = $data['profile_name'];
         if (!empty($redirect)) {
             header('Location: ' . urldecode($redirect));
@@ -715,7 +715,7 @@ class UserManager extends Generic
         $available_teams = $this->getUserTeams($_SESSION['id_user']);
         foreach ($available_teams as $available_team) {
             if ($available_team['id_equipe'] == $id_equipe) {
-                $_SESSION['id_equipe'] = $id_equipe;
+                $_SESSION['id_equipe'] = (int)$id_equipe;
                 return;
             }
         }
