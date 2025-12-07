@@ -10,17 +10,22 @@ class Photo extends Generic
         $this->table_name = 'photos';
     }
 
+    /**
+     * @throws Exception
+     */
     function insertPhoto($uploadfile)
     {
-        $sql = "INSERT INTO photos SET path_photo = '$uploadfile'";
-        return $this->sql_manager->execute($sql);
+        $sql = "INSERT INTO photos SET path_photo = ?";
+        $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => $uploadfile);
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     function get_photo($path_photo)
     {
         header('Content-Type: image/jpeg');
-        if(!empty($path_photo)) {
-            if(file_exists(__DIR__ . "/../$path_photo")) {
+        if (!empty($path_photo)) {
+            if (file_exists(__DIR__ . "/../$path_photo")) {
                 readfile(__DIR__ . "/../$path_photo");
                 exit(0);
             }
