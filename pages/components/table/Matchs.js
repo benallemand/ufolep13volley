@@ -1,5 +1,10 @@
+import {matchFilterMixin, filterBarTemplate} from "/utils/matchFilterMixin.js";
+
 export default {
+    mixins: [matchFilterMixin],
     template: `
+    <div>
+      ${filterBarTemplate}
       <table class="table mt-2 table-pin-rows bg-base-100">
         <thead>
         <tr>
@@ -13,7 +18,7 @@ export default {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="match in matchs" :key="match.id_match">
+        <tr v-for="match in filteredMatchs" :key="match.id_match">
           <td>
             <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
                target="_blank">{{ match.code_match }}
@@ -48,6 +53,10 @@ export default {
         </tr>
         </tbody>
       </table>
+      <div v-if="filteredMatchs.length === 0" class="text-center text-gray-500 py-4">
+        Aucun match ne correspond aux critères de recherche.
+      </div>
+    </div>
     `, props: {
         fetchUrl: {
             type: String, required: true,
@@ -56,6 +65,10 @@ export default {
         return {
             matchs: [],
         };
+    }, computed: {
+        filteredMatchs() {
+            return this.matchs.filter(match => this.applyBaseFilters(match));
+        },
     }, methods: {
         fetch() {
             axios
@@ -66,6 +79,9 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement des matchs :", error);
                 });
+        },
+        resetFilters() {
+            this.resetBaseFilters();
         },
         addToGoogleCalendar(match) {
             // Convertir le timestamp en date

@@ -1,6 +1,8 @@
 import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "/utils/reportUtils.js";
+import {matchFilterMixin} from "/utils/matchFilterMixin.js";
 
 export default {
+    mixins: [matchFilterMixin],
     components: {
         'match-card': () => import('../card/Match.js')
     }, template: `
@@ -9,7 +11,7 @@ export default {
         <label class="flex items-center gap-2">
           <input
               type="checkbox"
-              v-model="filter.showPlayedMatchesOnly"
+              v-model="filter.showPlayedOnly"
               class="checkbox checkbox-primary"
           />
           <span>joués</span>
@@ -17,7 +19,7 @@ export default {
         <label class="flex items-center gap-2">
           <input
               type="checkbox"
-              v-model="filter.showNonPlayedMatchesOnly"
+              v-model="filter.showNotPlayedOnly"
               class="checkbox checkbox-primary"
           />
           <span>non joués</span>
@@ -103,24 +105,24 @@ export default {
         }
     }, data() {
         return {
-            matchs: [], searchQuery: "", filter: {
+            matchs: [],
+            filter: {
+                showPlayedOnly: false,
+                showNotPlayedOnly: false,
                 showCertified: false,
                 showNotCertified: true,
                 showForbiddenPlayer: false,
-                showPlayedMatchesOnly: false,
-                showNonPlayedMatchesOnly: false,
-            }, user: null,
+            },
+            user: null,
         };
     }, computed: {
         displayedMatchs() {
             return this.matchs.filter((match) => {
-                const matchesSearch = match.equipe_dom.toLowerCase().includes(this.searchQuery.toLowerCase()) || match.equipe_ext.toLowerCase().includes(this.searchQuery.toLowerCase()) || match.code_match.toLowerCase().includes(this.searchQuery.toLowerCase());
+                if (!this.applyBaseFilters(match)) return false;
                 const matchesCertif = !this.filter.showCertified || match.certif === 1;
                 const matchesNotCertif = !this.filter.showNotCertified || match.certif === 0;
                 const matchesForbiddenPlayers = !this.filter.showForbiddenPlayer || match.has_forbidden_player === 1;
-                const matchesPlayed = !this.filter.showPlayedMatchesOnly || match.is_match_score_filled === 1;
-                const matchesNonPlayed = !this.filter.showNonPlayedMatchesOnly || match.is_match_score_filled === 0;
-                return matchesSearch && matchesCertif && matchesNotCertif && matchesForbiddenPlayers && matchesPlayed && matchesNonPlayed;
+                return matchesCertif && matchesNotCertif && matchesForbiddenPlayers;
             }).sort((a, b) => a.date_reception_raw - b.date_reception_raw);
         }, matchesByJournee() {
             const groupedMatches = {};
@@ -161,12 +163,10 @@ export default {
                 .catch(() => {
                 });
         }, resetFilters() {
-            this.filter.showPlayedMatchesOnly = false;
-            this.filter.showNonPlayedMatchesOnly = false;
+            this.resetBaseFilters();
             this.filter.showCertified = false;
             this.filter.showNotCertified = false;
             this.filter.showForbiddenPlayer = false;
-            this.searchQuery = "";
         },
         canAskReportFor(match) {
             return canAskReport(match, this.user, this.isLeader);
