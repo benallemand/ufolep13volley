@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/classes/Generic.php';
 require_once __DIR__ . '/classes/MatchMgr.php';
 try {
@@ -105,6 +105,35 @@ $user_details = $_SESSION;
             </button>
         </div>
     </form>
+    <div class="mb-4 p-4 border" v-if="isLeader">
+        <h3 class="text-xl font-bold mb-4">Demande de report</h3>
+        <div class="flex flex-wrap gap-2">
+            <button
+                v-if="canAskReport()"
+                @click="postReportAction('askForReport')"
+                class="btn btn-primary">
+                <i class="fas fa-calendar mr-2"></i>Demander un report
+            </button>
+            <button
+                v-if="canAcceptReport()"
+                @click="postReportAction('acceptReport')"
+                class="btn btn-success">
+                <i class="fas fa-calendar mr-2"></i>Accepter le report
+            </button>
+            <button
+                v-if="canRefuseReport()"
+                @click="postReportAction('refuseReport')"
+                class="btn btn-error">
+                <i class="fas fa-calendar mr-2"></i>Refuser le report
+            </button>
+            <button
+                v-if="canGiveReportDate()"
+                @click="postReportAction('giveReportDate')"
+                class="btn btn-success">
+                <i class="fas fa-calendar mr-2"></i>Donner une date de report
+            </button>
+        </div>
+    </div>
 </div>
 <script src="/match.js" type="module"></script>
 </BODY>

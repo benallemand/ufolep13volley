@@ -1,5 +1,6 @@
-import {onSuccess, onError} from "./toaster.js";
+﻿import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
+import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "./utils/reportUtils.js";
 
 new Vue({
     el: '#app',
@@ -7,9 +8,17 @@ new Vue({
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         isLoading: false,
+        user: null,
     },
     mounted() {
+        this.fetchUserDetails();
         this.reloadData();
+    },
+    computed: {
+        isLeader() {
+            const allowedProfiles = ["RESPONSABLE_EQUIPE"];
+            return this.user && allowedProfiles.includes(this.user.profile_name);
+        },
     },
     methods: {
         reloadData() {
@@ -97,6 +106,34 @@ new Vue({
             }, {score_equipe_dom: 0, score_equipe_ext: 0});
             this.matchData.score_equipe_dom = result.score_equipe_dom
             this.matchData.score_equipe_ext = result.score_equipe_ext
-        }
+        },
+        fetchUserDetails() {
+            axios
+                .get("/session_user.php")
+                .then((response) => {
+                    if (response.data.error) {
+                        this.user = null;
+                    } else {
+                        this.user = response.data;
+                    }
+                })
+                .catch(() => {
+                });
+        },
+        canAskReport() {
+            return canAskReport(this.matchData, this.user, this.isLeader);
+        },
+        canAcceptReport() {
+            return canAcceptReport(this.matchData, this.user, this.isLeader);
+        },
+        canRefuseReport() {
+            return canRefuseReport(this.matchData, this.user, this.isLeader);
+        },
+        canGiveReportDate() {
+            return canGiveReportDate(this.matchData, this.user, this.isLeader);
+        },
+        postReportAction(actionName) {
+            postReportAction(axios, this.matchData.code_match, actionName, () => this.reloadData());
+        },
     }
 });

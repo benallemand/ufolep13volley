@@ -1,3 +1,5 @@
+import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "/utils/reportUtils.js";
+
 export default {
     components: {
         'match-card': () => import('../card/Match.js')
@@ -64,26 +66,26 @@ export default {
                 <template v-slot:actions>
                   <div class="card-actions" v-if="isLeader">
                     <button
-                        v-if="canAskReport(match)"
-                        @click="postReportAction(match.code_match, 'askForReport')"
+                        v-if="canAskReportFor(match)"
+                        @click="doPostReportAction(match.code_match, 'askForReport')"
                         class="btn btn-primary">
                       <i class="fas fa-calendar mr-2"/>Demander un report
                     </button>
                     <button
-                        v-if="canAcceptReport(match)"
-                        @click="postReportAction(match.code_match, 'acceptReport')"
+                        v-if="canAcceptReportFor(match)"
+                        @click="doPostReportAction(match.code_match, 'acceptReport')"
                         class="btn btn-success">
                       <i class="fas fa-calendar mr-2"/>Accepter le report
                     </button>
                     <button
-                        v-if="canRefuseReport(match)"
-                        @click="postReportAction(match.code_match, 'refuseReport')"
+                        v-if="canRefuseReportFor(match)"
+                        @click="doPostReportAction(match.code_match, 'refuseReport')"
                         class="btn btn-error">
                       <i class="fas fa-calendar mr-2"/>Refuser le report
                     </button>
                     <button
-                        v-if="canGiveReportDate(match)"
-                        @click="postReportAction(match.code_match, 'giveReportDate')"
+                        v-if="canGiveReportDateFor(match)"
+                        @click="doPostReportAction(match.code_match, 'giveReportDate')"
                         class="btn btn-success">
                       <i class="fas fa-calendar mr-2"/>Donner une date de report
                     </button>
@@ -166,69 +168,20 @@ export default {
             this.filter.showForbiddenPlayer = false;
             this.searchQuery = "";
         },
-        canAskReport(match) {
-            return this.isLeader
-                && [match.id_equipe_dom, match.id_equipe_ext].includes(this.user.id_equipe)
-                && match.is_match_score_filled === 0
-                && match.report_status === 'NOT_ASKED';
+        canAskReportFor(match) {
+            return canAskReport(match, this.user, this.isLeader);
         },
-        canAcceptReport(match) {
-            return this.isLeader
-                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
-                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
-                && match.is_match_score_filled === 0;
+        canAcceptReportFor(match) {
+            return canAcceptReport(match, this.user, this.isLeader);
         },
-        canRefuseReport(match) {
-            return this.isLeader
-                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ASKED_BY_EXT')
-                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ASKED_BY_DOM'))
-                && match.is_match_score_filled === 0;
+        canRefuseReportFor(match) {
+            return canRefuseReport(match, this.user, this.isLeader);
         },
-        canGiveReportDate(match) {
-            return this.isLeader
-                && ((match.id_equipe_dom === this.user.id_equipe && match.report_status === 'ACCEPTED_BY_DOM')
-                    || (match.id_equipe_ext === this.user.id_equipe && match.report_status === 'ACCEPTED_BY_EXT'))
-                && match.is_match_score_filled === 0;
+        canGiveReportDateFor(match) {
+            return canGiveReportDate(match, this.user, this.isLeader);
         },
-        postReportAction(code_match, actionName) {
-            const params = new FormData();
-            params.append('code_match', code_match);
-            if (['askForReport', 'refuseReport'].includes(actionName)) {
-                const reason = prompt("Veuillez saisir la raison:");
-                if (reason === null) {
-                    return;
-                }
-                if (reason.trim() === "") {
-                    alert("La raison ne peut pas être vide.");
-                    return;
-                }
-                params.append('reason', reason);
-            }
-            if (['giveReportDate'].includes(actionName)) {
-                const newDate = prompt("Veuillez saisir la nouvelle date au format JJ/MM/AAAA:");
-                if (newDate === null) {
-                    return;
-                }
-                if (newDate.trim() === "") {
-                    alert("La date ne peut pas être vide.");
-                    return;
-                }
-                params.append('report_date', newDate);
-            }
-            // headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            axios.post(`/rest/action.php/matchmgr/${actionName}`, params)
-                .then(response => {
-                    if (response.data.success) {
-                        alert("envoyé avec succès.");
-                        this.fetch();
-                    } else {
-                        alert("Erreur lors de l'envoi: " + response.data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur:", error);
-                    alert("Une erreur est survenue...");
-                });
+        doPostReportAction(code_match, actionName) {
+            postReportAction(axios, code_match, actionName, () => this.fetch());
         },
     }, created() {
         this.fetchUserDetails();
