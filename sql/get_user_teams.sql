@@ -5,6 +5,6 @@ FROm comptes_acces u
          JOIN profiles p on up.profile_id = p.id
          JOIN users_teams ut on ca.id = ut.user_id
          JOIN teams_view t on ut.team_id = t.id_equipe
-         JOIN classements c on t.id_equipe = c.id_equipe
+         LEFT JOIN classements c on t.id_equipe = c.id_equipe
 WHERE p.name = 'RESPONSABLE_EQUIPE'
   AND u.id = ?

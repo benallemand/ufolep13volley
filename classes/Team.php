@@ -58,7 +58,7 @@ class Team extends Generic
         LEFT JOIN creneau cr ON cr.id_equipe = e.id_equipe
         LEFT JOIN gymnase g ON g.id=cr.id_gymnase
         WHERE $query
-        GROUP BY id_equipe, nom_equipe
+        GROUP BY e.id_equipe, e.nom_equipe
         ORDER BY nom_equipe";
     }
 
@@ -71,6 +71,27 @@ class Team extends Generic
     {
         $sql = $this->getSql($query);
         return $this->sql_manager->execute($sql);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     * @throws Exception
+     */
+    public function get_by_id($id): array
+    {
+        $query = "e.$this->id_name = ?";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id
+        );
+        $sql = $this->getSql($query);
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (empty($results)) {
+            throw new Exception("Pas de donnée dispo pour l'id $id !");
+        }
+        return $results[0];
     }
 
     /**

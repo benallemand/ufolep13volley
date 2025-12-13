@@ -114,25 +114,28 @@ class UserManager extends Generic
     }
 
     /**
-     * @param $login
      * @param $email
      * @param $team_id
      * @throws Exception
      */
-    public function create_or_update_leader_account($login, $email, $team_id): void
+    public function create_or_update_leader_account($email, $team_id): void
     {
         $login = strtolower($email);
         // create leader user account if it does not exist
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $login);
         $user = $this->get_one("login = ?", $bindings);
-        $password = null;
         if (!$user) {
             $password = Generic::randomPassword();
             $user_id = $this->insert_user($login, $email, $password);
             $this->insert_user_profile($user_id, 'RESPONSABLE_EQUIPE');
             $user = $this->get_one("login = ?", $bindings);
             $this->email->sendMailNewUser($email, $login, $password);
+            $this->activity->add("Compte $login créé");
+            error_log("le compte $login n'existe pas, création ok");
+        }
+        else {
+            error_log("le compte $login existe déjà, ok");
         }
         if (!$user) {
             throw new Exception("Impossible de créer le compte $login !");
@@ -140,10 +143,14 @@ class UserManager extends Generic
         // link team if not already linked
         if (!$this->is_existing_user_team($user['id'], $team_id)) {
             $this->insert_user_team($user['id'], $team_id);
+            $team = $this->team->getTeam($team_id);
+            $team_name = $team['nom_equipe'];
+            $this->activity->add("Compte $login responsable de l'equipe $team_name");
+            error_log("le compte $login n'est pas lié à l'équipe, création du lien ok");
         }
-        $team = $this->team->getTeam($team_id);
-        $team_name = $team['nom_equipe'];
-        $this->activity->add("Compte $login responsable de l'equipe $team_name");
+        else {
+            error_log("le compte $login est déjà lié à l'équipe, ok");
+        }
     }
 
     /**

@@ -62,7 +62,7 @@ class Register extends Generic
         $id = null
     ): void
     {
-        if(!UserManager::is_connected() || (UserManager::is_connected() && !UserManager::isAdmin())) {
+        if (!UserManager::is_connected() || (UserManager::is_connected() && !UserManager::isAdmin())) {
             if (!$this->competition->is_registration_available($id_competition)) {
                 throw new Exception("L'enregistrement à cette compétition n'est pas disponible actuellement !");
             }
@@ -243,7 +243,7 @@ class Register extends Generic
             foreach ($registered_teams as $registered_team) {
                 $id_team = $this->create_or_update_team($registered_team);
                 $team = $this->team->getTeam($id_team);
-                $this->user->create_or_update_leader_account($team['nom_equipe'], $registered_team['leader_email'], $id_team);
+                $this->user->create_or_update_leader_account($registered_team['leader_email'], $id_team);
                 $this->createTimeslots($registered_team, $id_team);
                 $this->add_leader_informations($registered_team, $id_team);
             }
@@ -379,21 +379,31 @@ class Register extends Generic
                     $registered_team['code_competition'],
                     $registered_team['new_team_name'],
                     $registered_team['id_club']);
+                error_log("l'équipe n'existe pas, création ok");
             } else {
                 // if new team has already been created, get team id
                 $team = $this->team->get_by_name($registered_team['code_competition'],
                     $registered_team['new_team_name'],
                     $registered_team['id_club']);
                 $id_team = $team['id_equipe'];
+                error_log("l'équipe existe déjà, ok");
             }
         } else {
-            // if team already exists, get team id
-            $id_team = $registered_team['old_team_id'];
-            // rename existing team with new team name
-            $this->team->save(array(
-                'id_equipe' => $id_team,
-                'nom_equipe' => $registered_team['new_team_name'],
-            ));
+            $old_team = $this->team->get_by_id($registered_team['old_team_id']);
+            if($old_team['nom_equipe'] !== $registered_team['new_team_name']) {
+                // if team already exists, get team id
+                $id_team = $registered_team['old_team_id'];
+                // rename existing team with new team name
+                $this->team->save(array(
+                    'id_equipe' => $id_team,
+                    'nom_equipe' => $registered_team['new_team_name'],
+                ));
+                error_log("l'équipe existe sous un autre nom, modification ok");
+            }
+            else {
+                $id_team = $registered_team['old_team_id'];
+                error_log("l'équipe existe déjà, ok");
+            }
         }
         return $id_team;
     }
@@ -636,6 +646,14 @@ class Register extends Generic
         }
     }
 
+    public function create_teams_and_accounts(string $ids): void
+    {
+        $ids = explode(',', $ids);
+        foreach ($ids as $id) {
+            $this->create_team_and_account($id);
+        }
+    }
+
     /**
      * @throws Exception
      */
@@ -665,6 +683,14 @@ class Register extends Generic
             'rank_start' => $rank,
         );
         $this->save($update_register);
+    }
+
+    private function create_team_and_account(string $id)
+    {
+        $register = $this->get_register($id);
+        error_log($register['new_team_name']);
+        $id_team = $this->create_or_update_team($register);
+        $this->user->create_or_update_leader_account($register['leader_email'], $id_team);
     }
 
 }
