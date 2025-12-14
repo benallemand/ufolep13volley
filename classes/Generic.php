@@ -114,8 +114,8 @@ class Generic
         }
         $sql = "SELECT 
                 DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
-                e.nom_equipe, 
-                c.libelle AS competition, 
+                GROUP_CONCAT(DISTINCT e.nom_equipe) AS nom_equipe, 
+                GROUP_CONCAT(DISTINCT c.libelle) AS competition, 
                 a.comment AS description, 
                 ca.login AS utilisateur, 
                 ca.email AS email_utilisateur 
@@ -123,7 +123,8 @@ class Generic
             LEFT JOIN comptes_acces ca ON ca.id=a.user_id
             LEFT JOIN users_teams ut ON ca.id = ut.user_id
             LEFT JOIN equipes e ON e.id_equipe=ut.team_id
-            LEFT JOIN competitions c ON c.code_competition=e.code_competition";
+            LEFT JOIN competitions c ON c.code_competition=e.code_competition
+            GROUP BY a.activity_date, a.comment, ca.login, ca.email";
         if (!empty($id_team)) {
             $sql .= " WHERE e.id_equipe = $id_team";
         }
