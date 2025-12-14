@@ -30,6 +30,14 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                 },
             },
             {
+                header: 'Division(s)',
+                dataIndex: 'divisions',
+                width: 300,
+                filter: {
+                    type: 'string',
+                },
+            },
+            {
                 header: 'Inscrite à la coupe ?',
                 dataIndex: 'is_cup_registered',
                 xtype: 'checkcolumn',
