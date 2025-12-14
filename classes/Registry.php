@@ -16,5 +16,16 @@ class Registry extends Generic
         return $this->sql_manager->execute($sql);
     }
 
+    public function find_by_key(string $like_key)
+    {
+        $sql = "SELECT * FROM registry WHERE registry_key LIKE CONCAT('%', ?, '%')";
+        $bindings = array();
+        $bindings[] = array(
+            'type' => 's',
+            'value' => $like_key
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
 
 }

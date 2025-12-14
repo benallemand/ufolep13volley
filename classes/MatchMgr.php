@@ -17,6 +17,7 @@ require_once __DIR__ . '/Competition.php';
 require_once __DIR__ . '/Day.php';
 require_once __DIR__ . '/UserManager.php';
 require_once __DIR__ . '/Survey.php';
+require_once __DIR__ . '/Registry.php';
 
 class MatchMgr extends Generic
 {
@@ -24,6 +25,7 @@ class MatchMgr extends Generic
 
     private Team $team;
     private Rank $rank;
+    private Registry $registry;
     private Configuration $configuration;
 
     /**
@@ -34,6 +36,7 @@ class MatchMgr extends Generic
         parent::__construct();
         $this->team = new Team();
         $this->rank = new Rank();
+        $this->registry = new Registry();
         $this->survey = new Survey();
         $this->configuration = new Configuration();
         ini_set('max_execution_time', 1200);
@@ -80,6 +83,17 @@ class MatchMgr extends Generic
         return $this->get_matches("m.code_competition = '$competition' 
                                     AND m.division = '$division' 
                                     AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED')");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getToScheduleMatches($competition = null, $division = null): array
+    {
+        if (empty($competition) && empty($division)) {
+            throw new Exception("Il faut renseigner une compétition et une division !");
+        }
+        return $this->registry->find_by_key("to_schedule." . $competition . "_" . $division . ".1");
     }
 
     /**
