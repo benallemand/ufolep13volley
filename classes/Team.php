@@ -45,7 +45,8 @@ class Team extends Generic
         e.id_photo,
         p.path_photo,
         e.is_cup_registered,
-        IF(cl.id IS NULL, 0, 1) AS is_active_team
+        IF(cl.id IS NULL, 0, 1) AS is_active_team,
+        GROUP_CONCAT(DISTINCT CONCAT(comp.libelle, ' division ', cl.division)) AS divisions
         FROM equipes e 
         LEFT JOIN classements cl ON cl.id_equipe = e.id_equipe
         LEFT JOIN photos p ON p.id = e.id_photo
