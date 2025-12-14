@@ -1,4 +1,9 @@
 export default {
+    data() {
+        return {
+            showPastMonths: false
+        };
+    },
     props: {
         events: {
             type: Array,
@@ -10,6 +15,15 @@ export default {
           
             <h2 class="text-2xl font-bold text-center text-primary mb-6">calendrier</h2>
             
+            <!-- Toggle mois passés -->
+            <div class="flex justify-center mb-4">
+                <button @click="showPastMonths = !showPastMonths" 
+                        class="btn btn-sm btn-outline">
+                    <span v-if="!showPastMonths">📅 Afficher les mois passés ({{ pastMonthsCount }})</span>
+                    <span v-else>📅 Masquer les mois passés</span>
+                </button>
+            </div>
+            
             <!-- Légende -->
             <div class="flex justify-center mb-6 gap-4 flex-wrap">
                 <div v-for="eventType in eventTypes" :key="eventType.label" class="flex items-center gap-2">
@@ -20,7 +34,7 @@ export default {
 
             <!-- Calendrier annuel -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div v-for="month in schoolYearMonths" :key="month.key" class="card bg-base-100 shadow-md">
+                <div v-for="month in visibleMonths" :key="month.key" class="card bg-base-100 shadow-md">
                     <div class="card-body p-3">
                         <h3 class="card-title text-lg text-center mb-3">{{ month.name }}</h3>
                         
@@ -70,6 +84,11 @@ export default {
         </div>
     `,
     computed: {
+        currentMonth() {
+            const now = new Date();
+            return { year: now.getFullYear(), month: now.getMonth() };
+        },
+        
         schoolYearMonths() {
             const currentYear = new Date().getFullYear();
             const nextYear = currentYear + 1;
@@ -89,8 +108,20 @@ export default {
                 ...month,
                 daysInMonth: new Date(month.year, month.month + 1, 0).getDate(),
                 startDay: new Date(month.year, month.month, 1).getDay() === 0 ? 6 : new Date(month.year, month.month, 1).getDay() - 1,
-                startDayWeekdays: this.getStartDayForWeekdays(month.year, month.month)
+                startDayWeekdays: this.getStartDayForWeekdays(month.year, month.month),
+                isPast: this.isMonthPast(month.year, month.month)
             }));
+        },
+        
+        visibleMonths() {
+            if (this.showPastMonths) {
+                return this.schoolYearMonths;
+            }
+            return this.schoolYearMonths.filter(month => !month.isPast);
+        },
+        
+        pastMonthsCount() {
+            return this.schoolYearMonths.filter(month => month.isPast).length;
         },
         
         processedEvents() {
@@ -104,9 +135,19 @@ export default {
             }));
         },
         
+        visibleEvents() {
+            if (this.showPastMonths) {
+                return this.processedEvents;
+            }
+            return this.processedEvents.filter(event => {
+                const endDate = event.endDate || event.startDate;
+                return !this.isMonthPast(endDate.getFullYear(), endDate.getMonth());
+            });
+        },
+        
         eventTypes() {
             const types = new Set();
-            this.processedEvents.forEach(event => {
+            this.visibleEvents.forEach(event => {
                 types.add(event.label);
             });
             return Array.from(types).map((label, index) => ({
@@ -116,6 +157,16 @@ export default {
         }
     },
     methods: {
+        isMonthPast(year, month) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            
+            if (year < currentYear) return true;
+            if (year === currentYear && month < currentMonth) return true;
+            return false;
+        },
+        
         parseDate(dateStr) {
             const [datePart, timePart] = dateStr.split(' ');
             const [day, month, year] = datePart.split('/');
