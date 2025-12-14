@@ -93,7 +93,7 @@ class MatchMgr extends Generic
         if (empty($competition) && empty($division)) {
             throw new Exception("Il faut renseigner une compétition et une division !");
         }
-        return $this->registry->find_by_key("to_schedule." . $competition . "_" . $division . ".1");
+        return $this->registry->find_by_key("to_schedule." . $competition . "_" . $division . ".");
     }
 
     /**
