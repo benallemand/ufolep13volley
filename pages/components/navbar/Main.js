@@ -3,12 +3,12 @@ export default {
       <div>
         <div class="flex justify-center">
           <a href="/" class="center">
-            <img alt="Ufolep" src="/images/svg/logo-ufolep-vectorizer-no-background.svg" style="max-height:150px;">
+            <img alt="Ufolep" src="../images/svg/logo-ufolep-vectorizer-no-background.svg" style="max-height:150px;">
           </a>
         </div>
-        <div class="navbar bg-base-200 shadow-sm flex flex-wrap justify-center gap-2">
-          <a class="btn btn-ghost" href="/">
-            <span><i class="fas fa-home mr-2"/>Accueil</span>
+        <div class="navbar bg-base-100 shadow-sm flex flex-wrap justify-center gap-2">
+          <a href="/" class="btn btn-ghost">
+            <span><i class="mr-2 fas fa-home"/>Accueil</span>
           </a>
           <div class="dropdown">
             <div tabindex="0" role="button" class="btn btn-ghost">
@@ -226,6 +226,11 @@ export default {
                     console.log(error)
                 });
         },
+    },
+    watch: {
+        $route() {
+            document.activeElement?.blur();
+        }
     },
     created() {
         this.fetchUserDetails();

@@ -119,6 +119,11 @@ export default {
                 });
         },
     },
+    watch: {
+        $route() {
+            document.activeElement?.blur();
+        }
+    },
     created() {
         this.fetchUserDetails();
     },
