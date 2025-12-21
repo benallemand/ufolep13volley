@@ -37,15 +37,6 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
                 allowBlank: false,
                 msgTarget: 'under'
             },
-            {
-                name: 'id_team',
-                xtype: 'combo',
-                queryMode: 'local',
-                fieldLabel: 'Equipe',
-                store: {type: 'Teams'},
-                displayField: 'team_full_name',
-                valueField: 'id_equipe'
-            }
         ],
         buttons: [
             {

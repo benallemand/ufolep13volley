@@ -133,8 +133,7 @@ class UserManager extends Generic
             $this->email->sendMailNewUser($email, $login, $password);
             $this->activity->add("Compte $login créé");
             error_log("le compte $login n'existe pas, création ok");
-        }
-        else {
+        } else {
             error_log("le compte $login existe déjà, ok");
         }
         if (!$user) {
@@ -147,8 +146,7 @@ class UserManager extends Generic
             $team_name = $team['nom_equipe'];
             $this->activity->add("Compte $login responsable de l'equipe $team_name");
             error_log("le compte $login n'est pas lié à l'équipe, création du lien ok");
-        }
-        else {
+        } else {
             error_log("le compte $login est déjà lié à l'équipe, ok");
         }
     }
@@ -242,21 +240,7 @@ class UserManager extends Generic
      */
     public function getUsers(): array|int|string|null
     {
-        $sql = "SELECT  ca.id, 
-                        ca.login, 
-                        ca.password_hash,
-                        ca.email,
-                        ut.team_id AS id_team,
-                        e.nom_equipe AS team_name,
-                        c.nom AS club_name,
-                        up.profile_id AS id_profile,
-                        p.name AS profile
-        FROM comptes_acces ca
-        LEFT JOIN users_teams ut ON ut.user_id=ca.id 
-        LEFT JOIN equipes e ON e.id_equipe=ut.team_id 
-        LEFT JOIN clubs c ON c.id=e.id_club 
-        LEFT JOIN users_profiles up ON up.user_id=ca.id 
-        LEFT JOIN profiles p ON p.id=up.profile_id";
+        $sql = file_get_contents(__DIR__ . '/../sql/get_users.sql');
         return $this->sql_manager->execute($sql);
     }
 
@@ -698,6 +682,21 @@ class UserManager extends Generic
         $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * @throws Exception
+     */
+    private function delete_user_team(int $user_id, $team_id): void
+    {
+        $sql = "DELETE FROM users_teams WHERE 
+                        user_id = ? AND 
+                        team_id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+            array('type' => 'i', 'value' => $team_id),
+        );
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
 
     /**
      * @throws Exception
@@ -727,6 +726,70 @@ class UserManager extends Generic
             }
         }
         throw new Exception("Equipe non autorisée !");
+    }
+
+    /**
+     * Met à jour les équipes associées à un utilisateur
+     * @param int $user_id
+     * @param string $team_ids Liste des IDs d'équipes séparés par des virgules
+     * @throws Exception
+     */
+    public function updateUserTeams(int $user_id, string $team_ids): void
+    {
+        if ($this->isUserAdmin($user_id)) {
+            throw new Exception("Les administrateurs ne peuvent pas être associés à une équipe");
+        }
+        
+        $new_team_ids = empty($team_ids) ? [] : array_map('intval', explode(',', $team_ids));
+        $current_teams = $this->getUserTeamIds($user_id);
+        $teams_to_add = array_diff($new_team_ids, $current_teams);
+        $teams_to_remove = array_diff($current_teams, $new_team_ids);
+        
+        foreach ($teams_to_remove as $team_id) {
+            $this->delete_user_team($user_id, $team_id);
+        }
+        
+        foreach ($teams_to_add as $team_id) {
+            $this->insert_user_team($user_id, $team_id);
+        }
+        
+        $login = $this->getUserLogin($user_id);
+        $this->addActivity("Mise à jour des équipes pour l'utilisateur $login");
+    }
+
+    /**
+     * Récupère uniquement les IDs des équipes associées à un utilisateur
+     * @param int $user_id
+     * @return array
+     * @throws Exception
+     */
+    public function getUserTeamIds(int $user_id): array
+    {
+        $sql = "SELECT team_id FROM users_teams WHERE user_id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return array_column($results, 'team_id');
+    }
+
+    /**
+     * Vérifie si un utilisateur a le profil ADMINISTRATEUR
+     * @param int $user_id
+     * @return bool
+     * @throws Exception
+     */
+    private function isUserAdmin(int $user_id): bool
+    {
+        $sql = "SELECT COUNT(*) AS cnt 
+                FROM users_profiles up 
+                JOIN profiles p ON up.profile_id = p.id 
+                WHERE up.user_id = ? AND p.name = 'ADMINISTRATEUR'";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return intval($results[0]['cnt']) > 0;
     }
 
 
