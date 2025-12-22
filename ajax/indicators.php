@@ -200,6 +200,9 @@ $indicators[] = new Indicator(
     "Joueurs sans photo",
     file_get_contents(__DIR__ . '/../sql/no_photo.sql'),
     'alert');
+$indicators[] = new Indicator(
+    "Distance parcourue",
+    file_get_contents(__DIR__ . '/../sql/equity_distance.sql'));
 
 function info_first($a, $b): int
 {
