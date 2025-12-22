@@ -211,13 +211,38 @@ function info_first($a, $b): int
 
 usort($indicators, 'info_first');
 
+$mode = filter_input(INPUT_GET, 'mode');
+$indicatorId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$indicatorName = filter_input(INPUT_GET, 'indicator');
+
+if ($mode === 'list') {
+    $list = array();
+    foreach ($indicators as $index => $indicator) {
+        $list[] = array(
+            'id' => $index,
+            'fieldLabel' => $indicator->getFieldLabel(),
+            'type' => $indicator->getType()
+        );
+    }
+    echo json_encode(array('results' => $list));
+    exit();
+}
+
+if ($mode === 'detail' && $indicatorId !== null && $indicatorId !== false) {
+    if (isset($indicators[$indicatorId])) {
+        $result = $indicators[$indicatorId]->getResult();
+        echo json_encode($result);
+    } else {
+        echo json_encode(array('error' => 'Indicator not found'));
+    }
+    exit();
+}
+
 $results = array();
 foreach ($indicators as $indicator) {
     $results[] = $indicator->getResult();
 }
 
-
-$indicatorName = filter_input(INPUT_GET, 'indicator');
 if (!$indicatorName) {
     echo json_encode(array('results' => array_filter($results)));
     exit();

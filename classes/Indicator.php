@@ -14,6 +14,11 @@ class Indicator extends Generic
         return $this->type;
     }
 
+    public function getFieldLabel(): string
+    {
+        return $this->fieldLabel;
+    }
+
     public function setType(string $type): void
     {
         $this->type = $type;

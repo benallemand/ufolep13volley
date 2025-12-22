@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
     stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate'],
     models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
@@ -328,49 +328,37 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         }
     },
     displayIndicators: function () {
-        var me = this;
         var mainPanel = this.getMainPanel();
         mainPanel.setAutoScroll(true);
+        var alertView = Ext.create('Ufolep13Volley.view.view.Indicators', {
+            flex: 1,
+            indicatorType: 'alert'
+        });
+        var infoView = Ext.create('Ufolep13Volley.view.view.Indicators', {
+            flex: 1,
+            indicatorType: 'info'
+        });
         var tab = mainPanel.add({
-            title: 'Indicateurs', layout: 'hbox', autoScroll: true, items: []
+            title: 'Indicateurs',
+            layout: 'hbox',
+            autoScroll: true,
+            items: [{
+                title: 'Alertes',
+                flex: 1,
+                layout: 'fit',
+                autoScroll: true,
+                items: [alertView]
+            }, {
+                title: 'Infos',
+                flex: 1,
+                layout: 'fit',
+                autoScroll: true,
+                items: [infoView]
+            }]
         });
         mainPanel.setActiveTab(tab);
-        var storeIndicators = Ext.create('Ext.data.Store', {
-            fields: ['fieldLabel', 'value', 'details', 'type'], proxy: {
-                type: 'rest', url: 'ajax/indicators.php', reader: {
-                    type: 'json', root: 'results'
-                }
-            }
-        });
-        storeIndicators.load({
-            callback: function (records) {
-                let alert_records = Ext.Array.filter(records, function (record) {
-                    return record.get('type') === 'alert'
-                })
-                let info_records = Ext.Array.filter(records, function (record) {
-                    return record.get('type') === 'info'
-                })
-                var indicatorPanel = Ext.ComponentQuery.query('panel[title=Indicateurs]')[0];
-                if (alert_records.length > 0) {
-                    var alert_items = me.get_indicator_items(me, alert_records);
-                    indicatorPanel.add({
-                        title: 'Alertes',
-                        flex: 1,
-                        layout: 'vbox',
-                        items: alert_items
-                    })
-                }
-                if (info_records.length > 0) {
-                    var info_items = me.get_indicator_items(me, info_records);
-                    indicatorPanel.add({
-                        title: 'Infos',
-                        flex: 1,
-                        layout: 'vbox',
-                        items: info_items
-                    })
-                }
-            }
-        });
+        alertView.getStore().load();
+        infoView.getStore().load();
     },
     filterPlayersWithoutClub: function (checkbox, newValue) {
         var store = checkbox.up('grid').getStore();
@@ -1333,70 +1321,5 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 });
             }
         });
-    },
-    get_indicator_items(me, records) {
-        var indicator_items = [];
-        Ext.each(records, function (record) {
-            var detailsData = record.get('details');
-            if (!detailsData) {
-                return;
-            }
-            var fields = [];
-            var columns = [];
-            for (var k in detailsData[0]) {
-                fields.push(k);
-                columns.push(me.getIndicatorColumn(k));
-            }
-            if (record.get('value') === 0) {
-                return;
-            }
-            indicator_items.push({
-                layout: 'hbox', items: [{
-                    xtype: 'displayfield',
-                    margin: 10,
-                    fieldLabel: record.get('fieldLabel'),
-                    labelWidth: 250,
-                    value: Ext.String.format(
-                        "<div style='{0}'>{1}</div>",
-                        record.get('type') === 'alert' ? 'color: red; font-weight: bold' : 'color: black',
-                        record.get('value')),
-                    width: 300
-                }, {
-                    xtype: 'button', margin: 10, text: 'Détails', handler: function () {
-                        Ext.create('Ext.window.Window', {
-                            title: record.get('fieldLabel'),
-                            height: 500,
-                            width: 700,
-                            maximizable: true,
-                            layout: 'fit',
-                            items: {
-                                xtype: 'grid_ufolep',
-                                selModel: 'rowmodel',
-                                store: Ext.create('Ext.data.Store', {
-                                    fields: fields, data: {
-                                        'items': detailsData
-                                    }, proxy: {
-                                        type: 'memory', reader: {
-                                            type: 'json', root: 'items'
-                                        }
-                                    }
-                                }),
-                                columns: columns
-                            },
-                            dockedItems: [
-                                {
-                                    xtype: 'toolbar', dock: 'bottom', items: [{
-                                        text: 'Télécharger', handler: function (button) {
-                                            button.up('window').down('grid').export(record.get('fieldLabel'));
-                                        }
-                                    }]
-                                }
-                            ]
-                        }).show();
-                    }
-                }]
-            });
-        });
-        return indicator_items;
     }
 });
