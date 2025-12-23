@@ -22,14 +22,6 @@ var indicator_tpl = new Ext.XTemplate(
     '<div style="text-align: center; font-size: 11px; color: #555; line-height: 1.3; overflow: hidden; flex: 1; display: flex; align-items: center; justify-content: center;">',
     '<span>{fieldLabel}</span>',
     '</div>',
-    '<div style="text-align: center; min-height: 24px;">',
-    '<tpl if="!loading && value &gt; 0">',
-    '<button type="button" class="ctl-details" style="',
-    'padding: 4px 12px; border: none; border-radius: 4px;',
-    'background: rgba(0,0,0,0.1); cursor: pointer; font-size: 11px;',
-    '">Détails</button>',
-    '</tpl>',
-    '</div>',
     '</div>',
     '</tpl>',
     '</div>'
@@ -99,11 +91,8 @@ Ext.define('Ufolep13Volley.view.view.Indicators', {
     },
 
     listeners: {
-        itemclick: function (view, record, item, index, e) {
-            var target = e.target;
-            if (target.tagName === 'BUTTON' && target.className === 'ctl-details') {
-                view.showDetails(record);
-            }
+        itemdblclick: function (view, record, item, index, e) {
+            view.showDetails(record);
         }
     },
 
