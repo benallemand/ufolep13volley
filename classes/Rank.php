@@ -474,6 +474,57 @@ class Rank extends Generic
     }
 
     /**
+     * Get teams registered for Khoury Hanna cup, sorted by registration date
+     * @param int $max_teams_per_pool Maximum teams per pool (default 4)
+     * @return array
+     * @throws Exception
+     */
+    public function getKHCupDrawData(int $max_teams_per_pool = 4): array
+    {
+        $sql = "SELECT 
+                    r.id AS id_register,
+                    COALESCE(e.id_equipe, r.old_team_id) AS id_equipe,
+                    r.new_team_name AS equipe,
+                    c.nom AS club,
+                    DATE_FORMAT(r.creation_date, '%d/%m/%Y %H:%i') AS date_inscription
+                FROM register r
+                JOIN clubs c ON c.id = r.id_club
+                JOIN competitions comp ON comp.id = r.id_competition
+                LEFT JOIN equipes e ON e.nom_equipe = r.new_team_name 
+                    AND e.code_competition = comp.code_competition
+                WHERE comp.code_competition = 'kh'
+                ORDER BY r.creation_date ASC";
+        
+        $teams = $this->sql_manager->execute($sql);
+        
+        if (empty($teams)) {
+            return [
+                'teams' => [],
+                'chapeaux' => [],
+                'total_teams' => 0,
+                'nb_pools' => 0
+            ];
+        }
+        
+        $total_teams = count($teams);
+        
+        // Add rank based on registration order
+        foreach ($teams as $index => &$team) {
+            $team['rang'] = $index + 1;
+        }
+        
+        // Assign chapeaux
+        $result = $this->assignChapeauxToTeams($teams, $max_teams_per_pool);
+        
+        return [
+            'teams' => $result['teams'],
+            'chapeaux' => $result['chapeaux'],
+            'total_teams' => $total_teams,
+            'nb_pools' => $result['nb_pools']
+        ];
+    }
+
+    /**
      * Get cup draw data with chapeaux based on ranking position for a competition
      * Chapeaux are created separately for tableau haut and tableau bas
      * Each chapeau has the same size to ensure max 4 teams per pool

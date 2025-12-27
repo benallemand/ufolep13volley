@@ -36,6 +36,12 @@ export default {
                   <i class="fas fa-random mr-1"/>tirage coupe Isoardi
                 </router-link>
               </li>
+              <li class="menu-title">Coupe Khoury Hanna</li>
+              <li>
+                <router-link to="/cup-draw-kh">
+                  <i class="fas fa-random mr-1"/>tirage coupe Khoury Hanna
+                </router-link>
+              </li>
               <template v-for="group in groupedPools">
                 <li class="menu-title">{{ group.libelle }}</li>
                 <li>

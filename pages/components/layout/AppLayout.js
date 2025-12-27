@@ -64,6 +64,10 @@ const routes = [
         path: '/cup-draw/:code_competition',
         component: () => import('../panel/CupDraw.js'),
     },
+    {
+        path: '/cup-draw-kh',
+        component: () => import('../panel/CupDrawKH.js'),
+    },
 
     {path: '*', redirect: '/home'}
 
