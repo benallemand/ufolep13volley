@@ -60,6 +60,10 @@ const routes = [
         path: '/general-rules',
         component: () => import('../panel/GeneralRules.js'),
     },
+    {
+        path: '/cup-draw/:code_competition',
+        component: () => import('../panel/CupDraw.js'),
+    },
 
     {path: '*', redirect: '/home'}
 

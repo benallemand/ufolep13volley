@@ -30,6 +30,12 @@ export default {
               <span><i class="fas fa-calendar mr-2"/>Coupes<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+              <li class="menu-title">Coupe Isoardi</li>
+              <li>
+                <router-link to="/cup-draw/m">
+                  <i class="fas fa-random mr-1"/>tirage coupe Isoardi
+                </router-link>
+              </li>
               <template v-for="group in groupedPools">
                 <li class="menu-title">{{ group.libelle }}</li>
                 <li>

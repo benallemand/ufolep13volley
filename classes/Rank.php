@@ -473,5 +473,107 @@ class Rank extends Generic
         return $result[0]['division'];
     }
 
+    /**
+     * Get cup draw data with chapeaux based on ranking position for a competition
+     * Chapeaux are created separately for tableau haut and tableau bas
+     * Each chapeau has the same size to ensure max 4 teams per pool
+     * @param string $code_competition
+     * @param int $max_teams_per_pool Maximum teams per pool (default 4)
+     * @return array
+     * @throws Exception
+     */
+    public function getCupDrawData(string $code_competition, int $max_teams_per_pool = 4): array
+    {
+        $teams = $this->get_full_competition_rank($code_competition);
+        
+        if (empty($teams)) {
+            return [
+                'teams' => [],
+                'total_teams' => 0,
+                'half_point' => 0,
+                'tableau_haut' => ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0],
+                'tableau_bas' => ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0]
+            ];
+        }
+        
+        $total_teams = count($teams);
+        $half_point = (int) ceil($total_teams / 2);
+        
+        $tableau_haut_teams = array_slice($teams, 0, $half_point);
+        $tableau_bas_teams = array_slice($teams, $half_point);
+        
+        $tableau_haut = $this->assignChapeauxToTeams($tableau_haut_teams, $max_teams_per_pool);
+        $tableau_bas = $this->assignChapeauxToTeams($tableau_bas_teams, $max_teams_per_pool);
+        
+        return [
+            'teams' => $teams,
+            'total_teams' => $total_teams,
+            'half_point' => $half_point,
+            'tableau_haut' => $tableau_haut,
+            'tableau_bas' => $tableau_bas
+        ];
+    }
+    
+    /**
+     * Calculate optimal number of chapeaux for equal distribution
+     * All chapeaux must have same size, and nb_chapeaux <= max_teams_per_pool
+     * @param int $total_teams
+     * @param int $max_teams_per_pool
+     * @return array ['nb_chapeaux' => int, 'chapeau_size' => int]
+     */
+    private function calculateOptimalChapeaux(int $total_teams, int $max_teams_per_pool): array
+    {
+        for ($nb_chapeaux = $max_teams_per_pool; $nb_chapeaux >= 1; $nb_chapeaux--) {
+            if ($total_teams % $nb_chapeaux === 0) {
+                return [
+                    'nb_chapeaux' => $nb_chapeaux,
+                    'chapeau_size' => $total_teams / $nb_chapeaux
+                ];
+            }
+        }
+        return ['nb_chapeaux' => 1, 'chapeau_size' => $total_teams];
+    }
+    
+    /**
+     * Assign chapeaux to a list of teams based on their position
+     * Uses equal-sized chapeaux to ensure fair pool distribution
+     * @param array $teams
+     * @param int $max_teams_per_pool
+     * @return array
+     */
+    private function assignChapeauxToTeams(array $teams, int $max_teams_per_pool): array
+    {
+        $total = count($teams);
+        if ($total === 0) {
+            return ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0];
+        }
+        
+        $optimal = $this->calculateOptimalChapeaux($total, $max_teams_per_pool);
+        $nb_chapeaux = $optimal['nb_chapeaux'];
+        $chapeau_size = $optimal['chapeau_size'];
+        
+        $chapeaux = [];
+        for ($i = 1; $i <= $nb_chapeaux; $i++) {
+            $start_index = ($i - 1) * $chapeau_size;
+            $chapeaux[$i] = [
+                'numero' => $i,
+                'start_index' => $start_index,
+                'end_index' => $start_index + $chapeau_size - 1,
+                'size' => $chapeau_size
+            ];
+        }
+        
+        foreach ($teams as $index => &$team) {
+            $chapeau_num = (int) floor($index / $chapeau_size) + 1;
+            $team['chapeau'] = $chapeau_num;
+        }
+        
+        return [
+            'teams' => $teams,
+            'chapeaux' => array_values($chapeaux),
+            'nb_pools' => $chapeau_size
+        ];
+    }
+
 
 }
