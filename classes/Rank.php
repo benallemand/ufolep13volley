@@ -524,6 +524,132 @@ class Rank extends Generic
     }
 
     /**
+     * Get cup finals draw data for knockout rounds (1/8 finals with 16 teams)
+     * Based on pool count: generates position names (1er poule X, meilleur 2e)
+     * This is used BEFORE pools are played to define the bracket
+     * @param int $nb_pools Total number of pools
+     * @param bool $has_tableau Whether the cup has tableau haut/bas (Isoardi) or not (Khoury Hanna)
+     * @return array
+     */
+    public function getCupFinalsDraw(int $nb_pools, bool $has_tableau = true): array
+    {
+        $nb_qualified = 16;
+        
+        if ($nb_pools === 0) {
+            return [
+                'qualified' => [],
+                'bracket' => [],
+                'nb_pools' => 0,
+                'nb_first_places' => 0,
+                'nb_best_seconds' => 0
+            ];
+        }
+        
+        // All 1st places qualify
+        $nb_first_places = $nb_pools;
+        // Remaining slots go to best 2nd places
+        $nb_best_seconds = max(0, $nb_qualified - $nb_first_places);
+        
+        // Generate qualified positions list
+        $qualified = [];
+        
+        if ($has_tableau) {
+            // Isoardi: pools split into tableau haut (1-7) and tableau bas (8-14)
+            $half_pools = (int) ceil($nb_pools / 2);
+            
+            // Tableau haut: 1er poule 1 to 1er poule 7
+            for ($i = 1; $i <= $half_pools; $i++) {
+                $qualified[] = ['label' => "1er poule $i", 'tableau' => 'haut', 'position' => 1, 'pool' => $i];
+            }
+            // Tableau bas: 1er poule 8 to 1er poule 14
+            for ($i = $half_pools + 1; $i <= $nb_pools; $i++) {
+                $qualified[] = ['label' => "1er poule $i", 'tableau' => 'bas', 'position' => 1, 'pool' => $i];
+            }
+            // Best 2nd places
+            for ($i = 1; $i <= $nb_best_seconds; $i++) {
+                $qualified[] = ['label' => "meilleur 2e $i/$nb_best_seconds", 'tableau' => 'mixte', 'position' => 2, 'pool' => null];
+            }
+        } else {
+            // Khoury Hanna: no tableau distinction
+            for ($i = 1; $i <= $nb_pools; $i++) {
+                $qualified[] = ['label' => "1er poule $i", 'tableau' => null, 'position' => 1, 'pool' => $i];
+            }
+            for ($i = 1; $i <= $nb_best_seconds; $i++) {
+                $qualified[] = ['label' => "meilleur 2e $i/$nb_best_seconds", 'tableau' => null, 'position' => 2, 'pool' => null];
+            }
+        }
+        
+        // Generate bracket for 1/8 finals
+        $bracket = $this->generateFinalsBracketFromPositions($qualified, $has_tableau);
+        
+        return [
+            'qualified' => $qualified,
+            'bracket' => $bracket,
+            'nb_pools' => $nb_pools,
+            'nb_first_places' => $nb_first_places,
+            'nb_best_seconds' => $nb_best_seconds
+        ];
+    }
+    
+    /**
+     * Generate bracket for 1/8 finals from position labels
+     * @param array $qualified List of qualified positions (16 teams)
+     * @param bool $has_tableau Whether to cross tableaux
+     * @return array
+     */
+    private function generateFinalsBracketFromPositions(array $qualified, bool $has_tableau): array
+    {
+        $bracket = [];
+        $nb_matches = 8; // 1/8 finals = 8 matches
+        
+        if ($has_tableau) {
+            // Isoardi: cross tableau haut vs tableau bas
+            // Separate qualified by tableau
+            $haut = array_values(array_filter($qualified, fn($q) => $q['tableau'] === 'haut'));
+            $bas = array_values(array_filter($qualified, fn($q) => $q['tableau'] === 'bas'));
+            $seconds = array_values(array_filter($qualified, fn($q) => $q['position'] === 2));
+            
+            // Add seconds to the smaller tableau to balance
+            foreach ($seconds as $second) {
+                if (count($haut) <= count($bas)) {
+                    $haut[] = $second;
+                } else {
+                    $bas[] = $second;
+                }
+            }
+            
+            // Now pair haut[0] vs bas[last], haut[1] vs bas[last-1], etc.
+            // This ensures crossing: best haut vs worst bas, etc.
+            for ($i = 0; $i < $nb_matches && $i < count($haut); $i++) {
+                $opponent_idx = count($bas) - 1 - $i;
+                if ($opponent_idx >= 0 && isset($bas[$opponent_idx])) {
+                    $bracket[] = [
+                        'match' => $i + 1,
+                        'team1' => $haut[$i]['label'],
+                        'team2' => $bas[$opponent_idx]['label']
+                    ];
+                }
+            }
+        } else {
+            // Khoury Hanna: simple 1 vs 16, 2 vs 15, etc.
+            // All qualified in one list, sorted by seed
+            for ($i = 0; $i < $nb_matches; $i++) {
+                $team1_idx = $i;
+                $team2_idx = count($qualified) - 1 - $i;
+                if ($team1_idx < $team2_idx && isset($qualified[$team1_idx]) && isset($qualified[$team2_idx])) {
+                    $bracket[] = [
+                        'match' => $i + 1,
+                        'team1' => $qualified[$team1_idx]['label'],
+                        'team2' => $qualified[$team2_idx]['label']
+                    ];
+                }
+            }
+        }
+        
+        return $bracket;
+    }
+
+    /**
      * Get cup draw data with chapeaux based on ranking position for a competition
      * Chapeaux are created separately for tableau haut and tableau bas
      * Each chapeau has the same size to ensure max 4 teams per pool

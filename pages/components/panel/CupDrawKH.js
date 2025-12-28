@@ -81,6 +81,35 @@ export default {
               </table>
             </div>
           </div>
+          
+          <!-- Section Phases Finales -->
+          <div class="divider divider-warning my-8">
+            <span class="badge badge-warning badge-lg gap-2 py-4">
+              <i class="fas fa-trophy"></i>
+              PHASES FINALES (1/8 de finale)
+            </span>
+          </div>
+          
+          <div class="mb-6">
+            <div class="alert alert-warning mb-4">
+              <i class="fas fa-info-circle"></i>
+              <div>
+                <strong>16 équipes qualifiées pour les 1/8 de finale :</strong>
+                {{ finalsData.nb_first_places }} premiers de poule + {{ finalsData.nb_best_seconds }} meilleurs 2e
+              </div>
+            </div>
+            
+            <button class="btn btn-warning mb-4" @click="printFinalsCards">
+              <i class="fas fa-print mr-2"></i>Imprimer les cartes phases finales
+            </button>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div v-for="(q, idx) in finalsData.qualified" :key="'final-'+idx" 
+                   class="p-3 rounded-lg text-center border-2 bg-base-200 border-base-300">
+                {{ q.label }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `,
@@ -91,6 +120,12 @@ export default {
                 total_teams: 0,
                 nb_pools: 0,
                 teams_per_pool: 4
+            },
+            finalsData: {
+                qualified: [],
+                nb_pools: 0,
+                nb_first_places: 0,
+                nb_best_seconds: 0
             },
             loading: true
         };
@@ -105,12 +140,26 @@ export default {
                 .get('/rest/action.php/rank/getKHCupDrawData')
                 .then((response) => {
                     this.data = response.data;
+                    // Fetch finals data based on number of pools
+                    if (this.data.nb_pools > 0) {
+                        this.fetchFinalsData(this.data.nb_pools);
+                    }
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement :", error);
                 })
                 .finally(() => {
                     this.loading = false;
+                });
+        },
+        fetchFinalsData(nb_pools) {
+            axios
+                .get(`/rest/action.php/rank/getCupFinalsDraw?nb_pools=${nb_pools}&has_tableau=0`)
+                .then((response) => {
+                    this.finalsData = response.data;
+                })
+                .catch((error) => {
+                    console.error("Erreur lors du chargement des données phases finales :", error);
                 });
         },
         printCards() {
@@ -179,6 +228,68 @@ export default {
             `;
             
             printWindow.document.write(cardsHtml);
+            printWindow.document.close();
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+        },
+        printFinalsCards() {
+            const printWindow = window.open('', '_blank');
+            let html = `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <title>Cartes Phases Finales - Coupe Khoury Hanna</title>
+                    <style>
+                        @page { margin: 10mm; }
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+                        .cards-container { 
+                            display: flex; 
+                            flex-wrap: wrap; 
+                            gap: 5mm;
+                            justify-content: flex-start;
+                        }
+                        .card {
+                            width: 85mm;
+                            height: 40mm;
+                            border: 2px solid #333;
+                            border-radius: 3mm;
+                            padding: 3mm;
+                            box-sizing: border-box;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            page-break-inside: avoid;
+                        }
+                        .card-label {
+                            font-size: 16pt;
+                            font-weight: bold;
+                            text-align: center;
+                        }
+                        h1 { text-align: center; margin-bottom: 5mm; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Phases Finales - Coupe Khoury Hanna</h1>
+                    <div class="cards-container">
+            `;
+            
+            this.finalsData.qualified.forEach(q => {
+                html += `
+                    <div class="card">
+                        <div class="card-label">${q.label}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(html);
             printWindow.document.close();
             printWindow.onload = () => {
                 printWindow.print();
