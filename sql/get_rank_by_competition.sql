@@ -1,11 +1,13 @@
 SELECT @r := @r + 1 AS rang,
        z.id_equipe,
        z.equipe,
+       z.club,
        z.division
 FROM (SELECT e.id_equipe,
              ?                                                                            AS code_competition,
              c.division,
              e.nom_equipe                                                                   AS equipe,
+             cl.nom                                                                          AS club,
              SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_dom = 3, 3, 0)) +
              SUM(IF(e.id_equipe = m.id_equipe_ext AND m.score_equipe_ext = 3, 3, 0)) +
              SUM(IF(e.id_equipe = m.id_equipe_dom AND m.score_equipe_ext = 3 AND m.forfait_dom = 0, 1, 0)) +
@@ -29,6 +31,7 @@ FROM (SELECT e.id_equipe,
              c.report_count
       FROM classements c
                JOIN equipes e ON e.id_equipe = c.id_equipe
+               LEFT JOIN clubs cl ON cl.id = e.id_club
                LEFT JOIN matchs_view m ON
           m.code_competition = c.code_competition
               AND m.division = c.division
@@ -36,6 +39,6 @@ FROM (SELECT e.id_equipe,
               AND m.match_status != 'ARCHIVED'
       WHERE c.code_competition = ?
         AND e.is_cup_registered = 1
-      GROUP BY e.id_equipe, '%name', e.nom_equipe, c.penalite, c.report_count
+      GROUP BY e.id_equipe, '%name', e.nom_equipe, cl.nom, c.penalite, c.report_count
       ORDER BY division, points DESC, diff DESC, c.rank_start) z,
      (SELECT @r := 0) y

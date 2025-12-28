@@ -19,27 +19,17 @@ export default {
               <div class="stat-value">{{ data.total_teams }}</div>
             </div>
             <div class="stat">
-              <div class="stat-title">Chapeaux</div>
-              <div class="stat-value">{{ data.chapeaux.length }}</div>
-            </div>
-            <div class="stat">
-              <div class="stat-title">Poules</div>
+              <div class="stat-title">Poules à former</div>
               <div class="stat-value">{{ data.nb_pools }}</div>
-              <div class="stat-desc">de {{ data.chapeaux.length }} équipes max</div>
+              <div class="stat-desc">de {{ data.teams_per_pool }} équipes max</div>
             </div>
           </div>
           
-          <!-- Légende des chapeaux -->
+          <!-- Bouton Imprimer -->
           <div class="mb-6">
-            <h2 class="text-lg font-bold mb-2">Légende des chapeaux</h2>
-            <div class="flex flex-wrap gap-2">
-              <span v-for="(chapeau, index) in data.chapeaux" 
-                    :key="chapeau.numero"
-                    class="badge badge-lg"
-                    :class="getChapeauColorClass(index)">
-                Chapeau {{ chapeau.numero }} ({{ chapeau.size }} éq.)
-              </span>
-            </div>
+            <button class="btn btn-primary" @click="printCards">
+              <i class="fas fa-print mr-2"></i>Imprimer les cartes pour le tirage
+            </button>
           </div>
           
           <!-- Règles du tirage -->
@@ -48,9 +38,9 @@ export default {
             <div>
               <h3 class="font-bold">Règles du tirage</h3>
               <ul class="list-disc list-inside text-sm">
-                <li>Les équipes sont triées par <strong>date d'inscription</strong></li>
-                <li>Pour former une poule : tirer une équipe dans chaque chapeau</li>
-                <li>Maximum {{ data.chapeaux.length }} équipes par poule</li>
+                <li>Tirage <strong>complètement au sort</strong> (un seul chapeau)</li>
+                <li>Tirer les équipes une par une et les répartir dans les poules</li>
+                <li>Maximum {{ data.teams_per_pool }} équipes par poule</li>
               </ul>
             </div>
           </div>
@@ -61,47 +51,32 @@ export default {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              Équipes inscrites ({{ data.total_teams }} → {{ data.nb_pools }} poules de {{ data.chapeaux.length }} équipes)
+              Équipes inscrites ({{ data.total_teams }})
             </h2>
             <div class="overflow-x-auto">
               <table class="table table-zebra w-full">
                 <thead>
                   <tr class="bg-primary/20">
-                    <th class="text-center">Ordre</th>
+                    <th class="text-center">#</th>
                     <th>Équipe</th>
                     <th>Club</th>
                     <th class="text-center">Date inscription</th>
-                    <th class="text-center">Chapeau</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <template v-for="(chapeau, chapeauIndex) in data.chapeaux">
-                    <tr v-for="team in getTeamsFromChapeau(chapeau.numero)" 
-                        :key="'team-'+team.id_register"
-                        :class="getChapeauRowClass(chapeauIndex)">
-                      <td class="text-center font-bold">{{ team.rang }}</td>
-                      <td>
-                        <span v-if="team.id_equipe">
-                          <router-link :to="'/teams/' + team.id_equipe" class="link link-primary">
-                            {{ team.equipe }}
-                          </router-link>
-                        </span>
-                        <span v-else>{{ team.equipe }}</span>
-                      </td>
-                      <td>{{ team.club }}</td>
-                      <td class="text-center text-sm">{{ team.date_inscription }}</td>
-                      <td class="text-center">
-                        <span class="badge" :class="getChapeauColorClass(chapeauIndex)">
-                          Chapeau {{ chapeau.numero }}
-                        </span>
-                      </td>
-                    </tr>
-                    <!-- Séparateur entre chapeaux -->
-                    <tr v-if="chapeauIndex < data.chapeaux.length - 1" 
-                        class="border-b-4 border-base-300">
-                      <td colspan="5"></td>
-                    </tr>
-                  </template>
+                  <tr v-for="team in data.teams" :key="'team-'+team.id_register">
+                    <td class="text-center font-bold">{{ team.rang }}</td>
+                    <td>
+                      <span v-if="team.id_equipe">
+                        <router-link :to="'/teams/' + team.id_equipe" class="link link-primary">
+                          {{ team.equipe }}
+                        </router-link>
+                      </span>
+                      <span v-else>{{ team.equipe }}</span>
+                    </td>
+                    <td>{{ team.club }}</td>
+                    <td class="text-center text-sm">{{ team.date_inscription }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -113,9 +88,9 @@ export default {
         return {
             data: {
                 teams: [],
-                chapeaux: [],
                 total_teams: 0,
-                nb_pools: 0
+                nb_pools: 0,
+                teams_per_pool: 4
             },
             loading: true
         };
@@ -138,30 +113,76 @@ export default {
                     this.loading = false;
                 });
         },
-        getTeamsFromChapeau(chapeauNumero) {
-            return this.data.teams.filter(team => team.chapeau === chapeauNumero);
-        },
-        getChapeauColorClass(index) {
-            const colors = [
-                'badge-primary',
-                'badge-secondary', 
-                'badge-accent',
-                'badge-info',
-                'badge-warning',
-                'badge-success'
-            ];
-            return colors[index % colors.length];
-        },
-        getChapeauRowClass(index) {
-            const colors = [
-                'bg-primary/5',
-                'bg-secondary/5',
-                'bg-accent/5',
-                'bg-info/5',
-                'bg-warning/5',
-                'bg-success/5'
-            ];
-            return colors[index % colors.length];
+        printCards() {
+            const printWindow = window.open('', '_blank');
+            let cardsHtml = `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <title>Cartes Tirage Coupe Khoury Hanna</title>
+                    <style>
+                        @page { margin: 10mm; }
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+                        .cards-container { 
+                            display: flex; 
+                            flex-wrap: wrap; 
+                            gap: 5mm;
+                            justify-content: flex-start;
+                        }
+                        .card {
+                            width: 85mm;
+                            height: 40mm;
+                            border: 2px solid #333;
+                            border-radius: 3mm;
+                            padding: 3mm;
+                            box-sizing: border-box;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            page-break-inside: avoid;
+                        }
+                        .card-team {
+                            font-size: 14pt;
+                            font-weight: bold;
+                            text-align: center;
+                            margin-bottom: 2mm;
+                        }
+                        .card-club {
+                            font-size: 11pt;
+                            text-align: center;
+                            color: #666;
+                        }
+                        h1 { 
+                            text-align: center;
+                            margin-bottom: 5mm;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Coupe Khoury Hanna</h1>
+                    <div class="cards-container">
+            `;
+            
+            this.data.teams.forEach(team => {
+                cardsHtml += `
+                    <div class="card">
+                        <div class="card-team">${team.equipe}</div>
+                        <div class="card-club">${team.club}</div>
+                    </div>
+                `;
+            });
+            
+            cardsHtml += `
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(cardsHtml);
+            printWindow.document.close();
+            printWindow.onload = () => {
+                printWindow.print();
+            };
         }
     }
 };

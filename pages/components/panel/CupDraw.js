@@ -30,6 +30,13 @@ export default {
             </div>
           </div>
           
+          <!-- Bouton Imprimer -->
+          <div class="mb-6">
+            <button class="btn btn-primary" @click="printCards">
+              <i class="fas fa-print mr-2"></i>Imprimer les cartes pour le tirage
+            </button>
+          </div>
+          
           <!-- Règles du tirage -->
           <div class="alert alert-info mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -233,6 +240,117 @@ export default {
                 'bg-success/5'
             ];
             return colors[index % colors.length];
+        },
+        printCards() {
+            const printWindow = window.open('', '_blank');
+            let cardsHtml = `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <title>Cartes Tirage Coupe Isoardi</title>
+                    <style>
+                        @page { margin: 10mm; }
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+                        .cards-container { 
+                            display: flex; 
+                            flex-wrap: wrap; 
+                            gap: 5mm;
+                            justify-content: flex-start;
+                        }
+                        .card {
+                            width: 85mm;
+                            height: 50mm;
+                            border: 2px solid #333;
+                            border-radius: 3mm;
+                            padding: 3mm;
+                            box-sizing: border-box;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            page-break-inside: avoid;
+                        }
+                        .card-team {
+                            font-size: 14pt;
+                            font-weight: bold;
+                            text-align: center;
+                            margin-bottom: 2mm;
+                        }
+                        .card-club {
+                            font-size: 10pt;
+                            text-align: center;
+                            color: #666;
+                            margin-bottom: 3mm;
+                        }
+                        .card-info {
+                            display: flex;
+                            justify-content: space-between;
+                            font-size: 11pt;
+                            border-top: 1px solid #ccc;
+                            padding-top: 2mm;
+                        }
+                        .card-tableau {
+                            font-weight: bold;
+                        }
+                        .tableau-haut { color: #22c55e; }
+                        .tableau-bas { color: #ef4444; }
+                        h2 { 
+                            width: 100%; 
+                            margin: 5mm 0 3mm 0; 
+                            page-break-before: always;
+                        }
+                        h2:first-child { page-break-before: avoid; }
+                    </style>
+                </head>
+                <body>
+                    <h2>TABLEAU HAUT</h2>
+                    <div class="cards-container">
+            `;
+            
+            // Tableau Haut cards
+            this.data.tableau_haut.teams.forEach(team => {
+                cardsHtml += `
+                    <div class="card">
+                        <div class="card-team">${team.equipe}</div>
+                        <div class="card-club">${team.club || ''}</div>
+                        <div class="card-info">
+                            <span>Chapeau ${team.chapeau}</span>
+                            <span class="card-tableau tableau-haut">TABLEAU HAUT</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cardsHtml += `
+                    </div>
+                    <h2>TABLEAU BAS</h2>
+                    <div class="cards-container">
+            `;
+            
+            // Tableau Bas cards
+            this.data.tableau_bas.teams.forEach(team => {
+                cardsHtml += `
+                    <div class="card">
+                        <div class="card-team">${team.equipe}</div>
+                        <div class="card-club">${team.club || ''}</div>
+                        <div class="card-info">
+                            <span>Chapeau ${team.chapeau}</span>
+                            <span class="card-tableau tableau-bas">TABLEAU BAS</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cardsHtml += `
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(cardsHtml);
+            printWindow.document.close();
+            printWindow.onload = () => {
+                printWindow.print();
+            };
         }
     },
     created() {

@@ -475,6 +475,7 @@ class Rank extends Generic
 
     /**
      * Get teams registered for Khoury Hanna cup, sorted by registration date
+     * All teams in one chapeau for fully random draw
      * @param int $max_teams_per_pool Maximum teams per pool (default 4)
      * @return array
      * @throws Exception
@@ -493,34 +494,32 @@ class Rank extends Generic
                 LEFT JOIN equipes e ON e.nom_equipe = r.new_team_name 
                     AND e.code_competition = comp.code_competition
                 WHERE comp.code_competition = 'kh'
-                ORDER BY r.creation_date ASC";
+                ORDER BY r.creation_date";
         
         $teams = $this->sql_manager->execute($sql);
         
         if (empty($teams)) {
             return [
                 'teams' => [],
-                'chapeaux' => [],
                 'total_teams' => 0,
-                'nb_pools' => 0
+                'nb_pools' => 0,
+                'teams_per_pool' => $max_teams_per_pool
             ];
         }
         
         $total_teams = count($teams);
+        $nb_pools = (int) ceil($total_teams / $max_teams_per_pool);
         
-        // Add rank based on registration order
+        // Add order based on registration date
         foreach ($teams as $index => &$team) {
             $team['rang'] = $index + 1;
         }
         
-        // Assign chapeaux
-        $result = $this->assignChapeauxToTeams($teams, $max_teams_per_pool);
-        
         return [
-            'teams' => $result['teams'],
-            'chapeaux' => $result['chapeaux'],
+            'teams' => $teams,
             'total_teams' => $total_teams,
-            'nb_pools' => $result['nb_pools']
+            'nb_pools' => $nb_pools,
+            'teams_per_pool' => $max_teams_per_pool
         ];
     }
 
