@@ -691,30 +691,10 @@ class Rank extends Generic
     }
     
     /**
-     * Calculate optimal number of chapeaux for equal distribution
-     * All chapeaux must have same size, and nb_chapeaux <= max_teams_per_pool
-     * @param int $total_teams
-     * @param int $max_teams_per_pool
-     * @return array ['nb_chapeaux' => int, 'chapeau_size' => int]
-     */
-    private function calculateOptimalChapeaux(int $total_teams, int $max_teams_per_pool): array
-    {
-        for ($nb_chapeaux = $max_teams_per_pool; $nb_chapeaux >= 1; $nb_chapeaux--) {
-            if ($total_teams % $nb_chapeaux === 0) {
-                return [
-                    'nb_chapeaux' => $nb_chapeaux,
-                    'chapeau_size' => $total_teams / $nb_chapeaux
-                ];
-            }
-        }
-        return ['nb_chapeaux' => 1, 'chapeau_size' => $total_teams];
-    }
-    
-    /**
      * Assign chapeaux to a list of teams based on their position
-     * Uses equal-sized chapeaux to ensure fair pool distribution
+     * Creates pools of 3-4 teams with proper chapeau distribution
      * @param array $teams
-     * @param int $max_teams_per_pool
+     * @param int $max_teams_per_pool Maximum teams per pool (default 4)
      * @return array
      */
     private function assignChapeauxToTeams(array $teams, int $max_teams_per_pool): array
@@ -724,30 +704,58 @@ class Rank extends Generic
             return ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0];
         }
         
-        $optimal = $this->calculateOptimalChapeaux($total, $max_teams_per_pool);
-        $nb_chapeaux = $optimal['nb_chapeaux'];
-        $chapeau_size = $optimal['chapeau_size'];
+        // Calculate number of pools needed (pools of 3-4 teams)
+        $nb_pools = (int) ceil($total / $max_teams_per_pool);
         
+        // Calculate how many pools have max teams vs (max-1) teams
+        // nb_pools * max - total = number of pools with (max-1) teams
+        $pools_with_less = $nb_pools * $max_teams_per_pool - $total;
+        $pools_with_max = $nb_pools - $pools_with_less;
+        
+        // Number of chapeaux = max teams per pool (usually 4, but could be 3 if not enough teams)
+        $nb_chapeaux = min($max_teams_per_pool, (int) ceil($total / $nb_pools));
+        
+        // Build chapeaux info
+        // Chapeau 1 to (nb_chapeaux-1) have nb_pools teams each
+        // Last chapeau has pools_with_max teams (the pools that have max_teams_per_pool teams)
         $chapeaux = [];
+        $cumulative = 0;
         for ($i = 1; $i <= $nb_chapeaux; $i++) {
-            $start_index = ($i - 1) * $chapeau_size;
-            $chapeaux[$i] = [
-                'numero' => $i,
-                'start_index' => $start_index,
-                'end_index' => $start_index + $chapeau_size - 1,
-                'size' => $chapeau_size
-            ];
+            // Last chapeau may have fewer teams if some pools have only 3 teams
+            if ($i <= $nb_chapeaux - 1 || $pools_with_less === 0) {
+                $size = $nb_pools;
+            } else {
+                // Last chapeau: only pools that have max_teams_per_pool teams
+                $size = $pools_with_max;
+            }
+            
+            // Adjust if we're running out of teams
+            $size = min($size, $total - $cumulative);
+            
+            if ($size > 0) {
+                $chapeaux[$i] = [
+                    'numero' => $i,
+                    'size' => $size
+                ];
+                $cumulative += $size;
+            }
         }
         
+        // Assign chapeau to each team
+        // Team 0 to (nb_pools-1) -> chapeau 1
+        // Team nb_pools to (2*nb_pools-1) -> chapeau 2
+        // etc.
         foreach ($teams as $index => &$team) {
-            $chapeau_num = (int) floor($index / $chapeau_size) + 1;
+            $chapeau_num = (int) floor($index / $nb_pools) + 1;
+            // Make sure we don't exceed nb_chapeaux
+            $chapeau_num = min($chapeau_num, $nb_chapeaux);
             $team['chapeau'] = $chapeau_num;
         }
         
         return [
             'teams' => $teams,
             'chapeaux' => array_values($chapeaux),
-            'nb_pools' => $chapeau_size
+            'nb_pools' => $nb_pools
         ];
     }
 
