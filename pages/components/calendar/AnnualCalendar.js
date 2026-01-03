@@ -41,18 +41,18 @@ export default {
                         <!-- Grille du calendrier -->
                         <div class="grid grid-cols-5 gap-1 text-xs">
                             <!-- En-têtes des jours -->
-                            <div v-for="day in ['L', 'M', 'M', 'J', 'V']" 
-                                 :key="day" 
+                            <div v-for="(day, index) in ['L', 'M', 'M', 'J', 'V']" 
+                                 :key="month.key + '-header-' + index" 
                                  class="text-center font-bold text-gray-500 p-1">
                                 {{ day }}
                             </div>
                             
                             <!-- Cases vides pour aligner le premier jour -->
-                            <div v-for="n in month.startDayWeekdays" :key="'empty-' + n" class="p-1"></div>
+                            <div v-for="n in month.startDayWeekdays" :key="month.key + '-empty-' + n" class="p-1"></div>
                             
                             <!-- Jours du mois (seulement les jours de semaine) -->
                             <div v-for="day in getWeekdaysInMonth(month.year, month.month)" 
-                                 :key="day" 
+                                 :key="month.key + '-day-' + day" 
                                  class="relative p-1 text-center hover:bg-base-200 rounded"
                                  :class="getDayClasses(month.year, month.month, day)"
                                  :title="getDayTooltip(month.year, month.month, day)">
@@ -61,7 +61,7 @@ export default {
                                 
                                 <!-- Périodes -->
                                 <div v-for="(event, index) in getPeriodEventsForDay(month.year, month.month, day)" 
-                                     :key="event.id"
+                                     :key="month.key + '-day-' + day + '-event-' + event.id"
                                      class="absolute inset-x-0 h-1 z-0"
                                      :class="[getEventColor(event).bgClass, getPeriodClasses(month.year, month.month, day, event)]"
                                      :style="{ bottom: (index * 4) + 'px' }"></div>
@@ -71,7 +71,7 @@ export default {
                         <!-- Liste des événements du mois -->
                         <div v-if="getMonthEvents(month.year, month.month).length > 0" class="mt-3 pt-3 border-t border-base-300">
                             <div v-for="event in getMonthEvents(month.year, month.month)" 
-                                 :key="event.id" 
+                                 :key="month.key + '-list-' + event.id" 
                                  class="text-xs mb-1 p-2 rounded border-l-4"
                                  :class="[getEventColor(event).bgLightClass, getEventColor(event).borderClass]">
                                 <div class="font-medium" :class="getEventColor(event).textClass">{{ event.label }}</div>
