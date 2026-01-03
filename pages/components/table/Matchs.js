@@ -27,6 +27,7 @@ export default {
                  title="Ajouter à Google Calendar">
                 <i class="fas fa-calendar-plus"/>
               </a>
+              <i v-if="match.certif === 1" class="fas fa-check-circle text-success ml-2" title="Match validé"></i>
             </td>
             <td>{{ match.date_reception }} {{ match.heure_reception }}<span v-if="match.match_status == 'NOT_CONFIRMED'"
                                                                             class="ml-1 badge badge-warning">date non confirmée</span>
