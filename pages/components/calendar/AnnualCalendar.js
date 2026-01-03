@@ -90,20 +90,23 @@ export default {
         },
         
         schoolYearMonths() {
-            const currentYear = new Date().getFullYear();
-            const nextYear = currentYear + 1;
+            const now = new Date();
+            const currentMonth = now.getMonth(); // 0-11
+            // Si on est entre janvier (0) et août (7), on est dans la saison de l'année précédente
+            const startYear = currentMonth <= 7 ? now.getFullYear() - 1 : now.getFullYear();
+            const endYear = startYear + 1;
             
             return [
-                { name: 'Septembre', month: 8, year: currentYear, key: 'sep' },
-                { name: 'Octobre', month: 9, year: currentYear, key: 'oct' },
-                { name: 'Novembre', month: 10, year: currentYear, key: 'nov' },
-                { name: 'Décembre', month: 11, year: currentYear, key: 'dec' },
-                { name: 'Janvier', month: 0, year: nextYear, key: 'jan' },
-                { name: 'Février', month: 1, year: nextYear, key: 'feb' },
-                { name: 'Mars', month: 2, year: nextYear, key: 'mar' },
-                { name: 'Avril', month: 3, year: nextYear, key: 'apr' },
-                { name: 'Mai', month: 4, year: nextYear, key: 'may' },
-                { name: 'Juin', month: 5, year: nextYear, key: 'jun' }
+                { name: 'Septembre', month: 8, year: startYear, key: 'sep' },
+                { name: 'Octobre', month: 9, year: startYear, key: 'oct' },
+                { name: 'Novembre', month: 10, year: startYear, key: 'nov' },
+                { name: 'Décembre', month: 11, year: startYear, key: 'dec' },
+                { name: 'Janvier', month: 0, year: endYear, key: 'jan' },
+                { name: 'Février', month: 1, year: endYear, key: 'feb' },
+                { name: 'Mars', month: 2, year: endYear, key: 'mar' },
+                { name: 'Avril', month: 3, year: endYear, key: 'apr' },
+                { name: 'Mai', month: 4, year: endYear, key: 'may' },
+                { name: 'Juin', month: 5, year: endYear, key: 'jun' }
             ].map(month => ({
                 ...month,
                 daysInMonth: new Date(month.year, month.month + 1, 0).getDate(),

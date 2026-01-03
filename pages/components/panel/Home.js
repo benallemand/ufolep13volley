@@ -22,7 +22,7 @@ export default {
                 {date_start: '03/11/2025 00:00', date_end: '19/12/2025 23:59', label: 'Championnats'},
                 {date_start: '20/12/2025 00:00', date_end: '04/01/2026 23:59', label: 'Vacances'},
                 {date_start: '05/01/2026 00:00', date_end: '09/01/2026 23:59', label: 'Reports'},
-                {date_start: '05/01/2026 19:30', date_end: null, label: 'Tirage des coupes'},
+                {date_start: '07/01/2026 19:30', date_end: null, label: 'Tirage des coupes'},
                 {date_start: '12/01/2026 19:30', date_end: null, label: 'Réunion fin de demi-saison'},
                 {date_start: '19/01/2026 00:00', date_end: '13/02/2026 23:59', label: 'Coupes'},
                 {date_start: '14/02/2026 00:00', date_end: '27/02/2026 23:59', label: 'Vacances'},
