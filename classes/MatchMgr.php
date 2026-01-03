@@ -1945,7 +1945,7 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    private function flip_match($id_match)
+    public function flip_match($id_match)
     {
         $match = $this->get_match($id_match);
 
@@ -1967,8 +1967,18 @@ class MatchMgr extends Generic
         if (count($timeslots) >= 1) {
             $timeslot = $timeslots[0];
             $update_match['id_gymnasium'] = $timeslot['id_gymnase'];
-            $dayOfWeek = date('w', strtotime($timeslot['jour']));
-            $newDate = (clone $weekStart)->modify("+{$dayOfWeek} days");
+            // Conversion jour français -> offset depuis lundi
+            $jourToOffset = [
+                'Lundi' => 0,
+                'Mardi' => 1,
+                'Mercredi' => 2,
+                'Jeudi' => 3,
+                'Vendredi' => 4,
+                'Samedi' => 5,
+                'Dimanche' => 6,
+            ];
+            $dayOffset = $jourToOffset[$timeslot['jour']] ?? 0;
+            $newDate = (clone $weekStart)->modify("+{$dayOffset} days");
             $update_match['date_reception'] = $newDate->format('d/m/Y');
             $this->save($update_match);
         }

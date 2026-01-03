@@ -908,4 +908,105 @@ class MatchManagerTest extends UfolepTestCase
         print_r($results);
         $this->assertTrue(1 == 1);
     }
+
+    /**
+     * Test flip_match : vérifie que les équipes sont inversées
+     * et que la date correspond au créneau de la nouvelle équipe domicile
+     * Teste toutes les combinaisons de créneaux (Lundi à Vendredi) pour les 2 équipes
+     * @throws Exception
+     */
+    public function test_flip_match_all_days()
+    {
+        require_once __DIR__ . '/../classes/TimeSlot.php';
+        $tsm = new TimeSlot();
+
+        $jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        $jour_to_offset = [
+            'Lundi' => 0,
+            'Mardi' => 1,
+            'Mercredi' => 2,
+            'Jeudi' => 3,
+            'Vendredi' => 4,
+        ];
+
+        // Récupérer les équipes et le match de test
+        $test_matchs = $this->get_test_matches();
+        $match = $test_matchs[0];
+        $id_match = $match['id_match'];
+        $id_equipe_1 = $match['id_equipe_dom'];
+        $id_equipe_2 = $match['id_equipe_ext'];
+
+        echo "\n========================================\n";
+        echo "TEST FLIP_MATCH - TOUTES COMBINAISONS\n";
+        echo "========================================\n";
+
+        $test_count = 0;
+        $success_count = 0;
+
+        foreach ($jours as $jour_equipe_1) {
+            foreach ($jours as $jour_equipe_2) {
+                $test_count++;
+
+                // Mettre à jour les créneaux des équipes
+                $this->sql_manager->execute(
+                    "UPDATE creneau SET jour = ? WHERE id_equipe = ?",
+                    [['type' => 's', 'value' => $jour_equipe_1], ['type' => 'i', 'value' => $id_equipe_1]]
+                );
+                $this->sql_manager->execute(
+                    "UPDATE creneau SET jour = ? WHERE id_equipe = ?",
+                    [['type' => 's', 'value' => $jour_equipe_2], ['type' => 'i', 'value' => $id_equipe_2]]
+                );
+
+                // Réinitialiser le match : équipe 1 à domicile, date sur le lundi de la semaine
+                $date_lundi = (new DateTime())->modify('monday this week')->format('d/m/Y');
+                $this->sql_manager->execute(
+                    "UPDATE matches SET id_equipe_dom = ?, id_equipe_ext = ?, date_reception = STR_TO_DATE(?, '%d/%m/%Y') WHERE id_match = ?",
+                    [
+                        ['type' => 'i', 'value' => $id_equipe_1],
+                        ['type' => 'i', 'value' => $id_equipe_2],
+                        ['type' => 's', 'value' => $date_lundi],
+                        ['type' => 'i', 'value' => $id_match]
+                    ]
+                );
+
+                // Appeler flip_match
+                $this->match_manager->flip_match($id_match);
+
+                // Récupérer le match après flip
+                $match_after = $this->match_manager->get_match($id_match);
+
+                // Calculer la date attendue (basée sur le créneau de la nouvelle équipe domicile = équipe 2)
+                $date_attendue = (new DateTime())->modify('monday this week')
+                    ->modify("+{$jour_to_offset[$jour_equipe_2]} days")
+                    ->format('d/m/Y');
+
+                // Vérifications
+                $equipes_inversees = ($match_after['id_equipe_dom'] == $id_equipe_2 && $match_after['id_equipe_ext'] == $id_equipe_1);
+                $date_correcte = ($match_after['date_reception'] == $date_attendue);
+
+                $status = ($equipes_inversees && $date_correcte) ? '✓' : '✗';
+                if ($equipes_inversees && $date_correcte) {
+                    $success_count++;
+                }
+
+                echo "\n[{$status}] Test {$test_count}: Équipe1={$jour_equipe_1}, Équipe2={$jour_equipe_2}\n";
+                echo "    Date origine: {$date_lundi} | Date obtenue: {$match_after['date_reception']}\n";
+
+                if (!$equipes_inversees) {
+                    echo "    ERREUR: Équipes non inversées!\n";
+                }
+                if (!$date_correcte) {
+                    echo "    ERREUR: Date incorrecte!\n";
+                }
+
+                $this->assertTrue($equipes_inversees, "Équipes non inversées pour {$jour_equipe_1}/{$jour_equipe_2}");
+                $this->assertEquals($date_attendue, $match_after['date_reception'],
+                    "Date incorrecte pour {$jour_equipe_1}/{$jour_equipe_2}");
+            }
+        }
+
+        echo "\n========================================\n";
+        echo "RÉSULTAT: {$success_count}/{$test_count} tests réussis\n";
+        echo "========================================\n";
+    }
 }
