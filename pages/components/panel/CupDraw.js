@@ -46,11 +46,14 @@ export default {
             </div>
           </div>
           
-          <!-- Bouton Imprimer -->
-          <div class="mb-6">
+          <!-- Boutons d'action -->
+          <div class="mb-6 flex flex-wrap gap-2">
             <button class="btn btn-primary" @click="printCards">
               <i class="fas fa-print mr-2"></i>Imprimer les cartes pour le tirage
             </button>
+            <router-link to="/cup-draw-admin" class="btn btn-secondary">
+              <i class="fas fa-edit mr-2"></i>Administrer le tirage (drag&drop)
+            </router-link>
           </div>
           
           <!-- Règles du tirage -->

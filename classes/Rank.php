@@ -691,6 +691,199 @@ class Rank extends Generic
     }
     
     /**
+     * Save cup pool assignments from drag&drop interface
+     * @param string $code_competition The cup competition code
+     * @param array $pools Array of pools, each containing team IDs with their rank_start
+     * @return array
+     * @throws Exception
+     */
+    public function saveCupPoolAssignments(string $code_competition, string $pools): array
+    {
+        // Decode JSON pools if string
+        $poolsArray = json_decode($pools, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Format JSON invalide pour les pools");
+        }
+        
+        // Validate input
+        if (empty($code_competition) || empty($poolsArray)) {
+            throw new Exception("code_competition et pools sont requis");
+        }
+        
+        $pools = $poolsArray;
+        
+        // Get database connection for transaction control
+        $db = Database::openDbConnection();
+        
+        // Start transaction using mysqli_query (not prepared statements)
+        mysqli_begin_transaction($db);
+        
+        try {
+            // Delete existing assignments for this cup competition
+            $sql = "DELETE FROM classements WHERE code_competition = ?";
+            $bindings = [['type' => 's', 'value' => $code_competition]];
+            $this->sql_manager->execute($sql, $bindings);
+            
+            // Insert new assignments
+            $inserted = 0;
+            foreach ($pools as $poolIndex => $pool) {
+                $division = strval($poolIndex + 1); // Pool 1, 2, 3... become division "1", "2", "3"...
+                
+                if (!is_array($pool) || empty($pool)) {
+                    continue;
+                }
+                
+                foreach ($pool as $rankIndex => $teamId) {
+                    if (empty($teamId)) {
+                        continue;
+                    }
+                    
+                    $rank_start = $rankIndex + 1; // Position in pool: 1, 2, 3, 4
+                    
+                    $sql = "INSERT INTO classements (code_competition, division, id_equipe, rank_start) VALUES (?, ?, ?, ?)";
+                    $bindings = [
+                        ['type' => 's', 'value' => $code_competition],
+                        ['type' => 's', 'value' => $division],
+                        ['type' => 'i', 'value' => intval($teamId)],
+                        ['type' => 'i', 'value' => $rank_start]
+                    ];
+                    $this->sql_manager->execute($sql, $bindings);
+                    $inserted++;
+                }
+            }
+            
+            mysqli_commit($db);
+            
+            $this->addActivity("Tirage au sort sauvegardé pour la compétition $code_competition: $inserted équipes réparties dans " . count($pools) . " poules");
+            
+            return [
+                'success' => true,
+                'inserted' => $inserted,
+                'pools_count' => count($pools)
+            ];
+            
+        } catch (Exception $e) {
+            mysqli_rollback($db);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get all cup competitions for dropdown selection
+     * @return array
+     * @throws Exception
+     */
+    public function getCupCompetitions(): array
+    {
+        $sql = "SELECT 
+                    c.code_competition,
+                    c.libelle,
+                    c.id_compet_maitre,
+                    IFNULL(DATE_FORMAT(c.start_date, '%d/%m/%Y'), '') AS start_date
+                FROM competitions c
+                WHERE c.code_competition IN ('c', 'kh')
+                ORDER BY c.libelle";
+        return $this->sql_manager->execute($sql);
+    }
+
+    /**
+     * Get teams available for cup draw (reuses existing methods)
+     * @param string $code_competition The cup code (c for Isoardi, kh for Khoury Hanna)
+     * @return array
+     * @throws Exception  
+     */
+    public function getTeamsForCupDraw(string $code_competition): array
+    {
+        // Use existing methods based on competition type
+        if ($code_competition === 'kh') {
+            // Khoury Hanna: use getKHCupDrawData
+            $data = $this->getKHCupDrawData();
+            return array_map(function($team) {
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'],
+                    'club' => $team['club'],
+                    'division_origine' => '-',
+                    'rank_start' => $team['rang'],
+                    'rang_global' => $team['rang']
+                ];
+            }, $data['teams'] ?? []);
+        } elseif ($code_competition === 'c') {
+            // Coupe Isoardi (c): use getCupDrawData
+            $data = $this->getCupDrawData('m');
+            
+            // Combine tableau haut and tableau bas teams
+            $teams = [];
+            
+            // Add tableau haut teams
+            foreach ($data['tableau_haut']['teams'] ?? [] as $team) {
+                $teams[] = [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'],
+                    'club' => $team['club'] ?? '',
+                    'division_origine' => $team['division'] ?? '-',
+                    'rank_start' => $team['rang'],
+                    'rang_global' => $team['rang'],
+                    'chapeau' => $team['chapeau'],
+                    'tableau' => 'haut'
+                ];
+            }
+            
+            // Add tableau bas teams
+            foreach ($data['tableau_bas']['teams'] ?? [] as $team) {
+                $teams[] = [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'],
+                    'club' => $team['club'] ?? '',
+                    'division_origine' => $team['division'] ?? '-',
+                    'rank_start' => $team['rang'],
+                    'rang_global' => $team['rang'],
+                    'chapeau' => $team['chapeau'],
+                    'tableau' => 'bas'
+                ];
+            }
+            
+            return $teams;
+        }
+    }
+
+    /**
+     * Get current pool assignments for a cup competition
+     * @param string $code_competition
+     * @return array
+     * @throws Exception
+     */
+    public function getCupPoolAssignments(string $code_competition): array
+    {
+        $sql = "SELECT 
+                    c.division AS pool,
+                    c.id_equipe,
+                    e.nom_equipe,
+                    cl.nom AS club,
+                    c.rank_start
+                FROM classements c
+                JOIN equipes e ON e.id_equipe = c.id_equipe
+                JOIN clubs cl ON cl.id = e.id_club
+                WHERE c.code_competition = ?
+                ORDER BY CAST(c.division AS UNSIGNED), c.rank_start";
+        
+        $bindings = [['type' => 's', 'value' => $code_competition]];
+        $results = $this->sql_manager->execute($sql, $bindings);
+        
+        // Group by pool
+        $pools = [];
+        foreach ($results as $row) {
+            $poolNum = intval($row['pool']);
+            if (!isset($pools[$poolNum])) {
+                $pools[$poolNum] = [];
+            }
+            $pools[$poolNum][] = $row;
+        }
+        
+        return $pools;
+    }
+
+    /**
      * Assign chapeaux to a list of teams based on their position
      * Creates pools of 3-4 teams with proper chapeau distribution
      * @param array $teams
