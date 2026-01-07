@@ -11,7 +11,7 @@ export default {
           </h2>
           <div class="rounded-lg overflow-hidden shadow-lg">
             <iframe
-              src="https://player.twitch.tv/?channel=biggyben13&parent=ufolep13volley.org"
+              src="https://player.twitch.tv/?channel=biggyben13&parent=ufolep13volley.org&parent=www.ufolep13volley.org"
               height="600"
               width="100%"
               allowfullscreen>
