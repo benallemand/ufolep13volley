@@ -3,6 +3,22 @@ export default {
       <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">Tirage au sort des poules de Coupe Khoury Hanna</h1>
         
+        <!-- Stream Twitch du tirage au sort -->
+        <div class="mb-6">
+          <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
+            <i class="fab fa-twitch text-purple-500"></i>
+            Stream en direct
+          </h2>
+          <div class="rounded-lg overflow-hidden shadow-lg">
+            <iframe
+              src="https://player.twitch.tv/?channel=biggyben13&parent=ufolep13volley.org"
+              height="600"
+              width="100%"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+        
         <div v-if="loading" class="text-center py-8">
           <span class="loading loading-spinner loading-lg"></span>
         </div>
