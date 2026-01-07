@@ -41,11 +41,14 @@ export default {
             </div>
           </div>
           
-          <!-- Bouton Imprimer -->
-          <div class="mb-6">
+          <!-- Boutons d'action -->
+          <div class="mb-6 flex flex-wrap gap-2">
             <button class="btn btn-primary" @click="printCards">
               <i class="fas fa-print mr-2"></i>Imprimer les cartes pour le tirage
             </button>
+            <router-link v-if="isAdmin" to="/cup-draw-admin" class="btn btn-secondary">
+              <i class="fas fa-edit mr-2"></i>Administrer le tirage (drag&drop)
+            </router-link>
           </div>
           
           <!-- Règles du tirage -->
@@ -143,10 +146,17 @@ export default {
                 nb_first_places: 0,
                 nb_best_seconds: 0
             },
-            loading: true
+            loading: true,
+            user: null
         };
     },
+    computed: {
+        isAdmin() {
+            return this.user && this.user.profile_name === 'ADMINISTRATEUR';
+        }
+    },
     created() {
+        this.fetchUserDetails();
         this.fetch();
     },
     methods: {
@@ -176,6 +186,18 @@ export default {
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement des données phases finales :", error);
+                });
+        },
+        fetchUserDetails() {
+            axios
+                .get('/session_user.php')
+                .then((response) => {
+                    if (!response.data.error) {
+                        this.user = response.data;
+                    }
+                })
+                .catch(() => {
+                    this.user = null;
                 });
         },
         printCards() {

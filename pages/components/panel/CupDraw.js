@@ -51,7 +51,7 @@ export default {
             <button class="btn btn-primary" @click="printCards">
               <i class="fas fa-print mr-2"></i>Imprimer les cartes pour le tirage
             </button>
-            <router-link to="/cup-draw-admin" class="btn btn-secondary">
+            <router-link v-if="isAdmin" to="/cup-draw-admin" class="btn btn-secondary">
               <i class="fas fa-edit mr-2"></i>Administrer le tirage (drag&drop)
             </router-link>
           </div>
@@ -242,8 +242,14 @@ export default {
                 nb_first_places: 0,
                 nb_best_seconds: 0
             },
-            loading: true
+            loading: true,
+            user: null
         };
+    },
+    computed: {
+        isAdmin() {
+            return this.user && this.user.profile_name === 'ADMINISTRATEUR';
+        }
     },
     watch: {
         '$route.params.code_competition': {
@@ -284,6 +290,18 @@ export default {
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement des données phases finales :", error);
+                });
+        },
+        fetchUserDetails() {
+            axios
+                .get('/session_user.php')
+                .then((response) => {
+                    if (!response.data.error) {
+                        this.user = response.data;
+                    }
+                })
+                .catch(() => {
+                    this.user = null;
                 });
         },
         getTeamsFromChapeau(teams, chapeauNumero) {
@@ -492,6 +510,7 @@ export default {
         }
     },
     created() {
+        this.fetchUserDetails();
         this.fetch();
     }
 };

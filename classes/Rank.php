@@ -495,9 +495,9 @@ class Rank extends Generic
                     AND e.code_competition = comp.code_competition
                 WHERE comp.code_competition = 'kh'
                 ORDER BY r.creation_date";
-        
+
         $teams = $this->sql_manager->execute($sql);
-        
+
         if (empty($teams)) {
             return [
                 'teams' => [],
@@ -506,15 +506,15 @@ class Rank extends Generic
                 'teams_per_pool' => $max_teams_per_pool
             ];
         }
-        
+
         $total_teams = count($teams);
-        $nb_pools = (int) ceil($total_teams / $max_teams_per_pool);
-        
+        $nb_pools = (int)ceil($total_teams / $max_teams_per_pool);
+
         // Add order based on registration date
         foreach ($teams as $index => &$team) {
             $team['rang'] = $index + 1;
         }
-        
+
         return [
             'teams' => $teams,
             'total_teams' => $total_teams,
@@ -534,7 +534,7 @@ class Rank extends Generic
     public function getCupFinalsDraw(int $nb_pools, bool $has_tableau = true): array
     {
         $nb_qualified = 16;
-        
+
         if ($nb_pools === 0) {
             return [
                 'qualified' => [],
@@ -544,19 +544,19 @@ class Rank extends Generic
                 'nb_best_seconds' => 0
             ];
         }
-        
+
         // All 1st places qualify
         $nb_first_places = $nb_pools;
         // Remaining slots go to best 2nd places
         $nb_best_seconds = max(0, $nb_qualified - $nb_first_places);
-        
+
         // Generate qualified positions list
         $qualified = [];
-        
+
         if ($has_tableau) {
             // Isoardi: pools split into tableau haut (1-7) and tableau bas (8-14)
-            $half_pools = (int) ceil($nb_pools / 2);
-            
+            $half_pools = (int)ceil($nb_pools / 2);
+
             // Tableau haut: 1er poule 1 to 1er poule 7
             for ($i = 1; $i <= $half_pools; $i++) {
                 $qualified[] = ['label' => "1er poule $i", 'tableau' => 'haut', 'position' => 1, 'pool' => $i];
@@ -578,10 +578,10 @@ class Rank extends Generic
                 $qualified[] = ['label' => "meilleur 2e $i/$nb_best_seconds", 'tableau' => null, 'position' => 2, 'pool' => null];
             }
         }
-        
+
         // Generate bracket for 1/8 finals
         $bracket = $this->generateFinalsBracketFromPositions($qualified, $has_tableau);
-        
+
         return [
             'qualified' => $qualified,
             'bracket' => $bracket,
@@ -590,7 +590,7 @@ class Rank extends Generic
             'nb_best_seconds' => $nb_best_seconds
         ];
     }
-    
+
     /**
      * Generate bracket for 1/8 finals from position labels
      * @param array $qualified List of qualified positions (16 teams)
@@ -601,14 +601,14 @@ class Rank extends Generic
     {
         $bracket = [];
         $nb_matches = 8; // 1/8 finals = 8 matches
-        
+
         if ($has_tableau) {
             // Isoardi: cross tableau haut vs tableau bas
             // Separate qualified by tableau
             $haut = array_values(array_filter($qualified, fn($q) => $q['tableau'] === 'haut'));
             $bas = array_values(array_filter($qualified, fn($q) => $q['tableau'] === 'bas'));
             $seconds = array_values(array_filter($qualified, fn($q) => $q['position'] === 2));
-            
+
             // Add seconds to the smaller tableau to balance
             foreach ($seconds as $second) {
                 if (count($haut) <= count($bas)) {
@@ -617,7 +617,7 @@ class Rank extends Generic
                     $bas[] = $second;
                 }
             }
-            
+
             // Now pair haut[0] vs bas[last], haut[1] vs bas[last-1], etc.
             // This ensures crossing: best haut vs worst bas, etc.
             for ($i = 0; $i < $nb_matches && $i < count($haut); $i++) {
@@ -645,7 +645,7 @@ class Rank extends Generic
                 }
             }
         }
-        
+
         return $bracket;
     }
 
@@ -661,7 +661,7 @@ class Rank extends Generic
     public function getCupDrawData(string $code_competition, int $max_teams_per_pool = 4): array
     {
         $teams = $this->get_full_competition_rank($code_competition);
-        
+
         if (empty($teams)) {
             return [
                 'teams' => [],
@@ -671,16 +671,16 @@ class Rank extends Generic
                 'tableau_bas' => ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0]
             ];
         }
-        
+
         $total_teams = count($teams);
-        $half_point = (int) ceil($total_teams / 2);
-        
+        $half_point = (int)ceil($total_teams / 2);
+
         $tableau_haut_teams = array_slice($teams, 0, $half_point);
         $tableau_bas_teams = array_slice($teams, $half_point);
-        
+
         $tableau_haut = $this->assignChapeauxToTeams($tableau_haut_teams, $max_teams_per_pool);
         $tableau_bas = $this->assignChapeauxToTeams($tableau_bas_teams, $max_teams_per_pool);
-        
+
         return [
             'teams' => $teams,
             'total_teams' => $total_teams,
@@ -689,7 +689,7 @@ class Rank extends Generic
             'tableau_bas' => $tableau_bas
         ];
     }
-    
+
     /**
      * Save cup pool assignments from drag&drop interface
      * @param string $code_competition The cup competition code
@@ -699,47 +699,52 @@ class Rank extends Generic
      */
     public function saveCupPoolAssignments(string $code_competition, string $pools): array
     {
+        // Check if user is admin
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut modifier le tirage au sort !");
+        }
+
         // Decode JSON pools if string
         $poolsArray = json_decode($pools, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception("Format JSON invalide pour les pools");
         }
-        
+
         // Validate input
         if (empty($code_competition) || empty($poolsArray)) {
             throw new Exception("code_competition et pools sont requis");
         }
-        
+
         $pools = $poolsArray;
-        
+
         // Get database connection for transaction control
         $db = Database::openDbConnection();
-        
+
         // Start transaction using mysqli_query (not prepared statements)
         mysqli_begin_transaction($db);
-        
+
         try {
             // Delete existing assignments for this cup competition
             $sql = "DELETE FROM classements WHERE code_competition = ?";
             $bindings = [['type' => 's', 'value' => $code_competition]];
             $this->sql_manager->execute($sql, $bindings);
-            
+
             // Insert new assignments
             $inserted = 0;
             foreach ($pools as $poolIndex => $pool) {
                 $division = strval($poolIndex + 1); // Pool 1, 2, 3... become division "1", "2", "3"...
-                
+
                 if (!is_array($pool) || empty($pool)) {
                     continue;
                 }
-                
+
                 foreach ($pool as $rankIndex => $teamId) {
                     if (empty($teamId)) {
                         continue;
                     }
-                    
+
                     $rank_start = $rankIndex + 1; // Position in pool: 1, 2, 3, 4
-                    
+
                     $sql = "INSERT INTO classements (code_competition, division, id_equipe, rank_start) VALUES (?, ?, ?, ?)";
                     $bindings = [
                         ['type' => 's', 'value' => $code_competition],
@@ -751,17 +756,17 @@ class Rank extends Generic
                     $inserted++;
                 }
             }
-            
+
             mysqli_commit($db);
-            
+
             $this->addActivity("Tirage au sort sauvegardé pour la compétition $code_competition: $inserted équipes réparties dans " . count($pools) . " poules");
-            
+
             return [
                 'success' => true,
                 'inserted' => $inserted,
                 'pools_count' => count($pools)
             ];
-            
+
         } catch (Exception $e) {
             mysqli_rollback($db);
             throw $e;
@@ -790,7 +795,7 @@ class Rank extends Generic
      * Get teams available for cup draw (reuses existing methods)
      * @param string $code_competition The cup code (c for Isoardi, kh for Khoury Hanna)
      * @return array
-     * @throws Exception  
+     * @throws Exception
      */
     public function getTeamsForCupDraw(string $code_competition): array
     {
@@ -798,7 +803,7 @@ class Rank extends Generic
         if ($code_competition === 'kh') {
             // Khoury Hanna: use getKHCupDrawData
             $data = $this->getKHCupDrawData();
-            return array_map(function($team) {
+            return array_map(function ($team) {
                 return [
                     'id_equipe' => $team['id_equipe'],
                     'nom_equipe' => $team['equipe'],
@@ -811,10 +816,10 @@ class Rank extends Generic
         } elseif ($code_competition === 'c') {
             // Coupe Isoardi (c): use getCupDrawData
             $data = $this->getCupDrawData('m');
-            
+
             // Combine tableau haut and tableau bas teams
             $teams = [];
-            
+
             // Add tableau haut teams
             foreach ($data['tableau_haut']['teams'] ?? [] as $team) {
                 $teams[] = [
@@ -828,7 +833,7 @@ class Rank extends Generic
                     'tableau' => 'haut'
                 ];
             }
-            
+
             // Add tableau bas teams
             foreach ($data['tableau_bas']['teams'] ?? [] as $team) {
                 $teams[] = [
@@ -842,9 +847,10 @@ class Rank extends Generic
                     'tableau' => 'bas'
                 ];
             }
-            
+
             return $teams;
         }
+        throw new Exception("cette compétition n'est pas une coupe...");
     }
 
     /**
@@ -866,10 +872,10 @@ class Rank extends Generic
                 JOIN clubs cl ON cl.id = e.id_club
                 WHERE c.code_competition = ?
                 ORDER BY CAST(c.division AS UNSIGNED), c.rank_start";
-        
+
         $bindings = [['type' => 's', 'value' => $code_competition]];
         $results = $this->sql_manager->execute($sql, $bindings);
-        
+
         // Group by pool
         $pools = [];
         foreach ($results as $row) {
@@ -879,7 +885,7 @@ class Rank extends Generic
             }
             $pools[$poolNum][] = $row;
         }
-        
+
         return $pools;
     }
 
@@ -896,18 +902,18 @@ class Rank extends Generic
         if ($total === 0) {
             return ['teams' => [], 'chapeaux' => [], 'nb_pools' => 0];
         }
-        
+
         // Calculate number of pools needed (pools of 3-4 teams)
-        $nb_pools = (int) ceil($total / $max_teams_per_pool);
-        
+        $nb_pools = (int)ceil($total / $max_teams_per_pool);
+
         // Calculate how many pools have max teams vs (max-1) teams
         // nb_pools * max - total = number of pools with (max-1) teams
         $pools_with_less = $nb_pools * $max_teams_per_pool - $total;
         $pools_with_max = $nb_pools - $pools_with_less;
-        
+
         // Number of chapeaux = max teams per pool (usually 4, but could be 3 if not enough teams)
-        $nb_chapeaux = min($max_teams_per_pool, (int) ceil($total / $nb_pools));
-        
+        $nb_chapeaux = min($max_teams_per_pool, (int)ceil($total / $nb_pools));
+
         // Build chapeaux info
         // Chapeau 1 to (nb_chapeaux-1) have nb_pools teams each
         // Last chapeau has pools_with_max teams (the pools that have max_teams_per_pool teams)
@@ -921,10 +927,10 @@ class Rank extends Generic
                 // Last chapeau: only pools that have max_teams_per_pool teams
                 $size = $pools_with_max;
             }
-            
+
             // Adjust if we're running out of teams
             $size = min($size, $total - $cumulative);
-            
+
             if ($size > 0) {
                 $chapeaux[$i] = [
                     'numero' => $i,
@@ -933,18 +939,18 @@ class Rank extends Generic
                 $cumulative += $size;
             }
         }
-        
+
         // Assign chapeau to each team
         // Team 0 to (nb_pools-1) -> chapeau 1
         // Team nb_pools to (2*nb_pools-1) -> chapeau 2
         // etc.
         foreach ($teams as $index => &$team) {
-            $chapeau_num = (int) floor($index / $nb_pools) + 1;
+            $chapeau_num = (int)floor($index / $nb_pools) + 1;
             // Make sure we don't exceed nb_chapeaux
             $chapeau_num = min($chapeau_num, $nb_chapeaux);
             $team['chapeau'] = $chapeau_num;
         }
-        
+
         return [
             'teams' => $teams,
             'chapeaux' => array_values($chapeaux),
