@@ -13,6 +13,7 @@ class SqlManager
     {
         $db = Database::openDbConnection();
         $sql = trim($sql);
+        $sqlType = $this->getSqlStatementType($sql);
         mysqli_query($db, "SET SESSION group_concat_max_len = 1000000");
         $stmt = mysqli_prepare($db, $sql);
         if ($stmt === FALSE) {
@@ -33,7 +34,7 @@ class SqlManager
         if (mysqli_stmt_execute($stmt) === FALSE) {
             throw new Exception("Erreur SQL : " . mysqli_error($db));
         }
-        if (str_starts_with($sql, "SELECT") || str_starts_with($sql, "SHOW") || str_starts_with($sql, "WITH")) {
+        if (in_array($sqlType, ['SELECT', 'SHOW', 'WITH'])) {
             $mysqli_result = mysqli_stmt_get_result($stmt);
             $results = array();
             while ($data = mysqli_fetch_assoc($mysqli_result)) {
@@ -44,7 +45,7 @@ class SqlManager
             }
             return $results;
         }
-        if (str_starts_with($sql, "INSERT INTO")) {
+        if ($sqlType === 'INSERT') {
             return mysqli_insert_id($db);
         }
         if (mysqli_stmt_close($stmt) === FALSE) {
@@ -156,6 +157,21 @@ class SqlManager
             $refs[$key] = &$arr[$key];
         }
         return $refs;
+    }
+
+    private function getSqlStatementType(string $sql): string
+    {
+        $lines = explode("\n", $sql);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line) || str_starts_with($line, '--')) {
+                continue;
+            }
+            if (preg_match('/^(SELECT|INSERT|UPDATE|DELETE|SHOW|WITH)\b/i', $line, $matches)) {
+                return strtoupper($matches[1]);
+            }
+        }
+        return '';
     }
 
     /**

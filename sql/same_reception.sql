@@ -9,27 +9,28 @@ SELECT DISTINCT last_match.id_equipe_dom,
 FROM matchs_view last_match,
      matchs_view previous_match
 WHERE last_match.id_match <> previous_match.id_match
+  -- Les 2 matchs concernent les mêmes équipes (dans n'importe quel sens)
+  AND LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext) =
+      LEAST(previous_match.id_equipe_dom, previous_match.id_equipe_ext)
+  AND GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext) =
+      GREATEST(previous_match.id_equipe_dom, previous_match.id_equipe_ext)
+  -- Mais la même équipe recevait les 2 fois (problème!)
   AND last_match.id_equipe_dom = previous_match.id_equipe_dom
-  AND last_match.id_equipe_ext = previous_match.id_equipe_ext
-  AND last_match.equipe_dom = previous_match.equipe_dom
+  -- last_match est le plus récent entre ces 2 équipes (passé OU futur)
   AND last_match.date_reception = (SELECT MAX(date_reception)
                                    FROM matchs_view
-                                   WHERE id_equipe_dom = last_match.id_equipe_dom
-                                     AND id_equipe_ext = last_match.id_equipe_ext
-                                     AND equipe_dom = last_match.equipe_dom
-                                     AND date_reception < NOW())
+                                   WHERE LEAST(id_equipe_dom, id_equipe_ext) =
+                                         LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext)
+                                     AND GREATEST(id_equipe_dom, id_equipe_ext) =
+                                         GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext))
+  -- previous_match est le 2ème plus récent entre ces 2 équipes
   AND previous_match.date_reception = (SELECT MAX(date_reception)
                                        FROM matchs_view
-                                       WHERE id_equipe_dom = last_match.id_equipe_dom
-                                         AND id_equipe_ext = last_match.id_equipe_ext
-                                         AND equipe_dom = last_match.equipe_dom
+                                       WHERE LEAST(id_equipe_dom, id_equipe_ext) =
+                                             LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext)
+                                         AND GREATEST(id_equipe_dom, id_equipe_ext) =
+                                             GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext)
                                          AND date_reception < last_match.date_reception)
-  AND NOT EXISTS(SELECT 1
-                 FROM matchs_view
-                 WHERE id_equipe_dom = previous_match.id_equipe_ext
-                   AND id_equipe_ext = previous_match.id_equipe_dom
-                   AND date_reception BETWEEN previous_match.date_reception AND last_match.date_reception)
   AND STR_TO_DATE(previous_match.date_reception, '%d/%m/%Y') > DATE_SUB(NOW(), INTERVAL 9 MONTH)
-  AND STR_TO_DATE(last_match.date_reception, '%d/%m/%Y') > DATE_SUB(NOW(), INTERVAL 9 MONTH)
   AND last_match.id_equipe_ext IN (SELECT id_equipe FROM creneau)
-ORDER BY equipe_dom, prev_date
+ORDER BY last_match.equipe_dom, prev_date
