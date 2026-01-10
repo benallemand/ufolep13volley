@@ -57,9 +57,10 @@ class Club extends Generic
      */
     public function save($inputs)
     {
-        parent::save($inputs);
+        $result = parent::save($inputs);
         $subject = "Club " . $inputs['nom'];
-        $this->addActivity($this->build_activity($subject, $inputs['dirtyFields'], $inputs));
+        $this->addActivity($this->build_activity($subject, $inputs['dirtyFields'] ?? null, $inputs));
+        return $result;
     }
 
     public function getClubName($idClub)

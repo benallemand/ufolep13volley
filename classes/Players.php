@@ -930,12 +930,20 @@ class Players extends Generic
             $idPhoto = $this->savePlayerPhotoFromLicence($licence);
         }
         
+        // Vérifier si le club existe, sinon le créer
+        $cur_club = $this->club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => $licence['licence_club'])));
+        if (empty($cur_club)) {
+            // Créer le club avec les infos de la licence
+            $newClubId = $this->club->save(array(
+                'nom' => $licence['club'],
+                'affiliation_number' => $licence['licence_club'],
+                'dirtyFields' => null,
+            ));
+            $cur_club = array('id' => $newClubId);
+        }
+        
         // s'il n'existe pas, le créer
         if (empty($current_player)) {
-            $cur_club = $this->club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => $licence['licence_club'])));
-            if (empty($cur_club)) {
-                throw new Exception("Pas de club avec le numéro d'affiliation " . $licence['licence_club'] . " !");
-            }
             $newPlayerId = $this->save(array(
                 'prenom' => explode(' ', $licence['last_first_name'])[1],
                 'nom' => explode(' ', $licence['last_first_name'])[0],

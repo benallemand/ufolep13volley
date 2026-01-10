@@ -367,7 +367,28 @@ class Files extends Generic
                         throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
                     }
                     $result['licence_club'] = $matches[1];
-                    $result['club'] = $matches[2];
+                    $club_name = $matches[2];
+                    // Vérifier si le nom du club continue sur la ligne suivante
+                    if ($tm_index + 1 < count($data_tm)) {
+                        $next_item = trim($data_tm[$tm_index + 1][1]);
+                        // Si la ligne suivante ne commence pas par un mot-clé connu, c'est la suite du nom
+                        if (!self::starts_with($next_item, "Délivrée le") &&
+                            !self::starts_with($next_item, "Cert.") &&
+                            !self::starts_with($next_item, "Connectez") &&
+                            !self::starts_with($next_item, "votre identifiant") &&
+                            !self::starts_with($next_item, "Licence à") &&
+                            !self::starts_with($next_item, "Plus d'informations") &&
+                            !self::starts_with($next_item, "N°") &&
+                            !self::starts_with($next_item, "Né(e) le") &&
+                            !self::starts_with($next_item, "Asso") &&
+                            !self::starts_with($next_item, "MULTISPORTS") &&
+                            !self::starts_with($next_item, "Pratiquant") &&
+                            !self::starts_with($next_item, "Vos activités")) {
+                            $club_name .= ' ' . $next_item;
+                            $tm_index++; // Sauter la ligne suivante
+                        }
+                    }
+                    $result['club'] = $club_name;
                 } elseif (self::starts_with($item, "votre identifiant")) {
                     if (!preg_match('/votre identifiant (0\d{2}_\d+).*/', $item, $matches)) {
                         throw new Exception("Impossible de déchiffrer cette chaîne: $item !");
