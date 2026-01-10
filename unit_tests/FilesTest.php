@@ -42,7 +42,7 @@ class FilesTest extends UfolepTestCase
                 $this->assertEquals('29/11/1983', $licence['date_of_birth']);
                 $this->assertEquals('41', $licence['age']);
                 $this->assertEquals('M', $licence['sexe']);
-                $this->assertEquals('ASS VOLLEY LOISIR', $licence['club']);
+                $this->assertEquals('ASS VOLLEY LOISIR FUVELAIN', $licence['club']);
                 $this->assertEquals('013040711', $licence['licence_club']);
                 $this->assertEquals('30/09/2025', $licence['homologation_date']);
                 $this->assertEquals('013_96567550', $licence['licence_number_2']);
@@ -132,4 +132,26 @@ class FilesTest extends UfolepTestCase
         echo "\n" . str_repeat("=", 80) . "\n";
         echo "Tous les fichiers PDF ont été traités avec succès!\n\n";
     }
+
+    public function test_licence_ardeche()
+    {
+        $mgr = new Files();
+        $results = $mgr->get_licences_data(__DIR__ . '/files/licences/licence-ardeche.pdf');
+        
+        $this->assertCount(1, $results, "Le PDF devrait contenir 1 licence");
+        
+        $licence = $results[0];
+        
+        $this->assertEquals('07', $licence['departement']);
+        $this->assertEquals('99996743', $licence['licence_number']);
+        $this->assertEquals('DELOUCHE HUGO', $licence['last_first_name']);
+        $this->assertEquals('08/08/2000', $licence['date_of_birth']);
+        $this->assertEquals('M', $licence['sexe']);
+        $this->assertEquals('AMICALE LAIQUE SAINT PERAY', $licence['club']);
+        $this->assertEquals('007281005', $licence['licence_club']);
+        $this->assertEquals('29/10/2025', $licence['homologation_date']);
+        $this->assertEquals('007_99996743', $licence['licence_number_2']);
+    }
+
+
 }

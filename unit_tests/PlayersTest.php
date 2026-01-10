@@ -27,4 +27,118 @@ class PlayersTest extends UfolepTestCase
         $this->assertTrue(1 == 1);
     }
 
+    public function test_import_licence_ardeche_creates_club()
+    {
+        $this->connect_as_admin();
+        
+        $club = new Club();
+        $files = new Files();
+        
+        // Supprimer le club et le joueur s'ils existent déjà (pour pouvoir rejouer le test)
+        $existingClub = $club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => '007281005')));
+        if (!empty($existingClub)) {
+            $club->delete($existingClub['id']);
+        }
+        
+        $existingPlayer = $this->players->get_one("num_licence = ?", array(array('type' => 's', 'value' => '99996743')));
+        if (!empty($existingPlayer)) {
+            $this->players->delete($existingPlayer['id']);
+        }
+        
+        // Extraire les données de la licence
+        $licences = $files->get_licences_data(__DIR__ . '/files/licences/licence-ardeche.pdf');
+        $this->assertCount(1, $licences);
+        
+        $licence = $licences[0];
+        
+        // Importer la licence (doit créer le club automatiquement)
+        $this->players->search_player_and_save_from_licence($licence);
+        
+        // Vérifier que le club a été créé
+        $newClub = $club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => '007281005')));
+        $this->assertNotEmpty($newClub, "Le club devrait avoir été créé");
+        $this->assertEquals('AMICALE LAIQUE SAINT PERAY', $newClub['nom']);
+        
+        // Vérifier que le joueur a été créé
+        $newPlayer = $this->players->get_one("num_licence = ?", array(array('type' => 's', 'value' => '99996743')));
+        $this->assertNotEmpty($newPlayer, "Le joueur devrait avoir été créé");
+        $this->assertEquals('DELOUCHE', $newPlayer['nom']);
+        $this->assertEquals('HUGO', $newPlayer['prenom']);
+        $this->assertEquals('07', $newPlayer['departement_affiliation']);
+        $this->assertEquals($newClub['id'], $newPlayer['id_club']);
+        
+        // Nettoyage
+        $this->players->delete($newPlayer['id']);
+        $club->delete($newClub['id']);
+    }
+
+    public function test_import_all_licences_from_test_directory()
+    {
+        $this->connect_as_admin();
+        
+        $files = new Files();
+        $licencesDir = __DIR__ . '/files/licences';
+        $pdfFiles = glob($licencesDir . '/*.pdf');
+        
+        $this->assertNotEmpty($pdfFiles, "Aucun fichier PDF trouvé dans $licencesDir");
+        
+        $totalImported = 0;
+        $totalErrors = 0;
+        $createdPlayerIds = [];
+        
+        fwrite(STDERR, "\n\nTest d'import de toutes les licences:\n");
+        fwrite(STDERR, str_repeat("=", 80) . "\n");
+        
+        foreach ($pdfFiles as $pdfFile) {
+            $filename = basename($pdfFile);
+            fwrite(STDERR, "\nFichier: $filename ... ");
+            
+            try {
+                $licences = $files->get_licences_data($pdfFile);
+                fwrite(STDERR, count($licences) . " licences trouvées\n");
+                
+                $fileImported = 0;
+                $fileErrors = 0;
+                $licenceCount = count($licences);
+                
+                foreach ($licences as $index => $licence) {
+                    fwrite(STDERR, "  [" . ($index + 1) . "/$licenceCount] {$licence['last_first_name']} ... ");
+                    
+                    try {
+                        $this->players->search_player_and_save_from_licence($licence);
+                        $fileImported++;
+                        fwrite(STDERR, "OK\n");
+                        
+                        // Récupérer l'ID du joueur créé/mis à jour pour le nettoyage
+                        $player = $this->players->get_one(
+                            "num_licence = ? AND departement_affiliation = ?",
+                            array(
+                                array('type' => 's', 'value' => $licence['licence_number']),
+                                array('type' => 's', 'value' => $licence['departement'])
+                            )
+                        );
+                        if (!empty($player)) {
+                            $createdPlayerIds[] = $player['id'];
+                        }
+                    } catch (Exception $e) {
+                        $fileErrors++;
+                        fwrite(STDERR, "ERREUR: " . $e->getMessage() . "\n");
+                    }
+                }
+                
+                $totalImported += $fileImported;
+                $totalErrors += $fileErrors;
+                fwrite(STDERR, "  → Résumé: $fileImported importées, $fileErrors erreurs\n");
+                
+            } catch (Exception $e) {
+                fwrite(STDERR, "ERREUR lecture PDF: " . $e->getMessage() . "\n");
+            }
+        }
+        
+        fwrite(STDERR, "\n" . str_repeat("=", 80) . "\n");
+        fwrite(STDERR, "TOTAL: $totalImported licences importées, $totalErrors erreurs\n\n");
+        
+        $this->assertGreaterThan(0, $totalImported, "Au moins une licence devrait être importée");
+    }
+
 }
