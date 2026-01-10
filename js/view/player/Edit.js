@@ -87,15 +87,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 fieldLabel: "Département d'affiliation",
                 xtype: 'combo',
                 allowBlank: false,
-                store: Ext.create('Ext.data.Store', {
-                    fields: [{name: 'abbr', type: 'int'}, 'name'],
-                    data: [
-                        {"abbr": 13, "name": "Bouches du Rhône"},
-                        {"abbr": 84, "name": "Vaucluse"},
-                        {"abbr": 83, "name": "Var"},
-                        {"abbr": 0, "name": "Autres"}
-                    ]
-                }),
+                store: {type: 'Departements'},
                 queryMode: 'local',
                 displayField: 'name',
                 valueField: 'abbr',
