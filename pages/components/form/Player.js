@@ -47,8 +47,11 @@ export default {
               <span class="label-text">Département d'affiliation</span>
             </label>
             <select v-model="form.departement_affiliation" class="select select-bordered">
-              <option value="13">13 - bouches du rhône</option>
-              <option value="83">83 - var</option>
+              <option value="7">07 - Ardèche</option>
+              <option value="13">13 - Bouches du Rhône</option>
+              <option value="83">83 - Var</option>
+              <option value="84">84 - Vaucluse</option>
+              <option value="0">Autres</option>
             </select>
           </div>
           <div class="form-control">
