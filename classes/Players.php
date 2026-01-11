@@ -491,6 +491,24 @@ class Players extends Generic
     /**
      * @throws Exception
      */
+    public function get_players_by_team($id_team): array
+    {
+        $sql = "SELECT j.id, j.prenom, j.nom, CONCAT(j.prenom, ' ', j.nom) AS full_name,
+                       IF(je.id_equipe IS NOT NULL, 1, 0) AS is_in_team
+                FROM joueurs j
+                JOIN equipes e ON e.id_club = j.id_club
+                LEFT JOIN joueur_equipe je ON je.id_joueur = j.id AND je.id_equipe = e.id_equipe
+                WHERE e.id_equipe = ?
+                ORDER BY is_in_team DESC, j.nom, j.prenom";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_team)
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function addPlayersToTeam($id_players, $id_team, $dirtyFields = null)
     {
         if (!UserManager::isAdmin()) {
@@ -677,7 +695,7 @@ class Players extends Generic
         }
         foreach ($ids as $id_player) {
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
-                throw new Exception("Ce joueur n'est pas dans l'équipe !");
+                $this->addPlayerToTeam($id_player, $id_team);
             }
             $sql = "UPDATE joueur_equipe SET is_leader = 0 WHERE id_equipe = ?";
             $bindings = array(

@@ -142,6 +142,8 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.deleteClubs
             }, 'teamsgrid button[action=delete]': {
                 click: this.deleteTeams
+            }, 'teamsgrid button[action=setLeader]': {
+                click: this.setTeamLeader
             }, 'matchesgrid button[action=delete]': {
                 click: this.deleteMatches
             }, 'rankgrid button[action=delete]': {
@@ -1321,5 +1323,78 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 });
             }
         });
+    },
+    setTeamLeader: function (button) {
+        var this_controller = this;
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            Ext.Msg.alert('Erreur', 'Veuillez sélectionner une équipe');
+            return;
+        }
+        var id_equipe = record.get('id_equipe');
+        var nom_equipe = record.get('nom_equipe');
+        var playersStore = Ext.create('Ext.data.Store', {
+            fields: ['id', 'prenom', 'nom', 'full_name'],
+            proxy: {
+                type: 'ajax',
+                url: '/rest/action.php/player/get_players_by_team',
+                reader: {
+                    type: 'json'
+                }
+            },
+            autoLoad: false
+        });
+        playersStore.load({
+            params: {id_team: id_equipe}
+        });
+        var selectWindow = Ext.create('Ext.window.Window', {
+            title: 'Nommer responsable pour ' + nom_equipe,
+            width: 400,
+            height: 400,
+            layout: 'fit',
+            modal: true,
+            items: [{
+                xtype: 'grid_ufolep',
+                store: playersStore,
+                columns: [
+                    {header: 'Prénom', dataIndex: 'prenom', flex: 1},
+                    {header: 'Nom', dataIndex: 'nom', flex: 1},
+                    {header: 'Dans l\'équipe', dataIndex: 'is_in_team', width: 100, renderer: function(val) {
+                        return val == 1 ? 'Oui' : 'Non';
+                    }}
+                ]
+            }],
+            buttons: [{
+                text: 'Annuler',
+                handler: function () {
+                    selectWindow.close();
+                }
+            }, {
+                text: 'Nommer responsable',
+                handler: function () {
+                    var playerGrid = selectWindow.down('grid');
+                    var selectedPlayer = playerGrid.getSelectionModel().getSelection()[0];
+                    if (!selectedPlayer) {
+                        Ext.Msg.alert('Erreur', 'Veuillez sélectionner un joueur');
+                        return;
+                    }
+                    Ext.Ajax.request({
+                        url: '/rest/action.php/player/set_leader',
+                        params: {
+                            ids: selectedPlayer.get('id'),
+                            id_team: id_equipe
+                        },
+                        success: function () {
+                            Ext.Msg.alert('Succès', 'Le joueur a été nommé responsable de l\'équipe');
+                            selectWindow.close();
+                            grid.getStore().load();
+                        },
+                        failure: this_controller.manage_failure
+                    });
+                }
+            }]
+        });
+        selectWindow.show();
     }
 });

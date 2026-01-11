@@ -85,6 +85,13 @@ Ext.define('Ufolep13Volley.view.team.Grid', {
                 {
                     text: 'Supprimer',
                     action: 'delete'
+                },
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    text: 'Nommer responsable',
+                    action: 'setLeader'
                 }
             ]
         },
