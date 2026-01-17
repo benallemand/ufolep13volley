@@ -118,60 +118,56 @@ class HallOfFame extends Generic
     }
 
     /**
-     * for each competition id
-     * - get competition date
-     * - for each division
-     * -- get leader
-     * -- insert into hall of fame the leader
-     * -- get vice-leader
-     * -- insert into hall of fame the vice-leader
+     * Génère le palmarès à partir des matchs certifiés entre deux dates
+     * @param string $code_competition Code de la compétition (m, f, mo)
+     * @param string $date_debut Date de début (format Y-m-d)
+     * @param string $date_fin Date de fin (format Y-m-d)
+     * @param string $period Période à afficher (ex: "2025-2026")
+     * @param string $title_season Titre de la saison (ex: "mi-saison" ou "Dept.")
      * @throws Exception
      */
-    public function generateHallOfFame($ids)
+    public function generateHallOfFameFromMatches($code_competition, $date_debut, $date_fin, $period, $title_season)
     {
-        if (empty($ids)) {
-            throw new Exception("Aucune compétition sélectionnée !");
+        if (empty($code_competition) || empty($date_debut) || empty($date_fin)) {
+            throw new Exception("Les paramètres code_competition, date_debut et date_fin sont obligatoires !");
         }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            require_once __DIR__ . '/../classes/Competition.php';
-            $competition_manager = new Competition();
-            $competitions = $competition_manager->getCompetitions("c.id = $id");
-            if (count($competitions) !== 1) {
-                throw new Exception("Une seule compétition doit être trouvée !");
-            }
-            if (!$competition_manager->isCompetitionOver($competitions[0]['id'])) {
-                throw new Exception("La compétition n'est pas terminée !!!");
-            }
-            $competition_date = DateTime::createFromFormat("d/m/Y", $competitions[0]['start_date']);
-            require_once __DIR__ . '/../classes/Rank.php';
-            $rank_manager = new Rank();
-            $divisions = $rank_manager->getDivisionsFromCompetition($competitions[0]['code_competition']);
-            foreach ($divisions as $division) {
-                $leader = $rank_manager->getLeader($competitions[0]['code_competition'], $division['division']);
-                $vice_leader = $rank_manager->getViceLeader($competitions[0]['code_competition'], $division['division']);
-                require_once __DIR__ . '/../classes/HallOfFame.php';
-                if (intval($competition_date->format('m')) >= 9) {
-                    $title_season = " mi-saison ";
-                    $period = $competition_date->format('Y') . "-" . (intval($competition_date->format('Y')) + 1);
-                } else {
-                    $title_season = " Dept. ";
-                    $period = (intval($competition_date->format('Y')) - 1) . "-" . $competition_date->format('Y');
-                }
-                $this->insert(
-                    "Championne" . $title_season . "de Division " . $division['division'],
-                    $leader['equipe'],
-                    $period,
-                    $competitions[0]['libelle']
-                );
-                $this->insert(
-                    "Vice-championne" . $title_season . "de Division " . $division['division'],
-                    $vice_leader['equipe'],
-                    $period,
-                    $competitions[0]['libelle']
-                );
-            }
+
+        // Récupérer le libellé de la compétition
+        require_once __DIR__ . '/Competition.php';
+        $competition_manager = new Competition();
+        $competitions = $competition_manager->getCompetitions("c.code_competition = '$code_competition'");
+        if (count($competitions) === 0) {
+            throw new Exception("Compétition non trouvée pour le code: $code_competition");
         }
+        $libelle_competition = $competitions[0]['libelle'];
+
+        // Requête pour obtenir les 2 premiers de chaque division
+        $sql = file_get_contents(__DIR__ . '/../sql/get_top2_by_division.sql');
+
+        $bindings = array(
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $date_debut),
+            array('type' => 's', 'value' => $date_fin),
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $date_debut),
+            array('type' => 's', 'value' => $date_fin),
+        );
+
+        $results = $this->sql_manager->execute($sql, $bindings);
+
+        if (empty($results)) {
+            throw new Exception("Aucun résultat trouvé pour cette période !");
+        }
+
+        $count = 0;
+        foreach ($results as $row) {
+            $title = ($row['rang'] == 1 ? "Championne" : "Vice-championne") 
+                   . " " . $title_season . " de Division " . $row['division'];
+            $this->insert($title, $row['equipe'], $period, $libelle_competition);
+            $count++;
+        }
+
+        return $count;
     }
 
     /**

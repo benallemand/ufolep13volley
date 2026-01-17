@@ -929,7 +929,92 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
     },
     generateHallOfFame: function (button) {
-        this.genericRequest(button, 'Générer le palmarès', '/rest/action.php/halloffame/generateHallOfFame');
+        var this_controller = this;
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length !== 1) {
+            Ext.Msg.alert('Erreur', "Veuillez sélectionner une seule compétition !");
+            return;
+        }
+        var code_competition = records[0].get('code_competition');
+        
+        Ext.create('Ext.window.Window', {
+            title: 'Générer le palmarès',
+            width: 400,
+            modal: true,
+            layout: 'fit',
+            items: {
+                xtype: 'form',
+                bodyPadding: 10,
+                defaults: {
+                    anchor: '100%',
+                    labelWidth: 120
+                },
+                items: [{
+                    xtype: 'displayfield',
+                    fieldLabel: 'Compétition',
+                    value: code_competition
+                }, {
+                    xtype: 'datefield',
+                    fieldLabel: 'Date début',
+                    name: 'date_debut',
+                    format: 'Y-m-d',
+                    allowBlank: false
+                }, {
+                    xtype: 'datefield',
+                    fieldLabel: 'Date fin',
+                    name: 'date_fin',
+                    format: 'Y-m-d',
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'Période',
+                    name: 'period',
+                    allowBlank: false,
+                    value: '2025-2026'
+                }, {
+                    xtype: 'combobox',
+                    fieldLabel: 'Type',
+                    name: 'title_season',
+                    store: [['mi-saison', 'Mi-saison'], ['Dept.', 'Départemental']],
+                    value: 'mi-saison',
+                    allowBlank: false
+                }],
+                buttons: [{
+                    text: 'Générer',
+                    formBind: true,
+                    handler: function() {
+                        var form = this.up('form').getForm();
+                        if (form.isValid()) {
+                            var values = form.getValues();
+                            var win = this.up('window');
+                            Ext.Ajax.request({
+                                url: '/rest/action.php/halloffame/generateHallOfFameFromMatches',
+                                params: {
+                                    code_competition: code_competition,
+                                    date_debut: values.date_debut,
+                                    date_fin: values.date_fin,
+                                    period: values.period,
+                                    title_season: values.title_season
+                                },
+                                timeout: 600000,
+                                success: function(response) {
+                                    win.close();
+                                    Ext.Msg.alert('Succès', "Le palmarès a été généré avec succès.");
+                                    grid.getStore().load();
+                                },
+                                failure: this_controller.manage_failure
+                            });
+                        }
+                    }
+                }, {
+                    text: 'Annuler',
+                    handler: function() {
+                        this.up('window').close();
+                    }
+                }]
+            }
+        }).show();
     },
     resetCompetition: function (button) {
         this.genericRequest(button, 'Reset compétition', '/rest/action.php/competition/resetCompetition');
