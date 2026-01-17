@@ -233,11 +233,11 @@ class HallOfFame extends Generic
         // Ajout de texte au centre de la page
         $pdf->SetXY(0, $top_left_y + 50);
         $determinant = self::starts_with(strtolower($diploma_data['league']), "championnat") ? 'le' : 'la';
-        $centered_text = implode(PHP_EOL, array(
+        $centered_text = utf8_decode(implode(PHP_EOL, array(
             "Les membres de la Commission Technique",
             "de l'UFOLEP Volley-Ball des Bouches-du-Rhône",
             "décernent, pour $determinant " . $diploma_data['league'] . ", le titre de",
-        ));
+        )));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
         $this->pdf_add_separator($pdf);
@@ -247,9 +247,9 @@ class HallOfFame extends Generic
         $pdf->SetFont('Arial', 'B', 24);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
         $this->pdf_add_separator($pdf);
-        $centered_text = implode(PHP_EOL, array(
-            "à l’équipe de",
-        ));
+        $centered_text = utf8_decode(implode(PHP_EOL, array(
+            "à l'équipe de",
+        )));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
         $this->pdf_add_separator($pdf);
