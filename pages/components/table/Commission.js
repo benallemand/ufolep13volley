@@ -25,7 +25,13 @@ export default {
               <p class="flex justify-center mt-1 mb-1"><img alt="photo manquante" :src="'/'+item.photo" class="max-h-[100px]" /></p>
             </td>
             <td>{{ item.type }} / {{ item.fonction }}</td>
-            <td class="uppercase">{{ item.attribution }}</td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                <span v-for="attr in formatAttribution(item.attribution)" :key="attr.raw" :class="['badge', attr.badgeClass]">
+                  {{ attr.label }}
+                </span>
+              </div>
+            </td>
             <td>{{ item.telephone1 }}</td>
             <td>{{ item.email }}</td>
           </tr>
@@ -49,6 +55,25 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement:", error);
                 });
+        },
+        formatAttribution(attribution) {
+            if (!attribution) return [];
+            const competitionMap = {
+                'm': { name: 'Champ. Masculin', badge: 'badge-primary' },
+                'f': { name: 'Champ. Féminin', badge: 'badge-secondary' },
+                'mo': { name: 'Champ. Mixte', badge: 'badge-accent' },
+                'c': { name: 'Coupe Isoardi', badge: 'badge-success' },
+                'kh': { name: 'Coupe Khoury Hanna', badge: 'badge-warning' },
+            };
+            return attribution.split(',').map(attr => {
+                const [code, div] = attr.trim().split('/');
+                const comp = competitionMap[code] || { name: code.toUpperCase(), badge: 'badge-ghost' };
+                return {
+                    raw: attr,
+                    label: `${comp.name} D${div}`,
+                    badgeClass: comp.badge
+                };
+            });
         },
     },
     created() {

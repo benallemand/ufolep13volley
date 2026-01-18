@@ -92,5 +92,24 @@ class Commission extends Generic
         $this->sql_manager->execute($sql, $bindings);
     }
 
+    public function getByDivision(string $code_competition, string $division): array
+    {
+        $divisionKey = $code_competition . '/' . $division;
+        $sql = "SELECT 
+            c.id_commission,
+            c.nom,
+            c.prenom,
+            c.fonction,
+            c.telephone1,
+            c.email,
+            c.photo
+            FROM commission c 
+            INNER JOIN commission_division cd ON c.id_commission = cd.id_commission
+            WHERE cd.division = ?";
+        $bindings = array(
+            array('type' => 's', 'value' => $divisionKey),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
 
 }

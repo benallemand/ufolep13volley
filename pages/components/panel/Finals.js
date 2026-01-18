@@ -1,12 +1,16 @@
 export default {
     components: {
         'limit-date-navbar': () => import('../navbar/LimitDate.js'),
+        'commission-member': () => import('../navbar/CommissionMember.js'),
         'matchs-list': () => import('../list/Matchs.js'),
         'tournament-bracket-viewer': () => import('./TournamentBracketViewer.js'),
     },
     template: `
       <div>
-        <limit-date-navbar :key="'navbar-' + code_competition" :code_competition="code_competition"></limit-date-navbar>
+        <div class="flex flex-wrap gap-4 mb-4">
+          <limit-date-navbar :key="'navbar-' + code_competition" :code_competition="code_competition" class="flex-1"></limit-date-navbar>
+          <commission-member :key="'commission-' + code_competition + '-' + division" :code_competition="code_competition" :division="division" class="flex-none"></commission-member>
+        </div>
         
         <!-- Onglets pour choisir la vue -->
         <div class="tabs tabs-boxed mb-4">
