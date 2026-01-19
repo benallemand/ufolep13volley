@@ -6,6 +6,7 @@ require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Club.php';
 require_once __DIR__ . '/Photo.php';
 require_once __DIR__ . '/Files.php';
+require_once __DIR__ . '/UserManager.php';
 
 
 class Players extends Generic
@@ -14,6 +15,7 @@ class Players extends Generic
     private Club $club;
     private Team $team;
     private Photo $photo;
+    private UserManager $userManager;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class Players extends Generic
         $this->club = new Club();
         $this->photo = new Photo();
         $this->files = new Files();
+        $this->userManager = new UserManager();
     }
 
 
@@ -1112,5 +1115,38 @@ class Players extends Generic
             // flush memory
             @imagedestroy($image);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createLeaderAccount($idPlayer): void
+    {
+        @session_start();
+        if (!UserManager::isTeamLeader()) {
+            throw new Exception("Seul un responsable d'équipe peut faire ça !");
+        }
+        $id_team = $_SESSION['id_equipe'];
+        $player = $this->get_player($idPlayer);
+        if (empty($player['email'])) {
+            throw new Exception("Ce joueur n'a pas d'adresse email !");
+        }
+        $sql = "SELECT is_leader, is_vice_leader 
+                FROM joueur_equipe 
+                WHERE id_joueur = ? AND id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idPlayer),
+            array('type' => 'i', 'value' => $id_team),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (empty($results)) {
+            throw new Exception("Ce joueur n'appartient pas à votre équipe !");
+        }
+        $playerTeam = $results[0];
+        if (!$playerTeam['is_leader'] && !$playerTeam['is_vice_leader']) {
+            throw new Exception("Ce joueur n'est ni responsable d'équipe ni suppléant !");
+        }
+        $this->userManager->create_or_update_leader_account($player['email'], $id_team);
+        $this->addActivity("Création du compte responsable pour " . $player['prenom'] . " " . $player['nom']);
     }
 }

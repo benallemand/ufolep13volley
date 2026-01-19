@@ -130,6 +130,11 @@ export default {
                 </div>
               </div>
               <div class="card-actions justify-end mr-2 mb-2">
+                <button v-if="(player.is_leader || player.is_vice_leader) && player.email"
+                        class="btn btn-success"
+                        @click="onCreateAccountClick(player)">
+                  <i class="fas fa-user-plus mr-2"></i>créer compte
+                </button>
                 <button class="btn btn-error"
                         @click="onRemovePlayerFromTeamClick(player)"><i class="fas fa-user-slash mr-2"></i>retirer
                 </button>
@@ -280,6 +285,20 @@ export default {
                 .catch((error) => {
                     onError(this, error)
                 });
+        },
+        onCreateAccountClick(player) {
+            if (confirm(`Voulez-vous créer un compte utilisateur pour ${player.prenom} ${player.nom} ?`)) {
+                const formData = new FormData();
+                formData.append('idPlayer', player.id);
+                axios
+                    .post('/rest/action.php/player/createLeaderAccount', formData)
+                    .then((response) => {
+                        onSuccess(this, response);
+                    })
+                    .catch((error) => {
+                        onError(this, error);
+                    });
+            }
         },
         openImportModal() {
             this.$refs.importModal.showModal();
