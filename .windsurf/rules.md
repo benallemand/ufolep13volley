@@ -9,6 +9,19 @@ Application web de gestion de championnats de volleyball UFOLEP 13.
 - **Tests**: PHPUnit (unit_tests/)
 - **Déploiement**: GitHub Actions + OVH
 
+## ⚠️ Points Critiques
+
+### Encodage des fichiers
+- **IMPORTANT**: Utiliser LF (Unix) et non CRLF (Windows) pour les fins de ligne
+- Les fichiers avec CRLF peuvent causer des problèmes lors des éditions
+- Configurer l'éditeur pour utiliser LF par défaut
+
+### Scripts SQL de modification de structure
+- **Les scripts SQL de modification de la base de données doivent être stockés dans le projet `ufolep13volley_python`**
+- Emplacement: `C:\Users\benal\PycharmProjects\ufolep13volley_python\sql\updates\{année}\`
+- Convention: `{numéro}-{description}.sql` (ex: `001-add_remarques_to_gymnase.sql`)
+- Créer une branche et PR séparée dans `ufolep13volley_python` pour les scripts SQL
+
 ## Conventions de Code
 
 ### PHP
