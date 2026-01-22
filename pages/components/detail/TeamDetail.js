@@ -156,6 +156,10 @@ export default {
                           <span v-if="schedule.hasConstraint" class="badge badge-warning badge-sm">⚠️</span>
                         </div>
 
+                        <div v-if="schedule.remarques" class="text-xs text-info italic mt-2">
+                          📝 {{ schedule.remarques }}
+                        </div>
+
                         <div class="card-actions pt-2">
                           <a :href="'https://www.google.com/maps/place/' + schedule.gps"
                              target="_blank"
@@ -210,19 +214,20 @@ export default {
         formatSchedules(gymnasiumsList) {
             if (!gymnasiumsList) return [];
 
-            const schedulePattern = /(.+?) - (.+?) - (.+?) - ([\d.,\s]+) \(([^)]+)\)(\s*\([^)]*CONTRAINTE[^)]*\))?/g;
+            const schedulePattern = /(.+?) - (.+?) - (.+?) - ([\d.,\s]+) \(([^)]+)\)(\s*\([^)]*CONTRAINTE[^)]*\))?(\s*\[([^\]]+)\])?/g;
             const schedules = [];
             let match;
 
             while ((match = schedulePattern.exec(gymnasiumsList)) !== null) {
-                const [, ville, nom, adresse, gps, horaire, contrainte] = match;
+                const [, ville, nom, adresse, gps, horaire, contrainte, , remarques] = match;
                 schedules.push({
                     ville: ville.trim(),
                     nom: nom.trim(),
                     adresse: adresse.trim(),
                     gps: gps.trim(),
                     horaire: horaire.trim(),
-                    hasConstraint: contrainte && contrainte.includes('CONTRAINTE')
+                    hasConstraint: contrainte && contrainte.includes('CONTRAINTE'),
+                    remarques: remarques ? remarques.trim() : null
                 });
             }
 
