@@ -14,6 +14,7 @@ Ext.define('Ufolep13Volley.model.Gymnasium', {
         {
             name: 'nb_terrain',
             type: 'int'
-        }
+        },
+        'remarques'
     ]
 });
