@@ -1,5 +1,5 @@
 ---
-description: 
+description: Traitement complet d'un ticket GitHub avec TDD, PR, merge et tag
 ---
 
 # Workflow: Traitement de Ticket GitHub
@@ -8,12 +8,16 @@ description:
 Ce workflow est déclenché lorsqu'un utilisateur demande de traiter un ticket GitHub avec une URL du type:
 `https://github.com/benallemand/ufolep13volley/issues/{numero}`
 
+## Prérequis
+- GitHub CLI installé: `C:\Program Files\GitHub CLI\gh.exe`
+- Authentification configurée: `gh auth login`
+
 ## Étapes du Workflow
 
 ### 1. Récupération et Compréhension du Ticket
-```bash
+```powershell
 # Récupérer les informations du ticket via l'API GitHub
-gh issue view {numero} --repo benallemand/ufolep13volley
+& "C:\Program Files\GitHub CLI\gh.exe" issue view {numero} --repo benallemand/ufolep13volley
 ```
 
 **Actions:**
@@ -173,6 +177,27 @@ unit_tests/
 ├── RankTest.php            # Tests sur les classements
 ├── RegisterTest.php        # Tests sur les inscriptions
 └── files/                  # Fichiers de test
+```
+
+### 8. Merge de la PR
+
+```powershell
+# Merger la PR (avec --admin si branch protection)
+& "C:\Program Files\GitHub CLI\gh.exe" pr merge {numero_pr} --repo benallemand/ufolep13volley --merge --admin
+```
+
+**Note:** L'issue est fermée automatiquement grâce à la référence `Résout #{numero}` dans le message de commit.
+
+### 9. Tag de Release (optionnel)
+
+```powershell
+# Mettre à jour master local
+git checkout master
+git pull origin master
+
+# Créer un tag avec la date au format yyyymmddhhii
+git tag {yyyymmddhhii}
+git push origin {yyyymmddhhii}
 ```
 
 ## Scripts SQL de Migration
