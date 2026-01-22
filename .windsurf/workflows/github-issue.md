@@ -1,3 +1,7 @@
+---
+description: 
+---
+
 # Workflow: Traitement de Ticket GitHub
 
 ## Déclenchement
@@ -33,14 +37,10 @@ git pull origin master
 git checkout -b {prefix}/issue-{numero}
 ```
 
-### 3. Implémentation TDD (OBLIGATOIRE pour backend PHP/Python)
-
-**⚠️ TDD est OBLIGATOIRE pour TOUTE modification de classes PHP (Court.php, Team.php, MatchMgr.php, etc.)**
+### 3. Implémentation TDD (si backend PHP/Python)
 
 #### 3.1 Identifier les fichiers de test concernés
 - Si modification de `classes/MatchManager.php` → `unit_tests/MatchManagerTest.php`
-- Si modification de `classes/Team.php` → `unit_tests/TeamTest.php`
-- Si modification de `classes/Court.php` → `unit_tests/CourtTest.php`
 - Si nouvelle classe → créer `unit_tests/{ClassName}Test.php`
 
 #### 3.2 Écrire les tests AVANT l'implémentation
