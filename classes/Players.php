@@ -697,6 +697,10 @@ class Players extends Generic
             $ids = array($ids);
         }
         foreach ($ids as $id_player) {
+            $player = $this->get_player($id_player);
+            if (empty($player['email']) || empty($player['telephone'])) {
+                throw new Exception("Ce joueur doit avoir une adresse email et un numéro de téléphone pour devenir responsable d'équipe !");
+            }
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
                 $this->addPlayerToTeam($id_player, $id_team);
             }
@@ -765,6 +769,10 @@ class Players extends Generic
             $ids = array($ids);
         }
         foreach ($ids as $id_player) {
+            $player = $this->get_player($id_player);
+            if (empty($player['email']) || empty($player['telephone'])) {
+                throw new Exception("Ce joueur doit avoir une adresse email et un numéro de téléphone pour devenir suppléant !");
+            }
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
                 throw new Exception("Ce joueur n'est pas dans l'équipe !");
             }
