@@ -119,7 +119,10 @@ export default {
                         <div class="flex items-center gap-2 text-xs text-base-content/70">
                           <div class="badge badge-ghost badge-xs">🕐</div>
                           <span>{{ schedule.horaire }}</span>
-                          <span v-if="schedule.hasConstraint" class="badge badge-warning sm">⚠️ Contrainte</span>
+                          <span v-if="schedule.hasConstraint" class="badge badge-warning badge-sm">⚠️ Contrainte</span>
+                        </div>
+                        <div v-if="schedule.remarques" class="mt-2 text-xs text-info italic">
+                          📝 {{ schedule.remarques }}
                         </div>
                       </div>
                     </div>
@@ -204,21 +207,22 @@ export default {
             if (!gymnasiumsList) return [];
             
             // Utiliser une regex pour séparer les créneaux correctement
-            // Pattern: "ville - nom - adresse - coordonnées (horaire)" optionnellement suivi de "(CONTRAINTE...)"
+            // Pattern: "ville - nom - adresse - coordonnées (horaire)" optionnellement suivi de "(CONTRAINTE...)" et "[remarques]"
             // La regex capture jusqu'aux coordonnées GPS qui sont toujours au format numérique avant les parenthèses
-            const schedulePattern = /(.+?) - (.+?) - (.+?) - ([\d.,\s]+) \(([^)]+)\)(\s*\([^)]*CONTRAINTE[^)]*\))?/g;
+            const schedulePattern = /(.+?) - (.+?) - (.+?) - ([\d.,\s]+) \(([^)]+)\)(\s*\([^)]*CONTRAINTE[^)]*\))?(\s*\[([^\]]+)\])?/g;
             const schedules = [];
             let match;
             
             while ((match = schedulePattern.exec(gymnasiumsList)) !== null) {
-                const [, ville, nom, adresse, gps, horaire, contrainte] = match;
+                const [, ville, nom, adresse, gps, horaire, contrainte, , remarques] = match;
                 schedules.push({
                     ville: ville.trim(),
                     nom: nom.trim(),
                     adresse: adresse.trim(),
                     gps: gps.trim(),
                     horaire: horaire.trim(),
-                    hasConstraint: contrainte && contrainte.includes('CONTRAINTE')
+                    hasConstraint: contrainte && contrainte.includes('CONTRAINTE'),
+                    remarques: remarques ? remarques.trim() : null
                 });
             }
             

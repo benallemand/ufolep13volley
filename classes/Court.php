@@ -20,7 +20,8 @@ class Court extends Generic
         ville, 
         gps, 
         CONCAT(ville, ' - ', nom, ' - ', adresse) AS full_name,
-        nb_terrain
+        nb_terrain,
+        remarques
         FROM gymnase
         ORDER BY ville, nom, adresse";
         return $this->sql_manager->execute($sql);
@@ -86,7 +87,8 @@ class Court extends Generic
         $gps,
         $nb_terrain,
         $dirtyFields = null,
-        $id = null
+        $id = null,
+        $remarques = null
     )
     {
         $inputs = array(
@@ -96,6 +98,7 @@ class Court extends Generic
             'ville' => $ville,
             'gps' => $gps,
             'nb_terrain' => $nb_terrain,
+            'remarques' => $remarques,
             'dirtyFields' => $dirtyFields,
             'id' => $id,
         );

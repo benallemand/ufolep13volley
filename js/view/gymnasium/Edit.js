@@ -62,6 +62,14 @@ Ext.define('Ufolep13Volley.view.gymnasium.Edit', {
                 minValue: 1,
                 maxValue: 6,
                 msgTarget: 'under'
+            },
+            {
+                xtype: 'textarea',
+                name: 'remarques',
+                fieldLabel: 'Remarques',
+                allowBlank: true,
+                msgTarget: 'under',
+                height: 100
             }
         ],
         buttons: [
