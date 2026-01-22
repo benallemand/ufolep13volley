@@ -72,6 +72,122 @@ class PlayersTest extends UfolepTestCase
         $club->delete($newClub['id']);
     }
 
+    public function test_set_leader_requires_email_and_telephone()
+    {
+        $this->connect_as_admin();
+        
+        // Créer un joueur sans email ni téléphone
+        $playerId = $this->players->update_player(
+            null, 'Test', 'Leader', 'M', '13', 1, null, null, null, null, null
+        );
+        
+        // Créer une équipe temporaire pour le test
+        $team = new Team();
+        $teamId = $team->create_team('m', 'Test Team Leader', 1);
+        
+        try {
+            // Doit lever une exception car pas d'email ni téléphone
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage("Ce joueur doit avoir une adresse email et un numéro de téléphone");
+            $this->players->set_leader([$playerId], $teamId);
+        } finally {
+            // Nettoyage
+            $this->players->delete($playerId);
+            $team->delete($teamId);
+        }
+    }
+
+    public function test_set_leader_with_email_only_fails()
+    {
+        $this->connect_as_admin();
+        
+        // Créer un joueur avec email mais sans téléphone
+        $playerId = $this->players->update_player(
+            null, 'Test', 'EmailOnly', 'M', '13', 1, null, null, null, null, 'test@email.com'
+        );
+        
+        $team = new Team();
+        $teamId = $team->create_team('m', 'Test Team EmailOnly', 1);
+        
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage("Ce joueur doit avoir une adresse email et un numéro de téléphone");
+            $this->players->set_leader([$playerId], $teamId);
+        } finally {
+            $this->players->delete($playerId);
+            $team->delete($teamId);
+        }
+    }
+
+    public function test_set_leader_with_phone_only_fails()
+    {
+        $this->connect_as_admin();
+        
+        // Créer un joueur avec téléphone mais sans email
+        $playerId = $this->players->update_player(
+            null, 'Test', 'PhoneOnly', 'M', '13', 1, null, null, '0612345678', null
+        );
+        
+        $team = new Team();
+        $teamId = $team->create_team('m', 'Test Team PhoneOnly', 1);
+        
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage("Ce joueur doit avoir une adresse email et un numéro de téléphone");
+            $this->players->set_leader([$playerId], $teamId);
+        } finally {
+            $this->players->delete($playerId);
+            $team->delete($teamId);
+        }
+    }
+
+    public function test_set_leader_with_email_and_phone_succeeds()
+    {
+        $this->connect_as_admin();
+        
+        // Créer un joueur avec email ET téléphone
+        $playerId = $this->players->update_player(
+            null, 'Test', 'Complete', 'M', '13', 1, null, null, '0612345678', 'test@complete.com'
+        );
+        
+        $team = new Team();
+        $teamId = $team->create_team('m', 'Test Team Complete', 1);
+        
+        try {
+            // Ne doit PAS lever d'exception
+            $this->players->set_leader([$playerId], $teamId);
+            $this->assertTrue(true, "set_leader a réussi avec email et téléphone");
+        } finally {
+            $this->players->delete($playerId);
+            $team->delete($teamId);
+        }
+    }
+
+    public function test_set_vice_leader_requires_email_and_telephone()
+    {
+        $this->connect_as_admin();
+        
+        // Créer un joueur sans email ni téléphone
+        $playerId = $this->players->update_player(
+            null, 'Test', 'ViceLeader', 'M', '13', 1, null, null, null, null, null
+        );
+        
+        $team = new Team();
+        $teamId = $team->create_team('m', 'Test Team ViceLeader', 1);
+        
+        // Ajouter le joueur à l'équipe d'abord (requis pour set_vice_leader)
+        $this->players->addPlayerToTeam($playerId, $teamId);
+        
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage("Ce joueur doit avoir une adresse email et un numéro de téléphone");
+            $this->players->set_vice_leader([$playerId], $teamId);
+        } finally {
+            $this->players->delete($playerId);
+            $team->delete($teamId);
+        }
+    }
+
     public function test_import_all_licences_from_test_directory()
     {
         $this->connect_as_admin();

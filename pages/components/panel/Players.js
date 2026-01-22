@@ -109,12 +109,16 @@ export default {
                   </div>
                   <div class="flex flex-wrap gap-2">
                     <button
-                        :class="'btn btn-xs ' + (player.is_leader === true ? 'btn-primary':'btn-outline line-through')"
+                        :class="'btn btn-xs ' + (player.is_leader === true ? 'btn-primary':'btn-outline line-through') + (!canBeLeader(player) ? ' btn-disabled':'')"
+                        :disabled="!canBeLeader(player)"
+                        :title="!canBeLeader(player) ? 'Ce joueur doit avoir une adresse email et un numéro de téléphone' : ''"
                         @click="onMedalClick(player, 'is_leader')">
                       <i class="fas fa-medal"/>responsable d'équipe
                     </button>
                     <button
-                        :class="'btn btn-xs ' + (player.is_vice_leader === true ? 'btn-primary':'btn-outline line-through')"
+                        :class="'btn btn-xs ' + (player.is_vice_leader === true ? 'btn-primary':'btn-outline line-through') + (!canBeLeader(player) ? ' btn-disabled':'')"
+                        :disabled="!canBeLeader(player)"
+                        :title="!canBeLeader(player) ? 'Ce joueur doit avoir une adresse email et un numéro de téléphone' : ''"
                         @click="onMedalClick(player, 'is_vice_leader')">
                       <i class="fas fa-medal"/>suppléant
                     </button>
@@ -217,6 +221,9 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement des joueurs :", error);
                 });
+        },
+        canBeLeader(player) {
+            return player.email && player.telephone;
         },
         onDragOver(player) {
             player.isDragging = true;
