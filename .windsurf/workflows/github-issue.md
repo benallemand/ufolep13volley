@@ -229,3 +229,17 @@ Les scripts SQL sont stockés dans le projet **ufolep13volley_python**:
 - Créer un fichier `debug_{feature}.php` pour tester/modifier les données
 - Permet de mettre à jour les dates pour simuler "aujourd'hui"
 - Utile pour les tests manuels sans attendre la vraie date
+
+### Requêtes AJAX ExtJS
+- Toujours spécifier `method: 'GET'` pour les lectures, `method: 'POST'` pour les écritures
+- Par défaut ExtJS utilise POST, ce qui n'est pas toujours approprié
+
+### Validation d'ID en PHP
+- Utiliser `!empty($id) && is_numeric($id)` pour vérifier les IDs de base de données
+- ExtJS génère des IDs temporaires comme `"extModel1124-23"` pour les nouveaux records
+- `isset()` retourne true même pour `null`, préférer `!empty()`
+
+### Tests Unitaires Sélectifs
+- Certains tests sont destructifs (modification de données réelles)
+- Préférer exécuter les tests spécifiques: `--filter "test_method1|test_method2"`
+- Éviter `phpunit unit_tests/` si la base contient des données de production
