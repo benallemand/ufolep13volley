@@ -116,6 +116,11 @@ Ext.application({
                                         action: 'manageRanks'
                                     },
                                     {
+                                        text: 'Réorganiser divisions (Drag & Drop)',
+                                        glyph: 'xf0dc@FontAwesome',
+                                        action: 'manageRanksDragDrop'
+                                    },
+                                    {
                                         text: 'Gestion des matches',
                                         glyph: 'xe909@icomoon',
                                         action: 'manageMatches'

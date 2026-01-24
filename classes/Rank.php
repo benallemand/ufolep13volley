@@ -958,5 +958,157 @@ class Rank extends Generic
         ];
     }
 
+    /**
+     * Get teams registered for a competition but not assigned to any division
+     * @param string $code_competition
+     * @return array
+     * @throws Exception
+     */
+    public function getUnassignedTeams(string $code_competition): array
+    {
+        $sql = "SELECT 
+                    e.id_equipe,
+                    e.nom_equipe,
+                    c.nom AS club
+                FROM equipes e
+                JOIN clubs c ON c.id = e.id_club
+                WHERE e.code_competition = ?
+                AND e.id_equipe NOT IN (
+                    SELECT id_equipe 
+                    FROM classements 
+                    WHERE code_competition = ?
+                )
+                ORDER BY e.nom_equipe";
+        $bindings = [
+            ['type' => 's', 'value' => $code_competition],
+            ['type' => 's', 'value' => $code_competition]
+        ];
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Get ranks for a competition grouped by division
+     * @param string $code_competition
+     * @return array
+     * @throws Exception
+     */
+    public function getRanksByCompetitionGroupedByDivision(string $code_competition): array
+    {
+        $sql = "SELECT 
+                    c.id,
+                    c.division,
+                    c.id_equipe,
+                    e.nom_equipe,
+                    cl.nom AS club,
+                    c.rank_start
+                FROM classements c
+                JOIN equipes e ON e.id_equipe = c.id_equipe
+                JOIN clubs cl ON cl.id = e.id_club
+                WHERE c.code_competition = ?
+                ORDER BY CAST(c.division AS UNSIGNED), c.rank_start";
+        $bindings = [['type' => 's', 'value' => $code_competition]];
+        $results = $this->sql_manager->execute($sql, $bindings);
+
+        // Group by division
+        $divisions = [];
+        foreach ($results as $row) {
+            $div = $row['division'];
+            if (!isset($divisions[$div])) {
+                $divisions[$div] = [];
+            }
+            $divisions[$div][] = $row;
+        }
+
+        return $divisions;
+    }
+
+    /**
+     * Update multiple ranks in batch (for drag & drop reordering)
+     * @param string $code_competition
+     * @param string $updates JSON array of updates [{id, division, rank_start}, ...]
+     * @return array
+     * @throws Exception
+     */
+    public function updateRanksBatch(string $code_competition, string $updates): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut modifier les classements !");
+        }
+
+        $updatesArray = json_decode($updates, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Format JSON invalide pour les updates");
+        }
+
+        $db = Database::openDbConnection();
+        mysqli_begin_transaction($db);
+
+        try {
+            $updated = 0;
+            foreach ($updatesArray as $update) {
+                if (!empty($update['id']) && is_numeric($update['id'])) {
+                    // Update existing rank
+                    $sql = "UPDATE classements 
+                            SET division = ?, rank_start = ? 
+                            WHERE id = ? AND code_competition = ?";
+                    $bindings = [
+                        ['type' => 's', 'value' => $update['division']],
+                        ['type' => 'i', 'value' => $update['rank_start']],
+                        ['type' => 'i', 'value' => $update['id']],
+                        ['type' => 's', 'value' => $code_competition]
+                    ];
+                    $this->sql_manager->execute($sql, $bindings);
+                    $updated++;
+                } elseif (isset($update['id_equipe'])) {
+                    // Insert new rank (team was unassigned)
+                    $sql = "INSERT INTO classements (code_competition, division, id_equipe, rank_start) 
+                            VALUES (?, ?, ?, ?)";
+                    $bindings = [
+                        ['type' => 's', 'value' => $code_competition],
+                        ['type' => 's', 'value' => $update['division']],
+                        ['type' => 'i', 'value' => $update['id_equipe']],
+                        ['type' => 'i', 'value' => $update['rank_start']]
+                    ];
+                    $this->sql_manager->execute($sql, $bindings);
+                    $updated++;
+                }
+            }
+
+            mysqli_commit($db);
+
+            $this->addActivity("Classements mis à jour pour la compétition $code_competition: $updated modifications");
+
+            return [
+                'success' => true,
+                'updated' => $updated
+            ];
+
+        } catch (Exception $e) {
+            mysqli_rollback($db);
+            throw $e;
+        }
+    }
+
+    /**
+     * Remove a team from a division (move to unassigned)
+     * @param int $id Rank ID to delete
+     * @return array
+     * @throws Exception
+     */
+    public function removeFromDivision(int $id): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut modifier les classements !");
+        }
+
+        $sql = "DELETE FROM classements WHERE id = ?";
+        $bindings = [['type' => 'i', 'value' => $id]];
+        $this->sql_manager->execute($sql, $bindings);
+
+        $this->addActivity("Équipe retirée du classement (id: $id)");
+
+        return ['success' => true];
+    }
+
 
 }
