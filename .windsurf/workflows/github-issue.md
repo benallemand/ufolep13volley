@@ -205,4 +205,27 @@ git push origin {yyyymmddhhii}
 Les scripts SQL sont stockés dans le projet **ufolep13volley_python**:
 - Emplacement: `C:\Users\benal\PycharmProjects\ufolep13volley_python\sql\updates\{année}\`
 - Convention de nommage: `{numéro}-{description}.sql` (ex: `001-add_remarques_to_gymnase.sql`)
-- **Important**: Créer également une branche et PR dans ufolep13volley_python pour les scripts SQL
+- **Important**: Commit et push directement sur master dans ufolep13volley_python (pas de PR nécessaire)
+
+## Bonnes Pratiques Apprises
+
+### Identifiants de Match
+- Les `id_match` peuvent être des chaînes (ex: `C_9_20260122_040`), pas seulement des entiers
+- Utiliser `VARCHAR(20)` pour stocker les `code_match` en base
+- Dans l'API PHP, utiliser `FILTER_SANITIZE_FULL_SPECIAL_CHARS` au lieu de `FILTER_VALIDATE_INT`
+- Utiliser `get_match_by_code_match()` plutôt que `get_match()` pour les requêtes par code
+
+### Boutons Conditionnels (Vue.js)
+- Vérifier la date du jour : `new Date().toLocaleDateString('fr-FR')` pour comparer avec les dates au format `dd/mm/yyyy`
+- Masquer les boutons quand l'action n'est plus pertinente (ex: match terminé)
+- Utiliser `animate-pulse` de Tailwind pour attirer l'attention
+
+### Autorisation Multi-Niveau
+- Vérifier côté backend ET frontend
+- Pattern: Admin OU responsable de l'équipe concernée
+- Stocker `id_equipe` en session pour les vérifications
+
+### Debug de Features en Temps Réel
+- Créer un fichier `debug_{feature}.php` pour tester/modifier les données
+- Permet de mettre à jour les dates pour simuler "aujourd'hui"
+- Utile pour les tests manuels sans attendre la vraie date
