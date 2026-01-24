@@ -19,6 +19,22 @@ new Vue({
             const allowedProfiles = ["RESPONSABLE_EQUIPE"];
             return this.user && allowedProfiles.includes(this.user.profile_name);
         },
+        isAdmin() {
+            const allowedProfiles = ["ADMINISTRATEUR", "SUPPORT"];
+            return this.user && allowedProfiles.includes(this.user.profile_name);
+        },
+        isMatchDay() {
+            if (!this.matchData.date_reception) return false;
+            const today = new Date().toLocaleDateString('fr-FR');
+            return this.matchData.date_reception === today;
+        },
+        canScoreLive() {
+            if (!this.user) return false;
+            if (this.isAdmin) return true;
+            if (!this.isLeader) return false;
+            const userTeamId = this.user.id_equipe;
+            return userTeamId == this.matchData.id_equipe_dom || userTeamId == this.matchData.id_equipe_ext;
+        },
     },
     methods: {
         reloadData() {
