@@ -326,47 +326,92 @@ Ext.define('Ufolep13Volley.view.rank.DragDropPanel', {
         var me = this;
         var container = me.down('#divisionsContainer');
         var updates = [];
+        var removals = [];
         
         container.items.each(function(panel) {
             var grid = panel.down('grid');
-            if (grid && panel.divisionId && panel.divisionId !== 'unassigned') {
+            if (grid && panel.divisionId) {
                 var store = grid.getStore();
-                store.each(function(record, index) {
-                    updates.push({
-                        id: record.get('id'),
-                        id_equipe: record.get('id_equipe'),
-                        division: panel.divisionId,
-                        rank_start: index + 1
+                if (panel.divisionId === 'unassigned') {
+                    // Equipes dans "non assignées" avec un ID existant = à supprimer
+                    store.each(function(record) {
+                        var id = record.get('id');
+                        if (id && !isNaN(parseInt(id))) {
+                            removals.push(parseInt(id));
+                        }
                     });
-                });
+                } else {
+                    // Equipes dans une division = à mettre à jour
+                    store.each(function(record, index) {
+                        updates.push({
+                            id: record.get('id'),
+                            id_equipe: record.get('id_equipe'),
+                            division: panel.divisionId,
+                            rank_start: index + 1
+                        });
+                    });
+                }
             }
         });
         
-        if (updates.length === 0) {
+        if (updates.length === 0 && removals.length === 0) {
             Ext.Msg.alert('Info', 'Aucune modification à sauvegarder');
             return;
         }
         
-        Ext.Ajax.request({
-            url: '/rest/action.php/rank/updateRanksBatch',
-            method: 'POST',
-            params: {
-                code_competition: me.code_competition,
-                updates: Ext.encode(updates)
-            },
-            success: function(response) {
-                var result = Ext.decode(response.responseText);
-                if (result.success) {
-                    Ext.Msg.alert('Succès', result.message || 'Classements mis à jour');
-                    me.loadDivisions(me.code_competition);
-                } else {
+        // Fonction pour sauvegarder les updates
+        var saveUpdates = function(callback) {
+            if (updates.length === 0) {
+                callback();
+                return;
+            }
+            Ext.Ajax.request({
+                url: '/rest/action.php/rank/updateRanksBatch',
+                method: 'POST',
+                params: {
+                    code_competition: me.code_competition,
+                    updates: Ext.encode(updates)
+                },
+                success: callback,
+                failure: function(response) {
+                    var result = Ext.decode(response.responseText);
                     Ext.Msg.alert('Erreur', result.message || 'Erreur lors de la sauvegarde');
                 }
-            },
-            failure: function(response) {
-                var result = Ext.decode(response.responseText);
-                Ext.Msg.alert('Erreur', result.message || 'Erreur lors de la sauvegarde');
+            });
+        };
+        
+        // Fonction pour supprimer les équipes retirées
+        var removeTeams = function(callback) {
+            if (removals.length === 0) {
+                callback();
+                return;
             }
+            var processed = 0;
+            Ext.each(removals, function(id) {
+                Ext.Ajax.request({
+                    url: '/rest/action.php/rank/removeFromDivision',
+                    method: 'POST',
+                    params: { id: id },
+                    success: function() {
+                        processed++;
+                        if (processed === removals.length) {
+                            callback();
+                        }
+                    },
+                    failure: function(response) {
+                        var result = Ext.decode(response.responseText);
+                        Ext.Msg.alert('Erreur', result.message || 'Erreur lors de la suppression');
+                    }
+                });
+            });
+        };
+        
+        // Exécuter les deux opérations puis recharger
+        saveUpdates(function() {
+            removeTeams(function() {
+                Ext.Msg.alert('Succès', 'Classements mis à jour');
+                me.loadDivisions(me.code_competition);
+            });
         });
     }
 });
