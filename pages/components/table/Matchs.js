@@ -27,6 +27,10 @@ export default {
                  title="Ajouter à Google Calendar">
                 <i class="fas fa-calendar-plus"/>
               </a>
+              <a v-if="isMatchToday(match) && !isMatchFinished(match)" :href="'/live.php?id_match=' + match.code_match" 
+                 class="btn btn-xs btn-error ml-2 animate-pulse" title="Suivre en direct" target="_blank">
+                <i class="fas fa-circle text-white text-xs mr-1"/>LIVE
+              </a>
               <i v-if="match.certif === 1" class="fas fa-check-circle text-success ml-2" title="Match validé"></i>
             </td>
             <td>{{ match.date_reception }} {{ match.heure_reception }}<span v-if="match.match_status == 'NOT_CONFIRMED'"
@@ -102,6 +106,14 @@ export default {
         },
         resetFilters() {
             this.resetBaseFilters();
+        },
+        isMatchToday(match) {
+            if (!match.date_reception) return false;
+            const today = new Date().toLocaleDateString('fr-FR');
+            return match.date_reception === today;
+        },
+        isMatchFinished(match) {
+            return match.score_equipe_dom === 3 || match.score_equipe_ext === 3;
         },
         addToGoogleCalendar(match) {
             // Convertir le timestamp en date

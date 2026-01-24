@@ -126,6 +126,12 @@ export default {
           <span class="badge badge-error" v-if="match.is_forfait === 1">forfait</span>
         </p>
         <p>Date : {{ match.date_reception }}</p>
+        <div v-if="isMatchToday && !isMatchFinished" class="mt-2">
+          <a :href="'/live.php?id_match=' + match.code_match + '&mode=scorer'" 
+             class="btn btn-warning btn-sm animate-pulse" target="_blank">
+            <i class="fas fa-edit mr-1"></i>Mode scoreur
+          </a>
+        </div>
         <div v-if="!['null', '', null].includes(match.note)" class="collapse">
           <input type="checkbox"/>
           <div class="collapse-title text-xs font-medium">voir les commentaires</div>
@@ -149,6 +155,14 @@ export default {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             return matchDate <= today;
+        },
+        isMatchToday() {
+            if (!this.match.date_reception) return false;
+            const today = new Date().toLocaleDateString('fr-FR');
+            return this.match.date_reception === today;
+        },
+        isMatchFinished() {
+            return this.match.score_equipe_dom === 3 || this.match.score_equipe_ext === 3;
         }
     },
     methods: {
