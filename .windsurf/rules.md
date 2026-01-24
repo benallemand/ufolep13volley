@@ -5,7 +5,7 @@ Application web de gestion de championnats de volleyball UFOLEP 13.
 
 ## Stack Technique
 - **Backend**: PHP 8+, MySQL
-- **Frontend**: Vue.js, ExtJS, Tailwind CSS, DaisyUI
+- **Frontend**: Vue.js, Tailwind CSS, DaisyUI (client), ExtJS/Sencha (admin)
 - **Tests**: PHPUnit (unit_tests/)
 - **Déploiement**: GitHub Actions + OVH
 
