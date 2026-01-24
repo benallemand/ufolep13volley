@@ -1,10 +1,78 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 
-function filter_ignored_parameters(array $parameters)
+
+function exclude_ignored_parameters(array $parameters): array
 {
     return array_filter($parameters, function ($key) {
-        return !in_array($key, array('_dc', 'page', 'start', 'limit'));
+        return !in_array($key, array('_dc', 'page', 'start', 'limit', '_end', '_order', '_sort', '_start'));
     }, ARRAY_FILTER_USE_KEY);
+}
+
+function filter_pagination_parameters(array $parameters): array
+{
+    return array_filter($parameters, function ($key) {
+        return in_array($key, array('_end', '_start'));
+    }, ARRAY_FILTER_USE_KEY);
+}
+
+function filter_sort_order_parameters(array $parameters): array
+{
+    return array_filter($parameters, function ($key) {
+        return in_array($key, array('_order', '_sort'));
+    }, ARRAY_FILTER_USE_KEY);
+}
+
+function get_pagination_parameters(): ?array
+{
+    $parameters = filter_input_array(INPUT_GET);
+    if(is_null($parameters)) {
+        return null;
+    }
+    $parameters = filter_pagination_parameters($parameters);
+    if (count($parameters) != 2) {
+        return null;
+    }
+    return $parameters;
+}
+
+function get_sorter_parameters(): ?array
+{
+    $parameters = filter_input_array(INPUT_GET);
+    if(is_null($parameters)) {
+        return null;
+    }
+    $parameters = filter_sort_order_parameters($parameters);
+    if (count($parameters) != 2) {
+        return null;
+    }
+    return $parameters;
+}
+
+function filter_results_by_pagination(mixed $results, array $pagination)
+{
+    return array_slice($results, $pagination['_start'], $pagination['_end'] - $pagination['_start'] + 1);
+}
+
+function sort_results(mixed $results, array $sorter)
+{
+    usort($results, function ($a, $b) use ($sorter) {
+        if ($sorter['_sort'] == 'date_reception') {
+            $a[$sorter['_sort']] = strtotime($a[$sorter['_sort']]);
+            $b[$sorter['_sort']] = strtotime($b[$sorter['_sort']]);
+            if ($sorter['_order'] === 'ASC') {
+                return $a[$sorter['_sort']] - $b[$sorter['_sort']];
+            } else {
+                return $b[$sorter['_sort']] - $a[$sorter['_sort']];
+            }
+        }
+        if ($sorter['_order'] === 'ASC') {
+            return strcmp($a[$sorter['_sort']], $b[$sorter['_sort']]);
+        } else {
+            return -strcmp($a[$sorter['_sort']], $b[$sorter['_sort']]);
+        }
+    });
+    return $results;
 }
 
 try {
@@ -143,7 +211,7 @@ try {
             if (empty($parameters)) {
                 $parameters = array();
             }
-            $parameters = filter_ignored_parameters($parameters);
+            $parameters = exclude_ignored_parameters($parameters);
             call_user_func_array(
                 array($manager, $action_name),
                 $parameters);
@@ -153,10 +221,21 @@ try {
             if (empty($parameters)) {
                 $parameters = array();
             }
-            $parameters = filter_ignored_parameters($parameters);
-            echo json_encode(call_user_func_array(
+            $parameters = exclude_ignored_parameters($parameters);
+            $results = call_user_func_array(
                 array($manager, $action_name),
-                $parameters));
+                $parameters);
+            header('Access-Control-Expose-Headers: X-Total-Count');
+            header('X-Total-Count: ' . count($results));
+            $sorter = get_sorter_parameters();
+            if (!empty($sorter)) {
+                $results = sort_results($results, $sorter);
+            }
+            $pagination = get_pagination_parameters();
+            if (!empty($pagination)) {
+                $results = filter_results_by_pagination($results, $pagination);
+            }
+            echo json_encode($results);
             exit(0);
         case 'PUT':
         case 'DELETE':
@@ -169,7 +248,7 @@ try {
     ));
 } catch (Exception $exception) {
     $resp_code = empty($exception->getCode()) ? 500 : $exception->getCode();
-    switch($resp_code) {
+    switch ($resp_code) {
         case 401:
             // redirect to login page
             header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
