@@ -3,11 +3,6 @@ Ext.define('Ufolep13Volley.view.news.AdminGrid', {
     alias: 'widget.newsgrid',
     title: 'Gestion des News',
     store: {type: 'AdminNews'},
-    plugins: [{
-        ptype: 'rowediting',
-        clicksToEdit: 2,
-        pluginId: 'rowediting'
-    }],
     columns: {
         items: [
             {
@@ -18,40 +13,23 @@ Ext.define('Ufolep13Volley.view.news.AdminGrid', {
             {
                 header: 'Titre',
                 dataIndex: 'title',
-                flex: 1,
-                editor: {
-                    xtype: 'textfield',
-                    allowBlank: false
-                }
+                flex: 1
             },
             {
                 header: 'Texte',
                 dataIndex: 'text',
-                flex: 2,
-                editor: {
-                    xtype: 'textarea',
-                    allowBlank: true
-                }
+                flex: 2
             },
             {
                 header: 'Fichier',
                 dataIndex: 'file_path',
-                width: 150,
-                editor: {
-                    xtype: 'textfield',
-                    allowBlank: true
-                }
+                width: 150
             },
             {
                 header: 'Date',
                 dataIndex: 'news_date',
                 width: 120,
-                renderer: Ext.util.Format.dateRenderer('d/m/Y'),
-                editor: {
-                    xtype: 'datefield',
-                    format: 'd/m/Y',
-                    allowBlank: false
-                }
+                renderer: Ext.util.Format.dateRenderer('d/m/Y')
             },
             {
                 header: 'Désactivé',
@@ -59,11 +37,6 @@ Ext.define('Ufolep13Volley.view.news.AdminGrid', {
                 width: 100,
                 renderer: function(value) {
                     return value == 1 ? 'Oui' : 'Non';
-                },
-                editor: {
-                    xtype: 'combobox',
-                    store: [[0, 'Non'], [1, 'Oui']],
-                    editable: false
                 }
             }
         ]
@@ -81,6 +54,11 @@ Ext.define('Ufolep13Volley.view.news.AdminGrid', {
                     text: 'Ajouter une news',
                     glyph: 'xf067@FontAwesome',
                     action: 'addNews'
+                },
+                {
+                    text: 'Editer',
+                    glyph: 'xf044@FontAwesome',
+                    action: 'editNews'
                 },
                 {
                     text: 'Supprimer',

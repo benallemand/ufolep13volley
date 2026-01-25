@@ -46,7 +46,7 @@ class News extends Generic
         return $this->sql_manager->execute($sql);
     }
 
-    public function saveNews($id = null, $title = '', $text = '', $file_path = '', $news_date = null, $is_disabled = 0): void
+    public function saveNews($id = null, $title = '', $text = '', $file_path = '', $news_date = null, $is_disabled = 0, $dirtyFields = null): void
     {
         @session_start();
         if (!UserManager::isAdmin()) {
