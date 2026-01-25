@@ -73,13 +73,9 @@ class NewsTest extends UfolepTestCase
         // Arrange
         $this->connect_as_admin();
         $manager = new News();
-        $_POST['title'] = 'Test New News';
-        $_POST['text'] = 'Test content for new news';
-        $_POST['news_date'] = date('Y-m-d');
-        $_POST['is_disabled'] = 0;
 
         // Act
-        $manager->saveNews();
+        $manager->saveNews(null, 'Test New News', 'Test content for new news', '', date('Y-m-d'), 0);
         
         // Get the created news
         $sql = "SELECT id FROM news WHERE title = ? ORDER BY id DESC LIMIT 1";
@@ -106,12 +102,7 @@ class NewsTest extends UfolepTestCase
         $this->created_news_id = $this->sql->execute($sql, $bindings);
 
         // Act - Update the news
-        $_POST['id'] = $this->created_news_id;
-        $_POST['title'] = 'Updated Title';
-        $_POST['text'] = 'Updated content';
-        $_POST['news_date'] = date('Y-m-d');
-        $_POST['is_disabled'] = 0;
-        $manager->saveNews();
+        $manager->saveNews($this->created_news_id, 'Updated Title', 'Updated content', '', date('Y-m-d'), 0);
 
         // Assert
         $sql = "SELECT title FROM news WHERE id = ?";
@@ -135,8 +126,7 @@ class NewsTest extends UfolepTestCase
         $news_id = $this->sql->execute($sql, $bindings);
 
         // Act
-        $_POST['id'] = $news_id;
-        $manager->deleteNews();
+        $manager->deleteNews($news_id);
 
         // Assert
         $sql = "SELECT id FROM news WHERE id = ?";
@@ -150,14 +140,10 @@ class NewsTest extends UfolepTestCase
         // Arrange
         $this->connect_as_team_leader(5);
         $manager = new News();
-        $_POST['title'] = 'Test News';
-        $_POST['text'] = 'Test content';
-        $_POST['news_date'] = date('Y-m-d');
-        $_POST['is_disabled'] = 0;
 
         // Act & Assert
         $this->expectException(Exception::class);
-        $manager->saveNews();
+        $manager->saveNews(null, 'Test News', 'Test content', '', date('Y-m-d'), 0);
     }
 
     public function test_deleteNews_fails_for_non_admin()
@@ -165,10 +151,9 @@ class NewsTest extends UfolepTestCase
         // Arrange
         $this->connect_as_team_leader(5);
         $manager = new News();
-        $_POST['id'] = 1;
 
         // Act & Assert
         $this->expectException(Exception::class);
-        $manager->deleteNews();
+        $manager->deleteNews(1);
     }
 }

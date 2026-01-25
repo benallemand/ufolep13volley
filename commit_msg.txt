@@ -1,0 +1,16 @@
+feat: add News management in admin interface
+
+Résout #188
+
+Backend (PHP):
+- Add getAllNews() method to retrieve all news including disabled
+- Add saveNews() method for create/update operations
+- Add deleteNews() method with admin check
+- Add unit tests for all CRUD operations
+
+Frontend (ExtJS):
+- Add News model (js/model/News.js)
+- Add AdminNews store (js/store/AdminNews.js)
+- Add news AdminGrid view with inline editing
+- Add menu entry in administration.js
+- Add controller methods: showNewsGrid, addNews, deleteNews, saveNews

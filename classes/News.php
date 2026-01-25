@@ -46,19 +46,16 @@ class News extends Generic
         return $this->sql_manager->execute($sql);
     }
 
-    public function saveNews(): void
+    public function saveNews($id = null, $title = '', $text = '', $file_path = '', $news_date = null, $is_disabled = 0): void
     {
         @session_start();
         if (!UserManager::isAdmin()) {
             throw new Exception("Seuls les administrateurs peuvent modifier les news");
         }
 
-        $id = $_POST['id'] ?? null;
-        $title = $_POST['title'] ?? '';
-        $text = $_POST['text'] ?? '';
-        $file_path = $_POST['file_path'] ?? '';
-        $news_date = $_POST['news_date'] ?? date('Y-m-d');
-        $is_disabled = $_POST['is_disabled'] ?? 0;
+        if ($news_date === null) {
+            $news_date = date('Y-m-d');
+        }
 
         if (!empty($id) && is_numeric($id)) {
             $sql = "UPDATE news SET title = ?, text = ?, file_path = ?, news_date = ?, is_disabled = ? WHERE id = ?";
@@ -83,14 +80,13 @@ class News extends Generic
         $this->sql_manager->execute($sql, $bindings);
     }
 
-    public function deleteNews(): void
+    public function deleteNews($id = null): void
     {
         @session_start();
         if (!UserManager::isAdmin()) {
             throw new Exception("Seuls les administrateurs peuvent supprimer les news");
         }
 
-        $id = $_POST['id'] ?? null;
         if (empty($id) || !is_numeric($id)) {
             throw new Exception("ID de news invalide");
         }
