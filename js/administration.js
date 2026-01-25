@@ -166,6 +166,11 @@ Ext.application({
                                     {
                                         text: 'Gestion des dates interdites',
                                         action: 'displayBlacklistDate'
+                                    },
+                                    {
+                                        text: 'Gestion des news',
+                                        glyph: 'xf1ea@FontAwesome',
+                                        action: 'manageNews'
                                     }
                                 ]
                             },

@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements'],
-    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators'],
+    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews'],
+    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
@@ -302,6 +302,14 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.confirmMatch
             }, 'button[action=unconfirmMatch]': {
                 click: this.unconfirmMatch
+            }, 'menuitem[action=manageNews]': {
+                click: this.showNewsGrid
+            }, 'button[action=addNews]': {
+                click: this.addNews
+            }, 'button[action=deleteNews]': {
+                click: this.deleteNews
+            }, 'newsgrid': {
+                edit: this.saveNews
             }
         });
     },
@@ -1486,5 +1494,69 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }]
         });
         selectWindow.show();
+    },
+    showNewsGrid: function () {
+        var mainPanel = this.getMainPanel();
+        var tab = mainPanel.add(Ext.widget('newsgrid'));
+        mainPanel.setActiveTab(tab);
+    },
+    addNews: function (button) {
+        var grid = button.up('grid');
+        var store = grid.getStore();
+        var record = Ext.create('Ufolep13Volley.model.News', {
+            title: 'Nouvelle news',
+            text: '',
+            file_path: '',
+            news_date: new Date(),
+            is_disabled: 0
+        });
+        store.insert(0, record);
+        grid.getPlugin('rowediting').startEdit(record, 0);
+    },
+    deleteNews: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            Ext.Msg.alert('Erreur', 'Veuillez sélectionner une news');
+            return;
+        }
+        Ext.Msg.confirm('Confirmation', 'Voulez-vous vraiment supprimer cette news ?', function (btn) {
+            if (btn === 'yes') {
+                Ext.Ajax.request({
+                    url: '/rest/action.php/news/deleteNews',
+                    method: 'POST',
+                    params: {id: record.get('id')},
+                    success: function () {
+                        grid.getStore().load();
+                    },
+                    failure: function (response) {
+                        var result = Ext.decode(response.responseText);
+                        Ext.Msg.alert('Erreur', result.message);
+                    }
+                });
+            }
+        });
+    },
+    saveNews: function (editor, context) {
+        var record = context.record;
+        Ext.Ajax.request({
+            url: '/rest/action.php/news/saveNews',
+            method: 'POST',
+            params: {
+                id: record.get('id'),
+                title: record.get('title'),
+                text: record.get('text'),
+                file_path: record.get('file_path'),
+                news_date: Ext.Date.format(record.get('news_date'), 'Y-m-d'),
+                is_disabled: record.get('is_disabled')
+            },
+            success: function () {
+                context.grid.getStore().load();
+            },
+            failure: function (response) {
+                var result = Ext.decode(response.responseText);
+                Ext.Msg.alert('Erreur', result.message);
+            }
+        });
     }
 });
