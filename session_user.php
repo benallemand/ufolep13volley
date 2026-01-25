@@ -5,5 +5,10 @@ if (!UserManager::is_connected()) {
     exit;
 }
 header('Content-Type: application/json');
-echo json_encode($_SESSION);
+$response = $_SESSION;
+$response['is_acting_as'] = UserManager::is_acting_as();
+if (UserManager::is_acting_as()) {
+    $response['original_admin'] = UserManager::get_original_admin();
+}
+echo json_encode($response);
 ?>

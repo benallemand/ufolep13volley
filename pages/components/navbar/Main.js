@@ -146,14 +146,23 @@ export default {
               <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank"><i class="fas fa-link mr-2"/>Coupe Isoardi</a></li>
             </ul>
           </div>
+          <div v-if="isActingAs" class="flex gap-1 items-center">
+            <div class="badge badge-warning gap-2 animate-pulse">
+              <i class="fas fa-user-secret"/>
+              Mode: {{ this.user.login }}
+            </div>
+            <button class="btn btn-warning btn-sm" @click="switchBackToAdmin">
+              <i class="fas fa-arrow-left mr-1"/>Retour Admin
+            </button>
+          </div>
           <div v-if="isConnected" class="flex gap-1">
             <a class="btn btn-primary"
-               v-if="['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name)"
+               v-if="['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name) && !isActingAs"
                href="/admin.php">
               <span><i class="fas fa-gear mr-2"/>administration</span>
             </a>
             <a class="btn btn-primary"
-               v-if="!['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name)"
+               v-if="!['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name) || isActingAs"
                href="/pages/my_page.html">
               <span><i class="fas fa-user mr-2"/>{{ this.user.login }}</span>
             </a>
@@ -213,6 +222,9 @@ export default {
         }, isConnected() {
             return this.user !== null;
         },
+        isActingAs() {
+            return this.user !== null && this.user.is_acting_as === true;
+        },
     },
     methods: {
         fetch() {
@@ -236,6 +248,21 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error)
+                });
+        },
+        switchBackToAdmin() {
+            axios
+                .post("/rest/action.php/usermanager/switch_back_to_admin")
+                .then((response) => {
+                    if (response.data.success) {
+                        window.location.href = '/admin.php';
+                    } else {
+                        alert('Erreur: ' + response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Erreur lors du retour admin:", error);
+                    alert('Erreur de communication avec le serveur');
                 });
         },
     },
