@@ -24,6 +24,7 @@ Ext.application({
         'manage_commission',
         'manage_registry',
         'manage_user',
+        'act_as',
     ],
     name: 'Ufolep13Volley',
     appFolder: 'js',
@@ -167,6 +168,13 @@ Ext.application({
                                         action: 'displayBlacklistDate'
                                     }
                                 ]
+                            },
+                            {
+                                xtype: 'button',
+                                text: 'Agir en tant que...',
+                                scale: 'medium',
+                                glyph: 'xf21b@FontAwesome',
+                                action: 'showActAsSelector'
                             },
                             '->',
                             {

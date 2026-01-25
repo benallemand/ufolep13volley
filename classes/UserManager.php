@@ -792,5 +792,157 @@ class UserManager extends Generic
         return intval($results[0]['cnt']) > 0;
     }
 
+    /**
+     * Permet à un administrateur d'agir en tant qu'un autre utilisateur
+     * @param int $target_user_id ID de l'utilisateur cible
+     * @return bool
+     * @throws Exception
+     */
+    public function switch_to_user(int $target_user_id): bool
+    {
+        @session_start();
+        
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent utiliser cette fonctionnalité");
+        }
+        
+        if (self::is_acting_as()) {
+            throw new Exception("Vous êtes déjà en mode 'Agir en tant que'. Revenez d'abord à votre compte admin.");
+        }
+        
+        $target_user = $this->get_by_id($target_user_id);
+        if (!$target_user) {
+            throw new Exception("Utilisateur cible introuvable");
+        }
+        
+        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
+        $_SESSION['original_admin_login'] = $_SESSION['login'];
+        $_SESSION['original_admin_profile'] = $_SESSION['profile_name'];
+        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
+        
+        $sql = "SELECT  ut.team_id AS id_equipe, 
+                        ca.login, 
+                        ca.id AS id_user,
+                        p.name AS profile_name 
+                FROM comptes_acces ca
+                LEFT JOIN users_teams ut ON ca.id = ut.user_id
+                LEFT JOIN users_profiles up ON up.user_id=ca.id
+                LEFT JOIN profiles p ON p.id=up.profile_id
+                WHERE ca.id = ?
+                LIMIT 1";
+        $bindings = array(
+            array('type' => 'i', 'value' => $target_user_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        
+        if (count($results) === 0) {
+            throw new Exception("Impossible de récupérer les informations de l'utilisateur cible");
+        }
+        
+        $data = $results[0];
+        $_SESSION['id_equipe'] = (int)$data['id_equipe'];
+        $_SESSION['login'] = $data['login'];
+        $_SESSION['id_user'] = (int)$data['id_user'];
+        $_SESSION['profile_name'] = $data['profile_name'];
+        $_SESSION['acting_as'] = true;
+        
+        $this->activity->add("Admin a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
+        
+        return true;
+    }
+
+    /**
+     * Retourne au compte administrateur original
+     * @return bool
+     * @throws Exception
+     */
+    public function switch_back_to_admin(): bool
+    {
+        @session_start();
+        
+        if (!self::is_acting_as()) {
+            throw new Exception("Vous n'êtes pas en mode 'Agir en tant que'");
+        }
+        
+        $target_login = $_SESSION['login'];
+        
+        $_SESSION['id_user'] = $_SESSION['original_admin_id'];
+        $_SESSION['login'] = $_SESSION['original_admin_login'];
+        $_SESSION['profile_name'] = $_SESSION['original_admin_profile'];
+        $_SESSION['id_equipe'] = $_SESSION['original_admin_equipe'];
+        
+        unset($_SESSION['acting_as']);
+        unset($_SESSION['original_admin_id']);
+        unset($_SESSION['original_admin_login']);
+        unset($_SESSION['original_admin_profile']);
+        unset($_SESSION['original_admin_equipe']);
+        
+        $this->activity->add("Admin est revenu de: " . $target_login);
+        
+        return true;
+    }
+
+    /**
+     * Vérifie si l'utilisateur actuel est en mode "Agir en tant que"
+     * @return bool
+     */
+    public static function is_acting_as(): bool
+    {
+        @session_start();
+        return isset($_SESSION['acting_as']) && $_SESSION['acting_as'] === true;
+    }
+
+    /**
+     * Retourne les informations de l'administrateur original si en mode "Agir en tant que"
+     * @return array|null
+     */
+    public static function get_original_admin(): ?array
+    {
+        @session_start();
+        
+        if (!self::is_acting_as()) {
+            return null;
+        }
+        
+        return array(
+            'id_user' => $_SESSION['original_admin_id'],
+            'login' => $_SESSION['original_admin_login'],
+            'profile_name' => $_SESSION['original_admin_profile'],
+            'id_equipe' => $_SESSION['original_admin_equipe'],
+        );
+    }
+
+    /**
+     * Retourne la liste des utilisateurs disponibles pour "Agir en tant que"
+     * @return array
+     * @throws Exception
+     */
+    public function get_users_for_act_as(): array
+    {
+        @session_start();
+        
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent utiliser cette fonctionnalité");
+        }
+        
+        $sql = "SELECT  ca.id,
+                        ca.login,
+                        ca.email,
+                        p.name AS profile_name,
+                        GROUP_CONCAT(e.nom_equipe SEPARATOR ', ') AS equipes
+                FROM comptes_acces ca
+                LEFT JOIN users_profiles up ON up.user_id = ca.id
+                LEFT JOIN profiles p ON p.id = up.profile_id
+                LEFT JOIN users_teams ut ON ut.user_id = ca.id
+                LEFT JOIN equipes e ON e.id_equipe = ut.team_id
+                WHERE ca.id != ?
+                GROUP BY ca.id, ca.login, ca.email, p.name
+                ORDER BY ca.login";
+        $bindings = array(
+            array('type' => 'i', 'value' => $_SESSION['id_user']),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
 
 }
