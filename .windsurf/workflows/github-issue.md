@@ -186,9 +186,16 @@ unit_tests/
 & "C:\Program Files\GitHub CLI\gh.exe" pr merge {numero_pr} --repo benallemand/ufolep13volley --merge --admin
 ```
 
-**Note:** L'issue est fermée automatiquement grâce à la référence `Résout #{numero}` dans le message de commit.
+### 9. Fermeture du Ticket
 
-### 9. Tag de Release (optionnel)
+```powershell
+# Fermer explicitement le ticket avec un commentaire
+& "C:\Program Files\GitHub CLI\gh.exe" issue close {numero} --repo benallemand/ufolep13volley --comment "Fermé par PR #{numero_pr} - Tag {yyyymmddhhii}"
+```
+
+**Note:** Même si `Résout #{numero}` devrait fermer l'issue automatiquement, cette étape garantit la fermeture.
+
+### 10. Tag de Release (optionnel)
 
 ```powershell
 # Mettre à jour master local
