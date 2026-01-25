@@ -179,14 +179,20 @@ unit_tests/
 └── files/                  # Fichiers de test
 ```
 
-### 8. Merge de la PR
+### 8. Validation Utilisateur
+
+**IMPORTANT:** Ne JAMAIS merger automatiquement. Toujours demander confirmation à l'utilisateur avant de merger.
+- Attendre que l'utilisateur teste les modifications
+- Attendre son "go" explicite pour merger
+
+### 9. Merge de la PR
 
 ```powershell
 # Merger la PR (avec --admin si branch protection)
 & "C:\Program Files\GitHub CLI\gh.exe" pr merge {numero_pr} --repo benallemand/ufolep13volley --merge --admin
 ```
 
-### 9. Fermeture du Ticket
+### 10. Fermeture du Ticket
 
 ```powershell
 # Fermer explicitement le ticket avec un commentaire
@@ -195,7 +201,7 @@ unit_tests/
 
 **Note:** Même si `Résout #{numero}` devrait fermer l'issue automatiquement, cette étape garantit la fermeture.
 
-### 10. Tag de Release (optionnel)
+### 11. Tag de Release
 
 ```powershell
 # Mettre à jour master local
@@ -250,3 +256,16 @@ Les scripts SQL sont stockés dans le projet **ufolep13volley_python**:
 - Certains tests sont destructifs (modification de données réelles)
 - Préférer exécuter les tests spécifiques: `--filter "test_method1|test_method2"`
 - Éviter `phpunit unit_tests/` si la base contient des données de production
+
+### Routeur REST PHP et Paramètres Nommés
+- Le routeur `rest/action.php` appelle les méthodes avec des **paramètres nommés** PHP 8+
+- Les méthodes CRUD doivent accepter les paramètres comme arguments de fonction, pas via `$_POST`
+- Exemple: `public function saveNews($id = null, $title = '', $text = ''): void`
+- ExtJS envoie automatiquement `$dirtyFields` lors du submit de formulaire - l'ajouter comme paramètre optionnel
+
+### Frontend ExtJS - Patterns à Suivre
+- **Grilles admin**: Utiliser des fenêtres d'édition modales (pattern `window.Window`), pas le plugin `rowediting`
+- Créer: `js/view/{entity}/AdminGrid.js` pour la grille
+- Créer: `js/view/{entity}/Edit.js` pour la fenêtre d'édition modale
+- Le formulaire soumet directement à l'URL définie, le handler `save` du controller gère la soumission
+- Ajouter les refs: `formPanelEdit{Entity}`, `windowEdit{Entity}`, `manage{Entity}Grid`
