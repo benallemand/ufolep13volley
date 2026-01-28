@@ -1,31 +1,29 @@
-version: '3'
 services:
+  # Reverse proxy avec HTTPS automatique (Let's Encrypt)
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.docker:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - php
+
+  # Application PHP/Apache
   php:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - mysql
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: test
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker-sql:/docker-sql
-      - ./docker-sql/mysql.cnf:/etc/mysql/conf.d/my.cnf
-#    command: [ "/docker-sql/docker-entrypoint.sh" ]
-  init:
-    image: busybox
-    volumes:
-      - ./docker-sql:/docker-sql
-    command: [ "echo", "Initialization container created. Waiting for MySQL to be ready..." ]
-    depends_on:
-      - mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
-  mysql_data:
+  caddy_data:
+  caddy_config:
