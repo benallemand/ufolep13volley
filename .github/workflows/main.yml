@@ -27,5 +27,5 @@ jobs:
 
       - name: Deploy to production
         run: |
-          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && git pull"
+          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && git checkout -- composer.phar && git pull"
           echo "Deployment completed successfully!"
