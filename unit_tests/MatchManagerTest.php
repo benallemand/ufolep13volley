@@ -227,6 +227,53 @@ class MatchManagerTest extends UfolepTestCase
     /**
      * @throws Exception
      */
+    public function test_is_match_read_allowed_team_leader_multi_teams(): void
+    {
+        $_SERVER['SERVER_NAME'] = 'example.com';
+
+        $teams = $this->get_test_teams();
+        $team1 = $teams[0]['id_equipe'];
+        $team2 = $teams[1]['id_equipe'];
+
+        $id_club3 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'test club 3'");
+        $team3 = $this->sql_manager->execute("INSERT INTO equipes SET code_competition = 'ut', nom_equipe = 'test team 3', id_club = $id_club3");
+        $rank3 = $this->sql_manager->execute("INSERT INTO classements SET code_competition = 'ut', division = '1', id_equipe = $team3, rank_start = 3");
+        $court3 = $this->sql_manager->execute("INSERT INTO gymnase SET nom = 'test court 3'");
+
+        $day = $this->get_test_day();
+        $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT002', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_journee = {$day['id']}, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
+
+        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
+        if (is_array($profileId)) {
+            $profileId = $profileId[0]['id'];
+        }
+
+        $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_team_leader', email = 'ut_multi_team_leader@ufolep.test', password_hash = 'x'");
+        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId, profile_id = $profileId");
+        $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
+        $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team2");
+
+        @session_start();
+        $_SESSION['id_equipe'] = $team1;
+        $_SESSION['login'] = 'ut_multi_team_leader';
+        $_SESSION['id_user'] = $userId;
+        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
+
+        $this->assertTrue($this->match_manager->is_match_read_allowed($matchId));
+
+        $this->sql_manager->execute("DELETE FROM users_teams WHERE user_id = $userId");
+        $this->sql_manager->execute("DELETE FROM users_profiles WHERE user_id = $userId");
+        $this->sql_manager->execute("DELETE FROM comptes_acces WHERE id = $userId");
+        $this->sql_manager->execute("DELETE FROM matches WHERE id_match = $matchId");
+        $this->sql_manager->execute("DELETE FROM classements WHERE id_equipe = $team3");
+        $this->sql_manager->execute("DELETE FROM equipes WHERE id_equipe = $team3");
+        $this->sql_manager->execute("DELETE FROM clubs WHERE nom = 'test club 3'");
+        $this->sql_manager->execute("DELETE FROM gymnase WHERE nom = 'test court 3'");
+    }
+
+    /**
+     * @throws Exception
+     */
     public function test_get_count_matches_per_day()
     {
         //20220828:PASS
