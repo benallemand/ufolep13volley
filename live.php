@@ -91,34 +91,34 @@ if ($id_match) {
                 <div class="grid grid-cols-3 gap-2 items-center text-center">
                     <!-- Home Team -->
                     <div>
-                        <p class="font-bold text-lg truncate"><?php echo htmlspecialchars($match['equipe_dom']); ?></p>
-                        <p class="text-xs text-gray-500">Domicile</p>
+                        <p class="font-bold text-lg truncate">{{ leftTeamName }}</p>
+                        <p class="text-xs text-gray-500">{{ leftTeamLabel }}</p>
                     </div>
                     
                     <!-- Score -->
                     <div>
                         <div class="text-5xl font-bold">
-                            <span class="text-primary">{{ score.score_dom }}</span>
+                            <span class="text-primary">{{ leftScore }}</span>
                             <span class="text-gray-400">-</span>
-                            <span class="text-secondary">{{ score.score_ext }}</span>
+                            <span class="text-secondary">{{ rightScore }}</span>
                         </div>
                         <p class="text-sm mt-1">Set {{ score.set_en_cours }}</p>
-                        <p class="text-lg font-bold">({{ score.sets_dom }} - {{ score.sets_ext }})</p>
+                        <p class="text-lg font-bold">({{ leftSets }} - {{ rightSets }})</p>
                         
                         <!-- Set Details -->
                         <div class="text-xs text-gray-500 mt-2 flex gap-2 justify-center flex-wrap">
-                            <span v-if="score.set_1_dom || score.set_1_ext" class="badge badge-ghost">S1: {{ score.set_1_dom }}-{{ score.set_1_ext }}</span>
-                            <span v-if="score.set_2_dom || score.set_2_ext" class="badge badge-ghost">S2: {{ score.set_2_dom }}-{{ score.set_2_ext }}</span>
-                            <span v-if="score.set_3_dom || score.set_3_ext" class="badge badge-ghost">S3: {{ score.set_3_dom }}-{{ score.set_3_ext }}</span>
-                            <span v-if="score.set_4_dom || score.set_4_ext" class="badge badge-ghost">S4: {{ score.set_4_dom }}-{{ score.set_4_ext }}</span>
-                            <span v-if="score.set_5_dom || score.set_5_ext" class="badge badge-ghost">S5: {{ score.set_5_dom }}-{{ score.set_5_ext }}</span>
+                            <span v-if="score.set_1_dom || score.set_1_ext" class="badge badge-ghost">S1: {{ leftSetScore(1) }}-{{ rightSetScore(1) }}</span>
+                            <span v-if="score.set_2_dom || score.set_2_ext" class="badge badge-ghost">S2: {{ leftSetScore(2) }}-{{ rightSetScore(2) }}</span>
+                            <span v-if="score.set_3_dom || score.set_3_ext" class="badge badge-ghost">S3: {{ leftSetScore(3) }}-{{ rightSetScore(3) }}</span>
+                            <span v-if="score.set_4_dom || score.set_4_ext" class="badge badge-ghost">S4: {{ leftSetScore(4) }}-{{ rightSetScore(4) }}</span>
+                            <span v-if="score.set_5_dom || score.set_5_ext" class="badge badge-ghost">S5: {{ leftSetScore(5) }}-{{ rightSetScore(5) }}</span>
                         </div>
                     </div>
                     
                     <!-- Away Team -->
                     <div>
-                        <p class="font-bold text-lg truncate"><?php echo htmlspecialchars($match['equipe_ext']); ?></p>
-                        <p class="text-xs text-gray-500">Extérieur</p>
+                        <p class="font-bold text-lg truncate">{{ rightTeamName }}</p>
+                        <p class="text-xs text-gray-500">{{ rightTeamLabel }}</p>
                     </div>
                 </div>
             </div>
@@ -129,28 +129,34 @@ if ($id_match) {
         <div class="card bg-base-100 shadow-xl mb-4" v-if="isLive">
             <div class="card-body p-4">
                 <h3 class="text-center font-bold mb-4">Contrôles Scoreur</h3>
+
+                <div class="text-center mb-4">
+                    <button @click="toggleSwapSides()" class="btn btn-outline btn-sm">
+                        <i class="fas fa-exchange-alt mr-1"></i> Inverser les équipes
+                    </button>
+                </div>
                 
                 <!-- Score Buttons -->
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <!-- Dom buttons -->
+                    <!-- Left buttons -->
                     <div class="flex flex-col gap-2">
-                        <button @click="incrementScore('dom')" 
+                        <button @click="incrementLeft()" 
                                 class="btn btn-primary btn-lg h-24 text-3xl">
                             +1
                         </button>
-                        <button @click="decrementScore('dom')" 
+                        <button @click="decrementLeft()" 
                                 class="btn btn-outline btn-sm">
                             -1
                         </button>
                     </div>
                     
-                    <!-- Ext buttons -->
+                    <!-- Right buttons -->
                     <div class="flex flex-col gap-2">
-                        <button @click="incrementScore('ext')" 
+                        <button @click="incrementRight()" 
                                 class="btn btn-secondary btn-lg h-24 text-3xl">
                             +1
                         </button>
-                        <button @click="decrementScore('ext')" 
+                        <button @click="decrementRight()" 
                                 class="btn btn-outline btn-sm">
                             -1
                         </button>
@@ -160,11 +166,11 @@ if ($id_match) {
                 <!-- Set Controls -->
                 <div class="divider">Gestion des Sets</div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button @click="nextSet('dom')" class="btn btn-outline btn-primary">
-                        <i class="fas fa-trophy mr-1"></i> Set gagné DOM
+                    <button @click="nextSetLeft()" class="btn btn-outline btn-primary">
+                        <i class="fas fa-trophy mr-1"></i> Set gagné gauche
                     </button>
-                    <button @click="nextSet('ext')" class="btn btn-outline btn-secondary">
-                        <i class="fas fa-trophy mr-1"></i> Set gagné EXT
+                    <button @click="nextSetRight()" class="btn btn-outline btn-secondary">
+                        <i class="fas fa-trophy mr-1"></i> Set gagné droite
                     </button>
                 </div>
                 
@@ -250,6 +256,9 @@ new Vue({
     data: {
         idMatch: <?php echo json_encode($id_match); ?>,
         isScorer: <?php echo json_encode($isScorer); ?>,
+        teamDomName: <?php echo json_encode($match['equipe_dom'] ?? null); ?>,
+        teamExtName: <?php echo json_encode($match['equipe_ext'] ?? null); ?>,
+        swapSides: false,
         score: {
             set_en_cours: <?php echo $liveScoreData['set_en_cours'] ?? 1; ?>,
             score_dom: <?php echo $liveScoreData['score_dom'] ?? 0; ?>,
@@ -261,7 +270,43 @@ new Vue({
         activeLiveScores: [],
         refreshInterval: null
     },
+    computed: {
+        leftTeamKey() {
+            return this.swapSides ? 'ext' : 'dom';
+        },
+        rightTeamKey() {
+            return this.swapSides ? 'dom' : 'ext';
+        },
+        leftTeamName() {
+            return this.leftTeamKey === 'dom' ? this.teamDomName : this.teamExtName;
+        },
+        rightTeamName() {
+            return this.rightTeamKey === 'dom' ? this.teamDomName : this.teamExtName;
+        },
+        leftTeamLabel() {
+            return this.leftTeamKey === 'dom' ? 'Domicile' : 'Extérieur';
+        },
+        rightTeamLabel() {
+            return this.rightTeamKey === 'dom' ? 'Domicile' : 'Extérieur';
+        },
+        leftScore() {
+            return this.leftTeamKey === 'dom' ? this.score.score_dom : this.score.score_ext;
+        },
+        rightScore() {
+            return this.rightTeamKey === 'dom' ? this.score.score_dom : this.score.score_ext;
+        },
+        leftSets() {
+            return this.leftTeamKey === 'dom' ? this.score.sets_dom : this.score.sets_ext;
+        },
+        rightSets() {
+            return this.rightTeamKey === 'dom' ? this.score.sets_dom : this.score.sets_ext;
+        }
+    },
     mounted() {
+        if (this.idMatch && this.isScorer) {
+            const swapKey = 'live_score_swap_' + this.idMatch;
+            this.swapSides = localStorage.getItem(swapKey) === '1';
+        }
         if (this.idMatch) {
             this.refreshScore();
             this.startAutoRefresh();
@@ -276,6 +321,42 @@ new Vue({
         }
     },
     methods: {
+        toggleSwapSides() {
+            if (!this.idMatch) {
+                return;
+            }
+            const swapKey = 'live_score_swap_' + this.idMatch;
+            this.swapSides = !this.swapSides;
+            localStorage.setItem(swapKey, this.swapSides ? '1' : '0');
+        },
+        leftSetScore(setNum) {
+            const key = this.leftTeamKey;
+            const prop = 'set_' + setNum + '_' + key;
+            return this.score[prop] ?? 0;
+        },
+        rightSetScore(setNum) {
+            const key = this.rightTeamKey;
+            const prop = 'set_' + setNum + '_' + key;
+            return this.score[prop] ?? 0;
+        },
+        incrementLeft() {
+            return this.incrementScore(this.leftTeamKey);
+        },
+        incrementRight() {
+            return this.incrementScore(this.rightTeamKey);
+        },
+        decrementLeft() {
+            return this.decrementScore(this.leftTeamKey);
+        },
+        decrementRight() {
+            return this.decrementScore(this.rightTeamKey);
+        },
+        nextSetLeft() {
+            return this.nextSet(this.leftTeamKey);
+        },
+        nextSetRight() {
+            return this.nextSet(this.rightTeamKey);
+        },
         startAutoRefresh() {
             if (!this.isScorer) {
                 this.refreshInterval = setInterval(() => this.refreshScore(), 5000);
