@@ -244,7 +244,8 @@ class MatchMgr extends Generic
     public function is_match_read_allowed($id_match): bool
     {
         // if localhost, presume it is for test purpose
-        switch (filter_input(INPUT_SERVER, 'SERVER_NAME')) {
+        $serverName = $_SERVER['SERVER_NAME'] ?? filter_input(INPUT_SERVER, 'SERVER_NAME');
+        switch ($serverName) {
             case 'localhost':
             case null:
                 return true;
@@ -254,17 +255,22 @@ class MatchMgr extends Generic
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
         $id_team = $userDetails['id_equipe'];
+        $id_user = $userDetails['id_user'] ?? null;
         $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
             case 'SUPPORT':
                 return true;
             case 'RESPONSABLE_EQUIPE':
-                if (
-                    ($id_team != $match['id_equipe_dom'])
-                    &&
-                    ($id_team != $match['id_equipe_ext'])
-                ) {
+                if (!empty($id_user)) {
+                    $userManager = new UserManager();
+                    $teamIds = $userManager->getUserTeamIds((int)$id_user);
+                    if (in_array($match['id_equipe_dom'], $teamIds) || in_array($match['id_equipe_ext'], $teamIds)) {
+                        return true;
+                    }
+                    return false;
+                }
+                if (($id_team != $match['id_equipe_dom']) && ($id_team != $match['id_equipe_ext'])) {
                     return false;
                 }
                 return true;
