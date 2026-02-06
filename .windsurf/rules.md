@@ -60,3 +60,8 @@ Les tests unitaires héritent de `UfolepTestCase` qui fournit:
 - Repository: https://github.com/benallemand/ufolep13volley
 - Issues: https://github.com/benallemand/ufolep13volley/issues
 - Le token GitHub est stocké dans les variables d'environnement système
+
+### GitHub CLI (`gh`)
+- Pour créer une issue via `gh`, rédiger le contenu dans un fichier `.md` temporaire puis utiliser `--body-file <chemin>` (ne pas utiliser `--body` inline)
+- Créer le fichier `.md` par écriture directe (outil d'édition/écriture de fichier) plutôt que via des scripts shell complexes
+- Supprimer le fichier temporaire à la fin (après création de l'issue)
