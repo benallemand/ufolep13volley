@@ -27,5 +27,5 @@ jobs:
 
       - name: Deploy to production
         run: |
-          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && git checkout -- composer.phar && git pull"
+          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && if git ls-files --error-unmatch composer.phar >/dev/null 2>&1; then git checkout -- composer.phar; else rm -f composer.phar; fi && git pull"
           echo "Deployment completed successfully!"
