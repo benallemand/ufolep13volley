@@ -129,6 +129,20 @@ try {
                 ]);
                 break;
 
+            case 'upsert':
+                if (!isset($input['score_data']) || !is_array($input['score_data'])) {
+                    throw new Exception("Missing or invalid score_data parameter");
+                }
+                if (!isset($input['version']) || !is_numeric($input['version'])) {
+                    throw new Exception("Missing or invalid version parameter");
+                }
+                $result = $liveScore->upsertScore($id_match, $input['score_data'], (int)$input['version']);
+                if (!$result['success']) {
+                    http_response_code(409);
+                }
+                echo json_encode($result);
+                break;
+
             case 'save_to_match':
                 $liveScore->saveToMatch($id_match);
                 echo json_encode([

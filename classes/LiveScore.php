@@ -196,6 +196,68 @@ class LiveScore extends Generic
     }
 
     /**
+     * Idempotent upsert: save the full score state with optimistic concurrency control.
+     * Rejects the update if the provided version doesn't match the server version.
+     * @param string|int $id_match
+     * @param array $scoreData Full score state (score_dom, score_ext, sets_dom, sets_ext, set_en_cours, set_X_dom, set_X_ext)
+     * @param int $expectedVersion Version the client last saw
+     * @return array ['success' => bool, 'version' => int, 'data' => array|null, 'error' => string|null]
+     * @throws Exception
+     */
+    public function upsertScore(string|int $id_match, array $scoreData, int $expectedVersion): array
+    {
+        $current = $this->getLiveScore($id_match);
+        if (!$current) {
+            throw new Exception("No active live score for this match");
+        }
+
+        $serverVersion = (int)$current['version'];
+        if ($serverVersion !== $expectedVersion) {
+            return [
+                'success' => false,
+                'error' => 'version_conflict',
+                'version' => $serverVersion,
+                'data' => $current
+            ];
+        }
+
+        $allowedFields = [
+            'score_dom', 'score_ext', 'sets_dom', 'sets_ext', 'set_en_cours',
+            'set_1_dom', 'set_1_ext', 'set_2_dom', 'set_2_ext', 'set_3_dom',
+            'set_3_ext', 'set_4_dom', 'set_4_ext', 'set_5_dom', 'set_5_ext'
+        ];
+
+        $setClauses = [];
+        $bindings = [];
+        foreach ($scoreData as $field => $value) {
+            if (in_array($field, $allowedFields)) {
+                $setClauses[] = "$field = ?";
+                $bindings[] = array('type' => 'i', 'value' => (int)$value);
+            }
+        }
+
+        if (empty($setClauses)) {
+            throw new Exception("No valid fields to update");
+        }
+
+        $setClauses[] = "version = version + 1";
+        $setString = implode(', ', $setClauses);
+
+        $sql = "UPDATE live_scores SET $setString WHERE id_match = ? AND is_active = 1 AND version = ?";
+        $bindings[] = array('type' => 's', 'value' => $id_match);
+        $bindings[] = array('type' => 'i', 'value' => $expectedVersion);
+
+        $this->sql_manager->execute($sql, $bindings);
+
+        $updated = $this->getLiveScore($id_match);
+        return [
+            'success' => true,
+            'version' => (int)$updated['version'],
+            'data' => $updated
+        ];
+    }
+
+    /**
      * Get all active live scores with match details
      * @return array
      * @throws Exception
