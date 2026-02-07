@@ -178,4 +178,145 @@ class LiveScoreTest extends UfolepTestCase
         $this->liveScore->deleteLiveScore($matches[0]['id_match']);
         $this->liveScore->deleteLiveScore($matches[1]['id_match']);
     }
+
+    public function test_upsert_score_updates_full_state()
+    {
+        $matches = $this->sql->execute("SELECT id_match FROM matches LIMIT 1");
+        if (empty($matches)) {
+            $this->markTestSkipped('No matches in database');
+        }
+        $id_match = $matches[0]['id_match'];
+
+        // Start a live score
+        $this->liveScore->startLiveScore($id_match);
+        $liveScore = $this->liveScore->getLiveScore($id_match);
+        $version = (int)$liveScore['version'];
+
+        // Upsert with full state
+        $scoreData = [
+            'score_dom' => 15,
+            'score_ext' => 12,
+            'sets_dom' => 1,
+            'sets_ext' => 0,
+            'set_en_cours' => 2,
+            'set_1_dom' => 25,
+            'set_1_ext' => 20,
+        ];
+        $result = $this->liveScore->upsertScore($id_match, $scoreData, $version);
+        $this->assertTrue($result['success']);
+
+        // Verify state was saved
+        $updated = $this->liveScore->getLiveScore($id_match);
+        $this->assertEquals(15, $updated['score_dom']);
+        $this->assertEquals(12, $updated['score_ext']);
+        $this->assertEquals(1, $updated['sets_dom']);
+        $this->assertEquals(0, $updated['sets_ext']);
+        $this->assertEquals(2, $updated['set_en_cours']);
+        $this->assertEquals(25, $updated['set_1_dom']);
+        $this->assertEquals(20, $updated['set_1_ext']);
+
+        // Cleanup
+        $this->liveScore->deleteLiveScore($id_match);
+    }
+
+    public function test_upsert_score_increments_version()
+    {
+        $matches = $this->sql->execute("SELECT id_match FROM matches LIMIT 1");
+        if (empty($matches)) {
+            $this->markTestSkipped('No matches in database');
+        }
+        $id_match = $matches[0]['id_match'];
+
+        // Start a live score
+        $this->liveScore->startLiveScore($id_match);
+        $liveScore = $this->liveScore->getLiveScore($id_match);
+        $initialVersion = (int)$liveScore['version'];
+
+        // Upsert
+        $scoreData = ['score_dom' => 5, 'score_ext' => 3];
+        $result = $this->liveScore->upsertScore($id_match, $scoreData, $initialVersion);
+
+        // Version should have incremented
+        $updated = $this->liveScore->getLiveScore($id_match);
+        $this->assertEquals($initialVersion + 1, (int)$updated['version']);
+        $this->assertEquals($initialVersion + 1, $result['version']);
+
+        // Cleanup
+        $this->liveScore->deleteLiveScore($id_match);
+    }
+
+    public function test_upsert_score_rejects_stale_version()
+    {
+        $matches = $this->sql->execute("SELECT id_match FROM matches LIMIT 1");
+        if (empty($matches)) {
+            $this->markTestSkipped('No matches in database');
+        }
+        $id_match = $matches[0]['id_match'];
+
+        // Start a live score
+        $this->liveScore->startLiveScore($id_match);
+        $liveScore = $this->liveScore->getLiveScore($id_match);
+        $version = (int)$liveScore['version'];
+
+        // First upsert succeeds
+        $scoreData = ['score_dom' => 5, 'score_ext' => 3];
+        $result1 = $this->liveScore->upsertScore($id_match, $scoreData, $version);
+        $this->assertTrue($result1['success']);
+
+        // Second upsert with same (now stale) version should fail
+        $scoreData2 = ['score_dom' => 10, 'score_ext' => 8];
+        $result2 = $this->liveScore->upsertScore($id_match, $scoreData2, $version);
+        $this->assertFalse($result2['success']);
+        $this->assertEquals('version_conflict', $result2['error']);
+
+        // Score should remain from first upsert
+        $current = $this->liveScore->getLiveScore($id_match);
+        $this->assertEquals(5, $current['score_dom']);
+        $this->assertEquals(3, $current['score_ext']);
+
+        // Cleanup
+        $this->liveScore->deleteLiveScore($id_match);
+    }
+
+    public function test_upsert_score_returns_current_state_on_conflict()
+    {
+        $matches = $this->sql->execute("SELECT id_match FROM matches LIMIT 1");
+        if (empty($matches)) {
+            $this->markTestSkipped('No matches in database');
+        }
+        $id_match = $matches[0]['id_match'];
+
+        // Start and upsert once
+        $this->liveScore->startLiveScore($id_match);
+        $liveScore = $this->liveScore->getLiveScore($id_match);
+        $version = (int)$liveScore['version'];
+
+        $this->liveScore->upsertScore($id_match, ['score_dom' => 5, 'score_ext' => 3], $version);
+
+        // Conflict: stale version, should return server state
+        $result = $this->liveScore->upsertScore($id_match, ['score_dom' => 99, 'score_ext' => 99], $version);
+        $this->assertFalse($result['success']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertEquals(5, $result['data']['score_dom']);
+        $this->assertEquals(3, $result['data']['score_ext']);
+
+        // Cleanup
+        $this->liveScore->deleteLiveScore($id_match);
+    }
+
+    public function test_start_live_score_initializes_version_to_1()
+    {
+        $matches = $this->sql->execute("SELECT id_match FROM matches LIMIT 1");
+        if (empty($matches)) {
+            $this->markTestSkipped('No matches in database');
+        }
+        $id_match = $matches[0]['id_match'];
+
+        $this->liveScore->startLiveScore($id_match);
+        $liveScore = $this->liveScore->getLiveScore($id_match);
+        $this->assertEquals(1, (int)$liveScore['version']);
+
+        // Cleanup
+        $this->liveScore->deleteLiveScore($id_match);
+    }
 }
