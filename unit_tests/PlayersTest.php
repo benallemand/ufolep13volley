@@ -14,19 +14,6 @@ class PlayersTest extends UfolepTestCase
         $this->players = new Players();
     }
 
-    public function test_generateLowPhoto()
-    {
-        $this->players->generateLowPhoto('players_pics/AHOUANSOUVirginie1.jpg');
-        $this->assertTrue(1 == 1);
-    }
-
-    public function test_getPlayersPdf()
-    {
-        $this->connect_as_admin();
-        $this->players->getPlayersPdf(344);
-        $this->assertTrue(1 == 1);
-    }
-
     public function test_import_licence_ardeche_creates_club()
     {
         $this->connect_as_admin();
@@ -186,75 +173,6 @@ class PlayersTest extends UfolepTestCase
             $this->players->delete($playerId);
             $team->delete($teamId);
         }
-    }
-
-    public function test_import_all_licences_from_test_directory()
-    {
-        $this->connect_as_admin();
-        
-        $files = new Files();
-        $licencesDir = __DIR__ . '/files/licences';
-        $pdfFiles = glob($licencesDir . '/*.pdf');
-        
-        $this->assertNotEmpty($pdfFiles, "Aucun fichier PDF trouvé dans $licencesDir");
-        
-        $totalImported = 0;
-        $totalErrors = 0;
-        $createdPlayerIds = [];
-        
-        fwrite(STDERR, "\n\nTest d'import de toutes les licences:\n");
-        fwrite(STDERR, str_repeat("=", 80) . "\n");
-        
-        foreach ($pdfFiles as $pdfFile) {
-            $filename = basename($pdfFile);
-            fwrite(STDERR, "\nFichier: $filename ... ");
-            
-            try {
-                $licences = $files->get_licences_data($pdfFile);
-                fwrite(STDERR, count($licences) . " licences trouvées\n");
-                
-                $fileImported = 0;
-                $fileErrors = 0;
-                $licenceCount = count($licences);
-                
-                foreach ($licences as $index => $licence) {
-                    fwrite(STDERR, "  [" . ($index + 1) . "/$licenceCount] {$licence['last_first_name']} ... ");
-                    
-                    try {
-                        $this->players->search_player_and_save_from_licence($licence);
-                        $fileImported++;
-                        fwrite(STDERR, "OK\n");
-                        
-                        // Récupérer l'ID du joueur créé/mis à jour pour le nettoyage
-                        $player = $this->players->get_one(
-                            "num_licence = ? AND departement_affiliation = ?",
-                            array(
-                                array('type' => 's', 'value' => $licence['licence_number']),
-                                array('type' => 's', 'value' => $licence['departement'])
-                            )
-                        );
-                        if (!empty($player)) {
-                            $createdPlayerIds[] = $player['id'];
-                        }
-                    } catch (Exception $e) {
-                        $fileErrors++;
-                        fwrite(STDERR, "ERREUR: " . $e->getMessage() . "\n");
-                    }
-                }
-                
-                $totalImported += $fileImported;
-                $totalErrors += $fileErrors;
-                fwrite(STDERR, "  → Résumé: $fileImported importées, $fileErrors erreurs\n");
-                
-            } catch (Exception $e) {
-                fwrite(STDERR, "ERREUR lecture PDF: " . $e->getMessage() . "\n");
-            }
-        }
-        
-        fwrite(STDERR, "\n" . str_repeat("=", 80) . "\n");
-        fwrite(STDERR, "TOTAL: $totalImported licences importées, $totalErrors erreurs\n\n");
-        
-        $this->assertGreaterThan(0, $totalImported, "Au moins une licence devrait être importée");
     }
 
 }

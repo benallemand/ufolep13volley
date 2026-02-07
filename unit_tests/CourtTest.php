@@ -9,11 +9,24 @@ require_once __DIR__ . "/../classes/Court.php";
 class CourtTest extends UfolepTestCase
 {
     private Court $court;
+    private array $created_gym_ids = [];
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->court = new Court();
         $this->connect_as_admin();
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->created_gym_ids as $gymId) {
+            $this->sql->execute("DELETE FROM gymnase WHERE id = ?", [
+                ['type' => 'i', 'value' => $gymId]
+            ]);
+        }
+        $this->created_gym_ids = [];
+        parent::tearDown();
     }
 
     public function test_getGymnasiums_returns_remarques_field()
@@ -53,12 +66,8 @@ class CourtTest extends UfolepTestCase
         foreach ($gymnasiums as $gym) {
             if ($gym['nom'] === $testName) {
                 $found = true;
+                $this->created_gym_ids[] = $gym['id'];
                 $this->assertEquals($testRemarques, $gym['remarques'], "Les remarques devraient être sauvegardées");
-                
-                // Cleanup - supprimer le gymnase de test
-                $this->sql->execute("DELETE FROM gymnase WHERE id = ?", [
-                    ['type' => 'i', 'value' => $gym['id']]
-                ]);
                 break;
             }
         }
@@ -96,6 +105,7 @@ class CourtTest extends UfolepTestCase
         }
         
         $this->assertNotNull($gymId, "Le gymnase devrait avoir été créé");
+        $this->created_gym_ids[] = $gymId;
         
         // Act - mettre à jour les remarques
         $this->court->saveGymnasium(
@@ -115,11 +125,6 @@ class CourtTest extends UfolepTestCase
         foreach ($gymnasiums as $gym) {
             if ($gym['id'] == $gymId) {
                 $this->assertEquals($updatedRemarques, $gym['remarques'], "Les remarques devraient être mises à jour");
-                
-                // Cleanup
-                $this->sql->execute("DELETE FROM gymnase WHERE id = ?", [
-                    ['type' => 'i', 'value' => $gymId]
-                ]);
                 break;
             }
         }
