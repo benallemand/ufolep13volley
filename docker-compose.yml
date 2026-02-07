@@ -23,6 +23,9 @@ services:
       - .env
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/var/www/html/
+      - /var/www/html/vendor
 
 volumes:
   caddy_data:
