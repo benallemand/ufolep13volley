@@ -213,6 +213,16 @@ git tag {yyyymmddhhii}
 git push origin {yyyymmddhhii}
 ```
 
+### 12. Suppression de la Branche
+
+```powershell
+# Supprimer la branche locale
+git branch -d {prefix}/issue-{numero}
+
+# Supprimer la branche distante
+git push origin --delete {prefix}/issue-{numero}
+```
+
 ## Scripts SQL de Migration
 
 Les scripts SQL sont stockés dans le projet **ufolep13volley_python**:
