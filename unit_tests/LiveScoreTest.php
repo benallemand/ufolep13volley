@@ -8,12 +8,22 @@ require_once __DIR__ . '/UfolepTestCase.php';
 class LiveScoreTest extends UfolepTestCase
 {
     private $liveScore;
+    private array $liveScoreMatchIds = [];
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->liveScore = new LiveScore();
         $this->connect_as_admin();
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->liveScoreMatchIds as $id_match) {
+            $this->liveScore->deleteLiveScore($id_match);
+        }
+        $this->liveScoreMatchIds = [];
+        parent::tearDown();
     }
 
     public function test_get_live_score_returns_null_when_no_live_score_exists()
@@ -31,6 +41,7 @@ class LiveScoreTest extends UfolepTestCase
         }
         $id_match = $matches[0]['id_match'];
 
+        $this->liveScoreMatchIds[] = $id_match;
         $result = $this->liveScore->startLiveScore($id_match);
         $this->assertNotEmpty($result);
 
@@ -41,9 +52,6 @@ class LiveScoreTest extends UfolepTestCase
         $this->assertEquals(1, $liveScore['set_en_cours']);
         $this->assertEquals(0, $liveScore['score_dom']);
         $this->assertEquals(0, $liveScore['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_increment_score_dom()
@@ -55,6 +63,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
 
         // Increment dom score
@@ -63,9 +72,6 @@ class LiveScoreTest extends UfolepTestCase
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(1, $liveScore['score_dom']);
         $this->assertEquals(0, $liveScore['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_increment_score_ext()
@@ -77,6 +83,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
 
         // Increment ext score
@@ -85,9 +92,6 @@ class LiveScoreTest extends UfolepTestCase
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(0, $liveScore['score_dom']);
         $this->assertEquals(1, $liveScore['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_next_set_increments_set_and_resets_scores()
@@ -99,6 +103,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score and add some points
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $this->liveScore->incrementScore($id_match, 'dom');
         $this->liveScore->incrementScore($id_match, 'dom');
@@ -111,9 +116,6 @@ class LiveScoreTest extends UfolepTestCase
         $this->assertEquals(2, $liveScore['set_en_cours']);
         $this->assertEquals(0, $liveScore['score_dom']);
         $this->assertEquals(0, $liveScore['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_decrement_score_dom()
@@ -125,6 +127,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score and add points
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $this->liveScore->incrementScore($id_match, 'dom');
         $this->liveScore->incrementScore($id_match, 'dom');
@@ -134,9 +137,6 @@ class LiveScoreTest extends UfolepTestCase
 
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(1, $liveScore['score_dom']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_decrement_score_cannot_go_below_zero()
@@ -148,6 +148,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
 
         // Try to decrement from 0
@@ -155,9 +156,6 @@ class LiveScoreTest extends UfolepTestCase
 
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(0, $liveScore['score_dom']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_get_active_live_scores()
@@ -168,15 +166,13 @@ class LiveScoreTest extends UfolepTestCase
         }
 
         // Start 2 live scores
+        $this->liveScoreMatchIds[] = $matches[0]['id_match'];
+        $this->liveScoreMatchIds[] = $matches[1]['id_match'];
         $this->liveScore->startLiveScore($matches[0]['id_match']);
         $this->liveScore->startLiveScore($matches[1]['id_match']);
 
         $activeLiveScores = $this->liveScore->getActiveLiveScores();
         $this->assertGreaterThanOrEqual(2, count($activeLiveScores));
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($matches[0]['id_match']);
-        $this->liveScore->deleteLiveScore($matches[1]['id_match']);
     }
 
     public function test_upsert_score_updates_full_state()
@@ -188,6 +184,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $version = (int)$liveScore['version'];
@@ -214,9 +211,6 @@ class LiveScoreTest extends UfolepTestCase
         $this->assertEquals(2, $updated['set_en_cours']);
         $this->assertEquals(25, $updated['set_1_dom']);
         $this->assertEquals(20, $updated['set_1_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_upsert_score_increments_version()
@@ -228,6 +222,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $initialVersion = (int)$liveScore['version'];
@@ -240,9 +235,6 @@ class LiveScoreTest extends UfolepTestCase
         $updated = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals($initialVersion + 1, (int)$updated['version']);
         $this->assertEquals($initialVersion + 1, $result['version']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_upsert_score_rejects_stale_version()
@@ -254,6 +246,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start a live score
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $version = (int)$liveScore['version'];
@@ -273,9 +266,6 @@ class LiveScoreTest extends UfolepTestCase
         $current = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(5, $current['score_dom']);
         $this->assertEquals(3, $current['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_upsert_score_returns_current_state_on_conflict()
@@ -287,6 +277,7 @@ class LiveScoreTest extends UfolepTestCase
         $id_match = $matches[0]['id_match'];
 
         // Start and upsert once
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $version = (int)$liveScore['version'];
@@ -299,9 +290,6 @@ class LiveScoreTest extends UfolepTestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertEquals(5, $result['data']['score_dom']);
         $this->assertEquals(3, $result['data']['score_ext']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 
     public function test_start_live_score_initializes_version_to_1()
@@ -312,11 +300,9 @@ class LiveScoreTest extends UfolepTestCase
         }
         $id_match = $matches[0]['id_match'];
 
+        $this->liveScoreMatchIds[] = $id_match;
         $this->liveScore->startLiveScore($id_match);
         $liveScore = $this->liveScore->getLiveScore($id_match);
         $this->assertEquals(1, (int)$liveScore['version']);
-
-        // Cleanup
-        $this->liveScore->deleteLiveScore($id_match);
     }
 }

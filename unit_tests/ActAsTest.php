@@ -11,14 +11,6 @@ class ActAsTest extends UfolepTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        @session_start();
-        $_SESSION = [];
-    }
-
-    protected function tearDown(): void
-    {
-        $_SESSION = [];
-        parent::tearDown();
     }
 
     private function getTargetUserId(): int

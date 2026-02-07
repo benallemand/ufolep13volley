@@ -30,4 +30,10 @@ class UfolepTestCase extends TestCase
         $_SESSION['id_user'] = 1;
         $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
     }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
+        parent::tearDown();
+    }
 }

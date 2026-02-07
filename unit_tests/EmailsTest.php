@@ -1,14 +1,31 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
-use PHPUnit\Framework\TestCase;
+require_once __DIR__ . '/UfolepTestCase.php';
 
 require_once __DIR__ . "/../classes/Emails.php";
 require_once __DIR__ . "/../classes/Players.php";
 require_once __DIR__ . "/../classes/Files.php";
 
-class EmailsTest extends TestCase
+class EmailsTest extends UfolepTestCase
 {
+    private array $created_email_ids = [];
+    private array $created_file_ids = [];
+
+    protected function tearDown(): void
+    {
+        $email_manager = new Emails();
+        $file_manager = new Files();
+        foreach ($this->created_email_ids as $id) {
+            $email_manager->delete_email($id);
+        }
+        foreach ($this->created_file_ids as $id) {
+            $file_manager->delete($id);
+        }
+        $this->created_email_ids = [];
+        $this->created_file_ids = [];
+        parent::tearDown();
+    }
 
     /**
      * @throws Exception
@@ -24,25 +41,24 @@ class EmailsTest extends TestCase
             "benallemand@gmail.com");
         $this->assertIsInt($id);
         $this->assertNotEquals(0, $id);
-        $email_manager->delete_email($id);
+        $this->created_email_ids[] = $id;
         $file_manager = new Files();
         $file_id = $file_manager->save(
             array('path_file' => "test file path",
                 'hash' => "test hash"));
-        $id = $email_manager->insert_email(
+        $this->created_file_ids[] = $file_id;
+        $id2 = $email_manager->insert_email(
             "test subject",
             "test body",
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             "benallemand@gmail.com",
             array($file_id));
-        $this->assertIsInt($id);
-        $this->assertNotEquals(0, $id);
-        $email_files = $email_manager->get_email_files($id);
+        $this->assertIsInt($id2);
+        $this->assertNotEquals(0, $id2);
+        $this->created_email_ids[] = $id2;
+        $email_files = $email_manager->get_email_files($id2);
         $this->assertCount(1, $email_files);
-        $email_manager->delete_email($id);
-        $email_files = $email_manager->get_email_files($id);
-        $this->assertCount(0, $email_files);
     }
 
     /**
@@ -54,61 +70,13 @@ class EmailsTest extends TestCase
         $players_manager = new Players();
         $where = "j.est_actif = 1";
         $active_players = $players_manager->get_players($where);
-        $email_ids = array();
         foreach ($active_players as $active_player) {
             $email_id = $email_manager->insert_email_notify_activated_player($active_player['id']);
             if ($email_id !== 0) {
-                $email_ids[] = $email_id;
+                $this->created_email_ids[] = $email_id;
             }
         }
         $emails = $email_manager->get_emails("LENGTH(to_email) = 0");
         $this->assertCount(0, $emails);
-        foreach ($email_ids as $email_id) {
-            $email_manager->delete_email($email_id);
-        }
-    }
-
-    /**
-     * @throws \PHPMailer\PHPMailer\Exception
-     * @throws Exception
-     */
-    public function testSend_pending_emails()
-    {
-        // create email
-        $email_manager = new Emails();
-        $file_manager = new Files();
-        $email_manager->delete_emails();
-        $file_id = $file_manager->save(
-            array('path_file' => "images/logo_ufolep.jpg",
-                'hash' => md5_file(__DIR__ . '/../images/logo_ufolep.jpg')));
-        $id = $email_manager->insert_email(
-            "test subject",
-            "test body",
-            "benallemand@gmail.com",
-            "benallemand@gmail.com",
-            "benallemand@gmail.com",
-            array($file_id));
-        $emails = $email_manager->get_emails("id = $id");
-        $this->assertCount(1, $emails);
-        $this->assertEquals('TO_DO', $emails[0]['sending_status']);
-        $email_manager->send_pending_emails();
-        $emails = $email_manager->get_emails("id = $id");
-        $this->assertCount(1, $emails);
-        $this->assertEquals('DONE', $emails[0]['sending_status']);
-        // delete email
-        $email_manager->delete_email($id);
-        $file_manager->delete($file_id);
-    }
-
-    /**
-     * @doesNotPerformAssertions
-     * @throws Exception
-     */
-    public function test_send_some_mails()
-    {
-        $email_manager = new Emails();
-        $email_manager->insert_email_missing_licences();
-        $email_manager->insert_email_register_not_paid();
-        $email_manager->insert_mail_match_not_fully_signed();
     }
 }

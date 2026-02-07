@@ -11,8 +11,6 @@ class NewsTest extends UfolepTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        @session_start();
-        $_SESSION = [];
     }
 
     protected function tearDown(): void
@@ -23,7 +21,6 @@ class NewsTest extends UfolepTestCase
             $this->sql->execute($sql, $bindings);
             $this->created_news_id = null;
         }
-        $_SESSION = [];
         parent::tearDown();
     }
 

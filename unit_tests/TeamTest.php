@@ -9,11 +9,30 @@ require_once __DIR__ . "/../classes/Team.php";
 class TeamTest extends UfolepTestCase
 {
     private Team $team;
+    private ?int $modifiedGymId = null;
+    private ?string $oldRemarques = null;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->team = new Team();
         $this->connect_as_admin();
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->modifiedGymId !== null) {
+            $this->sql->execute(
+                "UPDATE gymnase SET remarques = ? WHERE id = ?",
+                [
+                    ['type' => 's', 'value' => $this->oldRemarques],
+                    ['type' => 'i', 'value' => $this->modifiedGymId]
+                ]
+            );
+            $this->modifiedGymId = null;
+            $this->oldRemarques = null;
+        }
+        parent::tearDown();
     }
 
     /**
@@ -35,15 +54,15 @@ class TeamTest extends UfolepTestCase
             $this->markTestSkipped("Aucun gymnase avec créneau trouvé pour le test");
         }
         
-        $gymId = $results[0]['id'];
-        $oldRemarques = $results[0]['old_remarques'];
+        $this->modifiedGymId = $results[0]['id'];
+        $this->oldRemarques = $results[0]['old_remarques'];
         
         // Mettre à jour les remarques du gymnase
         $this->sql->execute(
             "UPDATE gymnase SET remarques = ? WHERE id = ?",
             [
                 ['type' => 's', 'value' => $remarquesTest],
-                ['type' => 'i', 'value' => $gymId]
+                ['type' => 'i', 'value' => $this->modifiedGymId]
             ]
         );
         
@@ -61,15 +80,6 @@ class TeamTest extends UfolepTestCase
                 break;
             }
         }
-        
-        // Cleanup - restaurer les anciennes remarques
-        $this->sql->execute(
-            "UPDATE gymnase SET remarques = ? WHERE id = ?",
-            [
-                ['type' => 's', 'value' => $oldRemarques],
-                ['type' => 'i', 'value' => $gymId]
-            ]
-        );
         
         $this->assertTrue($found, "Les remarques du gymnase devraient apparaître dans gymnasiums_list d'au moins une équipe");
     }
