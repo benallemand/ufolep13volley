@@ -163,6 +163,75 @@ if ($id_match) {
                     </div>
                 </div>
                 
+                <!-- Timeouts -->
+                <div class="divider">Temps morts</div>
+                <div class="grid grid-cols-2 gap-4 mb-2">
+                    <!-- Left team timeouts -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="text-xs font-semibold">{{ leftTeamName }}</span>
+                        <div class="flex gap-3">
+                            <div class="flex flex-col items-center">
+                                <label class="label cursor-pointer gap-1 p-0">
+                                    <input type="checkbox" class="checkbox checkbox-primary checkbox-sm"
+                                           :checked="leftTimeouts.tm1.used"
+                                           :disabled="leftTimeouts.tm1.used"
+                                           @change="startTimeout(leftTeamKey, 1)">
+                                    <span class="label-text text-xs">TM1</span>
+                                </label>
+                                <span v-if="leftTimeouts.tm1.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
+                                    {{ leftTimeouts.tm1.countdown }}s
+                                </span>
+                                <span v-else-if="leftTimeouts.tm1.used" class="text-xs text-gray-400">Terminé</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="label cursor-pointer gap-1 p-0">
+                                    <input type="checkbox" class="checkbox checkbox-primary checkbox-sm"
+                                           :checked="leftTimeouts.tm2.used"
+                                           :disabled="leftTimeouts.tm2.used"
+                                           @change="startTimeout(leftTeamKey, 2)">
+                                    <span class="label-text text-xs">TM2</span>
+                                </label>
+                                <span v-if="leftTimeouts.tm2.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
+                                    {{ leftTimeouts.tm2.countdown }}s
+                                </span>
+                                <span v-else-if="leftTimeouts.tm2.used" class="text-xs text-gray-400">Terminé</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right team timeouts -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="text-xs font-semibold">{{ rightTeamName }}</span>
+                        <div class="flex gap-3">
+                            <div class="flex flex-col items-center">
+                                <label class="label cursor-pointer gap-1 p-0">
+                                    <input type="checkbox" class="checkbox checkbox-secondary checkbox-sm"
+                                           :checked="rightTimeouts.tm1.used"
+                                           :disabled="rightTimeouts.tm1.used"
+                                           @change="startTimeout(rightTeamKey, 1)">
+                                    <span class="label-text text-xs">TM1</span>
+                                </label>
+                                <span v-if="rightTimeouts.tm1.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
+                                    {{ rightTimeouts.tm1.countdown }}s
+                                </span>
+                                <span v-else-if="rightTimeouts.tm1.used" class="text-xs text-gray-400">Terminé</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="label cursor-pointer gap-1 p-0">
+                                    <input type="checkbox" class="checkbox checkbox-secondary checkbox-sm"
+                                           :checked="rightTimeouts.tm2.used"
+                                           :disabled="rightTimeouts.tm2.used"
+                                           @change="startTimeout(rightTeamKey, 2)">
+                                    <span class="label-text text-xs">TM2</span>
+                                </label>
+                                <span v-if="rightTimeouts.tm2.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
+                                    {{ rightTimeouts.tm2.countdown }}s
+                                </span>
+                                <span v-else-if="rightTimeouts.tm2.used" class="text-xs text-gray-400">Terminé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Set Controls -->
                 <div class="divider">Gestion des Sets</div>
                 <div class="grid grid-cols-2 gap-2">
@@ -268,7 +337,17 @@ new Vue({
         },
         isLive: <?php echo json_encode($liveScoreData !== null); ?>,
         activeLiveScores: [],
-        refreshInterval: null
+        refreshInterval: null,
+        timeouts: {
+            dom: {
+                tm1: { used: false, countdown: 0, timer: null },
+                tm2: { used: false, countdown: 0, timer: null }
+            },
+            ext: {
+                tm1: { used: false, countdown: 0, timer: null },
+                tm2: { used: false, countdown: 0, timer: null }
+            }
+        }
     },
     computed: {
         leftTeamKey() {
@@ -300,6 +379,12 @@ new Vue({
         },
         rightSets() {
             return this.rightTeamKey === 'dom' ? this.score.sets_dom : this.score.sets_ext;
+        },
+        leftTimeouts() {
+            return this.timeouts[this.leftTeamKey];
+        },
+        rightTimeouts() {
+            return this.timeouts[this.rightTeamKey];
         }
     },
     mounted() {
@@ -319,6 +404,7 @@ new Vue({
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
         }
+        this.clearAllTimeoutTimers();
     },
     methods: {
         toggleSwapSides() {
@@ -437,6 +523,7 @@ new Vue({
                 });
                 if (response.data.success) {
                     this.score = response.data.data;
+                    this.resetTimeouts();
                     this.showToast('Set terminé !', 'success');
                 }
             } catch (error) {
@@ -472,6 +559,40 @@ new Vue({
             } catch (error) {
                 this.showToast('Erreur: ' + error.response?.data?.error, 'error');
             }
+        },
+        startTimeout(teamKey, num) {
+            const tm = this.timeouts[teamKey]['tm' + num];
+            if (tm.used) return;
+            tm.used = true;
+            tm.countdown = 30;
+            tm.timer = setInterval(() => {
+                tm.countdown--;
+                if (tm.countdown <= 0) {
+                    tm.countdown = 0;
+                    clearInterval(tm.timer);
+                    tm.timer = null;
+                }
+            }, 1000);
+        },
+        resetTimeouts() {
+            this.clearAllTimeoutTimers();
+            ['dom', 'ext'].forEach(team => {
+                ['tm1', 'tm2'].forEach(tm => {
+                    this.timeouts[team][tm].used = false;
+                    this.timeouts[team][tm].countdown = 0;
+                    this.timeouts[team][tm].timer = null;
+                });
+            });
+        },
+        clearAllTimeoutTimers() {
+            ['dom', 'ext'].forEach(team => {
+                ['tm1', 'tm2'].forEach(tm => {
+                    if (this.timeouts[team][tm].timer) {
+                        clearInterval(this.timeouts[team][tm].timer);
+                        this.timeouts[team][tm].timer = null;
+                    }
+                });
+            });
         },
         showToast(message, type = 'info') {
             const colors = {
