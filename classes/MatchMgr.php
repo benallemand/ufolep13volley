@@ -237,43 +237,39 @@ class MatchMgr extends Generic
     }
 
     /**
+     * @param array $match
+     * @return bool
+     * @throws Exception
+     */
+    private function isUserTeamInMatch(array $match): bool
+    {
+        $userDetails = $this->getCurrentUserDetails();
+        $id_user = $userDetails['id_user'] ?? null;
+        $id_team = $userDetails['id_equipe'];
+        if (!empty($id_user)) {
+            $userManager = new UserManager();
+            $teamIds = $userManager->getUserTeamIds((int)$id_user);
+            return in_array($match['id_equipe_dom'], $teamIds) || in_array($match['id_equipe_ext'], $teamIds);
+        }
+        return ($id_team == $match['id_equipe_dom']) || ($id_team == $match['id_equipe_ext']);
+    }
+
+    /**
      * @param $id_match
      * @return bool
      * @throws Exception
      */
     public function is_match_read_allowed($id_match): bool
     {
-        // if localhost, presume it is for test purpose
-        $serverName = $_SERVER['SERVER_NAME'] ?? filter_input(INPUT_SERVER, 'SERVER_NAME');
-        switch ($serverName) {
-            case 'localhost':
-            case null:
-                return true;
-            default:
-                break;
-        }
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
-        $id_team = $userDetails['id_equipe'];
-        $id_user = $userDetails['id_user'] ?? null;
-        $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
             case 'SUPPORT':
                 return true;
             case 'RESPONSABLE_EQUIPE':
-                if (!empty($id_user)) {
-                    $userManager = new UserManager();
-                    $teamIds = $userManager->getUserTeamIds((int)$id_user);
-                    if (in_array($match['id_equipe_dom'], $teamIds) || in_array($match['id_equipe_ext'], $teamIds)) {
-                        return true;
-                    }
-                    return false;
-                }
-                if (($id_team != $match['id_equipe_dom']) && ($id_team != $match['id_equipe_ext'])) {
-                    return false;
-                }
-                return true;
+                $match = $this->get_match($id_match);
+                return $this->isUserTeamInMatch($match);
             default:
                 return false;
         }
@@ -286,28 +282,15 @@ class MatchMgr extends Generic
      */
     public function is_match_update_allowed($id_match): bool
     {
-        // if localhost, presume it is for test purpose
-        switch (filter_input(INPUT_SERVER, 'SERVER_NAME')) {
-            case 'localhost':
-            case null:
-                return true;
-            default:
-                break;
-        }
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
-        $id_team = $userDetails['id_equipe'];
-        $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
             case 'SUPPORT':
                 return true;
             case 'RESPONSABLE_EQUIPE':
-                if (
-                    ($id_team != $match['id_equipe_dom'])
-                    &&
-                    ($id_team != $match['id_equipe_ext'])
-                ) {
+                $match = $this->get_match($id_match);
+                if (!$this->isUserTeamInMatch($match)) {
                     return false;
                 }
                 if ($match['certif'] == 1) {
