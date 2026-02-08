@@ -70,755 +70,94 @@ if ($id_match) {
 
     <!-- Match Info -->
     <div class="container mx-auto p-4 max-w-2xl">
-        <?php if ($error): ?>
-        <div class="alert alert-error mb-4">
+        <div class="alert alert-error mb-4" v-if="error">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>Erreur: <?php echo htmlspecialchars($error); ?></span>
-        </div>
-        <?php endif; ?>
-        
-        <?php if ($match): ?>
-        <!-- Competition Badge -->
-        <div class="text-center mb-4">
-            <span class="badge badge-info badge-lg"><?php echo htmlspecialchars($match['libelle_competition']); ?></span>
-            <span class="badge badge-outline ml-2">Division <?php echo htmlspecialchars($match['division']); ?></span>
-        </div>
-
-        <!-- Score Board -->
-        <div class="card bg-base-100 shadow-xl mb-4">
-            <div class="card-body p-4">
-                <!-- Teams and Score -->
-                <div class="grid grid-cols-3 gap-2 items-center text-center">
-                    <!-- Home Team -->
-                    <div>
-                        <p class="font-bold text-lg truncate">{{ leftTeamName }}</p>
-                        <p class="text-xs text-gray-500">{{ leftTeamLabel }}</p>
-                    </div>
-                    
-                    <!-- Score -->
-                    <div>
-                        <div class="text-5xl font-bold">
-                            <span class="text-primary">{{ leftScore }}</span>
-                            <span class="text-gray-400">-</span>
-                            <span class="text-secondary">{{ rightScore }}</span>
-                        </div>
-                        <p class="text-sm mt-1">Set {{ score.set_en_cours }}</p>
-                        <p class="text-lg font-bold">({{ leftSets }} - {{ rightSets }})</p>
-                        
-                        <!-- Set Details -->
-                        <div class="text-xs text-gray-500 mt-2 flex gap-2 justify-center flex-wrap">
-                            <span v-if="score.set_1_dom || score.set_1_ext" class="badge badge-ghost">S1: {{ leftSetScore(1) }}-{{ rightSetScore(1) }}</span>
-                            <span v-if="score.set_2_dom || score.set_2_ext" class="badge badge-ghost">S2: {{ leftSetScore(2) }}-{{ rightSetScore(2) }}</span>
-                            <span v-if="score.set_3_dom || score.set_3_ext" class="badge badge-ghost">S3: {{ leftSetScore(3) }}-{{ rightSetScore(3) }}</span>
-                            <span v-if="score.set_4_dom || score.set_4_ext" class="badge badge-ghost">S4: {{ leftSetScore(4) }}-{{ rightSetScore(4) }}</span>
-                            <span v-if="score.set_5_dom || score.set_5_ext" class="badge badge-ghost">S5: {{ leftSetScore(5) }}-{{ rightSetScore(5) }}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Away Team -->
-                    <div>
-                        <p class="font-bold text-lg truncate">{{ rightTeamName }}</p>
-                        <p class="text-xs text-gray-500">{{ rightTeamLabel }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scorer Controls (only for authorized users in scorer mode) -->
-        <?php if ($canScore && $isScorer): ?>
-        <div class="card bg-base-100 shadow-xl mb-4" v-if="isLive">
-            <div class="card-body p-4">
-                <h3 class="text-center font-bold mb-2">Contrôles Scoreur</h3>
-
-                <!-- Save Status Indicator -->
-                <div class="flex items-center justify-center gap-2 mb-4">
-                    <span v-if="saveStatus === 'saved'" class="badge badge-success gap-1">
-                        <i class="fas fa-check-circle"></i> Enregistré
-                    </span>
-                    <span v-else-if="saveStatus === 'saving'" class="badge badge-info gap-1">
-                        <i class="fas fa-sync-alt animate-spin"></i> Enregistrement...
-                    </span>
-                    <span v-else-if="saveStatus === 'unsaved'" class="badge badge-warning gap-1 animate-pulse">
-                        <i class="fas fa-exclamation-circle"></i> Non enregistré
-                    </span>
-                    <span v-else-if="saveStatus === 'error'" class="badge badge-error gap-1">
-                        <i class="fas fa-times-circle"></i> Échec
-                    </span>
-                    <button v-if="saveStatus === 'unsaved' || saveStatus === 'error'"
-                            @click="saveScore()"
-                            class="btn btn-outline btn-success btn-xs">
-                        <i class="fas fa-save mr-1"></i> Enregistrer
-                    </button>
-                    <button v-if="saveStatus === 'error'"
-                            @click="saveScore()"
-                            class="btn btn-outline btn-warning btn-xs">
-                        <i class="fas fa-redo mr-1"></i> Réessayer
-                    </button>
-                    <span v-if="!isOnline" class="badge badge-ghost gap-1">
-                        <i class="fas fa-wifi-slash"></i> Hors ligne
-                    </span>
-                </div>
-
-                <div class="text-center mb-4">
-                    <button @click="toggleSwapSides()" class="btn btn-outline btn-sm">
-                        <i class="fas fa-exchange-alt mr-1"></i> Inverser les équipes
-                    </button>
-                </div>
-                
-                <!-- Score Buttons -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <!-- Left buttons -->
-                    <div class="flex flex-col gap-2">
-                        <button @click="incrementLeft()" 
-                                class="btn btn-primary btn-lg h-24 text-3xl">
-                            +1
-                        </button>
-                        <button @click="decrementLeft()" 
-                                class="btn btn-outline btn-sm">
-                            -1
-                        </button>
-                    </div>
-                    
-                    <!-- Right buttons -->
-                    <div class="flex flex-col gap-2">
-                        <button @click="incrementRight()" 
-                                class="btn btn-secondary btn-lg h-24 text-3xl">
-                            +1
-                        </button>
-                        <button @click="decrementRight()" 
-                                class="btn btn-outline btn-sm">
-                            -1
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Timeouts -->
-                <div class="divider">Temps morts</div>
-                <div class="grid grid-cols-2 gap-4 mb-2">
-                    <!-- Left team timeouts -->
-                    <div class="flex flex-col items-center gap-2">
-                        <span class="text-xs font-semibold">{{ leftTeamName }}</span>
-                        <div class="flex gap-3">
-                            <div class="flex flex-col items-center">
-                                <label class="label cursor-pointer gap-1 p-0">
-                                    <input type="checkbox" class="checkbox checkbox-primary checkbox-sm"
-                                           :checked="leftTimeouts.tm1.used"
-                                           :disabled="leftTimeouts.tm1.used"
-                                           @change="startTimeout(leftTeamKey, 1)">
-                                    <span class="label-text text-xs">TM1</span>
-                                </label>
-                                <span v-if="leftTimeouts.tm1.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
-                                    {{ leftTimeouts.tm1.countdown }}s
-                                </span>
-                                <span v-else-if="leftTimeouts.tm1.used" class="text-xs text-gray-400">Terminé</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <label class="label cursor-pointer gap-1 p-0">
-                                    <input type="checkbox" class="checkbox checkbox-primary checkbox-sm"
-                                           :checked="leftTimeouts.tm2.used"
-                                           :disabled="leftTimeouts.tm2.used"
-                                           @change="startTimeout(leftTeamKey, 2)">
-                                    <span class="label-text text-xs">TM2</span>
-                                </label>
-                                <span v-if="leftTimeouts.tm2.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
-                                    {{ leftTimeouts.tm2.countdown }}s
-                                </span>
-                                <span v-else-if="leftTimeouts.tm2.used" class="text-xs text-gray-400">Terminé</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Right team timeouts -->
-                    <div class="flex flex-col items-center gap-2">
-                        <span class="text-xs font-semibold">{{ rightTeamName }}</span>
-                        <div class="flex gap-3">
-                            <div class="flex flex-col items-center">
-                                <label class="label cursor-pointer gap-1 p-0">
-                                    <input type="checkbox" class="checkbox checkbox-secondary checkbox-sm"
-                                           :checked="rightTimeouts.tm1.used"
-                                           :disabled="rightTimeouts.tm1.used"
-                                           @change="startTimeout(rightTeamKey, 1)">
-                                    <span class="label-text text-xs">TM1</span>
-                                </label>
-                                <span v-if="rightTimeouts.tm1.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
-                                    {{ rightTimeouts.tm1.countdown }}s
-                                </span>
-                                <span v-else-if="rightTimeouts.tm1.used" class="text-xs text-gray-400">Terminé</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <label class="label cursor-pointer gap-1 p-0">
-                                    <input type="checkbox" class="checkbox checkbox-secondary checkbox-sm"
-                                           :checked="rightTimeouts.tm2.used"
-                                           :disabled="rightTimeouts.tm2.used"
-                                           @change="startTimeout(rightTeamKey, 2)">
-                                    <span class="label-text text-xs">TM2</span>
-                                </label>
-                                <span v-if="rightTimeouts.tm2.countdown > 0" class="countdown text-lg font-bold text-warning animate-pulse">
-                                    {{ rightTimeouts.tm2.countdown }}s
-                                </span>
-                                <span v-else-if="rightTimeouts.tm2.used" class="text-xs text-gray-400">Terminé</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Set Controls -->
-                <div class="divider">Gestion des Sets</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button @click="nextSetLeft()" class="btn btn-outline btn-primary">
-                        <i class="fas fa-trophy mr-1"></i> Set gagné gauche
-                    </button>
-                    <button @click="nextSetRight()" class="btn btn-outline btn-secondary">
-                        <i class="fas fa-trophy mr-1"></i> Set gagné droite
-                    </button>
-                </div>
-                
-                <!-- End Match -->
-                <div class="mt-4 flex flex-col gap-2">
-                    <button @click="saveToMatch()" class="btn btn-success btn-block" v-if="score && (score.sets_dom >= 3 || score.sets_ext >= 3)">
-                        <i class="fas fa-save mr-1"></i> Renseigner les scores du match
-                    </button>
-                    <button @click="endLiveScore()" class="btn btn-error btn-block">
-                        <i class="fas fa-stop mr-1"></i> Terminer le Live
-                    </button>
-                </div>
-            </div>
+            <span>Erreur: {{ error }}</span>
         </div>
         
-        <!-- Start Live Button -->
-        <div class="text-center mb-4" v-if="!isLive">
-            <button @click="startLiveScore()" class="btn btn-success btn-lg">
-                <i class="fas fa-play mr-2"></i> Démarrer le Live Score
-            </button>
-        </div>
-        <?php endif; ?>
-
-        <!-- Status Messages -->
-        <div class="alert alert-info mb-4" v-if="!isLive && !isScorer">
-            <i class="fas fa-info-circle"></i>
-            <span>Le live score n'est pas encore démarré pour ce match.</span>
-        </div>
-
-        <!-- Auto-refresh indicator -->
-        <div class="text-center text-sm text-gray-500" v-if="isLive && !isScorer">
-            <i class="fas fa-sync-alt animate-spin mr-1"></i>
-            Mise à jour automatique toutes les 5 secondes
-        </div>
-
-        <!-- Match Details -->
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body p-4">
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><i class="fas fa-calendar mr-1"></i> <?php echo htmlspecialchars($match['date_reception'] ?? 'Non définie'); ?></div>
-                    <div><i class="fas fa-clock mr-1"></i> <?php echo htmlspecialchars($match['heure_reception'] ?? ''); ?></div>
-                    <div class="col-span-2"><i class="fas fa-map-marker-alt mr-1"></i> <?php echo htmlspecialchars($match['gymnasium'] ?? 'Non défini'); ?></div>
-                </div>
+        <template v-if="match">
+            <!-- Competition Badge -->
+            <div class="text-center mb-4">
+                <span class="badge badge-info badge-lg">{{ match.libelle_competition }}</span>
+                <span class="badge badge-outline ml-2">Division {{ match.division }}</span>
             </div>
-        </div>
 
-        <?php else: ?>
+            <!-- Score Board -->
+            <score-board
+                :score="score"
+                :left-team-name="leftTeamName"
+                :right-team-name="rightTeamName"
+                :left-team-label="leftTeamLabel"
+                :right-team-label="rightTeamLabel"
+                :left-team-key="leftTeamKey"
+                :right-team-key="rightTeamKey">
+            </score-board>
+
+            <!-- Scorer Controls (only for authorized users in scorer mode) -->
+            <template v-if="canScore && isScorer">
+                <scorer-controls
+                    :score="score"
+                    :is-live="isLive"
+                    :save-status="saveStatus"
+                    :is-online="isOnline"
+                    :left-team-name="leftTeamName"
+                    :right-team-name="rightTeamName"
+                    :left-team-key="leftTeamKey"
+                    :right-team-key="rightTeamKey"
+                    :left-timeouts="leftTimeouts"
+                    :right-timeouts="rightTimeouts"
+                    @increment-left="incrementLeft"
+                    @increment-right="incrementRight"
+                    @decrement-left="decrementLeft"
+                    @decrement-right="decrementRight"
+                    @next-set-left="nextSetLeft"
+                    @next-set-right="nextSetRight"
+                    @save-score="saveScore"
+                    @save-to-match="saveToMatch"
+                    @end-live="endLiveScore"
+                    @start-timeout="startTimeout"
+                    @swap-sides="toggleSwapSides">
+                </scorer-controls>
+                
+                <!-- Start Live Button -->
+                <div class="text-center mb-4" v-if="!isLive">
+                    <button @click="startLiveScore()" class="btn btn-success btn-lg">
+                        <i class="fas fa-play mr-2"></i> Démarrer le Live Score
+                    </button>
+                </div>
+            </template>
+
+            <!-- Status Messages -->
+            <div class="alert alert-info mb-4" v-if="!isLive && !isScorer">
+                <i class="fas fa-info-circle"></i>
+                <span>Le live score n'est pas encore démarré pour ce match.</span>
+            </div>
+
+            <!-- Auto-refresh indicator -->
+            <div class="text-center text-sm text-gray-500" v-if="isLive && !isScorer">
+                <i class="fas fa-sync-alt animate-spin mr-1"></i>
+                Mise à jour automatique toutes les 5 secondes
+            </div>
+
+            <!-- Match Details -->
+            <match-details :match="match"></match-details>
+        </template>
+
         <!-- No match selected - show active live scores -->
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold mb-2">Matchs en direct</h2>
-            <p class="text-gray-500">Sélectionnez un match pour suivre le score</p>
-        </div>
-        
-        <div v-if="activeLiveScores.length === 0" class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            <span>Aucun match en direct actuellement.</span>
-        </div>
-        
-        <div v-for="live in activeLiveScores" :key="live.id_match" class="card bg-base-100 shadow-xl mb-4">
-            <div class="card-body p-4">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">{{ live.equipe_dom }} vs {{ live.equipe_ext }}</p>
-                        <p class="text-sm text-gray-500">{{ live.code_competition }} - Div {{ live.division }}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-2xl font-bold">{{ live.score_dom }} - {{ live.score_ext }}</p>
-                        <p class="text-xs">Set {{ live.set_en_cours }}</p>
-                    </div>
-                    <a :href="'/live.php?id_match=' + live.id_match" class="btn btn-primary btn-sm">
-                        <i class="fas fa-eye"></i> Voir
-                    </a>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
+        <active-match-list v-else :active-live-scores="activeLiveScores"></active-match-list>
     </div>
 </div>
 
 <script>
-new Vue({
-    el: '#app',
-    data: {
+    window.__LIVE_DATA__ = {
         idMatch: <?php echo json_encode($id_match); ?>,
         isScorer: <?php echo json_encode($isScorer); ?>,
-        teamDomName: <?php echo json_encode($match['equipe_dom'] ?? null); ?>,
-        teamExtName: <?php echo json_encode($match['equipe_ext'] ?? null); ?>,
-        swapSides: false,
-        score: {
-            set_en_cours: <?php echo $liveScoreData['set_en_cours'] ?? 1; ?>,
-            score_dom: <?php echo $liveScoreData['score_dom'] ?? 0; ?>,
-            score_ext: <?php echo $liveScoreData['score_ext'] ?? 0; ?>,
-            sets_dom: <?php echo $liveScoreData['sets_dom'] ?? 0; ?>,
-            sets_ext: <?php echo $liveScoreData['sets_ext'] ?? 0; ?>
-        },
-        isLive: <?php echo json_encode($liveScoreData !== null); ?>,
-        activeLiveScores: [],
-        refreshInterval: null,
-        timeouts: {
-            dom: {
-                tm1: { used: false, countdown: 0, timer: null },
-                tm2: { used: false, countdown: 0, timer: null }
-            },
-            ext: {
-                tm1: { used: false, countdown: 0, timer: null },
-                tm2: { used: false, countdown: 0, timer: null }
-            }
-        },
-        // Autosave state (issue #196)
-        saveStatus: 'saved',
-        version: <?php echo (int)($liveScoreData['version'] ?? 1); ?>,
-        autosaveInterval: null,
-        retryCount: 0,
-        maxRetries: 5,
-        baseRetryDelay: 2000,
-        retryTimer: null,
-        isOnline: true,
-        isSaving: false
-    },
-    computed: {
-        leftTeamKey() {
-            return this.swapSides ? 'ext' : 'dom';
-        },
-        rightTeamKey() {
-            return this.swapSides ? 'dom' : 'ext';
-        },
-        leftTeamName() {
-            return this.leftTeamKey === 'dom' ? this.teamDomName : this.teamExtName;
-        },
-        rightTeamName() {
-            return this.rightTeamKey === 'dom' ? this.teamDomName : this.teamExtName;
-        },
-        leftTeamLabel() {
-            return this.leftTeamKey === 'dom' ? 'Domicile' : 'Extérieur';
-        },
-        rightTeamLabel() {
-            return this.rightTeamKey === 'dom' ? 'Domicile' : 'Extérieur';
-        },
-        leftScore() {
-            return this.leftTeamKey === 'dom' ? this.score.score_dom : this.score.score_ext;
-        },
-        rightScore() {
-            return this.rightTeamKey === 'dom' ? this.score.score_dom : this.score.score_ext;
-        },
-        leftSets() {
-            return this.leftTeamKey === 'dom' ? this.score.sets_dom : this.score.sets_ext;
-        },
-        rightSets() {
-            return this.rightTeamKey === 'dom' ? this.score.sets_dom : this.score.sets_ext;
-        },
-        leftTimeouts() {
-            return this.timeouts[this.leftTeamKey];
-        },
-        rightTimeouts() {
-            return this.timeouts[this.rightTeamKey];
-        },
-        localStorageKey() {
-            return 'live_score_draft_' + this.idMatch;
-        }
-    },
-    mounted() {
-        if (this.idMatch && this.isScorer) {
-            const swapKey = 'live_score_swap_' + this.idMatch;
-            this.swapSides = localStorage.getItem(swapKey) === '1';
-            this.restoreFromLocalStorage();
-            this.startAutosave();
-            window.addEventListener('online', this.handleOnline);
-            window.addEventListener('offline', this.handleOffline);
-            this.isOnline = navigator.onLine;
-        }
-        if (this.idMatch) {
-            this.refreshScore();
-            this.startAutoRefresh();
-        } else {
-            this.loadActiveLiveScores();
-            this.refreshInterval = setInterval(() => this.loadActiveLiveScores(), 10000);
-        }
-    },
-    beforeDestroy() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        if (this.autosaveInterval) {
-            clearInterval(this.autosaveInterval);
-        }
-        if (this.retryTimer) {
-            clearTimeout(this.retryTimer);
-        }
-        this.clearAllTimeoutTimers();
-        if (this.isScorer) {
-            window.removeEventListener('online', this.handleOnline);
-            window.removeEventListener('offline', this.handleOffline);
-        }
-    },
-    methods: {
-        toggleSwapSides() {
-            if (!this.idMatch) {
-                return;
-            }
-            const swapKey = 'live_score_swap_' + this.idMatch;
-            this.swapSides = !this.swapSides;
-            localStorage.setItem(swapKey, this.swapSides ? '1' : '0');
-        },
-        leftSetScore(setNum) {
-            const key = this.leftTeamKey;
-            const prop = 'set_' + setNum + '_' + key;
-            return this.score[prop] ?? 0;
-        },
-        rightSetScore(setNum) {
-            const key = this.rightTeamKey;
-            const prop = 'set_' + setNum + '_' + key;
-            return this.score[prop] ?? 0;
-        },
-        incrementLeft() {
-            this.incrementScore(this.leftTeamKey);
-        },
-        incrementRight() {
-            this.incrementScore(this.rightTeamKey);
-        },
-        decrementLeft() {
-            this.decrementScore(this.leftTeamKey);
-        },
-        decrementRight() {
-            this.decrementScore(this.rightTeamKey);
-        },
-        nextSetLeft() {
-            this.nextSet(this.leftTeamKey);
-        },
-        nextSetRight() {
-            this.nextSet(this.rightTeamKey);
-        },
-
-        // --- Local state modification (no AJAX) ---
-        incrementScore(team) {
-            const key = 'score_' + team;
-            this.$set(this.score, key, (parseInt(this.score[key]) || 0) + 1);
-            this.markAsUnsaved();
-        },
-        decrementScore(team) {
-            const key = 'score_' + team;
-            const current = parseInt(this.score[key]) || 0;
-            this.$set(this.score, key, Math.max(0, current - 1));
-            this.markAsUnsaved();
-        },
-        nextSet(winner) {
-            const setNum = parseInt(this.score.set_en_cours) || 1;
-            if (setNum > 5) {
-                this.showToast('Impossible de dépasser 5 sets', 'error');
-                return;
-            }
-            // Save current set scores
-            this.$set(this.score, 'set_' + setNum + '_dom', this.score.score_dom);
-            this.$set(this.score, 'set_' + setNum + '_ext', this.score.score_ext);
-            // Increment sets won
-            if (winner === 'dom') {
-                this.$set(this.score, 'sets_dom', (parseInt(this.score.sets_dom) || 0) + 1);
-            } else if (winner === 'ext') {
-                this.$set(this.score, 'sets_ext', (parseInt(this.score.sets_ext) || 0) + 1);
-            }
-            // Reset point scores and advance set
-            this.$set(this.score, 'score_dom', 0);
-            this.$set(this.score, 'score_ext', 0);
-            this.$set(this.score, 'set_en_cours', setNum + 1);
-            this.resetTimeouts();
-            this.markAsUnsaved();
-            this.showToast('Set terminé !', 'success');
-        },
-
-        // --- Save status management ---
-        markAsUnsaved() {
-            this.saveStatus = 'unsaved';
-            this.persistToLocalStorage();
-        },
-
-        // --- Autosave ---
-        startAutosave() {
-            this.autosaveInterval = setInterval(() => {
-                if (this.saveStatus === 'unsaved' && !this.isSaving && this.isOnline) {
-                    this.saveScore();
-                }
-            }, 5000);
-        },
-        async saveScore() {
-            if (this.isSaving) return;
-            this.isSaving = true;
-            this.saveStatus = 'saving';
-            try {
-                const scoreData = {
-                    score_dom: parseInt(this.score.score_dom) || 0,
-                    score_ext: parseInt(this.score.score_ext) || 0,
-                    sets_dom: parseInt(this.score.sets_dom) || 0,
-                    sets_ext: parseInt(this.score.sets_ext) || 0,
-                    set_en_cours: parseInt(this.score.set_en_cours) || 1,
-                    set_1_dom: parseInt(this.score.set_1_dom) || 0,
-                    set_1_ext: parseInt(this.score.set_1_ext) || 0,
-                    set_2_dom: parseInt(this.score.set_2_dom) || 0,
-                    set_2_ext: parseInt(this.score.set_2_ext) || 0,
-                    set_3_dom: parseInt(this.score.set_3_dom) || 0,
-                    set_3_ext: parseInt(this.score.set_3_ext) || 0,
-                    set_4_dom: parseInt(this.score.set_4_dom) || 0,
-                    set_4_ext: parseInt(this.score.set_4_ext) || 0,
-                    set_5_dom: parseInt(this.score.set_5_dom) || 0,
-                    set_5_ext: parseInt(this.score.set_5_ext) || 0
-                };
-                const response = await axios.post('/ajax/live_score.php', {
-                    action: 'upsert',
-                    id_match: this.idMatch,
-                    score_data: scoreData,
-                    version: this.version
-                });
-                if (response.data.success) {
-                    this.version = response.data.version;
-                    this.saveStatus = 'saved';
-                    this.retryCount = 0;
-                    this.clearLocalStorage();
-                } else if (response.data.error === 'version_conflict') {
-                    // Server has a newer version — adopt server state
-                    this.score = response.data.data;
-                    this.version = response.data.version;
-                    this.saveStatus = 'saved';
-                    this.retryCount = 0;
-                    this.clearLocalStorage();
-                    this.showToast('Conflit de version résolu (état serveur adopté)', 'info');
-                }
-            } catch (error) {
-                console.error('Save error:', error);
-                this.saveStatus = 'error';
-                this.retryCount++;
-                if (this.retryCount <= this.maxRetries) {
-                    this.scheduleRetry();
-                } else {
-                    this.showToast('Échec d\'enregistrement après ' + this.maxRetries + ' tentatives', 'error');
-                }
-            } finally {
-                this.isSaving = false;
-            }
-        },
-        scheduleRetry() {
-            const delay = this.baseRetryDelay * Math.pow(2, this.retryCount - 1);
-            console.log('Retry scheduled in ' + delay + 'ms (attempt ' + this.retryCount + ')');
-            if (this.retryTimer) clearTimeout(this.retryTimer);
-            this.retryTimer = setTimeout(() => {
-                if (this.saveStatus === 'error' && this.isOnline) {
-                    this.saveScore();
-                }
-            }, delay);
-        },
-
-        // --- localStorage persistence ---
-        persistToLocalStorage() {
-            try {
-                const draft = {
-                    score: this.score,
-                    version: this.version,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem(this.localStorageKey, JSON.stringify(draft));
-            } catch (e) {
-                console.warn('Failed to persist to localStorage:', e);
-            }
-        },
-        restoreFromLocalStorage() {
-            try {
-                const raw = localStorage.getItem(this.localStorageKey);
-                if (!raw) return;
-                const draft = JSON.parse(raw);
-                // Only restore if less than 24h old
-                if (draft.timestamp && (Date.now() - draft.timestamp) < 86400000) {
-                    this.score = draft.score;
-                    this.version = draft.version;
-                    this.saveStatus = 'unsaved';
-                    this.showToast('Brouillon restauré depuis le stockage local', 'info');
-                } else {
-                    this.clearLocalStorage();
-                }
-            } catch (e) {
-                console.warn('Failed to restore from localStorage:', e);
-                this.clearLocalStorage();
-            }
-        },
-        clearLocalStorage() {
-            try {
-                localStorage.removeItem(this.localStorageKey);
-            } catch (e) {
-                console.warn('Failed to clear localStorage:', e);
-            }
-        },
-
-        // --- Online/Offline handling ---
-        handleOnline() {
-            this.isOnline = true;
-            this.showToast('Connexion rétablie', 'success');
-            if (this.saveStatus === 'unsaved' || this.saveStatus === 'error') {
-                this.retryCount = 0;
-                this.saveScore();
-            }
-        },
-        handleOffline() {
-            this.isOnline = false;
-            this.showToast('Connexion perdue — les modifications sont sauvegardées localement', 'info');
-        },
-
-        // --- Auto-refresh (viewers only) ---
-        startAutoRefresh() {
-            if (!this.isScorer) {
-                this.refreshInterval = setInterval(() => this.refreshScore(), 5000);
-            }
-        },
-        async refreshScore() {
-            try {
-                const response = await axios.get('/ajax/live_score.php?id_match=' + this.idMatch);
-                if (response.data.success && response.data.data) {
-                    if (!this.isScorer) {
-                        this.score = response.data.data;
-                    }
-                    if (response.data.data.version) {
-                        // For scorer: update version on initial load only if no pending changes
-                        if (this.isScorer && this.saveStatus === 'saved') {
-                            this.score = response.data.data;
-                            this.version = parseInt(response.data.data.version) || this.version;
-                        }
-                    }
-                    this.isLive = true;
-                } else {
-                    this.isLive = false;
-                }
-            } catch (error) {
-                console.error('Error refreshing score:', error);
-            }
-        },
-        async loadActiveLiveScores() {
-            try {
-                const response = await axios.get('/ajax/live_score.php');
-                if (response.data.success) {
-                    this.activeLiveScores = response.data.data;
-                }
-            } catch (error) {
-                console.error('Error loading active live scores:', error);
-            }
-        },
-        async startLiveScore() {
-            console.log('Starting live score with idMatch:', this.idMatch);
-            try {
-                const response = await axios.post('/ajax/live_score.php', {
-                    action: 'start',
-                    id_match: this.idMatch
-                });
-                if (response.data.success) {
-                    this.isLive = true;
-                    this.version = 1;
-                    this.saveStatus = 'saved';
-                    this.showToast('Live score démarré !', 'success');
-                    if (!this.autosaveInterval) {
-                        this.startAutosave();
-                    }
-                }
-            } catch (error) {
-                this.showToast('Erreur: ' + error.response?.data?.error, 'error');
-            }
-        },
-        async endLiveScore() {
-            if (!confirm('Êtes-vous sûr de vouloir terminer le live score ?')) return;
-            // Flush pending changes before ending
-            if (this.saveStatus === 'unsaved') {
-                await this.saveScore();
-            }
-            try {
-                const response = await axios.post('/ajax/live_score.php', {
-                    action: 'end',
-                    id_match: this.idMatch
-                });
-                if (response.data.success) {
-                    this.isLive = false;
-                    this.clearLocalStorage();
-                    this.showToast('Live score terminé', 'info');
-                }
-            } catch (error) {
-                this.showToast('Erreur: ' + error.response?.data?.error, 'error');
-            }
-        },
-        async saveToMatch() {
-            if (!confirm('Enregistrer les scores dans le match ? Cette action terminera le live score.')) return;
-            // Flush pending changes before saving to match
-            if (this.saveStatus === 'unsaved') {
-                await this.saveScore();
-            }
-            try {
-                const response = await axios.post('/ajax/live_score.php', {
-                    action: 'save_to_match',
-                    id_match: this.idMatch
-                });
-                if (response.data.success) {
-                    this.isLive = false;
-                    this.clearLocalStorage();
-                    this.showToast('Scores enregistrés dans le match !', 'success');
-                }
-            } catch (error) {
-                this.showToast('Erreur: ' + error.response?.data?.error, 'error');
-            }
-        },
-        startTimeout(teamKey, num) {
-            const tm = this.timeouts[teamKey]['tm' + num];
-            if (tm.used) return;
-            tm.used = true;
-            tm.countdown = 30;
-            tm.timer = setInterval(() => {
-                tm.countdown--;
-                if (tm.countdown <= 0) {
-                    tm.countdown = 0;
-                    clearInterval(tm.timer);
-                    tm.timer = null;
-                }
-            }, 1000);
-        },
-        resetTimeouts() {
-            this.clearAllTimeoutTimers();
-            ['dom', 'ext'].forEach(team => {
-                ['tm1', 'tm2'].forEach(tm => {
-                    this.timeouts[team][tm].used = false;
-                    this.timeouts[team][tm].countdown = 0;
-                    this.timeouts[team][tm].timer = null;
-                });
-            });
-        },
-        clearAllTimeoutTimers() {
-            ['dom', 'ext'].forEach(team => {
-                ['tm1', 'tm2'].forEach(tm => {
-                    if (this.timeouts[team][tm].timer) {
-                        clearInterval(this.timeouts[team][tm].timer);
-                        this.timeouts[team][tm].timer = null;
-                    }
-                });
-            });
-        },
-        showToast(message, type = 'info') {
-            const colors = {
-                success: '#10b981',
-                error: '#ef4444',
-                info: '#3b82f6'
-            };
-            Toastify({
-                text: message,
-                duration: 3000,
-                gravity: "top",
-                position: "center",
-                backgroundColor: colors[type] || colors.info
-            }).showToast();
-        }
-    }
-});
+        canScore: <?php echo json_encode($canScore); ?>,
+        match: <?php echo json_encode($match); ?>,
+        liveScoreData: <?php echo json_encode($liveScoreData); ?>,
+        error: <?php echo json_encode($error); ?>
+    };
 </script>
+<script src="/live.js" type="module"></script>
 </BODY>
 </HTML>
