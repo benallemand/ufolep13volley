@@ -24,7 +24,6 @@ SELECT m.code_match,
 from matchs_view m
 WHERE m.match_status = 'CONFIRMED'
   AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') < CURRENT_DATE
-  AND m.id_match NOT IN (SELECT id_match FROM matches_files)
   AND (
     (m.is_forfait = 0 AND
      (m.is_sign_team_dom +

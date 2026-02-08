@@ -4,7 +4,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 
 require_once __DIR__ . '/../classes/Configuration.php';
-require_once __DIR__ . '/../classes/Files.php';
 require_once __DIR__ . '/../classes/MatchMgr.php';
 require_once __DIR__ . '/../classes/Generic.php';
 
@@ -14,7 +13,6 @@ require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
 
 class Emails extends Generic
 {
-    private Files $file_manager;
     private MatchMgr $match;
     private Team $team;
 
@@ -27,7 +25,6 @@ class Emails extends Generic
     {
         parent::__construct();
         $this->table_name = 'emails';
-        $this->file_manager = new Files();
         $this->match = new MatchMgr();
         $this->team = new Team();
         $this->configuration = new Configuration();
@@ -39,7 +36,6 @@ class Emails extends Generic
      * @param string $to
      * @param string $cc
      * @param string $bcc
-     * @param array $file_ids
      * @return int|string
      * @throws Exception
      */
@@ -47,8 +43,7 @@ class Emails extends Generic
                                  string $body,
                                  string $to,
                                  string $cc = "",
-                                 string $bcc = "",
-                                 array $file_ids = array()): int|string
+                                 string $bcc = ""): int|string
     {
         $sql = "INSERT INTO emails (
                     from_email, 
@@ -87,21 +82,7 @@ class Emails extends Generic
             'type' => 's',
             'value' => $body
         );
-        $email_id = $this->sql_manager->execute($sql, $bindings);
-        foreach ($file_ids as $file_id) {
-            $bindings = array();
-            $bindings[] = array(
-                'type' => 'i',
-                'value' => $email_id
-            );
-            $bindings[] = array(
-                'type' => 'i',
-                'value' => $file_id
-            );
-            $sql = "INSERT INTO emails_files (id_email, id_file) VALUES (?, ?)";
-            $this->sql_manager->execute($sql, $bindings);
-        }
-        return $email_id;
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -110,10 +91,9 @@ class Emails extends Generic
      * @param $to
      * @param null $cc
      * @param null $bcc
-     * @param null $attachments
      * @throws Exception
      */
-    public function sendEmail($subject, $body, $to, $cc = null, $bcc = null, $attachments = null): void
+    public function sendEmail($subject, $body, $to, $cc = null, $bcc = null): void
     {
         if (empty($to)) {
             error_log("Email does not have any TO, subject: $subject, body: $body");
@@ -146,11 +126,6 @@ class Emails extends Generic
         if (!empty($bcc)) {
             foreach (explode(';', $bcc) as $bccAddress) {
                 $mail->addBCC($bccAddress);
-            }
-        }
-        if (is_array($attachments)) {
-            foreach ($attachments as $fileName) {
-                $mail->addAttachment($fileName, basename($fileName));
             }
         }
         $mail->addReplyTo('contact@ufolep13volley.org', 'UFOLEP 13 Volleyball');
@@ -463,17 +438,6 @@ class Emails extends Generic
     }
 
     /**
-     * @param int $email_id
-     * @return array
-     * @throws Exception
-     */
-    public function get_email_files(int $email_id): array
-    {
-        $sql = "SELECT * FROM emails_files WHERE id_email = $email_id";
-        return $this->sql_manager->execute($sql);
-    }
-
-    /**
      * @param int $player_id
      * @return int|string
      * @throws Exception
@@ -592,20 +556,13 @@ class Emails extends Generic
     {
         $pending_emails = $this->get_emails("sending_status = 'TO_DO' AND creation_date > CURDATE() - INTERVAL 10 DAY LIMIT 50");
         foreach ($pending_emails as $pending_email) {
-            $email_files = $this->get_email_files($pending_email['id']);
-            $attachments = array();
-            foreach ($email_files as $email_file) {
-                $file = $this->file_manager->get_by_id($email_file['id_file']);
-                $attachments[] = __DIR__ . "/../" . $file['path_file'];
-            }
             try {
                 $this->sendEmail(
                     $pending_email['subject'],
                     $pending_email['body'],
                     $pending_email['to_email'],
                     $pending_email['cc'],
-                    $pending_email['bcc'],
-                    $attachments
+                    $pending_email['bcc']
                 );
             } catch (Exception $exception) {
                 print_r("ERROR");

@@ -1,8 +1,6 @@
 <?php
 try {
     require_once __DIR__ . '/../classes/Emails.php';
-    require_once __DIR__ . '/../classes/Files.php';
-    $files = new Files();
     $email = new Emails();
     $email->insert_email_matches_not_reported();
     $email->insert_email_next_matches();
@@ -12,7 +10,6 @@ try {
     $email->insert_email_missing_licences();
     $email->insert_email_register_not_paid();
     $email->insert_mail_match_not_fully_signed();
-    $files->cleanup_files();
 } catch (Exception $exception) {
     echo json_encode(array(
         'success' => false,

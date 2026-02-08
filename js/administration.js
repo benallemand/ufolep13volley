@@ -11,7 +11,6 @@ Ext.application({
         'Administration',
         'manage_friendships',
         'manage_blacklist_by_city',
-        'remove_duplicate_files',
         'certify_matchs',
         'flip_matchs',
         'retry_error_emails',

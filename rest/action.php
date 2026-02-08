@@ -137,10 +137,6 @@ try {
             require_once __DIR__ . "/../classes/Emails.php";
             $manager = new Emails();
             break;
-        case 'files':
-            require_once __DIR__ . "/../classes/Files.php";
-            $manager = new Files();
-            break;
         case 'generic':
             require_once __DIR__ . "/../classes/Generic.php";
             $manager = new Generic();

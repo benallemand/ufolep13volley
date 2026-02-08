@@ -266,9 +266,6 @@ class Register extends Generic
     {
         // archive any active match
         $this->archive_confirmed_matches($id_competition);
-        // remove matches_files when archived
-        $this->cleanup_files($id_competition);
-        $this->cleanup_matches_files($id_competition);
         // remove matches_players when archived
         $this->cleanup_matches_players($id_competition);
         // if championship and 2nd half, nothing else is needed
@@ -511,23 +508,6 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    private function cleanup_matches_files($id_competition)
-    {
-        $sql = "DELETE FROM matches_files 
-                WHERE id_match IN (SELECT id_match 
-                                   FROM matches 
-                                   WHERE match_status IN ('ARCHIVED')
-                                   AND code_competition IN (SELECT code_competition
-                                                            FROM competitions 
-                                                            WHERE id = ?))";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @throws Exception
-     */
     private function cleanup_matches_players($id_competition)
     {
         $sql = "DELETE FROM match_player 
@@ -537,25 +517,6 @@ class Register extends Generic
                                    AND code_competition IN (SELECT code_competition 
                                                             FROM competitions 
                                                             WHERE id = ?))";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function cleanup_files($id_competition)
-    {
-        $sql = "DELETE FROM files 
-                WHERE id IN (SELECT id_file 
-                             FROM matches_files 
-                             WHERE id_match IN (SELECT id_match  
-                                                FROM matches 
-                                                WHERE match_status IN ('ARCHIVED')
-                                                AND code_competition IN (SELECT code_competition
-                                                                         FROM competitions 
-                                                                         WHERE id = ?)))";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
         $this->sql_manager->execute($sql, $bindings);

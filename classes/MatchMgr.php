@@ -57,22 +57,6 @@ class MatchMgr extends Generic
     }
 
     /**
-     * @param string|null $query
-     * @return string
-     */
-    private function get_sql_match_files(?string $query = "1=1"): string
-    {
-        // group by to avoid duplicate files in zip file
-        return "SELECT 
-        f.id,
-        f.path_file,
-        f.hash
-        FROM files f 
-        JOIN matches_files mf ON mf.id_file = f.id
-        WHERE $query GROUP BY f.hash";
-    }
-
-    /**
      * @throws Exception
      */
     public function getMatches($competition = null, $division = null): array
@@ -160,53 +144,6 @@ class MatchMgr extends Generic
         return $results[0];
     }
 
-    /**
-     * @param $id_match
-     * @return array
-     * @throws Exception
-     */
-    public function get_match_files($id_match): array
-    {
-        return $this->sql_manager->execute($this->get_sql_match_files("mf.id_match = $id_match"));
-    }
-
-    /**
-     * @param $id
-     * @throws Exception
-     */
-    public function download($id)
-    {
-        setlocale(LC_ALL, 'fr_FR.UTF-8');
-        if (empty($id)) {
-            throw new Exception("Pas d'id spécifié !");
-        }
-        if (!$this->is_download_allowed($id)) {
-            throw new Exception("Utilisateur non autorisé à télécharger !");
-        }
-        $match = $this->get_match($id);
-        $match_files = $this->get_match_files($id);
-        $archiveFileName = $match['code_match'] . ".zip";
-        $zip = new ZipArchive();
-        if ($zip->open($archiveFileName, ZIPARCHIVE::CREATE) !== TRUE) {
-            throw new Exception("Erreur pendant la création du fichier ZIP !");
-        }
-        if (count($match_files) === 0) {
-            throw new Exception("Pas de fichier attaché (Attention, ceux envoyés par email ne sont pas téléchargeables) !");
-        }
-        foreach ($match_files as $match_file) {
-            $file_path = __DIR__ . "/../" . $match_file['path_file'];
-            if (file_exists($file_path))
-                $zip->addFile($file_path, basename($file_path));
-        }
-        $zip->close();
-        header("Content-type: application/zip");
-        header("Content-Disposition: attachment; filename=$archiveFileName");
-        header("Content-length: " . filesize($archiveFileName));
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        readfile($archiveFileName);
-        unlink($archiveFileName);
-    }
 
     /**
      * @param $id_match
@@ -479,38 +416,6 @@ class MatchMgr extends Generic
         }
         $code_match = $inputs['code_match'];
         $this->addActivity("Le match $code_match a ete modifie");
-    }
-
-    /**
-     * @param $uploadfile
-     * @param $file_hash
-     * @return array|int|string|null
-     * @throws Exception
-     */
-    private function insert_file($uploadfile, $file_hash)
-    {
-        $sql = "INSERT INTO files SET path_file = ?, hash = ?";
-        $bindings = array(
-            array('type' => 's', 'value' => $uploadfile),
-            array('type' => 's', 'value' => $file_hash),
-        );
-        return $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @param $idMatch
-     * @param $idFile
-     * @return array|int|string|null
-     * @throws Exception
-     */
-    private function link_match_to_file($idMatch, $idFile)
-    {
-        $sql = "INSERT INTO matches_files SET id_file = ?, id_match = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $idFile),
-            array('type' => 'i', 'value' => $idMatch),
-        );
-        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
