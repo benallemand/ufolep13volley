@@ -70,6 +70,11 @@ $user_details = $_SESSION;
                     <input type="radio" v-model="surveyData.on_time" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.on_time" :value="5" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.on_time" :value="6" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.on_time" :value="7" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.on_time" :value="8" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.on_time" :value="9" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.on_time" :value="10" class="mask mask-star"/>
                 </div>
             </div>
             <div class="rating flex">
@@ -81,6 +86,11 @@ $user_details = $_SESSION;
                     <input type="radio" v-model="surveyData.spirit" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.spirit" :value="5" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.spirit" :value="6" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.spirit" :value="7" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.spirit" :value="8" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.spirit" :value="9" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.spirit" :value="10" class="mask mask-star"/>
                 </div>
             </div>
             <div class="rating flex">
@@ -92,6 +102,11 @@ $user_details = $_SESSION;
                     <input type="radio" v-model="surveyData.referee" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.referee" :value="5" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.referee" :value="6" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.referee" :value="7" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.referee" :value="8" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.referee" :value="9" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.referee" :value="10" class="mask mask-star"/>
                 </div>
             </div>
             <div class="rating flex">
@@ -103,6 +118,11 @@ $user_details = $_SESSION;
                     <input type="radio" v-model="surveyData.catering" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.catering" :value="5" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.catering" :value="6" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.catering" :value="7" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.catering" :value="8" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.catering" :value="9" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.catering" :value="10" class="mask mask-star"/>
                 </div>
             </div>
             <div class="rating flex">
@@ -114,6 +134,11 @@ $user_details = $_SESSION;
                     <input type="radio" v-model="surveyData.global" :value="3" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="4" class="mask mask-star"/>
                     <input type="radio" v-model="surveyData.global" :value="5" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.global" :value="6" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.global" :value="7" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.global" :value="8" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.global" :value="9" class="mask mask-star"/>
+                    <input type="radio" v-model="surveyData.global" :value="10" class="mask mask-star"/>
                 </div>
             </div>
         </div>
