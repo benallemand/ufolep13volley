@@ -2093,6 +2093,12 @@ class MatchMgr extends Generic
                                 $dirtyFields = null,
                                 $id = null): int|array|string|null
     {
+        $ratings = ['on_time' => $on_time, 'spirit' => $spirit, 'referee' => $referee, 'catering' => $catering, 'global' => $global];
+        foreach ($ratings as $field => $value) {
+            if ($value < 0 || $value > 10) {
+                throw new InvalidArgumentException("La note '$field' doit être comprise entre 0 et 10 (reçu: $value)");
+            }
+        }
         $userDetails = $this->getCurrentUserDetails();
         $id_user = $userDetails['id_user'];
         $inputs = array(

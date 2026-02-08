@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/classes/Generic.php';
 require_once __DIR__ . '/classes/MatchMgr.php';
 try {
