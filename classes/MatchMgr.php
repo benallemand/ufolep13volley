@@ -154,17 +154,12 @@ class MatchMgr extends Generic
     {
         $userDetails = $this->getCurrentUserDetails();
         $profile = $userDetails['profile_name'];
-        $id_team = $userDetails['id_equipe'];
         $match = $this->get_match($id_match);
         switch ($profile) {
             case 'ADMINISTRATEUR':
                 return true;
             case 'RESPONSABLE_EQUIPE':
-                if (
-                    ($id_team != $match['id_equipe_dom'])
-                    &&
-                    ($id_team != $match['id_equipe_ext'])
-                ) {
+                if ($this->getUserTeamIdForMatch($match) === null) {
                     throw new Exception("Equipe non autorisée à télécharger ce match !");
                 }
                 return true;
@@ -189,6 +184,35 @@ class MatchMgr extends Generic
             return in_array($match['id_equipe_dom'], $teamIds) || in_array($match['id_equipe_ext'], $teamIds);
         }
         return ($id_team == $match['id_equipe_dom']) || ($id_team == $match['id_equipe_ext']);
+    }
+
+    /**
+     * Retourne l'ID de l'équipe de l'utilisateur connecté qui participe au match,
+     * ou null si aucune de ses équipes ne participe.
+     * @param array $match
+     * @return int|null
+     */
+    private function getUserTeamIdForMatch(array $match): ?int
+    {
+        $id_user = $_SESSION['id_user'] ?? null;
+        if (!empty($id_user)) {
+            $userManager = new UserManager();
+            $teamIds = $userManager->getUserTeamIds((int)$id_user);
+            if (!empty($teamIds)) {
+                if (in_array($match['id_equipe_dom'], $teamIds)) {
+                    return (int)$match['id_equipe_dom'];
+                }
+                if (in_array($match['id_equipe_ext'], $teamIds)) {
+                    return (int)$match['id_equipe_ext'];
+                }
+                return null;
+            }
+        }
+        $id_equipe = $_SESSION['id_equipe'] ?? null;
+        if ($id_equipe == $match['id_equipe_dom'] || $id_equipe == $match['id_equipe_ext']) {
+            return (int)$id_equipe;
+        }
+        return null;
     }
 
     /**
@@ -1483,6 +1507,7 @@ class MatchMgr extends Generic
     {
         $match_manager = new MatchMgr();
         $match = $match_manager->get_match($id_match);
+        $userTeamId = $this->getUserTeamIdForMatch($match);
         if (!UserManager::is_connected()) {
             throw new Exception("Utilisateur non connecté !");
         }
@@ -1498,10 +1523,7 @@ class MatchMgr extends Generic
                     return;
                 }
                 // allow only playing teams
-                if (!in_array(
-                    $_SESSION['id_equipe'],
-                    array($match['id_equipe_dom'],
-                        $match['id_equipe_ext']))) {
+                if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent donner une date de report !");
                 }
                 // allow only RESPONSABLE_EQUIPE
@@ -1517,10 +1539,7 @@ class MatchMgr extends Generic
                     return;
                 }
                 // allow only playing teams
-                if (!in_array(
-                    $_SESSION['id_equipe'],
-                    array($match['id_equipe_dom'],
-                        $match['id_equipe_ext']))) {
+                if ($userTeamId === null) {
                     throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !");
                 }
                 // allow only RESPONSABLE_EQUIPE
@@ -1542,10 +1561,7 @@ class MatchMgr extends Generic
                     return;
                 }
                 // allow only playing teams
-                if (!in_array(
-                    $_SESSION['id_equipe'],
-                    array($match['id_equipe_dom'],
-                        $match['id_equipe_ext']))) {
+                if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent signer les fiches équipes !");
                 }
                 // allow only RESPONSABLE_EQUIPE
@@ -1565,8 +1581,8 @@ class MatchMgr extends Generic
                     throw new Exception("Il y a un souci dans la saisie: $count_status !");
                 }
                 // allow only if not signed yet
-                if (($_SESSION['id_equipe'] == $match['id_equipe_dom'] && $match['is_sign_team_dom'] == 1) ||
-                    ($_SESSION['id_equipe'] == $match['id_equipe_ext'] && $match['is_sign_team_ext'] == 1)) {
+                if (($userTeamId == $match['id_equipe_dom'] && $match['is_sign_team_dom'] == 1) ||
+                    ($userTeamId == $match['id_equipe_ext'] && $match['is_sign_team_ext'] == 1)) {
                     throw new Exception("Signature déjà effectuée !");
                 }
                 break;
@@ -1576,10 +1592,7 @@ class MatchMgr extends Generic
                     return;
                 }
                 // allow only playing teams
-                if (!in_array(
-                    $_SESSION['id_equipe'],
-                    array($match['id_equipe_dom'],
-                        $match['id_equipe_ext']))) {
+                if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent signer la feuille de match !");
                 }
                 // allow only RESPONSABLE_EQUIPE
@@ -1595,8 +1608,8 @@ class MatchMgr extends Generic
                     throw new Exception("Le score n'a pas été renseigné !");
                 }
                 // allow only if not signed yet
-                if (($_SESSION['id_equipe'] == $match['id_equipe_dom'] && $match['is_sign_match_dom'] == 1) ||
-                    ($_SESSION['id_equipe'] == $match['id_equipe_ext'] && $match['is_sign_match_ext'] == 1)) {
+                if (($userTeamId == $match['id_equipe_dom'] && $match['is_sign_match_dom'] == 1) ||
+                    ($userTeamId == $match['id_equipe_ext'] && $match['is_sign_match_ext'] == 1)) {
                     throw new Exception("Signature déjà effectuée !");
                 }
                 break;
@@ -1704,7 +1717,8 @@ class MatchMgr extends Generic
         if (UserManager::isAdmin()) {
             $sql = "UPDATE matches set is_sign_team_dom = 1, is_sign_team_ext = 1 WHERE id_match = ?";
         } else {
-            switch ($_SESSION['id_equipe']) {
+            $userTeamId = $this->getUserTeamIdForMatch($match);
+            switch ($userTeamId) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
                     break;
@@ -1738,7 +1752,8 @@ class MatchMgr extends Generic
         if (UserManager::isAdmin()) {
             $sql = "UPDATE matches set is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?";
         } else {
-            switch ($_SESSION['id_equipe']) {
+            $userTeamId = $this->getUserTeamIdForMatch($match);
+            switch ($userTeamId) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
                     break;

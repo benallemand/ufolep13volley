@@ -835,4 +835,130 @@ class MatchManagerTest extends UfolepTestCase
         echo "RÉSULTAT: {$success_count}/{$test_count} tests réussis\n";
         echo "========================================\n";
     }
+
+    /**
+     * Test qu'un utilisateur lié à 2 équipes peut effectuer toutes les actions
+     * (ajout présents, signature fiche équipe, signature feuille de match)
+     * sur un match impliquant son AUTRE équipe (pas celle en session).
+     * @throws Exception
+     */
+    public function test_sign_multi_team_user(): void
+    {
+        $teams = $this->get_test_teams();
+        $team1 = $teams[0]['id_equipe'];
+        $team2 = $teams[1]['id_equipe'];
+
+        // Créer une 3e équipe avec joueurs
+        $id_club3 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'test club 3'");
+        $team3 = $this->sql_manager->execute("INSERT INTO equipes SET code_competition = 'ut', nom_equipe = 'test team 3', id_club = $id_club3");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe) SELECT id, $team3 FROM joueurs WHERE sexe = 'M' LIMIT 20,5");
+        $this->sql_manager->execute("INSERT INTO joueur_equipe(id_joueur, id_equipe) SELECT id, $team3 FROM joueurs WHERE sexe = 'F' LIMIT 20,5");
+        $court3 = $this->sql_manager->execute("INSERT INTO gymnase SET nom = 'test court 3'");
+        $this->sql_manager->execute("INSERT INTO creneau SET id_gymnase = $court3, jour = 'Mercredi', heure = '20:00', id_equipe = $team3");
+
+        // Créer un match team2 vs team3
+        $day = $this->get_test_day();
+        $matchId = $this->sql_manager->execute("INSERT INTO matches SET
+            code_match = 'UT_MULTI',
+            code_competition='ut',
+            division='1',
+            id_equipe_dom = $team2,
+            id_equipe_ext = $team3,
+            date_reception = CURRENT_DATE - INTERVAL 30 DAY,
+            id_journee = {$day['id']},
+            id_gymnasium = $court3,
+            date_original = CURRENT_DATE - INTERVAL 30 DAY,
+            match_status = 'CONFIRMED'");
+
+        // Créer un utilisateur lié à team1 ET team2
+        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
+        if (is_array($profileId)) {
+            $profileId = $profileId[0]['id'];
+        }
+        $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_sign', email = 'ut_multi_sign@ufolep.test', password_hash = 'x'");
+        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId, profile_id = $profileId");
+        $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
+        $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team2");
+
+        // Ajouter les leaders avec emails pour team3
+        $team_players_3 = $this->sql_manager->execute("SELECT * FROM joueur_equipe WHERE id_equipe = $team3");
+        $this->sql_manager->execute("UPDATE joueur_equipe SET is_leader = 1 WHERE id_joueur = ?", array(array('type' => 'i', 'value' => $team_players_3[0]['id_joueur'])));
+        $this->sql_manager->execute("UPDATE joueurs SET email = 'e@f.fr' WHERE id = ?", array(array('type' => 'i', 'value' => $team_players_3[0]['id_joueur'])));
+
+        // Remplir les présents en tant que responsable de chaque équipe individuellement
+        // Team2 players
+        $this->connect_as_team_leader($team2);
+        $players_team2 = $this->players_manager->getMyPlayers();
+        foreach ($players_team2 as $player) {
+            $this->match_manager->add_match_player($matchId, $player['id']);
+        }
+        // Team3 players
+        $this->connect_as_team_leader($team3);
+        $players_team3 = $this->players_manager->getMyPlayers();
+        foreach ($players_team3 as $player) {
+            $this->match_manager->add_match_player($matchId, $player['id']);
+        }
+
+        // Se connecter en tant qu'utilisateur multi-équipe avec session pointant vers team1
+        // C'est le cœur du test: la session pointe sur team1, mais le match implique team2
+        @session_start();
+        $_SESSION['id_equipe'] = $team1;
+        $_SESSION['login'] = 'ut_multi_sign';
+        $_SESSION['id_user'] = $userId;
+        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
+
+        // Signer la fiche équipe pour le match (team2 vs team3)
+        // Doit réussir car l'utilisateur appartient à team2
+        try {
+            $this->match_manager->sign_team_sheet($matchId);
+        } catch (Exception $exc) {
+            $this->assertEquals("Signature prise en compte", $exc->getMessage());
+        }
+
+        // Vérifier que la signature dom (team2) a bien été appliquée
+        $match = $this->match_manager->get_match($matchId);
+        $this->assertEquals(1, $match['is_sign_team_dom']);
+        $this->assertEquals(0, $match['is_sign_team_ext']);
+
+        // Signer la fiche équipe côté ext (team3)
+        $this->connect_as_team_leader($team3);
+        try {
+            $this->match_manager->sign_team_sheet($matchId);
+        } catch (Exception $exc) {
+            $this->assertEquals("Signature prise en compte", $exc->getMessage());
+        }
+
+        // Remplir le score en admin
+        $this->connect_as_admin();
+        $this->match_manager->save(array(
+            'id_match' => $matchId,
+            'set_1_dom' => 25,
+            'set_1_ext' => 1,
+            'set_2_dom' => 25,
+            'set_2_ext' => 2,
+            'set_3_dom' => 25,
+            'set_3_ext' => 3,
+            'code_match' => 'UT_MULTI',
+        ));
+
+        // Re-connecter en tant qu'utilisateur multi-équipe (session sur team1)
+        @session_start();
+        $_SESSION['id_equipe'] = $team1;
+        $_SESSION['login'] = 'ut_multi_sign';
+        $_SESSION['id_user'] = $userId;
+        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
+
+        // Signer la feuille de match
+        // Doit réussir car l'utilisateur appartient à team2
+        try {
+            $this->match_manager->sign_match_sheet($matchId);
+        } catch (Exception $exc) {
+            $this->assertEquals("Signature prise en compte", $exc->getMessage());
+        }
+
+        // Vérifier que la signature match dom (team2) a bien été appliquée
+        $match = $this->match_manager->get_match($matchId);
+        $this->assertEquals(1, $match['is_sign_match_dom']);
+        $this->assertEquals(0, $match['is_sign_match_ext']);
+    }
 }
