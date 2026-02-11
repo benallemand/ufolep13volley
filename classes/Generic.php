@@ -123,11 +123,11 @@ class Generic
             LEFT JOIN comptes_acces ca ON ca.id=a.user_id
             LEFT JOIN users_teams ut ON ca.id = ut.user_id
             LEFT JOIN equipes e ON e.id_equipe=ut.team_id
-            LEFT JOIN competitions c ON c.code_competition=e.code_competition
-            GROUP BY a.activity_date, a.comment, ca.login, ca.email";
+            LEFT JOIN competitions c ON c.code_competition=e.code_competition";
         if (!empty($id_team)) {
             $sql .= " WHERE e.id_equipe = $id_team";
         }
+        $sql .= " GROUP BY a.activity_date, a.comment, ca.login, ca.email";
         $sql .= " ORDER BY a.activity_date DESC";
         return $this->sql_manager->execute($sql);
     }
