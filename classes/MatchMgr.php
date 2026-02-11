@@ -1344,6 +1344,10 @@ class MatchMgr extends Generic
      */
     public function askForReport($code_match, $reason)
     {
+        $match = $this->get_match_by_code_match($code_match);
+        if ($match['match_status'] !== 'CONFIRMED') {
+            throw new Exception("Seuls les matchs confirmés peuvent faire l'objet d'une demande de report !");
+        }
         $sessionIdEquipe = $_SESSION['id_equipe'];
         $this->check_team_allowed_to_ask_report($sessionIdEquipe, $code_match);
         if ($this->isTeamDomForMatch($sessionIdEquipe, $code_match)) {
@@ -2155,5 +2159,802 @@ class MatchMgr extends Generic
             WHERE id_match = $id_match";
         $this->sql_manager->execute($sql);
 
+    }
+
+    /**
+     * Get available dates for a match with availability checking.
+     * Uses batch SQL queries to avoid N+1 performance issues.
+     * @param int $id_match
+     * @param bool $check_opposite_gymnasium
+     * @param bool $force_date
+     * @return array
+     * @throws Exception
+     */
+    public function get_available_dates_for_match(int $id_match, bool $check_opposite_gymnasium = false, bool $force_date = false): array
+    {
+        $match = $this->get_match($id_match);
+        $competition = $this->get_competition_details($match['code_competition']);
+
+        $start_date = $this->parse_date_dmY($competition['start_date_formatted']);
+        $end_date = $this->get_competition_end_date($competition);
+        $today = new DateTime('today');
+
+        // Skip past dates: start from today if competition already started
+        if ($start_date < $today) {
+            $start_date = clone $today;
+        }
+
+        // Determine receiving team and gymnasium
+        $receiving_team_id = $match['id_equipe_dom'];
+        $gymnasium_id = $match['id_gymnasium'];
+        if ($check_opposite_gymnasium) {
+            $receiving_team_id = $match['id_equipe_ext'];
+            $opposite_gymnasium = $this->get_team_gymnasium($receiving_team_id);
+            if ($opposite_gymnasium) {
+                $gymnasium_id = $opposite_gymnasium;
+            }
+        }
+
+        // Get the receiving team's reception day(s) from créneau
+        $reception_days = $this->get_team_reception_days($receiving_team_id);
+
+        // Batch: fetch all team matches in the period (excluding current match)
+        $team_busy_dates = $this->get_team_busy_dates(
+            $match['id_equipe_dom'],
+            $match['id_equipe_ext'],
+            $start_date->format('d/m/Y'),
+            $end_date->format('d/m/Y'),
+            $id_match
+        );
+
+        // Batch: fetch gymnasium usage per date in the period (excluding current match)
+        $gymnasium_usage = $this->get_gymnasium_usage_in_period(
+            $gymnasium_id,
+            $start_date->format('d/m/Y'),
+            $end_date->format('d/m/Y'),
+            $id_match
+        );
+
+        // Batch: fetch all blacklisted dates in the period
+        $blacklisted_dates = $this->get_blacklisted_dates_in_period(
+            $start_date->format('d/m/Y'),
+            $end_date->format('d/m/Y')
+        );
+
+        // Batch: fetch all matches for week conflict detection (excluding current match)
+        $all_team_matches = $this->get_team_matches_in_period(
+            $match['id_equipe_dom'],
+            $match['id_equipe_ext'],
+            $start_date->format('d/m/Y'),
+            $end_date->format('d/m/Y'),
+            $id_match
+        );
+
+        // Batch: fetch public holidays and school holidays Zone B
+        $start_year = (int)$start_date->format('Y');
+        $end_year = (int)$end_date->format('Y');
+        $public_holidays = $this->get_french_public_holidays($start_year);
+        if ($end_year !== $start_year) {
+            $public_holidays = array_merge($public_holidays, $this->get_french_public_holidays($end_year));
+        }
+        $school_holidays = $this->get_school_holidays_zone_b($start_date, $end_date);
+
+        $available_dates = array();
+        $current_date = clone $start_date;
+        while ($current_date <= $end_date) {
+            $date_str = $current_date->format('d/m/Y');
+            $date_ymd = $current_date->format('Y-m-d');
+
+            // Skip dates that don't match the receiving team's créneau day
+            $day_name = $this->get_french_day_name($current_date);
+            $matches_reception_day = empty($reception_days) || in_array($day_name, $reception_days);
+
+            if (!$matches_reception_day && !$force_date) {
+                $current_date->modify('+1 day');
+                continue;
+            }
+
+            // Skip holidays and school vacations (unless force_date)
+            $is_holiday = $this->is_holiday_or_vacation($date_ymd, $public_holidays, $school_holidays);
+
+            if ($is_holiday && !$force_date) {
+                $current_date->modify('+1 day');
+                continue;
+            }
+
+            if ($force_date) {
+                $available_dates[] = array(
+                    'date' => $date_str,
+                    'available' => true,
+                    'gymnasium_available' => true,
+                    'teams_available' => true,
+                    'matches_reception_day' => $matches_reception_day,
+                    'is_holiday' => $is_holiday,
+                    'week_conflicts' => array('home_team_conflicts' => array(), 'away_team_conflicts' => array())
+                );
+                $current_date->modify('+1 day');
+                continue;
+            }
+
+            $home_busy = in_array($date_ymd, $team_busy_dates['home']);
+            $away_busy = in_array($date_ymd, $team_busy_dates['away']);
+            $teams_available = !$home_busy && !$away_busy;
+
+            $gym_count = $gymnasium_usage['dates'][$date_ymd] ?? 0;
+            $gymnasium_available = $gym_count < $gymnasium_usage['capacity'];
+
+            $is_blacklisted = in_array($date_ymd, $blacklisted_dates);
+
+            $week_conflicts = $this->compute_week_conflicts_from_matches(
+                $all_team_matches,
+                $match['id_equipe_dom'],
+                $match['id_equipe_ext'],
+                $current_date
+            );
+
+            $available_dates[] = array(
+                'date' => $date_str,
+                'available' => $teams_available && $gymnasium_available && !$is_blacklisted,
+                'gymnasium_available' => $gymnasium_available,
+                'teams_available' => $teams_available,
+                'matches_reception_day' => true,
+                'is_holiday' => false,
+                'week_conflicts' => $week_conflicts
+            );
+            $current_date->modify('+1 day');
+        }
+
+        return $available_dates;
+    }
+
+    /**
+     * @param string $date format d/m/Y
+     * @param string $code_competition
+     * @return bool
+     * @throws Exception
+     */
+    public function is_date_within_competition_period(string $date, string $code_competition): bool
+    {
+        $competition = $this->get_competition_details($code_competition);
+        $check_date = DateTime::createFromFormat('d/m/Y', $date);
+        $start_date = $this->parse_date_dmY($competition['start_date_formatted']);
+        $end_date = $this->get_competition_end_date($competition);
+
+        return $check_date >= $start_date && $check_date <= $end_date;
+    }
+
+    /**
+     * Check teams availability for a specific date.
+     * Single SQL query for both teams, excludes the match being moved.
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @param string $date format d/m/Y
+     * @param int|null $exclude_match_id match being moved (to exclude from busy check)
+     * @return array
+     * @throws Exception
+     */
+    public function check_teams_availability_for_date(int $home_team_id, int $away_team_id, string $date, ?int $exclude_match_id = null): array
+    {
+        $sql = "SELECT id_equipe_dom, id_equipe_ext FROM matches 
+                WHERE date_reception = STR_TO_DATE(?, '%d/%m/%Y')
+                AND (id_equipe_dom IN (?, ?) OR id_equipe_ext IN (?, ?))
+                AND match_status NOT IN ('ARCHIVED')";
+        $bindings = array(
+            array('type' => 's', 'value' => $date),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+        );
+        if ($exclude_match_id) {
+            $sql .= " AND id_match != ?";
+            $bindings[] = array('type' => 'i', 'value' => $exclude_match_id);
+        }
+
+        $results = $this->sql_manager->execute($sql, $bindings);
+        $home_busy = false;
+        $away_busy = false;
+        foreach ($results as $row) {
+            if ($row['id_equipe_dom'] == $home_team_id || $row['id_equipe_ext'] == $home_team_id) {
+                $home_busy = true;
+            }
+            if ($row['id_equipe_dom'] == $away_team_id || $row['id_equipe_ext'] == $away_team_id) {
+                $away_busy = true;
+            }
+        }
+
+        return array(
+            'home_team_available' => !$home_busy,
+            'away_team_available' => !$away_busy
+        );
+    }
+
+    /**
+     * Check if gymnasium is available for a specific date.
+     * Excludes the match being moved.
+     * @param int $gymnasium_id
+     * @param string $date format d/m/Y
+     * @param int|null $exclude_match_id
+     * @return bool
+     * @throws Exception
+     */
+    public function is_gymnasium_available_for_date(int $gymnasium_id, string $date, ?int $exclude_match_id = null): bool
+    {
+        $sql = "SELECT g.nb_terrain, COUNT(m.id_match) as scheduled_matches 
+                FROM gymnase g 
+                LEFT JOIN matches m ON g.id = m.id_gymnasium 
+                    AND m.date_reception = STR_TO_DATE(?, '%d/%m/%Y')
+                    AND m.match_status NOT IN ('ARCHIVED')";
+        $bindings = array(
+            array('type' => 's', 'value' => $date),
+        );
+        if ($exclude_match_id) {
+            $sql .= " AND m.id_match != ?";
+            $bindings[] = array('type' => 'i', 'value' => $exclude_match_id);
+        }
+        $sql .= " WHERE g.id = ? GROUP BY g.id, g.nb_terrain";
+        $bindings[] = array('type' => 'i', 'value' => $gymnasium_id);
+
+        $result = $this->sql_manager->execute($sql, $bindings);
+        if (empty($result)) {
+            return true;
+        }
+        return $result[0]['scheduled_matches'] < $result[0]['nb_terrain'];
+    }
+
+    /**
+     * Get week conflicts for teams (matches already scheduled the same week).
+     * Excludes the match being moved.
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @param string $date format d/m/Y
+     * @param int|null $exclude_match_id
+     * @return array
+     * @throws Exception
+     */
+    public function get_week_conflicts_for_teams(int $home_team_id, int $away_team_id, string $date, ?int $exclude_match_id = null): array
+    {
+        $check_date = DateTime::createFromFormat('d/m/Y', $date);
+        $week_start = clone $check_date;
+        $week_start->modify('monday this week');
+        $week_end = clone $week_start;
+        $week_end->modify('sunday this week');
+
+        $sql = "SELECT m.id_match, m.id_equipe_dom, m.id_equipe_ext, 
+                       DATE_FORMAT(m.date_reception, '%d/%m/%Y') as match_date,
+                       e1.nom_equipe as nom_dom, e2.nom_equipe as nom_ext
+                FROM matches m
+                JOIN equipes e1 ON m.id_equipe_dom = e1.id_equipe
+                JOIN equipes e2 ON m.id_equipe_ext = e2.id_equipe
+                WHERE m.date_reception BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y')
+                AND m.match_status NOT IN ('ARCHIVED')
+                AND (m.id_equipe_dom IN (?, ?) OR m.id_equipe_ext IN (?, ?))";
+        $bindings = array(
+            array('type' => 's', 'value' => $week_start->format('d/m/Y')),
+            array('type' => 's', 'value' => $week_end->format('d/m/Y')),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+        );
+        if ($exclude_match_id) {
+            $sql .= " AND m.id_match != ?";
+            $bindings[] = array('type' => 'i', 'value' => $exclude_match_id);
+        }
+
+        $matches = $this->sql_manager->execute($sql, $bindings);
+        return $this->build_week_conflicts($matches, $home_team_id, $away_team_id);
+    }
+
+    /**
+     * @param int $id_match
+     * @param string $new_date format d/m/Y
+     * @param int $gymnasium_id
+     * @param bool $invert_reception
+     * @param string|null $comment
+     * @throws Exception
+     */
+    public function modify_match_date(int $id_match, string $new_date, int $gymnasium_id = 0, bool $invert_reception = false, ?string $comment = null): void
+    {
+        if (!$this->is_match_date_modification_allowed($id_match)) {
+            throw new Exception("Vous n'êtes pas autorisé à modifier la date de ce match !");
+        }
+
+        $match = $this->get_match($id_match);
+        $old_date = $match['date_reception'];
+
+        if ($invert_reception) {
+            $opposite_gym = $this->get_team_gymnasium($match['id_equipe_ext']);
+            if ($opposite_gym) {
+                $gymnasium_id = $opposite_gym;
+            }
+        }
+        if ($gymnasium_id <= 0) {
+            $gymnasium_id = $match['id_gymnasium'];
+        }
+
+        $bindings = array();
+        $sql = "UPDATE matches SET date_reception = STR_TO_DATE(?, '%d/%m/%Y'), id_gymnasium = ?";
+        $bindings[] = array('type' => 's', 'value' => $new_date);
+        $bindings[] = array('type' => 'i', 'value' => $gymnasium_id);
+
+        if ($invert_reception) {
+            $sql .= ", id_equipe_dom = ?, id_equipe_ext = ?";
+            $bindings[] = array('type' => 'i', 'value' => $match['id_equipe_ext']);
+            $bindings[] = array('type' => 'i', 'value' => $match['id_equipe_dom']);
+        }
+
+        if ($comment) {
+            $sql .= ", note = ?";
+            $bindings[] = array('type' => 's', 'value' => trim(($match['note'] ?? '') . "\n" . $comment));
+        }
+
+        $sql .= " WHERE id_match = ?";
+        $bindings[] = array('type' => 'i', 'value' => $id_match);
+
+        $this->sql_manager->execute($sql, $bindings);
+        $this->addActivity("Le match {$match['code_match']} a vu sa date modifiée pour le $new_date");
+
+        // Re-fetch updated match for email (teams may have been inverted)
+        $updated_match = $this->get_match($id_match);
+        $this->send_date_change_notification($updated_match, $old_date, $new_date, $invert_reception, $comment);
+    }
+
+    /**
+     * @param int $id_match
+     * @return bool
+     * @throws Exception
+     */
+    public function is_match_date_modification_allowed(int $id_match): bool
+    {
+        $match = $this->get_match($id_match);
+
+        if ($match['match_status'] !== 'NOT_CONFIRMED') {
+            return false;
+        }
+
+        $userDetails = $this->getCurrentUserDetails();
+        $profile = $userDetails['profile_name'];
+
+        switch ($profile) {
+            case 'ADMINISTRATEUR':
+            case 'SUPPORT':
+                return true;
+            case 'RESPONSABLE_EQUIPE':
+                return $this->isUserTeamInMatch($match);
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * @param string $code_competition
+     * @return array
+     * @throws Exception
+     */
+    private function get_competition_details(string $code_competition): array
+    {
+        $sql = "SELECT c.*, DATE_FORMAT(c.start_date, '%d/%m/%Y') AS start_date_formatted, d.date_limite AS limit_date 
+                FROM competitions c 
+                LEFT JOIN dates_limite d ON d.code_competition = c.code_competition 
+                WHERE c.code_competition = ?";
+        $bindings = array(array('type' => 's', 'value' => $code_competition));
+        $results = $this->sql_manager->execute($sql, $bindings);
+
+        if (empty($results)) {
+            throw new Exception("Compétition non trouvée : $code_competition");
+        }
+        return $results[0];
+    }
+
+    /**
+     * @param array $competition
+     * @return DateTime
+     */
+    private function get_competition_end_date(array $competition): DateTime
+    {
+        if (!empty($competition['limit_date'])) {
+            $end = DateTime::createFromFormat('d/m/Y', $competition['limit_date']);
+            if ($end) {
+                return $end;
+            }
+        }
+        return $this->parse_date_dmY($competition['start_date_formatted'])->modify('+1 year');
+    }
+
+    /**
+     * @param int $team_id
+     * @return array List of French day names (e.g. ['Lundi', 'Mercredi'])
+     * @throws Exception
+     */
+    private function get_team_reception_days(int $team_id): array
+    {
+        $sql = "SELECT DISTINCT c.jour FROM creneau c WHERE c.id_equipe = ? ORDER BY c.usage_priority";
+        $bindings = array(array('type' => 'i', 'value' => $team_id));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return array_column($results, 'jour');
+    }
+
+    /**
+     * @param DateTime $date
+     * @return string French day name
+     */
+    private function get_french_day_name(DateTime $date): string
+    {
+        $days = array(1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche');
+        return $days[(int)$date->format('N')];
+    }
+
+    /**
+     * @param string $date_string format d/m/Y
+     * @return DateTime
+     * @throws Exception
+     */
+    private function parse_date_dmY(string $date_string): DateTime
+    {
+        $date = DateTime::createFromFormat('d/m/Y', $date_string);
+        if (!$date) {
+            throw new Exception("Format de date invalide : $date_string (attendu d/m/Y)");
+        }
+        $date->setTime(0, 0, 0);
+        return $date;
+    }
+
+    /**
+     * Get French public holidays for a given year.
+     * @param int $year
+     * @return array of Y-m-d strings
+     */
+    private function get_french_public_holidays(int $year): array
+    {
+        $url = "https://calendrier.api.gouv.fr/jours-feries/metropole/$year.json";
+        $context = stream_context_create(array('http' => array('timeout' => 5)));
+        $response = @file_get_contents($url, false, $context);
+        if ($response === false) {
+            error_log("Failed to fetch public holidays from API for year $year");
+            return array();
+        }
+        $data = json_decode($response, true);
+        if (empty($data)) {
+            return array();
+        }
+        return array_keys($data);
+    }
+
+    /**
+     * Get Zone B school holidays from the French government API.
+     * Returns an array of [start_date, end_date] periods in Y-m-d format.
+     * @param DateTime $start_date
+     * @param DateTime $end_date
+     * @return array of ['start' => 'Y-m-d', 'end' => 'Y-m-d']
+     */
+    private function get_school_holidays_zone_b(DateTime $start_date, DateTime $end_date): array
+    {
+        $start_month = (int)$start_date->format('m');
+        $start_year = (int)$start_date->format('Y');
+        if ($start_month >= 8) {
+            $annee_scolaire = $start_year . '-' . ($start_year + 1);
+        } else {
+            $annee_scolaire = ($start_year - 1) . '-' . $start_year;
+        }
+
+        $url = 'https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records'
+            . '?where=' . urlencode("zones=\"Zone B\" AND annee_scolaire=\"$annee_scolaire\"")
+            . '&limit=100';
+
+        $context = stream_context_create(array('http' => array('timeout' => 5)));
+        $response = @file_get_contents($url, false, $context);
+        if ($response === false) {
+            error_log("Failed to fetch school holidays from API for $annee_scolaire");
+            return array();
+        }
+
+        $data = json_decode($response, true);
+        if (empty($data['results'])) {
+            return array();
+        }
+
+        $periods = array();
+        $seen = array();
+        foreach ($data['results'] as $record) {
+            $desc = $record['description'] ?? '';
+            if ($desc === "Vacances d'Été") {
+                continue;
+            }
+            $s = substr($record['start_date'] ?? '', 0, 10);
+            $e = substr($record['end_date'] ?? '', 0, 10);
+            $key = "$s|$e";
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $periods[] = array('start' => $s, 'end' => $e, 'description' => $desc);
+        }
+        return $periods;
+    }
+
+    /**
+     * Check if a date falls on a French public holiday or during Zone B school holidays.
+     * @param string $date_ymd Y-m-d format
+     * @param array $public_holidays array of Y-m-d strings
+     * @param array $school_holiday_periods array of ['start' => 'Y-m-d', 'end' => 'Y-m-d']
+     * @return bool
+     */
+    private function is_holiday_or_vacation(string $date_ymd, array $public_holidays, array $school_holiday_periods): bool
+    {
+        if (in_array($date_ymd, $public_holidays)) {
+            return true;
+        }
+        foreach ($school_holiday_periods as $period) {
+            if ($date_ymd >= $period['start'] && $date_ymd <= $period['end']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param int $team_id
+     * @return int|null
+     * @throws Exception
+     */
+    private function get_team_gymnasium(int $team_id): ?int
+    {
+        $sql = "SELECT c.id_gymnase FROM creneau c WHERE c.id_equipe = ? ORDER BY c.usage_priority LIMIT 1";
+        $bindings = array(array('type' => 'i', 'value' => $team_id));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return empty($results) ? null : (int)$results[0]['id_gymnase'];
+    }
+
+    /**
+     * Batch: get dates where each team is busy in the period (excluding a match).
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @param string $start format d/m/Y
+     * @param string $end format d/m/Y
+     * @param int $exclude_match_id
+     * @return array{home: string[], away: string[]} dates in Y-m-d format
+     * @throws Exception
+     */
+    private function get_team_busy_dates(int $home_team_id, int $away_team_id, string $start, string $end, int $exclude_match_id): array
+    {
+        $sql = "SELECT DISTINCT DATE_FORMAT(m.date_reception, '%Y-%m-%d') as d, m.id_equipe_dom, m.id_equipe_ext
+                FROM matches m
+                WHERE m.date_reception BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y')
+                AND m.match_status NOT IN ('ARCHIVED')
+                AND m.id_match != ?
+                AND (m.id_equipe_dom IN (?, ?) OR m.id_equipe_ext IN (?, ?))";
+        $bindings = array(
+            array('type' => 's', 'value' => $start),
+            array('type' => 's', 'value' => $end),
+            array('type' => 'i', 'value' => $exclude_match_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+
+        $home_dates = array();
+        $away_dates = array();
+        foreach ($results as $row) {
+            if ($row['id_equipe_dom'] == $home_team_id || $row['id_equipe_ext'] == $home_team_id) {
+                $home_dates[] = $row['d'];
+            }
+            if ($row['id_equipe_dom'] == $away_team_id || $row['id_equipe_ext'] == $away_team_id) {
+                $away_dates[] = $row['d'];
+            }
+        }
+        return array('home' => array_unique($home_dates), 'away' => array_unique($away_dates));
+    }
+
+    /**
+     * Batch: get gymnasium usage count per date in the period (excluding a match).
+     * @param int $gymnasium_id
+     * @param string $start format d/m/Y
+     * @param string $end format d/m/Y
+     * @param int $exclude_match_id
+     * @return array{capacity: int, dates: array<string, int>} dates keyed by Y-m-d
+     * @throws Exception
+     */
+    private function get_gymnasium_usage_in_period(int $gymnasium_id, string $start, string $end, int $exclude_match_id): array
+    {
+        $sql = "SELECT g.nb_terrain,
+                       DATE_FORMAT(m.date_reception, '%Y-%m-%d') as d,
+                       COUNT(m.id_match) as cnt
+                FROM gymnase g
+                LEFT JOIN matches m ON g.id = m.id_gymnasium
+                    AND m.date_reception BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y')
+                    AND m.match_status NOT IN ('ARCHIVED')
+                    AND m.id_match != ?
+                WHERE g.id = ?
+                GROUP BY g.nb_terrain, d";
+        $bindings = array(
+            array('type' => 's', 'value' => $start),
+            array('type' => 's', 'value' => $end),
+            array('type' => 'i', 'value' => $exclude_match_id),
+            array('type' => 'i', 'value' => $gymnasium_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+
+        $capacity = 999;
+        $dates = array();
+        foreach ($results as $row) {
+            $capacity = (int)$row['nb_terrain'];
+            if ($row['d'] !== null) {
+                $dates[$row['d']] = (int)$row['cnt'];
+            }
+        }
+        return array('capacity' => $capacity, 'dates' => $dates);
+    }
+
+    /**
+     * Batch: get all blacklisted dates (global) in the period.
+     * @param string $start format d/m/Y
+     * @param string $end format d/m/Y
+     * @return string[] dates in Y-m-d format
+     * @throws Exception
+     */
+    private function get_blacklisted_dates_in_period(string $start, string $end): array
+    {
+        $sql = "SELECT DATE_FORMAT(closed_date, '%Y-%m-%d') as d 
+                FROM blacklist_date 
+                WHERE closed_date BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y')";
+        $bindings = array(
+            array('type' => 's', 'value' => $start),
+            array('type' => 's', 'value' => $end),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return array_column($results, 'd');
+    }
+
+    /**
+     * Batch: get all matches involving the two teams in the period (excluding a match).
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @param string $start format d/m/Y
+     * @param string $end format d/m/Y
+     * @param int $exclude_match_id
+     * @return array
+     * @throws Exception
+     */
+    private function get_team_matches_in_period(int $home_team_id, int $away_team_id, string $start, string $end, int $exclude_match_id): array
+    {
+        $sql = "SELECT m.id_match, m.id_equipe_dom, m.id_equipe_ext,
+                       DATE_FORMAT(m.date_reception, '%Y-%m-%d') as match_date_ymd,
+                       DATE_FORMAT(m.date_reception, '%d/%m/%Y') as match_date,
+                       e1.nom_equipe as nom_dom, e2.nom_equipe as nom_ext
+                FROM matches m
+                JOIN equipes e1 ON m.id_equipe_dom = e1.id_equipe
+                JOIN equipes e2 ON m.id_equipe_ext = e2.id_equipe
+                WHERE m.date_reception BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y')
+                AND m.match_status NOT IN ('ARCHIVED')
+                AND m.id_match != ?
+                AND (m.id_equipe_dom IN (?, ?) OR m.id_equipe_ext IN (?, ?))";
+        $bindings = array(
+            array('type' => 's', 'value' => $start),
+            array('type' => 's', 'value' => $end),
+            array('type' => 'i', 'value' => $exclude_match_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+            array('type' => 'i', 'value' => $home_team_id),
+            array('type' => 'i', 'value' => $away_team_id),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Compute week conflicts from pre-fetched matches (no additional SQL).
+     * @param array $all_matches
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @param DateTime $check_date
+     * @return array
+     */
+    private function compute_week_conflicts_from_matches(array $all_matches, int $home_team_id, int $away_team_id, DateTime $check_date): array
+    {
+        $week_start = (clone $check_date)->modify('monday this week');
+        $week_end = (clone $week_start)->modify('sunday this week');
+
+        $home_conflicts = array();
+        $away_conflicts = array();
+
+        foreach ($all_matches as $m) {
+            $match_dt = new DateTime($m['match_date_ymd']);
+            if ($match_dt < $week_start || $match_dt > $week_end) {
+                continue;
+            }
+            if ($m['id_equipe_dom'] == $home_team_id || $m['id_equipe_ext'] == $home_team_id) {
+                $home_conflicts[] = array(
+                    'team_name' => $m['id_equipe_dom'] == $home_team_id ? $m['nom_dom'] : $m['nom_ext'],
+                    'match_date' => $m['match_date'],
+                    'opponent' => $m['id_equipe_dom'] == $home_team_id ? $m['nom_ext'] : $m['nom_dom']
+                );
+            }
+            if ($m['id_equipe_dom'] == $away_team_id || $m['id_equipe_ext'] == $away_team_id) {
+                $away_conflicts[] = array(
+                    'team_name' => $m['id_equipe_dom'] == $away_team_id ? $m['nom_dom'] : $m['nom_ext'],
+                    'match_date' => $m['match_date'],
+                    'opponent' => $m['id_equipe_dom'] == $away_team_id ? $m['nom_ext'] : $m['nom_dom']
+                );
+            }
+        }
+
+        return array('home_team_conflicts' => $home_conflicts, 'away_team_conflicts' => $away_conflicts);
+    }
+
+    /**
+     * Build week conflicts array from query results.
+     * @param array $matches
+     * @param int $home_team_id
+     * @param int $away_team_id
+     * @return array
+     */
+    private function build_week_conflicts(array $matches, int $home_team_id, int $away_team_id): array
+    {
+        $home_conflicts = array();
+        $away_conflicts = array();
+
+        foreach ($matches as $m) {
+            if ($m['id_equipe_dom'] == $home_team_id || $m['id_equipe_ext'] == $home_team_id) {
+                $home_conflicts[] = array(
+                    'team_name' => $m['id_equipe_dom'] == $home_team_id ? $m['nom_dom'] : $m['nom_ext'],
+                    'match_date' => $m['match_date'],
+                    'opponent' => $m['id_equipe_dom'] == $home_team_id ? $m['nom_ext'] : $m['nom_dom']
+                );
+            }
+            if ($m['id_equipe_dom'] == $away_team_id || $m['id_equipe_ext'] == $away_team_id) {
+                $away_conflicts[] = array(
+                    'team_name' => $m['id_equipe_dom'] == $away_team_id ? $m['nom_dom'] : $m['nom_ext'],
+                    'match_date' => $m['match_date'],
+                    'opponent' => $m['id_equipe_dom'] == $away_team_id ? $m['nom_ext'] : $m['nom_dom']
+                );
+            }
+        }
+
+        return array('home_team_conflicts' => $home_conflicts, 'away_team_conflicts' => $away_conflicts);
+    }
+
+    /**
+     * Send email notification for date change using the Emails system.
+     * @param array $match updated match data
+     * @param string $old_date
+     * @param string $new_date
+     * @param bool $invert_reception
+     * @param string|null $comment
+     * @throws Exception
+     */
+    private function send_date_change_notification(array $match, string $old_date, string $new_date, bool $invert_reception, ?string $comment): void
+    {
+        try {
+            $email_dom = $this->team->getTeamEmail($match['id_equipe_dom']);
+        } catch (Exception $e) {
+            $email_dom = '';
+        }
+        try {
+            $email_ext = $this->team->getTeamEmail($match['id_equipe_ext']);
+        } catch (Exception $e) {
+            $email_ext = '';
+        }
+        if (empty($email_dom) && empty($email_ext)) {
+            return;
+        }
+
+        $emails = new Emails();
+        $emails->insert_generic_email(
+            __DIR__ . '/../templates/emails/sendMailDateModification.fr.html',
+            array(
+                'code_match' => $match['code_match'],
+                'equipe_dom' => $match['equipe_dom'] ?? '',
+                'equipe_ext' => $match['equipe_ext'] ?? '',
+                'old_date' => $old_date,
+                'new_date' => $new_date,
+                'gymnasium' => $match['gymnasium'] ?? '',
+                'inversion' => $invert_reception ? "<strong>Attention : La réception a été inversée !</strong><br>" : '',
+                'commentaire' => $comment ? "Commentaire : $comment<br>" : '',
+            ),
+            $email_dom,
+            $email_ext
+        );
     }
 }
