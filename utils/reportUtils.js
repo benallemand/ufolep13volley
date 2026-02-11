@@ -1,6 +1,7 @@
 export function canAskReport(match, user, isLeader) {
     return isLeader
         && [match.id_equipe_dom, match.id_equipe_ext].includes(user?.id_equipe)
+        && match.match_status === 'CONFIRMED'
         && match.is_match_score_filled === 0
         && match.report_status === 'NOT_ASKED';
 }

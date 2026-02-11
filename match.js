@@ -9,10 +9,30 @@ new Vue({
         matchData: {},
         isLoading: false,
         user: null,
+        dateModification: {
+            dates: [],
+            loading: false,
+            invertReception: false,
+            forceDate: false,
+            comment: '',
+            selectedDate: null,
+        },
     },
     mounted() {
         this.fetchUserDetails();
         this.reloadData();
+    },
+    watch: {
+        'dateModification.invertReception'() {
+            if (document.getElementById('dateModificationModal').open) {
+                this.loadAvailableDates();
+            }
+        },
+        'dateModification.forceDate'() {
+            if (document.getElementById('dateModificationModal').open) {
+                this.loadAvailableDates();
+            }
+        },
     },
     computed: {
         isLeader() {
@@ -33,6 +53,14 @@ new Vue({
             if (this.isAdmin) return true;
             if (!this.isLeader) return false;
             const userTeamId = this.user.id_equipe;
+            return userTeamId == this.matchData.id_equipe_dom || userTeamId == this.matchData.id_equipe_ext;
+        },
+        canModifyDate() {
+            if (!this.matchData.match_status) return false;
+            if (this.matchData.match_status !== 'NOT_CONFIRMED') return false;
+            if (this.isAdmin) return true;
+            if (!this.isLeader) return false;
+            const userTeamId = this.user?.id_equipe;
             return userTeamId == this.matchData.id_equipe_dom || userTeamId == this.matchData.id_equipe_ext;
         },
     },
@@ -150,6 +178,78 @@ new Vue({
         },
         postReportAction(actionName) {
             postReportAction(axios, this.matchData.code_match, actionName, () => this.reloadData());
+        },
+        openDateModificationModal() {
+            this.dateModification.dates = [];
+            this.dateModification.loading = true;
+            this.dateModification.selectedDate = null;
+            document.getElementById('dateModificationModal').showModal();
+            this.loadAvailableDates();
+        },
+        loadAvailableDates() {
+            this.dateModification.loading = true;
+            const params = new URLSearchParams({
+                id_match: this.id_match,
+                check_opposite_gymnasium: this.dateModification.invertReception ? '1' : '0',
+                force_date: this.dateModification.forceDate ? '1' : '0',
+            });
+            axios.get(`/rest/action.php/matchmgr/get_available_dates_for_match?${params}`)
+                .then(response => {
+                    this.dateModification.dates = response.data;
+                })
+                .catch(error => onError(this, error))
+                .finally(() => { this.dateModification.loading = false; });
+        },
+        getDateRowClass(d) {
+            if (d.is_holiday) return 'bg-blue-50 opacity-60';
+            if (!d.matches_reception_day) return 'bg-gray-50 opacity-40';
+            if (d.available) {
+                if (this.hasWeekConflicts(d)) return 'bg-yellow-50';
+                return '';
+            }
+            return 'opacity-40';
+        },
+        hasWeekConflicts(d) {
+            if (!d.week_conflicts) return false;
+            return (d.week_conflicts.home_team_conflicts?.length > 0) ||
+                   (d.week_conflicts.away_team_conflicts?.length > 0);
+        },
+        getWeekConflictText(d) {
+            if (!d.week_conflicts) return '';
+            const parts = [];
+            (d.week_conflicts.home_team_conflicts || []).forEach(c => {
+                parts.push(`${c.team_name} vs ${c.opponent} le ${c.match_date}`);
+            });
+            (d.week_conflicts.away_team_conflicts || []).forEach(c => {
+                parts.push(`${c.team_name} vs ${c.opponent} le ${c.match_date}`);
+            });
+            return parts.join('\n');
+        },
+        selectDate(d) {
+            if (this.dateModification.forceDate && !this.dateModification.comment.trim()) {
+                alert('Un commentaire est obligatoire pour forcer une date.');
+                return;
+            }
+            this.dateModification.selectedDate = d.date;
+            document.getElementById('dateModificationModal').close();
+            document.getElementById('confirmDateModal').showModal();
+        },
+        confirmDateModification() {
+            this.isLoading = true;
+            const formData = new FormData();
+            formData.append('id_match', this.id_match);
+            formData.append('new_date', this.dateModification.selectedDate);
+            formData.append('invert_reception', this.dateModification.invertReception ? '1' : '0');
+            if (this.dateModification.comment) {
+                formData.append('comment', this.dateModification.comment);
+            }
+            axios.post('/rest/action.php/matchmgr/modify_match_date', formData)
+                .then(response => {
+                    onSuccess(this, response);
+                    this.reloadData();
+                })
+                .catch(error => onError(this, error))
+                .finally(() => { this.isLoading = false; });
         },
     }
 });
