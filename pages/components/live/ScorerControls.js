@@ -56,23 +56,23 @@ export default {
                     <span class="font-semibold">2</span>
                   </div>
                   <div class="grid grid-cols-3 gap-2 mb-2">
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[4]" @change="$emit('update-position', leftTeamKey, 4, $event.target.value)">
-                      <option value="">P4</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p4-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(4, $event)">
+                      <option value="" :selected="!leftLineup[4]">P4</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p4-' + player.id" :value="player.full_name" :selected="leftLineup[4] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[4]" @input="$emit('update-position', leftTeamKey, 4, $event.target.value)" placeholder="P4">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(4)" placeholder="P4">
 
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[3]" @change="$emit('update-position', leftTeamKey, 3, $event.target.value)">
-                      <option value="">P3</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p3-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(3, $event)">
+                      <option value="" :selected="!leftLineup[3]">P3</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p3-' + player.id" :value="player.full_name" :selected="leftLineup[3] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[3]" @input="$emit('update-position', leftTeamKey, 3, $event.target.value)" placeholder="P3">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(3)" placeholder="P3">
 
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[2]" @change="$emit('update-position', leftTeamKey, 2, $event.target.value)">
-                      <option value="">P2</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p2-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(2, $event)">
+                      <option value="" :selected="!leftLineup[2]">P2</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p2-' + player.id" :value="player.full_name" :selected="leftLineup[2] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[2]" @input="$emit('update-position', leftTeamKey, 2, $event.target.value)" placeholder="P2">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(2)" placeholder="P2">
                   </div>
                   <div class="grid grid-cols-3 gap-2 text-xs text-center mb-1">
                     <span class="font-semibold">5</span>
@@ -80,23 +80,23 @@ export default {
                     <span class="font-semibold">1</span>
                   </div>
                   <div class="grid grid-cols-3 gap-2">
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[5]" @change="$emit('update-position', leftTeamKey, 5, $event.target.value)">
-                      <option value="">P5</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p5-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(5, $event)">
+                      <option value="" :selected="!leftLineup[5]">P5</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p5-' + player.id" :value="player.full_name" :selected="leftLineup[5] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[5]" @input="$emit('update-position', leftTeamKey, 5, $event.target.value)" placeholder="P5">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(5)" placeholder="P5">
 
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[6]" @change="$emit('update-position', leftTeamKey, 6, $event.target.value)">
-                      <option value="">P6</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p6-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(6, $event)">
+                      <option value="" :selected="!leftLineup[6]">P6</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p6-' + player.id" :value="player.full_name" :selected="leftLineup[6] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[6]" @input="$emit('update-position', leftTeamKey, 6, $event.target.value)" placeholder="P6">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(6)" placeholder="P6">
 
-                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" :value="leftLineup[1]" @change="$emit('update-position', leftTeamKey, 1, $event.target.value)">
-                      <option value="">P1</option>
-                      <option v-for="player in leftTeamPlayers" :key="'left-p1-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="leftTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onLeftChange(1, $event)">
+                      <option value="" :selected="!leftLineup[1]">P1</option>
+                      <option v-for="player in leftTeamPlayers" :key="'left-p1-' + player.id" :value="player.full_name" :selected="leftLineup[1] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="leftLineup[1]" @input="$emit('update-position', leftTeamKey, 1, $event.target.value)" placeholder="P1">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onLeftChange(1)" placeholder="P1">
                   </div>
                 </div>
               </div>
@@ -113,23 +113,23 @@ export default {
                     <span class="font-semibold">2</span>
                   </div>
                   <div class="grid grid-cols-3 gap-2 mb-2">
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[4]" @change="$emit('update-position', rightTeamKey, 4, $event.target.value)">
-                      <option value="">P4</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p4-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(4, $event)">
+                      <option value="" :selected="!rightLineup[4]">P4</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p4-' + player.id" :value="player.full_name" :selected="rightLineup[4] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[4]" @input="$emit('update-position', rightTeamKey, 4, $event.target.value)" placeholder="P4">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(4)" placeholder="P4">
 
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[3]" @change="$emit('update-position', rightTeamKey, 3, $event.target.value)">
-                      <option value="">P3</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p3-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(3, $event)">
+                      <option value="" :selected="!rightLineup[3]">P3</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p3-' + player.id" :value="player.full_name" :selected="rightLineup[3] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[3]" @input="$emit('update-position', rightTeamKey, 3, $event.target.value)" placeholder="P3">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(3)" placeholder="P3">
 
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[2]" @change="$emit('update-position', rightTeamKey, 2, $event.target.value)">
-                      <option value="">P2</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p2-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(2, $event)">
+                      <option value="" :selected="!rightLineup[2]">P2</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p2-' + player.id" :value="player.full_name" :selected="rightLineup[2] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[2]" @input="$emit('update-position', rightTeamKey, 2, $event.target.value)" placeholder="P2">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(2)" placeholder="P2">
                   </div>
                   <div class="grid grid-cols-3 gap-2 text-xs text-center mb-1">
                     <span class="font-semibold">5</span>
@@ -137,23 +137,23 @@ export default {
                     <span class="font-semibold">1</span>
                   </div>
                   <div class="grid grid-cols-3 gap-2">
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[5]" @change="$emit('update-position', rightTeamKey, 5, $event.target.value)">
-                      <option value="">P5</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p5-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(5, $event)">
+                      <option value="" :selected="!rightLineup[5]">P5</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p5-' + player.id" :value="player.full_name" :selected="rightLineup[5] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[5]" @input="$emit('update-position', rightTeamKey, 5, $event.target.value)" placeholder="P5">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(5)" placeholder="P5">
 
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[6]" @change="$emit('update-position', rightTeamKey, 6, $event.target.value)">
-                      <option value="">P6</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p6-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(6, $event)">
+                      <option value="" :selected="!rightLineup[6]">P6</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p6-' + player.id" :value="player.full_name" :selected="rightLineup[6] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[6]" @input="$emit('update-position', rightTeamKey, 6, $event.target.value)" placeholder="P6">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(6)" placeholder="P6">
 
-                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" :value="rightLineup[1]" @change="$emit('update-position', rightTeamKey, 1, $event.target.value)">
-                      <option value="">P1</option>
-                      <option v-for="player in rightTeamPlayers" :key="'right-p1-' + player.id" :value="player.full_name">{{ player.full_name }}</option>
+                    <select v-if="rightTeamPlayers.length" class="select select-bordered select-xs text-center" @change="onRightChange(1, $event)">
+                      <option value="" :selected="!rightLineup[1]">P1</option>
+                      <option v-for="player in rightTeamPlayers" :key="'right-p1-' + player.id" :value="player.full_name" :selected="rightLineup[1] === player.full_name">{{ player.full_name }}</option>
                     </select>
-                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" :value="rightLineup[1]" @input="$emit('update-position', rightTeamKey, 1, $event.target.value)" placeholder="P1">
+                    <input v-else class="input input-bordered input-xs text-center" type="text" maxlength="20" @input="onRightChange(1)" placeholder="P1">
                   </div>
                 </div>
               </div>
@@ -274,5 +274,13 @@ export default {
         rightTeamPlayers: { type: Array, default: () => [] },
         leftTimeouts: { type: Object, required: true },
         rightTimeouts: { type: Object, required: true }
+    },
+    methods: {
+        onLeftChange(pos, event) {
+            this.$emit('update-position', this.leftTeamKey, pos, event.target.value);
+        },
+        onRightChange(pos, event) {
+            this.$emit('update-position', this.rightTeamKey, pos, event.target.value);
+        }
     }
 };

@@ -250,8 +250,9 @@ new Vue({
             if (!Number.isInteger(normalizedPosition) || normalizedPosition < 1 || normalizedPosition > 6) {
                 return;
             }
-            const sanitizedValue = (value || '').toString().trim().slice(0, 20);
-            this.$set(this.lineups[team], normalizedPosition, sanitizedValue);
+            const sanitizedValue = (value || '').toString().trim().slice(0, 100);
+            const updated = Object.assign({}, this.lineups[team], { [normalizedPosition]: sanitizedValue });
+            this.$set(this.lineups, team, updated);
             this.persistToLocalStorage();
         },
         resetPositions() {
