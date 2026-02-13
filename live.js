@@ -34,6 +34,10 @@ new Vue({
         match: liveData.match || null,
         error: liveData.error || null,
         swapSides: false,
+        teamPlayersBySide: {
+            dom: Array.isArray(liveData.teamPlayers?.dom) ? liveData.teamPlayers.dom : [],
+            ext: Array.isArray(liveData.teamPlayers?.ext) ? liveData.teamPlayers.ext : []
+        },
         score: {
             set_en_cours: liveData.liveScoreData ? liveData.liveScoreData.set_en_cours : 1,
             score_dom: liveData.liveScoreData ? liveData.liveScoreData.score_dom : 0,
@@ -94,6 +98,12 @@ new Vue({
         },
         rightTimeouts() {
             return this.timeouts[this.rightTeamKey];
+        },
+        leftTeamPlayers() {
+            return this.teamPlayersBySide[this.leftTeamKey] || [];
+        },
+        rightTeamPlayers() {
+            return this.teamPlayersBySide[this.rightTeamKey] || [];
         },
         isRotationModeEnabled() {
             const competitionCode = (this.match?.code_competition || '').toString().trim().toLowerCase();

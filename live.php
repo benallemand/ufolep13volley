@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/classes/MatchMgr.php';
 require_once __DIR__ . '/classes/LiveScore.php';
+require_once __DIR__ . '/classes/Players.php';
 require_once __DIR__ . '/classes/UserManager.php';
 
 $id_match = filter_input(INPUT_GET, 'id_match');
@@ -8,6 +9,10 @@ $mode = filter_input(INPUT_GET, 'mode') ?? 'view'; // 'view' or 'scorer'
 
 $match = null;
 $liveScoreData = null;
+$teamPlayers = [
+    'dom' => [],
+    'ext' => []
+];
 $error = null;
 $isScorer = ($mode === 'scorer');
 
@@ -30,6 +35,30 @@ if ($id_match) {
         } elseif ($isLoggedIn && isset($_SESSION['id_equipe'])) {
             $userTeamId = $_SESSION['id_equipe'];
             $canScore = ($userTeamId == $match['id_equipe_dom'] || $userTeamId == $match['id_equipe_ext']);
+        }
+
+        if ($canScore && $isScorer) {
+            $playersManager = new Players();
+            $domPlayers = $playersManager->get_players_by_team($match['id_equipe_dom']);
+            $extPlayers = $playersManager->get_players_by_team($match['id_equipe_ext']);
+
+            $teamPlayers['dom'] = array_values(array_map(static function ($player) {
+                return [
+                    'id' => (int)$player['id'],
+                    'full_name' => $player['full_name']
+                ];
+            }, array_filter($domPlayers, static function ($player) {
+                return (int)$player['is_in_team'] === 1;
+            })));
+
+            $teamPlayers['ext'] = array_values(array_map(static function ($player) {
+                return [
+                    'id' => (int)$player['id'],
+                    'full_name' => $player['full_name']
+                ];
+            }, array_filter($extPlayers, static function ($player) {
+                return (int)$player['is_in_team'] === 1;
+            })));
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
@@ -107,6 +136,8 @@ if ($id_match) {
                     :right-team-key="rightTeamKey"
                     :left-lineup="lineups[leftTeamKey]"
                     :right-lineup="lineups[rightTeamKey]"
+                    :left-team-players="leftTeamPlayers"
+                    :right-team-players="rightTeamPlayers"
                     :left-timeouts="leftTimeouts"
                     :right-timeouts="rightTimeouts"
                     @increment-left="incrementLeft"
@@ -159,6 +190,7 @@ if ($id_match) {
         isScorer: <?php echo json_encode($isScorer); ?>,
         canScore: <?php echo json_encode($canScore); ?>,
         match: <?php echo json_encode($match); ?>,
+        teamPlayers: <?php echo json_encode($teamPlayers); ?>,
         liveScoreData: <?php echo json_encode($liveScoreData); ?>,
         error: <?php echo json_encode($error); ?>
     };
