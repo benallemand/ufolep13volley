@@ -39,26 +39,22 @@ if ($id_match) {
 
         if ($canScore && $isScorer) {
             $playersManager = new Players();
-            $domPlayers = $playersManager->get_players_by_team($match['id_equipe_dom']);
-            $extPlayers = $playersManager->get_players_by_team($match['id_equipe_ext']);
+            $domPlayers = $playersManager->getPlayersFromTeam($match['id_equipe_dom']);
+            $extPlayers = $playersManager->getPlayersFromTeam($match['id_equipe_ext']);
 
             $teamPlayers['dom'] = array_values(array_map(static function ($player) {
                 return [
                     'id' => (int)$player['id'],
                     'full_name' => $player['full_name']
                 ];
-            }, array_filter($domPlayers, static function ($player) {
-                return (int)$player['is_in_team'] === 1;
-            })));
+            }, $domPlayers));
 
             $teamPlayers['ext'] = array_values(array_map(static function ($player) {
                 return [
                     'id' => (int)$player['id'],
                     'full_name' => $player['full_name']
                 ];
-            }, array_filter($extPlayers, static function ($player) {
-                return (int)$player['is_in_team'] === 1;
-            })));
+            }, $extPlayers));
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
