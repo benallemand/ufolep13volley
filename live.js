@@ -4,6 +4,18 @@ import ActiveMatchList from './pages/components/live/ActiveMatchList.js';
 import MatchDetails from './pages/components/live/MatchDetails.js';
 
 const liveData = window.__LIVE_DATA__ || {};
+const ROTATION_COMPETITION_CODES = ['m', 'c', 'cf'];
+
+function createEmptyLineup() {
+    return {
+        1: '',
+        2: '',
+        3: '',
+        4: '',
+        5: '',
+        6: ''
+    };
+}
 
 new Vue({
     el: '#app',
@@ -42,6 +54,11 @@ new Vue({
                 tm2: { used: false, countdown: 0, timer: null }
             }
         },
+        lineups: {
+            dom: createEmptyLineup(),
+            ext: createEmptyLineup()
+        },
+        servingTeam: null,
         // Autosave state (issue #196)
         saveStatus: 'saved',
         version: liveData.liveScoreData ? parseInt(liveData.liveScoreData.version) || 1 : 1,
@@ -77,6 +94,10 @@ new Vue({
         },
         rightTimeouts() {
             return this.timeouts[this.rightTeamKey];
+        },
+        isRotationModeEnabled() {
+            const competitionCode = (this.match?.code_competition || '').toString().trim().toLowerCase();
+            return ROTATION_COMPETITION_CODES.includes(competitionCode);
         },
         localStorageKey() {
             return 'live_score_draft_' + this.idMatch;
@@ -147,6 +168,9 @@ new Vue({
 
         // --- Local state modification (no AJAX) ---
         incrementScore(team) {
+            if (this.isRotationModeEnabled) {
+                this.handleServiceAndRotation(team);
+            }
             const key = 'score_' + team;
             this.$set(this.score, key, (parseInt(this.score[key]) || 0) + 1);
             this.markAsUnsaved();
@@ -177,8 +201,56 @@ new Vue({
             this.$set(this.score, 'score_ext', 0);
             this.$set(this.score, 'set_en_cours', setNum + 1);
             this.resetTimeouts();
+            this.resetPositions();
+            this.servingTeam = null;
             this.markAsUnsaved();
             this.showToast('Set terminé !', 'success');
+        },
+        handleServiceAndRotation(team) {
+            if (!['dom', 'ext'].includes(team)) {
+                return;
+            }
+            if (!this.servingTeam) {
+                this.servingTeam = team;
+                return;
+            }
+            if (this.servingTeam !== team) {
+                this.rotateTeamPositions(team);
+                this.servingTeam = team;
+            }
+        },
+        rotateTeamPositions(team) {
+            const current = this.lineups[team] || createEmptyLineup();
+            const rotated = {
+                1: current[2] || '',
+                2: current[3] || '',
+                3: current[4] || '',
+                4: current[5] || '',
+                5: current[6] || '',
+                6: current[1] || ''
+            };
+            this.$set(this.lineups, team, rotated);
+            this.persistToLocalStorage();
+        },
+        updatePosition(team, position, value) {
+            if (!this.isRotationModeEnabled || !['dom', 'ext'].includes(team)) {
+                return;
+            }
+            const normalizedPosition = parseInt(position, 10);
+            if (!Number.isInteger(normalizedPosition) || normalizedPosition < 1 || normalizedPosition > 6) {
+                return;
+            }
+            const sanitizedValue = (value || '').toString().trim().slice(0, 20);
+            this.$set(this.lineups[team], normalizedPosition, sanitizedValue);
+            this.persistToLocalStorage();
+        },
+        resetPositions() {
+            if (!this.isRotationModeEnabled) {
+                return;
+            }
+            this.$set(this.lineups, 'dom', createEmptyLineup());
+            this.$set(this.lineups, 'ext', createEmptyLineup());
+            this.persistToLocalStorage();
         },
 
         // --- Save status management ---
@@ -266,6 +338,8 @@ new Vue({
             try {
                 const draft = {
                     score: this.score,
+                    lineups: this.lineups,
+                    servingTeam: this.servingTeam,
                     version: this.version,
                     timestamp: Date.now()
                 };
@@ -282,6 +356,10 @@ new Vue({
                 // Only restore if less than 24h old
                 if (draft.timestamp && (Date.now() - draft.timestamp) < 86400000) {
                     this.score = draft.score;
+                    if (draft.lineups?.dom && draft.lineups?.ext) {
+                        this.lineups = draft.lineups;
+                    }
+                    this.servingTeam = draft.servingTeam || null;
                     this.version = draft.version;
                     this.saveStatus = 'unsaved';
                     this.showToast('Brouillon restauré depuis le stockage local', 'info');
@@ -364,6 +442,8 @@ new Vue({
                     this.isLive = true;
                     this.version = 1;
                     this.saveStatus = 'saved';
+                    this.servingTeam = null;
+                    this.resetPositions();
                     this.showToast('Live score démarré !', 'success');
                     if (!this.autosaveInterval) {
                         this.startAutosave();
