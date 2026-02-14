@@ -11,6 +11,9 @@ Application web de gestion de championnats de volleyball UFOLEP 13.
 
 ## ⚠️ Points Critiques
 
+### Shell PowerShell
+- **IMPORTANT**: Le shell est PowerShell. Ne JAMAIS utiliser `&&` pour chaîner les commandes (syntaxe bash). Utiliser `;` ou exécuter les commandes séparément.
+
 ### Encodage des fichiers
 - **IMPORTANT**: Utiliser LF (Unix) et non CRLF (Windows) pour les fins de ligne
 - Les fichiers avec CRLF peuvent causer des problèmes lors des éditions
