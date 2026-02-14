@@ -11,6 +11,7 @@ Ce workflow est déclenché lorsqu'un utilisateur demande de traiter un ticket G
 ## Prérequis
 - GitHub CLI installé: `C:\Program Files\GitHub CLI\gh.exe`
 - Authentification configurée: `gh auth login`
+- **Shell: PowerShell** (voir règles dans `.windsurf/rules.md`)
 
 ## Étapes du Workflow
 

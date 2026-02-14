@@ -7,16 +7,19 @@
  */
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/Team.php';
+require_once __DIR__ . '/Registry.php';
 
 class Rank extends Generic
 {
     private Team $team;
+    private Registry $registry;
 
     public function __construct()
     {
         parent::__construct();
         $this->table_name = 'classements';
         $this->team = new Team();
+        $this->registry = new Registry();
     }
 
 
@@ -693,21 +696,25 @@ class Rank extends Generic
     /**
      * Save cup pool assignments from drag&drop interface
      * @param string $code_competition The cup competition code
-     * @param array $pools Array of pools, each containing team IDs with their rank_start
+     * @param array|string $pools JSON string or array of pools, each containing team IDs
      * @return array
      * @throws Exception
      */
-    public function saveCupPoolAssignments(string $code_competition, string $pools): array
+    public function saveCupPoolAssignments(string $code_competition, array|string $pools): array
     {
         // Check if user is admin
         if (!UserManager::isAdmin()) {
             throw new Exception("Seul un administrateur peut modifier le tirage au sort !");
         }
 
-        // Decode JSON pools if string
-        $poolsArray = json_decode($pools, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Format JSON invalide pour les pools");
+        // Decode JSON pools if string, otherwise use directly if already an array
+        if (is_string($pools)) {
+            $poolsArray = json_decode($pools, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Format JSON invalide pour les pools");
+            }
+        } else {
+            $poolsArray = $pools;
         }
 
         // Validate input
@@ -1110,5 +1117,339 @@ class Rank extends Generic
         return ['success' => true];
     }
 
+    /**
+     * Get the raw finals draw from registry for a given finals competition
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @return array Associative array: match_number => ['team1' => label, 'team2' => label]
+     * @throws Exception
+     */
+    public function getFinalsDrawRaw(string $code_competition_finals): array
+    {
+        $entries = $this->registry->find_by_key("finals_draw.$code_competition_finals.1_8.");
+        if (empty($entries)) {
+            return [];
+        }
 
+        $matches = [];
+        foreach ($entries as $entry) {
+            // Key format: finals_draw.{comp}.1_8.{match_num}.{team1|team2}
+            $key = $entry['registry_key'];
+            $parts = explode('.', $key);
+            if (count($parts) !== 5) {
+                continue;
+            }
+            $matchNum = intval($parts[3]);
+            $side = $parts[4]; // 'team1' or 'team2'
+            if (!isset($matches[$matchNum])) {
+                $matches[$matchNum] = [];
+            }
+            $matches[$matchNum][$side] = $entry['registry_value'];
+        }
+
+        ksort($matches);
+        return $matches;
+    }
+
+    /**
+     * Resolve a finals position label (e.g. "1er poule 3") to an actual team
+     * using the pool rankings of the parent competition
+     * @param string $positionLabel e.g. "1er poule 3", "2e poule 1", "meilleur 2e 1/2"
+     * @param string $code_competition_pools The pool competition code (e.g. 'kh', 'c')
+     * @return array|null Team data with id_equipe and nom_equipe, or null if not resolvable
+     * @throws Exception
+     */
+    public function resolveFinalsPosition(string $positionLabel, string $code_competition_pools): ?array
+    {
+        // Parse "1er poule X" or "2e poule X"
+        if (preg_match('/^1er poule (\d+)$/', $positionLabel, $m)) {
+            $pool = $m[1];
+            $rankInPool = 1;
+        } elseif (preg_match('/^2e poule (\d+)$/', $positionLabel, $m)) {
+            $pool = $m[1];
+            $rankInPool = 2;
+        } elseif (preg_match('/^meilleur 2e (\d+)\/(\d+)$/', $positionLabel, $m)) {
+            // "meilleur 2e X/Y" — requires sorting all 2nd places across pools
+            return $this->resolveBestSecond($code_competition_pools, intval($m[1]));
+        } else {
+            return null;
+        }
+
+        // Get the ranking for this specific pool
+        try {
+            $rankResults = $this->getRank($code_competition_pools, $pool);
+        } catch (Exception) {
+            return null;
+        }
+
+        if (empty($rankResults) || count($rankResults) < $rankInPool) {
+            return null;
+        }
+
+        $team = $rankResults[$rankInPool - 1];
+        return [
+            'id_equipe' => $team['id_equipe'],
+            'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+        ];
+    }
+
+    /**
+     * Resolve the Nth best 2nd place across all pools
+     * @param string $code_competition_pools
+     * @param int $nth Which best 2nd (1 = best, 2 = second best, etc.)
+     * @return array|null
+     * @throws Exception
+     */
+    private function resolveBestSecond(string $code_competition_pools, int $nth): ?array
+    {
+        $divisions = $this->getDivisionsFromCompetition($code_competition_pools);
+        $seconds = [];
+
+        foreach ($divisions as $division) {
+            $pool = $division['division'];
+            try {
+                $rankResults = $this->getRank($code_competition_pools, $pool);
+            } catch (Exception) {
+                continue;
+            }
+            if (count($rankResults) >= 2) {
+                $seconds[] = $rankResults[1]; // 2nd place
+            }
+        }
+
+        if (empty($seconds)) {
+            return null;
+        }
+
+        // Sort by points_ponderes DESC, diff_sets_ponderes DESC, diff_points_ponderes DESC
+        usort($seconds, function ($a, $b) {
+            $cmp = ($b['points_ponderes'] ?? 0) <=> ($a['points_ponderes'] ?? 0);
+            if ($cmp !== 0) return $cmp;
+            $cmp = ($b['diff_sets_ponderes'] ?? 0) <=> ($a['diff_sets_ponderes'] ?? 0);
+            if ($cmp !== 0) return $cmp;
+            return ($b['diff_points_ponderes'] ?? 0) <=> ($a['diff_points_ponderes'] ?? 0);
+        });
+
+        if ($nth > count($seconds)) {
+            return null;
+        }
+
+        $team = $seconds[$nth - 1];
+        return [
+            'id_equipe' => $team['id_equipe'],
+            'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+        ];
+    }
+
+    /**
+     * Save a single finals draw entry in registry
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @param int $matchNum Match number (1-8)
+     * @param string $side 'team1' or 'team2'
+     * @param string $positionLabel e.g. "1er poule 3"
+     * @return bool
+     * @throws Exception
+     */
+    public function saveFinalsDrawEntry(string $code_competition_finals, int $matchNum, string $side, string $positionLabel): bool
+    {
+        $key = "finals_draw.$code_competition_finals.1_8.$matchNum.$side";
+
+        // Check if entry already exists
+        $existing = $this->registry->find_by_key($key);
+        if (!empty($existing)) {
+            // Update existing
+            $sql = "UPDATE registry SET registry_value = ? WHERE registry_key = ?";
+        } else {
+            // Insert new
+            $sql = "INSERT INTO registry SET registry_value = ?, registry_key = ?";
+        }
+        $bindings = [
+            ['type' => 's', 'value' => $positionLabel],
+            ['type' => 's', 'value' => $key],
+        ];
+        $this->sql_manager->execute($sql, $bindings);
+        return true;
+    }
+
+    /**
+     * Save a full finals draw (all 8 matches) in registry
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @param string $drawJson JSON array of [{match, team1, team2}, ...]
+     * @return array
+     * @throws Exception
+     */
+    public function saveFullFinalsDraw(string $code_competition_finals, string $drawJson): array
+    {
+        $drawArray = json_decode($drawJson, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Format JSON invalide pour le tirage");
+        }
+
+        // Delete existing draw entries for this competition
+        $existingEntries = $this->registry->find_by_key("finals_draw.$code_competition_finals.");
+        foreach ($existingEntries as $entry) {
+            $sql = "DELETE FROM registry WHERE id = ?";
+            $this->sql_manager->execute($sql, [['type' => 'i', 'value' => $entry['id']]]);
+        }
+
+        // Insert new entries
+        $count = 0;
+        foreach ($drawArray as $match) {
+            $matchNum = $match['match'];
+            $this->saveFinalsDrawEntry($code_competition_finals, $matchNum, 'team1', $match['team1']);
+            $this->saveFinalsDrawEntry($code_competition_finals, $matchNum, 'team2', $match['team2']);
+            $count += 2;
+        }
+
+        $this->addActivity("Tirage des phases finales sauvegardé pour $code_competition_finals: " . count($drawArray) . " matchs");
+
+        return [
+            'success' => true,
+            'entries_count' => $count,
+        ];
+    }
+
+    /**
+     * Get the parent pool competition code from a finals competition code
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @return string|null e.g. 'c' or 'kh'
+     * @throws Exception
+     */
+    private function getParentCompetitionCode(string $code_competition_finals): ?string
+    {
+        $sql = "SELECT id_compet_maitre FROM competitions WHERE code_competition = ?";
+        $bindings = [['type' => 's', 'value' => $code_competition_finals]];
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (empty($results)) {
+            return null;
+        }
+        return $results[0]['id_compet_maitre'];
+    }
+
+    /**
+     * Get the full resolved finals bracket for a competition
+     * Reads draw from registry, resolves positions to real teams, builds full bracket
+     * Uses sort_cup_rank to fetch all rankings in a single query for performance
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @return array Full bracket structure with rounds
+     * @throws Exception
+     */
+    public function getFinalsDrawResolved(string $code_competition_finals): array
+    {
+        $parentCode = $this->getParentCompetitionCode($code_competition_finals);
+
+        // Get raw draw from registry
+        $rawDraw = $this->getFinalsDrawRaw($code_competition_finals);
+
+        // Pre-fetch all rankings in ONE query using sort_cup_rank
+        $allRankings = [];
+        $ranksByPool = [];
+        $bestSeconds = [];
+
+        if ($parentCode) {
+            $allRankings = $this->sort_cup_rank($parentCode);
+
+            // Build lookup: pool -> [1st place, 2nd place, ...]
+            foreach ($allRankings as $team) {
+                $pool = $team['division'];
+                if (!isset($ranksByPool[$pool])) {
+                    $ranksByPool[$pool] = [];
+                }
+                $ranksByPool[$pool][] = $team;
+            }
+
+            // Collect all 2nd places for "meilleur 2e" resolution
+            foreach ($ranksByPool as $pool => $teams) {
+                if (count($teams) >= 2) {
+                    $bestSeconds[] = $teams[1]; // 2nd place (already sorted by rang_poule)
+                }
+            }
+
+            // Sort best seconds by points_ponderes DESC, diff_sets_ponderes DESC, diff_points_ponderes DESC
+            usort($bestSeconds, function ($a, $b) {
+                $cmp = ($b['points_ponderes'] ?? 0) <=> ($a['points_ponderes'] ?? 0);
+                if ($cmp !== 0) return $cmp;
+                $cmp = ($b['diff_sets_ponderes'] ?? 0) <=> ($a['diff_sets_ponderes'] ?? 0);
+                if ($cmp !== 0) return $cmp;
+                return ($b['diff_points_ponderes'] ?? 0) <=> ($a['diff_points_ponderes'] ?? 0);
+            });
+        }
+
+        // Build 1/8 finals using cached data
+        $eighthFinals = [];
+        foreach ($rawDraw as $matchNum => $match) {
+            $team1Resolved = $this->resolvePositionFromCache($match['team1'] ?? '', $ranksByPool, $bestSeconds);
+            $team2Resolved = $this->resolvePositionFromCache($match['team2'] ?? '', $ranksByPool, $bestSeconds);
+
+            $eighthFinals[] = [
+                'match' => $matchNum,
+                'team1_label' => $match['team1'] ?? null,
+                'team2_label' => $match['team2'] ?? null,
+                'team1_resolved' => $team1Resolved,
+                'team2_resolved' => $team2Resolved,
+            ];
+        }
+
+        return [
+            'code_competition' => $code_competition_finals,
+            'parent_competition' => $parentCode,
+            'rounds' => [
+                '1_8' => $eighthFinals,
+            ],
+        ];
+    }
+
+    /**
+     * Resolve a position label using pre-cached rankings (no additional queries)
+     * @param string $positionLabel e.g. "1er poule 3", "meilleur 2e 1/7"
+     * @param array $ranksByPool Pool rankings indexed by pool number
+     * @param array $bestSeconds Sorted array of best 2nd places
+     * @return array|null
+     */
+    private function resolvePositionFromCache(string $positionLabel, array $ranksByPool, array $bestSeconds): ?array
+    {
+        if (empty($positionLabel)) {
+            return null;
+        }
+
+        // Parse "1er poule X"
+        if (preg_match('/^1er poule (\d+)$/', $positionLabel, $m)) {
+            $pool = intval($m[1]);
+            if (isset($ranksByPool[$pool]) && count($ranksByPool[$pool]) >= 1) {
+                $team = $ranksByPool[$pool][0];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        // Parse "2e poule X"
+        if (preg_match('/^2e poule (\d+)$/', $positionLabel, $m)) {
+            $pool = intval($m[1]);
+            if (isset($ranksByPool[$pool]) && count($ranksByPool[$pool]) >= 2) {
+                $team = $ranksByPool[$pool][1];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        // Parse "meilleur 2e X/Y"
+        if (preg_match('/^meilleur 2e (\d+)\/(\d+)$/', $positionLabel, $m)) {
+            $nth = intval($m[1]);
+            if ($nth <= count($bestSeconds)) {
+                $team = $bestSeconds[$nth - 1];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        return null;
+    }
 }
