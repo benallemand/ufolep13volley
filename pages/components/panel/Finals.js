@@ -17,64 +17,32 @@ export default {
         </div>
 
         <div v-else>
+          <!-- Admin link (toujours visible pour les admins) -->
+          <div v-if="isAdmin" class="mb-4">
+            <router-link :to="'/finals-draw-admin/' + code_competition" class="btn btn-outline btn-sm">
+              <i class="fas fa-edit mr-2"></i>Saisir / Modifier le tirage
+            </router-link>
+          </div>
+
           <!-- Onglets pour choisir la vue -->
           <div class="tabs tabs-boxed mb-4">
-            <a class="tab" :class="{ 'tab-active': viewMode === 'draw' }" @click="viewMode = 'draw'">
-              <i class="fas fa-sitemap mr-2"></i>Tableau des phases finales
-            </a>
             <a class="tab" :class="{ 'tab-active': viewMode === 'bracket' }" @click="viewMode = 'bracket'">
-              <i class="fas fa-project-diagram mr-2"></i>Arbre (brackets-viewer)
+              <i class="fas fa-project-diagram mr-2"></i>Arbre du tournoi
             </a>
             <a class="tab" :class="{ 'tab-active': viewMode === 'list' }" @click="viewMode = 'list'">
               <i class="fas fa-list mr-2"></i>Liste des matchs
             </a>
           </div>
 
-          <!-- Vue tableau des phases finales (tirage résolu) -->
-          <div v-if="viewMode === 'draw'" class="mb-6">
-            <!-- Admin link (toujours visible pour les admins) -->
-            <div v-if="isAdmin" class="mb-4">
-              <router-link :to="'/finals-draw-admin/' + code_competition" class="btn btn-outline btn-sm">
-                <i class="fas fa-edit mr-2"></i>Saisir / Modifier le tirage
-              </router-link>
-            </div>
-
-            <div v-if="!drawData || !drawData.rounds || !drawData.rounds['1_8'] || drawData.rounds['1_8'].length === 0" class="alert alert-info">
+          <!-- Vue arbre de tournoi (brackets-viewer) -->
+          <div v-if="viewMode === 'bracket'" class="mb-6">
+            <div v-if="!bracketMatches.length" class="alert alert-info">
               <i class="fas fa-info-circle"></i>
               <span>Le tirage au sort des phases finales n'a pas encore été saisi.</span>
             </div>
-            <div v-else>
-              <h2 class="text-xl font-bold mb-4">1/8 de finale</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div v-for="match in drawData.rounds['1_8']" :key="'match-' + match.match"
-                     class="card bg-base-200 shadow-md">
-                  <div class="card-body p-4">
-                    <h3 class="card-title text-sm text-base-content/60">Match {{ match.match }}</h3>
-                    <div class="flex items-center justify-between gap-4">
-                      <div class="flex-1 text-center p-3 rounded-lg" :class="match.team1_resolved ? 'bg-primary/10' : 'bg-warning/10'">
-                        <div class="font-bold" :class="match.team1_resolved ? 'text-primary' : 'text-warning'">
-                          {{ match.team1_resolved ? match.team1_resolved.nom_equipe : match.team1_label }}
-                        </div>
-                        <div v-if="match.team1_resolved" class="text-xs text-base-content/50 mt-1">{{ match.team1_label }}</div>
-                      </div>
-                      <div class="font-bold text-lg">VS</div>
-                      <div class="flex-1 text-center p-3 rounded-lg" :class="match.team2_resolved ? 'bg-secondary/10' : 'bg-warning/10'">
-                        <div class="font-bold" :class="match.team2_resolved ? 'text-secondary' : 'text-warning'">
-                          {{ match.team2_resolved ? match.team2_resolved.nom_equipe : match.team2_label }}
-                        </div>
-                        <div v-if="match.team2_resolved" class="text-xs text-base-content/50 mt-1">{{ match.team2_label }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Vue arbre de tournoi -->
-          <div v-if="viewMode === 'bracket'" class="mb-6">
             <tournament-bracket-viewer 
-              :matches="finalsMatches" 
+              v-else
+              :matches="bracketMatches" 
               :tournament-type="'single_elimination'"
               :key="'bracket-viewer-' + code_competition + '-' + division"
             />
@@ -91,7 +59,7 @@ export default {
         return {
             division: 1,
             code_competition: this.$route.params.code_competition,
-            viewMode: 'draw',
+            viewMode: 'bracket',
             finalsMatches: [],
             drawData: null,
             loading: true,
@@ -104,33 +72,97 @@ export default {
         },
         matchesFetchUrl() {
             return `/rest/action.php/matchmgr/getMatches?competition=${this.code_competition}&division=${this.division}`;
+        },
+        bracketMatches() {
+            // Combine real matches with draw data for bracket display
+            // Priority: use real matches if they exist, otherwise use draw data
+            
+            // If we have real finals matches, use them
+            if (this.finalsMatches && this.finalsMatches.length > 0) {
+                return this.finalsMatches;
+            }
+            
+            // Otherwise, convert draw data to bracket format
+            if (!this.drawData || !this.drawData.rounds || !this.drawData.rounds['1_8']) {
+                return [];
+            }
+            
+            // Convert draw data to match format for brackets-viewer
+            const matches = [];
+            
+            // 1/8 finals from draw - team name only, label for tooltip
+            this.drawData.rounds['1_8'].forEach((match, index) => {
+                matches.push({
+                    id_match: 1000 + index,
+                    journee: '1/8 de finale',
+                    equipe_dom: match.team1_resolved ? match.team1_resolved.nom_equipe : match.team1_label,
+                    equipe_ext: match.team2_resolved ? match.team2_resolved.nom_equipe : match.team2_label,
+                    id_equipe_dom: match.team1_resolved ? match.team1_resolved.id_equipe : null,
+                    id_equipe_ext: match.team2_resolved ? match.team2_resolved.id_equipe : null,
+                    tooltip_dom: match.team1_label,
+                    tooltip_ext: match.team2_label,
+                });
+            });
+            
+            // Add placeholder matches for 1/4, 1/2, finale
+            for (let i = 0; i < 4; i++) {
+                matches.push({
+                    id_match: 2000 + i,
+                    journee: '1/4 de finale',
+                    equipe_dom: 'Vainqueur 1/8 #' + (2*i + 1),
+                    equipe_ext: 'Vainqueur 1/8 #' + (2*i + 2),
+                });
+            }
+            
+            for (let i = 0; i < 2; i++) {
+                matches.push({
+                    id_match: 3000 + i,
+                    journee: '1/2 finale',
+                    equipe_dom: 'Vainqueur 1/4 #' + (2*i + 1),
+                    equipe_ext: 'Vainqueur 1/4 #' + (2*i + 2),
+                });
+            }
+            
+            matches.push({
+                id_match: 4000,
+                journee: 'Finale',
+                equipe_dom: 'Vainqueur 1/2 #1',
+                equipe_ext: 'Vainqueur 1/2 #2',
+            });
+            
+            return matches;
         }
     },
     watch: {
         '$route.params': {
             handler(newParams) {
                 this.code_competition = newParams.code_competition;
-                this.fetchDrawData();
+                this.fetchData();
             },
             immediate: true
         }
     },
     methods: {
-        fetchDrawData() {
+        fetchData() {
             this.loading = true;
-            axios.get(`/rest/action.php/rank/getFinalsDrawResolved?code_competition_finals=${this.code_competition}`)
+            Promise.all([
+                this.fetchDrawData(),
+                this.fetchFinalsMatches()
+            ]).finally(() => {
+                this.loading = false;
+            });
+        },
+        fetchDrawData() {
+            return axios.get(`/rest/action.php/rank/getFinalsDrawResolved?code_competition_finals=${this.code_competition}`)
                 .then(response => {
                     this.drawData = response.data;
                 })
                 .catch(error => {
                     console.error('Erreur lors du chargement du tirage:', error);
-                })
-                .finally(() => {
-                    this.loading = false;
                 });
         },
         fetchFinalsMatches() {
-            axios.get(this.matchesFetchUrl)
+            return axios.get(this.matchesFetchUrl)
                 .then(response => {
                     // Filtrer les matchs de phases finales
                     this.finalsMatches = response.data.filter(match => {
@@ -161,7 +193,5 @@ export default {
     },
     created() {
         this.fetchUserDetails();
-        this.fetchDrawData();
-        this.fetchFinalsMatches();
     }
 };

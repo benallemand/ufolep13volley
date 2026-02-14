@@ -696,21 +696,25 @@ class Rank extends Generic
     /**
      * Save cup pool assignments from drag&drop interface
      * @param string $code_competition The cup competition code
-     * @param array $pools Array of pools, each containing team IDs with their rank_start
+     * @param array|string $pools JSON string or array of pools, each containing team IDs
      * @return array
      * @throws Exception
      */
-    public function saveCupPoolAssignments(string $code_competition, string $pools): array
+    public function saveCupPoolAssignments(string $code_competition, array|string $pools): array
     {
         // Check if user is admin
         if (!UserManager::isAdmin()) {
             throw new Exception("Seul un administrateur peut modifier le tirage au sort !");
         }
 
-        // Decode JSON pools if string
-        $poolsArray = json_decode($pools, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Format JSON invalide pour les pools");
+        // Decode JSON pools if string, otherwise use directly if already an array
+        if (is_string($pools)) {
+            $poolsArray = json_decode($pools, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Format JSON invalide pour les pools");
+            }
+        } else {
+            $poolsArray = $pools;
         }
 
         // Validate input
@@ -1324,6 +1328,7 @@ class Rank extends Generic
     /**
      * Get the full resolved finals bracket for a competition
      * Reads draw from registry, resolves positions to real teams, builds full bracket
+     * Uses sort_cup_rank to fetch all rankings in a single query for performance
      * @param string $code_competition_finals e.g. 'cf' or 'kf'
      * @return array Full bracket structure with rounds
      * @throws Exception
@@ -1335,17 +1340,45 @@ class Rank extends Generic
         // Get raw draw from registry
         $rawDraw = $this->getFinalsDrawRaw($code_competition_finals);
 
-        // Build 1/8 finals
+        // Pre-fetch all rankings in ONE query using sort_cup_rank
+        $allRankings = [];
+        $ranksByPool = [];
+        $bestSeconds = [];
+
+        if ($parentCode) {
+            $allRankings = $this->sort_cup_rank($parentCode);
+
+            // Build lookup: pool -> [1st place, 2nd place, ...]
+            foreach ($allRankings as $team) {
+                $pool = $team['division'];
+                if (!isset($ranksByPool[$pool])) {
+                    $ranksByPool[$pool] = [];
+                }
+                $ranksByPool[$pool][] = $team;
+            }
+
+            // Collect all 2nd places for "meilleur 2e" resolution
+            foreach ($ranksByPool as $pool => $teams) {
+                if (count($teams) >= 2) {
+                    $bestSeconds[] = $teams[1]; // 2nd place (already sorted by rang_poule)
+                }
+            }
+
+            // Sort best seconds by points_ponderes DESC, diff_sets_ponderes DESC, diff_points_ponderes DESC
+            usort($bestSeconds, function ($a, $b) {
+                $cmp = ($b['points_ponderes'] ?? 0) <=> ($a['points_ponderes'] ?? 0);
+                if ($cmp !== 0) return $cmp;
+                $cmp = ($b['diff_sets_ponderes'] ?? 0) <=> ($a['diff_sets_ponderes'] ?? 0);
+                if ($cmp !== 0) return $cmp;
+                return ($b['diff_points_ponderes'] ?? 0) <=> ($a['diff_points_ponderes'] ?? 0);
+            });
+        }
+
+        // Build 1/8 finals using cached data
         $eighthFinals = [];
         foreach ($rawDraw as $matchNum => $match) {
-            $team1Resolved = null;
-            $team2Resolved = null;
-            if ($parentCode && !empty($match['team1'])) {
-                $team1Resolved = $this->resolveFinalsPosition($match['team1'], $parentCode);
-            }
-            if ($parentCode && !empty($match['team2'])) {
-                $team2Resolved = $this->resolveFinalsPosition($match['team2'], $parentCode);
-            }
+            $team1Resolved = $this->resolvePositionFromCache($match['team1'] ?? '', $ranksByPool, $bestSeconds);
+            $team2Resolved = $this->resolvePositionFromCache($match['team2'] ?? '', $ranksByPool, $bestSeconds);
 
             $eighthFinals[] = [
                 'match' => $matchNum,
@@ -1363,5 +1396,60 @@ class Rank extends Generic
                 '1_8' => $eighthFinals,
             ],
         ];
+    }
+
+    /**
+     * Resolve a position label using pre-cached rankings (no additional queries)
+     * @param string $positionLabel e.g. "1er poule 3", "meilleur 2e 1/7"
+     * @param array $ranksByPool Pool rankings indexed by pool number
+     * @param array $bestSeconds Sorted array of best 2nd places
+     * @return array|null
+     */
+    private function resolvePositionFromCache(string $positionLabel, array $ranksByPool, array $bestSeconds): ?array
+    {
+        if (empty($positionLabel)) {
+            return null;
+        }
+
+        // Parse "1er poule X"
+        if (preg_match('/^1er poule (\d+)$/', $positionLabel, $m)) {
+            $pool = intval($m[1]);
+            if (isset($ranksByPool[$pool]) && count($ranksByPool[$pool]) >= 1) {
+                $team = $ranksByPool[$pool][0];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        // Parse "2e poule X"
+        if (preg_match('/^2e poule (\d+)$/', $positionLabel, $m)) {
+            $pool = intval($m[1]);
+            if (isset($ranksByPool[$pool]) && count($ranksByPool[$pool]) >= 2) {
+                $team = $ranksByPool[$pool][1];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        // Parse "meilleur 2e X/Y"
+        if (preg_match('/^meilleur 2e (\d+)\/(\d+)$/', $positionLabel, $m)) {
+            $nth = intval($m[1]);
+            if ($nth <= count($bestSeconds)) {
+                $team = $bestSeconds[$nth - 1];
+                return [
+                    'id_equipe' => $team['id_equipe'],
+                    'nom_equipe' => $team['equipe'] ?? $team['nom_equipe'] ?? null,
+                ];
+            }
+            return null;
+        }
+
+        return null;
     }
 }

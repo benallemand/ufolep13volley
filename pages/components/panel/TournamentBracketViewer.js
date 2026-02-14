@@ -194,6 +194,11 @@ export default {
                         this.showMatchDetails(match);
                     }
                 });
+                
+                // Apply tooltips after render
+                this.$nextTick(() => {
+                    this.applyTooltips();
+                });
 
             } catch (error) {
                 console.error('Erreur lors du rendu du bracket:', error);
@@ -202,18 +207,25 @@ export default {
         },
 
         convertToBracketFormat() {
-            // Extraire les participants uniques
-            const participantsSet = new Set();
+            // Extraire les participants uniques et leurs tooltips
+            const participantsMap = new Map();
             this.matches.forEach(match => {
-                if (match.equipe_dom) participantsSet.add(match.equipe_dom);
-                if (match.equipe_ext) participantsSet.add(match.equipe_ext);
+                if (match.equipe_dom) {
+                    participantsMap.set(match.equipe_dom, match.tooltip_dom || '');
+                }
+                if (match.equipe_ext) {
+                    participantsMap.set(match.equipe_ext, match.tooltip_ext || '');
+                }
             });
 
-            const participants = Array.from(participantsSet).map((name, index) => ({
+            const participants = Array.from(participantsMap.entries()).map(([name, tooltip], index) => ({
                 id: index + 1,
                 tournament_id: 1,
-                name: name
+                name: tooltip ? `${name}` : name
             }));
+            
+            // Store tooltips for later use
+            this.participantTooltips = Object.fromEntries(participantsMap);
 
             // Créer un mapping nom -> id
             const nameToId = {};
@@ -223,16 +235,21 @@ export default {
 
             // Convertir les matchs
             const matches = this.matches.map((match, index) => {
+                const score1 = this.getMatchScore(match, 'dom');
+                const score2 = this.getMatchScore(match, 'ext');
+                const result1 = this.getMatchResult(match, 'dom');
+                const result2 = this.getMatchResult(match, 'ext');
+                
                 const opponent1 = match.equipe_dom ? {
                     id: nameToId[match.equipe_dom],
-                    score: this.getMatchScore(match, 'dom'),
-                    result: this.getMatchResult(match, 'dom')
+                    ...(score1 !== undefined && { score: score1 }),
+                    ...(result1 !== null && { result: result1 })
                 } : null;
 
                 const opponent2 = match.equipe_ext ? {
-                    id: nameToId[match.equipe_ext], 
-                    score: this.getMatchScore(match, 'ext'),
-                    result: this.getMatchResult(match, 'ext')
+                    id: nameToId[match.equipe_ext],
+                    ...(score2 !== undefined && { score: score2 }),
+                    ...(result2 !== null && { result: result2 })
                 } : null;
 
                 return {
@@ -280,9 +297,9 @@ export default {
 
         getMatchScore(match, team) {
             if (team === 'dom') {
-                return match.score_equipe_dom !== undefined ? match.score_equipe_dom : null;
+                return match.score_equipe_dom !== undefined ? match.score_equipe_dom : undefined;
             } else {
-                return match.score_equipe_ext !== undefined ? match.score_equipe_ext : null;
+                return match.score_equipe_ext !== undefined ? match.score_equipe_ext : undefined;
             }
         },
 
@@ -392,6 +409,25 @@ export default {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric'
+            });
+        },
+        
+        applyTooltips() {
+            // Add tooltips to participant names in brackets-viewer
+            if (!this.participantTooltips) return;
+            
+            const container = document.getElementById(this.containerId);
+            if (!container) return;
+            
+            // Find all participant name elements
+            const participantElements = container.querySelectorAll('.participant .name');
+            participantElements.forEach(el => {
+                const name = el.textContent.trim();
+                const tooltip = this.participantTooltips[name];
+                if (tooltip) {
+                    el.setAttribute('title', tooltip);
+                    el.style.cursor = 'help';
+                }
             });
         }
     },
