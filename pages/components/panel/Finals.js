@@ -32,6 +32,13 @@ export default {
 
           <!-- Vue tableau des phases finales (tirage résolu) -->
           <div v-if="viewMode === 'draw'" class="mb-6">
+            <!-- Admin link (toujours visible pour les admins) -->
+            <div v-if="isAdmin" class="mb-4">
+              <router-link :to="'/finals-draw-admin/' + code_competition" class="btn btn-outline btn-sm">
+                <i class="fas fa-edit mr-2"></i>Saisir / Modifier le tirage
+              </router-link>
+            </div>
+
             <div v-if="!drawData || !drawData.rounds || !drawData.rounds['1_8'] || drawData.rounds['1_8'].length === 0" class="alert alert-info">
               <i class="fas fa-info-circle"></i>
               <span>Le tirage au sort des phases finales n'a pas encore été saisi.</span>
@@ -60,13 +67,6 @@ export default {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Admin link -->
-              <div v-if="isAdmin" class="mt-4">
-                <router-link :to="'/finals-draw-admin/' + code_competition" class="btn btn-outline btn-sm">
-                  <i class="fas fa-edit mr-2"></i>Modifier le tirage
-                </router-link>
               </div>
             </div>
           </div>
