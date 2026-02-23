@@ -51,7 +51,7 @@ class MatchMgr extends Generic
      * @param string $order
      * @return string
      */
-    private function get_sql(?string $query = "1=1", string $order = "code_competition, division, numero_journee, code_match"): string
+    private function get_sql(?string $query = "1=1", string $order = "code_competition, division, STR_TO_DATE(date_reception, '%d/%m/%Y')"): string
     {
         return "SELECT m.id_match AS id, m.* FROM matchs_view m WHERE $query ORDER BY $order";
     }
@@ -86,7 +86,7 @@ class MatchMgr extends Generic
      * @return array
      * @throws Exception
      */
-    public function get_matches(?string $query = "1=1", string $order = "code_competition, division, numero_journee, code_match"): array
+    public function get_matches(?string $query = "1=1", string $order = "code_competition, division, STR_TO_DATE(date_reception, '%d/%m/%Y')"): array
     {
         return $this->sql_manager->execute($this->get_sql($query, $order));
     }
