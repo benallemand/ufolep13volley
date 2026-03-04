@@ -48,12 +48,12 @@ Ext.define('Ufolep13Volley.view.form.player', {
             name: 'num_licence',
             fieldLabel: 'Numéro de licence',
             minLength: 8,
-            maxLength: 8,
+            maxLength: 10,
             msgTarget: 'under',
         },
         {
             xtype: 'label',
-            html: "<small style='font-style: italic'>Le numéro de licence peut être laissé vide dans un premier temps, si vous ne le connaissez pas encore. Le numéro de licence doit comporter exactement 8 chiffres si renseigné.</small> ",
+            html: "<small style='font-style: italic'>Le numéro de licence peut être laissé vide dans un premier temps, si vous ne le connaissez pas encore. Formats acceptés : 8 chiffres (ancien format) ou 2 lettres + 8 chiffres (nouveau format liguasso).</small> ",
         },
         {
             xtype: 'datefield',

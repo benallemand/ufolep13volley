@@ -53,7 +53,7 @@ Ext.define('Ufolep13Volley.view.player.Edit', {
                 name: 'num_licence',
                 fieldLabel: 'Numéro de licence',
                 minLength: 8,
-                maxLength: 8,
+                maxLength: 10,
                 msgTarget: 'under'
             },
             {
