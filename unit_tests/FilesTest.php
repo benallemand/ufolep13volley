@@ -153,5 +153,61 @@ class FilesTest extends UfolepTestCase
         $this->assertEquals('007_99996743', $licence['licence_number_2']);
     }
 
+    public function test_licence_liguasso_new_format()
+    {
+        $mgr = new Files();
+        
+        // Test premier fichier liguasso
+        $results = $mgr->get_licences_data(__DIR__ . '/files/licences/01-liguasso.pdf');
+        $this->assertCount(1, $results, "Le PDF 01-liguasso devrait contenir 1 licence");
+        
+        $licence = $results[0];
+        $this->assertEquals('13', $licence['departement']);
+        $this->assertEquals('SB10000025', $licence['licence_number']); // Nouveau format: initiales + 8 chiffres
+        $this->assertEquals('SIEGL Baptiste', $licence['last_first_name']);
+        $this->assertEquals('19/03/2000', $licence['date_of_birth']);
+        $this->assertEquals('25', $licence['age']);
+        $this->assertEquals('M', $licence['sexe']);
+        $this->assertEquals('COUDOUX VELAUX LA FARE VOLLEY BALL', $licence['club']);
+        $this->assertEquals('013037583', $licence['licence_club']);
+        $this->assertEquals('03/03/2026', $licence['homologation_date']);
+        $this->assertEquals('SB10000025', $licence['licence_number_2']);
+        
+        // Test second fichier liguasso
+        $results = $mgr->get_licences_data(__DIR__ . '/files/licences/02-liguasso.pdf');
+        $this->assertCount(1, $results, "Le PDF 02-liguasso devrait contenir 1 licence");
+        
+        $licence = $results[0];
+        $this->assertEquals('13', $licence['departement']);
+        $this->assertEquals('CD10000056', $licence['licence_number']); // Nouveau format: initiales + 8 chiffres
+        $this->assertEquals('CROCI Dorian', $licence['last_first_name']);
+        $this->assertEquals('23/06/2002', $licence['date_of_birth']);
+        $this->assertEquals('23', $licence['age']);
+        $this->assertEquals('M', $licence['sexe']);
+        $this->assertEquals('AUC13 VB', $licence['club']);
+        $this->assertEquals('013001001', $licence['licence_club']);
+        $this->assertEquals('03/03/2026', $licence['homologation_date']);
+        $this->assertEquals('CD10000056', $licence['licence_number_2']);
+        
+        // Test troisième fichier liguasso (format hybride: ancien numéro dans template liguasso)
+        // Ce fichier contient une vraie photo portrait (127x180)
+        $results = $mgr->get_licences_data(__DIR__ . '/files/licences/03-liguasso.pdf');
+        $this->assertCount(1, $results, "Le PDF 03-liguasso devrait contenir 1 licence");
+        
+        $licence = $results[0];
+        $this->assertEquals('13', $licence['departement']);
+        $this->assertEquals('40232028', $licence['licence_number']); // Ancien format: 8 chiffres seulement
+        $this->assertEquals('ALLEMAND BENJAMIN', $licence['last_first_name']);
+        $this->assertEquals('28/12/1980', $licence['date_of_birth']);
+        $this->assertEquals('45', $licence['age']);
+        $this->assertEquals('M', $licence['sexe']);
+        $this->assertEquals('AIL GRANS', $licence['club']);
+        $this->assertEquals('013044450', $licence['licence_club']);
+        $this->assertEquals('29/09/2025', $licence['homologation_date']);
+        $this->assertEquals('013_40232028', $licence['licence_number_2']);
+        $this->assertNotNull($licence['photo'], "03-liguasso.pdf devrait avoir une photo");
+        $this->assertGreaterThan(0, strlen($licence['photo']), "La photo devrait avoir du contenu");
+    }
+
 
 }
