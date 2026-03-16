@@ -53,8 +53,15 @@ new Vue({
     },
     methods: {
         updateAvailableCompetitions() {
-            const competitions = new Set(this.allMatches.map((match) => match.libelle_competition));
-            this.availableCompetitions = Array.from(competitions).sort();
+            const competitionsMap = new Map();
+            this.allMatches.forEach((match) => {
+                if (!competitionsMap.has(match.code_competition)) {
+                    competitionsMap.set(match.code_competition, match.libelle_competition);
+                }
+            });
+            this.availableCompetitions = Array.from(competitionsMap.entries())
+                .map(([code, libelle]) => ({ code, libelle }))
+                .sort((a, b) => a.libelle.localeCompare(b.libelle));
         },
         fetchAllMatches() {
             axios
@@ -71,7 +78,7 @@ new Vue({
             if (this.filter.selectedCompetition) {
                 const divisions = new Set(
                     this.allMatches
-                        .filter((match) => match.libelle_competition === this.filter.selectedCompetition)
+                        .filter((match) => match.code_competition === this.filter.selectedCompetition)
                         .map((match) => match.division)
                 );
                 this.availableDivisions = Array.from(divisions).sort();

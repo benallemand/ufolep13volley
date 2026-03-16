@@ -27,8 +27,8 @@
             <select v-model="filter.selectedCompetition" @change="updateAvailableDivisions"
                     class="select select-bordered select-sm ml-2">
                 <option value="">toutes</option>
-                <option v-for="competition in availableCompetitions" :key="competition" :value="competition">
-                    {{ competition }}
+                <option v-for="competition in availableCompetitions" :key="competition.code" :value="competition.code">
+                    {{ competition.libelle }}
                 </option>
             </select>
         </label>
