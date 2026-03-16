@@ -59,14 +59,73 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function getMatches($competition = null, $division = null): array
-    {
-        if (empty($competition) && empty($division)) {
-            return $this->get_matches();
+    public function getMatches(
+        $competition = null,
+        $division = null,
+        $showCertified = null,
+        $showNotCertified = null,
+        $showForbiddenPlayer = null,
+        $showPlayedMatchesOnly = null,
+        $showCertifiable = null,
+        $showInProgress = null,
+        $search = null
+    ): array {
+        $conditions = ["1=1"];
+
+        if (!empty($competition)) {
+            $competition = $this->sql_manager->escape($competition);
+            $conditions[] = "m.code_competition = '$competition'";
         }
-        return $this->get_matches("m.code_competition = '$competition' 
-                                    AND m.division = '$division' 
-                                    AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED')");
+
+        if (!empty($division)) {
+            $division = $this->sql_manager->escape($division);
+            $conditions[] = "m.division = '$division'";
+        }
+
+        if ($showCertified === 'true') {
+            $conditions[] = "m.certif = 1";
+        }
+
+        if ($showNotCertified === 'true') {
+            $conditions[] = "m.certif != 1";
+        }
+
+        if ($showForbiddenPlayer === 'true') {
+            $conditions[] = "m.has_forbidden_player = 1";
+        }
+
+        if ($showPlayedMatchesOnly === 'true') {
+            $conditions[] = "m.is_match_score_filled = 1";
+        }
+
+        if ($showCertifiable === 'true') {
+            $conditions[] = "m.certif = 0";
+            $conditions[] = "m.has_forbidden_player = 0";
+            $conditions[] = "m.is_match_score_filled = 1";
+            $conditions[] = "m.is_match_player_filled = 1";
+            $conditions[] = "m.is_sign_match_dom = 1";
+            $conditions[] = "m.is_sign_match_ext = 1";
+            $conditions[] = "m.is_sign_team_dom = 1";
+            $conditions[] = "m.is_sign_team_ext = 1";
+            $conditions[] = "m.is_survey_filled_dom = 1";
+            $conditions[] = "m.is_survey_filled_ext = 1";
+        }
+
+        if ($showInProgress === 'true') {
+            $conditions[] = "m.match_status != 'ARCHIVED'";
+        }
+
+        if (!empty($search)) {
+            $search = $this->sql_manager->escape($search);
+            $conditions[] = "(m.equipe_dom LIKE '%$search%' 
+                OR m.equipe_ext LIKE '%$search%' 
+                OR m.libelle_competition LIKE '%$search%' 
+                OR m.division LIKE '%$search%' 
+                OR m.code_match LIKE '%$search%')";
+        }
+
+        $query = implode(" AND ", $conditions);
+        return $this->get_matches($query);
     }
 
     /**

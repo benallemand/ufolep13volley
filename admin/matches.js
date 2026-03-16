@@ -10,6 +10,7 @@ new Vue({
         searchQuery: "",
         matches: [],
         loadingMatch: null,
+        loading: false,
         filter: {
             selectedCompetition: "",
             selectedDivision: "",
@@ -18,10 +19,12 @@ new Vue({
             showForbiddenPlayer: false,
             showPlayedMatchesOnly: false,
             showCertifiable: false,
+            showInProgress: true,
         },
         user: null,
         availableCompetitions: [],
         availableDivisions: [],
+        allMatches: [],
     },
     computed: {
         canValidate() {
@@ -34,62 +37,40 @@ new Vue({
             };
         },
         filteredMatches() {
-            return this.matches.filter((match) => {
-                const matchesSearch =
-                    match.equipe_dom.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    match.equipe_ext.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    match.libelle_competition.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    match.division.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    match.code_match.toLowerCase().includes(this.searchQuery.toLowerCase());
-                const matchesCompetition =
-                    !this.filter.selectedCompetition ||
-                    match.libelle_competition === this.filter.selectedCompetition;
-                const matchesDivision =
-                    !this.filter.selectedDivision || match.division === this.filter.selectedDivision;
-                const matchesCertif =
-                    !this.filter.showCertified || match.certif === 1;
-                const matchesNotCertif =
-                    !this.filter.showNotCertified || match.certif !== 1;
-                const matchesForbiddenPlayers =
-                    !this.filter.showForbiddenPlayer ||
-                    match.has_forbidden_player === 1;
-                const matchesPlayed =
-                    !this.filter.showPlayedMatchesOnly ||
-                    match.is_match_score_filled === 1;
-
-                const matchesCertifiable =
-                    !this.filter.showCertifiable ||
-                    (match.certif === 0 &&
-                        match.has_forbidden_player === 0 &&
-                        match.is_match_score_filled === 1 &&
-                        match.is_match_player_filled === 1 &&
-                        match.is_sign_match_dom === 1 &&
-                        match.is_sign_match_ext === 1 &&
-                        match.is_sign_team_dom === 1 &&
-                        match.is_sign_team_ext === 1 &&
-                        match.is_survey_filled_dom === 1 &&
-                        match.is_survey_filled_ext === 1);
-
-                return matchesSearch
-                    && matchesCompetition
-                    && matchesDivision
-                    && matchesCertif
-                    && matchesNotCertif
-                    && matchesForbiddenPlayers
-                    && matchesPlayed
-                    && matchesCertifiable;
-            });
+            return this.matches;
         },
+    },
+    watch: {
+        'filter': {
+            handler: function() {
+                this.debouncedFetchMatches();
+            },
+            deep: true
+        },
+        'searchQuery': function() {
+            this.debouncedFetchMatches();
+        }
     },
     methods: {
         updateAvailableCompetitions() {
-            const competitions = new Set(this.matches.map((match) => match.libelle_competition));
+            const competitions = new Set(this.allMatches.map((match) => match.libelle_competition));
             this.availableCompetitions = Array.from(competitions).sort();
+        },
+        fetchAllMatches() {
+            axios
+                .get("/rest/action.php/matchmgr/getMatches")
+                .then((response) => {
+                    this.allMatches = response.data;
+                    this.updateAvailableCompetitions();
+                })
+                .catch((error) => {
+                    console.error("Erreur lors du chargement de tous les matchs :", error);
+                });
         },
         updateAvailableDivisions() {
             if (this.filter.selectedCompetition) {
                 const divisions = new Set(
-                    this.matches
+                    this.allMatches
                         .filter((match) => match.libelle_competition === this.filter.selectedCompetition)
                         .map((match) => match.division)
                 );
@@ -100,16 +81,56 @@ new Vue({
             this.filter.selectedDivision = "";
         },
         fetchMatches() {
+            const params = new URLSearchParams();
+            if (this.filter.selectedCompetition) {
+                params.append('competition', this.filter.selectedCompetition);
+            }
+            if (this.filter.selectedDivision) {
+                params.append('division', this.filter.selectedDivision);
+            }
+            if (this.filter.showCertified) {
+                params.append('showCertified', 'true');
+            }
+            if (this.filter.showNotCertified) {
+                params.append('showNotCertified', 'true');
+            }
+            if (this.filter.showForbiddenPlayer) {
+                params.append('showForbiddenPlayer', 'true');
+            }
+            if (this.filter.showPlayedMatchesOnly) {
+                params.append('showPlayedMatchesOnly', 'true');
+            }
+            if (this.filter.showCertifiable) {
+                params.append('showCertifiable', 'true');
+            }
+            if (this.filter.showInProgress) {
+                params.append('showInProgress', 'true');
+            }
+            if (this.searchQuery) {
+                params.append('search', this.searchQuery);
+            }
+            this.loading = true;
             axios
-                .get("/rest/action.php/matchmgr/getMatches")
+                .get(`/rest/action.php/matchmgr/getMatches?${params.toString()}`)
                 .then((response) => {
                     this.matches = response.data;
-                    this.updateAvailableCompetitions();
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement des matchs :", error);
+                })
+                .finally(() => {
+                    this.loading = false;
                 });
         },
+        debouncedFetchMatches: (function() {
+            let timeout = null;
+            return function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    this.fetchMatches();
+                }, 300);
+            };
+        })(),
         fetchUserDetails() {
             axios
                 .get("/session_user.php")
@@ -152,11 +173,13 @@ new Vue({
             this.filter.showForbiddenPlayer = false;
             this.filter.showCertifiable = false;
             this.filter.showPlayedMatchesOnly = false;
+            this.filter.showInProgress = true;
             this.searchQuery = "";
         },
     },
     created() {
         this.fetchUserDetails();
+        this.fetchAllMatches();
         this.fetchMatches();
     },
 });

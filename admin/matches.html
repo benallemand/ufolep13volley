@@ -81,6 +81,14 @@
             />
             <span>non certifiés</span>
         </label>
+        <label class="flex items-center space-x-2">
+            <input
+                    type="checkbox"
+                    v-model="filter.showInProgress"
+                    class="checkbox checkbox-primary"
+            />
+            <span>en cours</span>
+        </label>
         <input
                 type="text"
                 v-model="searchQuery"
@@ -88,6 +96,10 @@
                 class="input input-bordered flex-grow"
         />
         <button @click="resetFilters" class="btn btn-outline">Réinitialiser</button>
+    </div>
+    <!-- Loading overlay -->
+    <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
     </div>
     <!-- Liste des matchs -->
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

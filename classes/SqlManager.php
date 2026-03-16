@@ -150,6 +150,17 @@ class SqlManager
         return $this->execute($sql);
     }
 
+    /**
+     * Escape a string for safe use in SQL queries.
+     * @param string $value
+     * @return string
+     */
+    public function escape(string $value): string
+    {
+        $db = Database::openDbConnection();
+        return mysqli_real_escape_string($db, $value);
+    }
+
     private function make_values_referenced($arr): array
     {
         $refs = array();
