@@ -413,7 +413,7 @@ export default {
         },
         
         applyTooltips() {
-            // Add tooltips to participant names in brackets-viewer
+            // Add position labels as small text next to participant names
             if (!this.participantTooltips) return;
             
             const container = document.getElementById(this.containerId);
@@ -424,9 +424,13 @@ export default {
             participantElements.forEach(el => {
                 const name = el.textContent.trim();
                 const tooltip = this.participantTooltips[name];
-                if (tooltip) {
-                    el.setAttribute('title', tooltip);
-                    el.style.cursor = 'help';
+                if (tooltip && !el.querySelector('.position-label')) {
+                    // Add small text after the team name
+                    const small = document.createElement('small');
+                    small.className = 'position-label';
+                    small.style.cssText = 'display: block; font-size: 0.7em; opacity: 0.7; font-weight: normal;';
+                    small.textContent = tooltip;
+                    el.appendChild(small);
                 }
             });
         }
