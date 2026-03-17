@@ -24,7 +24,10 @@ export const matchFilterMixin = {
             return true;
         },
         applyBaseFilters(match) {
-            return this.matchesSearchQuery(match) && this.matchesPlayedFilter(match);
+            return this.matchesSearchQuery(match) && this.matchesPlayedFilter(match) && !this.isArchived(match);
+        },
+        isArchived(match) {
+            return match.match_status === 'ARCHIVED';
         },
         resetBaseFilters() {
             this.searchQuery = "";
