@@ -340,11 +340,11 @@ class Rank extends Generic
         return true;
     }
 
-    public function decrementReportCount($compet, $equipe)
+    public function decrementReportCount($compet, $id_equipe)
     {
-        $sql = "UPDATE classements SET report_count = report_count - 1 WHERE id_equipe = $equipe AND code_competition = '$compet' AND report_count > 0";
+        $sql = "UPDATE classements SET report_count = report_count - 1 WHERE id_equipe = $id_equipe AND code_competition = '$compet' AND report_count > 0";
         $this->sql_manager->execute($sql);
-        $this->addActivity("Un report a ete retire pour l'equipe " . $this->team->getTeamName($equipe));
+        $this->addActivity("Un report a ete retire pour l'equipe " . $this->team->getTeamName($id_equipe));
         return true;
     }
 
