@@ -90,36 +90,71 @@ export default {
             // Convert draw data to match format for brackets-viewer
             const matches = [];
             
-            // 1/8 finals from draw - team name only, label for tooltip
+            // 1/8 finals from draw - team1 is always host (first drawn)
             this.drawData.rounds['1_8'].forEach((match, index) => {
+                // If team is resolved, show name + label in small; otherwise just label
+                let team1Display, team2Display;
+                if (match.team1_resolved) {
+                    team1Display = '🏠 ' + match.team1_resolved.nom_equipe;
+                } else {
+                    team1Display = '🏠 ' + match.team1_label;
+                }
+                if (match.team2_resolved) {
+                    team2Display = match.team2_resolved.nom_equipe;
+                } else {
+                    team2Display = match.team2_label;
+                }
                 matches.push({
                     id_match: 1000 + index,
                     journee: '1/8 de finale',
-                    equipe_dom: match.team1_resolved ? match.team1_resolved.nom_equipe : match.team1_label,
-                    equipe_ext: match.team2_resolved ? match.team2_resolved.nom_equipe : match.team2_label,
+                    equipe_dom: team1Display,
+                    equipe_ext: team2Display,
                     id_equipe_dom: match.team1_resolved ? match.team1_resolved.id_equipe : null,
                     id_equipe_ext: match.team2_resolved ? match.team2_resolved.id_equipe : null,
-                    tooltip_dom: match.team1_label,
-                    tooltip_ext: match.team2_label,
+                    // Keep label in small if team is resolved
+                    tooltip_dom: match.team1_resolved ? match.team1_label : null,
+                    tooltip_ext: match.team2_resolved ? match.team2_label : null,
                 });
             });
             
-            // Add placeholder matches for 1/4, 1/2, finale
+            // Get host draw data
+            const hostDraw = this.drawData.host_draw || { '1_4': {}, '1_2': {} };
+            
+            // Add placeholder matches for 1/4 with host info
             for (let i = 0; i < 4; i++) {
+                const quarterNum = i + 1;
+                const winner1 = 2*i + 1;
+                const winner2 = 2*i + 2;
+                const hostWinner = hostDraw['1_4'] ? hostDraw['1_4'][quarterNum] : null;
+                
+                // Determine which team is host
+                const team1IsHost = hostWinner === winner1;
+                const team2IsHost = hostWinner === winner2;
+                
                 matches.push({
                     id_match: 2000 + i,
                     journee: '1/4 de finale',
-                    equipe_dom: 'Vainqueur 1/8 #' + (2*i + 1),
-                    equipe_ext: 'Vainqueur 1/8 #' + (2*i + 2),
+                    equipe_dom: (team1IsHost ? '🏠 ' : '') + 'Vainqueur 1/8 #' + winner1,
+                    equipe_ext: (team2IsHost ? '🏠 ' : '') + 'Vainqueur 1/8 #' + winner2,
                 });
             }
             
+            // Add placeholder matches for 1/2 with host info
             for (let i = 0; i < 2; i++) {
+                const semiNum = i + 1;
+                const winner1 = 2*i + 1;
+                const winner2 = 2*i + 2;
+                const hostWinner = hostDraw['1_2'] ? hostDraw['1_2'][semiNum] : null;
+                
+                // Determine which team is host
+                const team1IsHost = hostWinner === winner1;
+                const team2IsHost = hostWinner === winner2;
+                
                 matches.push({
                     id_match: 3000 + i,
                     journee: '1/2 finale',
-                    equipe_dom: 'Vainqueur 1/4 #' + (2*i + 1),
-                    equipe_ext: 'Vainqueur 1/4 #' + (2*i + 2),
+                    equipe_dom: (team1IsHost ? '🏠 ' : '') + 'Vainqueur 1/4 #' + winner1,
+                    equipe_ext: (team2IsHost ? '🏠 ' : '') + 'Vainqueur 1/4 #' + winner2,
                 });
             }
             

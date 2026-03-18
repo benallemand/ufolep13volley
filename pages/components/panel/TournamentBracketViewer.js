@@ -12,6 +12,7 @@ export default {
           :id="containerId" 
           class="brackets-viewer"
           v-show="libraryLoaded"
+          style="--match-width: 200px; --round-margin: 50px;"
         ></div>
         
         <!-- Message si pas de données -->

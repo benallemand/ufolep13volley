@@ -1284,8 +1284,8 @@ class Rank extends Generic
             throw new Exception("Format JSON invalide pour le tirage");
         }
 
-        // Delete existing draw entries for this competition
-        $existingEntries = $this->registry->find_by_key("finals_draw.$code_competition_finals.");
+        // Delete existing draw entries for this competition (only 1_8, not host)
+        $existingEntries = $this->registry->find_by_key("finals_draw.$code_competition_finals.1_8.");
         foreach ($existingEntries as $entry) {
             $sql = "DELETE FROM registry WHERE id = ?";
             $this->sql_manager->execute($sql, [['type' => 'i', 'value' => $entry['id']]]);
@@ -1389,12 +1389,98 @@ class Rank extends Generic
             ];
         }
 
+        // Get host draw for quarters and semis
+        $hostDraw = $this->getFinalsHostDraw($code_competition_finals);
+
         return [
             'code_competition' => $code_competition_finals,
             'parent_competition' => $parentCode,
             'rounds' => [
                 '1_8' => $eighthFinals,
             ],
+            'host_draw' => $hostDraw,
+        ];
+    }
+
+    /**
+     * Get the host draw for quarters and semi-finals
+     * Format: which winner of previous round hosts the next match
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @return array ['1_4' => [1 => 2, 2 => 3, ...], '1_2' => [1 => 1, ...]]
+     */
+    public function getFinalsHostDraw(string $code_competition_finals): array
+    {
+        $result = [
+            '1_4' => [], // For each quarter (1-4), which 1/8 winner hosts (1-8)
+            '1_2' => [], // For each semi (1-2), which 1/4 winner hosts (1-4)
+        ];
+
+        // Read from registry
+        $entries = $this->registry->find_by_key("finals_draw.$code_competition_finals.host.");
+        foreach ($entries as $entry) {
+            // Key format: finals_draw.{comp}.host.{round}.{match_num}
+            $key = $entry['registry_key'];
+            $parts = explode('.', $key);
+            if (count($parts) === 5) {
+                $round = $parts[3]; // '1_4' or '1_2'
+                $matchNum = intval($parts[4]);
+                $hostWinner = intval($entry['registry_value']);
+                if (isset($result[$round])) {
+                    $result[$round][$matchNum] = $hostWinner;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Save the host draw for quarters and semi-finals
+     * @param string $code_competition_finals e.g. 'cf' or 'kf'
+     * @param string $hostDrawJson JSON with format {1_4: {1: 2, 2: 4, ...}, 1_2: {1: 1, ...}}
+     * @return array
+     * @throws Exception
+     */
+    public function saveFinalsHostDraw(string $code_competition_finals, string $hostDrawJson): array
+    {
+        $hostDraw = json_decode($hostDrawJson, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Format JSON invalide pour le tirage de réception");
+        }
+
+        // Delete existing host draw entries for this competition
+        $existingEntries = $this->registry->find_by_key("finals_draw.$code_competition_finals.host.");
+        foreach ($existingEntries as $entry) {
+            $sql = "DELETE FROM registry WHERE id = ?";
+            $this->sql_manager->execute($sql, [['type' => 'i', 'value' => $entry['id']]]);
+        }
+
+        // Insert new entries
+        $count = 0;
+        foreach (['1_4', '1_2'] as $round) {
+            if (isset($hostDraw[$round]) && is_array($hostDraw[$round])) {
+                foreach ($hostDraw[$round] as $matchNum => $hostWinner) {
+                    // Skip null values
+                    if ($hostWinner === null) {
+                        continue;
+                    }
+                    $key = "finals_draw.$code_competition_finals.host.$round.$matchNum";
+                    $sql = "INSERT INTO registry (registry_key, registry_value) VALUES (?, ?)";
+                    $bindings = [
+                        ['type' => 's', 'value' => $key],
+                        ['type' => 's', 'value' => (string)$hostWinner],
+                    ];
+                    $this->sql_manager->execute($sql, $bindings);
+                    $count++;
+                }
+            }
+        }
+
+        $this->addActivity("Tirage de réception des phases finales sauvegardé pour $code_competition_finals: $count entrées");
+
+        return [
+            'success' => true,
+            'entries_count' => $count,
         ];
     }
 

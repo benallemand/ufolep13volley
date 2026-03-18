@@ -11,6 +11,7 @@ export default {
         </div>
         
         <div v-else>
+          <!-- Section 1/8 de finale -->
           <div class="alert alert-info mb-6">
             <i class="fas fa-info-circle"></i>
             <div>
@@ -64,6 +65,59 @@ export default {
               </div>
             </div>
           </div>
+
+          <!-- Section tirage de réception (quarts et demi-finales) -->
+          <div class="divider"></div>
+          
+          <div class="alert alert-warning mb-6">
+            <i class="fas fa-home"></i>
+            <div>
+              <strong>Tirage de réception des quarts et demi-finales</strong>
+              <p class="text-sm">Indiquez quel vainqueur de 1/8 recevra en quart de finale, et quel vainqueur de 1/4 recevra en demi-finale.</p>
+            </div>
+          </div>
+
+          <!-- Quarts de finale -->
+          <h3 class="text-lg font-semibold mb-3"><i class="fas fa-trophy mr-2"></i>Quarts de finale</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div v-for="quarterNum in 4" :key="'quarter-' + quarterNum"
+                 class="card bg-base-200 shadow-md">
+              <div class="card-body p-4">
+                <h4 class="card-title text-sm">Quart {{ quarterNum }}</h4>
+                <p class="text-xs text-gray-500 mb-2">
+                  Vainqueur 1/8 #{{ quarterNum * 2 - 1 }} vs Vainqueur 1/8 #{{ quarterNum * 2 }}
+                </p>
+                <select class="select select-bordered w-full" 
+                        v-model="hostDraw['1_4'][quarterNum]"
+                        @change="markHostDirty">
+                  <option :value="null">-- Qui reçoit ? --</option>
+                  <option :value="quarterNum * 2 - 1">Vainqueur 1/8 #{{ quarterNum * 2 - 1 }} <i class="fas fa-home"></i></option>
+                  <option :value="quarterNum * 2">Vainqueur 1/8 #{{ quarterNum * 2 }} <i class="fas fa-home"></i></option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demi-finales -->
+          <h3 class="text-lg font-semibold mb-3"><i class="fas fa-trophy mr-2"></i>Demi-finales</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div v-for="semiNum in 2" :key="'semi-' + semiNum"
+                 class="card bg-base-200 shadow-md">
+              <div class="card-body p-4">
+                <h4 class="card-title text-sm">Demi-finale {{ semiNum }}</h4>
+                <p class="text-xs text-gray-500 mb-2">
+                  Vainqueur 1/4 #{{ semiNum * 2 - 1 }} vs Vainqueur 1/4 #{{ semiNum * 2 }}
+                </p>
+                <select class="select select-bordered w-full" 
+                        v-model="hostDraw['1_2'][semiNum]"
+                        @change="markHostDirty">
+                  <option :value="null">-- Qui reçoit ? --</option>
+                  <option :value="semiNum * 2 - 1">Vainqueur 1/4 #{{ semiNum * 2 - 1 }} <i class="fas fa-home"></i></option>
+                  <option :value="semiNum * 2">Vainqueur 1/4 #{{ semiNum * 2 }} <i class="fas fa-home"></i></option>
+                </select>
+              </div>
+            </div>
+          </div>
           
           <!-- Boutons d'action -->
           <div class="flex gap-2">
@@ -85,7 +139,12 @@ export default {
             loading: true,
             saving: false,
             isDirty: false,
+            isHostDirty: false,
             draw: {},
+            hostDraw: {
+                '1_4': { 1: null, 2: null, 3: null, 4: null },
+                '1_2': { 1: null, 2: null }
+            },
             qualifiedPositions: [],
             competitionLabel: '',
         };
@@ -123,9 +182,11 @@ export default {
             const poolsPromise = axios.get(`/rest/action.php/rank/getDivisionsFromCompetition?code_competition=${parentCode}`);
             // Fetch existing draw
             const drawPromise = axios.get(`/rest/action.php/rank/getFinalsDrawRaw?code_competition_finals=${this.code_competition}`);
+            // Fetch existing host draw
+            const hostDrawPromise = axios.get(`/rest/action.php/rank/getFinalsHostDraw?code_competition_finals=${this.code_competition}`);
             
-            Promise.all([poolsPromise, drawPromise])
-                .then(([poolsResponse, drawResponse]) => {
+            Promise.all([poolsPromise, drawPromise, hostDrawPromise])
+                .then(([poolsResponse, drawResponse, hostDrawResponse]) => {
                     const nbPools = poolsResponse.data.length;
                     this.generatePositions(nbPools, hasTableau);
                     
@@ -137,6 +198,21 @@ export default {
                             if (this.draw[num]) {
                                 this.draw[num].team1 = match.team1 || '';
                                 this.draw[num].team2 = match.team2 || '';
+                            }
+                        }
+                    }
+                    
+                    // Load existing host draw if any
+                    const existingHostDraw = hostDrawResponse.data;
+                    if (existingHostDraw) {
+                        if (existingHostDraw['1_4']) {
+                            for (const [matchNum, hostWinner] of Object.entries(existingHostDraw['1_4'])) {
+                                this.hostDraw['1_4'][parseInt(matchNum)] = hostWinner;
+                            }
+                        }
+                        if (existingHostDraw['1_2']) {
+                            for (const [matchNum, hostWinner] of Object.entries(existingHostDraw['1_2'])) {
+                                this.hostDraw['1_2'][parseInt(matchNum)] = hostWinner;
                             }
                         }
                     }
@@ -165,6 +241,9 @@ export default {
         markDirty() {
             this.isDirty = true;
         },
+        markHostDirty() {
+            this.isHostDirty = true;
+        },
         saveDraw() {
             this.saving = true;
             
@@ -183,12 +262,21 @@ export default {
             params.append('code_competition_finals', this.code_competition);
             params.append('drawJson', JSON.stringify(drawArray));
             
-            axios.post('/rest/action.php/rank/saveFullFinalsDraw', params)
-                .then(response => {
-                    if (response.data.success) {
-                        this.isDirty = false;
-                        alert(`Tirage sauvegardé : ${response.data.entries_count} entrées`);
-                    }
+            // Save both draw and host draw
+            const saveDrawPromise = axios.post('/rest/action.php/rank/saveFullFinalsDraw', params);
+            
+            const hostParams = new URLSearchParams();
+            hostParams.append('code_competition_finals', this.code_competition);
+            hostParams.append('hostDrawJson', JSON.stringify(this.hostDraw));
+            const saveHostDrawPromise = axios.post('/rest/action.php/rank/saveFinalsHostDraw', hostParams);
+            
+            Promise.all([saveDrawPromise, saveHostDrawPromise])
+                .then(([drawResponse, hostResponse]) => {
+                    this.isDirty = false;
+                    this.isHostDirty = false;
+                    const drawCount = drawResponse.data.entries_count || 0;
+                    const hostCount = hostResponse.data.entries_count || 0;
+                    alert(`Tirage sauvegardé : ${drawCount} entrées 1/8 + ${hostCount} entrées réception`);
                 })
                 .catch(error => {
                     console.error('Erreur lors de la sauvegarde:', error);
