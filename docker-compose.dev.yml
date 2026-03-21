@@ -1,0 +1,52 @@
+services:
+  php:
+    volumes:
+      - .:/var/www/html/
+      - /var/www/html/vendor
+      # phpdotenv lit un fichier .env sur le disque — on monte .env.docker comme .env
+      - ./.env.docker:/var/www/html/.env:ro
+
+  caddy:
+    ports:
+      - "80:80"
+      # Pas de 443 en local
+    volumes:
+      - ./Caddyfile.local:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # Tests E2E Playwright (lancement : docker compose --profile test run --rm playwright)
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    depends_on:
+      - caddy
+    volumes:
+      - ./e2e:/app/e2e
+      - /app/e2e/node_modules
+      - ../ufolep13volley_python:/app/ufolep13volley_python:ro
+      - ./e2e/test-results:/app/e2e/test-results
+    environment:
+      BASE_URL: http://caddy
+      DB_SERVER: host.docker.internal
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASSWORD: test
+      DB_NAME: ufolep_13volley
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    working_dir: /app/e2e
+    shm_size: '2gb'
+    command: node_modules/.bin/playwright test
+    profiles:
+      - test
+
+  # Serveur SMTP local : capture tous les emails envoyés
+  # Interface web : http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # Interface web
+      - "1025:1025"   # SMTP (utilisé par PHP)

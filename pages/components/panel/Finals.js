@@ -74,63 +74,65 @@ export default {
             return `/rest/action.php/matchmgr/getMatches?competition=${this.code_competition}&division=${this.division}`;
         },
         bracketMatches() {
-            // Combine real matches with draw data for bracket display
-            // Priority: use real matches if they exist, otherwise use draw data
-            
-            // If we have real finals matches, use them
-            if (this.finalsMatches && this.finalsMatches.length > 0) {
-                return this.finalsMatches;
-            }
-            
-            // Otherwise, convert draw data to bracket format
+            // Toujours construire la structure depuis le tirage,
+            // et enrichir les 1/8 avec les vrais matchs insérés quand ils existent.
             if (!this.drawData || !this.drawData.rounds || !this.drawData.rounds['1_8']) {
                 return [];
             }
-            
-            // Convert draw data to match format for brackets-viewer
+
             const matches = [];
-            
-            // 1/8 finals from draw - team1 is always host (first drawn)
-            this.drawData.rounds['1_8'].forEach((match, index) => {
-                // If team is resolved, show name + label in small; otherwise just label
-                let team1Display, team2Display;
-                if (match.team1_resolved) {
-                    team1Display = '🏠 ' + match.team1_resolved.nom_equipe;
-                } else {
-                    team1Display = '🏠 ' + match.team1_label;
-                }
-                if (match.team2_resolved) {
-                    team2Display = match.team2_resolved.nom_equipe;
-                } else {
-                    team2Display = match.team2_label;
-                }
-                matches.push({
-                    id_match: 1000 + index,
-                    journee: '1/8 de finale',
-                    equipe_dom: team1Display,
-                    equipe_ext: team2Display,
-                    id_equipe_dom: match.team1_resolved ? match.team1_resolved.id_equipe : null,
-                    id_equipe_ext: match.team2_resolved ? match.team2_resolved.id_equipe : null,
-                    // Keep label in small if team is resolved
-                    tooltip_dom: match.team1_resolved ? match.team1_label : null,
-                    tooltip_ext: match.team2_resolved ? match.team2_label : null,
-                });
-            });
-            
-            // Get host draw data
             const hostDraw = this.drawData.host_draw || { '1_4': {}, '1_2': {} };
-            
-            // Add placeholder matches for 1/4 with host info
+
+            // 1/8 de finale : tirage + enrichissement avec vrais matchs
+            this.drawData.rounds['1_8'].forEach((drawMatch, index) => {
+                const t1 = drawMatch.team1_resolved ? drawMatch.team1_resolved.id_equipe : null;
+                const t2 = drawMatch.team2_resolved ? drawMatch.team2_resolved.id_equipe : null;
+
+                // Chercher le vrai match correspondant par id_equipe
+                // (pas de filtre sur journee : les matchs insérés peuvent avoir journee=null)
+                const realMatch = (t1 && t2) ? this.finalsMatches.find(m =>
+                    (m.id_equipe_dom === t1 && m.id_equipe_ext === t2) ||
+                    (m.id_equipe_dom === t2 && m.id_equipe_ext === t1)
+                ) : null;
+
+                if (realMatch) {
+                    // Vrai match inséré : on conserve toutes ses données (date, gymnase, score)
+                    // et on ajoute les labels du tirage comme tooltips
+                    matches.push({
+                        ...realMatch,
+                        equipe_dom: '🏠 ' + realMatch.equipe_dom,
+                        tooltip_dom: drawMatch.team1_label,
+                        tooltip_ext: drawMatch.team2_label,
+                    });
+                } else {
+                    // Pas encore de match inséré : placeholder depuis le tirage
+                    const team1Display = drawMatch.team1_resolved
+                        ? '🏠 ' + drawMatch.team1_resolved.nom_equipe
+                        : '🏠 ' + drawMatch.team1_label;
+                    const team2Display = drawMatch.team2_resolved
+                        ? drawMatch.team2_resolved.nom_equipe
+                        : drawMatch.team2_label;
+                    matches.push({
+                        id_match: 1000 + index,
+                        journee: '1/8 de finale',
+                        equipe_dom: team1Display,
+                        equipe_ext: team2Display,
+                        id_equipe_dom: t1,
+                        id_equipe_ext: t2,
+                        tooltip_dom: drawMatch.team1_resolved ? drawMatch.team1_label : null,
+                        tooltip_ext: drawMatch.team2_resolved ? drawMatch.team2_label : null,
+                    });
+                }
+            });
+
+            // 1/4 de finale (placeholders avec info de réception)
             for (let i = 0; i < 4; i++) {
                 const quarterNum = i + 1;
-                const winner1 = 2*i + 1;
-                const winner2 = 2*i + 2;
+                const winner1 = 2 * i + 1;
+                const winner2 = 2 * i + 2;
                 const hostWinner = hostDraw['1_4'] ? hostDraw['1_4'][quarterNum] : null;
-                
-                // Determine which team is host
                 const team1IsHost = hostWinner === winner1;
                 const team2IsHost = hostWinner === winner2;
-                
                 matches.push({
                     id_match: 2000 + i,
                     journee: '1/4 de finale',
@@ -138,18 +140,15 @@ export default {
                     equipe_ext: (team2IsHost ? '🏠 ' : '') + 'Vainqueur 1/8 #' + winner2,
                 });
             }
-            
-            // Add placeholder matches for 1/2 with host info
+
+            // 1/2 finale (placeholders avec info de réception)
             for (let i = 0; i < 2; i++) {
                 const semiNum = i + 1;
-                const winner1 = 2*i + 1;
-                const winner2 = 2*i + 2;
+                const winner1 = 2 * i + 1;
+                const winner2 = 2 * i + 2;
                 const hostWinner = hostDraw['1_2'] ? hostDraw['1_2'][semiNum] : null;
-                
-                // Determine which team is host
                 const team1IsHost = hostWinner === winner1;
                 const team2IsHost = hostWinner === winner2;
-                
                 matches.push({
                     id_match: 3000 + i,
                     journee: '1/2 finale',
@@ -157,14 +156,14 @@ export default {
                     equipe_ext: (team2IsHost ? '🏠 ' : '') + 'Vainqueur 1/4 #' + winner2,
                 });
             }
-            
+
             matches.push({
                 id_match: 4000,
                 journee: 'Finale',
                 equipe_dom: 'Vainqueur 1/2 #1',
                 equipe_ext: 'Vainqueur 1/2 #2',
             });
-            
+
             return matches;
         }
     },
@@ -197,18 +196,12 @@ export default {
                 });
         },
         fetchFinalsMatches() {
+            // L'endpoint filtre déjà par competition=kf/cf, tous les matchs retournés
+            // sont des matchs de phases finales. Pas de filtre supplémentaire par journée
+            // car les matchs insérés peuvent avoir journee=null.
             return axios.get(this.matchesFetchUrl)
                 .then(response => {
-                    // Filtrer les matchs de phases finales
-                    this.finalsMatches = response.data.filter(match => {
-                        const journee = match.journee?.toLowerCase() || '';
-                        return journee.includes('finale') || 
-                               journee.includes('1/8') || 
-                               journee.includes('1/4') || 
-                               journee.includes('1/2') ||
-                               journee.includes('quart') ||
-                               journee.includes('demi');
-                    });
+                    this.finalsMatches = response.data;
                 })
                 .catch(error => {
                     console.error('Erreur lors du chargement des matchs de phases finales:', error);

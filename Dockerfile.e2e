@@ -1,0 +1,9 @@
+FROM mcr.microsoft.com/playwright:v1.58.2-jammy
+
+WORKDIR /app/e2e
+
+# Copier et installer les dépendances Node (playwright + mysql2)
+COPY e2e/package.json ./
+RUN npm install
+
+# Le code des tests est monté en volume au runtime

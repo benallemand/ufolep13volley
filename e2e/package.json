@@ -1,0 +1,12 @@
+{
+  "name": "ufolep13volley-e2e",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed"
+  },
+  "dependencies": {
+    "@playwright/test": "1.58.2",
+    "mysql2": "^3.11.0"
+  }
+}

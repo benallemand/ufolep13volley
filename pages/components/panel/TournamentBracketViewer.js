@@ -7,12 +7,23 @@ export default {
           <span class="ml-2">Chargement de l'arbre de tournoi...</span>
         </div>
         
+        <!-- Override CSS : permettre le retour à la ligne sur les noms longs -->
+        <style>
+          .brackets-viewer .participant .name {
+            overflow: visible !important;
+            white-space: normal !important;
+            text-overflow: unset !important;
+            word-break: break-word;
+            line-height: 1.3;
+          }
+        </style>
+
         <!-- Container pour brackets-viewer -->
-        <div 
-          :id="containerId" 
+        <div
+          :id="containerId"
           class="brackets-viewer"
           v-show="libraryLoaded"
-          style="--match-width: 200px; --round-margin: 50px;"
+          style="--match-width: 220px; --round-margin: 50px;"
         ></div>
         
         <!-- Message si pas de données -->
@@ -73,8 +84,8 @@ export default {
 
             <!-- Informations supplémentaires -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div v-if="selectedMatch.date_reception_raw">
-                <strong>Date :</strong> {{ formatMatchDate(selectedMatch.date_reception_raw) }}
+              <div v-if="selectedMatch.date_reception">
+                <strong>Date :</strong> {{ selectedMatch.date_reception }}
               </div>
               <div v-if="selectedMatch.heure_reception">
                 <strong>Heure :</strong> {{ selectedMatch.heure_reception }}
@@ -196,8 +207,9 @@ export default {
                     }
                 });
                 
-                // Apply tooltips after render
+                // Injecter date et tooltips après rendu
                 this.$nextTick(() => {
+                    this.applyMatchDates();
                     this.applyTooltips();
                 });
 
@@ -227,6 +239,15 @@ export default {
             
             // Store tooltips for later use
             this.participantTooltips = Object.fromEntries(participantsMap);
+
+            // Construire un index clé(noms triés) → match pour l'injection de date
+            this.matchByParticipantKey = new Map();
+            this.matches.forEach(match => {
+                if (match.equipe_dom && match.equipe_ext && match.date_reception) {
+                    const key = [match.equipe_dom, match.equipe_ext].sort().join('||');
+                    this.matchByParticipantKey.set(key, match);
+                }
+            });
 
             // Créer un mapping nom -> id
             const nameToId = {};
@@ -297,22 +318,18 @@ export default {
         },
 
         getMatchScore(match, team) {
-            if (team === 'dom') {
-                return match.score_equipe_dom !== undefined ? match.score_equipe_dom : undefined;
-            } else {
-                return match.score_equipe_ext !== undefined ? match.score_equipe_ext : undefined;
-            }
+            const val = team === 'dom' ? match.score_equipe_dom : match.score_equipe_ext;
+            return (val !== undefined && val !== null) ? val : undefined;
         },
 
         getMatchResult(match, team) {
-            if (match.score_equipe_dom === undefined || match.score_equipe_ext === undefined) {
-                return null;
-            }
+            const dom = match.score_equipe_dom;
+            const ext = match.score_equipe_ext;
+            if (dom == null || ext == null) return null;
 
-            const scoreDom = parseInt(match.score_equipe_dom);
-            const scoreExt = parseInt(match.score_equipe_ext);
-
-            if (scoreDom === scoreExt) return null; // Égalité (pas normal en volleyball)
+            const scoreDom = parseInt(dom);
+            const scoreExt = parseInt(ext);
+            if (scoreDom === scoreExt) return null;
 
             if (team === 'dom') {
                 return scoreDom > scoreExt ? 'win' : 'loss';
@@ -322,10 +339,9 @@ export default {
         },
 
         getMatchStatus(match) {
-            if (match.score_equipe_dom !== undefined && match.score_equipe_ext !== undefined) {
-                return 4; // Completed
-            }
-            return 2; // Ready
+            const dom = match.score_equipe_dom;
+            const ext = match.score_equipe_ext;
+            return (dom != null && ext != null) ? 4 : 2; // 4=Completed, 2=Ready
         },
 
         showMatchDetails(bracketMatch) {
@@ -413,6 +429,37 @@ export default {
             });
         },
         
+        applyMatchDates() {
+            if (!this.matchByParticipantKey || !this.matchByParticipantKey.size) return;
+
+            const container = document.getElementById(this.containerId);
+            if (!container) return;
+
+            container.querySelectorAll('.match').forEach(el => {
+                if (el.querySelector('.match-date-display')) return; // déjà injecté
+
+                const nameEls = el.querySelectorAll('.participant .name');
+                if (nameEls.length < 2) return;
+
+                // Lire uniquement les nœuds texte directs (ignorer les <small> ajoutés ensuite)
+                const getText = (nameEl) => Array.from(nameEl.childNodes)
+                    .filter(n => n.nodeType === 3) // TEXT_NODE
+                    .map(n => n.textContent)
+                    .join('')
+                    .trim();
+
+                const key = [getText(nameEls[0]), getText(nameEls[1])].sort().join('||');
+                const match = this.matchByParticipantKey.get(key);
+                if (!match) return;
+
+                const dateEl = document.createElement('div');
+                dateEl.className = 'match-date-display';
+                dateEl.style.cssText = 'text-align:center;font-size:0.72em;color:#6b7280;padding:2px 4px;border-top:1px solid #e5e7eb;margin-top:2px;';
+                dateEl.textContent = match.date_reception;
+                el.appendChild(dateEl);
+            });
+        },
+
         applyTooltips() {
             // Add position labels as small text next to participant names
             if (!this.participantTooltips) return;
