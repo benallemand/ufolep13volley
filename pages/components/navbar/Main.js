@@ -30,41 +30,68 @@ export default {
               <span><i class="fas fa-calendar mr-2"/>Coupes<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow">
-              <li class="menu-title">Tirages</li>
               <li>
-                <router-link to="/cup-draw/m">
-                  <i class="fas fa-random mr-1"/>tirage coupe Isoardi
-                </router-link>
+                <details>
+                  <summary><i class="fas fa-random mr-2"/>Tirages</summary>
+                  <ul>
+                    <li>
+                      <router-link to="/cup-draw/m">Coupe Isoardi</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/cup-draw-kh">Coupe Khoury Hanna</router-link>
+                    </li>
+                  </ul>
+                </details>
               </li>
               <li>
-                <router-link to="/cup-draw-kh">
-                  <i class="fas fa-random mr-1"/>tirage coupe Khoury Hanna
-                </router-link>
+                <details>
+                  <summary><i class="fas fa-th mr-2"/>Poules</summary>
+                  <ul>
+                    <template v-for="group in groupedPools">
+                      <li class="menu-title">{{ group.libelle }}</li>
+                      <li>
+                        <div class="flex flex-wrap gap-1 p-1">
+                          <router-link
+                            v-for="division in group.divisions"
+                            :key="division.code_competition+division.division"
+                            :to="'/divisions/'+division.code_competition+'/'+division.division"
+                            class="btn btn-xs btn-outline">
+                            {{ division.division }}
+                          </router-link>
+                        </div>
+                      </li>
+                    </template>
+                  </ul>
+                </details>
               </li>
-              <li class="menu-title">Poules</li>
-              <template v-for="group in groupedPools">
-                <li v-for="division in group.divisions" :key="division.code_competition+division.division">
-                  <router-link :to="'/divisions/'+division.code_competition+'/'+ division.division">
-                    {{ group.libelle }} — poule {{ division.division }}
-                  </router-link>
-                </li>
-              </template>
-              <li class="menu-title">Qualifiés</li>
-              <template v-for="group in groupedPools">
-                <li>
-                  <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
-                    <i class="fas fa-list-ol mr-1"/>{{ group.libelle }}
-                  </a>
-                </li>
-              </template>
-              <li class="menu-title">Phases finales</li>
-              <template v-for="group in groupedPools">
-                <li>
-                  <router-link :to="'/finals/'+group.code_competition_finals">
-                    <i class="fas fa-trophy mr-1"/>{{ group.libelle }}
-                  </router-link>
-                </li>
-              </template>
+              <li>
+                <details>
+                  <summary><i class="fas fa-list-ol mr-2"/>Qualifiés</summary>
+                  <ul>
+                    <template v-for="group in groupedPools">
+                      <li>
+                        <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
+                          {{ group.libelle }}
+                        </a>
+                      </li>
+                    </template>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary><i class="fas fa-trophy mr-2"/>Phases finales</summary>
+                  <ul>
+                    <template v-for="group in groupedPools">
+                      <li>
+                        <router-link :to="'/finals/'+group.code_competition_finals">
+                          {{ group.libelle }}
+                        </router-link>
+                      </li>
+                    </template>
+                  </ul>
+                </details>
+              </li>
             </ul>
           </div>
           <div class="dropdown">
