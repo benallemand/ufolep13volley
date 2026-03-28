@@ -4,12 +4,16 @@ export default {
         <div class="card-body p-4">
           <!-- Teams and Score -->
           <div class="grid grid-cols-3 gap-2 items-center text-center">
-            <!-- Home Team -->
+            <!-- Left Team -->
             <div>
               <p class="font-bold text-lg truncate">{{ leftTeamName }}</p>
               <p class="text-xs text-gray-500">{{ leftTeamLabel }}</p>
+              <div v-if="isScorer" class="flex flex-col gap-1 mt-2">
+                <button @click="$emit('increment-left')" class="btn btn-primary text-2xl w-full" style="height:4rem">+1</button>
+                <button @click="$emit('decrement-left')" class="btn btn-outline btn-sm w-full">-1</button>
+              </div>
             </div>
-            
+
             <!-- Score -->
             <div>
               <div class="text-5xl font-bold">
@@ -19,7 +23,7 @@ export default {
               </div>
               <p class="text-sm mt-1">Set {{ score.set_en_cours }}</p>
               <p class="text-lg font-bold">({{ leftSets }} - {{ rightSets }})</p>
-              
+
               <!-- Set Details -->
               <div class="text-xs text-gray-500 mt-2 flex gap-2 justify-center flex-wrap">
                 <span v-if="score.set_1_dom || score.set_1_ext" class="badge badge-ghost">S1: {{ leftSetScore(1) }}-{{ rightSetScore(1) }}</span>
@@ -29,11 +33,15 @@ export default {
                 <span v-if="score.set_5_dom || score.set_5_ext" class="badge badge-ghost">S5: {{ leftSetScore(5) }}-{{ rightSetScore(5) }}</span>
               </div>
             </div>
-            
-            <!-- Away Team -->
+
+            <!-- Right Team -->
             <div>
               <p class="font-bold text-lg truncate">{{ rightTeamName }}</p>
               <p class="text-xs text-gray-500">{{ rightTeamLabel }}</p>
+              <div v-if="isScorer" class="flex flex-col gap-1 mt-2">
+                <button @click="$emit('increment-right')" class="btn btn-secondary text-2xl w-full" style="height:4rem">+1</button>
+                <button @click="$emit('decrement-right')" class="btn btn-outline btn-sm w-full">-1</button>
+              </div>
             </div>
           </div>
         </div>
@@ -46,7 +54,8 @@ export default {
         leftTeamLabel: { type: String, default: '' },
         rightTeamLabel: { type: String, default: '' },
         leftTeamKey: { type: String, required: true },
-        rightTeamKey: { type: String, required: true }
+        rightTeamKey: { type: String, required: true },
+        isScorer: { type: Boolean, default: false }
     },
     computed: {
         leftScore() {

@@ -3,6 +3,19 @@ const { test, expect } = require('@playwright/test');
 // Codes de compétition à tester
 const COMPETITIONS = ['kf', 'cf'];
 
+// Setup global : crée les matchs de test 1/8 avec date et gymnase
+test.beforeAll(async ({ request }) => {
+    const res = await request.get('/e2e/helpers/finals_setup.php');
+    expect(res.status(), 'finals_setup.php doit répondre 200').toBe(200);
+    const body = await res.json();
+    expect(body.error, `Erreur setup finals : ${body.error}`).toBeUndefined();
+});
+
+// Teardown global : supprime les matchs de test
+test.afterAll(async ({ request }) => {
+    await request.get('/e2e/helpers/finals_teardown.php');
+});
+
 for (const code of COMPETITIONS) {
     test.describe(`Phases finales — ${code.toUpperCase()}`, () => {
 
@@ -26,6 +39,8 @@ for (const code of COMPETITIONS) {
             expect(joined).toContain('1/4');
             expect(joined).toContain('1/2');
             expect(joined).toContain('finale');
+
+            await page.screenshot({ path: `test-results/issue-215/proof-${code}-arbre-complet.png` });
         });
 
         test('les matchs de 1/8 affichent des équipes réelles (pas des labels de tirage)', async ({ page }) => {
@@ -42,6 +57,8 @@ for (const code of COMPETITIONS) {
             for (const name of huitiemesNames) {
                 expect(name.trim()).not.toMatch(/^Vainqueur/i);
             }
+
+            await page.screenshot({ path: `test-results/issue-215/proof-${code}-equipes-reelles-huitiemes.png` });
         });
 
         test('les matchs de 1/8 affichent la date directement dans l\'arbre', async ({ page }) => {
@@ -55,14 +72,16 @@ for (const code of COMPETITIONS) {
             // Les dates affichées doivent être au format dd/mm/yyyy
             const firstDate = await dateBadges.first().textContent();
             expect(firstDate).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
+
+            await page.screenshot({ path: `test-results/issue-215/proof-${code}-dates-dans-arbre.png` });
         });
 
         test('un clic sur un match de 1/8 ouvre la modal avec date et gymnase', async ({ page }) => {
             const bracket = page.locator('.brackets-viewer');
             await expect(bracket).toBeVisible({ timeout: 15000 });
 
-            // Cibler un match du premier round (1/8) — brackets-viewer rend les rounds
-            // dans l'ordre ; le premier contient les vrais matchs insérés avec une date
+            // Cibler un match du premier round (1/8) — le premier round contient
+            // les vrais matchs insérés par le setup avec date_reception
             const firstRound = bracket.locator('.round, [class*="round"]').first();
             const firstMatch = firstRound.locator('.match, [class*="match"]').first();
             await firstMatch.click();
@@ -71,11 +90,13 @@ for (const code of COMPETITIONS) {
             const modal = page.locator('.modal.modal-open');
             await expect(modal).toBeVisible({ timeout: 5000 });
 
-            // La date doit être présente (les matchs insérés ont date_reception = '01/06/2026')
+            // La date doit être présente
             await expect(modal.locator('strong:has-text("Date")')).toBeVisible();
 
             // Le gymnase doit être présent
             await expect(modal.locator('strong:has-text("Lieu")')).toBeVisible();
+
+            await page.screenshot({ path: `test-results/issue-215/proof-${code}-modal-details-match.png` });
 
             // Fermer
             await modal.locator('button.btn').click();
@@ -88,6 +109,8 @@ for (const code of COMPETITIONS) {
             // Le composant Matchs.js rend des filtres + des match-cards
             // On attend que les checkboxes de filtre soient visibles
             await expect(page.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 10000 });
+
+            await page.screenshot({ path: `test-results/issue-215/proof-${code}-liste-matchs.png` });
         });
     });
 }

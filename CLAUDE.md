@@ -5,9 +5,10 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 ## Stack Technique
 
 - **Backend** : PHP 8.1, MySQL
-- **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI
+- **Frontend client** : Vue.js 2, Tailwind CSS, DaisyUI
 - **Frontend admin** : Sencha/ExtJS (interface d'administration)
-- **Tests** : PHPUnit (`unit_tests/`)
+- **Tests unitaires** : PHPUnit (`unit_tests/`)
+- **Tests E2E** : Playwright (`e2e/`)
 - **Reverse proxy local** : Caddy (Docker)
 - **Déploiement** : Docker + GitHub Actions → OVH
 
@@ -33,6 +34,11 @@ js/               # JavaScript admin (ExtJS/Sencha)
 admin/            # Interface admin Vue.js moderne (en cours de migration)
   components/     # Web components JS
 unit_tests/       # Tests PHPUnit
+e2e/              # Tests E2E Playwright
+  tests/          # Specs (.spec.js), un fichier par ticket/feature
+  helpers/        # Helpers PHP (setup/teardown DB pour les tests)
+  playwright.config.js
+  global-setup.js # Setup global (données SQL optionnelles)
 templates/emails/ # Templates d'emails HTML
 sql/              # Requêtes SQL utilitaires (lecture seule, pas de migrations)
 images/           # Assets images
@@ -65,8 +71,31 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml exec php vendor/b
 
 ### Tests E2E Playwright
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile test run --rm playwright
+docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright
 ```
+
+**Architecture des tests E2E :**
+- Chaque spec est dans `e2e/tests/` et correspond à un ticket GitHub (ex. `live_score.spec.js` → issue #217)
+- Les données de test sont créées/nettoyées via des helpers PHP (`e2e/helpers/`) appelés en `beforeAll`/`afterAll`
+- Les helpers PHP vérifient `APP_ENV=test` avant d'agir — ne jamais déployer en production
+- Les screenshots de preuve sont rangés dans `e2e/test-results/issue-{N}/`
+- `workers: 1` dans `playwright.config.js` : les tests partagent une DB, pas de parallélisme
+
+**Pattern setup/teardown :**
+```js
+test.beforeAll(async ({ request }) => {
+    const res = await request.get('/e2e/helpers/mon_setup.php');
+    expect(res.status()).toBe(200);
+});
+test.afterAll(async ({ request }) => {
+    await request.get('/e2e/helpers/mon_teardown.php');
+});
+```
+
+**Helpers PHP existants :**
+- `test_setup.php` / `test_teardown.php` — match live score (issue #217)
+- `test_verify.php` — vérifie les scores en base après `save_to_match`
+- `finals_setup.php` / `finals_teardown.php` — matchs 1/8 finale KF/CF (issue #215)
 
 ### Installer les dépendances PHP
 ```bash
@@ -118,9 +147,10 @@ class MonTest extends UfolepTestCase {
 
 ## Frontend Vue.js (pages publiques)
 
-- Vue.js 3 chargé via CDN ou bundler
+- Vue.js 2 chargé via CDN
 - Tailwind CSS + DaisyUI pour les composants UI
-- Fichiers `.js` à la racine ou dans `admin/` pour les nouvelles pages
+- Fichiers `.js` à la racine ou dans `pages/components/` pour les composants
+- Communication parent→enfant : props ; enfant→parent : `$emit()`
 
 ## Frontend ExtJS (admin)
 
@@ -137,6 +167,8 @@ class MonTest extends UfolepTestCase {
 ## Points d'attention
 
 - **Scripts SQL de migration** : les stocker dans `ufolep13volley_python/sql/updates/{année}/` — PAS dans ce repo
+- **Structure des tables** : schéma de référence dans `ufolep13volley_python/sql/ufolepvocbufolep.sql`
+- **`matchs_view`** : vue SQL centrale utilisée par `MatchMgr::get_matches()` — fait un INNER JOIN sur `competitions`, donc tout match de test doit avoir une `code_competition` existante dans cette table
 - **Fichiers ignorés par git** : `players_pics/`, `teams_pics/`, `match_files/` (photos et feuilles de match)
 - **Encodage** : toujours LF, jamais CRLF
 - **Composer** : utiliser `composer.phar` local, pas un composer global

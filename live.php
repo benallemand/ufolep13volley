@@ -115,7 +115,12 @@ if ($id_match) {
                 :left-team-label="leftTeamLabel"
                 :right-team-label="rightTeamLabel"
                 :left-team-key="leftTeamKey"
-                :right-team-key="rightTeamKey">
+                :right-team-key="rightTeamKey"
+                :is-scorer="canScore && isScorer && isLive"
+                @increment-left="incrementLeft"
+                @increment-right="incrementRight"
+                @decrement-left="decrementLeft"
+                @decrement-right="decrementRight">
             </score-board>
 
             <!-- Scorer Controls (only for authorized users in scorer mode) -->

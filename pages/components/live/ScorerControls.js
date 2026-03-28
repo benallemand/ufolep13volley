@@ -165,33 +165,6 @@ export default {
             </div>
           </div>
           
-          <!-- Score Buttons -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <!-- Left buttons -->
-            <div class="flex flex-col gap-2">
-              <button @click="$emit('increment-left')" 
-                      class="btn btn-primary btn-lg h-24 text-3xl">
-                +1
-              </button>
-              <button @click="$emit('decrement-left')" 
-                      class="btn btn-outline btn-sm">
-                -1
-              </button>
-            </div>
-            
-            <!-- Right buttons -->
-            <div class="flex flex-col gap-2">
-              <button @click="$emit('increment-right')" 
-                      class="btn btn-secondary btn-lg h-24 text-3xl">
-                +1
-              </button>
-              <button @click="$emit('decrement-right')" 
-                      class="btn btn-outline btn-sm">
-                -1
-              </button>
-            </div>
-          </div>
-          
           <!-- Timeouts -->
           <div class="divider">Temps morts</div>
           <div class="grid grid-cols-2 gap-4 mb-2">
@@ -248,7 +221,7 @@ export default {
           
           <!-- End Match -->
           <div class="mt-4 flex flex-col gap-2">
-            <button @click="$emit('save-to-match')" class="btn btn-success btn-block" v-if="score && (score.sets_dom >= 3 || score.sets_ext >= 3)">
+            <button @click="$emit('save-to-match')" class="btn btn-success btn-block" v-if="score && (score.sets_dom + score.sets_ext > 0)">
               <i class="fas fa-save mr-1"></i> Renseigner les scores du match
             </button>
             <button @click="$emit('end-live')" class="btn btn-error btn-block">

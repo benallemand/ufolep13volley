@@ -1,0 +1,32 @@
+###############################################################################
+# docker-compose.e2e.yml
+#
+# Utilisation :
+#   docker compose -f docker-compose.yml -f docker-compose.e2e.yml \
+#       run --rm playwright
+#
+# Le service `playwright` execute les tests E2E contre le service `php`.
+# Le service `php` est démarré avec APP_ENV=test pour autoriser les helpers.
+###############################################################################
+
+services:
+  # Override du service php pour activer le mode test
+  php:
+    environment:
+      - APP_ENV=test
+
+  # Service Playwright (Node.js + navigateurs Chromium pré-installés)
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.58.2-jammy
+    working_dir: /app/e2e
+    volumes:
+      - .:/app
+    environment:
+      - BASE_URL=http://php
+      - CI=true
+    command: >
+      sh -c "npm install && npx playwright test --reporter=list"
+    depends_on:
+      - php
+    networks:
+      - default
