@@ -29,34 +29,39 @@ export default {
             <div tabindex="0" role="button" class="btn btn-ghost">
               <span><i class="fas fa-calendar mr-2"/>Coupes<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-              <li class="menu-title">Coupe Isoardi</li>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow">
+              <li class="menu-title">Tirages</li>
               <li>
                 <router-link to="/cup-draw/m">
                   <i class="fas fa-random mr-1"/>tirage coupe Isoardi
                 </router-link>
               </li>
-              <li class="menu-title">Coupe Khoury Hanna</li>
               <li>
                 <router-link to="/cup-draw-kh">
                   <i class="fas fa-random mr-1"/>tirage coupe Khoury Hanna
                 </router-link>
               </li>
+              <li class="menu-title">Poules</li>
               <template v-for="group in groupedPools">
-                <li class="menu-title">{{ group.libelle }}</li>
-                <li>
-                  <router-link :to="'/finals/'+group.code_competition_finals">
-                    phases finales
-                  </router-link>
-                </li>
-                <li>
-                  <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
-                    classement général
-                  </a>
-                </li>
                 <li v-for="division in group.divisions" :key="division.code_competition+division.division">
                   <router-link :to="'/divisions/'+division.code_competition+'/'+ division.division">
-                    poule {{ division.division }}
+                    {{ group.libelle }} — poule {{ division.division }}
+                  </router-link>
+                </li>
+              </template>
+              <li class="menu-title">Qualifiés</li>
+              <template v-for="group in groupedPools">
+                <li>
+                  <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
+                    <i class="fas fa-list-ol mr-1"/>{{ group.libelle }}
+                  </a>
+                </li>
+              </template>
+              <li class="menu-title">Phases finales</li>
+              <template v-for="group in groupedPools">
+                <li>
+                  <router-link :to="'/finals/'+group.code_competition_finals">
+                    <i class="fas fa-trophy mr-1"/>{{ group.libelle }}
                   </router-link>
                 </li>
               </template>
