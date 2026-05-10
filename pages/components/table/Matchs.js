@@ -5,7 +5,9 @@ export default {
     template: `
       <div>
         ${filterBarTemplate}
-        <table class="table mt-2 table-pin-rows bg-base-100">
+        <div v-for="week in matchesByWeek" :key="week.label" class="mb-6">
+          <h3 class="text-lg font-bold bg-primary/10 p-2 rounded mb-2">{{ week.label }} ({{ week.matches.length }} matchs)</h3>
+          <table class="table table-pin-rows bg-base-100">
           <thead>
           <tr>
             <th>code</th>
@@ -18,7 +20,7 @@ export default {
           </tr>
           </thead>
           <tbody>
-          <tr v-for="match in filteredMatchs" :key="match.id_match">
+          <tr v-for="match in week.matches" :key="match.id_match">
             <td>
               <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
                  target="_blank">{{ match.code_match }}
@@ -76,7 +78,8 @@ export default {
             </td>
           </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
         <div v-if="filteredMatchs.length === 0" class="text-center text-gray-500 py-4">
           Aucun match ne correspond aux critères de recherche.
         </div>
@@ -92,6 +95,28 @@ export default {
     }, computed: {
         filteredMatchs() {
             return this.matchs.filter(match => this.applyBaseFilters(match));
+        },
+        matchesByWeek() {
+            const grouped = {};
+            const noDateMatches = [];
+            this.filteredMatchs.forEach(match => {
+                if (!match.date_reception_raw) {
+                    noDateMatches.push(match);
+                    return;
+                }
+                const date = new Date(match.date_reception_raw);
+                const weekStart = this.getWeekStart(date);
+                const weekKey = weekStart.toISOString().split('T')[0];
+                if (!grouped[weekKey]) {
+                    grouped[weekKey] = { matches: [], label: this.formatWeekLabel(weekStart), weekKey };
+                }
+                grouped[weekKey].matches.push(match);
+            });
+            const result = Object.values(grouped).sort((a, b) => a.weekKey.localeCompare(b.weekKey));
+            if (noDateMatches.length > 0) {
+                result.unshift({ matches: noDateMatches, label: 'Date non trouvée' });
+            }
+            return result;
         },
     }, methods: {
         fetch() {
@@ -114,6 +139,21 @@ export default {
         },
         isMatchFinished(match) {
             return match.score_equipe_dom === 3 || match.score_equipe_ext === 3;
+        },
+        getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        },
+        formatWeekLabel(weekStart) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 4);
+            const options = { day: 'numeric', month: 'long' };
+            const startStr = weekStart.toLocaleDateString('fr-FR', options);
+            const endStr = weekEnd.toLocaleDateString('fr-FR', options);
+            const year = weekStart.getFullYear();
+            return `Semaine du ${startStr} au ${endStr} ${year}`;
         },
         addToGoogleCalendar(match) {
             // Convertir le timestamp en date
