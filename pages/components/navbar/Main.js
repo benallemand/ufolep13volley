@@ -165,17 +165,10 @@ export default {
                 </a>
               </li>
               <li>
-                <router-link :to="'/general-rules'">
-                  <i class="fas fa-scale-balanced mr-2"/>général
+                <router-link :to="'/ufolep-rules'">
+                  <i class="fas fa-book mr-2"/>Ufolep 13
                 </router-link>
               </li>
-              <li><a href="/infos_utiles/Media/ReglementFeminin.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat féminin</a></li>
-              <li><a href="/infos_utiles/Media/ReglementMasculin.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat masculin</a></li>
-              <li>
-                <a href="/infos_utiles/Media/ReglementChampionnatMixte.pdf" target="_blank"><i class="fas fa-link mr-2"/>Championnat mixte</a>
-              </li>
-              <li><a href="/infos_utiles/Media/ReglementKouryHanna.pdf" target="_blank"><i class="fas fa-link mr-2"/>Coupe Khoury Hanna</a></li>
-              <li><a href="/infos_utiles/Media/ReglementIsoardi.pdf" target="_blank"><i class="fas fa-link mr-2"/>Coupe Isoardi</a></li>
             </ul>
           </div>
           <div v-if="isActingAs" class="flex gap-1 items-center">

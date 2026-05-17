@@ -61,6 +61,10 @@ const routes = [
         component: () => import('../panel/GeneralRules.js'),
     },
     {
+        path: '/ufolep-rules',
+        component: () => import('../panel/UfolepRules.js'),
+    },
+    {
         path: '/cup-draw/:code_competition',
         component: () => import('../panel/CupDraw.js'),
     },
