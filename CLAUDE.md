@@ -96,6 +96,7 @@ test.afterAll(async ({ request }) => {
 - `test_setup.php` / `test_teardown.php` — match live score (issue #217)
 - `test_verify.php` — vérifie les scores en base après `save_to_match`
 - `finals_setup.php` / `finals_teardown.php` — matchs 1/8 finale KF/CF (issue #215)
+- `messages_setup.php` / `messages_teardown.php` — emails non lus pour responsable d'équipe (issue #221)
 
 ### Installer les dépendances PHP
 ```bash

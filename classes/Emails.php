@@ -1011,9 +1011,123 @@ class Emails extends Generic
                     body,
                     DATE_FORMAT(creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
                     DATE_FORMAT(sent_date, '%d/%m/%Y %H:%i:%s') AS sent_date,
-                    sending_status
+                    sending_status,
+                    is_read
                 FROM emails
                 WHERE $query
                 ORDER BY id DESC";
+    }
+
+    /**
+     * Retourne les emails destinés à une équipe (to, cc, bcc matchent une adresse liée à l'équipe).
+     * Accessible uniquement à l'admin ou au responsable de l'équipe en session.
+     * @param int $id_equipe
+     * @return array
+     * @throws Exception
+     */
+    public function get_team_emails(int $id_equipe): array
+    {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Accès non autorisé !", 401);
+        }
+        if (UserManager::isTeamLeader()) {
+            $session_team = (int)$_SESSION['id_equipe'];
+            if ($session_team !== $id_equipe) {
+                throw new Exception("Vous n'êtes pas autorisé à consulter les messages de cette équipe !", 401);
+            }
+        }
+        $sql = "SELECT DISTINCT j.email
+                FROM joueurs j
+                JOIN joueur_equipe je ON je.id_joueur = j.id
+                WHERE je.id_equipe = ?
+                  AND j.email IS NOT NULL
+                  AND j.email != ''";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+        );
+        $rows = $this->sql_manager->execute($sql, $bindings);
+        if (empty($rows)) {
+            return array();
+        }
+        $addresses = array_map(fn($r) => $r['email'], $rows);
+        $placeholders = implode(',', array_fill(0, count($addresses), '?'));
+        $addr_bindings = array_map(fn($a) => array('type' => 's', 'value' => $a), $addresses);
+        $addr_bindings_2 = $addr_bindings;
+        $addr_bindings_3 = $addr_bindings;
+        $email_sql = "SELECT
+                    id,
+                    to_email,
+                    cc,
+                    bcc,
+                    subject,
+                    LEFT(body, 200) AS body_preview,
+                    body,
+                    DATE_FORMAT(creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date_fmt,
+                    DATE_FORMAT(sent_date, '%d/%m/%Y %H:%i:%s') AS sent_date_fmt,
+                    sending_status,
+                    is_read
+                FROM emails
+                WHERE (to_email IN ($placeholders)
+                    OR cc IN ($placeholders)
+                    OR bcc IN ($placeholders))
+                ORDER BY creation_date DESC, id DESC";
+        return $this->sql_manager->execute($email_sql, array_merge($addr_bindings, $addr_bindings_2, $addr_bindings_3));
+    }
+
+    /**
+     * Met à jour le statut de lecture d'un email.
+     * Accessible uniquement à l'admin ou au responsable d'une équipe qui a reçu cet email.
+     * @param int $id
+     * @param int $is_read
+     * @throws Exception
+     */
+    public function set_read_status(int $id, int $is_read): void
+    {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Accès non autorisé !", 401);
+        }
+        if (UserManager::isTeamLeader()) {
+            $id_equipe = (int)$_SESSION['id_equipe'];
+            $emails = $this->get_team_emails($id_equipe);
+            $ids = array_column($emails, 'id');
+            if (!in_array($id, $ids)) {
+                throw new Exception("Vous n'êtes pas autorisé à modifier cet email !", 401);
+            }
+        }
+        $sql = "UPDATE emails SET is_read = ? WHERE id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $is_read ? 1 : 0),
+            array('type' => 'i', 'value' => $id),
+        );
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Marque tous les emails d'une équipe comme lus.
+     * @param int $id_equipe
+     * @throws Exception
+     */
+    public function mark_all_read(int $id_equipe): void
+    {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Accès non autorisé !", 401);
+        }
+        if (UserManager::isTeamLeader()) {
+            $session_team = (int)$_SESSION['id_equipe'];
+            if ($session_team !== $id_equipe) {
+                throw new Exception("Vous n'êtes pas autorisé à modifier les messages de cette équipe !", 401);
+            }
+        }
+        $emails = $this->get_team_emails($id_equipe);
+        if (empty($emails)) {
+            return;
+        }
+        $ids = array_column($emails, 'id');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $ids);
+        $this->sql_manager->execute(
+            "UPDATE emails SET is_read = 1 WHERE id IN ($placeholders)",
+            $bindings
+        );
     }
 }
