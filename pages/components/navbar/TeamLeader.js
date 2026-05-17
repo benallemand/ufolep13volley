@@ -71,6 +71,10 @@ export default {
                 </li>
               </ul>
             </div>
+            <router-link to="/messages" class="btn btn-ghost relative">
+              <span><i class="mr-2 fas fa-envelope"></i>messages</span>
+              <span v-if="unreadCount > 0" class="badge badge-error badge-xs absolute -top-1 -right-1">{{ unreadCount }}</span>
+            </router-link>
             <router-link to="/preferences" class="btn btn-ghost">
               <span><i class="mr-2 fas fa-gear"></i>préférences</span>
             </router-link>
@@ -84,9 +88,21 @@ export default {
             user: null,
             currentTeam: null,
             teams: null,
+            unreadCount: 0,
         };
     },
     methods: {
+        fetchUnreadCount() {
+            axios.get('/session_user.php').then((response) => {
+                if (response.data && !response.data.error && response.data.id_equipe) {
+                    axios.get(`/rest/action.php/emails/get_team_emails?id_equipe=${response.data.id_equipe}`)
+                        .then((r) => {
+                            this.unreadCount = r.data.filter(e => !parseInt(e.is_read)).length;
+                        })
+                        .catch(() => {});
+                }
+            }).catch(() => {});
+        },
         fetchUserDetails() {
             axios
                 .get("/session_user.php")
@@ -126,5 +142,6 @@ export default {
     },
     created() {
         this.fetchUserDetails();
+        this.fetchUnreadCount();
     },
 };

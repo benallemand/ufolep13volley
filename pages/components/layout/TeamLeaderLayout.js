@@ -56,6 +56,10 @@ const routes = [
         component: () => import('../list/Matchs.js'),
         props: () => ({fetchUrl: "/rest/action.php/matchmgr/getMyClubMatches"})
     },
+    {
+        path: '/messages',
+        component: () => import('../panel/TeamLeaderMessages.js')
+    },
     {path: '*', redirect: '/dashboard'}
 ];
 
