@@ -532,6 +532,12 @@ class Files extends Generic
                     $extractedDepartement = ltrim($matches[1], '0');
                     $licenceNumber = $matches[2];
                 }
+                // Format 3: département numérique + numéro alphanumérique (ex: 013_MH10000137)
+                elseif (preg_match('/^N°\s+0?(\d{2,3})_([A-Z]{1,2}\d+)$/', $item, $matches)) {
+                    $isNewLicence = true;
+                    $extractedDepartement = ltrim($matches[1], '0');
+                    $licenceNumber = $matches[2];
+                }
                 
                 if ($isNewLicence) {
                     // Nouvelle licence détectée - sauvegarder la précédente si elle existe

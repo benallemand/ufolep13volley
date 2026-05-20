@@ -209,5 +209,34 @@ class FilesTest extends UfolepTestCase
         $this->assertGreaterThan(0, strlen($licence['photo']), "La photo devrait avoir du contenu");
     }
 
+    public function test_licence_ufolep_30438335()
+    {
+        $mgr = new Files();
+        $results = $mgr->get_licences_data(__DIR__ . '/files/licences/licence_ufolep_30438335.pdf');
+
+        $this->assertGreaterThan(0, count($results), "Le PDF devrait contenir au moins 1 licence");
+
+        echo "\n\nRésultats d'import - licence_ufolep_30438335.pdf\n";
+        echo str_repeat("=", 60) . "\n";
+        echo "Nombre de licences trouvées : " . count($results) . "\n";
+
+        foreach ($results as $index => $licence) {
+            echo "\n--- Licence #" . ($index + 1) . " ---\n";
+            echo "  Département           : " . ($licence['departement'] ?? 'N/A') . "\n";
+            echo "  Numéro de licence     : " . ($licence['licence_number'] ?? 'N/A') . "\n";
+            echo "  Numéro de licence (2) : " . ($licence['licence_number_2'] ?? 'N/A') . "\n";
+            echo "  Nom/Prénom            : " . ($licence['last_first_name'] ?? 'N/A') . "\n";
+            echo "  Date de naissance     : " . ($licence['date_of_birth'] ?? 'N/A') . "\n";
+            echo "  Âge                   : " . ($licence['age'] ?? 'N/A') . "\n";
+            echo "  Sexe                  : " . ($licence['sexe'] ?? 'N/A') . "\n";
+            echo "  Club                  : " . ($licence['club'] ?? 'N/A') . "\n";
+            echo "  N° affiliation club   : " . ($licence['licence_club'] ?? 'N/A') . "\n";
+            echo "  Date homologation     : " . ($licence['homologation_date'] ?? 'N/A') . "\n";
+            echo "  Photo                 : " . ($licence['photo'] !== null ? 'Oui (' . strlen($licence['photo']) . ' octets)' : 'Non') . "\n";
+        }
+
+        echo str_repeat("=", 60) . "\n\n";
+    }
+
 
 }
