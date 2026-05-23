@@ -91,16 +91,34 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     focus: function (combo) {
                         var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
                         var division = combo.up('form').down('textfield[name=division]').getValue();
-                        combo.getStore().filter([{
-                            property: 'code_competition',
-                            value: code_competition,
-                            exactMatch: true
-                        },
-                            {
-                                property: 'division',
-                                value: division,
+                        
+                        // Pour les compétitions de coupe (CF, KF), afficher les équipes qualifiées depuis les poules
+                        // CF -> équipes de 'c' (poules féminines), KF -> équipes de 'kh' (poules masculines)
+                        if (code_competition === 'cf') {
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: 'c', // Équipes qualifiées depuis les poules féminines
                                 exactMatch: true
                             }]);
+                        } else if (code_competition === 'kf') {
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: 'kh', // Équipes qualifiées depuis les poules masculines
+                                exactMatch: true
+                            }]);
+                        } else {
+                            // Pour les championnats classiques, filtrer par code_competition ET division
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: code_competition,
+                                exactMatch: true
+                            },
+                                {
+                                    property: 'division',
+                                    value: division,
+                                    exactMatch: true
+                                }]);
+                        }
                     }
                 },
                 forceSelection: true
@@ -118,16 +136,34 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                     focus: function (combo) {
                         var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
                         var division = combo.up('form').down('textfield[name=division]').getValue();
-                        combo.getStore().filter([{
-                            property: 'code_competition',
-                            value: code_competition,
-                            exactMatch: true
-                        },
-                            {
-                                property: 'division',
-                                value: division,
+                        
+                        // Pour les compétitions de coupe (CF, KF), afficher les équipes qualifiées depuis les poules
+                        // CF -> équipes de 'c' (poules féminines), KF -> équipes de 'kh' (poules masculines)
+                        if (code_competition === 'cf') {
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: 'c', // Équipes qualifiées depuis les poules féminines
                                 exactMatch: true
                             }]);
+                        } else if (code_competition === 'kf') {
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: 'kh', // Équipes qualifiées depuis les poules masculines
+                                exactMatch: true
+                            }]);
+                        } else {
+                            // Pour les championnats classiques, filtrer par code_competition ET division
+                            combo.getStore().filter([{
+                                property: 'code_competition',
+                                value: code_competition,
+                                exactMatch: true
+                            },
+                                {
+                                    property: 'division',
+                                    value: division,
+                                    exactMatch: true
+                                }]);
+                        }
                     }
                 },
                 forceSelection: true
