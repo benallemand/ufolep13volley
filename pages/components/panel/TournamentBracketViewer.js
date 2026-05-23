@@ -6,17 +6,6 @@ export default {
           <div class="loading loading-spinner loading-lg"></div>
           <span class="ml-2">Chargement de l'arbre de tournoi...</span>
         </div>
-        
-        <!-- Override CSS : permettre le retour à la ligne sur les noms longs -->
-        <style>
-          .brackets-viewer .participant .name {
-            overflow: visible !important;
-            white-space: normal !important;
-            text-overflow: unset !important;
-            word-break: break-word;
-            line-height: 1.3;
-          }
-        </style>
 
         <!-- Container pour brackets-viewer -->
         <div
@@ -137,6 +126,7 @@ export default {
     },
     async mounted() {
         await this.loadBracketsViewer();
+        this.injectCustomCSS();
         this.renderBracket();
     },
     methods: {
@@ -159,6 +149,27 @@ export default {
             } catch (error) {
                 console.error('Erreur lors du chargement de brackets-viewer:', error);
             }
+        },
+
+        injectCustomCSS() {
+            // Vérifier si le CSS personnalisé est déjà injecté
+            if (document.querySelector('#brackets-viewer-custom-css')) {
+                return;
+            }
+
+            // Créer et injecter le CSS personnalisé
+            const customCSS = document.createElement('style');
+            customCSS.id = 'brackets-viewer-custom-css';
+            customCSS.textContent = `
+                .brackets-viewer .participant .name {
+                    overflow: visible !important;
+                    white-space: normal !important;
+                    text-overflow: unset !important;
+                    word-break: break-word;
+                    line-height: 1.3;
+                }
+            `;
+            document.head.appendChild(customCSS);
         },
 
         loadScript(src) {
@@ -430,8 +441,6 @@ export default {
         },
         
         applyMatchDates() {
-            if (!this.matchByParticipantKey || !this.matchByParticipantKey.size) return;
-
             const container = document.getElementById(this.containerId);
             if (!container) return;
 
@@ -448,9 +457,36 @@ export default {
                     .join('')
                     .trim();
 
-                const key = [getText(nameEls[0]), getText(nameEls[1])].sort().join('||');
-                const match = this.matchByParticipantKey.get(key);
-                if (!match) return;
+                const team1Name = getText(nameEls[0]);
+                const team2Name = getText(nameEls[1]);
+                
+                let match = null;
+
+                // 1. Essayer de trouver dans matchByParticipantKey (pour les 1/8)
+                if (this.matchByParticipantKey && this.matchByParticipantKey.size) {
+                    const key = [team1Name, team2Name].sort().join('||');
+                    match = this.matchByParticipantKey.get(key);
+                }
+
+                // 2. Si pas trouvé, chercher directement dans this.matches (pour 1/4, 1/2, finale)
+                if (!match) {
+                    match = this.matches.find(m => {
+                        if (!m.date_reception) return false;
+                        
+                        // Nettoyer les noms (retirer les icônes 🏠)
+                        const cleanDom = m.equipe_dom ? m.equipe_dom.replace('🏠 ', '').trim() : '';
+                        const cleanExt = m.equipe_ext ? m.equipe_ext.replace('🏠 ', '').trim() : '';
+                        
+                        // Comparer avec les noms affichés (nettoyés aussi)
+                        const cleanTeam1 = team1Name.replace('🏠 ', '').trim();
+                        const cleanTeam2 = team2Name.replace('🏠 ', '').trim();
+                        
+                        return (cleanDom === cleanTeam1 && cleanExt === cleanTeam2) ||
+                               (cleanDom === cleanTeam2 && cleanExt === cleanTeam1);
+                    });
+                }
+
+                if (!match || !match.date_reception) return;
 
                 const dateEl = document.createElement('div');
                 dateEl.className = 'match-date-display';
