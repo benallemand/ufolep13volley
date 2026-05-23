@@ -462,7 +462,7 @@ class MatchMgr extends Generic
                 case 'set_4_ext':
                 case 'set_5_dom':
                 case 'set_5_ext':
-                    if (empty($value)) {
+                    if ($value === null || $value === '') {
                         $sql .= "$key = NULL,";
                         break;
                     }
