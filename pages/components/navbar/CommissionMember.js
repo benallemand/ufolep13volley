@@ -13,7 +13,7 @@ export default {
             required: true,
         },
         division: {
-            type: String,
+            type: [String, Number],
             required: true,
         },
     },
