@@ -2,9 +2,8 @@
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "./utils/reportUtils.js";
 
-new Vue({
-    el: '#app',
-    data: {
+Vue.createApp({
+    data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         isLoading: false,
@@ -17,7 +16,7 @@ new Vue({
             comment: '',
             selectedDate: null,
         },
-    },
+    }; },
     mounted() {
         this.fetchUserDetails();
         this.reloadData();
@@ -252,4 +251,4 @@ new Vue({
                 .finally(() => { this.isLoading = false; });
         },
     }
-});
+}).mount('#app');

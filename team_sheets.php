@@ -32,7 +32,7 @@ $user_details = $_SESSION;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <!--VUE-->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <!--AXIOS-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- TAILWIND-->
@@ -60,6 +60,7 @@ $user_details = $_SESSION;
                             :players="availablePlayersDom"
                             :team-name="matchData.equipe_dom"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="add"
                             @add-player="addPlayer">
                     </player-list>
 
@@ -67,6 +68,7 @@ $user_details = $_SESSION;
                             :players="availablePlayersExt"
                             :team-name="matchData.equipe_ext"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="add"
                             @add-player="addPlayer">
                     </player-list>
                     <div class="border border-2 border-black">
@@ -86,6 +88,7 @@ $user_details = $_SESSION;
                                 :players="renforts.filter(player => !matchPlayers.includes(player))"
                                 team-name="Renfort"
                                 :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                                mode="add"
                                 @add-player="addPlayer">
                         </player-list>
                     </div>
@@ -96,18 +99,21 @@ $user_details = $_SESSION;
                             :players="matchPlayers.filter(player => player.equipe === matchData.equipe_dom)"
                             :team-name="matchData.equipe_dom"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                     <player-list
                             :players="matchPlayers.filter(player => player.equipe === matchData.equipe_ext)"
                             :team-name="matchData.equipe_ext"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                     <player-list
                             :players="matchPlayers.filter(player => player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom)"
                             team-name="Renfort"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                 </div>

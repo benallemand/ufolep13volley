@@ -60,12 +60,12 @@ const routes = [
         path: '/messages',
         component: () => import('../panel/TeamLeaderMessages.js')
     },
-    {path: '*', redirect: '/dashboard'}
+    {path: '/:pathMatch(.*)*', redirect: '/dashboard'}
 ];
 
 // Configuration du router
-const router = new VueRouter({
-    mode: 'hash',
+const router = VueRouter.createRouter({
+    history: VueRouter.createWebHashHistory(),
     routes
 });
 

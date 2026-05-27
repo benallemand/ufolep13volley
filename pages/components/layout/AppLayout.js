@@ -81,12 +81,12 @@ const routes = [
         component: () => import('../panel/FinalsDrawAdmin.js'),
     },
 
-    {path: '*', redirect: '/home'}
+    {path: '/:pathMatch(.*)*', redirect: '/home'}
 
 ];
 
-const router = new VueRouter({
-    mode: 'hash',
+const router = VueRouter.createRouter({
+    history: VueRouter.createWebHashHistory(),
     routes
 });
 

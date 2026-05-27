@@ -2,11 +2,19 @@ import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 
 
-Vue.component('player-list', {
-    props: ['players', 'teamName', 'isSigned'],
+const PlayerList = {
+    props: {
+        players: {type: Array, required: true},
+        teamName: {type: String, default: ''},
+        isSigned: {type: Boolean, default: false},
+        // 'add' : bouton vert "+" qui emet add-player
+        // 'remove' : bouton rouge "poubelle" qui emet remove-player
+        mode: {type: String, default: 'add'},
+    },
+    emits: ['add-player', 'remove-player'],
     methods: {
         handleClick(player) {
-            this.$emit(this.$listeners['add-player'] ? 'add-player' : 'remove-player', player);
+            this.$emit(this.mode === 'add' ? 'add-player' : 'remove-player', player);
         },
         parseDate(dateString) {
             if (!dateString) {
@@ -39,19 +47,21 @@ Vue.component('player-list', {
               class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
           <button v-if="!isSigned"
                   class="btn ml-auto"
-                  :class="{'btn-success': $listeners['add-player'], 'btn-error': $listeners['remove-player']}"
+                  :class="{'btn-success': mode === 'add', 'btn-error': mode === 'remove'}"
                   @click="handleClick(player)">
             <i class="fa-solid"
-               :class="{'fa-plus': $listeners['add-player'], 'fa-trash': $listeners['remove-player']}"></i>
+               :class="{'fa-plus': mode === 'add', 'fa-trash': mode === 'remove'}"></i>
           </button>
         </div>
       </div>
     `
-});
+};
 
-new Vue({
-    el: '#app',
-    data: {
+Vue.createApp({
+    components: {
+        'player-list': PlayerList,
+    },
+    data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         availablePlayers: [],
@@ -59,7 +69,7 @@ new Vue({
         isLoading: false,
         query: '',
         renforts: [],
-    },
+    }; },
     computed: {
         availablePlayersDom() {
             return this.availablePlayers.filter(player => player.equipe === this.matchData.equipe_dom && !this.matchPlayers.includes(player));
@@ -152,4 +162,4 @@ new Vue({
                 });
         },
     }
-});
+}).mount('#app');

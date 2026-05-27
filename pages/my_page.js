@@ -2,7 +2,6 @@
 import TeamLeaderLayout from './components/layout/TeamLeaderLayout.js';
 
 // Montage de l'application Vue
-new Vue({
-  el: '#app',
-  render: h => h(TeamLeaderLayout)
-});
+const app = Vue.createApp(TeamLeaderLayout);
+app.use(TeamLeaderLayout.router);
+app.mount('#app');

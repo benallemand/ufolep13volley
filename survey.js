@@ -1,13 +1,12 @@
 import {onError, onSuccess} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 
-new Vue({
-    el: '#app',
-    data: {
+Vue.createApp({
+    data() { return {
         matchData: {},
         surveyData: {},
         isLoading: false,
-    },
+    }; },
     mounted() {
         this.reloadData()
     },
@@ -70,4 +69,4 @@ new Vue({
                 });
         }
     }
-});
+}).mount('#app');

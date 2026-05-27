@@ -1,30 +1,31 @@
 // Import du composant admin-match-card
 import AdminMatchCard from './components/admin-match-card.js';
 
-new Vue({
-    el: '#match-app',
+Vue.createApp({
     components: {
         'admin-match-card': AdminMatchCard
     },
-    data: {
-        searchQuery: "",
-        matches: [],
-        loadingMatch: null,
-        loading: false,
-        filter: {
-            selectedCompetition: "",
-            selectedDivision: "",
-            showCertified: false,
-            showNotCertified: false,
-            showForbiddenPlayer: false,
-            showPlayedMatchesOnly: false,
-            showCertifiable: false,
-            showInProgress: true,
-        },
-        user: null,
-        availableCompetitions: [],
-        availableDivisions: [],
-        allMatches: [],
+    data() {
+        return {
+            searchQuery: "",
+            matches: [],
+            loadingMatch: null,
+            loading: false,
+            filter: {
+                selectedCompetition: "",
+                selectedDivision: "",
+                showCertified: false,
+                showNotCertified: false,
+                showForbiddenPlayer: false,
+                showPlayedMatchesOnly: false,
+                showCertifiable: false,
+                showInProgress: true,
+            },
+            user: null,
+            availableCompetitions: [],
+            availableDivisions: [],
+            allMatches: [],
+        };
     },
     computed: {
         canValidate() {
@@ -189,4 +190,4 @@ new Vue({
         this.fetchAllMatches();
         this.fetchMatches();
     },
-});
+}).mount('#match-app');
