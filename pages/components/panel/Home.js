@@ -1,8 +1,10 @@
+import { defineAsyncComponent } from 'vue';
+
 export default {
     components: {
-        'news': () => import('../table/News.js'),
-        'photos': () => import('../carousel/Photos.js'),
-        'annual-calendar': () => import('../calendar/AnnualCalendar.js'),
+        'news': defineAsyncComponent(() => import('../table/News.js')),
+        'photos': defineAsyncComponent(() => import('../carousel/Photos.js')),
+        'annual-calendar': defineAsyncComponent(() => import('../calendar/AnnualCalendar.js')),
     },
     template: `
       <div class="flex flex-col items-center gap-8">

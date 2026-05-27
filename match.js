@@ -1,10 +1,18 @@
-﻿import {onSuccess, onError} from "./toaster.js";
+﻿import { createApp } from 'vue';
+import axios from 'axios';
+import Toastify from 'toastify-js';
+import { Notyf } from 'notyf';
+import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "./utils/reportUtils.js";
 
-new Vue({
-    el: '#app',
-    data: {
+// Expose les libs en global pour les sous-composants qui les utilisent sans import
+window.axios = axios;
+window.Toastify = Toastify;
+window.Notyf = Notyf;
+
+createApp({
+    data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         isLoading: false,
@@ -17,7 +25,7 @@ new Vue({
             comment: '',
             selectedDate: null,
         },
-    },
+    }; },
     mounted() {
         this.fetchUserDetails();
         this.reloadData();
@@ -252,4 +260,4 @@ new Vue({
                 .finally(() => { this.isLoading = false; });
         },
     }
-});
+}).mount('#app');

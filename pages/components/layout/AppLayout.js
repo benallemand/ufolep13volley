@@ -1,3 +1,6 @@
+import { defineAsyncComponent } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 const routes = [
     // Routes pour my_page
     {
@@ -81,19 +84,19 @@ const routes = [
         component: () => import('../panel/FinalsDrawAdmin.js'),
     },
 
-    {path: '*', redirect: '/home'}
+    {path: '/:pathMatch(.*)*', redirect: '/home'}
 
 ];
 
-const router = new VueRouter({
-    mode: 'hash',
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 });
 
 export default {
     components: {
-        'main-navbar': () => import('../navbar/Main.js'),
-        'main-footer': () => import('../footer/Main.js'),
+        'main-navbar': defineAsyncComponent(() => import('../navbar/Main.js')),
+        'main-footer': defineAsyncComponent(() => import('../footer/Main.js')),
     },
     router,
     template: `

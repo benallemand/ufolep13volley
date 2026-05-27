@@ -1,7 +1,14 @@
+import { createApp } from 'vue';
+import axios from 'axios';
+import Toastify from 'toastify-js';
 import ScoreBoard from './pages/components/live/ScoreBoard.js';
 import ScorerControls from './pages/components/live/ScorerControls.js';
 import ActiveMatchList from './pages/components/live/ActiveMatchList.js';
 import MatchDetails from './pages/components/live/MatchDetails.js';
+
+// Expose les libs en global pour les sous-composants qui les utilisent sans import
+window.axios = axios;
+window.Toastify = Toastify;
 
 const liveData = window.__LIVE_DATA__ || {};
 const ROTATION_COMPETITION_CODES = ['m', 'c', 'cf'];
@@ -17,15 +24,14 @@ function createEmptyLineup() {
     };
 }
 
-new Vue({
-    el: '#app',
+createApp({
     components: {
         'score-board': ScoreBoard,
         'scorer-controls': ScorerControls,
         'active-match-list': ActiveMatchList,
         'match-details': MatchDetails
     },
-    data: {
+    data() { return {
         idMatch: liveData.idMatch,
         isScorer: liveData.isScorer || false,
         canScore: liveData.canScore || false,
@@ -73,7 +79,7 @@ new Vue({
         retryTimer: null,
         isOnline: true,
         isSaving: false
-    },
+    }; },
     computed: {
         leftTeamKey() {
             return this.swapSides ? 'ext' : 'dom';
@@ -182,13 +188,13 @@ new Vue({
                 this.handleServiceAndRotation(team);
             }
             const key = 'score_' + team;
-            this.$set(this.score, key, (parseInt(this.score[key]) || 0) + 1);
+            this.score[key] = (parseInt(this.score[key]) || 0) + 1;
             this.markAsUnsaved();
         },
         decrementScore(team) {
             const key = 'score_' + team;
             const current = parseInt(this.score[key]) || 0;
-            this.$set(this.score, key, Math.max(0, current - 1));
+            this.score[key] = Math.max(0, current - 1);
             this.markAsUnsaved();
         },
         nextSet(winner) {
@@ -198,18 +204,18 @@ new Vue({
                 return;
             }
             // Save current set scores
-            this.$set(this.score, 'set_' + setNum + '_dom', this.score.score_dom);
-            this.$set(this.score, 'set_' + setNum + '_ext', this.score.score_ext);
+            this.score['set_' + setNum + '_dom'] = this.score.score_dom;
+            this.score['set_' + setNum + '_ext'] = this.score.score_ext;
             // Increment sets won
             if (winner === 'dom') {
-                this.$set(this.score, 'sets_dom', (parseInt(this.score.sets_dom) || 0) + 1);
+                this.score.sets_dom = (parseInt(this.score.sets_dom) || 0) + 1;
             } else if (winner === 'ext') {
-                this.$set(this.score, 'sets_ext', (parseInt(this.score.sets_ext) || 0) + 1);
+                this.score.sets_ext = (parseInt(this.score.sets_ext) || 0) + 1;
             }
             // Reset point scores and advance set
-            this.$set(this.score, 'score_dom', 0);
-            this.$set(this.score, 'score_ext', 0);
-            this.$set(this.score, 'set_en_cours', setNum + 1);
+            this.score.score_dom = 0;
+            this.score.score_ext = 0;
+            this.score.set_en_cours = setNum + 1;
             this.resetTimeouts();
             this.resetPositions();
             this.servingTeam = null;
@@ -239,7 +245,7 @@ new Vue({
                 5: current[6] || '',
                 6: current[1] || ''
             };
-            this.$set(this.lineups, team, rotated);
+            this.lineups[team] = rotated;
             this.persistToLocalStorage();
         },
         updatePosition(team, position, value) {
@@ -252,15 +258,15 @@ new Vue({
             }
             const sanitizedValue = (value || '').toString().trim().slice(0, 100);
             const updated = Object.assign({}, this.lineups[team], { [normalizedPosition]: sanitizedValue });
-            this.$set(this.lineups, team, updated);
+            this.lineups[team] = updated;
             this.persistToLocalStorage();
         },
         resetPositions() {
             if (!this.isRotationModeEnabled) {
                 return;
             }
-            this.$set(this.lineups, 'dom', createEmptyLineup());
-            this.$set(this.lineups, 'ext', createEmptyLineup());
+            this.lineups.dom = createEmptyLineup();
+            this.lineups.ext = createEmptyLineup();
             this.persistToLocalStorage();
         },
 
@@ -553,4 +559,4 @@ new Vue({
             }).showToast();
         }
     }
-});
+}).mount('#app');

@@ -1,3 +1,6 @@
+import { defineAsyncComponent } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 // Fonction utilitaire pour vérifier l'authentification côté client
 async function checkAuthentication() {
     try {
@@ -60,18 +63,18 @@ const routes = [
         path: '/messages',
         component: () => import('../panel/TeamLeaderMessages.js')
     },
-    {path: '*', redirect: '/dashboard'}
+    {path: '/:pathMatch(.*)*', redirect: '/dashboard'}
 ];
 
 // Configuration du router
-const router = new VueRouter({
-    mode: 'hash',
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 });
 
 export default {
     components: {
-        'team-leader-navbar': () => import('../navbar/TeamLeader.js')
+        'team-leader-navbar': defineAsyncComponent(() => import('../navbar/TeamLeader.js'))
     },
     router,
     data() {

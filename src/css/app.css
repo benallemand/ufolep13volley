@@ -1,0 +1,22 @@
+/*
+ * Feuille CSS globale du frontend bundlé.
+ *
+ * Contient :
+ *   - Les CSS des libs tierces qu'on chargeait avant par CDN
+ *   - Tailwind (base / components / utilities) avec DaisyUI en plugin
+ *
+ * Référencée comme entrée Vite à part (`css/app`) ; le helper PHP vite_asset()
+ * l'inclura dans le <head> de chaque page convertie.
+ *
+ * IMPORTANT : tous les @import DOIVENT précéder les @tailwind (règle CSS :
+ * "@import must precede all other statements").
+ */
+
+/* Libs tierces (auparavant chargées par CDN) */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'notyf/notyf.min.css';
+@import 'toastify-js/src/toastify.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

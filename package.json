@@ -1,0 +1,29 @@
+{
+  "name": "ufolep13volley-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend bundle (Vite + Vue 3) pour ufolep13volley",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.22",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "axios": "^1.7.9",
+    "brackets-viewer": "^1.6.4",
+    "notyf": "^3.10.0",
+    "toastify-js": "^1.12.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  }
+}

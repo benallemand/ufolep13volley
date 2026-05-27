@@ -60,6 +60,7 @@ if ($id_match) {
         $error = $e->getMessage();
     }
 }
+require_once __DIR__ . '/helpers/vite.php';
 ?>
 <!DOCTYPE html>
 <HTML data-theme="cupcake" lang="fr">
@@ -67,15 +68,7 @@ if ($id_match) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <TITLE>Live Score<?php echo $match ? ' - ' . htmlspecialchars($match['code_match']) : ''; ?></TITLE>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-          integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <?= vite_asset('src/css/app.css') ?>
 </HEAD>
 <BODY>
 <div id="app" class="min-h-screen bg-base-200">
@@ -196,6 +189,6 @@ if ($id_match) {
         error: <?php echo json_encode($error); ?>
     };
 </script>
-<script src="/live.js" type="module"></script>
+<?= vite_asset('live.js') ?>
 </BODY>
 </HTML>

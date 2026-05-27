@@ -289,14 +289,14 @@ export default {
             // Ensure all pool indices exist
             for (let i = 1; i <= this.nbPools; i++) {
                 if (!this.pools[i]) {
-                    this.$set(this.pools, i, []);
+                    this.pools[i] = [];
                 }
             }
             // Remove pools beyond nbPools
             Object.keys(this.pools).forEach(key => {
                 if (parseInt(key) > this.nbPools) {
                     // Move teams back to available
-                    this.$delete(this.pools, key);
+                    delete this.pools[key];
                 }
             });
         },
@@ -347,20 +347,19 @@ export default {
             
             // Remove from previous pool if coming from one
             if (this.draggedFromPool) {
-                this.$set(this.pools, this.draggedFromPool, this.pools[this.draggedFromPool].filter(
+                this.pools[this.draggedFromPool] = this.pools[this.draggedFromPool].filter(
                     t => t.id_equipe !== this.draggedTeam.id_equipe
-                ));
+                );
             }
-            
+
             // Add to new pool
             if (!this.pools[poolIndex]) {
-                this.$set(this.pools, poolIndex, []);
+                this.pools[poolIndex] = [];
             }
-            
+
             // Check if team already in this pool
             if (!this.pools[poolIndex].find(t => t.id_equipe === this.draggedTeam.id_equipe)) {
-                const newPool = [...this.pools[poolIndex], this.draggedTeam];
-                this.$set(this.pools, poolIndex, newPool);
+                this.pools[poolIndex] = [...this.pools[poolIndex], this.draggedTeam];
             }
             
             this.hasChanges = true;
@@ -373,25 +372,25 @@ export default {
             if (!this.draggedTeam || !this.draggedFromPool) return;
             
             // Remove from pool
-            this.$set(this.pools, this.draggedFromPool, this.pools[this.draggedFromPool].filter(
+            this.pools[this.draggedFromPool] = this.pools[this.draggedFromPool].filter(
                 t => t.id_equipe !== this.draggedTeam.id_equipe
-            ));
+            );
             
             this.hasChanges = true;
             this.draggedTeam = null;
             this.draggedFromPool = null;
         },
         removeFromPool(poolIndex, team) {
-            this.$set(this.pools, poolIndex, this.pools[poolIndex].filter(
+            this.pools[poolIndex] = this.pools[poolIndex].filter(
                 t => t.id_equipe !== team.id_equipe
-            ));
+            );
             this.hasChanges = true;
         },
         clearAllPools() {
             if (!confirm('Êtes-vous sûr de vouloir vider toutes les poules ?')) return;
-            
+
             Object.keys(this.pools).forEach(key => {
-                this.$set(this.pools, key, []);
+                this.pools[key] = [];
             });
             this.hasChanges = true;
         },

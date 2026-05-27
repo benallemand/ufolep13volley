@@ -21,6 +21,7 @@ try {
 }
 @session_start();
 $user_details = $_SESSION;
+require_once __DIR__ . '/helpers/vite.php';
 ?>
 <!DOCTYPE html>
 <HTML data-theme="cupcake" lang="fr">
@@ -28,21 +29,7 @@ $user_details = $_SESSION;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Joueurs</title>
-    <!--TOASTER-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <!--VUE-->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <!--AXIOS-->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- TAILWIND-->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!--DAISYUI-->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css"/>
-    <!--    FONT AWESOME-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-          integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <?= vite_asset('src/css/app.css') ?>
 </HEAD>
 <BODY>
 <div id="app" class="max-w-3xl mx-auto p-6">
@@ -60,6 +47,7 @@ $user_details = $_SESSION;
                             :players="availablePlayersDom"
                             :team-name="matchData.equipe_dom"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="add"
                             @add-player="addPlayer">
                     </player-list>
 
@@ -67,6 +55,7 @@ $user_details = $_SESSION;
                             :players="availablePlayersExt"
                             :team-name="matchData.equipe_ext"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="add"
                             @add-player="addPlayer">
                     </player-list>
                     <div class="border border-2 border-black">
@@ -86,6 +75,7 @@ $user_details = $_SESSION;
                                 :players="renforts.filter(player => !matchPlayers.includes(player))"
                                 team-name="Renfort"
                                 :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                                mode="add"
                                 @add-player="addPlayer">
                         </player-list>
                     </div>
@@ -96,18 +86,21 @@ $user_details = $_SESSION;
                             :players="matchPlayers.filter(player => player.equipe === matchData.equipe_dom)"
                             :team-name="matchData.equipe_dom"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                     <player-list
                             :players="matchPlayers.filter(player => player.equipe === matchData.equipe_ext)"
                             :team-name="matchData.equipe_ext"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                     <player-list
                             :players="matchPlayers.filter(player => player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom)"
                             team-name="Renfort"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
+                            mode="remove"
                             @remove-player="removePlayer">
                     </player-list>
                 </div>
@@ -121,6 +114,6 @@ $user_details = $_SESSION;
     </div>
 
 </div>
-<script src="/team_sheets.js" type="module"></script>
+<?= vite_asset('team_sheets.js') ?>
 </BODY>
 </HTML>
