@@ -1,0 +1,44 @@
+name: CI — Frontend build check
+
+# Valide que `npm ci` + `npm run build` passe sur le runner GH Actions
+# AVANT qu'un tag de release ne declenche le deploiement (main.yml).
+# Sans deploiement, donc safe : on apprend si le build CI marche sans
+# risquer la prod.
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - master  # master est deja couvert par main.yml au moment du tag
+
+jobs:
+  build:
+    name: Build frontend bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build frontend bundle
+        run: npm run build
+
+      - name: Verify build output
+        # Sanity check : on confirme que les fichiers attendus sont produits.
+        run: |
+          test -f dist/.vite/manifest.json || (echo "ERREUR : manifest.json manquant" && exit 1)
+          test -f dist/pages/home.html || (echo "ERREUR : dist/pages/home.html manquant" && exit 1)
+          test -f dist/pages/my_page.html || (echo "ERREUR : dist/pages/my_page.html manquant" && exit 1)
+          test -f dist/admin/matches.html || (echo "ERREUR : dist/admin/matches.html manquant" && exit 1)
+          ls -la dist/assets/ | head -20
+          echo ""
+          echo "Build OK. dist/ contient :"
+          du -sh dist/
