@@ -1,8 +1,8 @@
 export default {
     components: {
-        'news': () => import('../table/News.js'),
-        'photos': () => import('../carousel/Photos.js'),
-        'annual-calendar': () => import('../calendar/AnnualCalendar.js'),
+        'news': Vue.defineAsyncComponent(() => import('../table/News.js')),
+        'photos': Vue.defineAsyncComponent(() => import('../carousel/Photos.js')),
+        'annual-calendar': Vue.defineAsyncComponent(() => import('../calendar/AnnualCalendar.js')),
     },
     template: `
       <div class="flex flex-col items-center gap-8">

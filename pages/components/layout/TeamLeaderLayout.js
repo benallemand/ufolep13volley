@@ -71,7 +71,7 @@ const router = VueRouter.createRouter({
 
 export default {
     components: {
-        'team-leader-navbar': () => import('../navbar/TeamLeader.js')
+        'team-leader-navbar': Vue.defineAsyncComponent(() => import('../navbar/TeamLeader.js'))
     },
     router,
     data() {

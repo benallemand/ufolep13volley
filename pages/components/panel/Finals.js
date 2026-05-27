@@ -1,9 +1,9 @@
 export default {
     components: {
-        'limit-date-navbar': () => import('../navbar/LimitDate.js'),
-        'commission-member': () => import('../navbar/CommissionMember.js'),
-        'matchs-list': () => import('../list/Matchs.js'),
-        'tournament-bracket-viewer': () => import('./TournamentBracketViewer.js'),
+        'limit-date-navbar': Vue.defineAsyncComponent(() => import('../navbar/LimitDate.js')),
+        'commission-member': Vue.defineAsyncComponent(() => import('../navbar/CommissionMember.js')),
+        'matchs-list': Vue.defineAsyncComponent(() => import('../list/Matchs.js')),
+        'tournament-bracket-viewer': Vue.defineAsyncComponent(() => import('./TournamentBracketViewer.js')),
     },
     template: `
       <div>

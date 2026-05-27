@@ -92,8 +92,8 @@ const router = VueRouter.createRouter({
 
 export default {
     components: {
-        'main-navbar': () => import('../navbar/Main.js'),
-        'main-footer': () => import('../footer/Main.js'),
+        'main-navbar': Vue.defineAsyncComponent(() => import('../navbar/Main.js')),
+        'main-footer': Vue.defineAsyncComponent(() => import('../footer/Main.js')),
     },
     router,
     template: `

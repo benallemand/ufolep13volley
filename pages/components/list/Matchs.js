@@ -4,7 +4,7 @@ import {matchFilterMixin} from "/utils/matchFilterMixin.js";
 export default {
     mixins: [matchFilterMixin],
     components: {
-        'match-card': () => import('../card/Match.js')
+        'match-card': Vue.defineAsyncComponent(() => import('../card/Match.js'))
     }, template: `
     <div>
       <div class="flex flex-wrap gap-4 m-2">
