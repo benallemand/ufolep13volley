@@ -15,6 +15,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build frontend bundle
+        # Produit dist/ : JS/CSS minifies + hashes + dist/.vite/manifest.json.
+        # Necessaire car le helper PHP vite_asset() et le rewrite .htaccess
+        # pointent vers /dist/. Le dist/ n'est pas versionne.
+        run: npm run build
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -25,7 +40,14 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan ftp.cluster020.hosting.ovh.net >> ~/.ssh/known_hosts
 
-      - name: Deploy to production
+      - name: Sync frontend bundle to OVH
+        # rsync AVANT le git pull pour que dist/ soit en place quand le
+        # nouveau code source (HTML/PHP) commence a y faire reference.
+        # --delete pour purger les vieux fichiers hashes du build precedent.
+        run: |
+          rsync -avz --delete dist/ ufolepvocb@ftp.cluster020.hosting.ovh.net:www/dist/
+
+      - name: Deploy source code (git pull on OVH)
         run: |
           ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && if git ls-files --error-unmatch composer.phar >/dev/null 2>&1; then git checkout -- composer.phar; else rm -f composer.phar; fi && git pull"
           echo "Deployment completed successfully!"
