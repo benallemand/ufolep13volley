@@ -1,0 +1,36 @@
+# Dépendances locales (les images Docker font leurs propres install)
+node_modules/
+vendor/
+e2e/node_modules/
+
+# Build frontend : ne JAMAIS copier le dist/ local — il sera produit par
+# l'étape multi-stage Node du Dockerfile et copié dans l'image PHP finale.
+dist/
+
+# Git / IDE / OS
+.git/
+.github/
+.idea/
+.vscode/
+.DS_Store
+
+# Environnement
+.env
+.env.*
+
+# Tests
+e2e/test-results/
+e2e/report/
+e2e/playwright-report/
+.phpunit.result.cache
+
+# Données locales / dev
+docker-sql/ufolepvocbufolep-data-only.sql
+caddy.exe
+pr_body.md
+
+# Composants ignorés par git
+players_pics/
+players_pics_low/
+teams_pics/
+match_files/

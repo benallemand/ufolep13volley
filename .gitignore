@@ -30,3 +30,7 @@ e2e/node_modules/
 e2e/package-lock.json
 e2e/test-results/
 e2e/report/
+
+# Frontend build (Vite)
+node_modules/
+dist/
