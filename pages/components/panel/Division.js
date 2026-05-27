@@ -1,10 +1,12 @@
+import { defineAsyncComponent } from 'vue';
+
 export default {
     components: {
-        'limit-date-navbar': Vue.defineAsyncComponent(() => import('../navbar/LimitDate.js')),
-        'commission-member': Vue.defineAsyncComponent(() => import('../navbar/CommissionMember.js')),
-        'rank-table': Vue.defineAsyncComponent(() => import('../table/Rank.js')),
-        'matchs-table': Vue.defineAsyncComponent(() => import('../table/Matchs.js')),
-        'to-schedule-matchs-table': Vue.defineAsyncComponent(() => import('../table/ToScheduleMatchs.js')),
+        'limit-date-navbar': defineAsyncComponent(() => import('../navbar/LimitDate.js')),
+        'commission-member': defineAsyncComponent(() => import('../navbar/CommissionMember.js')),
+        'rank-table': defineAsyncComponent(() => import('../table/Rank.js')),
+        'matchs-table': defineAsyncComponent(() => import('../table/Matchs.js')),
+        'to-schedule-matchs-table': defineAsyncComponent(() => import('../table/ToScheduleMatchs.js')),
     },
     template: `
       <div>

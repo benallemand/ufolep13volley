@@ -1,3 +1,6 @@
+import { defineAsyncComponent } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 const routes = [
     // Routes pour my_page
     {
@@ -85,15 +88,15 @@ const routes = [
 
 ];
 
-const router = VueRouter.createRouter({
-    history: VueRouter.createWebHashHistory(),
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 });
 
 export default {
     components: {
-        'main-navbar': Vue.defineAsyncComponent(() => import('../navbar/Main.js')),
-        'main-footer': Vue.defineAsyncComponent(() => import('../footer/Main.js')),
+        'main-navbar': defineAsyncComponent(() => import('../navbar/Main.js')),
+        'main-footer': defineAsyncComponent(() => import('../footer/Main.js')),
     },
     router,
     template: `

@@ -1,3 +1,6 @@
+import { defineAsyncComponent } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 // Fonction utilitaire pour vérifier l'authentification côté client
 async function checkAuthentication() {
     try {
@@ -64,14 +67,14 @@ const routes = [
 ];
 
 // Configuration du router
-const router = VueRouter.createRouter({
-    history: VueRouter.createWebHashHistory(),
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 });
 
 export default {
     components: {
-        'team-leader-navbar': Vue.defineAsyncComponent(() => import('../navbar/TeamLeader.js'))
+        'team-leader-navbar': defineAsyncComponent(() => import('../navbar/TeamLeader.js'))
     },
     router,
     data() {

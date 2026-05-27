@@ -22,6 +22,10 @@ RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev
     && docker-php-ext-install gd mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
+# mod_rewrite : requis pour les RewriteRule du .htaccess
+# (mapping /pages/home.html -> /dist/pages/home.html etc.)
+RUN a2enmod rewrite
+
 # Copier les fichiers de notre site dans le conteneur
 COPY . /var/www/html/
 COPY --from=composer_builder /app/vendor /var/www/html/vendor

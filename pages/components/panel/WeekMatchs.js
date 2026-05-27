@@ -1,6 +1,8 @@
+import { defineAsyncComponent } from 'vue';
+
 export default {
     components: {
-        'matchs-table': Vue.defineAsyncComponent(() => import('../table/Matchs.js')),
+        'matchs-table': defineAsyncComponent(() => import('../table/Matchs.js')),
     },
     template: `
         <matchs-table :key="week-matchs" :fetch-url="matchesFetchUrl"></matchs-table>

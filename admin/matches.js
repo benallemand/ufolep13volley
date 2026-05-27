@@ -1,7 +1,12 @@
 // Import du composant admin-match-card
+import { createApp } from 'vue';
+import axios from 'axios';
 import AdminMatchCard from './components/admin-match-card.js';
 
-Vue.createApp({
+// Expose axios en global pour les sous-composants qui l'utilisent sans import
+window.axios = axios;
+
+createApp({
     components: {
         'admin-match-card': AdminMatchCard
     },

@@ -1,7 +1,14 @@
+import { createApp } from 'vue';
+import axios from 'axios';
+import Toastify from 'toastify-js';
 import ScoreBoard from './pages/components/live/ScoreBoard.js';
 import ScorerControls from './pages/components/live/ScorerControls.js';
 import ActiveMatchList from './pages/components/live/ActiveMatchList.js';
 import MatchDetails from './pages/components/live/MatchDetails.js';
+
+// Expose les libs en global pour les sous-composants qui les utilisent sans import
+window.axios = axios;
+window.Toastify = Toastify;
 
 const liveData = window.__LIVE_DATA__ || {};
 const ROTATION_COMPETITION_CODES = ['m', 'c', 'cf'];
@@ -17,7 +24,7 @@ function createEmptyLineup() {
     };
 }
 
-Vue.createApp({
+createApp({
     components: {
         'score-board': ScoreBoard,
         'scorer-controls': ScorerControls,

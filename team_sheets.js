@@ -1,5 +1,13 @@
+import { createApp } from 'vue';
+import axios from 'axios';
+import Toastify from 'toastify-js';
+import { Notyf } from 'notyf';
 import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
+
+window.axios = axios;
+window.Toastify = Toastify;
+window.Notyf = Notyf;
 
 
 const PlayerList = {
@@ -57,7 +65,7 @@ const PlayerList = {
     `
 };
 
-Vue.createApp({
+createApp({
     components: {
         'player-list': PlayerList,
     },

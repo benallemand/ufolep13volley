@@ -1,7 +1,15 @@
+import { createApp } from 'vue';
+import axios from 'axios';
+import Toastify from 'toastify-js';
+import { Notyf } from 'notyf';
 import {onError, onSuccess} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 
-Vue.createApp({
+window.axios = axios;
+window.Toastify = Toastify;
+window.Notyf = Notyf;
+
+createApp({
     data() { return {
         matchData: {},
         surveyData: {},
