@@ -49,7 +49,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                 && record.get('is_survey_filled_ext')) ? 'fa fa-square-poll-vertical green' : 'fa fa-square-poll-vertical red';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            window.open(`${location.origin}/survey.php?id_match=${record.get('id_match')}`, '_blank');
+                            window.open(`${location.origin}/survey.html?id_match=${record.get('id_match')}`, '_blank');
                         },
                     },
                     {

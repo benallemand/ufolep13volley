@@ -398,7 +398,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les feuilles de match n'ont pas été signées par les 2 équipes !");
         }
-        $url_survey = 'https://www.ufolep13volley.org/survey.php?id_match=' . $match['id_match'];
+        $url_survey = 'https://www.ufolep13volley.org/survey.html?id_match=' . $match['id_match'];
         // insert for sending
         $this->insert_generic_email(
             __DIR__ . '/../templates/emails/match_sheet_signed.fr.html',

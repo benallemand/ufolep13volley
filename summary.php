@@ -127,7 +127,7 @@
         <span class="basis-1/3">Fair-play</span>
         <div class="basis-1/3 flex gap-4 items-center">
             <a v-if="!matchData.is_survey_filled_dom"
-               :href="'/survey.php?id_match=' + matchData.id_match">
+               :href="'/survey.html?id_match=' + matchData.id_match">
                 <button
                         class="btn btn-primary"
                         type="button">
@@ -140,7 +140,7 @@
         </div>
         <div class="basis-1/3 flex gap-4 items-center">
             <a v-if="!matchData.is_survey_filled_ext"
-               :href="'/survey.php?id_match=' + matchData.id_match">
+               :href="'/survey.html?id_match=' + matchData.id_match">
                 <button
                         class="btn btn-primary"
                         type="button">

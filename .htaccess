@@ -6,5 +6,6 @@ RedirectMatch 404 /\.git
 # (/pages/home.html, /pages/my_page.html, /admin/matches.html) mais le
 # contenu servi est le HTML transformé par Vite dans dist/.
 RewriteEngine On
+RewriteRule ^survey\.html$ /dist/survey.html [L]
 RewriteRule ^pages/(home|my_page)\.html$ /dist/pages/$1.html [L]
 RewriteRule ^admin/matches\.html$ /dist/admin/matches.html [L]

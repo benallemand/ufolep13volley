@@ -21,7 +21,7 @@
         </a>
     </li>
     <li class="border-solid rounded-full border-4 border-indigo-500">
-        <a href="/survey.php?id_match=<?php echo $id_match; ?>">
+        <a href="/survey.html?id_match=<?php echo $id_match; ?>">
             <span>fair-play</span><i class="fa-solid fa-square-poll-vertical"></i>
         </a>
     </li>

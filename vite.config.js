@@ -21,13 +21,14 @@ const entries = {
     // CSS global (Tailwind + DaisyUI + libs tierces)
     'css/app': 'src/css/app.css',
 
-    // Pages .php (entrées JS, chargées via vite_asset() côté PHP)
+    // Pages .php restantes (entrées JS, chargées via vite_asset() côté PHP)
+    // — en cours de migration vers des entrées HTML natives (issue #228)
     'live':        'live.js',
     'match':       'match.js',
-    'survey':      'survey.js',
     'team_sheets': 'team_sheets.js',
 
     // Pages .html (entrées HTML natives, Vite remplace les scripts inline)
+    'survey':        'survey.html',
     'pages/home':    'pages/home.html',
     'pages/my_page': 'pages/my_page.html',
     'admin/matches': 'admin/matches.html',
