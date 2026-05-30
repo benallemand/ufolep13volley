@@ -71,7 +71,7 @@ export default {
                 <i class="fas fa-signature mr-1"></i><span>signer</span>
               </button>
               <input v-if="matchData.is_sign_team_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_sign_team_dom" disabled/>
+                     :checked="matchData.is_sign_team_dom === 1" disabled/>
             </div>
             <div class="basis-1/3 flex gap-4 items-center">
               <a v-if="!matchData.is_sign_team_ext && !matchData.is_match_player_filled"
@@ -85,7 +85,7 @@ export default {
                 <i class="fas fa-signature mr-1"></i><span>signer</span>
               </button>
               <input v-if="matchData.is_sign_team_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_sign_team_ext" disabled/>
+                     :checked="matchData.is_sign_team_ext === 1" disabled/>
             </div>
           </div>
           <div class="flex flex-row mb-4">
@@ -102,7 +102,7 @@ export default {
                 <i class="fas fa-signature mr-1"></i><span>signer</span>
               </button>
               <input v-if="matchData.is_sign_match_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_sign_match_dom" disabled/>
+                     :checked="matchData.is_sign_match_dom === 1" disabled/>
             </div>
             <div class="basis-1/3 flex gap-4 items-center">
               <a v-if="!matchData.is_sign_match_ext && !matchData.is_match_score_filled"
@@ -116,7 +116,7 @@ export default {
                 <i class="fas fa-signature mr-1"></i><span>signer</span>
               </button>
               <input v-if="matchData.is_sign_match_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_sign_match_ext" disabled/>
+                     :checked="matchData.is_sign_match_ext === 1" disabled/>
             </div>
           </div>
           <div class="flex flex-row mb-4">
@@ -129,7 +129,7 @@ export default {
                 </button>
               </a>
               <input v-if="matchData.is_survey_filled_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_survey_filled_dom" disabled/>
+                     :checked="matchData.is_survey_filled_dom === 1" disabled/>
             </div>
             <div class="basis-1/3 flex gap-4 items-center">
               <a v-if="!matchData.is_survey_filled_ext"
@@ -139,7 +139,7 @@ export default {
                 </button>
               </a>
               <input v-if="matchData.is_survey_filled_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     v-model="matchData.is_survey_filled_ext" disabled/>
+                     :checked="matchData.is_survey_filled_ext === 1" disabled/>
             </div>
           </div>
         </div>
