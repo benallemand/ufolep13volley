@@ -1,76 +1,12 @@
-<?php
-require_once __DIR__ . '/classes/MatchMgr.php';
-require_once __DIR__ . '/classes/LiveScore.php';
-require_once __DIR__ . '/classes/Players.php';
-require_once __DIR__ . '/classes/UserManager.php';
-
-$id_match = filter_input(INPUT_GET, 'id_match');
-$mode = filter_input(INPUT_GET, 'mode') ?? 'view'; // 'view' or 'scorer'
-
-$match = null;
-$liveScoreData = null;
-$teamPlayers = [
-    'dom' => [],
-    'ext' => []
-];
-$error = null;
-$isScorer = ($mode === 'scorer');
-
-@session_start();
-$isLoggedIn = isset($_SESSION['login']);
-$isAdmin = UserManager::isAdmin();
-$canScore = false;
-
-if ($id_match) {
-    try {
-        $manager = new MatchMgr();
-        $match = $manager->get_match_by_code_match($id_match);
-        
-        $liveScore = new LiveScore();
-        $liveScoreData = $liveScore->getLiveScore($id_match);
-        
-        // Check scorer permissions: admin OR team leader of one of the teams
-        if ($isAdmin) {
-            $canScore = true;
-        } elseif ($isLoggedIn && isset($_SESSION['id_equipe'])) {
-            $userTeamId = $_SESSION['id_equipe'];
-            $canScore = ($userTeamId == $match['id_equipe_dom'] || $userTeamId == $match['id_equipe_ext']);
-        }
-
-        if ($canScore && $isScorer) {
-            $playersManager = new Players();
-            $domPlayers = $playersManager->getPlayersFromTeam($match['id_equipe_dom']);
-            $extPlayers = $playersManager->getPlayersFromTeam($match['id_equipe_ext']);
-
-            $teamPlayers['dom'] = array_values(array_map(static function ($player) {
-                return [
-                    'id' => (int)$player['id'],
-                    'full_name' => $player['full_name']
-                ];
-            }, $domPlayers));
-
-            $teamPlayers['ext'] = array_values(array_map(static function ($player) {
-                return [
-                    'id' => (int)$player['id'],
-                    'full_name' => $player['full_name']
-                ];
-            }, $extPlayers));
-        }
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-    }
-}
-require_once __DIR__ . '/helpers/vite.php';
-?>
 <!DOCTYPE html>
-<HTML data-theme="cupcake" lang="fr">
-<HEAD>
+<html data-theme="cupcake" lang="fr">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <TITLE>Live Score<?php echo $match ? ' - ' . htmlspecialchars($match['code_match']) : ''; ?></TITLE>
-    <?= vite_asset('src/css/app.css') ?>
-</HEAD>
-<BODY>
+    <title>Live Score</title>
+    <link rel="stylesheet" href="./src/css/app.css">
+</head>
+<body>
 <div id="app" class="min-h-screen bg-base-200">
     <!-- Header -->
     <div class="navbar bg-primary text-primary-content">
@@ -92,7 +28,7 @@ require_once __DIR__ . '/helpers/vite.php';
             <i class="fas fa-exclamation-triangle"></i>
             <span>Erreur: {{ error }}</span>
         </div>
-        
+
         <template v-if="match">
             <!-- Competition Badge -->
             <div class="text-center mb-4">
@@ -148,7 +84,7 @@ require_once __DIR__ . '/helpers/vite.php';
                     @start-timeout="startTimeout"
                     @swap-sides="toggleSwapSides">
                 </scorer-controls>
-                
+
                 <!-- Start Live Button -->
                 <div class="text-center mb-4" v-if="!isLive">
                     <button @click="startLiveScore()" class="btn btn-success btn-lg">
@@ -177,18 +113,6 @@ require_once __DIR__ . '/helpers/vite.php';
         <active-match-list v-else :active-live-scores="activeLiveScores"></active-match-list>
     </div>
 </div>
-
-<script>
-    window.__LIVE_DATA__ = {
-        idMatch: <?php echo json_encode($id_match); ?>,
-        isScorer: <?php echo json_encode($isScorer); ?>,
-        canScore: <?php echo json_encode($canScore); ?>,
-        match: <?php echo json_encode($match); ?>,
-        teamPlayers: <?php echo json_encode($teamPlayers); ?>,
-        liveScoreData: <?php echo json_encode($liveScoreData); ?>,
-        error: <?php echo json_encode($error); ?>
-    };
-</script>
-<?= vite_asset('live.js') ?>
-</BODY>
-</HTML>
+<script src="./live.js" type="module"></script>
+</body>
+</html>

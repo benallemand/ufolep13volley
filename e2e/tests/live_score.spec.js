@@ -47,7 +47,7 @@ test('live score : boutons collés au score + 2 sets reportés dans le match', a
     // ------------------------------------------------------------------ //
     // 2. Ouvrir la page live en mode scoreur
     // ------------------------------------------------------------------ //
-    await page.goto(`/live.php?id_match=${codeMatch}&mode=scorer`);
+    await page.goto(`/live.html?id_match=${codeMatch}&mode=scorer`);
 
     // La page doit afficher le badge de compétition (app chargée)
     await expect(page.locator('.badge-info').first()).toBeVisible();

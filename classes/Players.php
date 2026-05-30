@@ -682,6 +682,28 @@ class Players extends Generic
     }
 
     /**
+     * Version "live score" : ne renvoie que l'id et le nom complet des joueurs
+     * d'une équipe (pas de PII type email/téléphone). Utilisé par la page
+     * live.html (marquage en direct) — voir issue #228.
+     *
+     * @param $id_equipe
+     * @return array<int, array{id: int, full_name: string}>
+     */
+    public function getLivePlayersFromTeam($id_equipe): array
+    {
+        $players = $this->getPlayersFromTeam($id_equipe);
+        if (!is_array($players)) {
+            return array();
+        }
+        return array_values(array_map(static function ($player) {
+            return array(
+                'id' => (int)$player['id'],
+                'full_name' => $player['full_name'],
+            );
+        }, $players));
+    }
+
+    /**
      * @throws Exception
      */
     public function set_leader($ids, $id_team = null)

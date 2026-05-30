@@ -25,9 +25,9 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build frontend bundle
-        # Produit dist/ : JS/CSS minifies + hashes + dist/.vite/manifest.json.
-        # Necessaire car le helper PHP vite_asset() et le rewrite .htaccess
-        # pointent vers /dist/. Le dist/ n'est pas versionne.
+        # Produit dist/ : pages .html + JS/CSS minifies + hashes + manifest.json.
+        # Necessaire car le rewrite .htaccess sert les pages depuis /dist/.
+        # Le dist/ n'est pas versionne.
         run: npm run build
 
       - name: Setup SSH

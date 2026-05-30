@@ -22,14 +22,14 @@ export default {
           <tbody>
           <tr v-for="match in week.matches" :key="match.id_match">
             <td>
-              <a class="link link-primary" :href="'/match.php?id_match=' + match.id_match"
+              <a class="link link-primary" :href="'/match.html?id_match=' + match.id_match"
                  target="_blank">{{ match.code_match }}
               </a>
               <a @click="addToGoogleCalendar(match)" class="btn btn-xs btn-primary ml-2"
                  title="Ajouter à Google Calendar">
                 <i class="fas fa-calendar-plus"/>
               </a>
-              <a v-if="isMatchToday(match) && !isMatchFinished(match)" :href="'/live.php?id_match=' + match.code_match" 
+              <a v-if="isMatchToday(match) && !isMatchFinished(match)" :href="'/live.html?id_match=' + match.code_match"
                  class="btn btn-xs btn-error ml-2 animate-pulse" title="Suivre en direct" target="_blank">
                 <i class="fas fa-circle text-white text-xs mr-1"/>LIVE
               </a>

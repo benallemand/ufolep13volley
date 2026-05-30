@@ -5,30 +5,23 @@ import { resolve } from 'node:path';
 /**
  * Multi-page app : on déclare ici toutes les entrées qui doivent être bundlées.
  *
- * Deux types d'entrées :
- *
- *  1. Fichiers .js purs (pour les pages .php existantes) — Vite produit un
- *     fichier hashé dans dist/assets/ et une entrée dans manifest.json. La
- *     page .php utilise le helper PHP `vite_asset()` pour émettre la bonne
- *     balise <script> avec le hash courant.
- *
- *  2. Fichiers .html (pour les pages HTML pures) — Vite parse le HTML, bundle
- *     les <script type="module"> et <link rel="stylesheet"> qu'il trouve, et
- *     produit un dist/.../page.html avec les scripts/links remplacés par les
- *     bundles hashés. Apache .htaccess rewrite ces URLs vers dist/.
+ * Toutes les pages sont des entrées HTML natives : Vite parse le HTML, bundle
+ * les <script type="module"> et <link rel="stylesheet"> qu'il trouve, et
+ * produit un dist/.../page.html avec les scripts/links remplacés par les
+ * bundles hashés. Apache .htaccess rewrite ces URLs publiques vers dist/.
+ * (Plus aucune page n'est servie par PHP — issue #228.)
  */
 const entries = {
     // CSS global (Tailwind + DaisyUI + libs tierces)
     'css/app': 'src/css/app.css',
 
-    // Pages .php restantes (entrées JS, chargées via vite_asset() côté PHP)
-    // — en cours de migration vers des entrées HTML natives (issue #228)
-    'live':        'live.js',
-    'match':       'match.js',
-    'team_sheets': 'team_sheets.js',
-
-    // Pages .html (entrées HTML natives, Vite remplace les scripts inline)
+    // Pages .html (entrées HTML natives, Vite remplace les scripts inline).
+    // Plus aucune page n'est servie par PHP : le PHP ne répond qu'à l'API REST
+    // (/rest/) et aux endpoints AJAX (issue #228).
+    'live':          'live.html',
+    'match':         'match.html',
     'survey':        'survey.html',
+    'team_sheets':   'team_sheets.html',
     'pages/home':    'pages/home.html',
     'pages/my_page': 'pages/my_page.html',
     'admin/matches': 'admin/matches.html',

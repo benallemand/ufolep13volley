@@ -20,7 +20,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                 && record.get('is_sign_match_ext')) ? 'fa fa-volleyball green' : 'fa fa-volleyball red';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            window.open(`${location.origin}/match.php?id_match=${record.get('id_match')}`, '_blank');
+                            window.open(`${location.origin}/match.html?id_match=${record.get('id_match')}`, '_blank');
                         },
                     },
                     {
@@ -35,7 +35,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                                 && record.get('is_sign_team_ext')) ? 'fa fa-user green' : 'fa fa-user red';
                         },
                         handler: function (grid, rowIndex, colIndex, item, e, record) {
-                            window.open(`${location.origin}/team_sheets.php?id_match=${record.get('id_match')}`, '_blank');
+                            window.open(`${location.origin}/team_sheets.html?id_match=${record.get('id_match')}`, '_blank');
                         },
                     },
                     {
@@ -189,7 +189,7 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 dataIndex: 'resultat',
                 width: 200,
                 renderer: function (value, meta, record) {
-                    return Ext.String.format("<a href='/match.php?id_match={0}' target='_blank'>{1}</a>",
+                    return Ext.String.format("<a href='/match.html?id_match={0}' target='_blank'>{1}</a>",
                         record.get('id_match'),
                         value,
                     );

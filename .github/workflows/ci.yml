@@ -38,6 +38,10 @@ jobs:
           test -f dist/pages/home.html || (echo "ERREUR : dist/pages/home.html manquant" && exit 1)
           test -f dist/pages/my_page.html || (echo "ERREUR : dist/pages/my_page.html manquant" && exit 1)
           test -f dist/admin/matches.html || (echo "ERREUR : dist/admin/matches.html manquant" && exit 1)
+          test -f dist/live.html || (echo "ERREUR : dist/live.html manquant" && exit 1)
+          test -f dist/match.html || (echo "ERREUR : dist/match.html manquant" && exit 1)
+          test -f dist/survey.html || (echo "ERREUR : dist/survey.html manquant" && exit 1)
+          test -f dist/team_sheets.html || (echo "ERREUR : dist/team_sheets.html manquant" && exit 1)
           ls -la dist/assets/ | head -20
           echo ""
           echo "Build OK. dist/ contient :"

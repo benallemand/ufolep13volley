@@ -3,7 +3,7 @@ export default {
       <div class="card-body">
         <h2 class="card-title text-lg font-bold font-medium">
           {{ match.code_match }}
-          <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+          <a :href="'/match.html?id_match='+match.id_match" target="_blank"
              class="link link-info hover:underline">
             <i class="fas fa-external-link-alt ml-1"></i>
           </a>
@@ -47,7 +47,7 @@ export default {
         <p v-if="isMatchDatePassed">
           <span v-if="match.count_status !== null && match.is_forfait !== 1" class="badge badge-error text-xs">
             {{ match.count_status }}
-            <a :href="'/team_sheets.php?id_match='+match.id_match"
+            <a :href="'/team_sheets.html?id_match='+match.id_match"
                target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
@@ -55,7 +55,7 @@ export default {
           </span>
           <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} fiche équipe non signée
-            <a :href="'/team_sheets.php?id_match='+match.id_match"
+            <a :href="'/team_sheets.html?id_match='+match.id_match"
                target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
@@ -63,21 +63,21 @@ export default {
           </span>
           <span v-if="match.is_sign_team_ext === 0" class="badge badge-error text-xs">
             {{ match.equipe_ext }} fiche équipe non signée
-            <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+            <a :href="'/team_sheets.html?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
                   <i class="fas fa-external-link-alt ml-1"></i>
             </a>
           </span>
           <span v-if="match.is_sign_match_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} feuille de match non signée
-            <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+            <a :href="'/match.html?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
             </a>
           </span>
           <span v-if="match.is_sign_match_ext === 0" class="badge badge-error text-xs">
             {{ match.equipe_ext }} feuille de match non signée
-            <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+            <a :href="'/match.html?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
             </a>
@@ -90,7 +90,7 @@ export default {
           </span>
           <span v-if="match.has_forbidden_player === 1" class="badge badge-error">
             pb licence(s)
-            <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+            <a :href="'/team_sheets.html?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
               <i class="fas fa-external-link-alt ml-1"></i>
             </a>
@@ -100,14 +100,14 @@ export default {
           <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
           <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
             fiche équipe signée
-                <a :href="'/team_sheets.php?id_match='+match.id_match" target="_blank"
+                <a :href="'/team_sheets.html?id_match='+match.id_match" target="_blank"
                    class="link link-info hover:underline">
                     <i class="fas fa-external-link-alt ml-1"></i>
                 </a>
           </span>
           <span v-if="match.is_sign_match_dom + match.is_sign_match_ext === 2" class="badge badge-success">
             feuille de match signée
-            <a :href="'/match.php?id_match='+match.id_match" target="_blank"
+            <a :href="'/match.html?id_match='+match.id_match" target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
             </a>
@@ -127,7 +127,7 @@ export default {
         </p>
         <p>Date : {{ match.date_reception }}</p>
         <div v-if="isMatchToday && !isMatchFinished" class="mt-2">
-          <a :href="'/live.php?id_match=' + match.code_match + '&mode=scorer'" 
+          <a :href="'/live.html?id_match=' + match.code_match + '&mode=scorer'"
              class="btn btn-warning btn-sm animate-pulse" target="_blank">
             <i class="fas fa-edit mr-1"></i>Mode scoreur
           </a>

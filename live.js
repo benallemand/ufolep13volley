@@ -5,13 +5,17 @@ import ScoreBoard from './pages/components/live/ScoreBoard.js';
 import ScorerControls from './pages/components/live/ScorerControls.js';
 import ActiveMatchList from './pages/components/live/ActiveMatchList.js';
 import MatchDetails from './pages/components/live/MatchDetails.js';
+import {getCurrentUser} from './pages/components/auth/guard.js';
 
 // Expose les libs en global pour les sous-composants qui les utilisent sans import
 window.axios = axios;
 window.Toastify = Toastify;
 
-const liveData = window.__LIVE_DATA__ || {};
+// Profils considérés "admin" pour le marquage (cf. UserManager::isAdmin)
+const ADMIN_PROFILES = ['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'];
 const ROTATION_COMPETITION_CODES = ['m', 'c', 'cf'];
+
+const params = new URLSearchParams(window.location.search);
 
 function createEmptyLineup() {
     return {
@@ -32,26 +36,26 @@ createApp({
         'match-details': MatchDetails
     },
     data() { return {
-        idMatch: liveData.idMatch,
-        isScorer: liveData.isScorer || false,
-        canScore: liveData.canScore || false,
-        teamDomName: liveData.match ? liveData.match.equipe_dom : null,
-        teamExtName: liveData.match ? liveData.match.equipe_ext : null,
-        match: liveData.match || null,
-        error: liveData.error || null,
+        idMatch: params.get('id_match'),
+        isScorer: (params.get('mode') || 'view') === 'scorer',
+        canScore: false,
+        teamDomName: null,
+        teamExtName: null,
+        match: null,
+        error: null,
         swapSides: false,
         teamPlayersBySide: {
-            dom: Array.isArray(liveData.teamPlayers?.dom) ? liveData.teamPlayers.dom : [],
-            ext: Array.isArray(liveData.teamPlayers?.ext) ? liveData.teamPlayers.ext : []
+            dom: [],
+            ext: []
         },
         score: {
-            set_en_cours: liveData.liveScoreData ? liveData.liveScoreData.set_en_cours : 1,
-            score_dom: liveData.liveScoreData ? liveData.liveScoreData.score_dom : 0,
-            score_ext: liveData.liveScoreData ? liveData.liveScoreData.score_ext : 0,
-            sets_dom: liveData.liveScoreData ? liveData.liveScoreData.sets_dom : 0,
-            sets_ext: liveData.liveScoreData ? liveData.liveScoreData.sets_ext : 0
+            set_en_cours: 1,
+            score_dom: 0,
+            score_ext: 0,
+            sets_dom: 0,
+            sets_ext: 0
         },
-        isLive: liveData.liveScoreData !== null && liveData.liveScoreData !== undefined,
+        isLive: false,
         activeLiveScores: [],
         refreshInterval: null,
         timeouts: {
@@ -71,7 +75,7 @@ createApp({
         servingTeam: null,
         // Autosave state (issue #196)
         saveStatus: 'saved',
-        version: liveData.liveScoreData ? parseInt(liveData.liveScoreData.version) || 1 : 1,
+        version: 1,
         autosaveInterval: null,
         retryCount: 0,
         maxRetries: 5,
@@ -119,8 +123,13 @@ createApp({
             return 'live_score_draft_' + this.idMatch;
         }
     },
-    mounted() {
-        if (this.idMatch && this.isScorer) {
+    async mounted() {
+        // Charge les données autrefois injectées par live.php (window.__LIVE_DATA__) :
+        // infos du match, droits de marquage, joueurs des équipes.
+        if (this.idMatch) {
+            await this.loadInitialData();
+        }
+        if (this.idMatch && this.isScorer && this.canScore) {
             const swapKey = 'live_score_swap_' + this.idMatch;
             this.swapSides = localStorage.getItem(swapKey) === '1';
             this.restoreFromLocalStorage();
@@ -154,6 +163,45 @@ createApp({
         }
     },
     methods: {
+        // Reconstitue côté client les données autrefois calculées par live.php.
+        // idMatch est en réalité un code_match (ex. C_9_20260122_040).
+        async loadInitialData() {
+            try {
+                const {data} = await axios.get(
+                    `/rest/action.php/matchmgr/get_match_by_code_match?code_match=${encodeURIComponent(this.idMatch)}`
+                );
+                this.match = data;
+                this.teamDomName = data.equipe_dom;
+                this.teamExtName = data.equipe_ext;
+                document.title = 'Live Score - ' + (data.code_match || '');
+            } catch (e) {
+                this.error = "Impossible de charger les informations du match.";
+                return;
+            }
+            // Droits de marquage : admin OU responsable d'une des deux équipes
+            const user = await getCurrentUser();
+            if (user && ADMIN_PROFILES.includes(user.profile_name)) {
+                this.canScore = true;
+            } else if (user && user.id_equipe) {
+                this.canScore = (user.id_equipe == this.match.id_equipe_dom
+                    || user.id_equipe == this.match.id_equipe_ext);
+            }
+            if (this.canScore && this.isScorer) {
+                await this.loadTeamPlayers();
+            }
+        },
+        async loadTeamPlayers() {
+            try {
+                const [domRes, extRes] = await Promise.all([
+                    axios.get(`/rest/action.php/player/getLivePlayersFromTeam?id_equipe=${this.match.id_equipe_dom}`),
+                    axios.get(`/rest/action.php/player/getLivePlayersFromTeam?id_equipe=${this.match.id_equipe_ext}`),
+                ]);
+                this.teamPlayersBySide.dom = Array.isArray(domRes.data) ? domRes.data : [];
+                this.teamPlayersBySide.ext = Array.isArray(extRes.data) ? extRes.data : [];
+            } catch (e) {
+                console.error('Erreur lors du chargement des joueurs:', e);
+            }
+        },
         toggleSwapSides() {
             if (!this.idMatch) {
                 return;
