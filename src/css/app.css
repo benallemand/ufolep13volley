@@ -5,8 +5,9 @@
  *   - Les CSS des libs tierces qu'on chargeait avant par CDN
  *   - Tailwind (base / components / utilities) avec DaisyUI en plugin
  *
- * Référencée comme entrée Vite à part (`css/app`) ; le helper PHP vite_asset()
- * l'inclura dans le <head> de chaque page convertie.
+ * Référencée comme entrée Vite à part (`css/app`) et incluse via un
+ * <link rel="stylesheet" href="./src/css/app.css"> dans le <head> de chaque
+ * page HTML (Vite la remplace par le bundle hashé au build).
  *
  * IMPORTANT : tous les @import DOIVENT précéder les @tailwind (règle CSS :
  * "@import must precede all other statements").

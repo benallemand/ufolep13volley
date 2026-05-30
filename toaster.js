@@ -27,7 +27,7 @@ export function onError(controller, error) {
     }
     if(typeof Notyf !== 'undefined') {
         const notyf = new Notyf();
-        notyf.error(response.data.message);
+        notyf.error(error.response.data.message);
     }
     console.error('Erreur lors du chargement des données:', error);
 }

@@ -4,6 +4,9 @@ import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
 import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
+import {requireMatchAccess} from "./pages/components/auth/guard.js";
+import MatchMenu from "./pages/components/match/MatchMenu.js";
+import MatchSummary from "./pages/components/match/MatchSummary.js";
 
 window.axios = axios;
 window.Toastify = Toastify;
@@ -68,6 +71,8 @@ const PlayerList = {
 createApp({
     components: {
         'player-list': PlayerList,
+        'match-menu': MatchMenu,
+        'match-summary': MatchSummary,
     },
     data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
@@ -86,8 +91,13 @@ createApp({
             return this.availablePlayers.filter(player => player.equipe === this.matchData.equipe_ext && !this.matchPlayers.includes(player));
         },
     },
-    mounted() {
-        this.reloadData()
+    async created() {
+        // Contrôle d'accès côté client (remplace les vérifs PHP de team_sheets.php)
+        const user = await requireMatchAccess(this.id_match, ['RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT']);
+        if (!user) {
+            return; // redirection déjà déclenchée par la garde
+        }
+        this.reloadData();
     },
     methods: {
         search() {

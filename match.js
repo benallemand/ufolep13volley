@@ -5,6 +5,9 @@ import { Notyf } from 'notyf';
 import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
 import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "./utils/reportUtils.js";
+import {requireMatchAccess} from "./pages/components/auth/guard.js";
+import MatchMenu from "./pages/components/match/MatchMenu.js";
+import MatchSummary from "./pages/components/match/MatchSummary.js";
 
 // Expose les libs en global pour les sous-composants qui les utilisent sans import
 window.axios = axios;
@@ -12,6 +15,10 @@ window.Toastify = Toastify;
 window.Notyf = Notyf;
 
 createApp({
+    components: {
+        'match-menu': MatchMenu,
+        'match-summary': MatchSummary,
+    },
     data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
@@ -26,7 +33,27 @@ createApp({
             selectedDate: null,
         },
     }; },
-    mounted() {
+    async created() {
+        // Résolution code_match -> id_match (anciennement faite en PHP par match.php),
+        // pour les liens de l'admin ExtJS qui ouvrent /match.html?code_match=...
+        if (!this.id_match) {
+            const code_match = (new URLSearchParams(window.location.search)).get('code_match');
+            if (code_match) {
+                try {
+                    const {data} = await axios.get(
+                        `/rest/action.php/matchmgr/get_match_by_code_match?code_match=${encodeURIComponent(code_match)}`
+                    );
+                    this.id_match = data && data.id_match ? data.id_match : null;
+                } catch (e) {
+                    // ignoré : la garde ci-dessous redirigera faute d'id_match
+                }
+            }
+        }
+        // Contrôle d'accès côté client (remplace les vérifs PHP de match.php)
+        const user = await requireMatchAccess(this.id_match, ['RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT']);
+        if (!user) {
+            return; // redirection déjà déclenchée par la garde
+        }
         this.fetchUserDetails();
         this.reloadData();
     },

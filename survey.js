@@ -4,29 +4,42 @@ import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
 import {onError, onSuccess} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
+import {requireMatchAccess} from "./pages/components/auth/guard.js";
+import MatchMenu from "./pages/components/match/MatchMenu.js";
+import MatchSummary from "./pages/components/match/MatchSummary.js";
 
 window.axios = axios;
 window.Toastify = Toastify;
 window.Notyf = Notyf;
 
 createApp({
+    components: {
+        'match-menu': MatchMenu,
+        'match-summary': MatchSummary,
+    },
     data() { return {
+        id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         surveyData: {},
         isLoading: false,
     }; },
-    mounted() {
-        this.reloadData()
+    async created() {
+        // Contrôle d'accès côté client (remplace les vérifs PHP de survey.php)
+        const user = await requireMatchAccess(this.id_match, ['RESPONSABLE_EQUIPE', 'ADMINISTRATEUR']);
+        if (!user) {
+            return; // redirection déjà déclenchée par la garde
+        }
+        this.reloadData();
     },
     methods: {
         signMatch() {
-            genericSignMatch(this, id_match);
+            genericSignMatch(this, this.id_match);
         },
         signTeamSheets() {
-            genericSignSheet(this, id_match);
+            genericSignSheet(this, this.id_match);
         },
         loadMatchData() {
-            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`)
                 .then(response => {
                     this.matchData = response.data;
                 })
@@ -35,7 +48,7 @@ createApp({
                 });
         },
         loadSurveyData() {
-            return axios.get(`/rest/action.php/matchmgr/get_survey?id_match=${id_match}`)
+            return axios.get(`/rest/action.php/matchmgr/get_survey?id_match=${this.id_match}`)
                 .then(response => {
                     this.surveyData = response.data;
                 })

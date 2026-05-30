@@ -22,7 +22,7 @@ export default {
                 <p class="text-2xl font-bold">{{ live.score_dom }} - {{ live.score_ext }}</p>
                 <p class="text-xs">Set {{ live.set_en_cours }}</p>
               </div>
-              <a :href="'/live.php?id_match=' + live.id_match" class="btn btn-primary btn-sm">
+              <a :href="'/live.html?id_match=' + live.id_match" class="btn btn-primary btn-sm">
                 <i class="fas fa-eye"></i> Voir
               </a>
             </div>

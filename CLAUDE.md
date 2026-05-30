@@ -36,7 +36,6 @@ admin/            # Interface admin Vue.js moderne (en cours de migration)
 src/              # Sources Vite (CSS global)
   css/app.css     # Tailwind + DaisyUI + libs tierces
 helpers/          # Helpers PHP
-  vite.php        # vite_asset() : lit dist/.vite/manifest.json
 dist/             # Bundle Vite (gitignored — produit par `npm run build`)
 unit_tests/       # Tests PHPUnit
 e2e/              # Tests E2E Playwright
@@ -111,7 +110,7 @@ c:\php\php.exe composer.phar update
 
 ### Frontend bundlé (Vite)
 
-Le frontend Vue 3 est bundlé par Vite. Les pages PHP utilisent le helper `vite_asset()` (dans `helpers/vite.php`) pour émettre les balises `<script>` / `<link>` vers les fichiers hashés ; les pages HTML pures (home, my_page, admin/matches) sont des entrées HTML natives Vite et un `.htaccess` rewrite leurs URLs publiques vers `/dist/`.
+Le frontend Vue 3 est bundlé par Vite. **Toutes les pages publiques sont des entrées HTML natives Vite** (plus aucune page servie par PHP — issue #228) : Vite bundle les `<script type="module">` / `<link>` qu'il y trouve et produit un `.html` hashé dans `dist/`, qu'un `.htaccess` rewrite expose à l'URL publique (ex. `/match.html` → `/dist/match.html`). Le PHP ne répond plus qu'à l'API REST (`/rest/`) et aux endpoints AJAX/JSON (`session_user.php`, `ajax/…`). Le contrôle d'accès des pages de gestion de match (live/match/survey/team_sheets) est fait côté client via `pages/components/auth/guard.js` (appels REST + redirection login).
 
 **Installer les dépendances Node**
 ```bash
@@ -126,10 +125,10 @@ npm run build
 
 > **Important** : le `dist/` n'est PAS versionné (.gitignore). Il faut le rebuild après chaque modification du code frontend. En Docker, le `Dockerfile` build automatiquement le `dist/` via une étape multi-stage `node:20-alpine`. En CI (`.github/workflows/main.yml`), GitHub Actions build et rsync `dist/` vers OVH avant le `git pull` du code source.
 
-**Entrées déclarées dans `vite.config.js`** :
+**Entrées déclarées dans `vite.config.js`** (toutes des entrées HTML natives) :
 - `src/css/app.css` — Tailwind + DaisyUI + libs tierces (FontAwesome, Notyf, Toastify)
-- `live.js`, `match.js`, `survey.js`, `team_sheets.js` — entrées JS pour les pages .php (chargées via `vite_asset('live.js')` etc.)
-- `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — entrées HTML natives Vite
+- `live.html`, `match.html`, `survey.html`, `team_sheets.html` — pages de gestion de match (chacune charge son `.js` racine : `live.js`, etc.)
+- `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — pages publiques / dashboard responsable
 
 **Hors périmètre du bundle Vite** : `admin.php`, `register.php`, `reset_password.php`, `rank_for_cup.php` — restent sur les CDN ExtJS (interface d'administration historique).
 

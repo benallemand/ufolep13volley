@@ -328,7 +328,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     header: field_key, dataIndex: field_key, flex: 1,
                     renderer: function (val) {
                         return val.split(',').map(function (code_match) {
-                            return Ext.String.format("<a href='/match.php?code_match={0}' target='_blank'>{1}</a>", code_match, code_match);
+                            return Ext.String.format("<a href='/match.html?code_match={0}' target='_blank'>{1}</a>", code_match, code_match);
                         }).join(',');
                     }
                 };
@@ -338,7 +338,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 return {
                     header: field_key, dataIndex: field_key, flex: 1,
                     renderer: function (val) {
-                        return Ext.String.format("<a href='/match.php?code_match={0}' target='_blank'>{1}</a>", val, val);
+                        return Ext.String.format("<a href='/match.html?code_match={0}' target='_blank'>{1}</a>", val, val);
                     }
                 };
             default:

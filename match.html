@@ -1,50 +1,20 @@
-<?php
-require_once __DIR__ . '/classes/Generic.php';
-require_once __DIR__ . '/classes/MatchMgr.php';
-try {
-    $generic = new Generic();
-    $user_details = $generic->getCurrentUserDetails();
-    if (!in_array($user_details['profile_name'], array('RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT'))) {
-        throw new Exception("Vous n'avez pas le profil suffisant pour accéder à cette page !", 401);
-    }
-    $manager = new MatchMgr();
-    $id_match = filter_input(INPUT_GET, 'id_match');
-    if (empty($id_match)) {
-        $code_match = filter_input(INPUT_GET, 'code_match');
-        if (empty($code_match)) {
-            throw new Exception("id_match non défini !", 404);
-        }
-        $match = $manager->get_match_by_code_match($code_match);
-        $id_match = $match['id_match'];
-        header("Location:/match.php?id_match=$id_match");
-        die();
-    }
-    if (!$manager->is_match_read_allowed($id_match)) {
-        throw new Exception("Vous n'êtes pas autorisé à modifier ce match !", 401);
-    }
-} catch (Exception $e) {
-    header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $e->getMessage());
-    exit(0);
-}
-@session_start();
-$user_details = $_SESSION;
-require_once __DIR__ . '/helpers/vite.php';
-?>
 <!DOCTYPE html>
-<HTML data-theme="cupcake" lang="fr">
-<HEAD>
+<html data-theme="cupcake" lang="fr">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <TITLE>Feuille de match</TITLE>
-    <?= vite_asset('src/css/app.css') ?>
-</HEAD>
-<BODY>
+    <title>Feuille de match</title>
+    <link rel="stylesheet" href="./src/css/app.css">
+</head>
+<body>
 <div id="app" class="max-w-3xl mx-auto p-6">
     <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
-    <?php include __DIR__ . '/menu.php'; ?>
-    <?php include __DIR__ . '/summary.php'; ?>
+    <match-menu :id-match="id_match"></match-menu>
+    <match-summary :match-data="matchData"
+                   @sign-match="signMatch"
+                   @sign-team-sheets="signTeamSheets"></match-summary>
     <form @submit.prevent="submitForm">
         <div>
             <div class="grid grid-cols-3 gap-4 flex items-center border mb-4">
@@ -227,6 +197,6 @@ require_once __DIR__ . '/helpers/vite.php';
         </dialog>
     </div>
 </div>
-<?= vite_asset('match.js') ?>
-</BODY>
-</HTML>
+<script src="./match.js" type="module"></script>
+</body>
+</html>

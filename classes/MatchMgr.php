@@ -296,6 +296,25 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Version "API REST" de is_match_read_allowed : renvoie un tableau
+     * (json-encodable + countable par le routeur rest/action.php) plutôt
+     * qu'un booléen. Ne lève jamais d'exception : un utilisateur non
+     * connecté ou non autorisé reçoit simplement allowed=false.
+     *
+     * @param $id_match
+     * @return array{allowed: bool}
+     */
+    public function getMatchReadAccess($id_match): array
+    {
+        try {
+            $allowed = $this->is_match_read_allowed($id_match);
+        } catch (Exception $e) {
+            $allowed = false;
+        }
+        return array('allowed' => $allowed);
+    }
+
+    /**
      * @param $id_match
      * @return bool
      * @throws Exception
