@@ -189,6 +189,42 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Matchs programmés aujourd'hui (date_reception = date du jour), triés par
+     * heure. Utilisé par l'encart "Matchs du jour" de la page d'accueil (#230).
+     *
+     * Endpoint PUBLIC : on ne renvoie qu'un sous-ensemble whitelisté des champs
+     * (matchs_view contient des emails d'équipe qu'il ne faut pas exposer).
+     * date_reception est stockée au format dd/mm/yyyy → STR_TO_DATE pour comparer
+     * à CURDATE().
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getMatchesOfTheDay(): array
+    {
+        $matches = $this->get_matches(
+            "STR_TO_DATE(m.date_reception, '%d/%m/%Y') = CURDATE() AND m.match_status != 'ARCHIVED'",
+            "heure_reception"
+        );
+        return array_map(static function ($m) {
+            return array(
+                'id_match' => $m['id_match'],
+                'code_match' => $m['code_match'],
+                'code_competition' => $m['code_competition'],
+                'libelle_competition' => $m['libelle_competition'] ?? null,
+                'division' => $m['division'],
+                'equipe_dom' => $m['equipe_dom'],
+                'equipe_ext' => $m['equipe_ext'],
+                'date_reception' => $m['date_reception'],
+                'heure_reception' => $m['heure_reception'],
+                'gymnasium' => $m['gymnasium'] ?? null,
+                'score_equipe_dom' => $m['score_equipe_dom'] ?? null,
+                'score_equipe_ext' => $m['score_equipe_ext'] ?? null,
+            );
+        }, $matches);
+    }
+
+    /**
      * @param $id_match
      * @return mixed
      * @throws Exception

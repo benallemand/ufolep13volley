@@ -2,12 +2,14 @@ import { defineAsyncComponent } from 'vue';
 
 export default {
     components: {
+        'today-matches': defineAsyncComponent(() => import('./TodayMatches.js')),
         'news': defineAsyncComponent(() => import('../table/News.js')),
         'photos': defineAsyncComponent(() => import('../carousel/Photos.js')),
         'annual-calendar': defineAsyncComponent(() => import('../calendar/AnnualCalendar.js')),
     },
     template: `
-      <div class="flex flex-col items-center gap-8">
+      <div class="flex flex-col items-center gap-8 px-2">
+        <today-matches/>
         <news/>
         <annual-calendar :events="importantEvents"/>
         <photos/>

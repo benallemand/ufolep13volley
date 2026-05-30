@@ -101,6 +101,7 @@ test.afterAll(async ({ request }) => {
 - `test_verify.php` — vérifie les scores en base après `save_to_match`
 - `finals_setup.php` / `finals_teardown.php` — matchs 1/8 finale KF/CF (issue #215)
 - `messages_setup.php` / `messages_teardown.php` — emails non lus pour responsable d'équipe (issue #221)
+- `today_matches_setup.php` / `today_matches_teardown.php` — match programmé aujourd'hui + une nouvelle, pour l'encart "Matchs du jour" et les nouvelles repliables de la home (issue #230). Le setup recopie les FK d'un match déjà visible dans `matchs_view` (échantillonnage **depuis la vue**, pas la table `matches`, pour éviter les matchs orphelins).
 
 ### Installer les dépendances PHP
 ```bash
