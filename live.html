@@ -36,6 +36,14 @@
                 <span class="badge badge-outline ml-2">Division {{ match.division }}</span>
             </div>
 
+            <!-- Passer en mode scoreur (admin ou responsable d'une des 2 équipes) -->
+            <div class="text-center mb-4" v-if="canScore && !isScorer">
+                <a :href="'/live.html?id_match=' + idMatch + '&mode=scorer'"
+                   class="btn btn-warning btn-sm animate-pulse">
+                    <i class="fas fa-edit mr-1"></i>Passer en mode scoreur
+                </a>
+            </div>
+
             <!-- Score Board -->
             <score-board
                 :score="score"
