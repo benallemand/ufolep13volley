@@ -36,12 +36,14 @@
                 <span class="badge badge-outline ml-2">Division {{ match.division }}</span>
             </div>
 
-            <!-- Passer en mode scoreur (admin ou responsable d'une des 2 équipes) -->
-            <div class="text-center mb-4" v-if="canScore && !isScorer">
-                <a :href="'/live.html?id_match=' + idMatch + '&mode=scorer'"
-                   class="btn btn-warning btn-sm animate-pulse">
+            <!-- Passer en mode scoreur — visible publiquement pour faire découvrir
+                 la fonctionnalité. L'accès réel reste réservé aux responsables des 2
+                 équipes et aux admins : c'est goToScorerMode() qui aiguille au clic. -->
+            <div class="text-center mb-4" v-if="!isScorer">
+                <button @click="goToScorerMode" type="button"
+                        class="btn btn-warning btn-sm animate-pulse">
                     <i class="fas fa-edit mr-1"></i>Passer en mode scoreur
-                </a>
+                </button>
             </div>
 
             <!-- Score Board -->

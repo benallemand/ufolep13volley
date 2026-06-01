@@ -39,6 +39,7 @@ createApp({
         idMatch: params.get('id_match'),
         isScorer: (params.get('mode') || 'view') === 'scorer',
         canScore: false,
+        currentUser: null,
         teamDomName: null,
         teamExtName: null,
         match: null,
@@ -180,6 +181,7 @@ createApp({
             }
             // Droits de marquage : admin OU responsable d'une des deux équipes
             const user = await getCurrentUser();
+            this.currentUser = user;
             if (user && ADMIN_PROFILES.includes(user.profile_name)) {
                 this.canScore = true;
             } else if (user && user.id_equipe) {
@@ -201,6 +203,29 @@ createApp({
             } catch (e) {
                 console.error('Erreur lors du chargement des joueurs:', e);
             }
+        },
+        // Aiguillage du bouton "Passer en mode scoreur", affiché publiquement.
+        // - autorisé (admin / responsable d'une des 2 équipes) : bascule en mode scoreur
+        // - non connecté : redirection login, avec retour au mode scoreur après connexion
+        // - connecté mais non autorisé : message explicatif, on reste en consultation
+        goToScorerMode() {
+            const scorerUrl = '/live.html?id_match=' + encodeURIComponent(this.idMatch) + '&mode=scorer';
+            if (this.canScore) {
+                window.location.href = scorerUrl;
+                return;
+            }
+            if (!this.currentUser) {
+                const redirect = encodeURIComponent(window.location.origin + scorerUrl);
+                const reason = encodeURIComponent(
+                    "Connectez-vous avec un compte responsable d'équipe ou administrateur pour saisir le score en direct."
+                );
+                window.location.href = `/pages/home.html#/login?redirect=${redirect}&reason=${reason}`;
+                return;
+            }
+            this.showToast(
+                "Le mode scoreur est réservé aux responsables des deux équipes et aux administrateurs.",
+                'info'
+            );
         },
         toggleSwapSides() {
             if (!this.idMatch) {
