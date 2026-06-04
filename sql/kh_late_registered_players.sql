@@ -1,8 +1,9 @@
 -- Indicateur : joueurs inscrits sur la fiche équipe d'une équipe de la Coupe Khoury Hanna
 -- (code compétition 'kh' en poules, 'kf' en finales) APRES la date limite.
 --
--- Date limite = date de l'activité « Les présents ont été renseignés pour le match {code_match} »
--- du PREMIER match (par date de réception) parmi les matchs déjà renseignés de l'équipe.
+-- Date limite = date de la DERNIERE occurrence de l'activité « Les présents ont été renseignés
+-- pour le match {code_match} » du PREMIER match (par date de réception) parmi les matchs déjà
+-- renseignés de l'équipe (la fiche peut être ré-éditée : on retient la saisie la plus récente).
 -- Un match non renseigné (sans cette activité) n'a pas de date limite et n'est pas pris en compte.
 --
 -- Détection = activités « Ajout de {joueur} a l'equipe {nom}(kh) » dont la date est postérieure
@@ -17,7 +18,7 @@ match_filled AS (
            m.id_equipe_dom,
            m.id_equipe_ext,
            m.date_reception,
-           MIN(a.activity_date) AS filled_date
+           MAX(a.activity_date) AS filled_date
     FROM matches m
     JOIN activity a
       ON a.comment = CONCAT('Les présents ont été renseignés pour le match ', m.code_match)
