@@ -36,18 +36,37 @@
                 <span class="badge badge-outline ml-2">Division {{ match.division }}</span>
             </div>
 
+            <!-- Score final (match terminé) : affiché dès que is_match_score_filled
+                 vaut 1. C'est le score FINAL (sets gagnés), pas le live score. -->
+            <div class="card bg-base-100 shadow-md border border-base-300 mb-4" v-if="isMatchFinished">
+                <div class="card-body p-4">
+                    <div class="text-center text-sm font-semibold opacity-60 mb-2">
+                        <i class="fas fa-flag-checkered mr-1"></i>Résultat final
+                    </div>
+                    <div class="flex items-center justify-center gap-4 text-center">
+                        <span class="flex-1 text-right font-bold">{{ match.equipe_dom }}</span>
+                        <span class="text-3xl font-mono font-bold">{{ match.score_equipe_dom }} - {{ match.score_equipe_ext }}</span>
+                        <span class="flex-1 text-left font-bold">{{ match.equipe_ext }}</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Passer en mode scoreur — visible publiquement pour faire découvrir
                  la fonctionnalité. L'accès réel reste réservé aux responsables des 2
-                 équipes et aux admins : c'est goToScorerMode() qui aiguille au clic. -->
-            <div class="text-center mb-4" v-if="!isScorer">
+                 équipes et aux admins : c'est goToScorerMode() qui aiguille au clic.
+                 Masqué quand le match est terminé (score final renseigné). -->
+            <div class="text-center mb-4" v-if="!isScorer && !isMatchFinished">
                 <button @click="goToScorerMode" type="button"
                         class="btn btn-warning btn-sm animate-pulse">
                     <i class="fas fa-edit mr-1"></i>Passer en mode scoreur
                 </button>
             </div>
 
-            <!-- Score Board -->
+            <!-- Score Board (live) — masqué pour un match terminé en simple
+                 consultation : le bloc "Résultat final" ci-dessus le remplace.
+                 Reste visible en mode scoreur ou pendant un live en cours. -->
             <score-board
+                v-if="isScorer || isLive || !isMatchFinished"
                 :score="score"
                 :left-team-name="leftTeamName"
                 :right-team-name="rightTeamName"
@@ -104,7 +123,7 @@
             </template>
 
             <!-- Status Messages -->
-            <div class="alert alert-info mb-4" v-if="!isLive && !isScorer">
+            <div class="alert alert-info mb-4" v-if="!isLive && !isScorer && !isMatchFinished">
                 <i class="fas fa-info-circle"></i>
                 <span>Le live score n'est pas encore démarré pour ce match.</span>
             </div>

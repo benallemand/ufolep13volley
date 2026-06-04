@@ -23,7 +23,8 @@ export default {
               </div>
               <div class="flex items-center justify-center gap-2 text-center font-bold text-base my-1">
                 <span class="flex-1 text-right">{{ match.equipe_dom }}</span>
-                <span class="opacity-50">vs</span>
+                <span v-if="isScoreFilled(match)" class="font-mono text-primary">{{ match.score_equipe_dom }} - {{ match.score_equipe_ext }}</span>
+                <span v-else class="opacity-50">vs</span>
                 <span class="flex-1 text-left">{{ match.equipe_ext }}</span>
               </div>
               <div class="flex items-center justify-between gap-2 text-xs opacity-70">
@@ -43,6 +44,12 @@ export default {
         };
     },
     methods: {
+        // Score FINAL renseigné (match terminé) — pas le live score.
+        // is_match_score_filled peut arriver en chaîne ("0"/"1") via mysqli :
+        // on compare en souple pour éviter que "0" (truthy en JS) ne passe.
+        isScoreFilled(match) {
+            return match.is_match_score_filled == 1;
+        },
         formatHeure(heure) {
             // "20:30:00" -> "20:30"
             if (!heure) {

@@ -122,6 +122,12 @@ createApp({
         },
         localStorageKey() {
             return 'live_score_draft_' + this.idMatch;
+        },
+        // Score FINAL renseigné (match terminé) : is_match_score_filled vaut 1
+        // dès qu'une équipe a gagné 3 sets. Peut arriver en chaîne ("0"/"1") via
+        // mysqli → comparaison souple ("0" est truthy en JS).
+        isMatchFinished() {
+            return this.match != null && this.match.is_match_score_filled == 1;
         }
     },
     async mounted() {
