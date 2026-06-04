@@ -49,6 +49,10 @@ $indicators[] = new Indicator(
     file_get_contents(__DIR__ . '/../sql/suspect_transfers.sql'),
     'alert');
 $indicators[] = new Indicator(
+    "Joueurs inscrits hors délai en Coupe Khoury Hanna",
+    file_get_contents(__DIR__ . '/../sql/kh_late_registered_players.sql'),
+    'alert');
+$indicators[] = new Indicator(
     "Joueurs sans numéro de licence",
     file_get_contents(__DIR__ . '/../sql/no_licence.sql'),
     'alert');
