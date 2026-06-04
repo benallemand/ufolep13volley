@@ -220,6 +220,7 @@ class MatchMgr extends Generic
                 'gymnasium' => $m['gymnasium'] ?? null,
                 'score_equipe_dom' => $m['score_equipe_dom'] ?? null,
                 'score_equipe_ext' => $m['score_equipe_ext'] ?? null,
+                'is_match_score_filled' => $m['is_match_score_filled'] ?? null,
             );
         }, $matches);
     }
