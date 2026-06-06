@@ -32,11 +32,10 @@ export default {
                 {date_start: '14/02/2026 00:00', date_end: '27/02/2026 23:59', label: 'Vacances'},
                 {date_start: '02/03/2026 00:00', date_end: '10/04/2026 23:59', label: 'Championnats'},
                 {date_start: '11/04/2026 00:00', date_end: '26/04/2026 23:59', label: 'Vacances'},
-                {date_start: '27/04/2026 00:00', date_end: '15/05/2026 23:59', label: 'Championnats'},
-                {date_start: '18/05/2026 00:00', date_end: '22/05/2026 23:59', label: 'Reports'},
-                {date_start: '26/05/2026 19:30', date_end: null, label: 'Réunion fin de saison'},
+                {date_start: '27/04/2026 00:00', date_end: '29/05/2026 23:59', label: 'Championnats'},
+                {date_start: '16/06/2026 19:30', date_end: null, label: 'Réunion fin de saison'},
                 {date_start: '01/06/2026 00:00', date_end: '19/06/2026 23:59', label: 'Phases finales Coupes'},
-                {date_start: '26/06/2026 19:00', date_end: null, label: 'Finales + récompenses'}
+                {date_start: '26/06/2026 19:30', date_end: null, label: 'Finales + récompenses à Marignane'}
             ]
         };
     },
