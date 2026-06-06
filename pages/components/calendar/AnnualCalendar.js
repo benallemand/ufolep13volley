@@ -33,8 +33,8 @@ export default {
             </div>
 
             <!-- Calendrier annuel -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div v-for="month in visibleMonths" :key="month.key" class="card bg-base-100 shadow-md">
+            <div class="flex flex-wrap justify-center gap-4">
+                <div v-for="month in visibleMonths" :key="month.key" class="card bg-base-100 shadow-md basis-full md:basis-[calc(50%_-_0.5rem)] lg:basis-[calc(33.333%_-_0.667rem)] xl:basis-[calc(25%_-_0.75rem)]">
                     <div class="card-body p-3">
                         <h3 class="card-title text-lg text-center mb-3">{{ month.name }}</h3>
                         
