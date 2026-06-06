@@ -264,11 +264,171 @@ class Rank extends Generic
         $bindings[] = array('type' => 's', 'value' => $division);
         if (empty($id_team)) {
             $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
-        } else {
-            $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division_id_team.sql');
-            $bindings[] = array('type' => 'i', 'value' => $id_team);
+            $results = $this->sql_manager->execute($sql, $bindings);
+            if (is_array($results) && count($results) > 1) {
+                $results = $this->applyHeadToHeadTieBreak($results, $competition, $division);
+            }
+            return $results;
         }
+        $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division_id_team.sql');
+        $bindings[] = array('type' => 'i', 'value' => $id_team);
         return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Départage les équipes à égalité (mêmes points ET même différence de sets) par
+     * la confrontation directe : le vainqueur du match qui les oppose passe devant.
+     *
+     * - Groupe de 2 équipes : on résout via les matchs joués entre elles (victoires,
+     *   puis différence de sets de ces matchs). Si rien de décisif (non joué / double
+     *   forfait), l'ordre est conservé et les équipes sont marquées `needs_manual_check`.
+     * - Groupe de 3 équipes ou plus : pas de départage automatique, marqué
+     *   `needs_manual_check` (à trancher manuellement).
+     *
+     * Le `rang` est ensuite réattribué séquentiellement selon le nouvel ordre.
+     *
+     * @param array $rows Résultats de ranks_view (incluant rang, points, diff, id_equipe)
+     * @param string $competition
+     * @param string $division
+     * @return array
+     * @throws Exception
+     */
+    private function applyHeadToHeadTieBreak(array $rows, string $competition, string $division): array
+    {
+        // Base d'ordre stable : le rang calculé par la vue
+        usort($rows, fn($a, $b) => ((int)$a['rang']) <=> ((int)$b['rang']));
+        foreach ($rows as &$row) {
+            $row['needs_manual_check'] = false;
+            $row['tie_broken_h2h'] = false;
+        }
+        unset($row);
+
+        $n = count($rows);
+        $i = 0;
+        while ($i < $n) {
+            // Trouver la fin du groupe à points + diff identiques
+            $j = $i + 1;
+            while ($j < $n
+                && (string)$rows[$j]['points'] === (string)$rows[$i]['points']
+                && (string)$rows[$j]['diff'] === (string)$rows[$i]['diff']) {
+                $j++;
+            }
+            $groupSize = $j - $i;
+
+            if ($groupSize === 2) {
+                $cmp = $this->resolveHeadToHead(
+                    $competition,
+                    $division,
+                    (int)$rows[$i]['id_equipe'],
+                    (int)$rows[$i + 1]['id_equipe']
+                );
+                if ($cmp === 0) {
+                    // Indécidable : on conserve l'ordre et on signale
+                    $rows[$i]['needs_manual_check'] = true;
+                    $rows[$i + 1]['needs_manual_check'] = true;
+                } else {
+                    if ($cmp < 0) {
+                        // La 2e équipe a gagné la confrontation directe : elle passe devant
+                        $tmp = $rows[$i];
+                        $rows[$i] = $rows[$i + 1];
+                        $rows[$i + 1] = $tmp;
+                    }
+                    $rows[$i]['tie_broken_h2h'] = true;
+                    $rows[$i + 1]['tie_broken_h2h'] = true;
+                }
+            } elseif ($groupSize >= 3) {
+                for ($k = $i; $k < $j; $k++) {
+                    $rows[$k]['needs_manual_check'] = true;
+                }
+            }
+
+            $i = $j;
+        }
+
+        // Réattribution séquentielle du rang après réordonnancement
+        foreach ($rows as $index => &$row) {
+            $row['rang'] = $index + 1;
+        }
+        unset($row);
+
+        return $rows;
+    }
+
+    /**
+     * Détermine le vainqueur de la confrontation directe entre deux équipes.
+     * Agrège tous les matchs décisifs (un camp à 3 sets) joués entre elles : on compare
+     * d'abord le nombre de victoires, puis la différence de sets de ces matchs.
+     *
+     * @return int  1 si A devant B, -1 si B devant A, 0 si indécidable (non joué,
+     *              double forfait, ou parfaite égalité sur ces matchs)
+     * @throws Exception
+     */
+    private function resolveHeadToHead(string $competition, string $division, int $idA, int $idB): int
+    {
+        // On interroge directement la table `matches` (et non la vue `matchs_view`, très
+        // coûteuse : ~17 jointures + sous-requêtes par ligne). Le score en sets est
+        // recalculé inline avec les mêmes règles que la vue (25 pts / 15 au 5e set, +2 d'écart).
+        $sql = "SELECT m.id_equipe_dom, m.id_equipe_ext,
+                  ((m.set_1_dom >= 25 AND m.set_1_dom >= m.set_1_ext + 2)
+                 + (m.set_2_dom >= 25 AND m.set_2_dom >= m.set_2_ext + 2)
+                 + (m.set_3_dom >= 25 AND m.set_3_dom >= m.set_3_ext + 2)
+                 + (m.set_4_dom >= 25 AND m.set_4_dom >= m.set_4_ext + 2)
+                 + (m.set_5_dom >= 15 AND m.set_5_dom >= m.set_5_ext + 2)) AS score_equipe_dom,
+                  ((m.set_1_ext >= 25 AND m.set_1_ext >= m.set_1_dom + 2)
+                 + (m.set_2_ext >= 25 AND m.set_2_ext >= m.set_2_dom + 2)
+                 + (m.set_3_ext >= 25 AND m.set_3_ext >= m.set_3_dom + 2)
+                 + (m.set_4_ext >= 25 AND m.set_4_ext >= m.set_4_dom + 2)
+                 + (m.set_5_ext >= 15 AND m.set_5_ext >= m.set_5_dom + 2)) AS score_equipe_ext
+                FROM matches m
+                WHERE m.code_competition = ?
+                  AND m.division = ?
+                  AND m.match_status <> 'ARCHIVED'
+                  AND ((m.id_equipe_dom = ? AND m.id_equipe_ext = ?)
+                    OR (m.id_equipe_dom = ? AND m.id_equipe_ext = ?))";
+        $bindings = [
+            ['type' => 's', 'value' => $competition],
+            ['type' => 's', 'value' => $division],
+            ['type' => 'i', 'value' => $idA],
+            ['type' => 'i', 'value' => $idB],
+            ['type' => 'i', 'value' => $idB],
+            ['type' => 'i', 'value' => $idA],
+        ];
+        $matches = $this->sql_manager->execute($sql, $bindings);
+        if (!is_array($matches) || empty($matches)) {
+            return 0;
+        }
+
+        $winsA = 0;
+        $winsB = 0;
+        $setDiffA = 0;
+        foreach ($matches as $match) {
+            $scoreDom = (int)$match['score_equipe_dom'];
+            $scoreExt = (int)$match['score_equipe_ext'];
+            // Match décisif uniquement si un camp atteint 3 sets
+            if ($scoreDom !== 3 && $scoreExt !== 3) {
+                continue;
+            }
+            $domIsA = ((int)$match['id_equipe_dom'] === $idA);
+            $scoreForA = $domIsA ? $scoreDom : $scoreExt;
+            $scoreForB = $domIsA ? $scoreExt : $scoreDom;
+            if ($scoreForA > $scoreForB) {
+                $winsA++;
+            } elseif ($scoreForB > $scoreForA) {
+                $winsB++;
+            }
+            $setDiffA += ($scoreForA - $scoreForB);
+        }
+
+        if ($winsA === 0 && $winsB === 0) {
+            return 0; // aucun match décisif joué
+        }
+        if ($winsA !== $winsB) {
+            return $winsA > $winsB ? 1 : -1;
+        }
+        if ($setDiffA !== 0) {
+            return $setDiffA > 0 ? 1 : -1;
+        }
+        return 0; // parfaitement à égalité sur la confrontation directe
     }
 
     public function getDivisions()

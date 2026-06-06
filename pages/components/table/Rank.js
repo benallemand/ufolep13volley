@@ -37,9 +37,14 @@ export default {
                 {{ Number(team.points) + team.penalites }} - {{ team.penalites }} pts de pénalité
               </span>
               </div>
-              <div v-if="isCompetitionFinished() && isExactDeuce(team)">
+              <div v-if="isCompetitionFinished() && team.needs_manual_check">
               <span class="badge badge-warning text-[8px]">
                 vérifier la rencontre directe
+              </span>
+              </div>
+              <div v-else-if="isCompetitionFinished() && team.tie_broken_h2h">
+              <span class="badge badge-success text-[8px]">
+                départagé à la confrontation directe
               </span>
               </div>
             </div>
@@ -135,9 +140,6 @@ export default {
                 })
                 .catch(() => {
                 });
-        },
-        isExactDeuce(rank) {
-            return this.ranks.filter((curRank) => curRank.points === rank.points && curRank.diff === rank.diff).length > 1;
         },
         isCompetitionFinished() {
             return this.limitDate && new Date() > new Date(this.limitDate.split('/').reverse().join('-'));
