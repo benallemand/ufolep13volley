@@ -1,6 +1,20 @@
 // Cellule "podium" : champion (or) au-dessus du vice-champion (argent), + lien diplômes.
 const PodiumCell = {
     props: ['label', 'champion', 'vice', 'ids'],
+    computed: {
+        // `ids` = "idChampion,idVice" → un id par équipe pour le téléchargement individuel
+        championId() {
+            return this.ids ? String(this.ids).split(',')[0] : null;
+        },
+        viceId() {
+            return this.ids ? String(this.ids).split(',')[1] : null;
+        },
+    },
+    methods: {
+        diplomaUrl(id) {
+            return '/rest/action.php/halloffame/download_diploma?ids=' + id;
+        },
+    },
     template: `
       <div class="flex-1 min-w-0">
         <div v-if="label" class="text-[10px] uppercase tracking-wide text-base-content/50 text-center mb-1">
@@ -9,17 +23,17 @@ const PodiumCell = {
         <div v-if="champion"
              class="flex items-center gap-1 rounded bg-amber-100 border-l-4 border-amber-400 px-2 py-1">
           <span>🥇</span>
-          <span class="text-xs font-semibold truncate" :title="champion">{{ champion }}</span>
+          <span class="text-xs font-semibold truncate flex-1" :title="champion">{{ champion }}</span>
+          <a v-if="championId" :href="diplomaUrl(championId)" target="_blank"
+             title="Télécharger le diplôme" class="shrink-0 text-primary/70 hover:text-primary">📄</a>
         </div>
         <div v-if="vice"
              class="flex items-center gap-1 rounded bg-slate-100 border-l-4 border-slate-300 px-2 py-1 mt-1">
           <span>🥈</span>
-          <span class="text-xs truncate" :title="vice">{{ vice }}</span>
+          <span class="text-xs truncate flex-1" :title="vice">{{ vice }}</span>
+          <a v-if="viceId" :href="diplomaUrl(viceId)" target="_blank"
+             title="Télécharger le diplôme" class="shrink-0 text-primary/70 hover:text-primary">📄</a>
         </div>
-        <a v-if="ids"
-           :href="'/rest/action.php/halloffame/download_diploma?ids=' + ids"
-           target="_blank"
-           class="block text-[10px] text-primary/70 hover:underline text-center mt-1">📄 diplômes</a>
       </div>
     `,
 };
@@ -51,10 +65,10 @@ const SeasonBody = {
               <div class="card-body p-3 gap-2">
                 <div class="text-center font-bold text-primary text-sm">Division {{ d.division }}</div>
                 <div class="flex gap-2">
-                  <podium-cell label="Phase 1" :champion="d.p1 && d.p1.champion" :vice="d.p1 && d.p1.vice"
+                  <podium-cell label="1ère demi-saison" :champion="d.p1 && d.p1.champion" :vice="d.p1 && d.p1.vice"
                                :ids="d.p1 && d.p1.ids"></podium-cell>
                   <div class="w-px bg-base-300"></div>
-                  <podium-cell label="Phase 2" :champion="d.p2 && d.p2.champion" :vice="d.p2 && d.p2.vice"
+                  <podium-cell label="2e demi-saison" :champion="d.p2 && d.p2.champion" :vice="d.p2 && d.p2.vice"
                                :ids="d.p2 && d.p2.ids"></podium-cell>
                 </div>
               </div>
@@ -75,10 +89,16 @@ export default {
 
         <!-- Dernière saison : mise en avant -->
         <div v-if="latestGroup" class="rounded-2xl border-2 border-primary/40 bg-primary/5 p-4 shadow-md">
-          <div class="flex items-center justify-center gap-2 mb-4">
+          <div class="flex items-center justify-center gap-2 mb-3">
             <span class="text-2xl">🏆</span>
             <h3 class="text-xl font-bold text-primary">{{ latestGroup.label }}</h3>
             <span class="badge badge-primary badge-sm">dernière saison</span>
+          </div>
+          <div v-if="latestGroup.allIds" class="flex justify-center mb-4">
+            <a :href="'/rest/action.php/halloffame/download_diploma?ids=' + latestGroup.allIds"
+               target="_blank" class="btn btn-sm btn-primary gap-1">
+              📄 Télécharger tous les diplômes de la saison
+            </a>
           </div>
           <season-body :leagues="latestGroup.leagues"></season-body>
         </div>
@@ -91,6 +111,12 @@ export default {
             <input type="checkbox"/>
             <div class="collapse-title font-semibold">{{ grp.label }}</div>
             <div class="collapse-content">
+              <div v-if="grp.allIds" class="flex justify-end pt-2">
+                <a :href="'/rest/action.php/halloffame/download_diploma?ids=' + grp.allIds"
+                   target="_blank" class="btn btn-xs btn-outline btn-primary gap-1">
+                  📄 Tous les diplômes
+                </a>
+              </div>
               <season-body :leagues="grp.leagues" class="pt-2"></season-body>
             </div>
           </div>
@@ -153,7 +179,9 @@ export default {
                         const divisions = Object.values(divMap).sort((a, b) => this.compareDivisions(a.division, b.division));
                         return { league, type: 'champ', divisions };
                     });
-                return { period, label: `Saison ${period}`, leagues };
+                // Tous les ids (champion + vice) de la saison, pour le téléchargement groupé
+                const allIds = rows.map((r) => r.ids).filter(Boolean).join(',');
+                return { period, label: `Saison ${period}`, leagues, allIds };
             });
         },
         latestGroup() {
