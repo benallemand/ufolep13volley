@@ -431,6 +431,26 @@ class Rank extends Generic
         return 0; // parfaitement à égalité sur la confrontation directe
     }
 
+    /**
+     * Classement calculé selon le barème FFVB (aperçu réservé aux administrateurs).
+     * Voir sql/get_rank_ffvb_by_competition_division.sql pour les règles.
+     * @throws Exception
+     */
+    public function getRankFFVB($competition, $division): array|int|string|null
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Accès réservé aux administrateurs !", 403);
+        }
+        $sql = file_get_contents(__DIR__ . '/../sql/get_rank_ffvb_by_competition_division.sql');
+        $bindings = array(
+            array('type' => 's', 'value' => $competition),
+            array('type' => 's', 'value' => $division),
+            array('type' => 's', 'value' => $competition),
+            array('type' => 's', 'value' => $division),
+        );
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
     public function getDivisions()
     {
         $sql = "SELECT

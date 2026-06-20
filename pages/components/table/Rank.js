@@ -1,6 +1,13 @@
 export default {
     template: `
-      <table class="table table-pin-rows">
+      <div>
+        <div v-if="canManagePoints" class="flex items-center justify-end gap-2 mb-2">
+          <span v-if="ffvbMode" class="text-xs text-base-content/60 italic">Aperçu admin — barème FFVB (3/2/1/0)</span>
+          <button @click="toggleFfvb" class="btn btn-sm" :class="ffvbMode ? 'btn-primary' : 'btn-outline btn-primary'">
+            {{ ffvbMode ? 'Revenir au classement actuel' : '🧪 Voir en mode FFVB' }}
+          </button>
+        </div>
+        <table class="table table-pin-rows">
         <thead>
         <tr>
           <th class="text-center">#</th>
@@ -77,7 +84,8 @@ export default {
           </td>
         </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
     `,
     props: {
         code_competition: {
@@ -95,6 +103,7 @@ export default {
             searchQuery: "",
             user: null,
             limitDate: '',
+            ffvbMode: false,
         };
     },
     computed: {
@@ -117,9 +126,10 @@ export default {
                 });
         },
         fetch() {
+            const endpoint = this.ffvbMode ? 'getRankFFVB' : 'getRank';
             axios
                 .get(
-                    `/rest/action.php/rank/getRank?competition=${this.code_competition}&division=${this.division}`
+                    `/rest/action.php/rank/${endpoint}?competition=${this.code_competition}&division=${this.division}`
                 )
                 .then((response) => {
                     this.ranks = response.data;
@@ -127,6 +137,10 @@ export default {
                 .catch((error) => {
                     console.error("Erreur lors du chargement :", error);
                 });
+        },
+        toggleFfvb() {
+            this.ffvbMode = !this.ffvbMode;
+            this.fetch();
         },
         fetchUserDetails() {
             axios
