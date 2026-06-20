@@ -2,7 +2,7 @@ export default {
     template: `
       <div>
         <div v-if="canManagePoints" class="flex items-center justify-end gap-2 mb-2">
-          <span v-if="ffvbMode" class="text-xs text-base-content/60 italic">Aperçu admin — barème FFVB (3/2/1/0)</span>
+          <span v-if="ffvbMode" class="text-xs text-base-content/60 italic">Aperçu admin — barème FFVB (3/2/1/0) · départage : victoires → quotient sets → quotient points</span>
           <button @click="toggleFfvb" class="btn btn-sm" :class="ffvbMode ? 'btn-primary' : 'btn-outline btn-primary'">
             {{ ffvbMode ? 'Revenir au classement actuel' : '🧪 Voir en mode FFVB' }}
           </button>
@@ -16,7 +16,9 @@ export default {
           <th class="text-center">MJ</th>
           <th class="text-center">G</th>
           <th class="text-center">P</th>
-          <th class="text-center">Diff. Sets</th>
+          <th v-if="!ffvbMode" class="text-center">Diff. Sets</th>
+          <th v-if="ffvbMode" class="text-center">Quot. sets</th>
+          <th v-if="ffvbMode" class="text-center">Quot. pts</th>
           <th class="hidden md:table-cell text-center">Sets Pour</th>
           <th class="hidden md:table-cell text-center">Sets Contre</th>
           <th class="hidden md:table-cell text-center">Reports</th>
@@ -64,7 +66,9 @@ export default {
                 dont {{ team.matches_lost_by_forfeit_count }} par forfait
             </span>
           </td>
-          <td class="text-center">{{ team.diff }}</td>
+          <td v-if="!ffvbMode" class="text-center">{{ team.diff }}</td>
+          <td v-if="ffvbMode" class="text-center">{{ team.quotient_sets }}</td>
+          <td v-if="ffvbMode" class="text-center">{{ team.quotient_points }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_pour }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_contre }}</td>
           <td class="hidden md:table-cell text-center">{{ team.report_count }}</td>
