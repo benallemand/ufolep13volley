@@ -1,6 +1,8 @@
 AddDefaultCharset UTF-8
 
-RedirectMatch 404 /\.git
+# Bloque l'accès à tous les fichiers/dossiers cachés (.env, .git, .htaccess…),
+# sauf .well-known. Évite notamment l'exposition du .env.
+RedirectMatch 404 /\.(?!well-known)
 
 # Bundles Vite des pages HTML pures : on conserve les URLs publiques
 # (/pages/home.html, /pages/my_page.html, /admin/matches.html) mais le
