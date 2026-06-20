@@ -299,8 +299,9 @@ export default {
 
         // Retourne le nom du vainqueur d'une 1/2 finale si terminée
         getSemiWinnerName(semiNum) {
-            const q1 = (semiNum - 1) * 2; // index 1/8 pour le 1er quart
-            const q2 = q1 + 2;            // index 1/8 pour le 2e quart
+            // Chaque demi couvre 4 matchs de 1/8 (demi #1 -> 1/8 0..3, demi #2 -> 1/8 4..7).
+            const q1 = (semiNum - 1) * 4; // 1er quart de la demi (1/8 q1 et q1+1)
+            const q2 = q1 + 2;            // 2e quart de la demi (1/8 q2 et q2+1)
             const idsQuarter1 = new Set([...this.getEighthTeamIds(q1), ...this.getEighthTeamIds(q1 + 1)]);
             const idsQuarter2 = new Set([...this.getEighthTeamIds(q2), ...this.getEighthTeamIds(q2 + 1)]);
             return this.getMatchWinner(this.findRealMatch(idsQuarter1, idsQuarter2));
