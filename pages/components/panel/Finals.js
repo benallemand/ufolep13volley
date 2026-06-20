@@ -85,6 +85,16 @@ export default {
             const matches = [];
             const hostDraw = this.drawData.host_draw || { '1_4': {}, '1_2': {} };
 
+            // Position de poule par id d'équipe (depuis le tirage 1/8 résolu).
+            // On indexe par id (et non par nom affiché) pour que chaque équipe
+            // conserve son sous-titre à tous les tours, sans collision de noms.
+            const posById = {};
+            this.drawData.rounds['1_8'].forEach((d) => {
+                if (d.team1_resolved) posById[d.team1_resolved.id_equipe] = d.team1_label;
+                if (d.team2_resolved) posById[d.team2_resolved.id_equipe] = d.team2_label;
+            });
+            const posLabel = (id) => (id != null && posById[id]) ? posById[id] : null;
+
             // 1/8 de finale : tirage + enrichissement avec vrais matchs
             this.drawData.rounds['1_8'].forEach((drawMatch, index) => {
                 const t1 = drawMatch.team1_resolved ? drawMatch.team1_resolved.id_equipe : null;
@@ -103,8 +113,8 @@ export default {
                         ...realMatch,
                         journee: '1/8 de finale',
                         equipe_dom: '🏠 ' + realMatch.equipe_dom,
-                        tooltip_dom: drawMatch.team1_label,
-                        tooltip_ext: drawMatch.team2_label,
+                        tooltip_dom: posLabel(realMatch.id_equipe_dom),
+                        tooltip_ext: posLabel(realMatch.id_equipe_ext),
                     });
                 } else {
                     // Pas encore de match inséré : placeholder depuis le tirage
@@ -121,8 +131,8 @@ export default {
                         equipe_ext: team2Display,
                         id_equipe_dom: t1,
                         id_equipe_ext: t2,
-                        tooltip_dom: drawMatch.team1_resolved ? drawMatch.team1_label : null,
-                        tooltip_ext: drawMatch.team2_resolved ? drawMatch.team2_label : null,
+                        tooltip_dom: posLabel(t1),
+                        tooltip_ext: posLabel(t2),
                     });
                 }
             });
@@ -151,6 +161,8 @@ export default {
                         journee: '1/4 de finale',
                         equipe_dom: '🏠 ' + realQuarterMatch.equipe_dom,
                         equipe_ext: realQuarterMatch.equipe_ext,
+                        tooltip_dom: posLabel(realQuarterMatch.id_equipe_dom),
+                        tooltip_ext: posLabel(realQuarterMatch.id_equipe_ext),
                     });
                 } else {
                     // Pas de vrai match : placeholder
@@ -199,6 +211,8 @@ export default {
                         journee: '1/2 finale',
                         equipe_dom: '🏠 ' + realSemiMatch.equipe_dom,
                         equipe_ext: realSemiMatch.equipe_ext,
+                        tooltip_dom: posLabel(realSemiMatch.id_equipe_dom),
+                        tooltip_ext: posLabel(realSemiMatch.id_equipe_ext),
                     });
                 } else {
                     // Placeholder : chercher les noms des vainqueurs des 1/4 si disponibles
@@ -233,6 +247,8 @@ export default {
                     journee: 'Finale',
                     equipe_dom: '🏠 ' + realFinalMatch.equipe_dom,
                     equipe_ext: realFinalMatch.equipe_ext,
+                    tooltip_dom: posLabel(realFinalMatch.id_equipe_dom),
+                    tooltip_ext: posLabel(realFinalMatch.id_equipe_ext),
                 });
             } else {
                 const finalist1Name = this.getSemiWinnerName(1);

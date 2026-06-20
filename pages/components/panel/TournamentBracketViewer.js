@@ -233,13 +233,17 @@ export default {
         convertToBracketFormat() {
             // Extraire les participants uniques et leurs tooltips
             const participantsMap = new Map();
+            // On conserve le 1er libellé non vide rencontré pour un nom donné :
+            // un tour ultérieur sans libellé (ex. placeholder de finale) ne doit pas
+            // écraser la position de poule déjà connue.
+            const setTooltip = (name, tooltip) => {
+                if (tooltip || !participantsMap.has(name)) {
+                    participantsMap.set(name, tooltip || '');
+                }
+            };
             this.matches.forEach(match => {
-                if (match.equipe_dom) {
-                    participantsMap.set(match.equipe_dom, match.tooltip_dom || '');
-                }
-                if (match.equipe_ext) {
-                    participantsMap.set(match.equipe_ext, match.tooltip_ext || '');
-                }
+                if (match.equipe_dom) setTooltip(match.equipe_dom, match.tooltip_dom);
+                if (match.equipe_ext) setTooltip(match.equipe_ext, match.tooltip_ext);
             });
 
             const participants = Array.from(participantsMap.entries()).map(([name, tooltip], index) => ({
