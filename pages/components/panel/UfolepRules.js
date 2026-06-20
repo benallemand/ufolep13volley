@@ -80,39 +80,67 @@ export default {
     methods: {
         selectRegulation(id) {
             this.selectedId = id;
+            // Faire défiler jusqu'au règlement affiché (utile surtout sur mobile)
+            this.$nextTick(() => {
+                const el = document.getElementById('reglement-content');
+                if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+            });
+        },
+        scrollToList() {
+            const el = document.getElementById('reglement-list');
+            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        },
+        // Les renvois "#article-X" du récapitulatif ne doivent pas passer par le routeur
+        // (mode hash) : on intercepte le clic et on défile jusqu'à l'article.
+        handleArticleClick(e) {
+            const link = e.target.closest('a[href^="#"]');
+            if (!link) return;
+            const id = link.getAttribute('href').slice(1);
+            if (!id) return;
+            const target = document.getElementById(id);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }
         },
     },
     template: `
-      <div class="container mx-auto p-4 space-y-6">
-        <div class="bg-base-100 shadow-xl rounded-lg p-6">
-          <h1 class="text-3xl font-bold text-center">Règlements UFOLEP 13</h1>
-          <p class="mt-2 text-center text-base-content/80">
-            Sélectionnez une compétition pour consulter son règlement détaillé.
-          </p>
+      <div class="container mx-auto p-4 space-y-4">
+        <div id="reglement-list" class="bg-base-100 shadow rounded-lg p-4 text-center scroll-mt-4">
+          <h1 class="text-2xl sm:text-3xl font-bold">Règlements UFOLEP 13</h1>
+          <p class="mt-1 text-sm text-base-content/70">Touchez un règlement pour l'afficher.</p>
         </div>
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Liste des règlements -->
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <button
               v-for="reg in regulations"
               :key="reg.id"
               type="button"
-              class="card bg-base-100 shadow hover:shadow-lg transition focus:outline-none"
-              :class="{'border-primary border-2': reg.id === selectedId}"
+              class="flex items-center gap-3 text-left w-full rounded-xl border p-3 transition hover:bg-base-200 focus:outline-none"
+              :class="reg.id === selectedId ? 'border-primary border-2 bg-primary/5' : 'border-base-300'"
               @click="selectRegulation(reg.id)">
-            <div class="card-body">
-              <div class="flex items-center gap-3">
-                <i :class="['fas', reg.icon, 'text-xl']"></i>
-                <h2 class="card-title text-lg">{{ reg.label }}</h2>
-              </div>
-              <p class="text-sm text-base-content/70">{{ reg.description }}</p>
-              <div class="mt-3">
-                <span class="btn btn-sm" :class="reg.id === selectedId ? 'btn-primary' : 'btn-outline'">
-                  {{ reg.id === selectedId ? 'Consulté' : 'Consulter' }}
-                </span>
-              </div>
+            <i :class="['fas', reg.icon, 'text-xl text-primary w-6 text-center shrink-0']"></i>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold leading-tight">{{ reg.label }}</div>
+              <div class="text-xs text-base-content/60">{{ reg.description }}</div>
             </div>
+            <i class="fas shrink-0 text-base-content/40"
+               :class="reg.id === selectedId ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
           </button>
         </div>
-        <div class="bg-base-100 rounded-xl shadow-xl p-4">
+
+        <!-- Contenu du règlement sélectionné -->
+        <div id="reglement-content" class="bg-base-100 rounded-xl shadow-xl p-4 scroll-mt-4" @click="handleArticleClick">
+          <div class="flex items-center justify-between gap-2 mb-2 border-b border-base-300 pb-2">
+            <div class="flex items-center gap-2 font-bold text-primary min-w-0">
+              <i :class="['fas', selectedRegulation.icon, 'shrink-0']"></i>
+              <span class="truncate">{{ selectedRegulation.label }}</span>
+            </div>
+            <button type="button" class="btn btn-xs btn-ghost gap-1 shrink-0" @click="scrollToList">
+              <i class="fas fa-arrow-up"></i> Changer
+            </button>
+          </div>
           <component :is="selectedRegulation.component" />
         </div>
       </div>
