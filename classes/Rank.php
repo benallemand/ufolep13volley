@@ -264,6 +264,9 @@ class Rank extends Generic
         $bindings[] = array('type' => 's', 'value' => $division);
         if (empty($id_team)) {
             $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
+            // La requête référence code_competition/division deux fois (CTE matches + jointure classements)
+            $bindings[] = array('type' => 's', 'value' => $competition);
+            $bindings[] = array('type' => 's', 'value' => $division);
             $results = $this->sql_manager->execute($sql, $bindings);
             if (is_array($results) && count($results) > 1) {
                 $results = $this->applyHeadToHeadTieBreak($results, $competition, $division);

@@ -45,7 +45,7 @@ agg AS (
            SUM(opp_sets) AS sets_contre,
            SUM(pts_for) AS points_pour,
            SUM(pts_against) AS points_contre,
-           SUM(CASE WHEN ff_against THEN 1 ELSE 0 END) AS matches_lost_by_forfait_count,
+           SUM(CASE WHEN ff_against THEN 1 ELSE 0 END) AS matches_lost_by_forfeit_count,
            SUM(CASE
                    WHEN ff_against THEN -1
                    WHEN own_sets = 3 AND opp_sets <= 1 THEN 3
@@ -75,7 +75,7 @@ SELECT
     ROUND(a.sets_pour / NULLIF(a.sets_contre,0), 3) AS quotient_sets,
     ROUND(a.points_pour / NULLIF(a.points_contre,0), 3) AS quotient_points,
     c.penalite AS penalites,
-    COALESCE(a.matches_lost_by_forfait_count,0) AS matches_lost_by_forfait_count,
+    COALESCE(a.matches_lost_by_forfeit_count,0) AS matches_lost_by_forfeit_count,
     c.report_count
 FROM classements c
 JOIN equipes e ON e.id_equipe = c.id_equipe
