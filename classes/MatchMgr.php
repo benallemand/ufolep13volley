@@ -158,8 +158,108 @@ class MatchMgr extends Generic
         @session_start();
         $team_id = $_SESSION['id_equipe'];
         return $this->get_matches(
-            "(m.id_equipe_dom = $team_id OR m.id_equipe_ext = $team_id) 
+            "(m.id_equipe_dom = $team_id OR m.id_equipe_ext = $team_id)
                     AND m.match_status NOT IN ('ARCHIVED')");
+    }
+
+    /**
+     * Détermine la PROCHAINE action en attente pour un camp donné d'un match,
+     * dans l'ordre du workflow : présents -> signer fiche -> score -> signer feuille -> sondage.
+     * Reproduit la logique d'affichage de pages/components/match/MatchSummary.js.
+     *
+     * @param array $match Une ligne de matchs_view
+     * @param string $side 'dom' ou 'ext'
+     * @param bool $presentsFilled Les joueurs présents de ce camp sont-ils saisis ?
+     *        (à calculer par l'appelant : is_match_player_filled de matchs_view n'est
+     *        PAS fiable côté camp — il vaut 1 même pour un état d'erreur "fiche non remplie".)
+     * @return array|null ['action','label','url'] ou null si plus rien à faire
+     */
+    public function getNextMatchActionForSide(array $match, string $side, bool $presentsFilled): ?array
+    {
+        $id = $match['id_match'];
+        $signTeam = (int)($match['is_sign_team_' . $side] ?? 0) === 1;
+        $scoreFilled = (int)($match['is_match_score_filled'] ?? 0) === 1;
+        $signMatch = (int)($match['is_sign_match_' . $side] ?? 0) === 1;
+        $surveyFilled = (int)($match['is_survey_filled_' . $side] ?? 0) === 1;
+
+        if (!$presentsFilled) {
+            return ['action' => 'fill_players', 'label' => 'Remplir les joueurs présents', 'url' => '/team_sheets.html?id_match=' . $id];
+        }
+        if (!$signTeam) {
+            return ['action' => 'sign_team', 'label' => 'Signer la fiche équipe', 'url' => '/team_sheets.html?id_match=' . $id];
+        }
+        if (!$scoreFilled) {
+            return ['action' => 'fill_score', 'label' => 'Remplir le score', 'url' => '/match.html?id_match=' . $id];
+        }
+        if (!$signMatch) {
+            return ['action' => 'sign_match', 'label' => 'Signer la feuille de match', 'url' => '/match.html?id_match=' . $id];
+        }
+        if (!$surveyFilled) {
+            return ['action' => 'fill_survey', 'label' => 'Remplir le sondage', 'url' => '/survey.html?id_match=' . $id];
+        }
+        return null;
+    }
+
+    /**
+     * Actions en attente du responsable connecté, pour ses matchs déjà joués
+     * (date <= aujourd'hui) et NON encore certifiés par la commission.
+     * Un élément par match, avec sa prochaine action.
+     * Utilisé pour afficher des toasts à la connexion (issue #240).
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getMyPendingMatchActions(): array
+    {
+        @session_start();
+        $team_id = $_SESSION['id_equipe'] ?? null;
+        if (empty($team_id) || !is_numeric($team_id)) {
+            return [];
+        }
+        $team_id = (int)$team_id;
+        $matches = $this->get_matches(
+            "(m.id_equipe_dom = $team_id OR m.id_equipe_ext = $team_id)
+                    AND m.match_status NOT IN ('ARCHIVED')
+                    AND m.certif = 0
+                    AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') <= CURDATE()");
+        if (empty($matches)) {
+            return array();
+        }
+        // Matchs où l'équipe du responsable a déjà saisi des joueurs présents
+        // (indicateur fiable par camp, contrairement à is_match_player_filled).
+        $ids = array_map(static fn($m) => (int)$m['id_match'], $matches);
+        $idList = implode(',', $ids);
+        $filledRows = $this->sql_manager->execute(
+            "SELECT DISTINCT mp.id_match
+             FROM match_player mp
+             JOIN joueur_equipe je ON je.id_joueur = mp.id_player
+             WHERE je.id_equipe = $team_id AND mp.id_match IN ($idList)");
+        $presentsByMatch = array();
+        foreach ($filledRows as $row) {
+            $presentsByMatch[(int)$row['id_match']] = true;
+        }
+
+        $result = array();
+        foreach ($matches as $match) {
+            $side = ((int)$match['id_equipe_dom'] === $team_id) ? 'dom' : 'ext';
+            $presentsFilled = isset($presentsByMatch[(int)$match['id_match']]);
+            $action = $this->getNextMatchActionForSide($match, $side, $presentsFilled);
+            if ($action === null) {
+                continue;
+            }
+            $result[] = array(
+                'id_match' => $match['id_match'],
+                'code_match' => $match['code_match'],
+                'libelle_competition' => $match['libelle_competition'],
+                'division' => $match['division'],
+                'date_reception' => $match['date_reception'],
+                'equipe_adverse' => $side === 'dom' ? $match['equipe_ext'] : $match['equipe_dom'],
+                'action' => $action['action'],
+                'label' => $action['label'],
+                'url' => $action['url'],
+            );
+        }
+        return $result;
     }
 
     /**
