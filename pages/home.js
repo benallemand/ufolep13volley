@@ -4,6 +4,7 @@ import axios from 'axios';
 import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
 import AppLayout from './components/layout/AppLayout.js';
+import { showMatchActionToasts } from './components/notifications/matchActionToasts.js';
 
 // Expose les libs en global pour les sous-composants qui les utilisent sans import
 window.axios = axios;
@@ -14,3 +15,6 @@ window.Notyf = Notyf;
 const app = createApp(AppLayout);
 app.use(AppLayout.router);
 app.mount('#app');
+
+// Notifications (toasts) des actions en attente pour le responsable connecté (#240)
+showMatchActionToasts();

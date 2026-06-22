@@ -161,6 +161,55 @@ class MatchManagerTest extends UfolepTestCase
     /**
      * @throws Exception
      */
+    /**
+     * Issue #240 — la prochaine action en attente suit le workflow :
+     * présents -> signer fiche -> score -> signer feuille -> sondage, et chaque
+     * camp (dom/ext) est résolu indépendamment.
+     */
+    public function test_getNextMatchActionForSide_workflow_order(): void
+    {
+        $base = array(
+            'id_match' => 'UT_1',
+            'is_match_player_filled' => 0,
+            'is_sign_team_dom' => 0, 'is_sign_team_ext' => 0,
+            'is_match_score_filled' => 0,
+            'is_sign_match_dom' => 0, 'is_sign_match_ext' => 0,
+            'is_survey_filled_dom' => 0, 'is_survey_filled_ext' => 0,
+        );
+
+        // 1) Rien de fait -> remplir les présents (team_sheets)
+        $a = $this->match_manager->getNextMatchActionForSide($base, 'dom');
+        $this->assertEquals('fill_players', $a['action']);
+        $this->assertStringContainsString('/team_sheets.html?id_match=UT_1', $a['url']);
+
+        // 2) Présents remplis -> signer la fiche équipe
+        $m = array_merge($base, array('is_match_player_filled' => 1));
+        $this->assertEquals('sign_team', $this->match_manager->getNextMatchActionForSide($m, 'dom')['action']);
+
+        // 3) Fiche signée -> remplir le score (match.html)
+        $m = array_merge($m, array('is_sign_team_dom' => 1));
+        $a = $this->match_manager->getNextMatchActionForSide($m, 'dom');
+        $this->assertEquals('fill_score', $a['action']);
+        $this->assertStringContainsString('/match.html?id_match=UT_1', $a['url']);
+
+        // 4) Score rempli -> signer la feuille de match
+        $m = array_merge($m, array('is_match_score_filled' => 1));
+        $this->assertEquals('sign_match', $this->match_manager->getNextMatchActionForSide($m, 'dom')['action']);
+
+        // 5) Feuille signée -> remplir le sondage (survey.html)
+        $m = array_merge($m, array('is_sign_match_dom' => 1));
+        $a = $this->match_manager->getNextMatchActionForSide($m, 'dom');
+        $this->assertEquals('fill_survey', $a['action']);
+        $this->assertStringContainsString('/survey.html?id_match=UT_1', $a['url']);
+
+        // 6) Tout fait pour dom -> plus d'action
+        $m = array_merge($m, array('is_survey_filled_dom' => 1));
+        $this->assertNull($this->match_manager->getNextMatchActionForSide($m, 'dom'));
+
+        // 7) Le camp ext est indépendant : présents partagés OK, mais ext n'a rien signé
+        $this->assertEquals('sign_team', $this->match_manager->getNextMatchActionForSide($m, 'ext')['action']);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
