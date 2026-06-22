@@ -85,7 +85,15 @@ try {
     }
     $row = $rows[0];
     $equipe_adverse = $row['equipe_ext'];
-    $action = (new MatchMgr())->getNextMatchActionForSide($row, 'dom');
+    // Présents saisis ? (match neuf => aucun match_player => false)
+    $cnt = $sql->execute(
+        "SELECT COUNT(*) AS c FROM match_player mp
+         JOIN joueur_equipe je ON je.id_joueur = mp.id_player
+         WHERE mp.id_match = ? AND je.id_equipe = ?",
+        [['type' => 'i', 'value' => (int)$row['id_match']], ['type' => 'i', 'value' => $id_equipe]]
+    );
+    $presentsFilled = ((int)($cnt[0]['c'] ?? 0)) > 0;
+    $action = (new MatchMgr())->getNextMatchActionForSide($row, 'dom', $presentsFilled);
     if ($action === null) {
         throw new Exception("Le match de test n'a aucune action en attente (état inattendu).");
     }

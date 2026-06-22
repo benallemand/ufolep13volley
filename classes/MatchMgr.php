@@ -169,18 +169,20 @@ class MatchMgr extends Generic
      *
      * @param array $match Une ligne de matchs_view
      * @param string $side 'dom' ou 'ext'
+     * @param bool $presentsFilled Les joueurs présents de ce camp sont-ils saisis ?
+     *        (à calculer par l'appelant : is_match_player_filled de matchs_view n'est
+     *        PAS fiable côté camp — il vaut 1 même pour un état d'erreur "fiche non remplie".)
      * @return array|null ['action','label','url'] ou null si plus rien à faire
      */
-    public function getNextMatchActionForSide(array $match, string $side): ?array
+    public function getNextMatchActionForSide(array $match, string $side, bool $presentsFilled): ?array
     {
         $id = $match['id_match'];
-        $playerFilled = (int)($match['is_match_player_filled'] ?? 0) === 1;
         $signTeam = (int)($match['is_sign_team_' . $side] ?? 0) === 1;
         $scoreFilled = (int)($match['is_match_score_filled'] ?? 0) === 1;
         $signMatch = (int)($match['is_sign_match_' . $side] ?? 0) === 1;
         $surveyFilled = (int)($match['is_survey_filled_' . $side] ?? 0) === 1;
 
-        if (!$playerFilled) {
+        if (!$presentsFilled) {
             return ['action' => 'fill_players', 'label' => 'Remplir les joueurs présents', 'url' => '/team_sheets.html?id_match=' . $id];
         }
         if (!$signTeam) {
@@ -220,10 +222,28 @@ class MatchMgr extends Generic
                     AND m.match_status NOT IN ('ARCHIVED')
                     AND m.certif = 0
                     AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') <= CURDATE()");
+        if (empty($matches)) {
+            return array();
+        }
+        // Matchs où l'équipe du responsable a déjà saisi des joueurs présents
+        // (indicateur fiable par camp, contrairement à is_match_player_filled).
+        $ids = array_map(static fn($m) => (int)$m['id_match'], $matches);
+        $idList = implode(',', $ids);
+        $filledRows = $this->sql_manager->execute(
+            "SELECT DISTINCT mp.id_match
+             FROM match_player mp
+             JOIN joueur_equipe je ON je.id_joueur = mp.id_player
+             WHERE je.id_equipe = $team_id AND mp.id_match IN ($idList)");
+        $presentsByMatch = array();
+        foreach ($filledRows as $row) {
+            $presentsByMatch[(int)$row['id_match']] = true;
+        }
+
         $result = array();
         foreach ($matches as $match) {
             $side = ((int)$match['id_equipe_dom'] === $team_id) ? 'dom' : 'ext';
-            $action = $this->getNextMatchActionForSide($match, $side);
+            $presentsFilled = isset($presentsByMatch[(int)$match['id_match']]);
+            $action = $this->getNextMatchActionForSide($match, $side, $presentsFilled);
             if ($action === null) {
                 continue;
             }
