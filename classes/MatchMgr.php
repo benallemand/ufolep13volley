@@ -200,7 +200,8 @@ class MatchMgr extends Generic
 
     /**
      * Actions en attente du responsable connecté, pour ses matchs déjà joués
-     * (date <= aujourd'hui). Un élément par match, avec sa prochaine action.
+     * (date <= aujourd'hui) et NON encore certifiés par la commission.
+     * Un élément par match, avec sa prochaine action.
      * Utilisé pour afficher des toasts à la connexion (issue #240).
      *
      * @return array
@@ -217,6 +218,7 @@ class MatchMgr extends Generic
         $matches = $this->get_matches(
             "(m.id_equipe_dom = $team_id OR m.id_equipe_ext = $team_id)
                     AND m.match_status NOT IN ('ARCHIVED')
+                    AND m.certif = 0
                     AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') <= CURDATE()");
         $result = array();
         foreach ($matches as $match) {
