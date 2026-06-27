@@ -41,6 +41,18 @@ const routes = [
         props: () => ({fetchUrl: "/rest/action.php/timeslot/get_my_timeslots"})
     },
     {
+        path: '/club_gymnasium_closures',
+        component: () => import('../panel/ClubGymnasiumClosures.js')
+    },
+    {
+        path: '/club_team_unavailability',
+        component: () => import('../panel/ClubTeamUnavailability.js')
+    },
+    {
+        path: '/club_team_leaders',
+        component: () => import('../panel/ClubTeamLeaders.js')
+    },
+    {
         path: '/players',
         component: () => import('../panel/Players.js'),
         props: () => ({fetchUrl: "/rest/action.php/player/getMyPlayers"})

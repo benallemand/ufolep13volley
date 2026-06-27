@@ -31,6 +31,16 @@ class UfolepTestCase extends TestCase
         $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
     }
 
+    protected function connect_as_club_leader(mixed $id_club, mixed $id_equipe = null)
+    {
+        @session_start();
+        $_SESSION['id_club'] = $id_club;
+        $_SESSION['id_equipe'] = $id_equipe;
+        $_SESSION['login'] = 'test_user';
+        $_SESSION['id_user'] = 1;
+        $_SESSION['profile_name'] = 'RESPONSABLE_CLUB';
+    }
+
     protected function tearDown(): void
     {
         $_SESSION = [];

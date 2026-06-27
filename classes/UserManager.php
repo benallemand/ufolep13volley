@@ -462,6 +462,12 @@ class UserManager extends Generic
         return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
     }
 
+    public static function isClubLeader(): bool
+    {
+        @session_start();
+        return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_CLUB");
+    }
+
     public static function isAdmin(): bool
     {
         @session_start();
@@ -533,6 +539,11 @@ class UserManager extends Generic
         $_SESSION['login'] = $data['login'];
         $_SESSION['id_user'] = (int)$data['id_user'];
         $_SESSION['profile_name'] = $data['profile_name'];
+        // Responsable de club : résoudre le club (users_clubs) et sélectionner par
+        // défaut une équipe du club (le profil n'a pas de ligne users_teams).
+        if ($_SESSION['profile_name'] === 'RESPONSABLE_CLUB') {
+            $this->initClubLeaderSession((int)$data['id_user']);
+        }
         if (!empty($redirect)) {
             header('Location: ' . urldecode($redirect));
             exit(0);
@@ -710,6 +721,98 @@ class UserManager extends Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * Liste les équipes du club du responsable de club connecté, avec les
+     * comptes responsables d'équipe qui leur sont rattachés (user_id null si
+     * aucun compte). Sert à l'écran d'attribution des comptes.
+     * @throws Exception
+     */
+    public function getMyClubTeamLeaders(): array
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        $id_club = (new Club())->getMyClubId();
+        $sql = "SELECT  e.id_equipe,
+                        e.nom_equipe,
+                        comp.libelle AS libelle_competition,
+                        CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name,
+                        (SELECT COUNT(DISTINCT cl.code_competition)
+                           FROM classements cl
+                          WHERE cl.id_equipe = e.id_equipe) AS nb_competitions,
+                        (SELECT GROUP_CONCAT(DISTINCT CONCAT(cc.libelle, IFNULL(CONCAT(' ', cl.division), '')) ORDER BY cc.libelle SEPARATOR ', ')
+                           FROM classements cl
+                           JOIN competitions cc ON cc.code_competition = cl.code_competition
+                          WHERE cl.id_equipe = e.id_equipe) AS competitions,
+                        ca.id AS user_id,
+                        ca.login,
+                        ca.email
+                FROM equipes e
+                LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
+                LEFT JOIN users_teams ut ON ut.team_id = e.id_equipe
+                LEFT JOIN comptes_acces ca ON ca.id = ut.user_id
+                WHERE e.id_club = ?
+                ORDER BY comp.libelle, e.nom_equipe, ca.login";
+        $bindings = array(array('type' => 'i', 'value' => $id_club));
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Crée (si besoin) et rattache un compte RESPONSABLE_EQUIPE à une équipe du
+     * club du responsable connecté.
+     * @throws Exception
+     */
+    public function attachClubTeamLeader($email, $id_equipe): void
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        if (empty($email)) {
+            throw new Exception("L'adresse email est obligatoire !", 400);
+        }
+        require_once __DIR__ . '/Club.php';
+        (new Club())->assertManagesTeam($id_equipe);
+        $this->create_or_update_leader_account($email, $id_equipe);
+    }
+
+    /**
+     * Détache un compte d'une équipe du club du responsable connecté
+     * (supprime le lien users_teams, sans supprimer le compte).
+     * @throws Exception
+     */
+    public function detachClubTeamLeader($user_id, $id_equipe): void
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        (new Club())->assertManagesTeam($id_equipe);
+        $this->delete_user_team($user_id, $id_equipe);
+        $this->addActivity("Compte " . $this->getUserLogin($user_id) . " détaché de l'équipe " . $this->team->getTeamName($id_equipe));
+    }
+
+    /**
+     * Initialise la session d'un RESPONSABLE_CLUB : résout son club depuis
+     * users_clubs et sélectionne par défaut la première équipe du club.
+     * @throws Exception
+     */
+    private function initClubLeaderSession(int $id_user): void
+    {
+        $sql = "SELECT club_id FROM users_clubs WHERE user_id = ? LIMIT 1";
+        $bindings = array(array('type' => 'i', 'value' => $id_user));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            return;
+        }
+        // Le responsable de club n'a pas d'équipe propre : il gère ses équipes en
+        // « agissant en tant que » leur responsable (cf. switch_to_club_team_leader).
+        $_SESSION['id_club'] = (int)$results[0]['club_id'];
+    }
+
     public function switchCurrentUserTeam($id_equipe): void
     {
         if (!(isset($_SESSION['login']))) {
@@ -847,7 +950,69 @@ class UserManager extends Generic
         $_SESSION['acting_as'] = true;
         
         $this->activity->add("Admin a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
-        
+
+        return true;
+    }
+
+    /**
+     * Permet à un responsable de club d'agir en tant qu'un compte responsable
+     * d'équipe de SON club (réutilise le mécanisme "agir en tant que").
+     * @param int $target_user_id ID du compte responsable d'équipe cible
+     * @return bool
+     * @throws Exception
+     */
+    public function switch_to_club_team_leader(int $target_user_id): bool
+    {
+        @session_start();
+
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        if (self::is_acting_as()) {
+            throw new Exception("Vous agissez déjà en tant qu'un autre compte. Revenez d'abord à votre compte club.");
+        }
+
+        require_once __DIR__ . '/Club.php';
+        $club = new Club();
+        $clubTeamIds = array_map('intval', array_column($club->getMyClubTeams(), 'id_equipe'));
+        $targetTeamIds = array_map('intval', $this->getUserTeamIds($target_user_id));
+        $sharedTeamIds = array_values(array_intersect($targetTeamIds, $clubTeamIds));
+        if (count($sharedTeamIds) === 0) {
+            throw new Exception("Ce compte ne gère aucune équipe de votre club !", 403);
+        }
+
+        // sauvegarde de la session du responsable de club
+        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
+        $_SESSION['original_admin_login'] = $_SESSION['login'];
+        $_SESSION['original_admin_profile'] = $_SESSION['profile_name'];
+        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
+        $_SESSION['original_admin_club'] = $_SESSION['id_club'] ?? null;
+
+        $sql = "SELECT  ca.login,
+                        ca.id AS id_user,
+                        p.name AS profile_name
+                FROM comptes_acces ca
+                LEFT JOIN users_profiles up ON up.user_id = ca.id
+                LEFT JOIN profiles p ON p.id = up.profile_id
+                WHERE ca.id = ?
+                LIMIT 1";
+        $bindings = array(array('type' => 'i', 'value' => $target_user_id));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            throw new Exception("Compte cible introuvable !");
+        }
+        $data = $results[0];
+        // on cible une équipe du club (la première partagée), pour que toute l'UI
+        // responsable opère sur une équipe du club même si le compte en gère d'autres
+        $_SESSION['id_equipe'] = $sharedTeamIds[0];
+        $_SESSION['login'] = $data['login'];
+        $_SESSION['id_user'] = (int)$data['id_user'];
+        $_SESSION['profile_name'] = $data['profile_name'];
+        unset($_SESSION['id_club']); // pendant l'act-as, on agit en responsable d'équipe
+        $_SESSION['acting_as'] = true;
+
+        $this->activity->add("Responsable de club a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
+
         return true;
     }
 
@@ -870,15 +1035,23 @@ class UserManager extends Generic
         $_SESSION['login'] = $_SESSION['original_admin_login'];
         $_SESSION['profile_name'] = $_SESSION['original_admin_profile'];
         $_SESSION['id_equipe'] = $_SESSION['original_admin_equipe'];
-        
+        // restaure le club d'origine (cas d'un responsable de club ayant agi en
+        // tant qu'un de ses responsables d'équipe)
+        if (array_key_exists('original_admin_club', $_SESSION)) {
+            if ($_SESSION['original_admin_club'] !== null) {
+                $_SESSION['id_club'] = (int)$_SESSION['original_admin_club'];
+            }
+            unset($_SESSION['original_admin_club']);
+        }
+
         unset($_SESSION['acting_as']);
         unset($_SESSION['original_admin_id']);
         unset($_SESSION['original_admin_login']);
         unset($_SESSION['original_admin_profile']);
         unset($_SESSION['original_admin_equipe']);
-        
-        $this->activity->add("Admin est revenu de: " . $target_login);
-        
+
+        $this->activity->add("Compte d'origine restauré depuis: " . $target_login);
+
         return true;
     }
 

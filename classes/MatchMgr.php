@@ -268,23 +268,35 @@ class MatchMgr extends Generic
     public function getMyClubMatches()
     {
         @session_start();
+        // Un responsable de club n'a pas d'équipe propre : on résout le club
+        // directement depuis la session. Sinon, on déduit le club de l'équipe.
+        if (UserManager::isClubLeader() && !empty($_SESSION['id_club'])) {
+            $id_club = (int)$_SESSION['id_club'];
+            return $this->get_matches(
+                "(
+                        m.id_equipe_dom IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club)
+                        OR
+                        m.id_equipe_ext IN (SELECT id_equipe FROM equipes WHERE id_club = $id_club)
+                        )
+                        AND m.match_status NOT IN ('ARCHIVED')");
+        }
         $team_id = $_SESSION['id_equipe'];
         return $this->get_matches(
             "(
-                    m.id_equipe_dom IN (SELECT id_equipe 
-                                        FROM equipes 
+                    m.id_equipe_dom IN (SELECT id_equipe
+                                        FROM equipes
                                         WHERE id_club IN (
-                                            SELECT id_club 
-                                            FROM equipes 
-                                            WHERE id_equipe = $team_id)) 
-                    OR 
-                    m.id_equipe_ext IN (SELECT id_equipe 
-                                        FROM equipes 
-                                        WHERE id_club IN (
-                                            SELECT id_club 
-                                            FROM equipes 
+                                            SELECT id_club
+                                            FROM equipes
                                             WHERE id_equipe = $team_id))
-                    ) 
+                    OR
+                    m.id_equipe_ext IN (SELECT id_equipe
+                                        FROM equipes
+                                        WHERE id_club IN (
+                                            SELECT id_club
+                                            FROM equipes
+                                            WHERE id_equipe = $team_id))
+                    )
                     AND m.match_status NOT IN ('ARCHIVED')");
     }
 
