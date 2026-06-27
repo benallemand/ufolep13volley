@@ -225,4 +225,39 @@ class ClubLeaderTest extends UfolepTestCase
         });
         $this->assertEmpty($stillThere, "L'indisponibilité doit avoir été supprimée");
     }
+
+    // ---- Phase e : attribution des comptes RESPONSABLE_EQUIPE -------------
+
+    public function test_getMyClubTeamLeaders_returns_only_club_teams()
+    {
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $userManager = new UserManager();
+        $rows = $userManager->getMyClubTeamLeaders();
+        $this->assertNotEmpty($rows);
+        foreach ($rows as $row) {
+            $this->assertContains((int)$row['id_equipe'], $this->club_team_ids);
+        }
+    }
+
+    public function test_attachClubTeamLeader_refuses_team_outside_club()
+    {
+        if ($this->foreign_team_id === null) {
+            $this->markTestSkipped("Pas d'équipe hors club disponible");
+        }
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $userManager = new UserManager();
+        $this->expectException(Exception::class);
+        $userManager->attachClubTeamLeader('ne.doit.pas.etre.cree@ufolep13.test', $this->foreign_team_id);
+    }
+
+    public function test_detachClubTeamLeader_refuses_team_outside_club()
+    {
+        if ($this->foreign_team_id === null) {
+            $this->markTestSkipped("Pas d'équipe hors club disponible");
+        }
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $userManager = new UserManager();
+        $this->expectException(Exception::class);
+        $userManager->detachClubTeamLeader(1, $this->foreign_team_id);
+    }
 }

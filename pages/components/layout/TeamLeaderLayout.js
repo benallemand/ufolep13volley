@@ -49,6 +49,10 @@ const routes = [
         component: () => import('../panel/ClubTeamUnavailability.js')
     },
     {
+        path: '/club_team_leaders',
+        component: () => import('../panel/ClubTeamLeaders.js')
+    },
+    {
         path: '/players',
         component: () => import('../panel/Players.js'),
         props: () => ({fetchUrl: "/rest/action.php/player/getMyPlayers"})

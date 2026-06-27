@@ -732,6 +732,73 @@ class UserManager extends Generic
     }
 
     /**
+     * Liste les équipes du club du responsable de club connecté, avec les
+     * comptes responsables d'équipe qui leur sont rattachés (user_id null si
+     * aucun compte). Sert à l'écran d'attribution des comptes.
+     * @throws Exception
+     */
+    public function getMyClubTeamLeaders(): array
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        $id_club = (new Club())->getMyClubId();
+        $sql = "SELECT  e.id_equipe,
+                        e.nom_equipe,
+                        comp.libelle AS libelle_competition,
+                        CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name,
+                        ca.id AS user_id,
+                        ca.login,
+                        ca.email
+                FROM equipes e
+                LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
+                LEFT JOIN users_teams ut ON ut.team_id = e.id_equipe
+                LEFT JOIN comptes_acces ca ON ca.id = ut.user_id
+                WHERE e.id_club = ?
+                ORDER BY comp.libelle, e.nom_equipe, ca.login";
+        $bindings = array(array('type' => 'i', 'value' => $id_club));
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Crée (si besoin) et rattache un compte RESPONSABLE_EQUIPE à une équipe du
+     * club du responsable connecté.
+     * @throws Exception
+     */
+    public function attachClubTeamLeader($email, $id_equipe): void
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        if (empty($email)) {
+            throw new Exception("L'adresse email est obligatoire !", 400);
+        }
+        require_once __DIR__ . '/Club.php';
+        (new Club())->assertManagesTeam($id_equipe);
+        $this->create_or_update_leader_account($email, $id_equipe);
+    }
+
+    /**
+     * Détache un compte d'une équipe du club du responsable connecté
+     * (supprime le lien users_teams, sans supprimer le compte).
+     * @throws Exception
+     */
+    public function detachClubTeamLeader($user_id, $id_equipe): void
+    {
+        @session_start();
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        (new Club())->assertManagesTeam($id_equipe);
+        $this->delete_user_team($user_id, $id_equipe);
+        $this->addActivity("Compte " . $this->getUserLogin($user_id) . " détaché de l'équipe " . $this->team->getTeamName($id_equipe));
+    }
+
+    /**
      * Initialise la session d'un RESPONSABLE_CLUB : résout son club depuis
      * users_clubs et sélectionne par défaut la première équipe du club.
      * @throws Exception

@@ -50,6 +50,9 @@ export default {
                 <li>
                   <router-link to="/club_team_unavailability"><span><i class="mr-2 fas fa-ban"></i>indispos équipes</span></router-link>
                 </li>
+                <li>
+                  <router-link to="/club_team_leaders"><span><i class="mr-2 fas fa-user-gear"></i>comptes responsables</span></router-link>
+                </li>
               </ul>
             </div>
             <div class="dropdown">
