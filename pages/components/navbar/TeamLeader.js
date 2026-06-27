@@ -28,9 +28,13 @@ export default {
                   Aucun compte responsable rattaché. Créez-en un dans « gestion club ».
                 </li>
                 <li v-for="account in actAsAccounts" :key="account.user_id + '-' + account.id_equipe">
-                  <a @click="actAs(account.user_id)">
-                    <i class="fas fa-people-group mr-2"></i>{{ account.team_full_name }}
-                    <span class="opacity-60">({{ account.login }})</span>
+                  <a @click="actAs(account.user_id)" class="flex flex-col items-start gap-1 py-2">
+                    <span><i class="fas fa-people-group mr-2"></i>{{ account.team_full_name }}
+                      <span class="opacity-60">({{ account.login }})</span></span>
+                    <span v-if="parseInt(account.nb_competitions) > 0" class="badge badge-success badge-sm gap-1">
+                      <i class="fas fa-trophy"></i>{{ account.competitions }}
+                    </span>
+                    <span v-else class="badge badge-ghost badge-sm">non engagée cette saison</span>
                   </a>
                 </li>
               </ul>

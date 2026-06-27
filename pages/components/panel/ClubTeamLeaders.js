@@ -21,6 +21,12 @@ export default {
             <div v-for="team in teams" :key="team.id_equipe" class="card shadow-xl w-full md:w-96">
               <div class="card-body">
                 <h2 class="card-title"><i class="fas fa-people-group mr-2"></i>{{ team.team_full_name }}</h2>
+                <div>
+                  <span v-if="parseInt(team.nb_competitions) > 0" class="badge badge-success gap-1">
+                    <i class="fas fa-trophy"></i>{{ team.competitions }}
+                  </span>
+                  <span v-else class="badge badge-ghost">non engagée cette saison</span>
+                </div>
                 <div v-if="team.leaders.length > 0">
                   <div v-for="leader in team.leaders" :key="leader.user_id"
                        class="flex items-center justify-between gap-2 border-b py-1">
@@ -82,6 +88,8 @@ export default {
                     map.set(row.id_equipe, {
                         id_equipe: row.id_equipe,
                         team_full_name: row.team_full_name,
+                        nb_competitions: row.nb_competitions,
+                        competitions: row.competitions,
                         leaders: [],
                     });
                 }

@@ -41,7 +41,7 @@ export default {
               <select id="equipe" name="id_team" v-model="newItem.id_team" required>
                 <option value="">Sélectionner une équipe</option>
                 <option v-for="team in clubTeams" :key="team.id_equipe" :value="team.id_equipe">
-                  {{ team.team_full_name }}
+                  {{ team.team_full_name }}{{ parseInt(team.nb_competitions) > 0 ? '' : ' — non engagée' }}
                 </option>
               </select>
 

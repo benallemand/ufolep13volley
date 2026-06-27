@@ -88,6 +88,9 @@ class ClubLeaderTest extends UfolepTestCase
         $club = new Club();
         $teams = $club->getMyClubTeams();
         $this->assertNotEmpty($teams);
+        // indicateur d'engagement (compétitions de la saison)
+        $this->assertArrayHasKey('nb_competitions', $teams[0]);
+        $this->assertArrayHasKey('competitions', $teams[0]);
         $returnedIds = array_map('intval', array_column($teams, 'id_equipe'));
         sort($returnedIds);
         $expected = $this->club_team_ids;

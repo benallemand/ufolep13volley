@@ -739,6 +739,13 @@ class UserManager extends Generic
                         e.nom_equipe,
                         comp.libelle AS libelle_competition,
                         CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name,
+                        (SELECT COUNT(DISTINCT cl.code_competition)
+                           FROM classements cl
+                          WHERE cl.id_equipe = e.id_equipe) AS nb_competitions,
+                        (SELECT GROUP_CONCAT(DISTINCT CONCAT(cc.libelle, IFNULL(CONCAT(' ', cl.division), '')) ORDER BY cc.libelle SEPARATOR ', ')
+                           FROM classements cl
+                           JOIN competitions cc ON cc.code_competition = cl.code_competition
+                          WHERE cl.id_equipe = e.id_equipe) AS competitions,
                         ca.id AS user_id,
                         ca.login,
                         ca.email

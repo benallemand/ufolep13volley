@@ -103,7 +103,14 @@ class Club extends Generic
                     e.nom_equipe,
                     e.code_competition,
                     comp.libelle AS libelle_competition,
-                    CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name
+                    CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name,
+                    (SELECT COUNT(DISTINCT cl.code_competition)
+                       FROM classements cl
+                      WHERE cl.id_equipe = e.id_equipe) AS nb_competitions,
+                    (SELECT GROUP_CONCAT(DISTINCT CONCAT(cc.libelle, IFNULL(CONCAT(' ', cl.division), '')) ORDER BY cc.libelle SEPARATOR ', ')
+                       FROM classements cl
+                       JOIN competitions cc ON cc.code_competition = cl.code_competition
+                      WHERE cl.id_equipe = e.id_equipe) AS competitions
                 FROM equipes e
                 LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
                 WHERE e.id_club = ?
