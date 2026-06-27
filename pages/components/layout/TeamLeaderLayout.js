@@ -41,6 +41,10 @@ const routes = [
         props: () => ({fetchUrl: "/rest/action.php/timeslot/get_my_timeslots"})
     },
     {
+        path: '/club_gymnasium_closures',
+        component: () => import('../panel/ClubGymnasiumClosures.js')
+    },
+    {
         path: '/players',
         component: () => import('../panel/Players.js'),
         props: () => ({fetchUrl: "/rest/action.php/player/getMyPlayers"})

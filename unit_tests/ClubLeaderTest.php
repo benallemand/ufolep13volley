@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../classes/UserManager.php';
 require_once __DIR__ . '/../classes/Club.php';
 require_once __DIR__ . '/../classes/TimeSlot.php';
+require_once __DIR__ . '/../classes/BlackListCourt.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/UfolepTestCase.php';
@@ -24,15 +25,19 @@ class ClubLeaderTest extends UfolepTestCase
     private ?int $id_club = null;
     private array $club_team_ids = [];
     private ?int $foreign_team_id = null;
+    private array $club_gymnasium_ids = [];
+    private ?int $foreign_gymnasium_id = null;
 
     public function __construct()
     {
         parent::__construct();
-        // Choisit dynamiquement un club ayant au moins 2 équipes
+        // Choisit dynamiquement un club ayant au moins 2 équipes ET des créneaux
+        // (donc des gymnases), pour couvrir aussi la gestion des fermetures.
         $rows = $this->sql->execute(
-            "SELECT e.id_club, COUNT(*) AS nb
+            "SELECT e.id_club, COUNT(DISTINCT e.id_equipe) AS nb
              FROM equipes e
              JOIN clubs c ON c.id = e.id_club
+             JOIN creneau cr ON cr.id_equipe = e.id_equipe
              GROUP BY e.id_club
              HAVING nb >= 2
              ORDER BY nb DESC
@@ -49,6 +54,22 @@ class ClubLeaderTest extends UfolepTestCase
             );
             if (count($foreignRows) > 0) {
                 $this->foreign_team_id = (int)$foreignRows[0]['id_equipe'];
+            }
+            $gymRows = $this->sql->execute(
+                "SELECT DISTINCT cr.id_gymnase
+                 FROM creneau cr
+                 JOIN equipes e ON e.id_equipe = cr.id_equipe
+                 WHERE e.id_club = " . $this->id_club
+            );
+            $this->club_gymnasium_ids = array_map('intval', array_column($gymRows, 'id_gymnase'));
+            if (count($this->club_gymnasium_ids) > 0) {
+                $idsCsv = implode(',', $this->club_gymnasium_ids);
+                $foreignGym = $this->sql->execute(
+                    "SELECT id FROM gymnase WHERE id NOT IN ($idsCsv) LIMIT 1"
+                );
+                if (count($foreignGym) > 0) {
+                    $this->foreign_gymnasium_id = (int)$foreignGym[0]['id'];
+                }
             }
         }
     }
@@ -119,5 +140,54 @@ class ClubLeaderTest extends UfolepTestCase
         // ne doit pas lever d'exception d'autorisation
         $result = $timeSlot->get_my_timeslots();
         $this->assertIsArray($result);
+    }
+
+    // ---- Phase b : fermetures des gymnases du club -------------------------
+
+    public function test_getMyClubGymnasiums_returns_gyms_used_by_club()
+    {
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $blacklist = new BlackListCourt();
+        $gyms = $blacklist->getMyClubGymnasiums();
+        $this->assertNotEmpty($gyms);
+        $returnedIds = array_map('intval', array_column($gyms, 'id'));
+        sort($returnedIds);
+        $expected = $this->club_gymnasium_ids;
+        sort($expected);
+        $this->assertEquals($expected, $returnedIds);
+    }
+
+    public function test_saveBlacklistGymnase_refuses_gym_outside_club()
+    {
+        if ($this->foreign_gymnasium_id === null) {
+            $this->markTestSkipped("Pas de gymnase hors club disponible");
+        }
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $blacklist = new BlackListCourt();
+        $this->expectException(Exception::class);
+        $blacklist->saveBlacklistGymnase($this->foreign_gymnasium_id, '01/01/2099');
+    }
+
+    public function test_club_leader_blacklist_gymnase_roundtrip()
+    {
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $blacklist = new BlackListCourt();
+        $gymId = $this->club_gymnasium_ids[0];
+        $closedDate = '02/01/2099';
+        $blacklist->saveBlacklistGymnase($gymId, $closedDate);
+        // la fermeture apparaît dans la vue club
+        $rows = $blacklist->getMyClubBlacklistGymnase();
+        $match = array_filter($rows, static function ($r) use ($gymId, $closedDate) {
+            return (int)$r['id_gymnase'] === $gymId && $r['closed_date'] === $closedDate;
+        });
+        $this->assertNotEmpty($match, "La fermeture créée doit apparaître dans la vue club");
+        // nettoyage : suppression par le club leader
+        $created = array_values($match)[0];
+        $blacklist->removeBlacklistGymnase($created['id']);
+        $rowsAfter = $blacklist->getMyClubBlacklistGymnase();
+        $stillThere = array_filter($rowsAfter, static function ($r) use ($created) {
+            return $r['id'] === $created['id'];
+        });
+        $this->assertEmpty($stillThere, "La fermeture doit avoir été supprimée");
     }
 }

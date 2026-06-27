@@ -37,6 +37,18 @@ export default {
                 </li>
               </ul>
             </div>
+            <div v-if="isClubLeader" class="dropdown">
+              <div tabindex="0" role="button" class="btn btn-ghost">
+                <span><i class="mr-2 fas fa-people-group"></i>gestion club<i class="ml-1 fas fa-chevron-down"/></span>
+              </div>
+              <ul
+                  tabindex="0"
+                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-60 p-2 shadow">
+                <li>
+                  <router-link to="/club_gymnasium_closures"><span><i class="mr-2 fas fa-lock"></i>fermetures gymnases</span></router-link>
+                </li>
+              </ul>
+            </div>
             <div class="dropdown">
               <div tabindex="0" role="button" class="btn btn-ghost">
                 <span>infos<i class="ml-1 fas fa-chevron-down"/></span>
