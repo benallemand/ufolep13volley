@@ -4,6 +4,7 @@ require_once __DIR__ . '/../classes/UserManager.php';
 require_once __DIR__ . '/../classes/Club.php';
 require_once __DIR__ . '/../classes/TimeSlot.php';
 require_once __DIR__ . '/../classes/BlackListCourt.php';
+require_once __DIR__ . '/../classes/BlackListTeam.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/UfolepTestCase.php';
@@ -189,5 +190,39 @@ class ClubLeaderTest extends UfolepTestCase
             return $r['id'] === $created['id'];
         });
         $this->assertEmpty($stillThere, "La fermeture doit avoir été supprimée");
+    }
+
+    // ---- Phase c : indisponibilités des équipes du club -------------------
+
+    public function test_saveBlacklistTeam_refuses_team_outside_club()
+    {
+        if ($this->foreign_team_id === null) {
+            $this->markTestSkipped("Pas d'équipe hors club disponible");
+        }
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $blacklist = new BlackListTeam();
+        $this->expectException(Exception::class);
+        $blacklist->saveBlacklistTeam($this->foreign_team_id, '03/01/2099');
+    }
+
+    public function test_club_leader_blacklist_team_roundtrip()
+    {
+        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
+        $blacklist = new BlackListTeam();
+        $teamId = $this->club_team_ids[0];
+        $closedDate = '04/01/2099';
+        $blacklist->saveBlacklistTeam($teamId, $closedDate);
+        $rows = $blacklist->getMyClubBlacklistTeam();
+        $match = array_filter($rows, static function ($r) use ($teamId, $closedDate) {
+            return (int)$r['id_team'] === $teamId && $r['closed_date'] === $closedDate;
+        });
+        $this->assertNotEmpty($match, "L'indisponibilité créée doit apparaître dans la vue club");
+        $created = array_values($match)[0];
+        $blacklist->removeBlacklistTeam($created['id']);
+        $rowsAfter = $blacklist->getMyClubBlacklistTeam();
+        $stillThere = array_filter($rowsAfter, static function ($r) use ($created) {
+            return $r['id'] === $created['id'];
+        });
+        $this->assertEmpty($stillThere, "L'indisponibilité doit avoir été supprimée");
     }
 }

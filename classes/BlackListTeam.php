@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/Generic.php";
+require_once __DIR__ . "/Club.php";
 
 class BlackListTeam extends Generic
 {
@@ -15,12 +16,57 @@ class BlackListTeam extends Generic
                                       $dirtyFields = null,
                                       $id = null)
     {
+        // Un responsable de club ne peut déclarer une indisponibilité que pour
+        // une équipe de son club.
+        if (!UserManager::isAdmin()) {
+            if (!UserManager::isClubLeader()) {
+                throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !", 403);
+            }
+            (new Club())->assertManagesTeam($id_team);
+        }
         $inputs = array();
         $inputs['id_team'] = $id_team;
         $inputs['closed_date'] = $closed_date;
         $inputs['dirtyFields'] = $dirtyFields;
         $inputs['id'] = $id;
         $this->save($inputs);
+    }
+
+    /**
+     * Indisponibilités des équipes du club du responsable connecté.
+     * @throws Exception
+     */
+    public function getMyClubBlacklistTeam(): array
+    {
+        $id_club = (new Club())->getMyClubId();
+        $sql = "SELECT  bt.id,
+                        bt.id_team,
+                        CONCAT(e.nom_equipe, ' (', e.code_competition, ')') AS libelle_equipe,
+                        DATE_FORMAT(bt.closed_date, '%d/%m/%Y') AS closed_date
+                FROM blacklist_team bt
+                JOIN equipes e ON e.id_equipe = bt.id_team
+                WHERE e.id_club = ?
+                ORDER BY bt.closed_date";
+        $bindings = array(array('type' => 'i', 'value' => $id_club));
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Supprime une indisponibilité d'équipe. Pour un responsable de club,
+     * vérifie que l'équipe appartient bien à son club.
+     * @throws Exception
+     */
+    public function removeBlacklistTeam($id): void
+    {
+        if (!UserManager::isAdmin()) {
+            if (!UserManager::isClubLeader()) {
+                throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !", 403);
+            }
+            $row = $this->get_by_id($id);
+            (new Club())->assertManagesTeam($row['id_team']);
+        }
+        $this->delete($id);
+        $this->addActivity("Une indisponibilité d'équipe a été supprimée");
     }
 
     public function save($inputs)

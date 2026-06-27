@@ -47,6 +47,9 @@ export default {
                 <li>
                   <router-link to="/club_gymnasium_closures"><span><i class="mr-2 fas fa-lock"></i>fermetures gymnases</span></router-link>
                 </li>
+                <li>
+                  <router-link to="/club_team_unavailability"><span><i class="mr-2 fas fa-ban"></i>indispos équipes</span></router-link>
+                </li>
               </ul>
             </div>
             <div class="dropdown">
