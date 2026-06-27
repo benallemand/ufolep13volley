@@ -12,7 +12,7 @@ export default {
             </a>
             <div class="dropdown">
               <div tabindex="0" role="button" class="btn btn-ghost">
-                <span><i class="mr-2 fas fa-user"></i>mon équipe: {{ currentTeam.nom_equipe }}<i class="ml-1 fas fa-chevron-down"/></span>
+                <span><i class="mr-2 fas" :class="isClubLeader ? 'fa-people-group' : 'fa-user'"></i>{{ isClubLeader ? 'club' : 'mon équipe' }}: {{ currentTeam?.nom_equipe }}<i class="ml-1 fas fa-chevron-down"/></span>
               </div>
               <ul
                   tabindex="0"
@@ -89,6 +89,7 @@ export default {
             currentTeam: null,
             teams: null,
             unreadCount: 0,
+            isClubLeader: false,
         };
     },
     methods: {
@@ -111,7 +112,13 @@ export default {
                         this.user = null;
                     } else {
                         this.user = response.data;
-                        axios.get(`/rest/action.php/usermanager/getUserTeams?user_id=${this.user.id_user}`).then((response) => {
+                        this.isClubLeader = this.user.profile_name === 'RESPONSABLE_CLUB';
+                        // Le responsable de club choisit parmi toutes les équipes de son club ;
+                        // le responsable d'équipe parmi les équipes qui lui sont rattachées.
+                        const teamsUrl = this.isClubLeader
+                            ? `/rest/action.php/club/getMyClubTeams`
+                            : `/rest/action.php/usermanager/getUserTeams?user_id=${this.user.id_user}`;
+                        axios.get(teamsUrl).then((response) => {
                             this.teams = response.data;
                             this.currentTeam = this.teams.find((item) => item.id_equipe == this.user.id_equipe)
                         })

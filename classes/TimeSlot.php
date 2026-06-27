@@ -47,8 +47,8 @@ class TimeSlot extends Generic
         if (UserManager::isAdmin()) {
             throw new Exception("Un administrateur ne peut pas faire ça !");
         }
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Seul un responsable d'équipe peut faire ça !");
+        if (!UserManager::isTeamManager()) {
+            throw new Exception("Seul un responsable d'équipe ou de club peut faire ça !");
         }
         $id_team = $_SESSION['id_equipe'];
         return $this->getTimeSlots("c.id_equipe = $id_team");
@@ -135,8 +135,15 @@ class TimeSlot extends Generic
         $dirtyFields = null,
     )
     {
-        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+        if (!UserManager::isAdmin() && !UserManager::isTeamManager()) {
             throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
+        }
+        // Un responsable (équipe ou club) ne peut agir que sur l'équipe sélectionnée
+        // en session : on ignore tout id_equipe transmis pour éviter qu'il cible une
+        // équipe tierce. L'admin peut cibler n'importe quelle équipe.
+        if (!UserManager::isAdmin()) {
+            @session_start();
+            $id_equipe = $_SESSION['id_equipe'];
         }
         if (empty($id_equipe)) {
             @session_start();
@@ -214,8 +221,18 @@ class TimeSlot extends Generic
      */
     public function removeTimeSlot($id)
     {
-        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+        if (!UserManager::isAdmin() && !UserManager::isTeamManager()) {
             throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
+        }
+        // Un responsable ne peut supprimer qu'un créneau d'une équipe qu'il gère.
+        if (!UserManager::isAdmin()) {
+            $timeSlot = $this->getTimeSlot($id);
+            if (UserManager::isClubLeader()) {
+                require_once __DIR__ . '/Club.php';
+                (new Club())->assertManagesTeam($timeSlot['id_equipe']);
+            } elseif ($timeSlot['id_equipe'] != ($_SESSION['id_equipe'] ?? null)) {
+                throw new Exception("Vous n'êtes pas autorisé à supprimer ce créneau !", 403);
+            }
         }
         $sql = "DELETE FROM creneau WHERE id = $id";
         $this->sql_manager->execute($sql);

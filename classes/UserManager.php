@@ -462,6 +462,22 @@ class UserManager extends Generic
         return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
     }
 
+    public static function isClubLeader(): bool
+    {
+        @session_start();
+        return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_CLUB");
+    }
+
+    /**
+     * Responsable habilité à gérer une équipe : responsable d'équipe OU de club.
+     * Un RESPONSABLE_CLUB agit sur l'équipe sélectionnée ($_SESSION['id_equipe']),
+     * laquelle est restreinte aux équipes de son club par switchCurrentUserTeam().
+     */
+    public static function isTeamManager(): bool
+    {
+        return self::isTeamLeader() || self::isClubLeader();
+    }
+
     public static function isAdmin(): bool
     {
         @session_start();
@@ -533,6 +549,11 @@ class UserManager extends Generic
         $_SESSION['login'] = $data['login'];
         $_SESSION['id_user'] = (int)$data['id_user'];
         $_SESSION['profile_name'] = $data['profile_name'];
+        // Responsable de club : résoudre le club (users_clubs) et sélectionner par
+        // défaut une équipe du club (le profil n'a pas de ligne users_teams).
+        if ($_SESSION['profile_name'] === 'RESPONSABLE_CLUB') {
+            $this->initClubLeaderSession((int)$data['id_user']);
+        }
         if (!empty($redirect)) {
             header('Location: ' . urldecode($redirect));
             exit(0);
@@ -710,6 +731,29 @@ class UserManager extends Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
+    /**
+     * Initialise la session d'un RESPONSABLE_CLUB : résout son club depuis
+     * users_clubs et sélectionne par défaut la première équipe du club.
+     * @throws Exception
+     */
+    private function initClubLeaderSession(int $id_user): void
+    {
+        $sql = "SELECT club_id FROM users_clubs WHERE user_id = ? LIMIT 1";
+        $bindings = array(array('type' => 'i', 'value' => $id_user));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            return;
+        }
+        $_SESSION['id_club'] = (int)$results[0]['club_id'];
+        $teams = $this->sql_manager->execute(
+            "SELECT id_equipe FROM equipes WHERE id_club = ? ORDER BY id_equipe LIMIT 1",
+            array(array('type' => 'i', 'value' => $_SESSION['id_club']))
+        );
+        if (count($teams) > 0) {
+            $_SESSION['id_equipe'] = (int)$teams[0]['id_equipe'];
+        }
+    }
+
     public function switchCurrentUserTeam($id_equipe): void
     {
         if (!(isset($_SESSION['login']))) {
@@ -717,6 +761,18 @@ class UserManager extends Generic
         }
         if (!(isset($_SESSION['login']))) {
             throw new Exception("Utilisateur non connecté !");
+        }
+        // Un responsable de club peut basculer sur n'importe quelle équipe de son club.
+        if (self::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            $club = new Club();
+            foreach ($club->getMyClubTeams() as $club_team) {
+                if ($club_team['id_equipe'] == $id_equipe) {
+                    $_SESSION['id_equipe'] = (int)$id_equipe;
+                    return;
+                }
+            }
+            throw new Exception("Equipe non autorisée !");
         }
         $available_teams = $this->getUserTeams($_SESSION['id_user']);
         foreach ($available_teams as $available_team) {
