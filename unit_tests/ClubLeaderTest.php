@@ -82,18 +82,6 @@ class ClubLeaderTest extends UfolepTestCase
         $this->assertFalse(UserManager::isTeamLeader());
     }
 
-    public function test_isTeamManager_true_for_both_team_and_club_leaders()
-    {
-        $this->connect_as_team_leader($this->club_team_ids[0]);
-        $this->assertTrue(UserManager::isTeamManager());
-
-        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
-        $this->assertTrue(UserManager::isTeamManager());
-
-        $this->connect_as_admin();
-        $this->assertFalse(UserManager::isTeamManager());
-    }
-
     public function test_getMyClubTeams_returns_only_teams_of_the_club()
     {
         $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
@@ -112,35 +100,6 @@ class ClubLeaderTest extends UfolepTestCase
         $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
         $club = new Club();
         $this->assertEquals($this->id_club, $club->getMyClubId());
-    }
-
-    public function test_switchCurrentUserTeam_allows_team_of_own_club()
-    {
-        $target = $this->club_team_ids[1];
-        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
-        $userManager = new UserManager();
-        $userManager->switchCurrentUserTeam($target);
-        $this->assertEquals($target, $_SESSION['id_equipe']);
-    }
-
-    public function test_switchCurrentUserTeam_refuses_foreign_team()
-    {
-        if ($this->foreign_team_id === null) {
-            $this->markTestSkipped("Pas d'équipe hors club disponible");
-        }
-        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
-        $userManager = new UserManager();
-        $this->expectException(Exception::class);
-        $userManager->switchCurrentUserTeam($this->foreign_team_id);
-    }
-
-    public function test_club_leader_can_read_timeslots_of_selected_team()
-    {
-        $this->connect_as_club_leader($this->id_club, $this->club_team_ids[0]);
-        $timeSlot = new TimeSlot();
-        // ne doit pas lever d'exception d'autorisation
-        $result = $timeSlot->get_my_timeslots();
-        $this->assertIsArray($result);
     }
 
     // ---- Phase b : fermetures des gymnases du club -------------------------
@@ -259,5 +218,78 @@ class ClubLeaderTest extends UfolepTestCase
         $userManager = new UserManager();
         $this->expectException(Exception::class);
         $userManager->detachClubTeamLeader(1, $this->foreign_team_id);
+    }
+
+    // ---- Phase d : agir en tant qu'un responsable d'équipe du club --------
+
+    public function test_switch_to_club_team_leader_succeeds_and_switch_back_restores_club()
+    {
+        $row = $this->sql->execute(
+            "SELECT e.id_club, ut.user_id, ut.team_id
+             FROM users_teams ut
+             JOIN equipes e ON e.id_equipe = ut.team_id
+             JOIN users_profiles up ON up.user_id = ut.user_id
+             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
+             LIMIT 1"
+        );
+        if (count($row) === 0) {
+            $this->markTestSkipped("Aucun compte responsable d'équipe disponible");
+        }
+        $clubId = (int)$row[0]['id_club'];
+        $targetUserId = (int)$row[0]['user_id'];
+
+        $this->connect_as_club_leader($clubId);
+        $userManager = new UserManager();
+        $userManager->switch_to_club_team_leader($targetUserId);
+
+        $this->assertTrue(UserManager::is_acting_as());
+        $this->assertEquals($targetUserId, $_SESSION['id_user']);
+        $this->assertEquals('RESPONSABLE_EQUIPE', $_SESSION['profile_name']);
+        // l'équipe ciblée appartient au club
+        $clubTeamIds = array_map('intval', array_column(
+            $this->sql->execute("SELECT id_equipe FROM equipes WHERE id_club = $clubId"), 'id_equipe'));
+        $this->assertContains((int)$_SESSION['id_equipe'], $clubTeamIds);
+
+        // retour : on retrouve le compte club
+        $userManager->switch_back_to_admin();
+        $this->assertFalse(UserManager::is_acting_as());
+        $this->assertEquals('RESPONSABLE_CLUB', $_SESSION['profile_name']);
+        $this->assertEquals($clubId, $_SESSION['id_club']);
+    }
+
+    public function test_switch_to_club_team_leader_refuses_account_outside_club()
+    {
+        $clubRow = $this->sql->execute(
+            "SELECT e.id_club
+             FROM users_teams ut
+             JOIN equipes e ON e.id_equipe = ut.team_id
+             JOIN users_profiles up ON up.user_id = ut.user_id
+             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
+             LIMIT 1"
+        );
+        if (count($clubRow) === 0) {
+            $this->markTestSkipped("Aucun compte responsable d'équipe disponible");
+        }
+        $clubId = (int)$clubRow[0]['id_club'];
+        $foreign = $this->sql->execute(
+            "SELECT ut.user_id
+             FROM users_teams ut
+             JOIN equipes e ON e.id_equipe = ut.team_id
+             JOIN users_profiles up ON up.user_id = ut.user_id
+             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
+             WHERE e.id_club <> $clubId
+               AND ut.user_id NOT IN (
+                   SELECT ut2.user_id FROM users_teams ut2
+                   JOIN equipes e2 ON e2.id_equipe = ut2.team_id
+                   WHERE e2.id_club = $clubId)
+             LIMIT 1"
+        );
+        if (count($foreign) === 0) {
+            $this->markTestSkipped("Aucun compte responsable hors club disponible");
+        }
+        $this->connect_as_club_leader($clubId);
+        $userManager = new UserManager();
+        $this->expectException(Exception::class);
+        $userManager->switch_to_club_team_leader((int)$foreign[0]['user_id']);
     }
 }

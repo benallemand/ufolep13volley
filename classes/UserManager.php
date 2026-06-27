@@ -468,16 +468,6 @@ class UserManager extends Generic
         return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_CLUB");
     }
 
-    /**
-     * Responsable habilité à gérer une équipe : responsable d'équipe OU de club.
-     * Un RESPONSABLE_CLUB agit sur l'équipe sélectionnée ($_SESSION['id_equipe']),
-     * laquelle est restreinte aux équipes de son club par switchCurrentUserTeam().
-     */
-    public static function isTeamManager(): bool
-    {
-        return self::isTeamLeader() || self::isClubLeader();
-    }
-
     public static function isAdmin(): bool
     {
         @session_start();
@@ -811,14 +801,9 @@ class UserManager extends Generic
         if (count($results) === 0) {
             return;
         }
+        // Le responsable de club n'a pas d'équipe propre : il gère ses équipes en
+        // « agissant en tant que » leur responsable (cf. switch_to_club_team_leader).
         $_SESSION['id_club'] = (int)$results[0]['club_id'];
-        $teams = $this->sql_manager->execute(
-            "SELECT id_equipe FROM equipes WHERE id_club = ? ORDER BY id_equipe LIMIT 1",
-            array(array('type' => 'i', 'value' => $_SESSION['id_club']))
-        );
-        if (count($teams) > 0) {
-            $_SESSION['id_equipe'] = (int)$teams[0]['id_equipe'];
-        }
     }
 
     public function switchCurrentUserTeam($id_equipe): void
@@ -828,18 +813,6 @@ class UserManager extends Generic
         }
         if (!(isset($_SESSION['login']))) {
             throw new Exception("Utilisateur non connecté !");
-        }
-        // Un responsable de club peut basculer sur n'importe quelle équipe de son club.
-        if (self::isClubLeader()) {
-            require_once __DIR__ . '/Club.php';
-            $club = new Club();
-            foreach ($club->getMyClubTeams() as $club_team) {
-                if ($club_team['id_equipe'] == $id_equipe) {
-                    $_SESSION['id_equipe'] = (int)$id_equipe;
-                    return;
-                }
-            }
-            throw new Exception("Equipe non autorisée !");
         }
         $available_teams = $this->getUserTeams($_SESSION['id_user']);
         foreach ($available_teams as $available_team) {
@@ -970,7 +943,69 @@ class UserManager extends Generic
         $_SESSION['acting_as'] = true;
         
         $this->activity->add("Admin a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
-        
+
+        return true;
+    }
+
+    /**
+     * Permet à un responsable de club d'agir en tant qu'un compte responsable
+     * d'équipe de SON club (réutilise le mécanisme "agir en tant que").
+     * @param int $target_user_id ID du compte responsable d'équipe cible
+     * @return bool
+     * @throws Exception
+     */
+    public function switch_to_club_team_leader(int $target_user_id): bool
+    {
+        @session_start();
+
+        if (!self::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        if (self::is_acting_as()) {
+            throw new Exception("Vous agissez déjà en tant qu'un autre compte. Revenez d'abord à votre compte club.");
+        }
+
+        require_once __DIR__ . '/Club.php';
+        $club = new Club();
+        $clubTeamIds = array_map('intval', array_column($club->getMyClubTeams(), 'id_equipe'));
+        $targetTeamIds = array_map('intval', $this->getUserTeamIds($target_user_id));
+        $sharedTeamIds = array_values(array_intersect($targetTeamIds, $clubTeamIds));
+        if (count($sharedTeamIds) === 0) {
+            throw new Exception("Ce compte ne gère aucune équipe de votre club !", 403);
+        }
+
+        // sauvegarde de la session du responsable de club
+        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
+        $_SESSION['original_admin_login'] = $_SESSION['login'];
+        $_SESSION['original_admin_profile'] = $_SESSION['profile_name'];
+        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
+        $_SESSION['original_admin_club'] = $_SESSION['id_club'] ?? null;
+
+        $sql = "SELECT  ca.login,
+                        ca.id AS id_user,
+                        p.name AS profile_name
+                FROM comptes_acces ca
+                LEFT JOIN users_profiles up ON up.user_id = ca.id
+                LEFT JOIN profiles p ON p.id = up.profile_id
+                WHERE ca.id = ?
+                LIMIT 1";
+        $bindings = array(array('type' => 'i', 'value' => $target_user_id));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            throw new Exception("Compte cible introuvable !");
+        }
+        $data = $results[0];
+        // on cible une équipe du club (la première partagée), pour que toute l'UI
+        // responsable opère sur une équipe du club même si le compte en gère d'autres
+        $_SESSION['id_equipe'] = $sharedTeamIds[0];
+        $_SESSION['login'] = $data['login'];
+        $_SESSION['id_user'] = (int)$data['id_user'];
+        $_SESSION['profile_name'] = $data['profile_name'];
+        unset($_SESSION['id_club']); // pendant l'act-as, on agit en responsable d'équipe
+        $_SESSION['acting_as'] = true;
+
+        $this->activity->add("Responsable de club a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
+
         return true;
     }
 
@@ -993,15 +1028,23 @@ class UserManager extends Generic
         $_SESSION['login'] = $_SESSION['original_admin_login'];
         $_SESSION['profile_name'] = $_SESSION['original_admin_profile'];
         $_SESSION['id_equipe'] = $_SESSION['original_admin_equipe'];
-        
+        // restaure le club d'origine (cas d'un responsable de club ayant agi en
+        // tant qu'un de ses responsables d'équipe)
+        if (array_key_exists('original_admin_club', $_SESSION)) {
+            if ($_SESSION['original_admin_club'] !== null) {
+                $_SESSION['id_club'] = (int)$_SESSION['original_admin_club'];
+            }
+            unset($_SESSION['original_admin_club']);
+        }
+
         unset($_SESSION['acting_as']);
         unset($_SESSION['original_admin_id']);
         unset($_SESSION['original_admin_login']);
         unset($_SESSION['original_admin_profile']);
         unset($_SESSION['original_admin_equipe']);
-        
-        $this->activity->add("Admin est revenu de: " . $target_login);
-        
+
+        $this->activity->add("Compte d'origine restauré depuis: " . $target_login);
+
         return true;
     }
 
