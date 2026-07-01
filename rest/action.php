@@ -109,6 +109,10 @@ try {
             require_once __DIR__ . "/../classes/BlackListTeams.php";
             $manager = new BlackListTeams();
             break;
+        case 'bilan':
+            require_once __DIR__ . "/../classes/Bilan.php";
+            $manager = new Bilan();
+            break;
         case 'club':
             require_once __DIR__ . "/../classes/Club.php";
             $manager = new Club();
