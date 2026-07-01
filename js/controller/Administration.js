@@ -2,7 +2,7 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
     stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews'],
     models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'bilan.Form'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
@@ -234,6 +234,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.displayIndicators
             }, 'menuitem[action=displayHallOfFame]': {
                 click: this.displayHallOfFame
+            }, 'menuitem[action=displayBilan]': {
+                click: this.displayBilan
+            }, 'button[action=loadBilanData]': {
+                click: this.loadBilanData
+            }, 'button[action=downloadBilanPdf]': {
+                click: this.downloadBilanPdf
             }, 'hall_of_fame_grid': {
                 added: this.addToolbarHallOfFame
             }, 'button[action=addHallOfFame]': {
@@ -1213,6 +1219,85 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     displayHallOfFame: function () {
         this.showAdministrationGrid('hall_of_fame_grid');
+    },
+    displayBilan: function () {
+        var mainPanel = this.getMainPanel();
+        var existing = Ext.ComponentQuery.query('bilanform');
+        var tab = existing.length > 0 ? existing[0] : mainPanel.add({xtype: 'bilanform'});
+        mainPanel.setActiveTab(tab);
+        var loadButton = tab.down('button[action=loadBilanData]');
+        if (loadButton) {
+            this.loadBilanData(loadButton);
+        }
+    },
+    buildBilanHtml: function (d) {
+        var rows = '';
+        Ext.each(d.matchs, function (m) {
+            rows += '<tr><td style="border:1px solid #ccc;padding:3px 8px;">' + m.competition
+                + '</td><td style="border:1px solid #ccc;padding:3px 8px;text-align:center;">' + m.nb_matchs + '</td></tr>';
+        });
+        var coupes = '';
+        Ext.each(d.coupes, function (c) {
+            coupes += '<li>' + c.recompense + ' : <b>' + c.vainqueur + '</b></li>';
+        });
+        return '' +
+            '<table style="border-collapse:collapse;margin-bottom:8px;">' +
+            '<tr><th style="border:1px solid #ccc;padding:3px 8px;text-align:left;">Compétition</th>' +
+            '<th style="border:1px solid #ccc;padding:3px 8px;">Nombre de matchs</th></tr>' +
+            rows +
+            '<tr><td style="border:1px solid #ccc;padding:3px 8px;"><b>TOTAL</b></td>' +
+            '<td style="border:1px solid #ccc;padding:3px 8px;text-align:center;"><b>' + d.total_matchs + '</b></td></tr>' +
+            '</table>' +
+            '<b>Clubs participants :</b> ' + d.nb_clubs + '<br/>' +
+            '<b>Licenciés participants :</b> ' + d.nb_licencies + '<br/>' +
+            '<b>Équipes récompensées (championnat) :</b> ' + d.nb_recompenses + '<br/>' +
+            '<b>Coupes décernées :</b> ' + d.nb_coupes +
+            '<ul style="margin:4px 0 0 0;">' + coupes + '</ul>';
+    },
+    loadBilanData: function (button) {
+        var this_controller = this;
+        var form = button.up('form');
+        var saisonField = form.getForm().findField('saison');
+        if (!saisonField.isValid()) {
+            Ext.Msg.alert('Erreur', "Saison invalide (format attendu : AAAA-AAAA, ex : 2025-2026).");
+            return;
+        }
+        var apercu = form.getForm().findField('apercu');
+        apercu.setValue('<em>Chargement…</em>');
+        Ext.Ajax.request({
+            url: '/rest/action.php/bilan/getBilanData',
+            method: 'GET',
+            params: {saison: saisonField.getValue()},
+            success: function (response) {
+                var d = Ext.decode(response.responseText);
+                apercu.setValue(this_controller.buildBilanHtml(d));
+            },
+            failure: this_controller.manage_failure
+        });
+    },
+    downloadBilanPdf: function (button) {
+        var form = button.up('form');
+        var saisonField = form.getForm().findField('saison');
+        if (!saisonField.isValid()) {
+            Ext.Msg.alert('Erreur', "Saison invalide (format attendu : AAAA-AAAA, ex : 2025-2026).");
+            return;
+        }
+        var values = form.getForm().getValues();
+        delete values.apercu;
+        var htmlForm = document.createElement('form');
+        htmlForm.method = 'POST';
+        htmlForm.action = '/bilanPdf.php';
+        htmlForm.target = '_blank';
+        Ext.Object.each(values, function (key, value) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = (value == null) ? '' : value;
+            htmlForm.appendChild(input);
+        });
+        document.body.appendChild(htmlForm);
+        htmlForm.submit();
+        document.body.removeChild(htmlForm);
     },
     addToolbarHallOfFame: function (grid) {
         grid.addDocked({

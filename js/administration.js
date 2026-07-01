@@ -151,6 +151,11 @@ Ext.application({
                                         action: 'displayHallOfFame'
                                     },
                                     {
+                                        text: 'Bilan annuel',
+                                        glyph: 'xf1c1@FontAwesome',
+                                        action: 'displayBilan'
+                                    },
+                                    {
                                         text: 'Gestion des dates interdites par gymnase',
                                         action: 'displayBlacklistGymnase'
                                     },
