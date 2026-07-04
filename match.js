@@ -50,7 +50,7 @@ createApp({
             }
         }
         // Contrôle d'accès côté client (remplace les vérifs PHP de match.php)
-        const user = await requireMatchAccess(this.id_match, ['RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT']);
+        const user = await requireMatchAccess(this.id_match, ['admin', 'team_leader']);
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }
@@ -71,12 +71,10 @@ createApp({
     },
     computed: {
         isLeader() {
-            const allowedProfiles = ["RESPONSABLE_EQUIPE"];
-            return this.user && allowedProfiles.includes(this.user.profile_name);
+            return !!(this.user && this.user.is_team_leader);
         },
         isAdmin() {
-            const allowedProfiles = ["ADMINISTRATEUR", "SUPPORT"];
-            return this.user && allowedProfiles.includes(this.user.profile_name);
+            return !!(this.user && this.user.is_admin);
         },
         isMatchDay() {
             if (!this.matchData.date_reception) return false;

@@ -138,8 +138,7 @@ export default {
                 journee: journee, matches: groupedMatches[journee]
             }));
         }, isLeader() {
-            const allowedProfiles = ["RESPONSABLE_EQUIPE"];
-            return this.user && allowedProfiles.includes(this.user.profile_name);
+            return !!(this.user && this.user.is_team_leader);
         },
     }, methods: {
         fetch() {

@@ -112,8 +112,7 @@ export default {
     },
     computed: {
         canManagePoints() {
-            const allowedProfiles = ["ADMINISTRATEUR", "SUPPORT"];
-            return this.user && allowedProfiles.includes(this.user.profile_name);
+            return !!(this.user && this.user.is_admin);
         },
     },
     methods: {

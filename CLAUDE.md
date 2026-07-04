@@ -216,6 +216,16 @@ class MonTest extends UfolepTestCase {
 - Pattern : Admin OU responsable de l'équipe concernée
 - Stocker `id_equipe` en session pour les vérifications
 
+### Rôles utilisateurs (issue #245)
+- Les rôles sont **dérivés et cumulables** — pas de table de profils :
+  admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;
+  responsable de club → ligne `users_clubs`
+- Flags posés en session au login : `is_admin`, `is_team_leader`, `is_club_leader`
+  (+ `id_equipe`, `id_club`) — prédicats `UserManager::isAdmin()/isTeamLeader()/isClubLeader()`
+- Côté frontend : `session_user.php` / `getCurrentUserDetails` exposent ces flags ;
+  garde des pages match via `requireRoles(['admin', 'team_leader'])` (`pages/components/auth/guard.js`)
+- « Agir en tant que » : sauvegarde/restauration des flags via `original_admin_*` en session
+
 ### Debug de Features en Temps Réel
 - Créer un fichier `debug_{feature}.php` pour tester/modifier les données temporairement
 - Permet de mettre à jour les dates pour simuler "aujourd'hui"

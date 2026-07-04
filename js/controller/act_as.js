@@ -30,7 +30,10 @@ Ext.define('Ufolep13Volley.controller.act_as', {
                         columns: [
                             {text: 'Login', dataIndex: 'login', flex: 1},
                             {text: 'Email', dataIndex: 'email', flex: 1},
-                            {text: 'Profil', dataIndex: 'profile_name', width: 120},
+                            {text: 'Admin', dataIndex: 'is_admin', width: 70,
+                                renderer: function (value) {
+                                    return value ? 'Oui' : '';
+                                }},
                             {text: 'Équipes', dataIndex: 'equipes', flex: 1}
                         ],
                         listeners: {

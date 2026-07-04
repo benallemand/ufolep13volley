@@ -14,10 +14,10 @@ Ext.define('Ufolep13Volley.model.User', {
         },
         'team_name',
         'club_name',
-        'profile',
+        'managed_club_names',
         {
-            name: 'id_profile',
-            type: 'int'
+            name: 'is_admin',
+            type: 'boolean'
         }
     ]
 });

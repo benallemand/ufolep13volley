@@ -105,7 +105,7 @@ try {
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
     }
-    $_SESSION['profile_name'] = 'ADMINISTRATEUR';
+    $_SESSION['is_admin']     = true;
     $_SESSION['login']        = 'e2e_test';
     $_SESSION['id_user']      = 1;
     $_SESSION['id_equipe']    = $id_equipe;

@@ -78,11 +78,6 @@ Ext.application({
                                         action: 'managePlayers'
                                     },
                                     {
-                                        text: 'Gestion des profils',
-                                        glyph: 'xf084@FontAwesome',
-                                        action: 'manageProfiles'
-                                    },
-                                    {
                                         text: 'Gestion des utilisateurs',
                                         glyph: 'xf0c0@FontAwesome',
                                         action: 'manageUsers'

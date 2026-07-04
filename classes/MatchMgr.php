@@ -360,20 +360,18 @@ class MatchMgr extends Generic
      */
     private function is_download_allowed($id_match): bool
     {
-        $userDetails = $this->getCurrentUserDetails();
-        $profile = $userDetails['profile_name'];
-        $match = $this->get_match($id_match);
-        switch ($profile) {
-            case 'ADMINISTRATEUR':
-                return true;
-            case 'RESPONSABLE_EQUIPE':
-                if ($this->getUserTeamIdForMatch($match) === null) {
-                    throw new Exception("Equipe non autorisée à télécharger ce match !");
-                }
-                return true;
-            default:
-                throw new Exception("Profil utilisateur non autorisé à télécharger !");
+        $this->getCurrentUserDetails();
+        if (UserManager::isAdmin()) {
+            return true;
         }
+        if (UserManager::isTeamLeader()) {
+            $match = $this->get_match($id_match);
+            if ($this->getUserTeamIdForMatch($match) === null) {
+                throw new Exception("Equipe non autorisée à télécharger ce match !");
+            }
+            return true;
+        }
+        throw new Exception("Profil utilisateur non autorisé à télécharger !");
     }
 
     /**
@@ -430,18 +428,15 @@ class MatchMgr extends Generic
      */
     public function is_match_read_allowed($id_match): bool
     {
-        $userDetails = $this->getCurrentUserDetails();
-        $profile = $userDetails['profile_name'];
-        switch ($profile) {
-            case 'ADMINISTRATEUR':
-            case 'SUPPORT':
-                return true;
-            case 'RESPONSABLE_EQUIPE':
-                $match = $this->get_match($id_match);
-                return $this->isUserTeamInMatch($match);
-            default:
-                return false;
+        $this->getCurrentUserDetails();
+        if (UserManager::isAdmin()) {
+            return true;
         }
+        if (UserManager::isTeamLeader()) {
+            $match = $this->get_match($id_match);
+            return $this->isUserTeamInMatch($match);
+        }
+        return false;
     }
 
     /**
@@ -470,27 +465,24 @@ class MatchMgr extends Generic
      */
     public function is_match_update_allowed($id_match): bool
     {
-        $userDetails = $this->getCurrentUserDetails();
-        $profile = $userDetails['profile_name'];
-        switch ($profile) {
-            case 'ADMINISTRATEUR':
-            case 'SUPPORT':
-                return true;
-            case 'RESPONSABLE_EQUIPE':
-                $match = $this->get_match($id_match);
-                if (!$this->isUserTeamInMatch($match)) {
-                    return false;
-                }
-                if ($match['certif'] == 1) {
-                    return false;
-                }
-                if ($match['is_sign_match_dom'] == 1 && $match['is_sign_match_ext'] == 1) {
-                    return false;
-                }
-                return true;
-            default:
-                return false;
+        $this->getCurrentUserDetails();
+        if (UserManager::isAdmin()) {
+            return true;
         }
+        if (UserManager::isTeamLeader()) {
+            $match = $this->get_match($id_match);
+            if (!$this->isUserTeamInMatch($match)) {
+                return false;
+            }
+            if ($match['certif'] == 1) {
+                return false;
+            }
+            if ($match['is_sign_match_dom'] == 1 && $match['is_sign_match_ext'] == 1) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1744,21 +1736,21 @@ class MatchMgr extends Generic
         }
         switch ($function_name) {
             case 'certify_match':
-                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR', 'SUPPORT'))) {
+                if (UserManager::isAdmin()) {
                     return;
                 }
                 throw new Exception("Seule la commission est autorisée à valider un match !");
             case 'giveReportDate':
                 // allow admin
-                if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
+                if (UserManager::isAdmin()) {
                     return;
                 }
                 // allow only playing teams
                 if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent donner une date de report !");
                 }
-                // allow only RESPONSABLE_EQUIPE
-                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                // allow only team leaders
+                if (!UserManager::isTeamLeader()) {
                     throw new Exception("Seuls les responsables d'équipes peuvent donner une date de report !");
                 }
                 break;
@@ -1766,15 +1758,15 @@ class MatchMgr extends Generic
             case 'add_match_player':
             case 'delete_match_player':
                 // allow admin
-                if ($_SESSION['profile_name'] === 'ADMINISTRATEUR') {
+                if (UserManager::isAdmin()) {
                     return;
                 }
                 // allow only playing teams
                 if ($userTeamId === null) {
                     throw new Exception("Seules les équipes ayant participé au match peuvent dire qui était là !");
                 }
-                // allow only RESPONSABLE_EQUIPE
-                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                // allow only team leaders
+                if (!UserManager::isTeamLeader()) {
                     throw new Exception("Seuls les responsables d'équipes peuvent dire qui était là !");
                 }
                 // allow only CONFIRMED matches
@@ -1787,16 +1779,16 @@ class MatchMgr extends Generic
                 }
                 break;
             case 'sign_team_sheet':
-                // allow if ADMINISTRATEUR
-                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR'))) {
+                // allow admin
+                if (UserManager::isAdmin()) {
                     return;
                 }
                 // allow only playing teams
                 if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent signer les fiches équipes !");
                 }
-                // allow only RESPONSABLE_EQUIPE
-                if (!in_array($_SESSION['profile_name'], array('RESPONSABLE_EQUIPE'))) {
+                // allow only team leaders
+                if (!UserManager::isTeamLeader()) {
                     throw new Exception("Seuls les responsables d'équipes peuvent signer les fiches équipes !");
                 }
                 // allow only CONFIRMED matches
@@ -1818,16 +1810,16 @@ class MatchMgr extends Generic
                 }
                 break;
             case 'sign_match_sheet':
-                // allow if ADMINISTRATEUR
-                if (in_array($_SESSION['profile_name'], array('ADMINISTRATEUR'))) {
+                // allow admin
+                if (UserManager::isAdmin()) {
                     return;
                 }
                 // allow only playing teams
                 if ($userTeamId === null) {
                     throw new Exception("Seules les équipes participant au match peuvent signer la feuille de match !");
                 }
-                // allow only RESPONSABLE_EQUIPE
-                if ($_SESSION['profile_name'] !== 'RESPONSABLE_EQUIPE') {
+                // allow only team leaders
+                if (!UserManager::isTeamLeader()) {
                     throw new Exception("Seuls les responsables d'équipes signer la feuille de match !");
                 }
                 // allow only CONFIRMED matches
@@ -2740,18 +2732,14 @@ class MatchMgr extends Generic
             return false;
         }
 
-        $userDetails = $this->getCurrentUserDetails();
-        $profile = $userDetails['profile_name'];
-
-        switch ($profile) {
-            case 'ADMINISTRATEUR':
-            case 'SUPPORT':
-                return true;
-            case 'RESPONSABLE_EQUIPE':
-                return $this->isUserTeamInMatch($match);
-            default:
-                return false;
+        $this->getCurrentUserDetails();
+        if (UserManager::isAdmin()) {
+            return true;
         }
+        if (UserManager::isTeamLeader()) {
+            return $this->isUserTeamInMatch($match);
+        }
+        return false;
     }
 
     /**

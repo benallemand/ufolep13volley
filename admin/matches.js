@@ -34,9 +34,8 @@ createApp({
     },
     computed: {
         canValidate() {
-            const allowedProfiles = ["ADMINISTRATEUR", "SUPPORT"];
             return (match) => {
-                const hasPermission = this.user && allowedProfiles.includes(this.user.profile_name);
+                const hasPermission = !!(this.user && this.user.is_admin);
                 const isSignedByBothTeams = match.is_sign_match_dom === 1 && match.is_sign_match_ext === 1;
                 const isAlreadyCertified = match.certif === 1;
                 return hasPermission && isSignedByBothTeams && !isAlreadyCertified;

@@ -248,21 +248,13 @@ class MatchManagerTest extends UfolepTestCase
         $day = $this->get_test_day();
         $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT002', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_journee = {$day['id']}, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
 
-        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
-        if (is_array($profileId)) {
-            $profileId = $profileId[0]['id'];
-        }
-
         $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_team_leader', email = 'ut_multi_team_leader@ufolep.test', password_hash = 'x'");
-        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId, profile_id = $profileId");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team2");
 
-        @session_start();
-        $_SESSION['id_equipe'] = $team1;
+        $this->connect_as_team_leader($team1);
         $_SESSION['login'] = 'ut_multi_team_leader';
         $_SESSION['id_user'] = $userId;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
 
         $this->assertTrue($this->match_manager->is_match_read_allowed($matchId));
     }
@@ -284,21 +276,13 @@ class MatchManagerTest extends UfolepTestCase
         $day = $this->get_test_day();
         $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT003', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_journee = {$day['id']}, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
 
-        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
-        if (is_array($profileId)) {
-            $profileId = $profileId[0]['id'];
-        }
-
         $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_team_leader2', email = 'ut_multi_team_leader2@ufolep.test', password_hash = 'x'");
-        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId, profile_id = $profileId");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team2");
 
-        @session_start();
-        $_SESSION['id_equipe'] = $team1;
+        $this->connect_as_team_leader($team1);
         $_SESSION['login'] = 'ut_multi_team_leader2';
         $_SESSION['id_user'] = $userId;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
 
         $this->assertTrue($this->match_manager->is_match_update_allowed($matchId));
     }
@@ -918,12 +902,7 @@ class MatchManagerTest extends UfolepTestCase
             match_status = 'CONFIRMED'");
 
         // Créer un utilisateur lié à team1 ET team2
-        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
-        if (is_array($profileId)) {
-            $profileId = $profileId[0]['id'];
-        }
         $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_sign', email = 'ut_multi_sign@ufolep.test', password_hash = 'x'");
-        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId, profile_id = $profileId");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team2");
 
@@ -948,11 +927,9 @@ class MatchManagerTest extends UfolepTestCase
 
         // Se connecter en tant qu'utilisateur multi-équipe avec session pointant vers team1
         // C'est le cœur du test: la session pointe sur team1, mais le match implique team2
-        @session_start();
-        $_SESSION['id_equipe'] = $team1;
+        $this->connect_as_team_leader($team1);
         $_SESSION['login'] = 'ut_multi_sign';
         $_SESSION['id_user'] = $userId;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
 
         // Signer la fiche équipe pour le match (team2 vs team3)
         // Doit réussir car l'utilisateur appartient à team2
@@ -989,11 +966,9 @@ class MatchManagerTest extends UfolepTestCase
         ));
 
         // Re-connecter en tant qu'utilisateur multi-équipe (session sur team1)
-        @session_start();
-        $_SESSION['id_equipe'] = $team1;
+        $this->connect_as_team_leader($team1);
         $_SESSION['login'] = 'ut_multi_sign';
         $_SESSION['id_user'] = $userId;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
 
         // Signer la feuille de match
         // Doit réussir car l'utilisateur appartient à team2

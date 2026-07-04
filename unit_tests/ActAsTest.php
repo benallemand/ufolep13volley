@@ -16,10 +16,8 @@ class ActAsTest extends UfolepTestCase
     private function getTargetUserId(): int
     {
         if ($this->target_user_id === null) {
-            $sql = "SELECT ca.id FROM comptes_acces ca 
-                    LEFT JOIN users_profiles up ON up.user_id = ca.id
-                    LEFT JOIN profiles p ON p.id = up.profile_id
-                    WHERE p.name != 'ADMINISTRATEUR' OR p.name IS NULL
+            $sql = "SELECT ca.id FROM comptes_acces ca
+                    WHERE ca.is_admin = 0
                     LIMIT 1";
             $results = $this->sql->execute($sql);
             if (empty($results)) {
@@ -75,7 +73,7 @@ class ActAsTest extends UfolepTestCase
         $this->assertTrue($result);
         $this->assertFalse(isset($_SESSION['acting_as']));
         $this->assertEquals(1, $_SESSION['id_user']);
-        $this->assertEquals('ADMINISTRATEUR', $_SESSION['profile_name']);
+        $this->assertTrue($_SESSION['is_admin']);
     }
 
     public function test_switch_back_fails_when_not_acting_as()
@@ -132,7 +130,7 @@ class ActAsTest extends UfolepTestCase
         $this->assertIsArray($result);
         $this->assertEquals(1, $result['id_user']);
         $this->assertEquals('test_user', $result['login']);
-        $this->assertEquals('ADMINISTRATEUR', $result['profile_name']);
+        $this->assertTrue($result['is_admin']);
     }
 
     public function test_get_original_admin_returns_null_when_not_acting()

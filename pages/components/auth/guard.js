@@ -36,14 +36,21 @@ export function redirectToLogin(reason = 'Vous devez être connecté pour accéd
 }
 
 /**
- * Exige que l'utilisateur connecté ait l'un des profils autorisés.
+ * Exige que l'utilisateur connecté ait l'un des rôles autorisés.
+ * Les rôles sont cumulables (issue #245) : 'admin', 'team_leader', 'club_leader',
+ * portés par les flags de session is_admin / is_team_leader / is_club_leader.
  * Redirige vers le login sinon. Retourne l'utilisateur si OK, null sinon.
- * @param {string[]} allowedProfiles
+ * @param {string[]} allowedRoles
  * @returns {Promise<Object|null>}
  */
-export async function requireProfile(allowedProfiles) {
+export async function requireRoles(allowedRoles) {
     const user = await getCurrentUser();
-    if (!user || !allowedProfiles.includes(user.profile_name)) {
+    const hasRole = user && (
+        (allowedRoles.includes('admin') && user.is_admin) ||
+        (allowedRoles.includes('team_leader') && user.is_team_leader) ||
+        (allowedRoles.includes('club_leader') && user.is_club_leader)
+    );
+    if (!hasRole) {
         redirectToLogin("Vous n'avez pas le profil suffisant pour accéder à cette page !");
         return null;
     }
@@ -67,14 +74,14 @@ export async function isMatchReadAllowed(idMatch) {
 }
 
 /**
- * Garde complète d'une page de gestion de match : profil + autorisation match.
+ * Garde complète d'une page de gestion de match : rôle + autorisation match.
  * Redirige et retourne null si refus ; retourne l'utilisateur si OK.
  * @param {string|number} idMatch
- * @param {string[]} allowedProfiles
+ * @param {string[]} allowedRoles
  * @returns {Promise<Object|null>}
  */
-export async function requireMatchAccess(idMatch, allowedProfiles) {
-    const user = await requireProfile(allowedProfiles);
+export async function requireMatchAccess(idMatch, allowedRoles = ['admin', 'team_leader']) {
+    const user = await requireRoles(allowedRoles);
     if (!user) {
         return null;
     }
