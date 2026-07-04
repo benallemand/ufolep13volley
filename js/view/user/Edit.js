@@ -27,8 +27,9 @@ Ext.define('Ufolep13Volley.view.user.Edit', {
             {
                 name: 'login',
                 fieldLabel: 'Login',
-                allowBlank: false,
+                allowBlank: true,
                 readOnly: true,
+                emptyText: '(rempli automatiquement avec l\'email)',
                 msgTarget: 'under'
             },
             {

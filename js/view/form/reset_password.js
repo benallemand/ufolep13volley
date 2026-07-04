@@ -12,11 +12,6 @@ Ext.define('Ufolep13Volley.view.form.reset_password', {
     autoScroll: true,
     items: [
         {
-            name: 'login',
-            fieldLabel: "Login",
-            allowBlank: false,
-        },
-        {
             name: 'user_email',
             fieldLabel: "Email",
             allowBlank: false,

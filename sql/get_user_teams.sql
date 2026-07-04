@@ -1,6 +1,4 @@
 SELECT DISTINCT t.*
-FROM comptes_acces u
-         JOIN comptes_acces ca ON ca.email = u.email
-         JOIN users_teams ut on ca.id = ut.user_id
+FROM users_teams ut
          JOIN teams_view t on ut.team_id = t.id_equipe
-WHERE u.id = ?
+WHERE ut.user_id = ?

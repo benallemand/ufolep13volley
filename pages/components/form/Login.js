@@ -16,7 +16,7 @@ export default {
 
           <div class="form-control">
             <label class="label">
-              <span class="label-text">Nom d'utilisateur</span>
+              <span class="label-text">Login ou email</span>
             </label>
             <input name="login" type="text" class="input input-bordered" required/>
           </div>
