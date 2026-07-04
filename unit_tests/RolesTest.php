@@ -129,6 +129,30 @@ class RolesTest extends UfolepTestCase
         (new UserManager())->setAdmin($userId, 'true');
     }
 
+    public function test_updateUserClubs_grants_and_revokes_club_leader_links()
+    {
+        $clubRow = $this->sql->execute("SELECT id FROM clubs LIMIT 1");
+        if (count($clubRow) === 0) {
+            $this->markTestSkipped("Aucun club disponible");
+        }
+        $clubId = (int)$clubRow[0]['id'];
+        $userId = $this->create_account(false);
+        $this->connect_as_admin();
+        $userManager = new UserManager();
+        $userManager->updateUserClubs($userId, (string)$clubId);
+        $this->assertContains($clubId, $userManager->getUserClubIds($userId));
+        $userManager->updateUserClubs($userId, '');
+        $this->assertEmpty($userManager->getUserClubIds($userId));
+    }
+
+    public function test_updateUserClubs_refused_for_non_admin()
+    {
+        $userId = $this->create_account(false);
+        $this->connect_as_team_leader(1);
+        $this->expectException(Exception::class);
+        (new UserManager())->updateUserClubs($userId, '1');
+    }
+
     public function test_admin_can_now_be_linked_to_a_team()
     {
         $teamRow = $this->sql->execute("SELECT id_equipe FROM equipes LIMIT 1");

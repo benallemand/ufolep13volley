@@ -748,6 +748,56 @@ class UserManager extends Generic
     }
 
     /**
+     * Récupère les IDs des clubs gérés par un utilisateur (users_clubs)
+     * @throws Exception
+     */
+    public function getUserClubIds(int $user_id): array
+    {
+        $sql = "SELECT club_id FROM users_clubs WHERE user_id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return array_map('intval', array_column($results, 'club_id'));
+    }
+
+    /**
+     * Met à jour les clubs gérés par un utilisateur (rôle responsable de club,
+     * dérivé de users_clubs).
+     * @param string $club_ids Liste des IDs de clubs séparés par des virgules
+     * @throws Exception
+     */
+    public function updateUserClubs(int $user_id, string $club_ids): void
+    {
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
+        }
+        $new_club_ids = empty($club_ids) ? [] : array_map('intval', explode(',', $club_ids));
+        $current_clubs = $this->getUserClubIds($user_id);
+
+        foreach (array_diff($current_clubs, $new_club_ids) as $club_id) {
+            $this->sql_manager->execute(
+                "DELETE FROM users_clubs WHERE user_id = ? AND club_id = ?",
+                array(
+                    array('type' => 'i', 'value' => $user_id),
+                    array('type' => 'i', 'value' => $club_id),
+                ));
+        }
+
+        foreach (array_diff($new_club_ids, $current_clubs) as $club_id) {
+            $this->sql_manager->execute(
+                "INSERT INTO users_clubs SET user_id = ?, club_id = ?",
+                array(
+                    array('type' => 'i', 'value' => $user_id),
+                    array('type' => 'i', 'value' => $club_id),
+                ));
+        }
+
+        $login = $this->getUserLogin($user_id);
+        $this->addActivity("Mise à jour des clubs gérés pour l'utilisateur $login");
+    }
+
+    /**
      * Permet à un administrateur d'agir en tant qu'un autre utilisateur
      * @param int $target_user_id ID de l'utilisateur cible
      * @return bool
