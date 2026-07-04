@@ -2,10 +2,7 @@ WITH first_responsable AS (SELECT ca.id,
                                   ut.team_id                                                 AS id_equipe,
                                   ROW_NUMBER() OVER (PARTITION BY ut.team_id ORDER BY ca.id) AS rn
                            FROM comptes_acces ca
-                                    JOIN users_teams ut ON ca.id = ut.user_id
-                                    JOIN users_profiles up ON ca.id = up.user_id
-                                    JOIN profiles p ON up.profile_id = p.id
-                           WHERE p.name = 'RESPONSABLE_EQUIPE')
+                                    JOIN users_teams ut ON ca.id = ut.user_id)
 SELECT e.nom_equipe                     AS equipe,
        c.libelle                        AS competition,
        COALESCE(ca.email,

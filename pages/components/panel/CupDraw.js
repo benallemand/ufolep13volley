@@ -248,7 +248,7 @@ export default {
     },
     computed: {
         isAdmin() {
-            return this.user && this.user.profile_name === 'ADMINISTRATEUR';
+            return !!(this.user && this.user.is_admin);
         }
     },
     watch: {

@@ -43,7 +43,7 @@ Ext.define('Ufolep13Volley.controller.register', {
     manage_display: function (selection_model, selected) {
         var form = selection_model.view.ownerCt.up('viewport').down('form');
         if (selected.length === 1) {
-            if (user_details.profile_name === 'ADMINISTRATEUR') {
+            if (user_details.is_admin) {
                 form.loadRecord(selected[0]);
                 return;
             }

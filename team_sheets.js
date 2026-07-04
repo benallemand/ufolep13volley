@@ -93,7 +93,7 @@ createApp({
     },
     async created() {
         // Contrôle d'accès côté client (remplace les vérifs PHP de team_sheets.php)
-        const user = await requireMatchAccess(this.id_match, ['RESPONSABLE_EQUIPE', 'ADMINISTRATEUR', 'SUPPORT']);
+        const user = await requireMatchAccess(this.id_match, ['admin', 'team_leader']);
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }

@@ -41,7 +41,7 @@ export default {
             </div>
 
             <!-- Responsable d'équipe (ou club en act-as) : sélecteur de son équipe -->
-            <div v-if="!isClubLeader" class="dropdown">
+            <div v-if="isTeamLeader" class="dropdown">
               <div tabindex="0" role="button" class="btn btn-ghost">
                 <span><i class="mr-2 fas fa-user"></i>mon équipe: {{ currentTeam?.nom_equipe }}<i class="ml-1 fas fa-chevron-down"/></span>
               </div>
@@ -54,8 +54,8 @@ export default {
               </ul>
             </div>
 
-            <!-- Menus per-équipe : cachés pour le responsable de club hors act-as -->
-            <template v-if="!isClubLeader">
+            <!-- Menus per-équipe : visibles dès que le compte gère une équipe (cumul possible avec le rôle club) -->
+            <template v-if="isTeamLeader">
               <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-ghost">
                   <span>gestion<i class="ml-1 fas fa-chevron-down"/></span>
@@ -146,6 +146,7 @@ export default {
             teams: null,
             unreadCount: 0,
             isClubLeader: false,
+            isTeamLeader: false,
             isActingAs: false,
             actAsAccounts: [],
         };
@@ -172,7 +173,9 @@ export default {
                     }
                     this.user = response.data;
                     this.isActingAs = this.user.is_acting_as === true;
-                    this.isClubLeader = this.user.profile_name === 'RESPONSABLE_CLUB';
+                    // rôles cumulables (issue #245) : un compte peut gérer un club ET des équipes
+                    this.isClubLeader = this.user.is_club_leader === true;
+                    this.isTeamLeader = this.user.is_team_leader === true;
                     if (this.isClubLeader) {
                         // Liste des comptes responsables d'équipe du club, à incarner.
                         axios.get('/rest/action.php/usermanager/getMyClubTeamLeaders')
@@ -180,7 +183,8 @@ export default {
                                 this.actAsAccounts = r.data.filter((row) => row.user_id);
                             })
                             .catch(() => {});
-                    } else {
+                    }
+                    if (this.isTeamLeader) {
                         // Responsable d'équipe (ou club en act-as) : ses équipes.
                         axios.get(`/rest/action.php/usermanager/getUserTeams?user_id=${this.user.id_user}`)
                             .then((r) => {

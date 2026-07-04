@@ -127,8 +127,7 @@ class UserManager extends Generic
         $user = $this->get_one("login = ?", $bindings);
         if (!$user) {
             $password = Generic::randomPassword();
-            $user_id = $this->insert_user($login, $email, $password);
-            $this->insert_user_profile($user_id, 'RESPONSABLE_EQUIPE');
+            $this->insert_user($login, $email, $password);
             $user = $this->get_one("login = ?", $bindings);
             $this->email->sendMailNewUser($email, $login, $password);
             $this->activity->add("Compte $login créé");
@@ -309,123 +308,22 @@ class UserManager extends Generic
     }
 
     /**
+     * Donne ou retire le rôle admin à un compte.
      * @throws Exception
      */
-    public function saveProfile($id,
-                                $name,
-                                $dirtyFields = null)
+    public function setAdmin($user_id, $is_admin, $dirtyFields = null): void
     {
-        $bindings = array();
-        $inputs = array(
-            'id' => $id,
-            'name' => $name,
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
+        }
+        $is_admin_bool = filter_var($is_admin, FILTER_VALIDATE_BOOLEAN);
+        $sql = "UPDATE comptes_acces SET is_admin = ? WHERE id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $is_admin_bool ? 1 : 0),
+            array('type' => 'i', 'value' => $user_id),
         );
-        if (empty($inputs['id'])) {
-            if ($this->isProfileExists($inputs['name'])) {
-                throw new Exception("Le profil n'existe pas !");
-            }
-        }
-        if (empty($inputs['id'])) {
-            $sql = "INSERT INTO";
-        } else {
-            $sql = "UPDATE";
-        }
-        $sql .= " profiles SET ";
-        foreach ($inputs as $key => $value) {
-            switch ($key) {
-                case 'id':
-                    break;
-                default:
-                    $bindings[] = array(
-                        'type' => 's',
-                        'value' => $value
-                    );
-                    $sql .= "$key = ?,";
-                    break;
-            }
-        }
-        $sql = trim($sql, ',');
-        if (!empty($inputs['id'])) {
-            $bindings[] = array(
-                'type' => 'i',
-                'value' => $inputs['id']
-            );
-            $sql .= " WHERE id = ?";
-        }
         $this->sql_manager->execute($sql, $bindings);
-        if (empty($inputs['id'])) {
-            $comment = "Creation d'un nouveau profil : $name";
-            $this->addActivity($comment);
-        } else {
-            if (!empty($dirtyFields)) {
-                $fieldsArray = explode(',', $dirtyFields);
-                foreach ($fieldsArray as $fieldName) {
-                    $fieldValue = filter_input(INPUT_POST, $fieldName);
-                    $name = $inputs['name'];
-                    $comment = "$name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-                    $this->addActivity($comment);
-                }
-            }
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function isProfileExists($name): bool
-    {
-        $sql = "SELECT COUNT(*) AS cnt FROM profiles WHERE name = ?";
-        $bindings = array();
-        $bindings[] = array('type' => 's', 'value' => $name);
-        $results = $this->sql_manager->execute($sql, $bindings);
-        return intval($results[0]['cnt']) > 0;
-    }
-
-    /**
-     * @throws Exception
-     */
-    function addProfileToUsers($id_profile, $id_users, $dirtyFields = null)
-    {
-        foreach (explode(',', $id_users) as $idUser) {
-            $hasProfile = $this->hasProfile($idUser);
-            if ($hasProfile) {
-                $sql = "UPDATE ";
-            } else {
-                $sql = "INSERT ";
-            }
-            $sql .= "users_profiles SET profile_id = $id_profile, user_id = $idUser ";
-            if ($hasProfile) {
-                $sql .= "WHERE user_id = $idUser";
-            }
-            $this->sql_manager->execute($sql);
-            $this->addActivity($this->getUserLogin($idUser) . " a obtenu le profil " . $this->getProfileName($id_profile));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function hasProfile($idUser): bool
-    {
-        $sql = "SELECT COUNT(*) AS cnt FROM users_profiles WHERE user_id = $idUser";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getProfileName($idProfile)
-    {
-        $sql = "SELECT 
-        p.name AS profile_name 
-        FROM profiles p 
-        WHERE p.id = $idProfile";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['profile_name'];
+        $this->addActivity($this->getUserLogin($user_id) . ($is_admin_bool ? " a obtenu" : " a perdu") . " le rôle administrateur");
     }
 
     /**
@@ -441,38 +339,32 @@ class UserManager extends Generic
         return $results[0]['login'];
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getProfiles(): array|int|string|null
-    {
-        $sql = "SELECT id, name FROM profiles";
-        return $this->sql_manager->execute($sql);
-    }
-
     public static function is_connected(): bool
     {
         @session_start();
-        return isset($_SESSION['profile_name']);
+        return isset($_SESSION['id_user']);
     }
 
+    // Les rôles sont dérivés et cumulables (issue #245) : un même compte peut
+    // être admin (comptes_acces.is_admin), responsable d'équipe (users_teams)
+    // et responsable de club (users_clubs). Les flags sont posés en session
+    // au login (cf. setSessionRoles).
     public static function isTeamLeader(): bool
     {
         @session_start();
-        return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_EQUIPE");
+        return !empty($_SESSION['is_team_leader']);
     }
 
     public static function isClubLeader(): bool
     {
         @session_start();
-        return (isset($_SESSION['profile_name']) && $_SESSION['profile_name'] == "RESPONSABLE_CLUB");
+        return !empty($_SESSION['is_club_leader']);
     }
 
     public static function isAdmin(): bool
     {
         @session_start();
-        return (isset($_SESSION['profile_name'])
-            && in_array($_SESSION['profile_name'], array("ADMINISTRATEUR", "COMMISSION", "SUPPORT")));
+        return !empty($_SESSION['is_admin']);
     }
 
 
@@ -502,14 +394,12 @@ class UserManager extends Generic
             ));
             return;
         }
-        $sql = "SELECT  ut.team_id AS id_equipe, 
-                        ca.login, 
+        $sql = "SELECT  ut.team_id AS id_equipe,
+                        ca.login,
                         ca.id AS id_user,
-                        p.name AS profile_name 
+                        ca.is_admin
                 FROM comptes_acces ca
                 LEFT JOIN users_teams ut ON ca.id = ut.user_id
-                LEFT JOIN users_profiles up ON up.user_id=ca.id
-                LEFT JOIN profiles p ON p.id=up.profile_id
                 WHERE ca.login = ?
                 AND ca.password_hash = MD5(CONCAT(?, ?))
                 LIMIT 1";
@@ -535,15 +425,7 @@ class UserManager extends Generic
             return;
         }
         $data = $results[0];
-        $_SESSION['id_equipe'] = (int)$data['id_equipe'];
-        $_SESSION['login'] = $data['login'];
-        $_SESSION['id_user'] = (int)$data['id_user'];
-        $_SESSION['profile_name'] = $data['profile_name'];
-        // Responsable de club : résoudre le club (users_clubs) et sélectionner par
-        // défaut une équipe du club (le profil n'a pas de ligne users_teams).
-        if ($_SESSION['profile_name'] === 'RESPONSABLE_CLUB') {
-            $this->initClubLeaderSession((int)$data['id_user']);
-        }
+        $this->setSessionRoles((int)$data['id_user'], $data['login'], !empty($data['is_admin']), $data['id_equipe']);
         if (!empty($redirect)) {
             header('Location: ' . urldecode($redirect));
             exit(0);
@@ -644,21 +526,6 @@ class UserManager extends Generic
             array('type' => 's', 'value' => $password),
         );
         return $this->sql_manager->execute($sql, $bindings);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function insert_user_profile(int|array|string|null $user_id, string $profile_name): void
-    {
-        $sql = "INSERT INTO users_profiles SET 
-                        user_id = ?, 
-                        profile_id = (SELECT id FROM profiles WHERE name = ?)";
-        $bindings = array(
-            array('type' => 'i', 'value' => $user_id),
-            array('type' => 's', 'value' => $profile_name),
-        );
-        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -796,21 +663,29 @@ class UserManager extends Generic
     }
 
     /**
-     * Initialise la session d'un RESPONSABLE_CLUB : résout son club depuis
-     * users_clubs et sélectionne par défaut la première équipe du club.
+     * Pose en session l'identité et les rôles (cumulables) d'un compte :
+     * admin (comptes_acces.is_admin), responsable d'équipe (users_teams),
+     * responsable de club (users_clubs). Utilisé au login et par les
+     * bascules « agir en tant que ».
      * @throws Exception
      */
-    private function initClubLeaderSession(int $id_user): void
+    private function setSessionRoles(int $id_user, string $login, bool $is_admin, $id_equipe): void
     {
+        $_SESSION['id_user'] = $id_user;
+        $_SESSION['login'] = $login;
+        $_SESSION['is_admin'] = $is_admin;
+        $_SESSION['id_equipe'] = (int)$id_equipe;
+        $_SESSION['is_team_leader'] = !empty($id_equipe);
         $sql = "SELECT club_id FROM users_clubs WHERE user_id = ? LIMIT 1";
         $bindings = array(array('type' => 'i', 'value' => $id_user));
         $results = $this->sql_manager->execute($sql, $bindings);
-        if (count($results) === 0) {
-            return;
+        if (count($results) > 0) {
+            $_SESSION['id_club'] = (int)$results[0]['club_id'];
+            $_SESSION['is_club_leader'] = true;
+        } else {
+            unset($_SESSION['id_club']);
+            $_SESSION['is_club_leader'] = false;
         }
-        // Le responsable de club n'a pas d'équipe propre : il gère ses équipes en
-        // « agissant en tant que » leur responsable (cf. switch_to_club_team_leader).
-        $_SESSION['id_club'] = (int)$results[0]['club_id'];
     }
 
     public function switchCurrentUserTeam($id_equipe): void
@@ -839,10 +714,6 @@ class UserManager extends Generic
      */
     public function updateUserTeams(int $user_id, string $team_ids): void
     {
-        if ($this->isUserAdmin($user_id)) {
-            throw new Exception("Les administrateurs ne peuvent pas être associés à une équipe");
-        }
-        
         $new_team_ids = empty($team_ids) ? [] : array_map('intval', explode(',', $team_ids));
         $current_teams = $this->getUserTeamIds($user_id);
         $teams_to_add = array_diff($new_team_ids, $current_teams);
@@ -877,25 +748,6 @@ class UserManager extends Generic
     }
 
     /**
-     * Vérifie si un utilisateur a le profil ADMINISTRATEUR
-     * @param int $user_id
-     * @return bool
-     * @throws Exception
-     */
-    private function isUserAdmin(int $user_id): bool
-    {
-        $sql = "SELECT COUNT(*) AS cnt 
-                FROM users_profiles up 
-                JOIN profiles p ON up.profile_id = p.id 
-                WHERE up.user_id = ? AND p.name = 'ADMINISTRATEUR'";
-        $bindings = array(
-            array('type' => 'i', 'value' => $user_id),
-        );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        return intval($results[0]['cnt']) > 0;
-    }
-
-    /**
      * Permet à un administrateur d'agir en tant qu'un autre utilisateur
      * @param int $target_user_id ID de l'utilisateur cible
      * @return bool
@@ -918,40 +770,47 @@ class UserManager extends Generic
             throw new Exception("Utilisateur cible introuvable");
         }
         
-        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
-        $_SESSION['original_admin_login'] = $_SESSION['login'];
-        $_SESSION['original_admin_profile'] = $_SESSION['profile_name'];
-        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
-        
-        $sql = "SELECT  ut.team_id AS id_equipe, 
-                        ca.login, 
+        $this->saveOriginalSessionRoles();
+
+        $sql = "SELECT  ut.team_id AS id_equipe,
+                        ca.login,
                         ca.id AS id_user,
-                        p.name AS profile_name 
+                        ca.is_admin
                 FROM comptes_acces ca
                 LEFT JOIN users_teams ut ON ca.id = ut.user_id
-                LEFT JOIN users_profiles up ON up.user_id=ca.id
-                LEFT JOIN profiles p ON p.id=up.profile_id
                 WHERE ca.id = ?
                 LIMIT 1";
         $bindings = array(
             array('type' => 'i', 'value' => $target_user_id),
         );
         $results = $this->sql_manager->execute($sql, $bindings);
-        
+
         if (count($results) === 0) {
             throw new Exception("Impossible de récupérer les informations de l'utilisateur cible");
         }
-        
+
         $data = $results[0];
-        $_SESSION['id_equipe'] = (int)$data['id_equipe'];
-        $_SESSION['login'] = $data['login'];
-        $_SESSION['id_user'] = (int)$data['id_user'];
-        $_SESSION['profile_name'] = $data['profile_name'];
+        $this->setSessionRoles((int)$data['id_user'], $data['login'], !empty($data['is_admin']), $data['id_equipe']);
         $_SESSION['acting_as'] = true;
-        
+
         $this->activity->add("Admin a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
 
         return true;
+    }
+
+    /**
+     * Sauvegarde en session l'identité et les rôles du compte d'origine
+     * avant une bascule « agir en tant que ».
+     */
+    private function saveOriginalSessionRoles(): void
+    {
+        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
+        $_SESSION['original_admin_login'] = $_SESSION['login'];
+        $_SESSION['original_admin_is_admin'] = !empty($_SESSION['is_admin']);
+        $_SESSION['original_admin_is_team_leader'] = !empty($_SESSION['is_team_leader']);
+        $_SESSION['original_admin_is_club_leader'] = !empty($_SESSION['is_club_leader']);
+        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
+        $_SESSION['original_admin_club'] = $_SESSION['id_club'] ?? null;
     }
 
     /**
@@ -982,18 +841,12 @@ class UserManager extends Generic
         }
 
         // sauvegarde de la session du responsable de club
-        $_SESSION['original_admin_id'] = $_SESSION['id_user'];
-        $_SESSION['original_admin_login'] = $_SESSION['login'];
-        $_SESSION['original_admin_profile'] = $_SESSION['profile_name'];
-        $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
-        $_SESSION['original_admin_club'] = $_SESSION['id_club'] ?? null;
+        $this->saveOriginalSessionRoles();
 
         $sql = "SELECT  ca.login,
                         ca.id AS id_user,
-                        p.name AS profile_name
+                        ca.is_admin
                 FROM comptes_acces ca
-                LEFT JOIN users_profiles up ON up.user_id = ca.id
-                LEFT JOIN profiles p ON p.id = up.profile_id
                 WHERE ca.id = ?
                 LIMIT 1";
         $bindings = array(array('type' => 'i', 'value' => $target_user_id));
@@ -1004,11 +857,7 @@ class UserManager extends Generic
         $data = $results[0];
         // on cible une équipe du club (la première partagée), pour que toute l'UI
         // responsable opère sur une équipe du club même si le compte en gère d'autres
-        $_SESSION['id_equipe'] = $sharedTeamIds[0];
-        $_SESSION['login'] = $data['login'];
-        $_SESSION['id_user'] = (int)$data['id_user'];
-        $_SESSION['profile_name'] = $data['profile_name'];
-        unset($_SESSION['id_club']); // pendant l'act-as, on agit en responsable d'équipe
+        $this->setSessionRoles((int)$data['id_user'], $data['login'], !empty($data['is_admin']), $sharedTeamIds[0]);
         $_SESSION['acting_as'] = true;
 
         $this->activity->add("Responsable de club a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);
@@ -1030,25 +879,27 @@ class UserManager extends Generic
         }
         
         $target_login = $_SESSION['login'];
-        
+
         $_SESSION['id_user'] = $_SESSION['original_admin_id'];
         $_SESSION['login'] = $_SESSION['original_admin_login'];
-        $_SESSION['profile_name'] = $_SESSION['original_admin_profile'];
+        $_SESSION['is_admin'] = !empty($_SESSION['original_admin_is_admin']);
+        $_SESSION['is_team_leader'] = !empty($_SESSION['original_admin_is_team_leader']);
+        $_SESSION['is_club_leader'] = !empty($_SESSION['original_admin_is_club_leader']);
         $_SESSION['id_equipe'] = $_SESSION['original_admin_equipe'];
-        // restaure le club d'origine (cas d'un responsable de club ayant agi en
-        // tant qu'un de ses responsables d'équipe)
-        if (array_key_exists('original_admin_club', $_SESSION)) {
-            if ($_SESSION['original_admin_club'] !== null) {
-                $_SESSION['id_club'] = (int)$_SESSION['original_admin_club'];
-            }
-            unset($_SESSION['original_admin_club']);
+        if (!empty($_SESSION['original_admin_club'])) {
+            $_SESSION['id_club'] = (int)$_SESSION['original_admin_club'];
+        } else {
+            unset($_SESSION['id_club']);
         }
 
         unset($_SESSION['acting_as']);
         unset($_SESSION['original_admin_id']);
         unset($_SESSION['original_admin_login']);
-        unset($_SESSION['original_admin_profile']);
+        unset($_SESSION['original_admin_is_admin']);
+        unset($_SESSION['original_admin_is_team_leader']);
+        unset($_SESSION['original_admin_is_club_leader']);
         unset($_SESSION['original_admin_equipe']);
+        unset($_SESSION['original_admin_club']);
 
         $this->activity->add("Compte d'origine restauré depuis: " . $target_login);
 
@@ -1080,7 +931,9 @@ class UserManager extends Generic
         return array(
             'id_user' => $_SESSION['original_admin_id'],
             'login' => $_SESSION['original_admin_login'],
-            'profile_name' => $_SESSION['original_admin_profile'],
+            'is_admin' => !empty($_SESSION['original_admin_is_admin']),
+            'is_team_leader' => !empty($_SESSION['original_admin_is_team_leader']),
+            'is_club_leader' => !empty($_SESSION['original_admin_is_club_leader']),
             'id_equipe' => $_SESSION['original_admin_equipe'],
         );
     }
@@ -1101,15 +954,13 @@ class UserManager extends Generic
         $sql = "SELECT  ca.id,
                         ca.login,
                         ca.email,
-                        p.name AS profile_name,
+                        ca.is_admin,
                         GROUP_CONCAT(e.nom_equipe SEPARATOR ', ') AS equipes
                 FROM comptes_acces ca
-                LEFT JOIN users_profiles up ON up.user_id = ca.id
-                LEFT JOIN profiles p ON p.id = up.profile_id
                 LEFT JOIN users_teams ut ON ut.user_id = ca.id
                 LEFT JOIN equipes e ON e.id_equipe = ut.team_id
                 WHERE ca.id != ?
-                GROUP BY ca.id, ca.login, ca.email, p.name
+                GROUP BY ca.id, ca.login, ca.email, ca.is_admin
                 ORDER BY ca.login";
         $bindings = array(
             array('type' => 'i', 'value' => $_SESSION['id_user']),

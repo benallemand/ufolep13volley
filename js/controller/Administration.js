@@ -1,14 +1,12 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Profiles', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews'],
-    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'Profile', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'profile.Grid', 'profile.Edit', 'profile.Select', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'bilan.Form'],
+    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews'],
+    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'bilan.Form'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
         ref: 'managePlayersGrid', selector: 'playersgrid'
-    }, {
-        ref: 'manageProfilesGrid', selector: 'profilesgrid'
     }, {
         ref: 'manageUsersGrid', selector: 'usersgrid'
     }, {
@@ -30,13 +28,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'formPanelSelectClub', selector: 'clubselect form'
     }, {
-        ref: 'formPanelSelectProfile', selector: 'profileselect form'
-    }, {
         ref: 'formPanelSelectTeam', selector: 'teamselect form'
     }, {
         ref: 'formPanelEditPlayer', selector: 'playeredit form'
-    }, {
-        ref: 'formPanelEditProfile', selector: 'profileedit form'
     }, {
         ref: 'formPanelEditUser', selector: 'useredit form'
     }, {
@@ -56,13 +50,9 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'windowSelectClub', selector: 'clubselect'
     }, {
-        ref: 'windowSelectProfile', selector: 'profileselect'
-    }, {
         ref: 'windowSelectTeam', selector: 'teamselect'
     }, {
         ref: 'windowEditPlayer', selector: 'playeredit'
-    }, {
-        ref: 'windowEditProfile', selector: 'profileedit'
     }, {
         ref: 'windowEditUser', selector: 'useredit'
     }, {
@@ -104,10 +94,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.editPlayer
             }, 'button[action=display_import_licence_file]': {
                 click: this.display_import_licence_file
-            }, 'button[action=addProfile]': {
-                click: this.addProfile
-            }, 'button[action=editProfile]': {
-                click: this.editProfile
             }, 'usersgrid button[action=add]': {
                 click: this.addUser
             }, 'gymnasiumsgrid button[action=add]': {
@@ -174,10 +160,10 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.deleteLimitDates
             }, 'playersgrid': {
                 itemdblclick: this.editPlayer
-            }, 'profilesgrid': {
-                itemdblclick: this.editProfile
             }, 'usersgrid': {
                 itemdblclick: this.editUser
+            }, 'usersgrid checkcolumn[dataIndex=is_admin]': {
+                checkchange: this.toggleUserAdmin
             }, 'gymnasiumsgrid': {
                 itemdblclick: this.editGymnasium
             }, 'clubsgrid': {
@@ -200,8 +186,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.showActivityGrid
             }, 'menuitem[action=managePlayers]': {
                 click: this.showPlayersGrid
-            }, 'menuitem[action=manageProfiles]': {
-                click: this.showProfilesGrid
             }, 'menuitem[action=manageUsers]': {
                 click: this.showUsersGrid
             }, 'menuitem[action=manageGymnasiums]': {
@@ -224,8 +208,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.showWeekScheduleGrid
             }, 'button[action=showClubSelect]': {
                 click: this.showClubSelect
-            }, 'button[action=showProfileSelect]': {
-                click: this.showProfileSelect
             }, 'button[action=showTeamSelect]': {
                 click: this.showTeamSelect
             }, 'playersgrid button[action=delete]': {
@@ -527,13 +509,24 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         });
         this_window.show();
     },
-    editProfile: function (button) {
-        var record = button.up('grid').getSelectionModel().getSelection()[0];
-        if (!record) {
-            return;
-        }
-        var widget = Ext.widget('profileedit');
-        this.getFormPanelEditProfile().loadRecord(record);
+    toggleUserAdmin: function (column, rowIndex, checked) {
+        var grid = column.up('grid');
+        var record = grid.getStore().getAt(rowIndex);
+        Ext.Ajax.request({
+            url: '/rest/action.php/usermanager/setAdmin',
+            method: 'POST',
+            params: {
+                user_id: record.get('id'),
+                is_admin: checked ? 'true' : 'false'
+            },
+            success: function () {
+                record.commit();
+            },
+            failure: function () {
+                record.reject();
+                Ext.Msg.alert('Erreur', "Impossible de modifier le rôle administrateur");
+            }
+        });
     },
     editUser: function (button) {
         var record = button.up('grid').getSelectionModel().getSelection()[0];
@@ -603,15 +596,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var widget = Ext.widget('playeredit');
         this.getImagePlayer().hide();
         this.getFormPanelEditPlayer().down('textfield[name=prenom]').focus();
-        var record = button.up('grid').getSelectionModel().getSelection()[0];
-        if (!record) {
-            return;
-        }
-        widget.down('form').loadRecord(record);
-        widget.down('form').getForm().findField('id').setValue("");
-    },
-    addProfile: function (button) {
-        var widget = Ext.widget('profileedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
             return;
@@ -1142,9 +1126,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     showPlayersGrid: function () {
         this.showAdministrationGrid('playersgrid');
     },
-    showProfilesGrid: function () {
-        this.showAdministrationGrid('profilesgrid');
-    },
     showUsersGrid: function () {
         this.showAdministrationGrid('usersgrid');
     },
@@ -1187,20 +1168,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var widget = Ext.widget('clubselect');
         this.getFormPanelSelectClub().getForm().setValues({
             id_players: idPlayers.join(',')
-        });
-    },
-    showProfileSelect: function (button) {
-        var records = button.up('grid').getSelectionModel().getSelection();
-        var idUsers = [];
-        Ext.each(records, function (record) {
-            idUsers.push(record.get('id'));
-        });
-        if (idUsers.length === 0) {
-            return;
-        }
-        var widget = Ext.widget('profileselect');
-        this.getFormPanelSelectProfile().getForm().setValues({
-            id_users: idUsers.join(',')
         });
     },
     showTeamSelect: function (button) {

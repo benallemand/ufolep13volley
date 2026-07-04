@@ -97,7 +97,7 @@ try {
 
     // --- Session admin ---
     session_start();
-    $_SESSION['profile_name'] = 'ADMINISTRATEUR';
+    $_SESSION['is_admin']     = true;
     $_SESSION['login']        = 'e2';
     $_SESSION['id_user']      = 1;
     $_SESSION['id_equipe']    = null;

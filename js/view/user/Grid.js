@@ -26,9 +26,10 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 flex: 1
             },
             {
-                header: 'Profil',
-                dataIndex: 'profile',
-                flex: 1
+                xtype: 'checkcolumn',
+                header: 'Admin',
+                dataIndex: 'is_admin',
+                width: 80
             }
         ]
     },
@@ -48,10 +49,6 @@ Ext.define('Ufolep13Volley.view.user.Grid', {
                 {
                     text: 'équipes liées...',
                     action: 'manage_user_teams',
-                },
-                {
-                    text: 'Associer à un profil',
-                    action: 'showProfileSelect'
                 },
                 {
                     text: 'Supprimer',

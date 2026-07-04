@@ -14,10 +14,7 @@ class SurveyTest extends UfolepTestCase
     {
         $this->delete_test_data();
         $this->test_user_id = $this->sql->execute(
-            "INSERT INTO comptes_acces SET login = 'survey_test_user', email = 'survey_test@test.fr', password_hash = MD5('test')");
-        $this->sql->execute(
-            "INSERT INTO users_profiles SET user_id = ?, profile_id = (SELECT id FROM profiles WHERE name = 'ADMINISTRATEUR')",
-            array(array('type' => 'i', 'value' => $this->test_user_id)));
+            "INSERT INTO comptes_acces SET login = 'survey_test_user', email = 'survey_test@test.fr', password_hash = MD5('test'), is_admin = 1");
         $id_club = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 1'");
         $id_club2 = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 2'");
         $id_team1 = $this->sql->execute(
@@ -53,7 +50,6 @@ class SurveyTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM matches WHERE code_match = 'SURVEY_UT001'");
         $this->sql->execute("DELETE FROM journees WHERE nommage = 'SURVEY_TEST'");
         $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'survey_test_user')");
-        $this->sql->execute("DELETE FROM users_profiles WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'survey_test_user')");
         $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'survey_test_user'");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'survey test team %'");
         $this->sql->execute("DELETE FROM clubs WHERE nom LIKE 'survey test club %'");
@@ -66,11 +62,9 @@ class SurveyTest extends UfolepTestCase
         parent::setUp();
         $this->match_manager = new MatchMgr();
         $this->create_test_data();
-        @session_start();
-        $_SESSION['id_equipe'] = null;
+        $this->connect_as_admin();
         $_SESSION['login'] = 'survey_test_user';
         $_SESSION['id_user'] = $this->test_user_id;
-        $_SESSION['profile_name'] = 'ADMINISTRATEUR';
     }
 
     public function test_save_survey_rejects_on_time_above_10()

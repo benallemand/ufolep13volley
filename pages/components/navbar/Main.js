@@ -182,12 +182,12 @@ export default {
           </div>
           <div v-if="isConnected" class="flex gap-1">
             <a class="btn btn-primary"
-               v-if="['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name) && !isActingAs"
+               v-if="user.is_admin && !isActingAs"
                href="/admin.php">
               <span><i class="fas fa-gear mr-2"/>administration</span>
             </a>
             <a class="btn btn-primary"
-               v-if="!['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'].includes(this.user.profile_name) || isActingAs"
+               v-if="user.is_team_leader || user.is_club_leader || isActingAs"
                href="/pages/my_page.html">
               <span><i class="fas fa-user mr-2"/>{{ this.user.login }}</span>
             </a>

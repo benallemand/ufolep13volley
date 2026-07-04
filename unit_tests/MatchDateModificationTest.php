@@ -36,11 +36,8 @@ class MatchDateModificationTest extends UfolepTestCase
      */
     protected function connect_as_team_leader_with_id(mixed $id_equipe, mixed $id_user)
     {
-        @session_start();
-        $_SESSION['id_equipe'] = $id_equipe;
-        $_SESSION['login'] = 'test_user';
+        $this->connect_as_team_leader($id_equipe);
         $_SESSION['id_user'] = $id_user;
-        $_SESSION['profile_name'] = 'RESPONSABLE_EQUIPE';
     }
 
     /**
@@ -115,17 +112,10 @@ class MatchDateModificationTest extends UfolepTestCase
                                                        heure = '20:00',
                                                        id_equipe = $id_team2");
         
-        // Create test users for team leaders
-        $profileId = $this->sql_manager->execute("SELECT id FROM profiles WHERE name = 'RESPONSABLE_EQUIPE'");
-        if (is_array($profileId)) {
-            $profileId = $profileId[0]['id'];
-        }
-        
+        // Create test users for team leaders (le rôle est porté par la liaison users_teams)
         $userId1 = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'dm_team_leader1', email = 'dm1@test.com', password_hash = 'x'");
         $userId2 = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'dm_team_leader2', email = 'dm2@test.com', password_hash = 'x'");
-        
-        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId1, profile_id = $profileId");
-        $this->sql_manager->execute("INSERT INTO users_profiles SET user_id = $userId2, profile_id = $profileId");
+
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId1, team_id = $id_team1");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId2, team_id = $id_team2");
         
@@ -151,7 +141,6 @@ class MatchDateModificationTest extends UfolepTestCase
     {
         $this->sql_manager->execute("DELETE FROM matches WHERE code_competition = 'dm'");
         $this->sql_manager->execute("DELETE FROM users_teams WHERE team_id IN (SELECT id_equipe FROM equipes WHERE code_competition = 'dm')");
-        $this->sql_manager->execute("DELETE FROM users_profiles WHERE user_id IN (SELECT id FROM comptes_acces WHERE login LIKE 'dm_%')");
         $this->sql_manager->execute("DELETE FROM comptes_acces WHERE login LIKE 'dm_%'");
         $this->sql_manager->execute("DELETE FROM creneau WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE code_competition = 'dm')");
         $this->sql_manager->execute("DELETE FROM classements WHERE code_competition = 'dm'");

@@ -78,7 +78,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
                         type: 'Competitions',
                         filters: [
                             function (item) {
-                                return user_details.profile_name === 'ADMINISTRATEUR' ? true : item.get('limit_register_date') >= Ext.Date.now() && item.get('start_register_date') < Ext.Date.now();
+                                return user_details.is_admin ? true : item.get('limit_register_date') >= Ext.Date.now() && item.get('start_register_date') < Ext.Date.now();
                             }
                         ]
                     },
@@ -158,7 +158,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
                 }: null,
             ],
         },
-        user_details.profile_name === 'ADMINISTRATEUR' ? {
+        user_details.is_admin ? {
             xtype: 'fieldset',
             title: "Attribution de division (Admin)",
             defaults: {
@@ -184,7 +184,7 @@ Ext.define('Ufolep13Volley.view.form.register', {
                 },
             ]
         } : null,
-        user_details.profile_name === 'ADMINISTRATEUR' ? {
+        user_details.is_admin ? {
             name: 'is_paid',
             xtype: 'checkboxfield',
             fieldLabel: 'Adhésion réglée ?',

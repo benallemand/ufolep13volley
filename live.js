@@ -11,8 +11,6 @@ import {getCurrentUser} from './pages/components/auth/guard.js';
 window.axios = axios;
 window.Toastify = Toastify;
 
-// Profils considérés "admin" pour le marquage (cf. UserManager::isAdmin)
-const ADMIN_PROFILES = ['ADMINISTRATEUR', 'COMMISSION', 'SUPPORT'];
 const ROTATION_COMPETITION_CODES = ['m', 'c', 'cf'];
 
 const params = new URLSearchParams(window.location.search);
@@ -188,7 +186,7 @@ createApp({
             // Droits de marquage : admin OU responsable d'une des deux équipes
             const user = await getCurrentUser();
             this.currentUser = user;
-            if (user && ADMIN_PROFILES.includes(user.profile_name)) {
+            if (user && user.is_admin) {
                 this.canScore = true;
             } else if (user && user.id_equipe) {
                 this.canScore = (user.id_equipe == this.match.id_equipe_dom

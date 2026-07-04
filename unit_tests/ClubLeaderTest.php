@@ -10,9 +10,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/UfolepTestCase.php';
 
 /**
- * Issue #101 — socle du profil RESPONSABLE_CLUB.
+ * Issue #101 — socle du rôle responsable de club (issue #245 : le rôle est
+ * dérivé de users_clubs, flag de session is_club_leader, cumulable).
  *
- * Un RESPONSABLE_CLUB gère toutes les équipes de son club. Le socle :
+ * Un responsable de club gère toutes les équipes de son club. Le socle :
  *  - UserManager::isClubLeader() / isTeamManager() (responsable d'équipe OU de club)
  *  - Club::getMyClubId() résout le club depuis la session (posée au login depuis users_clubs)
  *  - Club::getMyClubTeams() liste les équipes du club
@@ -231,8 +232,6 @@ class ClubLeaderTest extends UfolepTestCase
             "SELECT e.id_club, ut.user_id, ut.team_id
              FROM users_teams ut
              JOIN equipes e ON e.id_equipe = ut.team_id
-             JOIN users_profiles up ON up.user_id = ut.user_id
-             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
              LIMIT 1"
         );
         if (count($row) === 0) {
@@ -247,7 +246,7 @@ class ClubLeaderTest extends UfolepTestCase
 
         $this->assertTrue(UserManager::is_acting_as());
         $this->assertEquals($targetUserId, $_SESSION['id_user']);
-        $this->assertEquals('RESPONSABLE_EQUIPE', $_SESSION['profile_name']);
+        $this->assertTrue(UserManager::isTeamLeader());
         // l'équipe ciblée appartient au club
         $clubTeamIds = array_map('intval', array_column(
             $this->sql->execute("SELECT id_equipe FROM equipes WHERE id_club = $clubId"), 'id_equipe'));
@@ -256,7 +255,7 @@ class ClubLeaderTest extends UfolepTestCase
         // retour : on retrouve le compte club
         $userManager->switch_back_to_admin();
         $this->assertFalse(UserManager::is_acting_as());
-        $this->assertEquals('RESPONSABLE_CLUB', $_SESSION['profile_name']);
+        $this->assertTrue(UserManager::isClubLeader());
         $this->assertEquals($clubId, $_SESSION['id_club']);
     }
 
@@ -266,8 +265,6 @@ class ClubLeaderTest extends UfolepTestCase
             "SELECT e.id_club
              FROM users_teams ut
              JOIN equipes e ON e.id_equipe = ut.team_id
-             JOIN users_profiles up ON up.user_id = ut.user_id
-             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
              LIMIT 1"
         );
         if (count($clubRow) === 0) {
@@ -278,8 +275,6 @@ class ClubLeaderTest extends UfolepTestCase
             "SELECT ut.user_id
              FROM users_teams ut
              JOIN equipes e ON e.id_equipe = ut.team_id
-             JOIN users_profiles up ON up.user_id = ut.user_id
-             JOIN profiles p ON p.id = up.profile_id AND p.name = 'RESPONSABLE_EQUIPE'
              WHERE e.id_club <> $clubId
                AND ut.user_id NOT IN (
                    SELECT ut2.user_id FROM users_teams ut2
