@@ -15,6 +15,8 @@ class Configuration
     public bool $covid_mode;
     public string $proxy_url;
     public string $flickr_api_key;
+    public string $facebook_page_id;
+    public string $facebook_page_token;
     public string $seeding_tournament_week;
 
     /**
@@ -44,6 +46,8 @@ class Configuration
         $this->mail_port = (int)($_ENV['MAIL_PORT'] ?? 25);
         $this->covid_mode = ($_ENV['COVID_MODE'] ?? 'false') === 'true';
         $this->flickr_api_key = $_ENV['FLICKR_API_KEY'] ?? '';
+        $this->facebook_page_id = $_ENV['FACEBOOK_PAGE_ID'] ?? '';
+        $this->facebook_page_token = $_ENV['FACEBOOK_PAGE_TOKEN'] ?? '';
         $this->proxy_url = $_ENV['PROXY_URL'] ?? '';
         $this->seeding_tournament_week = $_ENV['SEEDING_TOURNAMENT_WEEK'] ?? '';
     }
