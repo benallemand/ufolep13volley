@@ -121,14 +121,15 @@ class UserManager extends Generic
     public function create_or_update_leader_account($email, $team_id): void
     {
         $login = strtolower($email);
-        // create leader user account if it does not exist
+        // recherche par email : un email = un compte (issue #247), même si le
+        // compte existant porte un login historique différent de l'email
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $login);
-        $user = $this->get_one("login = ?", $bindings);
+        $user = $this->get_one("email = ?", $bindings);
         if (!$user) {
             $password = Generic::randomPassword();
             $this->insert_user($login, $email, $password);
-            $user = $this->get_one("login = ?", $bindings);
+            $user = $this->get_one("email = ?", $bindings);
             $this->email->sendMailNewUser($email, $login, $password);
             $this->activity->add("Compte $login créé");
             error_log("le compte $login n'existe pas, création ok");
@@ -199,6 +200,17 @@ class UserManager extends Generic
     }
 
     /**
+     * @throws Exception
+     */
+    public function isEmailExists($email): bool
+    {
+        $sql = "SELECT COUNT(*) AS cnt FROM comptes_acces WHERE email = ?";
+        $bindings = array(array('type' => 's', 'value' => $email));
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return intval($results[0]['cnt']) > 0;
+    }
+
+    /**
      * @param $login
      * @param $email
      * @param $id_equipe
@@ -208,6 +220,10 @@ class UserManager extends Generic
     {
         if ($this->isUserExists($login)) {
             throw new Exception("Ce compte existe déjà !");
+        }
+        // un email = un compte (issue #247)
+        if ($this->isEmailExists($email)) {
+            throw new Exception("Un compte existe déjà avec cet email !");
         }
         $password = Generic::randomPassword();
         $user_id = $this->insert_user($login, $email, $password);
@@ -252,6 +268,10 @@ class UserManager extends Generic
         $email,
         $dirtyFields = null)
     {
+        // un email = un compte (issue #247) : le login des nouveaux comptes est l'email
+        if (empty($id) && empty($login)) {
+            $login = strtolower($email);
+        }
         $bindings = array();
         $inputs = array(
             'id' => $id,
@@ -260,7 +280,11 @@ class UserManager extends Generic
         );
         if (empty($id)) {
             if ($this->isUserExists($login)) {
-                throw new Exception("L'utilisateur n'existe pas !");
+                throw new Exception("Ce login existe déjà !");
+            }
+            // un email = un compte (issue #247)
+            if ($this->isEmailExists($email)) {
+                throw new Exception("Un compte existe déjà avec cet email !");
             }
         }
         if (empty($id)) {
@@ -380,6 +404,35 @@ class UserManager extends Generic
     }
 
     /**
+     * Authentifie un compte par login OU email (issue #247). Le sel du hash
+     * reste le login stocké : aucun mot de passe n'est invalidé.
+     * @return array|null id_user, login, is_admin, id_equipe (première équipe liée)
+     * @throws Exception
+     */
+    public function authenticate(string $login_or_email, string $password): ?array
+    {
+        $sql = "SELECT  ut.team_id AS id_equipe,
+                        ca.login,
+                        ca.id AS id_user,
+                        ca.is_admin
+                FROM comptes_acces ca
+                LEFT JOIN users_teams ut ON ca.id = ut.user_id
+                WHERE (ca.login = ? OR ca.email = ?)
+                AND ca.password_hash = MD5(CONCAT(CONVERT(ca.login USING utf8mb4), ?))
+                LIMIT 1";
+        $bindings = array(
+            array('type' => 's', 'value' => $login_or_email),
+            array('type' => 's', 'value' => $login_or_email),
+            array('type' => 's', 'value' => $password),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            return null;
+        }
+        return $results[0];
+    }
+
+    /**
      * @throws Exception
      */
     public function login(): void
@@ -394,37 +447,14 @@ class UserManager extends Generic
             ));
             return;
         }
-        $sql = "SELECT  ut.team_id AS id_equipe,
-                        ca.login,
-                        ca.id AS id_user,
-                        ca.is_admin
-                FROM comptes_acces ca
-                LEFT JOIN users_teams ut ON ca.id = ut.user_id
-                WHERE ca.login = ?
-                AND ca.password_hash = MD5(CONCAT(?, ?))
-                LIMIT 1";
-        $bindings = array();
-        $bindings[] = array(
-            'type' => 's',
-            'value' => $login
-        );
-        $bindings[] = array(
-            'type' => 's',
-            'value' => $login
-        );
-        $bindings[] = array(
-            'type' => 's',
-            'value' => $password
-        );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (count($results) != 1) {
+        $data = $this->authenticate($login, $password);
+        if ($data === null) {
             echo json_encode(array(
                 'success' => false,
                 'message' => 'Login ou mot de passe incorrect'
             ));
             return;
         }
-        $data = $results[0];
         $this->setSessionRoles((int)$data['id_user'], $data['login'], !empty($data['is_admin']), $data['id_equipe']);
         if (!empty($redirect)) {
             header('Location: ' . urldecode($redirect));
@@ -475,15 +505,18 @@ class UserManager extends Generic
     }
 
     /**
+     * Demande de réinitialisation par email seul : un email = un compte
+     * (issue #247). Le paramètre $login est conservé pour compatibilité.
      * @throws Exception
      */
-    public function request_reset_password($login,
-                                           $user_email,
+    public function request_reset_password($user_email,
+                                           $login = null,
                                            $dirtyFields = null): void
     {
-        $results = $this->get("login = '$login' AND email = '$user_email'");
+        $bindings = array(array('type' => 's', 'value' => $user_email));
+        $results = $this->get("email = ?", $bindings);
         if (count($results) === 0) {
-            throw new Exception("Il n'existe pas de compte avec cette adresse email et ce login !");
+            throw new Exception("Il n'existe pas de compte avec cette adresse email !");
         }
         $result = $results[0];
         $url = $this->get_page_url() .
