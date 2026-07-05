@@ -152,6 +152,29 @@ class RegisterTest extends UfolepTestCase
         $this->call_register(['id' => $id, 'new_team_name' => 'RT Team D']);
     }
 
+    public function test_admin_who_is_also_club_leader_registers_for_his_session_club()
+    {
+        // cumul des rôles : admin ET responsable de club, id_club non posté
+        // (cas du dépôt depuis l'espace club — bug remonté en recette)
+        $this->connect_as_club_leader($this->id_club_1);
+        $_SESSION['is_admin'] = true;
+        try {
+            $this->call_register(['id_club' => null, 'new_team_name' => 'RT Team S']);
+            $this->fail("Une création réussie doit lever l'exception 201");
+        } catch (Exception $e) {
+            $this->assertEquals(201, $e->getCode());
+        }
+        $rows = $this->sql->execute("SELECT * FROM register WHERE new_team_name = 'RT Team S'");
+        $this->assertEquals($this->id_club_1, (int)$rows[0]['id_club']);
+    }
+
+    public function test_admin_without_club_cannot_create_without_id_club()
+    {
+        $this->connect_as_admin();
+        $this->expectExceptionMessage("Le club de l'équipe à inscrire n'est pas déterminé !");
+        $this->call_register(['id_club' => null, 'new_team_name' => 'RT Team T']);
+    }
+
     public function test_admin_can_register_for_any_club()
     {
         $this->connect_as_admin();

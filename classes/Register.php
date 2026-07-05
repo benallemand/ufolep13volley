@@ -67,9 +67,9 @@ class Register extends Generic
         if (!UserManager::isClubLeader() && !UserManager::isAdmin()) {
             throw new Exception("Seuls les responsables de club peuvent gérer les inscriptions !", 403);
         }
+        require_once __DIR__ . '/Club.php';
         if (!UserManager::isAdmin()) {
             // le club de session fait foi, quel que soit le club posté
-            require_once __DIR__ . '/Club.php';
             $id_club = (new Club())->getMyClubId();
             if (!empty($id)) {
                 $this->assertMyClubPendingRegistration($id);
@@ -77,6 +77,17 @@ class Register extends Generic
             if (!$this->competition->is_registration_available($id_competition)) {
                 throw new Exception("L'enregistrement à cette compétition n'est pas disponible actuellement !");
             }
+        } elseif (empty($id_club) && UserManager::isClubLeader()) {
+            // les rôles se cumulent : un admin aussi responsable de club qui
+            // poste depuis son espace club (sans id_club) inscrit pour SON club
+            $id_club = (new Club())->getMyClubId();
+        }
+        if (empty($id_club) && !empty($id)) {
+            // mise à jour sans club posté : on conserve celui de la demande
+            $id_club = $this->get_register($id)['id_club'];
+        }
+        if (empty($id_club)) {
+            throw new Exception("Le club de l'équipe à inscrire n'est pas déterminé !", 400);
         }
         $parameters = array(
             'new_team_name' => trim($new_team_name),
