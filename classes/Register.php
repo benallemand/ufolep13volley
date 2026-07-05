@@ -62,10 +62,32 @@ class Register extends Generic
         $id = null
     ): void
     {
-        if (!UserManager::is_connected() || (UserManager::is_connected() && !UserManager::isAdmin())) {
+        // issue #249 : la demande d'inscription est réservée aux responsables
+        // de club (et aux admins, qui peuvent corriger n'importe quelle demande)
+        if (!UserManager::isClubLeader() && !UserManager::isAdmin()) {
+            throw new Exception("Seuls les responsables de club peuvent gérer les inscriptions !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        if (!UserManager::isAdmin()) {
+            // le club de session fait foi, quel que soit le club posté
+            $id_club = (new Club())->getMyClubId();
+            if (!empty($id)) {
+                $this->assertMyClubPendingRegistration($id);
+            }
             if (!$this->competition->is_registration_available($id_competition)) {
                 throw new Exception("L'enregistrement à cette compétition n'est pas disponible actuellement !");
             }
+        } elseif (empty($id_club) && UserManager::isClubLeader()) {
+            // les rôles se cumulent : un admin aussi responsable de club qui
+            // poste depuis son espace club (sans id_club) inscrit pour SON club
+            $id_club = (new Club())->getMyClubId();
+        }
+        if (empty($id_club) && !empty($id)) {
+            // mise à jour sans club posté : on conserve celui de la demande
+            $id_club = $this->get_register($id)['id_club'];
+        }
+        if (empty($id_club)) {
+            throw new Exception("Le club de l'équipe à inscrire n'est pas déterminé !", 400);
         }
         $parameters = array(
             'new_team_name' => trim($new_team_name),
@@ -155,6 +177,119 @@ class Register extends Generic
 
     }
 
+    /**
+     * Vérifie qu'une inscription appartient au club du responsable connecté
+     * et qu'elle est encore modifiable (statut PENDING).
+     * @throws Exception
+     */
+    private function assertMyClubPendingRegistration($id): array
+    {
+        require_once __DIR__ . '/Club.php';
+        $registration = $this->get_one("r.id = ?", array(array('type' => 'i', 'value' => $id)));
+        if (empty($registration)) {
+            throw new Exception("Inscription introuvable !", 404);
+        }
+        if ((int)$registration['id_club'] !== (new Club())->getMyClubId()) {
+            throw new Exception("Cette inscription n'appartient pas à votre club !", 403);
+        }
+        if ($registration['status'] === 'VALIDATED') {
+            throw new Exception("Cette inscription a été validée, elle n'est plus modifiable !", 403);
+        }
+        return $registration;
+    }
+
+    /**
+     * Liste les inscriptions du club du responsable connecté.
+     * @throws Exception
+     */
+    public function getMyClubRegistrations(): array
+    {
+        if (!UserManager::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        require_once __DIR__ . '/Club.php';
+        $id_club = (new Club())->getMyClubId();
+        $sql = $this->getSql("r.id_club = ?");
+        return $this->sql_manager->execute($sql, array(array('type' => 'i', 'value' => $id_club)));
+    }
+
+    /**
+     * Suppression d'une demande par le club, tant qu'elle n'est pas validée.
+     * @throws Exception
+     */
+    public function deleteMyClubRegistration($id): void
+    {
+        if (!UserManager::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        $registration = $this->assertMyClubPendingRegistration($id);
+        $this->sql_manager->execute(
+            "DELETE FROM register WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        $this->addActivity("Inscription supprimée par le club : " . $registration['new_team_name'] . " (" . $registration['competition'] . ")");
+    }
+
+    /**
+     * Validation d'une demande par l'admin : elle devient non modifiable par
+     * le club et éligible à l'engagement (set_up_season).
+     * @throws Exception
+     */
+    public function validateRegistration($id): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent valider une inscription !", 403);
+        }
+        $registration = $this->get_register($id);
+        $this->sql_manager->execute(
+            "UPDATE register SET status = 'VALIDATED', validation_date = NOW() WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        $this->notifyClubValidation($registration);
+        $this->addActivity("Inscription validée : " . $registration['new_team_name'] . " (" . $registration['competition'] . ")");
+    }
+
+    /**
+     * Retour d'une demande au statut PENDING (admin).
+     * @throws Exception
+     */
+    public function unvalidateRegistration($id): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent dévalider une inscription !", 403);
+        }
+        $registration = $this->get_register($id);
+        $this->sql_manager->execute(
+            "UPDATE register SET status = 'PENDING', validation_date = NULL WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        $this->addActivity("Inscription dévalidée : " . $registration['new_team_name'] . " (" . $registration['competition'] . ")");
+    }
+
+    /**
+     * Notifie par email les responsables du club que leur demande est validée.
+     * @throws Exception
+     */
+    private function notifyClubValidation(array $registration): void
+    {
+        $sql = "SELECT ca.email
+                FROM users_clubs uc
+                JOIN comptes_acces ca ON ca.id = uc.user_id
+                WHERE uc.club_id = ?";
+        $bindings = array(array('type' => 'i', 'value' => $registration['id_club']));
+        $leaders = $this->sql_manager->execute($sql, $bindings);
+        if (count($leaders) === 0) {
+            return;
+        }
+        $message = file_get_contents(__DIR__ . '/../templates/emails/notify_registration_validated.fr.html');
+        $message = str_replace('%new_team_name%', $registration['new_team_name'], $message);
+        $message = str_replace('%competition%', $registration['competition'], $message);
+        $email_manager = new Emails();
+        foreach ($leaders as $leader) {
+            $email_manager->insert_email(
+                "[UFOLEP13VOLLEY]Inscription validée : " . $registration['new_team_name'],
+                $message,
+                $leader['email']);
+        }
+    }
+
     public function getSql($query = "1=1"): string
     {
         return "SELECT 
@@ -181,6 +316,8 @@ class Register extends Generic
                 r.hour_court_2,
                 r.remarks,
                 DATE_FORMAT(r.creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
+                r.status,
+                DATE_FORMAT(r.validation_date, '%d/%m/%Y %H:%i:%s') AS validation_date,
                 r.rank_start,
                 r.division,
                 r.is_paid,
@@ -527,7 +664,8 @@ class Register extends Generic
      */
     private function get_register_by_competition($id_competition): array|int|string|null
     {
-        $where = "r.id_competition = ? 
+        $where = "r.id_competition = ?
+                  AND r.status = 'VALIDATED'
                   AND c2.code_competition = c2.id_compet_maitre";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
@@ -543,10 +681,8 @@ class Register extends Generic
         $competition = $this->competition->get_by_id($id_competition);
         if ($check_parent_competition) {
             $competition = $this->competition->getCompetition($competition['id_compet_maitre']);
-            $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
-        } else {
-            $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.id_competition = ?";
         }
+        $where = "(r.rank_start IS NULL AND r.division IS NULL) AND r.status = 'VALIDATED' AND r.id_competition = ?";
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $competition['id']);
         $sql = $this->getSql($where);
@@ -588,6 +724,7 @@ class Register extends Generic
                             WHERE code_competition IN (SELECT code_competition
                                                        FROM competitions
                                                        WHERE id = ?))
+                  AND r.status = 'VALIDATED'
                   AND id_competition = ?";
         $bindings = array(
             array('type' => 'i', 'value' => $id_competition),

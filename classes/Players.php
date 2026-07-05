@@ -194,7 +194,6 @@ class Players extends Generic
             $id_club,
             null,
             null,
-            null,
             $leader_phone,
             $leader_email);
     }

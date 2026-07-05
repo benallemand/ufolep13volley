@@ -53,6 +53,10 @@ const routes = [
         component: () => import('../panel/ClubTeamLeaders.js')
     },
     {
+        path: '/club_registrations',
+        component: () => import('../panel/ClubRegistrations.js')
+    },
+    {
         path: '/players',
         component: () => import('../panel/Players.js'),
         props: () => ({fetchUrl: "/rest/action.php/player/getMyPlayers"})

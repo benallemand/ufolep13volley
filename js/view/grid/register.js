@@ -23,6 +23,18 @@ Ext.define('Ufolep13Volley.view.grid.register', {
             width: 200,
         },
         {
+            header: 'Statut',
+            dataIndex: 'status',
+            width: 160,
+            renderer: function (value, metaData, record) {
+                if (value === 'VALIDATED') {
+                    return '<span style="color: green; font-weight: bold;">Validée le '
+                        + (record.get('validation_date') || '') + '</span>';
+                }
+                return '<span style="color: darkorange; font-weight: bold;">En attente</span>';
+            }
+        },
+        {
             header: 'Equipe',
             defaults: {
                 width: 200,

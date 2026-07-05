@@ -51,4 +51,12 @@ class Configuration
         $this->proxy_url = $_ENV['PROXY_URL'] ?? '';
         $this->seeding_tournament_week = $_ENV['SEEDING_TOURNAMENT_WEEK'] ?? '';
     }
+
+    /**
+     * Paramètres publics nécessaires au formulaire d'inscription (issue #249).
+     */
+    public function getRegisterSettings(): array
+    {
+        return array('seeding_tournament_week' => $this->seeding_tournament_week);
+    }
 }

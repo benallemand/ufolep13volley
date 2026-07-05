@@ -711,6 +711,19 @@ class Team extends Generic
     }
 
     /**
+     * Pré-remplissage du formulaire de réengagement pour une équipe du club
+     * du responsable connecté (issue #249). Contrairement à load_register(),
+     * pas de défi par email : l'appartenance de l'équipe au club fait autorité.
+     * @throws Exception
+     */
+    public function load_register_for_my_club($id_team): array
+    {
+        require_once __DIR__ . '/Club.php';
+        (new Club())->assertManagesTeam($id_team);
+        return $this->getRegisterTeamInfo($id_team);
+    }
+
+    /**
      * @throws Exception
      */
     private function getRegisterTeamInfo($id_team): array|int|string|null
