@@ -120,6 +120,9 @@ export default {
                   tabindex="0"
                   class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-60 p-2 shadow">
                 <li>
+                  <router-link to="/club_registrations"><span><i class="mr-2 fas fa-file-signature"></i>inscriptions</span></router-link>
+                </li>
+                <li>
                   <router-link to="/club_gymnasium_closures"><span><i class="mr-2 fas fa-lock"></i>fermetures gymnases</span></router-link>
                 </li>
                 <li>

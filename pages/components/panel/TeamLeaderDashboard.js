@@ -51,6 +51,12 @@ export default {
               <strong>« gérer une équipe »</strong> dans le menu : vous agirez alors en tant que son responsable.
             </p>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <router-link to="/club_registrations" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
+                <div class="card-body">
+                  <h2 class="card-title"><i class="fas fa-file-signature mr-2"></i>Inscriptions</h2>
+                  <p>Inscrire les équipes du club aux compétitions et suivre la validation des demandes.</p>
+                </div>
+              </router-link>
               <router-link to="/club_team_leaders" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
                 <div class="card-body">
                   <h2 class="card-title"><i class="fas fa-user-gear mr-2"></i>Comptes responsables</h2>

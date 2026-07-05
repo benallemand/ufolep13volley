@@ -7,7 +7,8 @@
         'register',
     ],
     views: [
-        'grid.register'
+        'grid.register',
+        'register.Edit'
     ],
     refs: [],
     init: function () {
@@ -18,6 +19,12 @@
                 },
                 'menuitem[action=display_register]': {
                     click: this.show_grid
+                },
+                'button[action=validate_register]': {
+                    click: this.validate_register
+                },
+                'button[action=unvalidate_register]': {
+                    click: this.unvalidate_register
                 },
                 'button[action=fill_ranks]': {
                     click: this.fill_ranks
@@ -30,7 +37,8 @@
                 },
                 'grid_register': {
                     added: this.add_buttons,
-                    selectionchange: this.manage_display
+                    selectionchange: this.manage_display,
+                    itemdblclick: this.edit_register
                 },
             }
         );
@@ -60,6 +68,18 @@
             items: [
                 {
                     xtype: 'button',
+                    text: 'Valider',
+                    action: 'validate_register',
+                    hidden: true,
+                },
+                {
+                    xtype: 'button',
+                    text: 'Dévalider',
+                    action: 'unvalidate_register',
+                    hidden: true,
+                },
+                {
+                    xtype: 'button',
                     text: 'Remplir les divisions/rangs',
                     action: 'fill_ranks',
                     hidden: true,
@@ -78,6 +98,59 @@
                 },
             ]
         })
+    },
+    edit_register: function (grid_or_button) {
+        var grid = grid_or_button.up ? grid_or_button.up('grid') : grid_or_button;
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            return;
+        }
+        var widget = Ext.widget('registeredit');
+        widget.down('form').loadRecord(record);
+    },
+    // valide/dévalide les inscriptions sélectionnées, une par une
+    // (les endpoints REST sont unitaires : validateRegistration(id))
+    set_registrations_status: function (button, action, title) {
+        var grid = button.up('grid');
+        var records = grid.getSelectionModel().getSelection();
+        if (records.length === 0) {
+            return;
+        }
+        Ext.Msg.show({
+            title: title,
+            msg: 'Veuillez confirmer cette action.',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            fn: function (btn) {
+                if (btn !== 'yes') {
+                    return;
+                }
+                var remaining = records.length;
+                Ext.each(records, function (record) {
+                    Ext.Ajax.request({
+                        url: 'rest/action.php/register/' + action,
+                        params: {
+                            id: record.get('id')
+                        },
+                        callback: function (options, success, response) {
+                            if (!success) {
+                                Ext.Msg.alert('Erreur', Ext.decode(response.responseText).message);
+                            }
+                            remaining--;
+                            if (remaining === 0) {
+                                grid.getStore().load();
+                            }
+                        },
+                    });
+                });
+            }
+        });
+    },
+    validate_register: function (button) {
+        this.set_registrations_status(button, 'validateRegistration', 'Valider inscription(s) ?');
+    },
+    unvalidate_register: function (button) {
+        this.set_registrations_status(button, 'unvalidateRegistration', 'Dévalider inscription(s) ?');
     },
     fill_ranks: function (button) {
         var grid = button.up('grid');
@@ -182,6 +255,8 @@
         });
     },
     manage_display: function (selection_model, selected) {
+        var button_validate = selection_model.view.ownerCt.down('button[action=validate_register]');
+        var button_unvalidate = selection_model.view.ownerCt.down('button[action=unvalidate_register]');
         var button_fill_ranks = selection_model.view.ownerCt.down('button[action=fill_ranks]');
         var button_create_teams_and_accounts = selection_model.view.ownerCt.down('button[action=create_teams_and_accounts]');
         var button_delete = selection_model.view.ownerCt.down('button[action=delete_register]');
@@ -192,6 +267,8 @@
         if (!Ext.isArray(selected)) {
             is_hidden = true;
         }
+        button_validate.setHidden(is_hidden);
+        button_unvalidate.setHidden(is_hidden);
         button_fill_ranks.setHidden(is_hidden);
         button_create_teams_and_accounts.setHidden(is_hidden);
         button_delete.setHidden(is_hidden);
