@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../classes/UserManager.php';
+require_once __DIR__ . '/../classes/Players.php';
+require_once __DIR__ . '/../classes/TimeSlot.php';
+require_once __DIR__ . '/../classes/Team.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/UfolepTestCase.php';
@@ -106,6 +109,61 @@ class RolesTest extends UfolepTestCase
         $this->assertTrue(UserManager::isTeamLeader());
         $this->assertTrue(UserManager::isClubLeader());
         $this->assertEquals((int)$teamRow[0]['id_club'], $_SESSION['id_club']);
+    }
+
+    /**
+     * Issue #251 — un admin AUSSI responsable d'équipe doit pouvoir utiliser
+     * les fonctions « mon équipe » (les anciens refus « un administrateur ne
+     * peut pas faire ça » datent du modèle à profil exclusif).
+     */
+    private function connect_as_admin_and_team_leader(): int
+    {
+        $teamRow = $this->sql->execute(
+            "SELECT id_equipe FROM equipes WHERE id_club IS NOT NULL LIMIT 1");
+        if (count($teamRow) === 0) {
+            $this->markTestSkipped("Aucune équipe disponible");
+        }
+        $id_equipe = (int)$teamRow[0]['id_equipe'];
+        $this->connect_as_team_leader($id_equipe);
+        $_SESSION['is_admin'] = true;
+        return $id_equipe;
+    }
+
+    public function test_admin_team_leader_can_get_my_players()
+    {
+        $this->connect_as_admin_and_team_leader();
+        $players = (new Players())->getMyPlayers();
+        $this->assertIsArray($players);
+    }
+
+    public function test_admin_team_leader_can_get_my_timeslots()
+    {
+        $this->connect_as_admin_and_team_leader();
+        $timeslots = (new TimeSlot())->get_my_timeslots();
+        $this->assertIsArray($timeslots);
+    }
+
+    public function test_admin_team_leader_can_get_my_team()
+    {
+        $this->connect_as_admin_and_team_leader();
+        $team = (new Team())->getMyTeam();
+        $this->assertNotEmpty($team);
+    }
+
+    public function test_admin_team_leader_passes_remove_player_guard()
+    {
+        $this->connect_as_admin_and_team_leader();
+        // joueur inexistant : on doit dépasser la garde de rôle et échouer
+        // sur l'appartenance à l'équipe, pas sur « un admin ne peut pas »
+        $this->expectExceptionMessage("Ce joueur n'est pas dans l'équipe !");
+        (new Players())->removePlayerFromMyTeam(-1);
+    }
+
+    public function test_pure_admin_still_refused_on_team_functions()
+    {
+        $this->connect_as_admin();
+        $this->expectExceptionMessage("Seul un responsable d'équipe peut faire ça !");
+        (new Players())->getMyPlayers();
     }
 
     public function test_setAdmin_grants_and_revokes()

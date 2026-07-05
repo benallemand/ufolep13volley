@@ -1666,9 +1666,8 @@ class MatchMgr extends Generic
      */
     public function acceptReport($code_match)
     {
-        if (UserManager::isAdmin()) {
-            throw new Exception("Un administrateur ne peut pas accepter un report !");
-        }
+        // un report s'accepte au nom d'une équipe : il faut le rôle
+        // responsable d'équipe (cumulable avec admin — issue #251)
         if (!UserManager::isTeamLeader()) {
             throw new Exception("Seul un responsable d'équipe peut accepter un report !");
         }

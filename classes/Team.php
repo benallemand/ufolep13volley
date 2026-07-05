@@ -492,9 +492,6 @@ class Team extends Generic
 
     public function getMyTeam()
     {
-        if (UserManager::isAdmin()) {
-            throw new Exception("Un administrateur ne peut pas faire ça !");
-        }
         if (!UserManager::isTeamLeader()) {
             throw new Exception("Seul un responsable d'équipe peut faire ça !");
         }

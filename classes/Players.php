@@ -97,9 +97,8 @@ class Players extends Generic
     public function getMyPlayers()
     {
         @session_start();
-        if (UserManager::isAdmin()) {
-            throw new Exception("Un administrateur ne peut pas faire ça !");
-        }
+        // les rôles se cumulent (issue #251) : seul compte le rôle
+        // responsable d'équipe, qu'il soit admin ou non
         if (!UserManager::isTeamLeader()) {
             throw new Exception("Seul un responsable d'équipe peut faire ça !");
         }
@@ -462,9 +461,6 @@ class Players extends Generic
      */
     function removePlayerFromMyTeam($idPlayer)
     {
-        if (UserManager::isAdmin()) {
-            throw new Exception("Un profil admin ne peut pas faire cette action !");
-        }
         if (!UserManager::isTeamLeader()) {
             throw new Exception("Seul un profil responsable d'équipe peut faire cette action !");
         }
