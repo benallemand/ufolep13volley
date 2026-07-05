@@ -31,32 +31,58 @@ test.describe('Issue #249 — Inscriptions par le responsable de club', () => {
         await request.get('/e2e/helpers/registrations_teardown.php');
     });
 
-    test('le responsable de club dépose puis modifie une demande', async ({ page }) => {
+    test("réengager une équipe pré-remplit le formulaire", async ({ page }) => {
+        await loginAsClubLeader(page);
+
+        await page.goto('/pages/my_page.html#/club_registrations');
+        await expect(page.locator('text=Inscriptions aux compétitions')).toBeVisible();
+
+        // mode « réengager » (par défaut) : le choix d'une équipe pré-remplit tout
+        await page.selectOption('#id_competition', String(setupData.id_competition));
+        await page.selectOption('#old_team_id', String(setupData.id_team));
+        await expect(page.locator('#new_team_name')).toHaveValue('E2E Reg Team Old');
+        await expect(page.locator('input[placeholder="Nom"]')).toHaveValue('REGLEADER');
+        await expect(page.locator('input[placeholder="Prénom"]')).toHaveValue('Marie');
+        await expect(page.locator('input[placeholder="Email"]')).toHaveValue('e2e_reg_marie@ufolep.test');
+        await page.screenshot({
+            path: 'test-results/issue-249/01_reengagement_prerempli.png',
+            fullPage: true
+        });
+
+        // dépôt de la demande de réengagement
+        await page.click('form button[type="submit"]');
+        const card = page.locator('.card', { hasText: 'E2E Reg Team Old' });
+        await expect(card).toBeVisible();
+        await expect(card.locator('.badge', { hasText: 'en attente' })).toBeVisible();
+        await page.screenshot({
+            path: 'test-results/issue-249/02_reengagement_depose.png',
+            fullPage: true
+        });
+    });
+
+    test('le responsable de club inscrit puis modifie une nouvelle équipe', async ({ page }) => {
         await loginAsClubLeader(page);
 
         await page.goto('/pages/my_page.html#/club_registrations');
         await expect(page.locator('text=Inscriptions aux compétitions')).toBeVisible();
         // la compétition de test (fenêtre ouverte) est proposée
         await expect(page.locator('#id_competition option', { hasText: 'E2E Inscriptions' })).toHaveCount(1);
-        await page.screenshot({
-            path: 'test-results/issue-249/01_page_inscriptions.png',
-            fullPage: true
-        });
 
-        // dépôt d'une demande
+        // dépôt d'une demande pour une nouvelle équipe
         await page.selectOption('#id_competition', String(setupData.id_competition));
-        await page.fill('#new_team_name', 'E2E Reg Team');
+        await page.check('input[type="radio"][value="new"]');
+        await page.fill('#new_team_name', 'E2E Reg Team New');
         await page.fill('input[placeholder="Nom"]', 'Dupont');
         await page.fill('input[placeholder="Prénom"]', 'Jean');
         await page.fill('input[placeholder="Email"]', 'e2e_reg_leader@ufolep.test');
         await page.fill('input[placeholder="Téléphone"]', '0600000000');
         await page.click('form button[type="submit"]');
 
-        const card = page.locator('.card', { hasText: 'E2E Reg Team' });
+        const card = page.locator('.card', { hasText: 'E2E Reg Team New' });
         await expect(card).toBeVisible();
         await expect(card.locator('.badge', { hasText: 'en attente' })).toBeVisible();
         await page.screenshot({
-            path: 'test-results/issue-249/02_demande_deposee.png',
+            path: 'test-results/issue-249/03_nouvelle_equipe_deposee.png',
             fullPage: true
         });
 
@@ -64,9 +90,9 @@ test.describe('Issue #249 — Inscriptions par le responsable de club', () => {
         await card.locator('button', { hasText: 'modifier' }).click();
         await page.fill('#remarks', 'gymnase indisponible pendant les vacances');
         await page.click('form button[type="submit"]');
-        await expect(page.locator('.card', { hasText: 'E2E Reg Team' })).toBeVisible();
+        await expect(page.locator('.card', { hasText: 'E2E Reg Team New' })).toBeVisible();
         await page.screenshot({
-            path: 'test-results/issue-249/03_demande_modifiee.png',
+            path: 'test-results/issue-249/04_demande_modifiee.png',
             fullPage: true
         });
     });
@@ -78,13 +104,13 @@ test.describe('Issue #249 — Inscriptions par le responsable de club', () => {
         await loginAsClubLeader(page);
         await page.goto('/pages/my_page.html#/club_registrations');
 
-        const card = page.locator('.card', { hasText: 'E2E Reg Team' });
+        const card = page.locator('.card', { hasText: 'E2E Reg Team New' });
         await expect(card).toBeVisible();
         await expect(card.locator('.badge', { hasText: 'validée' })).toBeVisible();
         await expect(card.locator('button', { hasText: 'modifier' })).toHaveCount(0);
         await expect(card.locator('button', { hasText: 'supprimer' })).toHaveCount(0);
         await page.screenshot({
-            path: 'test-results/issue-249/04_validee_verrouillee.png',
+            path: 'test-results/issue-249/05_validee_verrouillee.png',
             fullPage: true
         });
     });

@@ -14,7 +14,7 @@ header('Content-Type: application/json');
 
 try {
     $sql = new SqlManager();
-    $sql->execute("UPDATE register SET status = 'VALIDATED', validation_date = NOW() WHERE new_team_name = 'E2E Reg Team'");
+    $sql->execute("UPDATE register SET status = 'VALIDATED', validation_date = NOW() WHERE new_team_name = 'E2E Reg Team New'");
     echo json_encode(['success' => true]);
 } catch (Exception $exception) {
     http_response_code(500);

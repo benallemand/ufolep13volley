@@ -119,11 +119,29 @@ export default {
             <option v-for="c in openCompetitions" :key="c.id" :value="c.id">{{ c.libelle }}</option>
           </select>
 
-          <label class="font-bold" for="old_team_id">Équipe de la saison précédente (reconduction)</label>
-          <select id="old_team_id" v-model="form.old_team_id" class="select select-bordered">
-            <option value="">Nouvelle équipe (pas de reconduction)</option>
-            <option v-for="t in oldTeamChoices" :key="t.id_equipe" :value="t.id_equipe">{{ t.nom_equipe }}</option>
-          </select>
+          <div class="flex flex-wrap gap-4">
+            <label class="label cursor-pointer justify-start gap-2">
+              <input type="radio" value="renew" v-model="mode" class="radio" @change="onModeChange"/>
+              <span class="font-bold">Réengager une équipe du club</span>
+            </label>
+            <label class="label cursor-pointer justify-start gap-2">
+              <input type="radio" value="new" v-model="mode" class="radio" @change="onModeChange"/>
+              <span class="font-bold">Inscrire une nouvelle équipe</span>
+            </label>
+          </div>
+
+          <template v-if="mode === 'renew'">
+            <label class="font-bold" for="old_team_id">Équipe à réengager</label>
+            <select id="old_team_id" v-model="form.old_team_id" class="select select-bordered" required
+                    @change="onOldTeamChange">
+              <option value="">Sélectionner l'équipe</option>
+              <option v-for="t in oldTeamChoices" :key="t.id_equipe" :value="t.id_equipe">{{ t.nom_equipe }}</option>
+            </select>
+            <p class="text-xs opacity-60 italic">
+              Le formulaire est pré-rempli avec les informations de la saison en cours
+              (responsable, créneaux) : vérifiez-les et corrigez si besoin.
+            </p>
+          </template>
 
           <label class="font-bold" for="new_team_name">Nom de l'équipe à engager</label>
           <input id="new_team_name" type="text" v-model="form.new_team_name" class="input input-bordered" required/>
@@ -215,6 +233,7 @@ export default {
             gymnasiums: [],
             seedingTournamentWeek: '',
             form: emptyForm(),
+            mode: 'renew',
             isLoading: false,
             days: DAYS,
             hours: HOURS,
@@ -265,7 +284,37 @@ export default {
             this.form.old_team_id = '';
             this.form.is_cup_registered = this.isCupChoiceVisible;
         },
+        onModeChange() {
+            this.form.old_team_id = '';
+        },
+        // réengagement : pré-remplit le formulaire avec les infos de l'équipe
+        // (nom, responsable, créneaux de la saison en cours)
+        onOldTeamChange() {
+            if (!this.form.old_team_id) {
+                return;
+            }
+            const team = this.clubTeams.find((t) => t.id_equipe == this.form.old_team_id);
+            if (team) {
+                this.form.new_team_name = team.nom_equipe;
+            }
+            axios.get(`/rest/action.php/team/load_register_for_my_club?id_team=${this.form.old_team_id}`)
+                .then((r) => {
+                    const d = r.data;
+                    this.form.leader_name = d.leader_name || '';
+                    this.form.leader_first_name = d.leader_first_name || '';
+                    this.form.leader_email = d.leader_email || '';
+                    this.form.leader_phone = d.leader_phone || '';
+                    this.form.id_court_1 = d.id_court_1 || '';
+                    this.form.day_court_1 = d.day_court_1 || '';
+                    this.form.hour_court_1 = d.hour_court_1 || '';
+                    this.form.id_court_2 = d.id_court_2 || '';
+                    this.form.day_court_2 = d.day_court_2 || '';
+                    this.form.hour_court_2 = d.hour_court_2 || '';
+                })
+                .catch((error) => onError(this, error));
+        },
         onEditClick(r) {
+            this.mode = r.old_team_id ? 'renew' : 'new';
             this.form = {
                 id: r.id,
                 new_team_name: r.new_team_name || '',
@@ -290,6 +339,7 @@ export default {
         },
         resetForm() {
             this.form = emptyForm();
+            this.mode = 'renew';
         },
         handleSubmit() {
             const formData = new FormData();

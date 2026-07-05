@@ -39,11 +39,23 @@ try {
             password_hash = MD5(CONCAT('$login', '$password'))");
     $sql->execute("INSERT INTO users_clubs SET user_id = $id_user, club_id = $id_club");
 
+    // une équipe existante du club, avec responsable et créneau, pour le
+    // parcours « réengager une équipe » (pré-remplissage)
+    $id_team = $sql->execute(
+        "INSERT INTO equipes SET code_competition = 'zz', nom_equipe = 'E2E Reg Team Old', id_club = $id_club");
+    $id_gym = $sql->execute("INSERT INTO gymnase SET nom = 'E2E Reg Gym', nb_terrain = 2");
+    $sql->execute(
+        "INSERT INTO creneau SET id_gymnase = $id_gym, jour = 'Mardi', heure = '20:30', id_equipe = $id_team, usage_priority = 1");
+    $id_player = $sql->execute(
+        "INSERT INTO joueurs SET nom = 'REGLEADER', prenom = 'Marie', email = 'e2e_reg_marie@ufolep.test', telephone = '0611111111', id_club = $id_club");
+    $sql->execute("INSERT INTO joueur_equipe SET id_joueur = $id_player, id_equipe = $id_team, is_leader = 1");
+
     echo json_encode([
         'login' => $login,
         'password' => $password,
         'id_competition' => (int)$id_competition,
         'id_club' => (int)$id_club,
+        'id_team' => (int)$id_team,
     ]);
 } catch (Exception $exception) {
     http_response_code(500);

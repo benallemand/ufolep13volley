@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../classes/Register.php';
+require_once __DIR__ . '/../classes/Team.php';
 require_once __DIR__ . '/../classes/UserManager.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -226,6 +227,28 @@ class RegisterTest extends UfolepTestCase
         $this->connect_as_club_leader($this->id_club_1);
         $this->expectException(Exception::class);
         (new Register())->deleteMyClubRegistration($id);
+    }
+
+    // ---- Réengagement : pré-remplissage depuis l'équipe existante -----------
+
+    public function test_load_register_for_my_club_returns_prefill()
+    {
+        $id_team = (int)$this->sql->execute(
+            "INSERT INTO equipes SET code_competition = 'rt', nom_equipe = 'RT Team Old', id_club = $this->id_club_1");
+        $this->connect_as_club_leader($this->id_club_1);
+        $prefill = (new Team())->load_register_for_my_club($id_team);
+        $this->assertIsArray($prefill);
+        $this->assertArrayHasKey('leader_name', $prefill);
+        $this->assertArrayHasKey('id_court_1', $prefill);
+    }
+
+    public function test_load_register_for_my_club_refused_for_foreign_team()
+    {
+        $id_team = (int)$this->sql->execute(
+            "INSERT INTO equipes SET code_competition = 'rt', nom_equipe = 'RT Team Old', id_club = $this->id_club_2");
+        $this->connect_as_club_leader($this->id_club_1);
+        $this->expectExceptionMessage("Cette équipe n'appartient pas à votre club !");
+        (new Team())->load_register_for_my_club($id_team);
     }
 
     // ---- Étape 3 : l'engagement n'embarque que les validées -----------------
