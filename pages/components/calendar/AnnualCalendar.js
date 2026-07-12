@@ -8,12 +8,16 @@ export default {
         events: {
             type: Array,
             default: () => []
+        },
+        season: {
+            type: String,
+            default: ''
         }
     },
     template: `
         <div class="w-full p-4">
           
-            <h2 class="text-2xl font-bold text-center text-primary mb-6">calendrier</h2>
+            <h2 class="text-2xl font-bold text-center text-primary mb-6">{{ season ? 'calendrier ' + season : 'calendrier' }}</h2>
             
             <!-- Toggle mois passés -->
             <div class="flex justify-center mb-4">
@@ -92,8 +96,9 @@ export default {
         schoolYearMonths() {
             const now = new Date();
             const currentMonth = now.getMonth(); // 0-11
-            // Si on est entre janvier (0) et août (7), on est dans la saison de l'année précédente
-            const startYear = currentMonth <= 7 ? now.getFullYear() - 1 : now.getFullYear();
+            // Si on est entre janvier (0) et juin (5), on est dans la saison de l'année
+            // précédente ; dès juillet, la saison est finie → on affiche la suivante
+            const startYear = currentMonth <= 5 ? now.getFullYear() - 1 : now.getFullYear();
             const endYear = startYear + 1;
             
             return [
