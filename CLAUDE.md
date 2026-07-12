@@ -66,6 +66,12 @@ docker compose up -d --build
 ```
 > Le `docker-compose.dev.yml` n'est PAS chargé automatiquement — c'est voulu.
 > `docker-compose.override.yml` serait chargé auto : ne pas utiliser ce nom.
+>
+> En mode home server, le code est servi **depuis l'image** (pas de bind mount
+> du working dir — le partage de fichiers Windows→VM wedgeait la VM Docker
+> Desktop). Toute modif de code nécessite donc un `docker compose up -d --build`.
+> Seuls `.env.docker` (monté comme `.env`) et les répertoires d'uploads
+> (`players_pics`, `players_pics_low`, `teams_pics`, `match_files`) restent montés.
 
 ### Tests PHP (dans le container dev)
 ```bash

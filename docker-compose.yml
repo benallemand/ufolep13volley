@@ -24,8 +24,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - .:/var/www/html/
-      - /var/www/html/vendor
+      # Pas de bind mount du code : il est embarqué dans l'image (COPY du
+      # Dockerfile). Le partage de fichiers Windows→VM de Docker Desktop est
+      # instable en continu (wedge de la VM) — après une modif de code, il faut
+      # donc rebuilder : docker compose up -d --build
+      # (le mode dev garde le live-reload via docker-compose.dev.yml)
+      # phpdotenv lit un fichier .env sur le disque — on monte .env.docker comme .env
+      - ./.env.docker:/var/www/html/.env:ro
+      # Données hors image (uploads, exclus de git et du .dockerignore)
+      - ./players_pics:/var/www/html/players_pics
+      - ./players_pics_low:/var/www/html/players_pics_low
+      - ./teams_pics:/var/www/html/teams_pics
+      - ./match_files:/var/www/html/match_files
 
 volumes:
   caddy_data:
