@@ -60,8 +60,8 @@ export default {
       <div class="bg-base-200 border border-2 border-base-300 p-4">
         <!-- Loop through each journee group -->
         <div v-for="group in matchesByJournee" :key="group.journee" class="mb-8">
-          <!-- Display journee as section title -->
-          <h2 class="text-xl font-bold mb-4 p-2 bg-base-300 rounded-lg">{{ group.journee }}</h2>
+          <!-- Display journee as section title (masqué si la journée n'est pas renseignée) -->
+          <h2 v-if="group.journee" class="text-xl font-bold mb-4 p-2 bg-base-300 rounded-lg">{{ group.journee }}</h2>
           <!-- Display matches in this journee -->
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <li v-for="match in group.matches" :key="match.id_match" class="card shadow-md bg-base-100">
@@ -128,10 +128,12 @@ export default {
         }, matchesByJournee() {
             const groupedMatches = {};
             this.displayedMatchs.forEach(match => {
-                if (!groupedMatches[match.journee]) {
-                    groupedMatches[match.journee] = [];
+                // journee peut être null : on groupe sous '' pour ne pas afficher "null"
+                const journee = match.journee || '';
+                if (!groupedMatches[journee]) {
+                    groupedMatches[journee] = [];
                 }
-                groupedMatches[match.journee].push(match);
+                groupedMatches[journee].push(match);
             });
             // Convert to array of objects for v-for
             return Object.keys(groupedMatches).map(journee => ({
