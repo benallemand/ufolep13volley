@@ -18,7 +18,6 @@ on:
   push:
     branches:
       - master
-      - ci/auto-tag-semver  # TEMPORAIRE : validation avant merge, a retirer
   workflow_dispatch:
     inputs:
       dry_run:
