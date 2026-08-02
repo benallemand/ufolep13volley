@@ -18,6 +18,7 @@ on:
   push:
     branches:
       - master
+      - ci/auto-tag-semver  # TEMPORAIRE : validation avant merge, a retirer
   workflow_dispatch:
     inputs:
       dry_run:
@@ -53,7 +54,8 @@ jobs:
         run: bash .github/ci/next-release.sh
 
       - name: Push tag
-        if: steps.release.outputs.version != '' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        # github.ref garantit qu'aucun tag ne peut sortir d'une branche de travail.
+        if: steps.release.outputs.version != '' && github.ref == 'refs/heads/master' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           VERSION: ${{ steps.release.outputs.version }}
           PREVIOUS_TAG: ${{ steps.release.outputs.previous_tag }}
@@ -64,7 +66,8 @@ jobs:
           git push origin "$VERSION"
 
       - name: Publish release notes
-        if: steps.release.outputs.version != '' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        # github.ref garantit qu'aucun tag ne peut sortir d'une branche de travail.
+        if: steps.release.outputs.version != '' && github.ref == 'refs/heads/master' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.release.outputs.version }}
