@@ -47,7 +47,7 @@ jobs:
       - name: Install PHP dependencies
         # composer.lock n'est pas versionne (.gitignore) : la resolution est
         # refaite ici, comme dans l'etape composer_builder du Dockerfile.
-        run: composer install --no-interaction --no-progress --no-audit
+        run: composer install --no-interaction --no-progress
 
       - name: Install MySQL client
         run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
