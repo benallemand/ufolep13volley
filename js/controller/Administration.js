@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews'],
-    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'bilan.Form'],
+    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews', 'AdminCalendarEvents'],
+    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News', 'CalendarEvent'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'calendar_events.AdminGrid', 'calendar_events.Edit', 'bilan.Form'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
@@ -75,6 +75,12 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         ref: 'windowEditNews', selector: 'newsedit'
     }, {
         ref: 'manageNewsGrid', selector: 'newsgrid'
+    }, {
+        ref: 'formPanelEditCalendarEvents', selector: 'calendareventsedit form'
+    }, {
+        ref: 'windowEditCalendarEvents', selector: 'calendareventsedit'
+    }, {
+        ref: 'manageCalendarEventsGrid', selector: 'calendareventsgrid'
     }],
     init: function () {
         this.control({
@@ -306,6 +312,20 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.deleteNews
             }, 'newsgrid': {
                 itemdblclick: this.editNews
+            }, 'menuitem[action=manageCalendarEvents]': {
+                click: this.showCalendarEventsGrid
+            }, 'button[action=addCalendarEvent]': {
+                click: this.addCalendarEvent
+            }, 'button[action=editCalendarEvent]': {
+                click: this.editCalendarEvent
+            }, 'button[action=deleteCalendarEvent]': {
+                click: this.deleteCalendarEvent
+            }, 'calendareventsgrid': {
+                itemdblclick: this.editCalendarEvent
+            }, 'calendareventsedit datefield': {
+                change: this.syncCalendarEventDateTime
+            }, 'calendareventsedit timefield': {
+                change: this.syncCalendarEventDateTime
             }
         });
     },
@@ -1554,6 +1574,111 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }]
         });
         selectWindow.show();
+    },
+    showCalendarEventsGrid: function () {
+        this.showAdministrationGrid('calendareventsgrid');
+    },
+    /**
+     * Recompose les champs cachés date_start / date_end à partir des couples
+     * date + heure du formulaire. L'API ne reçoit ainsi qu'une date complète,
+     * ExtJS classic n'ayant pas de champ datetime.
+     */
+    applyCalendarEventDateTime: function (basicForm) {
+        Ext.each(['date_start', 'date_end'], function (prefix) {
+            var hidden = basicForm.findField(prefix);
+            var dateField = basicForm.findField(prefix + '_date');
+            var timeField = basicForm.findField(prefix + '_time');
+            if (!hidden || !dateField) {
+                return;
+            }
+            var dateValue = dateField.getValue();
+            if (!dateValue) {
+                // Pas de date de fin = événement ponctuel.
+                hidden.setValue('');
+                return;
+            }
+            var timeValue = timeField ? timeField.getValue() : null;
+            // Heure vide = journée entière : minuit, que l'API renverra sans heure.
+            var time = timeValue ? Ext.Date.format(timeValue, 'H:i') : '00:00';
+            hidden.setValue(Ext.Date.format(dateValue, 'Y-m-d') + ' ' + time + ':00');
+        });
+    },
+    syncCalendarEventDateTime: function (field) {
+        var form = field.up('form');
+        if (form) {
+            this.applyCalendarEventDateTime(form.getForm());
+        }
+    },
+    fillCalendarEventDateFields: function (basicForm, record) {
+        Ext.each(['date_start', 'date_end'], function (prefix) {
+            var dateField = basicForm.findField(prefix + '_date');
+            var timeField = basicForm.findField(prefix + '_time');
+            var value = record ? record.get(prefix) : null;
+            if (!value) {
+                if (dateField) {
+                    dateField.setValue(null);
+                }
+                if (timeField) {
+                    timeField.setValue(null);
+                }
+                return;
+            }
+            if (dateField) {
+                dateField.setValue(value);
+            }
+            if (timeField) {
+                var isMidnight = value.getHours() === 0 && value.getMinutes() === 0;
+                timeField.setValue(isMidnight ? null : Ext.Date.format(value, 'H:i'));
+            }
+        });
+    },
+    addCalendarEvent: function () {
+        Ext.widget('calendareventsedit');
+        var basicForm = this.getFormPanelEditCalendarEvents().getForm();
+        // Pré-remplit la saison en cours, même bascule qu'en juillet côté home.
+        var now = new Date();
+        var startYear = now.getMonth() <= 5 ? now.getFullYear() - 1 : now.getFullYear();
+        basicForm.findField('season').setValue(startYear + '-' + (startYear + 1));
+    },
+    editCalendarEvent: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            Ext.Msg.alert('Erreur', 'Veuillez sélectionner un événement');
+            return;
+        }
+        Ext.widget('calendareventsedit');
+        var formPanel = this.getFormPanelEditCalendarEvents();
+        formPanel.loadRecord(record);
+        var basicForm = formPanel.getForm();
+        this.fillCalendarEventDateFields(basicForm, record);
+        // loadRecord a posé des objets Date dans les champs cachés : on les
+        // repasse au format attendu par MySQL avant tout envoi.
+        this.applyCalendarEventDateTime(basicForm);
+    },
+    deleteCalendarEvent: function (button) {
+        var grid = button.up('grid');
+        var record = grid.getSelectionModel().getSelection()[0];
+        if (!record) {
+            Ext.Msg.alert('Erreur', 'Veuillez sélectionner un événement');
+            return;
+        }
+        Ext.Msg.confirm('Confirmation', 'Voulez-vous vraiment supprimer cet événement ?', function (btn) {
+            if (btn === 'yes') {
+                Ext.Ajax.request({
+                    url: '/rest/action.php/calendarevents/deleteCalendarEvent',
+                    method: 'POST',
+                    params: {id: record.get('id')},
+                    success: function () {
+                        grid.getStore().load();
+                    },
+                    failure: function (response) {
+                        var result = Ext.decode(response.responseText);
+                        Ext.Msg.alert('Erreur', result.message);
+                    }
+                });
+            }
+        });
     },
     showNewsGrid: function () {
         var mainPanel = this.getMainPanel();
