@@ -12,7 +12,8 @@ on:
   pull_request:
   push:
     branches-ignore:
-      - master  # master est couvert au moment du tag par main.yml
+      - master  # sur master, la suite est rejouee par auto-tag.yml avant de tagger
+  workflow_call:  # appele par auto-tag.yml : pas de tag si la suite est rouge
 
 jobs:
   phpunit:

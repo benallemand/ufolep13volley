@@ -161,9 +161,39 @@ npm run build
 
 **Hors périmètre du bundle Vite** : `admin.php`, `register.php`, `reset_password.php`, `rank_for_cup.php` — restent sur les CDN ExtJS (interface d'administration historique).
 
-### Déployer en production
+### Versionner et déployer
+
+**Le tag est automatique.** À chaque merge sur `master`, `.github/workflows/auto-tag.yml`
+rejoue la suite PHPUnit, calcule la version suivante depuis les conventional
+commits et pose le tag + une Release GitHub contenant les notes de version.
+
+Règles de bump (`.github/ci/next-release.sh`) — le semver strict ne bumpe que
+sur `feat`/`fix`, ce qui laisserait les merges dependabot sans version :
+
+| Commit | Bump |
+|--------|------|
+| `BREAKING CHANGE` en corps, ou type suivi de `!` | majeur |
+| `feat` | mineur |
+| tout le reste (`fix`, `chore(deps)`, `ci`…) | patch |
+
+Prévisualiser sans rien pousser :
 ```bash
-# Créer un tag pour déclencher le CI/CD
+bash .github/ci/next-release.sh --dry-run
+```
+
+**Le déploiement reste manuel.** Le tag est poussé avec le `GITHUB_TOKEN`, et
+GitHub ne redéclenche aucun workflow sur un push fait avec ce jeton : `main.yml`
+ne part donc pas tout seul. Pour mettre en prod : onglet Actions → *CI/CD
+Workflow* → **Run workflow** → choisir le tag comme ref.
+
+> Deux conséquences de la protection de `master` (PR + 1 review) :
+> `github-actions[bot]` ne peut pas y pousser de commit, d'où les notes de
+> version en Release plutôt qu'un `CHANGELOG.md` versionné.
+> Les 48 tags horodatés historiques (`YYYYMMDDHHMM`) cohabitent sans souci :
+> le script ne considère que les tags commençant par `v`.
+
+Poser un tag à la main reste possible :
+```bash
 git tag v1.2.3
 git push origin v1.2.3
 ```
