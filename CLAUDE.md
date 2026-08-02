@@ -79,6 +79,28 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml exec php vendor/b
 docker compose -f docker-compose.yml -f docker-compose.dev.yml exec php vendor/bin/phpunit unit_tests/FinalsDrawTest.php
 ```
 
+**En CI** (`.github/workflows/tests.yml`) : la suite tourne sur chaque PR contre
+une base MySQL jetable, montée de zéro à partir de `.github/ci/` :
+
+| Fichier | Rôle |
+|---------|------|
+| `schema.sql` | Schéma seul (`--no-data`), clauses `DEFINER` retirées |
+| `seed.sql` | Jeu de référence **fictif** (compétitions, 3 clubs, 5 équipes, 60 joueurs, comptes) |
+| `ci.env` | `.env` du job — valeurs bidon hors base, `MAIL_FUNCTION=mail` |
+| `dump-schema.ps1` | Régénère `schema.sql` depuis une base de référence |
+
+> **Le `schema.sql` doit être régénéré après chaque migration** appliquée à la
+> base (`pwsh .github/ci/dump-schema.ps1`), sinon la CI teste une structure qui
+> a dérivé de la prod. C'est le seul coût d'entretien de ce job.
+
+Deux réglages MySQL sont appliqués à chaud par le workflow car les service
+containers GitHub n'acceptent pas d'arguments serveur : `sql_mode` sans
+`ONLY_FULL_GROUP_BY` (aligné sur dev/prod) et `log_bin_trust_function_creators`
+(la fonction stockée `SPLIT_STRING` n'est pas déclarée `DETERMINISTIC`).
+
+Contrairement à une exécution sur la base de dev, **les tests destructifs sont
+sans danger en CI** puisque la base est vierge à chaque run.
+
 ### Tests E2E Playwright
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright

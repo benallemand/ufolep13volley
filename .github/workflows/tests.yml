@@ -1,0 +1,80 @@
+name: CI — Tests unitaires PHP
+
+# Joue la suite PHPUnit sur une base MySQL jetable, montee de zero a chaque run
+# a partir de .github/ci/schema.sql + .github/ci/seed.sql.
+#
+# Aucune donnee reelle n'est utilisee : la base est vierge et remplie d'un jeu
+# de reference fictif. Les tests destructifs (ils inserent et suppriment des
+# clubs, equipes, matchs) sont donc sans danger ici, contrairement a une
+# execution sur la base de dev.
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - master  # master est couvert au moment du tag par main.yml
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: ufolep_13volley
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'  # aligne sur le Dockerfile (php:8.1-apache)
+          extensions: mysqli, gd, zip, curl, dom, fileinfo, json
+          coverage: none
+
+      - name: Install PHP dependencies
+        # composer.lock n'est pas versionne (.gitignore) : la resolution est
+        # refaite ici, comme dans l'etape composer_builder du Dockerfile.
+        run: composer install --no-interaction --no-progress --no-audit
+
+      - name: Install MySQL client
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+
+      - name: Configure MySQL
+        # Deux ecarts entre un MySQL 8 par defaut et la base de dev/prod :
+        #  - ONLY_FULL_GROUP_BY est actif par defaut mais desactive chez nous,
+        #    et plusieurs requetes du code metier ne le respectent pas ;
+        #  - la fonction stockee SPLIT_STRING n'est pas declaree DETERMINISTIC,
+        #    ce que refuse MySQL quand le binlog est actif.
+        # Les service containers GitHub n'acceptent pas d'arguments serveur,
+        # d'ou ce reglage a chaud.
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -ptest -e "
+            SET GLOBAL sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+            SET GLOBAL log_bin_trust_function_creators=1;"
+
+      - name: Load schema
+        run: mysql -h 127.0.0.1 -P 3306 -uroot -ptest ufolep_13volley < .github/ci/schema.sql
+
+      - name: Load reference data
+        run: mysql -h 127.0.0.1 -P 3306 -uroot -ptest ufolep_13volley < .github/ci/seed.sql
+
+      - name: Configure environment
+        # phpdotenv (classes/Database.php, classes/Configuration.php) lit un
+        # fichier .env sur le disque, pas les variables d'environnement.
+        run: cp .github/ci/ci.env .env
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit unit_tests/ --colors=never
