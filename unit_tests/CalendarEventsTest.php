@@ -14,6 +14,7 @@ require_once __DIR__ . '/../classes/CalendarEvents.php';
 class CalendarEventsTest extends UfolepTestCase
 {
     private const TEST_SEASON = '1999-2000';
+    private const LABEL_PREFIX = 'UT253 ';
 
     private CalendarEvents $calendar;
 
@@ -30,20 +31,28 @@ class CalendarEventsTest extends UfolepTestCase
         parent::tearDown();
     }
 
+    /**
+     * La saison fictive suffit pour l'essentiel, mais un test doit poser un
+     * evenement dans la saison courante : d'ou le nettoyage complementaire sur
+     * le prefixe de libelle.
+     */
     private function purge(): void
     {
         $this->sql->execute(
-            "DELETE FROM calendar_events WHERE season = ?",
-            [['type' => 's', 'value' => self::TEST_SEASON]]
+            "DELETE FROM calendar_events WHERE season = ? OR label LIKE ?",
+            [
+                ['type' => 's', 'value' => self::TEST_SEASON],
+                ['type' => 's', 'value' => self::LABEL_PREFIX . '%'],
+            ]
         );
     }
 
-    private function insertEvent(string $label, string $start, ?string $end = null): int
+    private function insertEvent(string $label, string $start, ?string $end = null, ?string $season = null): int
     {
         return $this->sql->execute(
             "INSERT INTO calendar_events (season, label, date_start, date_end) VALUES (?, ?, ?, ?)",
             [
-                ['type' => 's', 'value' => self::TEST_SEASON],
+                ['type' => 's', 'value' => $season ?? self::TEST_SEASON],
                 ['type' => 's', 'value' => $label],
                 ['type' => 's', 'value' => $start],
                 ['type' => 's', 'value' => $end],
@@ -99,12 +108,16 @@ class CalendarEventsTest extends UfolepTestCase
 
     public function test_get_calendar_events_defaults_to_current_season()
     {
-        $events = $this->calendar->getCalendarEvents();
+        $currentSeason = CalendarEvents::getCurrentSeason();
+        $startYear = (int)explode('-', $currentSeason)[0];
 
-        // La saison fictive ne doit jamais remonter sans filtre explicite.
-        foreach ($events as $event) {
-            $this->assertNotEquals(self::TEST_SEASON, $event['season']);
-        }
+        $this->insertEvent(self::LABEL_PREFIX . 'Saison courante', "$startYear-11-15 19:30:00", null, $currentSeason);
+        $this->insertEvent(self::LABEL_PREFIX . 'Saison fictive', '1999-11-15 19:30:00');
+
+        $labels = array_column($this->calendar->getCalendarEvents(), 'label');
+
+        $this->assertContains(self::LABEL_PREFIX . 'Saison courante', $labels);
+        $this->assertNotContains(self::LABEL_PREFIX . 'Saison fictive', $labels);
     }
 
     public function test_current_season_switches_in_july()
