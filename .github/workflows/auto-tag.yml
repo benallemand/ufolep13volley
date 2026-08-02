@@ -1,0 +1,103 @@
+name: Auto-tag semver
+
+# A chaque merge sur master : rejoue la suite PHPUnit, puis calcule et pose un
+# tag semver derive des conventional commits, avec les notes de version
+# correspondantes publiees en Release GitHub.
+#
+# Ne deploie PAS. Le tag est pousse avec le GITHUB_TOKEN, et GitHub ne
+# redeclenche volontairement aucun workflow sur un push fait avec ce jeton :
+# main.yml reste donc silencieux. Pour mettre en prod, lancer "CI/CD Workflow"
+# a la main depuis l'onglet Actions en choisissant le tag voulu comme ref.
+#
+# Pourquoi une Release et pas un CHANGELOG.md versionne : master exige une PR
+# avec review, donc github-actions[bot] ne peut pas y pousser de commit. Les
+# tags, eux, ne sont pas couverts par la protection de branche. Si la
+# protection venait a autoriser le bot, le fichier redeviendrait possible.
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Calculer la version sans poser de tag ni publier de Release"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write  # pousser le tag et creer la Release
+
+concurrency:
+  group: auto-tag
+  cancel-in-progress: false  # deux merges rapproches doivent tagger chacun leur tour
+
+jobs:
+  tests:
+    # Meme job que sur les PR : rien n'est tagge si la suite est rouge.
+    uses: ./.github/workflows/tests.yml
+
+  tag:
+    name: Tag semver
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # historique complet + tags : necessaire au calcul de version
+
+      - name: Compute next version
+        id: release
+        run: bash .github/ci/next-release.sh
+
+      - name: Push tag
+        # github.ref garantit qu'aucun tag ne peut sortir d'une branche de travail.
+        if: steps.release.outputs.version != '' && github.ref == 'refs/heads/master' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          PREVIOUS_TAG: ${{ steps.release.outputs.previous_tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "$VERSION (depuis ${PREVIOUS_TAG:-le debut})"
+          git push origin "$VERSION"
+
+      - name: Publish release notes
+        # github.ref garantit qu'aucun tag ne peut sortir d'une branche de travail.
+        if: steps.release.outputs.version != '' && github.ref == 'refs/heads/master' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.release.outputs.version }}
+          SECTION: ${{ steps.release.outputs.changelog }}
+        run: |
+          # La section commence par un titre "## vX.Y.Z — date" redondant avec
+          # le titre de la Release : on ne garde que le corps.
+          tail -n +2 "$SECTION" > release_notes.md
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --notes-file release_notes.md
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          if [ -z "$VERSION" ]; then
+            echo "Aucun commit publiable : pas de tag." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$DRY_RUN" = "true" ]; then
+            {
+              echo "## Simulation : \`$VERSION\` serait pose"
+              echo
+              echo "Aucun tag ni Release n'a ete cree."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "## Tag \`$VERSION\` pose"
+              echo
+              echo "Deploiement **non** declenche."
+              echo "Pour mettre en prod : onglet Actions -> CI/CD Workflow ->"
+              echo "Run workflow -> ref \`$VERSION\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
