@@ -113,6 +113,10 @@ try {
             require_once __DIR__ . "/../classes/Bilan.php";
             $manager = new Bilan();
             break;
+        case 'calendarevents':
+            require_once __DIR__ . "/../classes/CalendarEvents.php";
+            $manager = new CalendarEvents();
+            break;
         case 'club':
             require_once __DIR__ . "/../classes/Club.php";
             $manager = new Club();

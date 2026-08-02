@@ -116,6 +116,24 @@ CREATE TABLE `blacklist_teams` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `calendar_events`
+--
+
+DROP TABLE IF EXISTS `calendar_events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `calendar_events` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `season` varchar(9) NOT NULL COMMENT 'ex. 2026-2027',
+  `label` varchar(100) NOT NULL,
+  `date_start` datetime NOT NULL,
+  `date_end` datetime DEFAULT NULL COMMENT 'NULL = evenement ponctuel',
+  PRIMARY KEY (`id`),
+  KEY `idx_calendar_events_season` (`season`,`date_start`)
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `classements`
 --
 

@@ -170,6 +170,11 @@ Ext.application({
                                         text: 'Gestion des news',
                                         glyph: 'xf1ea@FontAwesome',
                                         action: 'manageNews'
+                                    },
+                                    {
+                                        text: 'Calendrier de la page d\'accueil',
+                                        glyph: 'xf133@FontAwesome',
+                                        action: 'manageCalendarEvents'
                                     }
                                 ]
                             },
