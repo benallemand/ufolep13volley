@@ -373,6 +373,9 @@ class UserManager extends Generic
     // être admin (comptes_acces.is_admin), responsable d'équipe (users_teams)
     // et responsable de club (users_clubs). Les flags sont posés en session
     // au login (cf. setSessionRoles).
+    // is_team_leader traduit l'existence d'une équipe COURANTE en session : elle
+    // vient de users_teams, ou d'une équipe d'un club géré sélectionnée via
+    // switchCurrentUserTeam().
     public static function isTeamLeader(): bool
     {
         @session_start();
@@ -700,6 +703,10 @@ class UserManager extends Generic
      * admin (comptes_acces.is_admin), responsable d'équipe (users_teams),
      * responsable de club (users_clubs). Utilisé au login et par les
      * bascules « agir en tant que ».
+     *
+     * Un compte peut être rattaché à plusieurs clubs : la session porte la
+     * liste complète (club_ids) et le club courant (id_club, le premier par
+     * ordre alphabétique), que switchCurrentUserClub() fait ensuite varier.
      * @throws Exception
      */
     private function setSessionRoles(int $id_user, string $login, bool $is_admin, $id_equipe): void
@@ -709,18 +716,31 @@ class UserManager extends Generic
         $_SESSION['is_admin'] = $is_admin;
         $_SESSION['id_equipe'] = (int)$id_equipe;
         $_SESSION['is_team_leader'] = !empty($id_equipe);
-        $sql = "SELECT club_id FROM users_clubs WHERE user_id = ? LIMIT 1";
+        $sql = "SELECT  uc.club_id
+                FROM users_clubs uc
+                JOIN clubs c ON c.id = uc.club_id
+                WHERE uc.user_id = ?
+                ORDER BY c.nom";
         $bindings = array(array('type' => 'i', 'value' => $id_user));
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (count($results) > 0) {
-            $_SESSION['id_club'] = (int)$results[0]['club_id'];
+        $club_ids = array_map('intval', array_column($this->sql_manager->execute($sql, $bindings), 'club_id'));
+        if (count($club_ids) > 0) {
+            $_SESSION['club_ids'] = $club_ids;
+            $_SESSION['id_club'] = $club_ids[0];
             $_SESSION['is_club_leader'] = true;
         } else {
             unset($_SESSION['id_club']);
+            $_SESSION['club_ids'] = array();
             $_SESSION['is_club_leader'] = false;
         }
     }
 
+    /**
+     * Bascule l'équipe courante : équipes rattachées au compte (users_teams) ou,
+     * pour un responsable de club, n'importe quelle équipe de ses clubs — même
+     * sans compte responsable rattaché. La sélection porte l'accès aux écrans
+     * équipe (effectif, créneaux, coordonnées, matchs, messages).
+     * @throws Exception
+     */
     public function switchCurrentUserTeam($id_equipe): void
     {
         if (!(isset($_SESSION['login']))) {
@@ -729,14 +749,124 @@ class UserManager extends Generic
         if (!(isset($_SESSION['login']))) {
             throw new Exception("Utilisateur non connecté !");
         }
-        $available_teams = $this->getUserTeams($_SESSION['id_user']);
-        foreach ($available_teams as $available_team) {
-            if ($available_team['id_equipe'] == $id_equipe) {
-                $_SESSION['id_equipe'] = (int)$id_equipe;
+        $id_equipe = (int)$id_equipe;
+        // équipes rattachées au compte : on lit users_teams directement, et non
+        // getUserTeams() qui passe par teams_view (JOIN competitions, donc sans
+        // les équipes non engagées cette saison)
+        $own_team_ids = array_map('intval', $this->getUserTeamIds((int)$_SESSION['id_user']));
+        if (in_array($id_equipe, $own_team_ids, true)) {
+            $_SESSION['id_equipe'] = $id_equipe;
+            $_SESSION['is_team_leader'] = true;
+            return;
+        }
+        if (self::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            $id_club = (new Club())->getClubIdOfManagedTeam($id_equipe);
+            if ($id_club !== null) {
+                $_SESSION['id_equipe'] = $id_equipe;
+                $_SESSION['is_team_leader'] = true;
+                // le club courant suit l'équipe choisie, pour que les écrans
+                // club restent cohérents avec l'équipe en cours de gestion
+                $_SESSION['id_club'] = $id_club;
                 return;
             }
         }
-        throw new Exception("Equipe non autorisée !");
+        throw new Exception("Equipe non autorisée !", 403);
+    }
+
+    /**
+     * Bascule le club courant d'un compte rattaché à plusieurs clubs.
+     * @throws Exception
+     */
+    public function switchCurrentUserClub($id_club): void
+    {
+        @session_start();
+        if (!isset($_SESSION['login'])) {
+            throw new Exception("Utilisateur non connecté !");
+        }
+        require_once __DIR__ . '/Club.php';
+        $club = new Club();
+        $id_club = (int)$id_club;
+        if (!in_array($id_club, $club->getMyClubIds(), true)) {
+            throw new Exception("Club non autorisé !", 403);
+        }
+        $_SESSION['id_club'] = $id_club;
+        // l'équipe courante est relâchée si elle n'appartient ni au compte ni au
+        // nouveau club, pour ne pas gérer une équipe hors du club affiché
+        $id_equipe = (int)($_SESSION['id_equipe'] ?? 0);
+        if (empty($id_equipe)) {
+            return;
+        }
+        $own_team_ids = array_map('intval', $this->getUserTeamIds((int)$_SESSION['id_user']));
+        if (in_array($id_equipe, $own_team_ids, true)) {
+            return;
+        }
+        if ($club->getClubIdOfManagedTeam($id_equipe) !== $id_club) {
+            $_SESSION['id_equipe'] = null;
+            $_SESSION['is_team_leader'] = false;
+        }
+    }
+
+    /**
+     * Équipes sélectionnables par le compte connecté : celles qui lui sont
+     * rattachées (users_teams) et celles des clubs qu'il gère (users_clubs),
+     * qu'un compte responsable y soit rattaché ou non.
+     *
+     * Les lignes d'equipes sans nom sont écartées : ce sont des créations
+     * d'équipe avortées (aucun engagement, match, créneau, joueur ni compte),
+     * qui ne donneraient qu'une entrée blanche et inexploitable.
+     * @throws Exception
+     */
+    public function getMyManageableTeams(): array
+    {
+        @session_start();
+        if (empty($_SESSION['id_user'])) {
+            // 403 et non 401 : le routeur REST redirige les 401 vers le login,
+            // ce qui ferait répondre du HTML à un appel axios
+            throw new Exception("Utilisateur non connecté !", 403);
+        }
+        $id_user = (int)$_SESSION['id_user'];
+        $where = "e.id_equipe IN (SELECT ut.team_id FROM users_teams ut WHERE ut.user_id = ?)";
+        $club_ids = array();
+        if (self::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            $club_ids = (new Club())->getMyClubIds();
+            $placeholders = implode(',', array_fill(0, count($club_ids), '?'));
+            $where .= " OR e.id_club IN ($placeholders)";
+        }
+        // mysqli lie les paramètres dans l'ordre d'apparition : le ? du SELECT
+        // (is_my_team) précède ceux du WHERE
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_user),
+            array('type' => 'i', 'value' => $id_user),
+        );
+        foreach ($club_ids as $id_club) {
+            $bindings[] = array('type' => 'i', 'value' => $id_club);
+        }
+        $sql = "SELECT  e.id_equipe,
+                        e.nom_equipe,
+                        e.id_club,
+                        c.nom AS club_name,
+                        comp.libelle AS libelle_competition,
+                        CONCAT(e.nom_equipe, IFNULL(CONCAT(' (', comp.libelle, ')'), '')) AS team_full_name,
+                        (SELECT COUNT(DISTINCT cl.code_competition)
+                           FROM classements cl
+                          WHERE cl.id_equipe = e.id_equipe) AS nb_competitions,
+                        (SELECT GROUP_CONCAT(DISTINCT CONCAT(cc.libelle, IFNULL(CONCAT(' ', cl.division), '')) ORDER BY cc.libelle SEPARATOR ', ')
+                           FROM classements cl
+                           JOIN competitions cc ON cc.code_competition = cl.code_competition
+                          WHERE cl.id_equipe = e.id_equipe) AS competitions,
+                        EXISTS(SELECT 1 FROM users_teams ut2 WHERE ut2.team_id = e.id_equipe) AS has_leader_account,
+                        EXISTS(SELECT 1 FROM users_teams ut3
+                                WHERE ut3.team_id = e.id_equipe
+                                  AND ut3.user_id = ?) AS is_my_team
+                FROM equipes e
+                LEFT JOIN clubs c ON c.id = e.id_club
+                LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
+                WHERE ($where)
+                  AND NULLIF(e.nom_equipe, '') IS NOT NULL
+                ORDER BY c.nom, comp.libelle, e.nom_equipe";
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -894,6 +1024,7 @@ class UserManager extends Generic
         $_SESSION['original_admin_is_club_leader'] = !empty($_SESSION['is_club_leader']);
         $_SESSION['original_admin_equipe'] = $_SESSION['id_equipe'] ?? null;
         $_SESSION['original_admin_club'] = $_SESSION['id_club'] ?? null;
+        $_SESSION['original_admin_club_ids'] = $_SESSION['club_ids'] ?? array();
     }
 
     /**
@@ -974,6 +1105,7 @@ class UserManager extends Generic
         } else {
             unset($_SESSION['id_club']);
         }
+        $_SESSION['club_ids'] = $_SESSION['original_admin_club_ids'] ?? array();
 
         unset($_SESSION['acting_as']);
         unset($_SESSION['original_admin_id']);
@@ -983,6 +1115,7 @@ class UserManager extends Generic
         unset($_SESSION['original_admin_is_club_leader']);
         unset($_SESSION['original_admin_equipe']);
         unset($_SESSION['original_admin_club']);
+        unset($_SESSION['original_admin_club_ids']);
 
         $this->activity->add("Compte d'origine restauré depuis: " . $target_login);
 

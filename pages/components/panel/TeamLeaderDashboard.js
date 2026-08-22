@@ -35,8 +35,9 @@ export default {
     },
     // Les rôles se cumulent : un responsable de club voit l'espace club, un
     // responsable d'équipe voit le dashboard équipe, un compte qui cumule les
-    // deux voit les deux sections. Pour gérer le détail d'une équipe dont il
-    // n'a pas le compte, le responsable de club passe par « gérer une équipe ».
+    // deux voit les deux sections. Pour gérer le détail d'une équipe, le
+    // responsable de club la sélectionne dans le menu « équipe » — y compris
+    // une équipe sans compte responsable rattaché.
     template: `
       <div>
         <div v-if="!loaded" class="flex justify-center p-8">
@@ -47,8 +48,9 @@ export default {
             <h1 class="text-2xl font-bold mb-2"><i class="fas fa-people-group mr-2"></i>Espace responsable de club</h1>
             <p class="opacity-70 mb-6">
               Gérez les comptes et les contraintes de votre club ci-dessous. Pour gérer le détail
-              d'une équipe (effectif, créneaux, matchs, coordonnées), utilisez
-              <strong>« gérer une équipe »</strong> dans le menu : vous agirez alors en tant que son responsable.
+              d'une équipe (effectif, créneaux, matchs, coordonnées), sélectionnez-la avec
+              <strong>« équipe »</strong> dans le menu : toutes les équipes du club affiché sont
+              disponibles, même celles sans compte responsable rattaché.
             </p>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <router-link to="/club_registrations" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">

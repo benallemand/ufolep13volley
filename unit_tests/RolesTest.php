@@ -94,6 +94,47 @@ class RolesTest extends UfolepTestCase
         $this->assertEquals((int)$clubRow[0]['id'], $_SESSION['id_club']);
     }
 
+    /**
+     * Un compte peut être rattaché à plusieurs clubs : la session doit tous les
+     * exposer (club_ids), et prendre le premier par ordre alphabétique comme
+     * club courant.
+     */
+    public function test_multiple_club_links_expose_every_club()
+    {
+        $clubRows = $this->sql->execute("SELECT id, nom FROM clubs ORDER BY nom LIMIT 2");
+        if (count($clubRows) < 2) {
+            $this->markTestSkipped("Moins de 2 clubs disponibles");
+        }
+        $userId = $this->create_account(false);
+        foreach ($clubRows as $clubRow) {
+            $this->sql->execute("INSERT INTO users_clubs SET user_id = $userId, club_id = " . (int)$clubRow['id']);
+        }
+        $this->login_as($userId);
+        $this->assertTrue(UserManager::isClubLeader());
+        $expected = array_map('intval', array_column($clubRows, 'id'));
+        $this->assertEquals($expected, $_SESSION['club_ids']);
+        $this->assertEquals($expected[0], $_SESSION['id_club']);
+    }
+
+    /**
+     * Sans rôle club, les équipes sélectionnables se limitent à celles
+     * rattachées au compte (users_teams).
+     */
+    public function test_getMyManageableTeams_limited_to_own_teams_without_club_role()
+    {
+        $teamRow = $this->sql->execute("SELECT id_equipe FROM equipes LIMIT 1");
+        if (count($teamRow) === 0) {
+            $this->markTestSkipped("Aucune équipe disponible");
+        }
+        $userId = $this->create_account(false);
+        $id_equipe = (int)$teamRow[0]['id_equipe'];
+        $this->sql->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $id_equipe");
+        $this->login_as($userId);
+        $this->assertFalse(UserManager::isClubLeader());
+        $teams = (new UserManager())->getMyManageableTeams();
+        $this->assertEquals(array($id_equipe), array_map('intval', array_column($teams, 'id_equipe')));
+    }
+
     public function test_roles_are_cumulative()
     {
         $teamRow = $this->sql->execute(

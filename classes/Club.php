@@ -74,8 +74,10 @@ class Club extends Generic
     }
 
     /**
-     * Identifiant du club du responsable de club connecté.
-     * Le club est posé en session au login (depuis users_clubs).
+     * Identifiant du club COURANT du responsable de club connecté.
+     * Un compte peut être rattaché à plusieurs clubs (users_clubs) : la session
+     * porte la liste complète (club_ids) et le club courant (id_club), posés au
+     * login puis modifiables par UserManager::switchCurrentUserClub().
      * @throws Exception
      */
     public function getMyClubId(): int
@@ -91,8 +93,70 @@ class Club extends Generic
     }
 
     /**
-     * Liste les équipes du club du responsable de club connecté
-     * (sert au sélecteur d'équipe de l'espace responsable).
+     * Identifiants de TOUS les clubs gérés par le responsable connecté.
+     * Repli sur le club courant pour les sessions ouvertes avant l'arrivée de
+     * club_ids en session.
+     * @throws Exception
+     */
+    public function getMyClubIds(): array
+    {
+        @session_start();
+        if (!UserManager::isClubLeader()) {
+            throw new Exception("Seul un responsable de club peut faire ça !", 403);
+        }
+        if (!empty($_SESSION['club_ids'])) {
+            return array_map('intval', $_SESSION['club_ids']);
+        }
+        if (!empty($_SESSION['id_club'])) {
+            return array((int)$_SESSION['id_club']);
+        }
+        throw new Exception("Aucun club n'est rattaché à votre compte !", 403);
+    }
+
+    /**
+     * Clubs gérés par le responsable connecté (sélecteur de club).
+     * @throws Exception
+     */
+    public function getMyClubs(): array
+    {
+        $club_ids = $this->getMyClubIds();
+        $placeholders = implode(',', array_fill(0, count($club_ids), '?'));
+        $sql = "SELECT  c.id,
+                        c.nom
+                FROM clubs c
+                WHERE c.id IN ($placeholders)
+                ORDER BY c.nom";
+        $bindings = array_map(static function ($id_club) {
+            return array('type' => 'i', 'value' => $id_club);
+        }, $club_ids);
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Club de l'équipe si celle-ci appartient à l'un des clubs gérés par le
+     * responsable connecté, null sinon.
+     * @throws Exception
+     */
+    public function getClubIdOfManagedTeam($id_equipe): ?int
+    {
+        if (empty($id_equipe) || !is_numeric($id_equipe)) {
+            return null;
+        }
+        $results = $this->sql_manager->execute(
+            "SELECT id_club FROM equipes WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        if (count($results) === 0 || empty($results[0]['id_club'])) {
+            return null;
+        }
+        $id_club = (int)$results[0]['id_club'];
+        return in_array($id_club, $this->getMyClubIds(), true) ? $id_club : null;
+    }
+
+    /**
+     * Liste les équipes du club COURANT du responsable de club connecté
+     * (reconduction d'inscription, indisponibilités, comptes responsables).
+     * Pour les équipes sélectionnables tous clubs confondus, voir
+     * UserManager::getMyManageableTeams().
      * @throws Exception
      */
     public function getMyClubTeams(): array
@@ -120,17 +184,16 @@ class Club extends Generic
     }
 
     /**
-     * Vérifie que l'équipe appartient bien au club du responsable connecté.
+     * Vérifie que l'équipe appartient bien à l'un des clubs du responsable
+     * connecté (pas seulement au club courant : la frontière d'autorisation
+     * est le rattachement users_clubs, pas la bascule d'écran).
      * @throws Exception
      */
     public function assertManagesTeam($id_equipe): void
     {
-        foreach ($this->getMyClubTeams() as $team) {
-            if ($team['id_equipe'] == $id_equipe) {
-                return;
-            }
+        if ($this->getClubIdOfManagedTeam($id_equipe) === null) {
+            throw new Exception("Cette équipe n'appartient pas à votre club !", 403);
         }
-        throw new Exception("Cette équipe n'appartient pas à votre club !", 403);
     }
 
 

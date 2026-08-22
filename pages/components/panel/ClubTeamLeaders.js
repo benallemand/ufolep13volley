@@ -3,10 +3,14 @@ import {onError, onSuccess} from "../../../toaster.js";
 /**
  * Issue #101 — Attribution des comptes responsables d'équipe (responsable de club).
  *
- * Panneau club-scoped : pour chaque équipe du club, liste les comptes
- * RESPONSABLE_EQUIPE rattachés et permet d'en créer/rattacher un (par email)
- * ou de le détacher. Les endpoints REST (usermanager/*) restreignent côté
- * serveur aux équipes du club.
+ * Panneau cadré sur le club courant : pour chaque équipe du club, liste les
+ * comptes RESPONSABLE_EQUIPE rattachés et permet d'en créer/rattacher un (par
+ * email), de le détacher, ou de l'incarner (« agir en tant que »). Les endpoints
+ * REST (usermanager/*) restreignent côté serveur aux équipes du club.
+ *
+ * Rattacher un compte n'est plus un prérequis pour gérer une équipe : le
+ * responsable de club sélectionne n'importe quelle équipe de ses clubs via le
+ * sélecteur d'équipe du menu.
  */
 export default {
     template: `
@@ -15,6 +19,8 @@ export default {
         <p class="text-sm opacity-70 mb-4">
           Rattachez un compte responsable à chaque équipe de votre club. Si le compte
           n'existe pas encore, il est créé et ses identifiants sont envoyés par email.
+          Ce rattachement n'est pas nécessaire pour gérer vous-même une équipe :
+          utilisez le sélecteur <strong>« équipe »</strong> du menu.
         </p>
         <div class="flex flex-wrap gap-4">
           <div class="w-full bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-4">
@@ -31,9 +37,15 @@ export default {
                   <div v-for="leader in team.leaders" :key="leader.user_id"
                        class="flex items-center justify-between gap-2 border-b py-1">
                     <span><i class="fas fa-user mr-2"></i>{{ leader.login }}</span>
-                    <button class="btn btn-xs btn-error" @click="onDetachClick(team, leader)">
-                      <i class="fas fa-link-slash mr-1"></i>détacher
-                    </button>
+                    <div class="flex gap-1">
+                      <button class="btn btn-xs btn-neutral" @click="onActAsClick(leader)"
+                              title="voir le site tel que ce responsable le voit">
+                        <i class="fas fa-user-secret mr-1"></i>agir en tant que
+                      </button>
+                      <button class="btn btn-xs btn-error" @click="onDetachClick(team, leader)">
+                        <i class="fas fa-link-slash mr-1"></i>détacher
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <p v-else class="text-sm opacity-60"><i class="fas fa-triangle-exclamation mr-2"></i>aucun compte rattaché</p>
@@ -113,6 +125,25 @@ export default {
                     onSuccess(this, response);
                     this.fetchTeamLeaders();
                     this.newLink = {id_equipe: '', email: ''};
+                })
+                .catch((error) => {
+                    onError(this, error);
+                });
+        },
+        // Incarne un compte responsable du club : utile pour voir exactement ce
+        // que voit ce responsable. Pour simplement gérer une équipe, le
+        // sélecteur d'équipe du menu suffit (même sans compte rattaché).
+        onActAsClick(leader) {
+            const formData = new FormData();
+            formData.append("target_user_id", leader.user_id);
+            axios
+                .post(`/rest/action.php/usermanager/switch_to_club_team_leader`, formData)
+                .then((response) => {
+                    if (response.data.success) {
+                        window.location.href = '/pages/my_page.html';
+                    } else {
+                        onError(this, response);
+                    }
                 })
                 .catch((error) => {
                     onError(this, error);
