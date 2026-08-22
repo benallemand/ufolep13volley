@@ -8,11 +8,14 @@ name: CI — Tests unitaires PHP
 # clubs, equipes, matchs) sont donc sans danger ici, contrairement a une
 # execution sur la base de dev.
 
+# Uniquement sur la PR : avec `pull_request` ET `push` sur les branches, une
+# branche ayant une PR ouverte declenchait DEUX runs identiques a chaque push.
+# Sur master la suite est de toute facon rejouee par auto-tag.yml (workflow_call)
+# avant de tagger. Le declenchement manuel permet de verifier une branche avant
+# d'ouvrir sa PR.
 on:
   pull_request:
-  push:
-    branches-ignore:
-      - master  # sur master, la suite est rejouee par auto-tag.yml avant de tagger
+  workflow_dispatch:
   workflow_call:  # appele par auto-tag.yml : pas de tag si la suite est rouge
 
 jobs:

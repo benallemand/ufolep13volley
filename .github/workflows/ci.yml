@@ -5,11 +5,14 @@ name: CI — Frontend build check
 # Sans deploiement, donc safe : on apprend si le build CI marche sans
 # risquer la prod.
 
+# Uniquement sur la PR : avec `pull_request` ET `push` sur les branches, une
+# branche ayant une PR ouverte declenchait DEUX runs identiques a chaque push.
+# master n'est pas concerne (couvert par main.yml au moment du tag), donc il
+# reste `pull_request`, plus un declenchement manuel pour verifier une branche
+# avant d'ouvrir sa PR.
 on:
   pull_request:
-  push:
-    branches-ignore:
-      - master  # master est deja couvert par main.yml au moment du tag
+  workflow_dispatch:
 
 jobs:
   build:
