@@ -611,19 +611,6 @@ class UserManager extends Generic
         $this->sql_manager->execute($sql, $bindings);
     }
 
-
-    /**
-     * @throws Exception
-     */
-    public function getUserTeams($user_id): array|int|string|null
-    {
-        $sql = file_get_contents(__DIR__ . '/../sql/get_user_teams.sql');
-        $bindings = array(
-            array('type' => 'i', 'value' => $user_id),
-        );
-        return $this->sql_manager->execute($sql, $bindings);
-    }
-
     /**
      * Liste les équipes du club du responsable de club connecté, avec les
      * comptes responsables d'équipe qui leur sont rattachés (user_id null si
@@ -751,8 +738,8 @@ class UserManager extends Generic
         }
         $id_equipe = (int)$id_equipe;
         // équipes rattachées au compte : on lit users_teams directement, et non
-        // getUserTeams() qui passe par teams_view (JOIN competitions, donc sans
-        // les équipes non engagées cette saison)
+        // teams_view (JOIN competitions, donc sans les équipes non engagées
+        // cette saison)
         $own_team_ids = array_map('intval', $this->getUserTeamIds((int)$_SESSION['id_user']));
         if (in_array($id_equipe, $own_team_ids, true)) {
             $_SESSION['id_equipe'] = $id_equipe;
