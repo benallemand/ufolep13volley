@@ -17,40 +17,57 @@ export default {
               <span><i class="mr-2 fas fa-arrow-left"></i>retour</span>
             </a>
 
-            <!-- Responsable de club (hors act-as) : choisir un compte responsable à incarner -->
-            <div v-if="isClubLeader" class="dropdown">
-              <div tabindex="0" role="button" class="btn btn-primary">
-                <span><i class="mr-2 fas fa-user-secret"></i>gérer une équipe<i class="ml-1 fas fa-chevron-down"/></span>
+            <!-- Compte rattaché à plusieurs clubs : club courant des écrans club -->
+            <div v-if="clubs.length > 1" class="dropdown">
+              <div tabindex="0" role="button" class="btn btn-ghost">
+                <span><i class="mr-2 fas fa-people-group"></i>club: {{ currentClub?.nom }}<i class="ml-1 fas fa-chevron-down"/></span>
               </div>
               <ul tabindex="0"
                   class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-72 p-2 shadow max-h-96 overflow-y-auto">
-                <li v-if="actAsAccounts.length === 0" class="opacity-60 p-2 text-sm">
-                  Aucun compte responsable rattaché. Créez-en un dans « gestion club ».
-                </li>
-                <li v-for="account in actAsAccounts" :key="account.user_id + '-' + account.id_equipe">
-                  <a @click="actAs(account.user_id)" class="flex flex-col items-start gap-1 py-2">
-                    <span><i class="fas fa-people-group mr-2"></i>{{ account.team_full_name }}
-                      <span class="opacity-60">({{ account.login }})</span></span>
-                    <span v-if="parseInt(account.nb_competitions) > 0" class="badge badge-success badge-sm gap-1">
-                      <i class="fas fa-trophy"></i>{{ account.competitions }}
-                    </span>
-                    <span v-else class="badge badge-ghost badge-sm">non engagée cette saison</span>
+                <li v-for="club in clubs" :key="club.id">
+                  <a @click="switchClub(club.id)" :class="{ 'font-bold': club.id == user?.id_club }">
+                    {{ club.nom }}
                   </a>
                 </li>
               </ul>
             </div>
 
-            <!-- Responsable d'équipe (ou club en act-as) : sélecteur de son équipe -->
-            <div v-if="isTeamLeader" class="dropdown">
-              <div tabindex="0" role="button" class="btn btn-ghost">
-                <span><i class="mr-2 fas fa-user"></i>mon équipe: {{ currentTeam?.nom_equipe }}<i class="ml-1 fas fa-chevron-down"/></span>
+            <!-- Sélecteur d'équipe : équipes du club courant (plus les équipes
+                 propres au compte), y compris celles sans compte responsable -->
+            <div v-if="selectableTeams.length > 0" class="dropdown">
+              <div tabindex="0" role="button" :class="currentTeam ? 'btn btn-ghost' : 'btn btn-primary'">
+                <span><i class="mr-2 fas fa-user"></i>
+                  <template v-if="currentTeam">équipe: {{ currentTeam.nom_equipe }}</template>
+                  <template v-else>choisir une équipe</template>
+                  <i class="ml-1 fas fa-chevron-down"/></span>
               </div>
-              <ul
-                  tabindex="0"
-                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-                <li v-for="team in teams" :key="team.id_equipe">
-                  <a @click="switchTeam(team.id_equipe)">{{ team.nom_equipe }}</a>
-                </li>
+              <ul tabindex="0"
+                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 p-2 shadow flex-nowrap
+                         w-80 max-w-[calc(100vw-2rem)] max-h-96 overflow-y-auto overflow-x-hidden">
+                <template v-for="group in teamsByClub" :key="group.id_club">
+                  <li v-if="teamsByClub.length > 1" class="menu-title px-2 py-1">{{ group.club_name }}</li>
+                  <li v-for="team in group.teams" :key="team.id_equipe">
+                    <a @click="switchTeam(team.id_equipe)" class="flex items-start gap-3 py-2"
+                       :class="{ 'active': team.id_equipe == user?.id_equipe }">
+                      <!-- pastille d'engagement : verte si l'équipe est engagée cette saison -->
+                      <i class="fas fa-circle text-[0.55rem] mt-1.5 shrink-0"
+                         :class="parseInt(team.nb_competitions) > 0 ? 'text-success' : 'opacity-30'"></i>
+                      <span class="min-w-0 flex-1">
+                        <span class="block break-words leading-tight"
+                              :class="{ 'font-bold': team.id_equipe == user?.id_equipe }">
+                          {{ team.nom_equipe }}
+                        </span>
+                        <span class="block text-xs opacity-70 break-words leading-tight mt-0.5">
+                          {{ parseInt(team.nb_competitions) > 0 ? team.competitions : 'non engagée cette saison' }}
+                        </span>
+                        <span v-if="!parseInt(team.has_leader_account)"
+                              class="block text-xs text-warning break-words leading-tight mt-0.5">
+                          <i class="fas fa-user-slash mr-1"></i>aucun compte responsable
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                </template>
               </ul>
             </div>
 
@@ -145,18 +162,50 @@ export default {
     data() {
         return {
             user: null,
-            currentTeam: null,
-            teams: null,
             unreadCount: 0,
             isClubLeader: false,
             isTeamLeader: false,
             isActingAs: false,
-            actAsAccounts: [],
+            // équipes sélectionnables : celles du compte (users_teams) + celles
+            // des clubs gérés (users_clubs), avec ou sans compte responsable
+            manageableTeams: [],
+            clubs: [],
         };
+    },
+    computed: {
+        // le sélecteur reste cadré sur le club courant ; les équipes rattachées
+        // au compte lui-même restent visibles même si elles sont dans un autre club
+        selectableTeams() {
+            if (!this.user?.id_club) {
+                return this.manageableTeams;
+            }
+            return this.manageableTeams.filter(
+                (team) => team.id_club == this.user.id_club || parseInt(team.is_my_team));
+        },
+        currentTeam() {
+            return this.manageableTeams.find((team) => team.id_equipe == this.user?.id_equipe) || null;
+        },
+        currentClub() {
+            return this.clubs.find((club) => club.id == this.user?.id_club) || null;
+        },
+        // regroupement par club : n'affiche un intitulé que si le compte voit
+        // des équipes de plusieurs clubs (ses propres équipes hors club courant)
+        teamsByClub() {
+            const groups = [];
+            this.selectableTeams.forEach((team) => {
+                let group = groups.find((g) => g.id_club === team.id_club);
+                if (!group) {
+                    group = {id_club: team.id_club, club_name: team.club_name, teams: []};
+                    groups.push(group);
+                }
+                group.teams.push(team);
+            });
+            return groups;
+        },
     },
     methods: {
         fetchUnreadCount() {
-            axios.get('/session_user.php').then((response) => {
+            axios.get(`/session_user.php?_dc=${Date.now()}`).then((response) => {
                 if (response.data && !response.data.error && response.data.id_equipe) {
                     axios.get(`/rest/action.php/emails/get_team_emails?id_equipe=${response.data.id_equipe}`)
                         .then((r) => {
@@ -168,7 +217,7 @@ export default {
         },
         fetchUserDetails() {
             axios
-                .get("/session_user.php")
+                .get(`/session_user.php?_dc=${Date.now()}`)
                 .then((response) => {
                     if (response.data.error) {
                         this.user = null;
@@ -179,21 +228,19 @@ export default {
                     // rôles cumulables (issue #245) : un compte peut gérer un club ET des équipes
                     this.isClubLeader = this.user.is_club_leader === true;
                     this.isTeamLeader = this.user.is_team_leader === true;
+                    // équipes sélectionnables, tous clubs gérés confondus
+                    axios.get(`/rest/action.php/usermanager/getMyManageableTeams?_dc=${Date.now()}`)
+                        .then((r) => {
+                            this.manageableTeams = r.data;
+                        })
+                        .catch(() => {});
                     if (this.isClubLeader) {
-                        // Liste des comptes responsables d'équipe du club, à incarner.
-                        axios.get('/rest/action.php/usermanager/getMyClubTeamLeaders')
+                        // sélecteur de club courant si le compte gère plusieurs clubs
+                        axios.get(`/rest/action.php/club/getMyClubs?_dc=${Date.now()}`)
                             .then((r) => {
-                                this.actAsAccounts = r.data.filter((row) => row.user_id);
+                                this.clubs = r.data;
                             })
                             .catch(() => {});
-                    }
-                    if (this.isTeamLeader) {
-                        // Responsable d'équipe (ou club en act-as) : ses équipes.
-                        axios.get(`/rest/action.php/usermanager/getUserTeams?user_id=${this.user.id_user}`)
-                            .then((r) => {
-                                this.teams = r.data;
-                                this.currentTeam = this.teams.find((item) => item.id_equipe == this.user.id_equipe);
-                            });
                     }
                 })
                 .catch((error) => {
@@ -213,21 +260,17 @@ export default {
                     alert('Erreur lors du changement d\'équipe');
                 });
         },
-        actAs(user_id) {
+        switchClub(id_club) {
             const formData = new FormData();
-            formData.append('target_user_id', user_id);
+            formData.append('id_club', id_club);
             axios
-                .post(`/rest/action.php/usermanager/switch_to_club_team_leader`, formData)
-                .then((response) => {
-                    if (response.data.success) {
-                        window.location.href = '/pages/my_page.html';
-                    } else {
-                        alert('Erreur: ' + response.data.message);
-                    }
+                .post(`/rest/action.php/usermanager/switchCurrentUserClub`, formData)
+                .then(() => {
+                    window.location.reload();
                 })
                 .catch((error) => {
-                    console.error('Erreur lors du changement de compte:', error);
-                    alert(error.response?.data?.message || 'Erreur lors du changement de compte');
+                    console.error('Erreur lors du changement de club:', error);
+                    alert(error.response?.data?.message || 'Erreur lors du changement de club');
                 });
         },
         switchBackToClub() {

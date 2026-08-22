@@ -375,21 +375,37 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Équipes pour lesquelles l'utilisateur connecté peut agir sur un match :
+     * celles qui lui sont rattachées (users_teams) ET l'équipe COURANTE de sa
+     * session — cette dernière peut venir d'un club géré, donc sans aucune
+     * ligne users_teams (cf. UserManager::switchCurrentUserTeam()).
+     * @return int[]
+     * @throws Exception
+     */
+    private function getMyAllowedTeamIds(): array
+    {
+        @session_start();
+        $teamIds = array();
+        $id_user = $_SESSION['id_user'] ?? null;
+        if (!empty($id_user)) {
+            $teamIds = array_map('intval', (new UserManager())->getUserTeamIds((int)$id_user));
+        }
+        if (!empty($_SESSION['id_equipe'])) {
+            $teamIds[] = (int)$_SESSION['id_equipe'];
+        }
+        return array_values(array_unique($teamIds));
+    }
+
+    /**
      * @param array $match
      * @return bool
      * @throws Exception
      */
     private function isUserTeamInMatch(array $match): bool
     {
-        $userDetails = $this->getCurrentUserDetails();
-        $id_user = $userDetails['id_user'] ?? null;
-        $id_team = $userDetails['id_equipe'];
-        if (!empty($id_user)) {
-            $userManager = new UserManager();
-            $teamIds = $userManager->getUserTeamIds((int)$id_user);
-            return in_array($match['id_equipe_dom'], $teamIds) || in_array($match['id_equipe_ext'], $teamIds);
-        }
-        return ($id_team == $match['id_equipe_dom']) || ($id_team == $match['id_equipe_ext']);
+        $teamIds = $this->getMyAllowedTeamIds();
+        return in_array((int)$match['id_equipe_dom'], $teamIds, true)
+            || in_array((int)$match['id_equipe_ext'], $teamIds, true);
     }
 
     /**
@@ -397,26 +413,16 @@ class MatchMgr extends Generic
      * ou null si aucune de ses équipes ne participe.
      * @param array $match
      * @return int|null
+     * @throws Exception
      */
     private function getUserTeamIdForMatch(array $match): ?int
     {
-        $id_user = $_SESSION['id_user'] ?? null;
-        if (!empty($id_user)) {
-            $userManager = new UserManager();
-            $teamIds = $userManager->getUserTeamIds((int)$id_user);
-            if (!empty($teamIds)) {
-                if (in_array($match['id_equipe_dom'], $teamIds)) {
-                    return (int)$match['id_equipe_dom'];
-                }
-                if (in_array($match['id_equipe_ext'], $teamIds)) {
-                    return (int)$match['id_equipe_ext'];
-                }
-                return null;
-            }
+        $teamIds = $this->getMyAllowedTeamIds();
+        if (in_array((int)$match['id_equipe_dom'], $teamIds, true)) {
+            return (int)$match['id_equipe_dom'];
         }
-        $id_equipe = $_SESSION['id_equipe'] ?? null;
-        if ($id_equipe == $match['id_equipe_dom'] || $id_equipe == $match['id_equipe_ext']) {
-            return (int)$id_equipe;
+        if (in_array((int)$match['id_equipe_ext'], $teamIds, true)) {
+            return (int)$match['id_equipe_ext'];
         }
         return null;
     }

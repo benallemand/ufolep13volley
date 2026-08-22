@@ -285,6 +285,25 @@ class MonTest extends UfolepTestCase {
   garde des pages match via `requireRoles(['admin', 'team_leader'])` (`pages/components/auth/guard.js`)
 - « Agir en tant que » : sauvegarde/restauration des flags via `original_admin_*` en session
 
+### Multi-club et équipe courante
+- Un compte peut être rattaché à **plusieurs clubs** : la session porte
+  `club_ids` (tous les clubs, `users_clubs`) **et** `id_club` (le club **courant**,
+  le premier par ordre alphabétique au login). `UserManager::switchCurrentUserClub()`
+  fait varier le club courant, `Club::getMyClubs()` alimente le sélecteur.
+- `Club::getMyClubId()` reste le point unique de cadrage des écrans club
+  (inscriptions, fermetures gymnases, indispos équipes, comptes responsables,
+  matchs du club) : ils suivent tous le club courant. `Club::getMyClubIds()` sert
+  aux autorisations (tous clubs) et `Club::assertManagesTeam()` accepte une équipe
+  de n'importe lequel des clubs gérés.
+- `id_equipe` / `is_team_leader` reflètent l'équipe **courante** :
+  `UserManager::switchCurrentUserTeam()` accepte les équipes du compte
+  (`users_teams`) **et** toute équipe d'un club géré, y compris **sans compte
+  responsable rattaché** ; `getMyManageableTeams()` alimente le sélecteur d'équipe.
+  Sélectionner une équipe d'un autre club bascule aussi le club courant.
+- « Agir en tant que » un responsable d'équipe du club
+  (`switch_to_club_team_leader`) reste disponible depuis l'écran « comptes
+  responsables », mais n'est plus le chemin normal pour gérer une équipe.
+
 ### Debug de Features en Temps Réel
 - Créer un fichier `debug_{feature}.php` pour tester/modifier les données temporairement
 - Permet de mettre à jour les dates pour simuler "aujourd'hui"
