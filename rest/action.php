@@ -2,6 +2,28 @@
 header('Access-Control-Allow-Origin: *');
 
 
+/**
+ * Refuse la requête si l'action demandée est réservée aux administrateurs
+ * (issue #268). La liste vit dans `rest/admin_actions.php`.
+ *
+ * @throws Exception 403 si l'appelant n'est pas administrateur
+ */
+function assert_action_allowed(string $class_name, string $action_name): void
+{
+    $admin_actions = require __DIR__ . '/admin_actions.php';
+    if (!isset($admin_actions[$class_name])) {
+        return;
+    }
+    if (!in_array($action_name, $admin_actions[$class_name], true)) {
+        return;
+    }
+    require_once __DIR__ . "/../classes/UserManager.php";
+    if (UserManager::isAdmin()) {
+        return;
+    }
+    throw new Exception("Action réservée aux administrateurs !", 403);
+}
+
 function exclude_ignored_parameters(array $parameters): array
 {
     return array_filter($parameters, function ($key) {
@@ -84,6 +106,8 @@ try {
     }
     $class_name = $args[0];
     $action_name = $args[1];
+    // Garde d'autorisation AVANT toute instanciation ou exécution (issue #268)
+    assert_action_allowed($class_name, $action_name);
     switch ($class_name) {
         case 'activity':
             require_once __DIR__ . "/../classes/Activity.php";

@@ -238,13 +238,19 @@ class UserManager extends Generic
      */
     public function deleteUsers($ids)
     {
-        $explodedIds = explode(',', $ids);
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
         $logins = array();
-        foreach ($explodedIds as $id) {
+        foreach ($id_list as $id) {
             $logins[] = $this->getUserLogin($id);
         }
-        $sql = "DELETE FROM comptes_acces WHERE id IN($ids)";
-        $this->sql_manager->execute($sql);
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
+        $sql = "DELETE FROM comptes_acces WHERE id IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
         foreach ($logins as $login) {
             $this->addActivity("Suppression du compte : $login");
         }

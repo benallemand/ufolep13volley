@@ -201,8 +201,43 @@ class Generic
      */
     public function delete($ids): void
     {
-        $sql = "DELETE FROM $this->table_name WHERE $this->id_name IN($ids)";
-        $this->sql_manager->execute($sql);
+        // $ids arrive de l'extérieur sous la forme "1,2,3" (les grilles admin
+        // joignent les ids sélectionnés). Il était concaténé tel quel dans le SQL,
+        // ce qui l'exposait à une injection (issue #268) : on le découpe, on ne
+        // garde que des entiers, et on lie chaque valeur.
+        $id_list = self::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
+        $sql = "DELETE FROM $this->table_name WHERE $this->id_name IN($placeholders)";
+        $bindings = array_map(
+            fn($id) => array('type' => 'i', 'value' => $id),
+            $id_list
+        );
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Normalise une liste d'ids reçue de l'extérieur ("1,2,3", un tableau, un
+     * entier) en un tableau d'entiers, sans doublon ni valeur non numérique.
+     *
+     * @param mixed $ids
+     * @return int[]
+     */
+    public static function parse_id_list(mixed $ids): array
+    {
+        if (is_null($ids)) {
+            return array();
+        }
+        $raw = is_array($ids) ? $ids : explode(',', (string)$ids);
+        $parsed = array();
+        foreach ($raw as $value) {
+            if (is_numeric(trim((string)$value))) {
+                $parsed[] = (int)trim((string)$value);
+            }
+        }
+        return array_values(array_unique($parsed));
     }
 
     /**
