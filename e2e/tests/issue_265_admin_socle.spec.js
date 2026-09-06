@@ -37,7 +37,7 @@ test.describe('Issue #265 — socle de l\'administration Vue', () => {
     test('la grille des gymnases se charge pour un administrateur', async ({ page, request, baseURL }) => {
         await page.goto(baseURL + '/pages/home.html');
         await loginAsAdmin(page, request);
-        await page.goto('/admin/index.html');
+        await page.goto('/admin/index.html#/gymnasiums');
 
         await expect(page.getByRole('heading', { name: 'Gestion des gymnases' }))
             .toBeVisible({ timeout: 15000 });
@@ -56,7 +56,7 @@ test.describe('Issue #265 — socle de l\'administration Vue', () => {
     test('la recherche multi-termes et le tri fonctionnent', async ({ page, request, baseURL }) => {
         await page.goto(baseURL + '/pages/home.html');
         await loginAsAdmin(page, request);
-        await page.goto('/admin/index.html');
+        await page.goto('/admin/index.html#/gymnasiums');
 
         const rows = page.locator('tbody tr');
         await expect(rows.first()).toBeVisible({ timeout: 15000 });
@@ -103,10 +103,17 @@ test.describe('Issue #265 — socle de l\'administration Vue', () => {
         expect(Number(desc)).toBeGreaterThanOrEqual(Number(asc));
     });
 
+    // Les cinq écrans CRUD du lot 1 ne sont PAS parcourus automatiquement :
+    // l'écran joueurs charge 2,5 Mo en ~8 s, et un parcours de la barre latérale
+    // dépend du rendu du drawer à la largeur de test. Le rapport coût/valeur
+    // n'y est pas — ils sont couverts par la recette manuelle, `admin/RECETTE.md`.
+    // Ce qui reste ici est ce qui est rapide ET stable : la garde d'accès et le
+    // comportement de la grille générique.
+
     test('sélectionner une ligne active les actions', async ({ page, request, baseURL }) => {
         await page.goto(baseURL + '/pages/home.html');
         await loginAsAdmin(page, request);
-        await page.goto('/admin/index.html');
+        await page.goto('/admin/index.html#/gymnasiums');
 
         const rows = page.locator('tbody tr');
         await expect(rows.first()).toBeVisible({ timeout: 15000 });

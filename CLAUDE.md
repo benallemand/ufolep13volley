@@ -361,6 +361,19 @@ Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dan
 **Ajouter un écran** revient à déclarer ses colonnes, ses champs et ses URLs, puis
 à l'inscrire dans `routes` et `MENU` (`AdminLayout.js`) — voir
 `screens/Gymnasiums.js`, qui remplace ~180 lignes d'ExtJS par une trentaine.
+Les actions hors CRUD (réinitialiser un mot de passe, nommer un responsable…)
+passent par le slot `actions` de la grille, les filtres par le slot `filters` et
+la prop `rowFilter`.
+
+> **L'identifiant est toujours envoyé au save**, vide à la création : plusieurs
+> méthodes PHP le déclarent en paramètre **obligatoire** (`Club::saveClub($id, …)`),
+> et c'est ce que faisait le champ caché `id` des formulaires ExtJS.
+
+**Validation** : la recette manuelle vit dans `admin/RECETTE.md` — cas transverses,
+cas génériques de la grille, et cas par écran. Les écrans d'administration sont
+volontairement peu couverts en Playwright : `player/getPlayers` renvoie 2,5 Mo en
+~8 s, et une campagne complète passait de 20 s à plus de 10 minutes. Seuls la
+garde d'accès et le comportement de la grille sont automatisés.
 
 Conventions backend reprises telles quelles : lecture en GET, écriture en POST
 avec `id` vide pour un INSERT, suppression en POST avec `ids` joints par des

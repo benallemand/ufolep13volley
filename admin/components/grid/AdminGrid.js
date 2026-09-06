@@ -42,6 +42,8 @@ export default {
         idField: { type: String, default: 'id' },
         /** Libellé au singulier, pour les boutons et messages */
         entityLabel: { type: String, default: 'élément' },
+        /** Filtre supplémentaire piloté par l'écran : (row) => bool */
+        rowFilter: { type: Function, default: null },
     },
     template: `
       <div class="p-4">
@@ -63,7 +65,15 @@ export default {
             <button @click="fetchRows" class="btn btn-ghost btn-sm" title="Rafraîchir">
               <i class="fas fa-rotate"></i>
             </button>
+            <!-- Actions propres à l'écran (nommer responsable, reset mot de
+                 passe, import…) : la grille ne les connaît pas. -->
+            <slot name="actions" :selection="selection" :rows="rows" :reload="fetchRows"></slot>
           </div>
+        </div>
+
+        <!-- Filtres propres à l'écran, au-dessus de la recherche -->
+        <div v-if="$slots.filters" class="flex flex-wrap items-center gap-4 mb-3">
+          <slot name="filters" :rows="rows"></slot>
         </div>
 
         <div class="flex flex-wrap items-center gap-3 mb-3">
@@ -160,14 +170,17 @@ export default {
     },
     computed: {
         filteredRows() {
+            const base = this.rowFilter
+                ? this.sortedRows.filter((r) => this.rowFilter(r))
+                : this.sortedRows;
             if (!this.search) {
-                return this.sortedRows;
+                return base;
             }
             // Recherche multi-termes séparés par des virgules, comme la grille ExtJS
             const terms = this.search.split(',')
                 .map((t) => t.trim().toLowerCase())
                 .filter((t) => t.length);
-            return this.sortedRows.filter((row) => {
+            return base.filter((row) => {
                 const haystack = this.columns
                     .map((c) => String(row[c.key] ?? ''))
                     .join(' ')
@@ -203,6 +216,7 @@ export default {
     },
     watch: {
         search() { this.page = 1; },
+        rowFilter() { this.page = 1; },
         pageSize() { this.page = 1; },
     },
     created() {

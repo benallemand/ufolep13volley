@@ -16,8 +16,12 @@ import { requireRoles } from '../../../pages/components/auth/guard.js';
  */
 
 const routes = [
+    { path: '/users', component: () => import('../screens/Users.js') },
+    { path: '/clubs', component: () => import('../screens/Clubs.js') },
+    { path: '/teams', component: () => import('../screens/Teams.js') },
+    { path: '/players', component: () => import('../screens/Players.js') },
     { path: '/gymnasiums', component: () => import('../screens/Gymnasiums.js') },
-    { path: '/:pathMatch(.*)*', redirect: '/gymnasiums' },
+    { path: '/:pathMatch(.*)*', redirect: '/users' },
 ];
 
 const router = createRouter({
@@ -27,6 +31,10 @@ const router = createRouter({
 
 /** Écrans migrés, dans l'ordre du menu. */
 export const MENU = [
+    { path: '/users', label: 'Utilisateurs', icon: 'fas fa-users' },
+    { path: '/clubs', label: 'Clubs', icon: 'fas fa-sitemap' },
+    { path: '/teams', label: 'Équipes', icon: 'fas fa-people-group' },
+    { path: '/players', label: 'Joueurs', icon: 'fas fa-person-running' },
     { path: '/gymnasiums', label: 'Gymnases', icon: 'fas fa-building' },
 ];
 
