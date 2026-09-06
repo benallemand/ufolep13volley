@@ -44,6 +44,12 @@ export default {
         entityLabel: { type: String, default: 'élément' },
         /** Filtre supplémentaire piloté par l'écran : (row) => bool */
         rowFilter: { type: Function, default: null },
+        /**
+         * Colonne de sélection. Désactivée d'office sur un écran de simple
+         * consultation : sans save/delete elle ne sert à rien, et les lignes
+         * n'ont pas toujours d'identifiant sur lequel s'appuyer.
+         */
+        selectable: { type: Boolean, default: null },
     },
     template: `
       <div class="p-4">
@@ -108,7 +114,7 @@ export default {
           <table class="table table-xs md:table-sm table-pin-rows">
             <thead>
             <tr>
-              <th class="w-8">
+              <th v-if="canSelect" class="w-8">
                 <input type="checkbox"
                        class="checkbox checkbox-xs"
                        :checked="allPageSelected"
@@ -125,11 +131,11 @@ export default {
             </tr>
             </thead>
             <tbody>
-            <tr v-for="row in pageRows"
-                :key="row[idField]"
-                :class="{'bg-primary/10': isSelected(row)}"
-                @click="toggle(row)">
-              <td><input type="checkbox" class="checkbox checkbox-xs" :checked="isSelected(row)" @click.stop="toggle(row)"/></td>
+            <tr v-for="(row, i) in pageRows"
+                :key="row[idField] ?? i"
+                :class="{'bg-primary/10': canSelect && isSelected(row)}"
+                @click="canSelect && toggle(row)">
+              <td v-if="canSelect"><input type="checkbox" class="checkbox checkbox-xs" :checked="isSelected(row)" @click.stop="toggle(row)"/></td>
               <td v-for="col in columns"
                   :key="col.key"
                   :class="col.align === 'right' ? 'text-right' : ''">
@@ -209,6 +215,11 @@ export default {
         pageRows() {
             const start = (this.page - 1) * this.pageSize;
             return this.filteredRows.slice(start, start + this.pageSize);
+        },
+        canSelect() {
+            return this.selectable !== null
+                ? this.selectable
+                : Boolean(this.saveUrl || this.deleteUrl);
         },
         allPageSelected() {
             return this.pageRows.length > 0 && this.pageRows.every((r) => this.isSelected(r));
