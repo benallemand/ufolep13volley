@@ -25,6 +25,7 @@ const entries = {
     'pages/home':    'pages/home.html',
     'pages/my_page': 'pages/my_page.html',
     'admin/matches': 'admin/matches.html',
+    'admin/index':   'admin/index.html',
 };
 
 export default defineConfig({

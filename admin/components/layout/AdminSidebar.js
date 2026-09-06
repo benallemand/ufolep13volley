@@ -1,0 +1,41 @@
+import { MENU } from './AdminLayout.js';
+
+/**
+ * Barre latérale de navigation de l'administration (issue #265, lot 0).
+ *
+ * Elle ne liste que les écrans déjà migrés. Tant que la migration n'est pas
+ * terminée, un lien renvoie vers l'admin ExtJS pour le reste.
+ */
+export default {
+    props: {
+        user: { type: Object, required: true },
+    },
+    template: `
+      <aside class="bg-base-200 w-64 min-h-full flex flex-col">
+        <div class="p-4 border-b border-base-300">
+          <div class="font-bold text-lg">Administration</div>
+          <div class="text-xs text-base-content/60 truncate" :title="user.login">{{ user.login }}</div>
+        </div>
+
+        <ul class="menu p-2 flex-1">
+          <li v-for="item in menu" :key="item.path">
+            <router-link :to="item.path" active-class="active">
+              <i :class="item.icon"></i> {{ item.label }}
+            </router-link>
+          </li>
+        </ul>
+
+        <div class="p-2 border-t border-base-300 space-y-1">
+          <a href="/admin.php" class="btn btn-ghost btn-sm w-full justify-start">
+            <i class="fas fa-clock-rotate-left"></i> Ancienne administration
+          </a>
+          <a href="/pages/home.html" class="btn btn-ghost btn-sm w-full justify-start">
+            <i class="fas fa-home"></i> Retour au site
+          </a>
+        </div>
+      </aside>
+    `,
+    data() {
+        return { menu: MENU };
+    },
+};
