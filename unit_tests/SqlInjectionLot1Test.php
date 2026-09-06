@@ -73,14 +73,38 @@ class SqlInjectionLot1Test extends UfolepTestCase
     /**
      * `Players::isPlayerInTeam()` est appele avec l'id fourni par le client
      * depuis les actions du responsable d'equipe (set_leader, set_captain…).
-     * Avec la requete parametree, une charge ne peut plus rendre la condition
-     * vraie.
+     *
+     * On part d'un couple (joueur, equipe) qui n'existe PAS, puis on y greffe
+     * `OR 1=1`. Concatenee, la charge rendait la condition vraie ; liee, elle est
+     * castee en entier et le resultat ne change pas.
+     *
+     * Le couple est cherche en base a l'execution : asserter une valeur en dur
+     * dependrait du jeu de donnees (la premiere version de ce test passait en
+     * local et echouait sur le seed de la CI).
      */
     public function test_is_player_in_team_neutralise_une_charge(): void
     {
+        $rows = $this->sql->execute(
+            "SELECT j.id AS id_joueur, e.id_equipe
+             FROM joueurs j
+             CROSS JOIN equipes e
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM joueur_equipe je
+                 WHERE je.id_joueur = j.id AND je.id_equipe = e.id_equipe
+             )
+             LIMIT 1"
+        );
+        self::assertNotEmpty($rows, 'Il faut un couple joueur/équipe non lié pour ce test');
+        $id_joueur = (int)$rows[0]['id_joueur'];
+        $id_equipe = (int)$rows[0]['id_equipe'];
+
+        // Reference : le couple n'est pas lie
+        self::assertFalse($this->players->isPlayerInTeam($id_joueur, $id_equipe));
+
+        // Meme couple, avec une charge greffee : le resultat doit etre identique
         self::assertFalse(
-            $this->players->isPlayerInTeam('1 OR 1=1', '1 OR 1=1'),
-            "Une charge d'injection ne doit pas satisfaire la condition"
+            $this->players->isPlayerInTeam("$id_joueur OR 1=1", $id_equipe),
+            "La charge d'injection a modifié le résultat : la valeur n'est pas liée"
         );
     }
 
