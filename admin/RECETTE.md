@@ -100,6 +100,32 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 > masse à un club / une équipe**, **photo du joueur**. Restent dans l'ancienne
 > administration.
 
+### Matchs (`#/matches`)
+
+L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| M1 | Ouvrir l'écran | ~560 matchs sur ~939 (vue « Saison en cours » par défaut) |
+| M2 | Colonne **Liens**, première icône (ballon) | Ouvre `match.html` dans un nouvel onglet ; **verte** si les deux feuilles de match sont signées, rouge sinon |
+| M3 | Deuxième icône (personnage) | Ouvre `team_sheets.html` ; verte si présents renseignés **et** fiches signées des deux côtés |
+| M4 | Troisième icône (sondage) | Ouvre `survey.html` ; verte si les deux sondages sont remplis |
+| M5 | Quatrième icône (enveloppe) | Ouvre le client mail avec les deux responsables en destinataires |
+| M6 | Colonne **Statut** | Pastille verte « confirmé », orange « à confirmer », grise « archivé » |
+| M7 | Changer de **Vue** | Les six vues filtrent : saison, prêts à valider, présents à renseigner, joueurs non valides, non certifiés, archivés. Saison + archivés doivent redonner le total |
+| M8 | Vue « Prêts à valider » | **Peut légitimement afficher 0** : la règle exige un match non certifié, et en fin de saison tout est certifié |
+| M9 | Sélectionner un match → **Archiver** | Confirmation, puis le match bascule en « archivé » |
+| M10 | Sélectionner → **Confirmer** / **Dé-confirmer** | Le statut change en conséquence |
+| M11 | Sélectionner → **Certifier** | Le match passe certifié |
+| M12 | Sélectionner → **Inverser** | Domicile et extérieur permutent |
+| M13 | Éditer un match | Listes Compétition, Domicile, Extérieur et Gymnase remplies ; les cases de signature reflètent l'état |
+
+> Les actions d'écriture M9 à M12 modifient de vraies données : les jouer sur un
+> match de test, ou en connaissance de cause.
+>
+> **La génération de matchs n'est pas reprise** : scripts Python
+> (`ufolep13volley_python/calendar-agent/`).
+
 ### Compétitions (`#/competitions`)
 
 | # | Cas | Attendu |
