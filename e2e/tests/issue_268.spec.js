@@ -67,17 +67,9 @@ test.describe('Issue #268 — autorisation des endpoints REST admin', () => {
         });
     }
 
-    test('aucune réponse de l\'API n\'expose password_hash', async ({ playwright }) => {
-        const ctx = await playwright.request.newContext();
-        try {
-            // getUsers est désormais refusé aux anonymes ; on vérifie en plus que
-            // le champ a bien disparu du SELECT, pour qu'un admin ne le reçoive
-            // pas non plus.
-            const sql = require('fs').readFileSync(
-                require('path').join(__dirname, '../../sql/get_users.sql'), 'utf8');
-            expect(sql).not.toContain('password_hash');
-        } finally {
-            await ctx.dispose();
-        }
-    });
+    // L'absence de `password_hash` dans `sql/get_users.sql` est une assertion de
+    // niveau source : elle vit dans AdminRestAuthzTest (PHPUnit), qui tourne dans
+    // le conteneur php avec le dépôt sous la main. La vérifier ici obligerait à
+    // monter tout le dépôt dans le conteneur Playwright, ce que seul un des deux
+    // modes e2e fait — le test dépendrait alors du montage.
 });

@@ -1,0 +1,25 @@
+###############################################################################
+# docker-compose.e2e-dev.yml
+#
+# Mode E2E « itératif » : à combiner avec docker-compose.dev.yml.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml \
+#                  -f docker-compose.e2e-dev.yml up -d
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml \
+#                  -f docker-compose.e2e-dev.yml --profile test \
+#                  run --rm playwright
+#
+# Différence avec docker-compose.e2e.yml : le code est servi par le bind mount
+# du dev, pas depuis l'image. Donc pas de `build` entre deux itérations — et
+# surtout, impossible de tester une image périmée.
+#
+# IMPORTANT : utiliser le MÊME jeu de fichiers -f pour le `up` et pour le `run`.
+# Avec un jeu différent, Compose considère que la définition du service `php` a
+# changé et le recrée en cours de route — il perd alors APP_ENV=test et tous les
+# helpers répondent 403.
+###############################################################################
+
+services:
+  php:
+    environment:
+      - APP_ENV=test
