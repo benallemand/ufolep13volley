@@ -3,25 +3,31 @@ header('Access-Control-Allow-Origin: *');
 
 
 /**
- * Refuse la requête si l'action demandée est réservée aux administrateurs
- * (issue #268). La liste vit dans `rest/admin_actions.php`.
+ * Contrôle d'accès des endpoints REST — refus par défaut (issues #268, #270).
  *
- * @throws Exception 403 si l'appelant n'est pas administrateur
+ * `rest/action.php` dispatche n'importe quelle méthode publique des classes
+ * routées : la liste des actions autorisées et leur niveau vivent dans
+ * `rest/access.php`. Une action absente est refusée, qu'elle existe ou non.
+ *
+ * @throws Exception 403 si l'action est inconnue ou le niveau insuffisant
  */
 function assert_action_allowed(string $class_name, string $action_name): void
 {
-    $admin_actions = require __DIR__ . '/admin_actions.php';
-    if (!isset($admin_actions[$class_name])) {
-        return;
+    $access = require __DIR__ . '/access.php';
+    $level = $access[$class_name][$action_name] ?? null;
+    if ($level === null) {
+        throw new Exception("Action inconnue ou non autorisée !", 403);
     }
-    if (!in_array($action_name, $admin_actions[$class_name], true)) {
+    if ($level === 'public') {
         return;
     }
     require_once __DIR__ . "/../classes/UserManager.php";
-    if (UserManager::isAdmin()) {
-        return;
+    if (!UserManager::is_connected()) {
+        throw new Exception("Connexion requise pour cette action !", 403);
     }
-    throw new Exception("Action réservée aux administrateurs !", 403);
+    if ($level === 'admin' && !UserManager::isAdmin()) {
+        throw new Exception("Action réservée aux administrateurs !", 403);
+    }
 }
 
 function exclude_ignored_parameters(array $parameters): array

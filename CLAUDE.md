@@ -282,23 +282,36 @@ class MaClasse extends Generic {
 ### Endpoints AJAX
 Les fichiers dans `ajax/` sont des points d'entrée HTTP. Ils instancient les classes et retournent du JSON.
 
-### Autorisation des endpoints REST (issue #268)
+### Autorisation des endpoints REST — refus par défaut (issues #268, #270)
 
-`rest/admin_actions.php` liste les couples `classe/action` réservés aux
-administrateurs ; `rest/action.php` refuse en 403 **avant** d'instancier quoi que
-ce soit. La garde est dans le routeur et pas dans `Generic::save()`/`delete()`,
-parce que ces méthodes servent aussi des parcours responsable d'équipe et
-responsable de club — et parce qu'une garde de routeur n'affecte que le HTTP,
-donc ni les appels PHP internes, ni les crons.
+`rest/action.php` dispatche **n'importe quelle méthode publique** des classes
+routées : plus de 400 points d'entrée, bien au-delà de ce que les frontends
+appellent. `rest/access.php` liste donc les actions **autorisées** et leur niveau,
+et tout ce qui n'y figure pas est refusé en 403 — qu'il existe ou non.
 
-> Avant d'ajouter une entrée, vérifier que l'action n'est pas appelée par le front
-> public ou l'espace responsable, **y compris via une URL construite
-> dynamiquement** : `pages/components/panel/Players.js` appelle
-> `` `/rest/action.php/player/${action}` ``, ce qu'un grep sur les littéraux ne
-> voit pas.
+| Niveau | Règle |
+|--------|-------|
+| `public` | aucune connexion requise |
+| `user` | connexion requise ; les contrôles fins (responsable d'équipe, de club, propriété de l'objet) restent dans les méthodes, qui les font déjà |
+| `admin` | réservé aux administrateurs |
 
-Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier
-les valeurs. Ne jamais concaténer (issue #268, suivi dans #270).
+Principe : les lectures sont publiques, sauf celles qui exposent des données
+personnelles ou scopées à la session (`getMy*`, activité, emails d'équipe) ; les
+écritures exigent une connexion ; les actions d'administration exigent le rôle.
+
+> **Pourquoi le refus par défaut.** La première version (#268) listait les actions
+> d'administration, déduites de ce que les frontends appellent. Elle laissait donc
+> ouvertes les ~99 méthodes publiques qu'aucun frontend n'appelle — dont
+> `sqlmanager/execute`, qui exécutait du **SQL arbitraire sans authentification**.
+> Une liste bâtie sur l'usage observé ne protège pas d'une surface non observée.
+
+**Pour ajouter un endpoint** : l'inscrire dans `rest/access.php`, sinon il répondra
+403. Et vérifier qu'il n'est pas appelé via une URL construite dynamiquement —
+`pages/components/panel/Players.js` fait `` `/rest/action.php/player/${action}` ``,
+ce qu'un grep sur les littéraux ne voit pas.
+
+Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier les
+valeurs. Ne jamais concaténer (suivi dans #270).
 
 ## Tests unitaires
 
