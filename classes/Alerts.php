@@ -266,8 +266,9 @@ class Alerts extends Generic
 
     public function hasLeader($sessionIdEquipe)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_leader+0 > 0";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_leader+0 > 0";
+        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }
@@ -276,8 +277,9 @@ class Alerts extends Generic
 
     public function hasViceLeader($sessionIdEquipe)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_vice_leader+0 > 0";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_vice_leader+0 > 0";
+        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }
@@ -286,8 +288,9 @@ class Alerts extends Generic
 
     public function hasCaptain($sessionIdEquipe)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = $sessionIdEquipe AND is_captain+0 > 0";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_captain+0 > 0";
+        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }
@@ -296,8 +299,9 @@ class Alerts extends Generic
 
     public function hasTimeSlot($sessionIdEquipe)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM creneau WHERE id_equipe = $sessionIdEquipe";
-        $results = $this->sql_manager->execute($sql);
+        $sql = "SELECT COUNT(*) AS cnt FROM creneau WHERE id_equipe = ?";
+        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }

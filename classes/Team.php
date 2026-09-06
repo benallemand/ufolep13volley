@@ -446,8 +446,13 @@ class Team extends Generic
      */
     public function linkTeamToPhoto($idTeam, $idPhoto)
     {
-        $sql = "UPDATE equipes e SET e.id_photo = $idPhoto WHERE id_equipe = $idTeam";
-        $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "UPDATE equipes e SET e.id_photo = ? WHERE id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idPhoto),
+            array('type' => 'i', 'value' => $idTeam),
+        );
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     public function getIdClubFromIdTeam($idTeam)
@@ -646,6 +651,14 @@ class Team extends Generic
                 throw new Exception("Utilisateur non connecté ou non associé à une équipe !");
             }
         }
+        // `get_matches()` prend une clause WHERE toute faite : on ne peut pas y
+        // lier de paramètre, donc on valide $id avant de l'y placer. Sans ça,
+        // `?id=695 OR 1=1` renvoyait le calendrier de toutes les équipes sur un
+        // endpoint public (issue #270).
+        if (!is_numeric($id)) {
+            throw new Exception("Identifiant d'équipe invalide !");
+        }
+        $id = (int)$id;
         $matches = $match->get_matches("(id_equipe_dom = $id OR id_equipe_ext = $id) AND match_status NOT IN ('ARCHIVED')");
         if (count($matches) == 0) {
             throw new Exception("Il n'y a pas de match pour cette compétition/division !");

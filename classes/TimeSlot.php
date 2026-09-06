@@ -214,8 +214,10 @@ class TimeSlot extends Generic
         if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
             throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
         }
-        $sql = "DELETE FROM creneau WHERE id = $id";
-        $this->sql_manager->execute($sql);
+        // $id vient du client — issue #270
+        $sql = "DELETE FROM creneau WHERE id = ?";
+        $bindings = array(array('type' => 'i', 'value' => $id));
+        $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("Un créneau a été supprimé");
     }
 

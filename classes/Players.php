@@ -205,8 +205,10 @@ class Players extends Generic
         $sql = "SELECT 
         CONCAT(j.nom, ' ', j.prenom, ' (', IFNULL(j.num_licence, ''), ')') AS player_full_name
         FROM joueurs j
-        WHERE j.id = $idPlayer";
-        $results = $this->sql_manager->execute($sql);
+        WHERE j.id = ?";
+        // issue #270
+        $bindings = array(array('type' => 'i', 'value' => $idPlayer));
+        $results = $this->sql_manager->execute($sql, $bindings);
         return $results[0]['player_full_name'];
     }
 
@@ -377,8 +379,10 @@ class Players extends Generic
         if ($licenceNumber === '') {
             return false;
         }
-        $sql = "SELECT COUNT(*) AS cnt FROM joueurs WHERE num_licence = '$licenceNumber'";
-        $results = $this->sql_manager->execute($sql);
+        // le numéro de licence vient du fichier importé / du formulaire — issue #270
+        $sql = "SELECT COUNT(*) AS cnt FROM joueurs WHERE num_licence = ?";
+        $bindings = array(array('type' => 's', 'value' => $licenceNumber));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }
@@ -450,8 +454,13 @@ class Players extends Generic
      */
     public function linkPlayerToPhoto($idPlayer, $idPhoto)
     {
-        $sql = "UPDATE joueurs j SET j.id_photo = $idPhoto WHERE id = $idPlayer";
-        $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "UPDATE joueurs j SET j.id_photo = ? WHERE id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idPhoto),
+            array('type' => 'i', 'value' => $idPlayer),
+        );
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -478,8 +487,13 @@ class Players extends Generic
      */
     public function isPlayerInTeam($idPlayer, $idTeam)
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
-        $results = $this->sql_manager->execute($sql);
+        // $idPlayer vient du client (actions du responsable d'équipe) — issue #270
+        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_joueur = ? AND id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idPlayer),
+            array('type' => 'i', 'value' => $idTeam),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (intval($results[0]['cnt']) === 0) {
             return false;
         }
@@ -560,8 +574,13 @@ class Players extends Generic
         if ($this->isPlayerInTeam($idPlayer, $idTeam)) {
             return true;
         }
-        $sql = "INSERT joueur_equipe SET id_joueur = $idPlayer, id_equipe = $idTeam";
-        $this->sql_manager->execute($sql);
+        // $idPlayer vient du client (actions du responsable d'équipe) — issue #270
+        $sql = "INSERT joueur_equipe SET id_joueur = ?, id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $idPlayer),
+            array('type' => 'i', 'value' => $idTeam),
+        );
+        $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("Ajout de " . $this->getPlayerFullName($idPlayer) . " a l'equipe " . $this->team->getTeamName($idTeam));
         return true;
     }
