@@ -34,6 +34,18 @@ const PUBLIC_OK = [
     '/rest/action.php/limitdate/getLimitDates',
 ];
 
+// Refus par défaut (#270) : méthodes publiques des classes routées qu'aucun
+// frontend n'appelle, donc absentes de rest/access.php. Avant, elles étaient
+// dispatchées sans aucun contrôle — `sqlmanager/execute` exécutait du SQL
+// arbitraire sans authentification.
+const NEVER_ROUTABLE = [
+    { method: 'GET', path: '/rest/action.php/sqlmanager/execute', query: { sql: 'SELECT 1 AS probe' } },
+    { method: 'GET', path: '/rest/action.php/usermanager/remove', query: { login: '___inexistant___' } },
+    { method: 'GET', path: '/rest/action.php/generic/get' },
+    { method: 'POST', path: '/rest/action.php/rank/resetRankPoints', form: {} },
+    { method: 'POST', path: '/rest/action.php/matchmgr/generate_matches', form: {} },
+];
+
 test.describe('Issue #268 — autorisation des endpoints REST admin', () => {
 
     for (const { method, path, form } of ADMIN_ONLY) {
@@ -48,7 +60,29 @@ test.describe('Issue #268 — autorisation des endpoints REST admin', () => {
 
                 const body = await res.json();
                 expect(body.success).toBe(false);
-                expect(body.message).toContain('administrateurs');
+                // Un anonyme est arrêté sur la connexion, avant même le contrôle
+                // du rôle : le message diffère de celui que reçoit un utilisateur
+                // connecté non-admin.
+                expect(body.message).toMatch(/Connexion requise|administrateurs/);
+            } finally {
+                await ctx.dispose();
+            }
+        });
+    }
+
+    for (const { method, path, query, form } of NEVER_ROUTABLE) {
+        test(`${method} ${path} n'est pas routable du tout`, async ({ playwright }) => {
+            const ctx = await playwright.request.newContext();
+            try {
+                const res = method === 'GET'
+                    ? await ctx.get(path, { params: query })
+                    : await ctx.post(path, { form });
+
+                expect(res.status(), `${path} ne doit pas être dispatché`).toBe(403);
+
+                const body = await res.text();
+                // Surtout pas de résultat de requête dans la réponse
+                expect(body).not.toContain('probe');
             } finally {
                 await ctx.dispose();
             }

@@ -21,8 +21,13 @@ for (const code of COMPETITIONS) {
 
         test.beforeEach(async ({ page }) => {
             await page.goto(`/pages/home.html#/finals/${code}`);
-            // Attendre que le spinner disparaisse
-            await expect(page.locator('.loading.loading-spinner')).toHaveCount(0, { timeout: 10000 });
+            // Attendre que le spinner disparaisse.
+            // 30 s et non 10 : la page coûte ~4,3 s de backend à chaque chargement
+            // (matchmgr/getMatches ~1,2 s + rank/getFinalsDrawResolved ~3,1 s,
+            // mesurés machine au repos), avant le démarrage de Vue et le rendu de
+            // l'arbre. Avec 10 s la marge était sous les 6 s, d'où des échecs
+            // intermittents dès que la machine était un peu chargée.
+            await expect(page.locator('.loading.loading-spinner')).toHaveCount(0, { timeout: 30000 });
         });
 
         test('affiche l\'arbre du tournoi complet (1/8 → Finale)', async ({ page }) => {

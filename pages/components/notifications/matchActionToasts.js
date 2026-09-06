@@ -2,10 +2,15 @@
 // pour le responsable d'équipe connecté (présents, signatures, score, sondage).
 // Appelé après le montage de l'app sur la home publique ET l'espace responsable.
 //
-// L'endpoint renvoie [] si l'utilisateur n'est pas connecté en responsable
-// (pas d'id_equipe en session) : aucun toast pour les visiteurs anonymes.
+// La home est majoritairement consultée sans être connecté : on vérifie la
+// session avant d'appeler l'endpoint, qui exige une authentification (#270).
+// Sans ce court-circuit, chaque visite anonyme déclenche un appel voué au 403.
 export async function showMatchActionToasts() {
     try {
+        const session = await window.axios.get('/session_user.php');
+        if (!session.data || session.data.error) {
+            return;
+        }
         const response = await window.axios.get('/rest/action.php/matchmgr/getMyPendingMatchActions');
         const items = response.data;
         if (!Array.isArray(items) || items.length === 0) {
