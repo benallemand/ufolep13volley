@@ -192,9 +192,12 @@ class Day extends Generic
             }
             require_once __DIR__ . '/../classes/MatchMgr.php';
             $match_manager = new MatchMgr();
-            $match_manager->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+            // Clauses WHERE composees a la main : impossible d'y lier un
+            // parametre, on echappe donc la valeur (issue #270).
+            $safe_code = $this->sql_manager->escape($code_competition);
+            $match_manager->delete_matches("code_competition = '$safe_code' AND match_status = 'NOT_CONFIRMED'");
             $match_manager->unset_day_matches("code_competition = '$code_competition'");
-            $this->deleteDays("code_competition = '$code_competition'");
+            $this->deleteDays("code_competition = '$safe_code'");
             $divisions = $rank_manager->getDivisionsFromCompetition($code_competition);
             $rounds_counts = array();
             foreach ($divisions as $division) {

@@ -629,7 +629,10 @@ class Players extends Generic
     {
         $where = "1=1";
         if (!empty($query)) {
-            $where .= " AND j.full_name LIKE '%$query%'";
+            // $where part dans get_players(), qui prend une clause toute faite :
+            // on echappe le terme de recherche (issue #270).
+            $safe_query = $this->sql_manager->escape($query);
+            $where .= " AND j.full_name LIKE '%$safe_query%'";
         }
         // filter available match players by id_match (known teams)
         if (!empty($id_match)) {

@@ -712,7 +712,9 @@ class MatchMgr extends Generic
     public function generate_matches_v2($competition): void
     {
         $code_competition = $competition['code_competition'];
-        $this->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        // Clause WHERE composee a la main : on echappe la valeur (issue #270).
+        $safe_code = $this->sql_manager->escape($code_competition);
+        $this->delete_matches("code_competition = '$safe_code' AND match_status = 'NOT_CONFIRMED'");
         $message = "";
         $expected_matches = $this->get_expected_matches($competition, null, $message);
         foreach ($expected_matches as $index => $match) {
@@ -732,7 +734,9 @@ class MatchMgr extends Generic
         }
         // delete previous generation attempts
         $code_competition = $competition['code_competition'];
-        $this->delete_matches("code_competition = '$code_competition' AND match_status = 'NOT_CONFIRMED'");
+        // Clause WHERE composee a la main : on echappe la valeur (issue #270).
+        $safe_code = $this->sql_manager->escape($code_competition);
+        $this->delete_matches("code_competition = '$safe_code' AND match_status = 'NOT_CONFIRMED'");
         // home and away if needed
         $divisions = $this->rank->getDivisionsFromCompetition($competition['code_competition']);
         $message = "Nombre de divisions : " . count($divisions) . PHP_EOL;
@@ -1095,14 +1099,17 @@ class MatchMgr extends Generic
         }
         $code_competition = $to_be_inserted_matches[0]['competition']['code_competition'];
         $division = $to_be_inserted_matches[0]['division']['division'];
-        $matches = $this->get_matches("m.code_competition = '$code_competition' 
-                                             AND m.division = '$division' 
+        // Clauses WHERE composees a la main : on echappe les valeurs (issue #270).
+        $safe_code = $this->sql_manager->escape($code_competition);
+        $safe_division = $this->sql_manager->escape($division);
+        $matches = $this->get_matches("m.code_competition = '$safe_code' 
+                                             AND m.division = '$safe_division' 
                                              AND m.match_status = 'NOT_CONFIRMED'");
         if (count($matches) === count($to_be_inserted_matches)) {
             return;
         }
-        $this->delete_matches("code_competition = '$code_competition' 
-                                             AND division = '$division' 
+        $this->delete_matches("code_competition = '$safe_code' 
+                                             AND division = '$safe_division' 
                                              AND match_status = 'NOT_CONFIRMED'");
         if ($index_match === count($to_be_inserted_matches)) {
             return;
@@ -1957,7 +1964,9 @@ class MatchMgr extends Generic
                 // delete previously generated matchs
                 $competition = $competition_mgr->get_by_id($id);
                 $code_competition = $competition['code_competition'];
-                $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$code_competition'");
+                // Clause WHERE composee a la main : on echappe la valeur (issue #270).
+                $safe_code = $this->sql_manager->escape($code_competition);
+                $this->delete_matches("match_status = 'NOT_CONFIRMED' AND code_competition = '$safe_code'");
                 // generate matches
                 $this->generate_matches_v2($competition);
             }
