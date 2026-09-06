@@ -6,7 +6,7 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 
 - **Backend** : PHP 8.1, MySQL
 - **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI — bundlé via Vite (Node.js 20)
-- **Frontend admin** : Sencha/ExtJS (interface d'administration historique, CDN — non bundlé, `admin.php` uniquement)
+- **Frontend admin** : Vue.js 3 (`admin/index.html`, cible) + Sencha/ExtJS (`admin.php`, historique) — migration en cours, issue #265
 - **Tests unitaires** : PHPUnit (`unit_tests/`)
 - **Tests E2E** : Playwright (`e2e/`)
 - **Reverse proxy local** : Caddy (Docker)
@@ -30,8 +30,12 @@ js/               # JavaScript admin (ExtJS/Sencha)
   model/          # Modèles ExtJS
   view/           # Vues ExtJS
   store/          # Stores ExtJS
-admin/            # Interface admin Vue.js moderne (en cours de migration)
-  components/     # Web components JS
+admin/            # Interface admin Vue.js (en cours de migration — issue #265)
+  index.html      # Entrée Vite de la nouvelle admin
+  components/
+    layout/       # Shell, sidebar, routeur, garde admin
+    grid/         # Grille et formulaire modal génériques
+    screens/      # Un composant par écran migré
 src/              # Sources Vite (CSS global)
   css/app.css     # Tailwind + DaisyUI + libs tierces
 helpers/          # Helpers PHP
@@ -188,6 +192,7 @@ test.afterAll(async ({ request }) => {
 - `finals_setup.php` / `finals_teardown.php` — matchs 1/8 finale KF/CF (issue #215)
 - `messages_setup.php` / `messages_teardown.php` — emails non lus pour responsable d'équipe (issue #221)
 - `today_matches_setup.php` / `today_matches_teardown.php` — match programmé aujourd'hui + une nouvelle, pour l'encart "Matchs du jour" et les nouvelles repliables de la home (issue #230). Le setup recopie les FK d'un match déjà visible dans `matchs_view` (échantillonnage **depuis la vue**, pas la table `matches`, pour éviter les matchs orphelins).
+- `admin_session.php` — ouvre une session administrateur, sans autre effet de bord (issue #265). À préférer à `messages_setup.php` pour les specs d'administration.
 - `calendar_events_setup.php` / `calendar_events_teardown.php` — trois événements de calendrier dans la saison en cours, pour le calendrier de la home alimenté en base (issue #253). Les dates sont posées en novembre de l'année d'ouverture de saison, donc toujours dans les mois affichés ; le test déplie les mois passés pour ne pas dépendre du jour d'exécution.
 
 ### Installer les dépendances PHP
@@ -217,6 +222,7 @@ npm run build
 - `src/css/app.css` — Tailwind + DaisyUI + libs tierces (FontAwesome, Notyf, Toastify)
 - `live.html`, `match.html`, `survey.html`, `team_sheets.html` — pages de gestion de match (chacune charge son `.js` racine : `live.js`, etc.)
 - `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — pages publiques / dashboard responsable
+- `admin/index.html` — administration Vue (issue #265), servie aussi sur /admin/
 
 **Hors périmètre du bundle Vite** : `admin.php` seul — dernière page sur les CDN
 ExtJS (interface d'administration historique, migration suivie par l'issue #265).
@@ -335,13 +341,37 @@ class MonTest extends UfolepTestCase {
 - `axios`, `Toastify`, `Notyf` exposés sur `window` par chaque entrée pour préserver l'usage en globaux dans les sous-composants
 - `dist/` produit par `npm run build` (voir section "Commandes essentielles")
 
-## Frontend ExtJS (admin)
+## Frontend admin
 
-- Sencha/ExtJS pour l'interface d'administration historique
+Deux interfaces cohabitent le temps de la migration (issue #265).
+
+### Vue 3 — la cible (`admin/index.html`)
+
+Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dans
+`admin/components/` :
+
+| | |
+|---|---|
+| `layout/AdminLayout.js` | shell, routeur, garde ; `MENU` liste les écrans migrés |
+| `layout/AdminSidebar.js` | navigation repliable (utilisable sur mobile) |
+| `grid/AdminGrid.js` | grille générique : recherche multi-termes, tri, pagination, sélection, suppression en masse, export CSV |
+| `grid/AdminEditModal.js` | formulaire modal générique |
+| `screens/` | un composant par écran |
+
+**Ajouter un écran** revient à déclarer ses colonnes, ses champs et ses URLs, puis
+à l'inscrire dans `routes` et `MENU` (`AdminLayout.js`) — voir
+`screens/Gymnasiums.js`, qui remplace ~180 lignes d'ExtJS par une trentaine.
+
+Conventions backend reprises telles quelles : lecture en GET, écriture en POST
+avec `id` vide pour un INSERT, suppression en POST avec `ids` joints par des
+virgules. Chaque endpoint doit être déclaré `admin` dans `rest/access.php`.
+
+### Sencha/ExtJS — l'historique (`admin.php`)
+
 - Fichiers dans `js/` (controllers, models, views, stores)
 - **Point d'entrée unique : `admin.php` et `js/administration.js`** — depuis #266,
-  plus aucune page publique ne charge ExtJS. Supprimer `admin.php` suffit donc à
-  sortir ExtJS du projet (issue #265).
+  plus aucune page publique ne charge ExtJS. Supprimer `admin.php` suffira donc à
+  sortir ExtJS du projet, une fois tous les écrans migrés.
 
 ## GitHub
 
