@@ -139,7 +139,21 @@ export default {
               <td v-for="col in columns"
                   :key="col.key"
                   :class="col.align === 'right' ? 'text-right' : ''">
-                {{ render(col, row) }}
+                <!-- Colonne d'icones : reprend les actioncolumn d'ExtJS.
+                     Chaque lien declare son icone, son infobulle, sa cible et
+                     sa couleur, toutes calculees depuis la ligne. -->
+                <span v-if="col.links" class="flex gap-2" @click.stop>
+                  <a v-for="(lnk, li) in col.links"
+                     :key="li"
+                     :href="lnk.href(row)"
+                     :target="lnk.href(row).startsWith('mailto:') ? '_self' : '_blank'"
+                     :title="lnk.title"
+                     :class="['text-base hover:opacity-70', lnk.variant ? lnk.variant(row) : '']">
+                    <i :class="lnk.icon"></i>
+                  </a>
+                </span>
+                <span v-else-if="col.badge" :class="col.badge(row)">{{ render(col, row) }}</span>
+                <template v-else>{{ render(col, row) }}</template>
               </td>
             </tr>
             </tbody>
