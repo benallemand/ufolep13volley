@@ -200,6 +200,12 @@ return array(
         'uploadPhoto' => 'user',
     ),
     'rank' => array(
+        'getRank' => 'public',
+        'getRankFFVB' => 'public',
+        'addPenalty' => 'admin',
+        'decrementReportCount' => 'admin',
+        'incrementReportCount' => 'admin',
+        'removePenalty' => 'admin',
         'delete' => 'admin',
         'getRanks' => 'admin',
         'getRanksByCompetitionGroupedByDivision' => 'admin',
@@ -253,7 +259,8 @@ return array(
         'delete' => 'admin',
         'getTimeSlots' => 'admin',
         'getWeekSchedule' => 'admin',
-        'saveTimeSlot' => 'admin',
+        'removeTimeSlot' => 'user',
+        'saveTimeSlot' => 'user',
         'get_my_timeslots' => 'public',
     ),
     'usermanager' => array(

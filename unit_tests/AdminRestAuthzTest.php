@@ -124,6 +124,85 @@ class AdminRestAuthzTest extends UfolepTestCase
     }
 
     /**
+     * Garde-fou de non-régression le plus utile du lot : tout endpoint référencé
+     * par un frontend DOIT être déclaré dans `rest/access.php`, sinon il répond
+     * 403 en production alors que l'écran l'appelle.
+     *
+     * C'est exactement le bug qui a échappé à la première version : `rank/getRank`
+     * est construit dynamiquement (`/rest/action.php/rank/${endpoint}`) et n'a donc
+     * pas été vu par un grep sur les littéraux — la page de classement était cassée.
+     */
+    public function test_tous_les_endpoints_appeles_par_les_frontends_sont_declares(): void
+    {
+        $access = require __DIR__ . '/../rest/access.php';
+        $root = realpath(__DIR__ . '/..');
+
+        $referenced = [];
+        foreach ($this->frontendFiles($root) as $file) {
+            $content = file_get_contents($file);
+            if (preg_match_all('#action\.php/([a-z]+)/([a-zA-Z_]+)#', $content, $m, PREG_SET_ORDER)) {
+                foreach ($m as $hit) {
+                    $referenced[$hit[1] . '/' . $hit[2]] = str_replace($root, '', $file);
+                }
+            }
+        }
+
+        // Actions construites dynamiquement : invisibles a un grep sur les
+        // litteraux. Les tenir a jour ici fait echouer le test si l'on en ajoute
+        // une sans la declarer dans access.php.
+        $dynamiques = [
+            // pages/components/table/Rank.js  ->  /rest/action.php/rank/${endpoint}
+            'rank/getRank', 'rank/getRankFFVB', 'rank/addPenalty', 'rank/removePenalty',
+            'rank/incrementReportCount', 'rank/decrementReportCount',
+            // pages/components/panel/Timeslots.js  ->  /rest/action.php/timeslot/${action}
+            'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
+            // pages/components/panel/Players.js  ->  /rest/action.php/player/${action}
+            'player/set_leader', 'player/set_vice_leader', 'player/set_captain',
+            'player/remove_from_team',
+        ];
+        foreach ($dynamiques as $key) {
+            $referenced[$key] = $referenced[$key] ?? '(URL construite dynamiquement)';
+        }
+
+        $manquants = [];
+        foreach ($referenced as $key => $origin) {
+            [$class_name, $action] = explode('/', $key, 2);
+            if (!isset($access[$class_name][$action])) {
+                $manquants[] = "$key  (appelé depuis $origin)";
+            }
+        }
+
+        self::assertSame(
+            [],
+            $manquants,
+            'Endpoints appelés par un frontend mais absents de rest/access.php : '
+            . implode(' | ', $manquants)
+        );
+    }
+
+    /**
+     * @return string[] fichiers JS des frontends (SPA publique, admin Vue, ExtJS)
+     */
+    private function frontendFiles(string $root): array
+    {
+        $files = [];
+        foreach (['pages', 'admin', 'js'] as $dir) {
+            $it = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator("$root/$dir", FilesystemIterator::SKIP_DOTS)
+            );
+            foreach ($it as $f) {
+                if ($f->isFile() && $f->getExtension() === 'js') {
+                    $files[] = $f->getPathname();
+                }
+            }
+        }
+        foreach (glob("$root/*.js") as $f) {
+            $files[] = $f;
+        }
+        return $files;
+    }
+
+    /**
      * Actions d'administration dépourvues de contrôle de rôle interne : elles
      * dépendent entièrement du niveau déclaré ici.
      */
