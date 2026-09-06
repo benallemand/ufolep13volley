@@ -1,3 +1,15 @@
 :80 {
-    reverse_proxy php:80
+	# Même routage qu'en home server (Caddyfile.docker), pour que /mailpit soit
+	# testable en local. En dev, http://localhost:8025 reste accessible en
+	# direct, sans mot de passe.
+	handle /mailpit* {
+		basic_auth {
+			mailpit $2a$14$eoT7zU/WYoWLo1RuN0yGvuZ7Jfcb3NMGp8zx0vHEBJTEMb9FoYNpO
+		}
+		reverse_proxy mailpit:8025
+	}
+
+	handle {
+		reverse_proxy php:80
+	}
 }

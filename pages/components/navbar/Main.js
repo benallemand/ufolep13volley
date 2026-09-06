@@ -70,9 +70,9 @@ export default {
                   <ul>
                     <template v-for="group in groupedPools">
                       <li>
-                        <a target="_blank" :href="'/rank_for_cup.php?code_competition='+group.code_competition">
+                        <router-link :to="'/rank_for_cup/'+group.code_competition">
                           {{ group.libelle }}
-                        </a>
+                        </router-link>
                       </li>
                     </template>
                   </ul>

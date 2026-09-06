@@ -42,11 +42,5 @@ services:
     profiles:
       - test
 
-  # Serveur SMTP local : capture tous les emails envoyés
-  # Interface web : http://localhost:8025
-  mailpit:
-    image: axllent/mailpit:latest
-    restart: unless-stopped
-    ports:
-      - "8025:8025"   # Interface web
-      - "1025:1025"   # SMTP (utilisé par PHP)
+  # Mailpit est désormais défini dans docker-compose.yml (les deux modes en ont
+  # besoin) — plus rien à surcharger ici.

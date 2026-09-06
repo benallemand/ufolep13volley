@@ -522,13 +522,16 @@ class UserManager extends Generic
             throw new Exception("Il n'existe pas de compte avec cette adresse email !");
         }
         $result = $results[0];
+        // Le lien atterrit sur une page Vue qui appelle reset_my_password et
+        // affiche le résultat (issue #266) — avant, il pointait directement sur
+        // l'endpoint REST et l'utilisateur voyait du JSON brut.
         $url = $this->get_page_url() .
-            '/rest/action.php/usermanager/reset_my_password?' .
+            '/pages/home.html#/reset_password/confirm?' .
             http_build_query(array(
                 'id' => $result['id'],
                 'hash' => md5($result['id'] . $result['login'] . $result['email'] . date('Y-m-d')),));
         $this->email->send_reset_password($user_email, $result['login'], $url);
-        $message = "Demande d'initialisation de mot de passe effectuée.<br/>Vous allez recevoir un email vous indiquant la marche à suivre.";
+        $message = "Demande d'initialisation de mot de passe effectuée. Vous allez recevoir un email vous indiquant la marche à suivre.";
         throw new Exception($message, 201);
     }
 

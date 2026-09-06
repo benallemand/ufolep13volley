@@ -277,38 +277,6 @@ class Competition extends Generic
     }
 
     /**
-     * @param string $code_competition
-     * @return void
-     * @throws Exception
-     */
-    public function generate_menu(string $code_competition): void
-    {
-        $label = match ($code_competition) {
-            'm', 'f', 'mo' => 'Division',
-            'c', 'kh' => 'Poule',
-            default => '?',
-        };
-        $result_string = "";
-        $competitions = $this->getCompetitions("c.code_competition = '$code_competition'");
-        foreach ($competitions as $competition) {
-            if (in_array($code_competition, array('cf', 'kf'))) {
-                $result_string .= "<li><a href='#matches/$code_competition'>" . $competition['libelle'] . "</a></li>";
-                continue;
-            }
-            $result_string .= "<li class='dropdown-header'><h4>" . $competition['libelle'] . "</h4></li>";
-            if (in_array($code_competition, array('c', 'kh'))) {
-                $result_string .= "<li><a href='/rank_for_cup.php?code_competition=$code_competition'>Classement général</a></li>";
-            }
-            $divisions = $this->rank->getDivisionsFromCompetition($code_competition);
-            foreach ($divisions as $division) {
-                $division_string = $division['division'];
-                $result_string .= "<li><a href='#championship/$code_competition/$division_string'>$label $division_string</a></li>";
-            }
-        }
-        echo $result_string;
-    }
-
-    /**
      * @throws Exception
      */
     public function getTournaments(): array|int|string|null
