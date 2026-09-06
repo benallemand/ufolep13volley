@@ -6,7 +6,7 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 
 - **Backend** : PHP 8.1, MySQL
 - **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI — bundlé via Vite (Node.js 20)
-- **Frontend admin** : Sencha/ExtJS (interface d'administration historique, CDN — non bundlé)
+- **Frontend admin** : Sencha/ExtJS (interface d'administration historique, CDN — non bundlé, `admin.php` uniquement)
 - **Tests unitaires** : PHPUnit (`unit_tests/`)
 - **Tests E2E** : Playwright (`e2e/`)
 - **Reverse proxy local** : Caddy (Docker)
@@ -160,7 +160,11 @@ npm run build
 - `live.html`, `match.html`, `survey.html`, `team_sheets.html` — pages de gestion de match (chacune charge son `.js` racine : `live.js`, etc.)
 - `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — pages publiques / dashboard responsable
 
-**Hors périmètre du bundle Vite** : `admin.php`, `register.php`, `reset_password.php`, `rank_for_cup.php` — restent sur les CDN ExtJS (interface d'administration historique).
+**Hors périmètre du bundle Vite** : `admin.php` seul — dernière page sur les CDN
+ExtJS (interface d'administration historique, migration suivie par l'issue #265).
+`register.php` (#249), `reset_password.php` et `rank_for_cup.php` (#266) ne sont plus
+que des redirections vers les routes Vue correspondantes ; leurs URLs historiques
+sont conservées parce qu'elles circulent en lien externe et en favori.
 
 ### Versionner et déployer
 
@@ -249,7 +253,9 @@ class MonTest extends UfolepTestCase {
 
 - Sencha/ExtJS pour l'interface d'administration historique
 - Fichiers dans `js/` (controllers, models, views, stores)
-- Point d'entrée : `admin.php` et `js/administration.js`
+- **Point d'entrée unique : `admin.php` et `js/administration.js`** — depuis #266,
+  plus aucune page publique ne charge ExtJS. Supprimer `admin.php` suffit donc à
+  sortir ExtJS du projet (issue #265).
 
 ## GitHub
 

@@ -1,44 +1,13 @@
 <?php
-$title = "Classement général";
+// Issue #266 : la grille ExtJS a été remplacée par un composant Vue de la SPA
+// publique. On conserve l'URL historique en redirection : elle circule en lien
+// externe et en favori (/rank_for_cup.php?code_competition=c).
 $code_competition = filter_input(INPUT_GET, 'code_competition');
-?>
-<!DOCTYPE html>
-<HTML>
-<HEAD>
-    <TITLE> <?php echo $title; ?></TITLE>
-    <META
-            http-equiv="Content-Type"
-            content="text/html; charset=utf-8"/>
-    <link
-            rel="shortcut icon"
-            href="favicon.ico"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"/>
-    <link
-            href="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-crisp-touch/resources/theme-crisp-touch-all.css"
-            rel="stylesheet"/>
-    <link
-            href="/cells.css"
-            rel="stylesheet"/>
-    <script type="text/javascript" src="/js/ux/jszip.min.js"></script>
-    <script type="text/javascript" src="/js/ux/FileSaver.js"></script>
-    <script
-            src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"
-            type="text/javascript"></script>
-    <script
-            src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/locale/locale-fr.js"
-            type="text/javascript"></script>
-    <script
-            src="//cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-crisp-touch/theme-crisp-touch.js"
-            type="text/javascript"></script>
-    <script
-            type="text/javascript" src="js/rank_for_cup.js"></script>
-    <script type="text/javascript">
-        var code_competition = "<?php echo $code_competition; ?>";
-    </script>
-</HEAD>
-<BODY>
-</BODY>
-</HTML>
+// Le code de compétition part dans un en-tête Location : on n'y laisse passer
+// que des caractères de code (pas de CR/LF, pas de séparateur d'URL).
+if (empty($code_competition) || preg_match('/^[a-z0-9_]{1,20}$/i', $code_competition) !== 1) {
+    header('Location: /pages/home.html');
+    exit(0);
+}
+header("Location: /pages/home.html#/rank_for_cup/$code_competition");
+exit(0);

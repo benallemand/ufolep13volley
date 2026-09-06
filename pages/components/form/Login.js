@@ -27,9 +27,9 @@ export default {
             <input name="password" type="password" class="input input-bordered" required/>
           </div>
           <div class="flex justify-between gap-2">
-            <a href="/reset_password.php" class="btn btn-sm btn-ghost">
+            <router-link to="/reset_password" class="btn btn-sm btn-ghost">
               <i class="fas fa-question"></i>mot de passe oublié
-            </a>
+            </router-link>
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i>Connexion
             </button>

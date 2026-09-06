@@ -12,12 +12,25 @@ const routes = [
         component: () => import('../form/Login.js')
     },
     {
+        path: '/reset_password',
+        component: () => import('../form/ResetPassword.js')
+    },
+    {
+        // Atterrissage du lien envoyé par email (?id=…&hash=…)
+        path: '/reset_password/confirm',
+        component: () => import('../panel/ResetPasswordConfirm.js')
+    },
+    {
         path: '/divisions/:code_competition/:division',
         component: () => import('../panel/Division.js')
     },
     {
         path: '/finals/:code_competition',
         component: () => import('../panel/Finals.js'),
+    },
+    {
+        path: '/rank_for_cup/:code_competition',
+        component: () => import('../panel/RankForCup.js'),
     },
     {
         path: '/last-results',
