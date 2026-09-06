@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "e2e:up": "docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.e2e-dev.yml up -d",
+    "e2e:check": "bash e2e/preflight.sh -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.e2e-dev.yml",
+    "e2e": "docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.e2e-dev.yml --profile test run --rm playwright",
+    "e2e:only": "docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.e2e-dev.yml --profile test run --rm playwright npx playwright test",
+    "e2e:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.e2e-dev.yml down"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.7",

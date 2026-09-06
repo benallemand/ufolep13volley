@@ -64,6 +64,17 @@ class AdminRestAuthzTest extends UfolepTestCase
         self::assertSame([1], Generic::parse_id_list('1,2) OR (1=1'));
     }
 
+    /**
+     * `getUsers` renvoyait `password_hash` à qui le demandait. Le champ n'est ni
+     * affiché ni édité par l'admin : il n'a aucune raison de sortir de la base.
+     */
+    public function test_get_users_n_expose_pas_l_empreinte_du_mot_de_passe(): void
+    {
+        $sql = file_get_contents(__DIR__ . '/../sql/get_users.sql');
+        self::assertNotFalse($sql, 'sql/get_users.sql introuvable');
+        self::assertStringNotContainsString('password_hash', $sql);
+    }
+
     public function test_la_liste_des_endpoints_admin_est_bien_formee(): void
     {
         $admin_actions = require __DIR__ . '/../rest/admin_actions.php';

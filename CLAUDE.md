@@ -17,7 +17,6 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 ```
 classes/          # Toutes les classes PHP métier
   SqlManager.php  # Accès base de données
-  Rest.php        # Classe de base pour les endpoints REST
   Generic.php     # Classe de base commune
   MatchMgr.php    # Gestion des matchs
   Players.php     # Gestion des joueurs
@@ -129,9 +128,41 @@ Contrairement à une exécution sur la base de dev, **les tests destructifs sont
 sans danger en CI** puisque la base est vierge à chaque run.
 
 ### Tests E2E Playwright
+
+**Boucle de développement** (recommandé) — le code est servi par le bind mount,
+donc aucun `build` d'image entre deux itérations :
+
 ```bash
+npm run e2e:up       # démarre la stack en mode test (APP_ENV=test)
+npm run e2e:check    # préflight : refuse de lancer si la stack n'est pas prête
+npm run e2e          # campagne complète  (~3 min 30, 54 tests)
+npm run e2e:only -- tests/issue_268.spec.js   # une seule spec  (~25 s)
+```
+
+**Mode image** (ce que fait la CI, et le seul qui teste l'image telle qu'elle sera
+déployée) — impose un `build` avant chaque run :
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.e2e.yml build php
 docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright
 ```
+
+**Trois pièges qui coûtent cher :**
+
+1. **Toujours passer le MÊME jeu de `-f` au `up` et au `run`.** Avec un jeu
+   différent, Compose voit la définition de `php` changer et le recrée en cours de
+   route : il perd `APP_ENV=test` et *tous* les helpers répondent 403, ce qui fait
+   échouer une quinzaine de tests pour une raison qui n'a rien à voir.
+2. **Ne rien lancer pendant une campagne.** Un `build`, un `up` ou une suite
+   PHPUnit en parallèle recrée ou affame le conteneur `php` : la campagne meurt, ou
+   `finals.spec.js` déborde son timeout de 10 s sur le spinner (la page enchaîne
+   plusieurs `matchmgr/getMatches`, ~1,1 s pièce machine au repos).
+3. **En mode image, penser au `build`.** Sinon on teste l'image précédente et on
+   croit avoir validé un correctif qui n'y est pas.
+
+Si un `up` dépasse la minute, la VM Docker Desktop est probablement coincée sur le
+partage de fichiers Windows (le conteneur reste en `Created`) : redémarrer Docker
+Desktop depuis la barre des tâches.
 
 **Architecture des tests E2E :**
 - Chaque spec est dans `e2e/tests/` et correspond à un ticket GitHub (ex. `live_score.spec.js` → issue #217)
@@ -241,9 +272,6 @@ git push origin v1.2.3
 ### Classe `SqlManager`
 Point central d'accès à la base de données MySQL. Toutes les classes métier héritent de `Generic` qui instancie `SqlManager`.
 
-### Classe `Rest`
-Classe de base pour les endpoints REST auto-générés depuis la structure de table MySQL.
-
 ### Pattern des classes métier
 ```php
 class MaClasse extends Generic {
@@ -253,6 +281,24 @@ class MaClasse extends Generic {
 
 ### Endpoints AJAX
 Les fichiers dans `ajax/` sont des points d'entrée HTTP. Ils instancient les classes et retournent du JSON.
+
+### Autorisation des endpoints REST (issue #268)
+
+`rest/admin_actions.php` liste les couples `classe/action` réservés aux
+administrateurs ; `rest/action.php` refuse en 403 **avant** d'instancier quoi que
+ce soit. La garde est dans le routeur et pas dans `Generic::save()`/`delete()`,
+parce que ces méthodes servent aussi des parcours responsable d'équipe et
+responsable de club — et parce qu'une garde de routeur n'affecte que le HTTP,
+donc ni les appels PHP internes, ni les crons.
+
+> Avant d'ajouter une entrée, vérifier que l'action n'est pas appelée par le front
+> public ou l'espace responsable, **y compris via une URL construite
+> dynamiquement** : `pages/components/panel/Players.js` appelle
+> `` `/rest/action.php/player/${action}` ``, ce qu'un grep sur les littéraux ne
+> voit pas.
+
+Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier
+les valeurs. Ne jamais concaténer (issue #268, suivi dans #270).
 
 ## Tests unitaires
 
