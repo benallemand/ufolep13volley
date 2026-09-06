@@ -129,10 +129,12 @@ export default {
                     field.type === 'checkbox' ? (value ? '1' : '0') : (value ?? '')
                 );
             }
-            // `id` vide => INSERT, sinon UPDATE (convention Generic::save)
-            if (!this.isCreation) {
-                formData.append(this.idField, this.record[this.idField]);
-            }
+            // L'identifiant est TOUJOURS envoyé, vide à la création : c'est ce
+            // que faisait le champ caché `id` des formulaires ExtJS, et
+            // plusieurs méthodes le déclarent en paramètre obligatoire
+            // (`Club::saveClub($id, ...)`). Côté base, `Generic::save()` fait un
+            // INSERT sur une valeur vide et un UPDATE sinon.
+            formData.append(this.idField, this.record[this.idField] ?? '');
             axios.post(this.saveUrl, formData)
                 .then((response) => {
                     onSuccess(this, response);
