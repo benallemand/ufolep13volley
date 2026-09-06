@@ -344,6 +344,12 @@ class MatchMgr extends Generic
      */
     public function get_match($id_match)
     {
+        // `get_matches()` prend une clause WHERE toute faite : impossible d'y lier
+        // un paramètre, donc on valide avant de composer (issue #270).
+        if (!is_numeric($id_match)) {
+            throw new Exception("Identifiant de match invalide !");
+        }
+        $id_match = (int)$id_match;
         $results = $this->get_matches("m.id_match = $id_match");
         $count_results = count($results);
         if ($count_results !== 1) {
@@ -1912,6 +1918,9 @@ class MatchMgr extends Generic
      */
     public function get_match_by_code_match(string $code_match)
     {
+        // Contexte de chaîne quotée dans une clause WHERE composée à la main :
+        // on échappe, comme le fait déjà getMatches() (issue #270).
+        $code_match = $this->sql_manager->escape($code_match);
         $results = $this->get_matches("m.code_match = '$code_match'");
         $count_results = count($results);
         if ($count_results !== 1) {
