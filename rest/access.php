@@ -201,7 +201,7 @@ return array(
     ),
     'rank' => array(
         'getRank' => 'public',
-        'getRankFFVB' => 'public',
+        'getRankFFVB' => 'admin',
         'addPenalty' => 'admin',
         'decrementReportCount' => 'admin',
         'incrementReportCount' => 'admin',
