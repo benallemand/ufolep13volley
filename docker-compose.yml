@@ -12,6 +12,7 @@ services:
       - caddy_config:/config
     depends_on:
       - php
+      - mailpit
 
   # Application PHP/Apache
   php:
@@ -36,6 +37,22 @@ services:
       - ./players_pics_low:/var/www/html/players_pics_low
       - ./teams_pics:/var/www/html/teams_pics
       - ./match_files:/var/www/html/match_files
+
+  # Serveur SMTP de test : capture tous les emails au lieu de les envoyer.
+  # Présent dans les DEUX modes (local et home server) — `.env.docker` pointe
+  # dessus, donc aucune de ces deux instances n'envoie de vrai email.
+  # La prod OVH utilise `.env.prod` (SMTP OVH) et n'est pas concernée.
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    environment:
+      # L'UI est servie sous /mailpit et exposée par Caddy (auth basique).
+      # Pas de port public : le 8025 n'est ouvert que sur la loopback, pour le
+      # confort en dev (http://localhost:8025, sans mot de passe).
+      - MP_WEBROOT=mailpit
+    ports:
+      - "127.0.0.1:8025:8025"   # Interface web (accès direct, machine locale)
+      - "127.0.0.1:1025:1025"   # SMTP (php le joint par le réseau compose)
 
 volumes:
   caddy_data:

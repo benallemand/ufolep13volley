@@ -56,13 +56,15 @@ images/           # Assets images
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 # App      : http://localhost
-# Emails   : http://localhost:8025  (Mailpit)
+# Emails   : http://localhost/mailpit  (via Caddy, auth basique)
+#            http://localhost:8025/mailpit/  (accès direct, sans mot de passe)
 ```
 
 **Mode home server / biggyben.freeboxos.fr** (HTTPS via Let's Encrypt, Caddyfile.docker) :
 ```bash
 docker compose up -d --build
-# App : https://biggyben.freeboxos.fr
+# App    : https://biggyben.freeboxos.fr
+# Emails : https://biggyben.freeboxos.fr/mailpit  (auth basique)
 ```
 > Le `docker-compose.dev.yml` n'est PAS chargé automatiquement — c'est voulu.
 > `docker-compose.override.yml` serait chargé auto : ne pas utiliser ce nom.
@@ -72,6 +74,31 @@ docker compose up -d --build
 > Desktop). Toute modif de code nécessite donc un `docker compose up -d --build`.
 > Seuls `.env.docker` (monté comme `.env`) et les répertoires d'uploads
 > (`players_pics`, `players_pics_low`, `teams_pics`, `match_files`) restent montés.
+>
+> **`.env.docker` étant monté fichier par fichier, une réécriture du fichier casse
+> le bind mount** (nouvel inode) : le conteneur continue de lire l'ancienne version.
+> Après modification, `docker compose ... up -d --force-recreate php`.
+
+### Emails : tout part dans Mailpit
+
+Le service `mailpit` est déclaré dans `docker-compose.yml`, donc présent dans les
+**deux** modes, et `.env.docker` pointe dessus (`MAIL_HOST=mailpit`, port 1025).
+Ni le dev local ni le home server n'envoient de vrai email. Seule la prod OVH
+envoie réellement — elle utilise `.env.prod` (SMTP OVH), jamais `.env.docker`.
+
+L'interface est servie par Caddy sous `/mailpit` (Mailpit tourne avec
+`MP_WEBROOT=mailpit`, donc le préfixe n'est **pas** retiré par le proxy) et
+protégée par une auth basique : la boîte contient des liens de réinitialisation
+valides et des mots de passe générés en clair. Le port 8025 n'est publié que sur
+`127.0.0.1`, jamais sur l'extérieur.
+
+> **Piège** : `Emails.php` force **tous** les destinataires vers
+> `benallemand@gmail.com` dès que `MAIL_USERNAME` vaut cette adresse. En pointant
+> sur Mailpit on utilise donc un autre expéditeur, pour voir les vrais
+> destinataires. Ne pas remettre l'ancien couple Gmail sans y penser.
+>
+> `.env.docker` n'est pas versionné : le changement doit être fait **sur chaque
+> machine**, y compris sur biggyben (voir `.env-template`).
 
 ### Tests PHP (dans le container dev)
 ```bash

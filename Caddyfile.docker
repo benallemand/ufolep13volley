@@ -1,3 +1,17 @@
 biggyben.freeboxos.fr {
-    reverse_proxy php:80
+	# Boîte de réception de test (Mailpit). Elle contient des liens de
+	# réinitialisation valides et des mots de passe en clair : accès protégé
+	# par mot de passe, et servi en HTTPS sur le 443 déjà ouvert — pas de port
+	# supplémentaire à rediriger sur la Freebox.
+	# Mailpit tourne avec MP_WEBROOT=mailpit : on ne retire donc PAS le préfixe.
+	handle /mailpit* {
+		basic_auth {
+			mailpit $2a$14$eoT7zU/WYoWLo1RuN0yGvuZ7Jfcb3NMGp8zx0vHEBJTEMb9FoYNpO
+		}
+		reverse_proxy mailpit:8025
+	}
+
+	handle {
+		reverse_proxy php:80
+	}
 }
