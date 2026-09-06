@@ -87,8 +87,10 @@ class LimitDate extends Generic
      */
     public function getLimitDate($compet)
     {
-        $sql = "SELECT date_limite FROM dates_limite WHERE code_competition = '$compet'";
-        $results = $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "SELECT date_limite FROM dates_limite WHERE code_competition = ?";
+        $bindings = array(array('type' => 's', 'value' => $compet));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             throw new Exception("Impossible de récupérer la date limite de la compétition $compet !");
         }

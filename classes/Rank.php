@@ -482,24 +482,39 @@ class Rank extends Generic
      */
     public function addPenalty($compet, $id_equipe)
     {
-        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-        $results = $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = ? AND code_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             throw new Exception("Impossible de récupérer les pénalités de l'équipe !");
         }
         $data = $results[0];
         $penalite = $data['penalite'];
         $penalite++;
-        $sqlmaj = "UPDATE classements SET penalite = $penalite WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-        $this->sql_manager->execute($sqlmaj);
+        $sqlmaj = "UPDATE classements SET penalite = ? WHERE id_equipe = ? AND code_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $penalite),
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $this->sql_manager->execute($sqlmaj, $bindings);
         $this->addActivity("Une penalite a ete infligee a l'equipe " . $this->team->getTeamName($id_equipe));
         return true;
     }
 
     public function removePenalty($compet, $id_equipe)
     {
-        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-        $results = $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = ? AND code_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             throw new Exception("Impossible de récupérer les pénalités de l'équipe !");
         }
@@ -509,24 +524,39 @@ class Rank extends Generic
         if ($penalite < 0) {
             $penalite = 0;
         }
-        $sqlmaj = "UPDATE classements SET penalite = $penalite WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-        $this->sql_manager->execute($sqlmaj);
+        $sqlmaj = "UPDATE classements SET penalite = ? WHERE id_equipe = ? AND code_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $penalite),
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $this->sql_manager->execute($sqlmaj, $bindings);
         $this->addActivity("Une penalite a ete annulee pour l'equipe " . $this->team->getTeamName($id_equipe));
         return true;
     }
 
     public function incrementReportCount($compet, $id_equipe)
     {
-        $sql = "UPDATE classements SET report_count = report_count + 1 WHERE id_equipe = $id_equipe AND code_competition = '$compet'";
-        $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "UPDATE classements SET report_count = report_count + 1 WHERE id_equipe = ? AND code_competition = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("Un report a ete comptabilise pour l'equipe " . $this->team->getTeamName($id_equipe));
         return true;
     }
 
     public function decrementReportCount($compet, $id_equipe)
     {
-        $sql = "UPDATE classements SET report_count = report_count - 1 WHERE id_equipe = $id_equipe AND code_competition = '$compet' AND report_count > 0";
-        $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "UPDATE classements SET report_count = report_count - 1 WHERE id_equipe = ? AND code_competition = ? AND report_count > 0";
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_equipe),
+            array('type' => 's', 'value' => $compet),
+        );
+        $this->sql_manager->execute($sql, $bindings);
         $this->addActivity("Un report a ete retire pour l'equipe " . $this->team->getTeamName($id_equipe));
         return true;
     }

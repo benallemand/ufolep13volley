@@ -75,8 +75,10 @@ class Competition extends Generic
      */
     public function isCompetitionStarted($id): bool
     {
-        $sql = "SELECT DATE_FORMAT(start_date, '%d/%m/%Y') AS start_date FROM competitions WHERE id = $id";
-        $results = $this->sql_manager->execute($sql);
+        // issue #270
+        $sql = "SELECT DATE_FORMAT(start_date, '%d/%m/%Y') AS start_date FROM competitions WHERE id = ?";
+        $bindings = array(array('type' => 'i', 'value' => $id));
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) !== 1) {
             throw new Exception("La date de début n'a pas été saisie pour cette compétition !");
         }
@@ -682,12 +684,21 @@ class Competition extends Generic
             if (!in_array($competition['code_competition'], array('kf', 'cf'))) {
                 throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
             }
-            $days = $day_mgr->get("j.code_competition = '$code_competition' AND j.nommage = '$nommage'");
+            // Clauses WHERE composees a la main : on echappe les valeurs (issue #270).
+            $safe_code = $this->sql_manager->escape($code_competition);
+            $safe_nommage = $this->sql_manager->escape($nommage);
+            $days = $day_mgr->get("j.code_competition = '$safe_code' AND j.nommage = '$safe_nommage'");
             if (empty($days)) {
                 throw new Exception("Il faut créer la journée avant de générer cette compétition !");
             }
             $days_ids = implode(',', array_values(array_column($days, 'id')));
-            $this->match->delete_matches("code_competition = '$code_competition' AND division = '1' AND id_journee IN ($days_ids)");
+            // $days_ids est une liste d'identifiants : on la normalise en entiers
+            // avant de la placer dans la clause (issue #270).
+            $safe_days_ids = implode(',', Generic::parse_id_list($days_ids));
+            if ($safe_days_ids === '') {
+                return;
+            }
+            $this->match->delete_matches("code_competition = '$safe_code' AND division = '1' AND id_journee IN ($safe_days_ids)");
             $this->match->draw_matches($code_competition, '1', $days[0]['id']);
         }
     }
