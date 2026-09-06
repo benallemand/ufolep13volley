@@ -172,8 +172,15 @@ class Competition extends Generic
      */
     public function delete_friendships($ids)
     {
-        $sql = "DELETE FROM friendships WHERE id IN($ids)";
-        $this->sql_manager->execute($sql);
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
+        $sql = "DELETE FROM friendships WHERE id IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -272,8 +279,15 @@ class Competition extends Generic
      */
     public function delete_blacklist_by_city($ids)
     {
-        $sql = "DELETE FROM blacklist_by_city WHERE id IN($ids)";
-        $this->sql_manager->execute($sql);
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
+        $sql = "DELETE FROM blacklist_by_city WHERE id IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**

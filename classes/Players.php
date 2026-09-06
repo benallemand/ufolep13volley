@@ -534,9 +534,19 @@ class Players extends Generic
                 return false;
             }
         }
-        $sql = "UPDATE joueurs SET id_club = $id_club WHERE id IN ($id_players)";
-        $this->sql_manager->execute($sql);
-        foreach (explode(',', $id_players) as $idPlayer) {
+        // $id_players et $id_club viennent de l'extérieur (issue #268)
+        $id_list = Generic::parse_id_list($id_players);
+        if (empty($id_list) || !is_numeric($id_club)) {
+            return false;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
+        $sql = "UPDATE joueurs SET id_club = ? WHERE id IN ($placeholders)";
+        $bindings = array(array('type' => 'i', 'value' => (int)$id_club));
+        foreach ($id_list as $id) {
+            $bindings[] = array('type' => 'i', 'value' => $id);
+        }
+        $this->sql_manager->execute($sql, $bindings);
+        foreach ($id_list as $idPlayer) {
             $this->addActivity($this->getPlayerFullName($idPlayer) . " a ete ajoute au club " . $this->club->getClubName($id_club));
         }
         return true;

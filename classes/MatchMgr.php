@@ -1353,11 +1353,18 @@ class MatchMgr extends Generic
      */
     function archiveMatch($ids)
     {
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
         $sql = "UPDATE matches 
             SET match_status = 'ARCHIVED',
                 id_journee = NULL
-            WHERE id_match IN($ids)";
-        $this->sql_manager->execute($sql);
+            WHERE id_match IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -1365,10 +1372,17 @@ class MatchMgr extends Generic
      */
     function confirmMatch($ids)
     {
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
         $sql = "UPDATE matches 
-            SET match_status = 'CONFIRMED' 
-            WHERE id_match IN($ids)";
-        $this->sql_manager->execute($sql);
+            SET match_status = 'CONFIRMED'
+            WHERE id_match IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -1376,10 +1390,17 @@ class MatchMgr extends Generic
      */
     function unconfirmMatch($ids)
     {
+        // $ids vient de l'extérieur : liste assainie et valeurs liées (issue #268)
+        $id_list = Generic::parse_id_list($ids);
+        if (empty($id_list)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($id_list), '?'));
         $sql = "UPDATE matches 
-            SET match_status = 'NOT_CONFIRMED' 
-            WHERE id_match IN($ids)";
-        $this->sql_manager->execute($sql);
+            SET match_status = 'NOT_CONFIRMED'
+            WHERE id_match IN($placeholders)";
+        $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
