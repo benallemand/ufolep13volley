@@ -100,6 +100,53 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 > masse à un club / une équipe**, **photo du joueur**. Restent dans l'ancienne
 > administration.
 
+### Compétitions (`#/competitions`)
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| P1 | Créer une compétition | Créée ; « Matchs aller-retour » se coche |
+| P2 | Éditer les dates (jj/mm/aaaa) | Modification visible dans la grille |
+| P3 | Supprimer la compétition de test | Le compteur revient à sa valeur de départ |
+
+> Les actions de **génération** du menu ExtJS (journées, matchs, phases finales,
+> palmarès) ne sont **pas** reprises : elles passent par les scripts Python du
+> dépôt `ufolep13volley_python` (`calendar-agent/`).
+
+### Journées (`#/days`)
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| D1 | Ouvrir l'écran | Liste des journées. **Peut être vide en dev** : les journées sont générées par les scripts Python, et la requête joint `competitions` — une journée orpheline ne remonte pas (l'ancien écran se comporte pareil) |
+| D2 | Créer une journée | Liste des compétitions remplie ; créée avec le bon numéro |
+| D3 | Supprimer la journée de test | Disparaît |
+
+### Divisions / poules (`#/ranks`)
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| R1 | Ouvrir l'écran | ~216 engagements |
+| R2 | Ouvrir la création | Listes **Compétition** (9) et **Équipe** (~280) remplies |
+| R3 | Éditer un engagement, changer le classement initial | Modification visible |
+
+> La **réorganisation par glisser-déposer** (issue #189) n'est pas reprise :
+> c'est un écran à part, pas une grille. Reste dans l'ancienne administration.
+
+### Dates limites (`#/limit-dates`)
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| L1 | Ouvrir l'écran | Une ligne par compétition ayant une date limite |
+| L2 | Créer une date limite | Liste des compétitions remplie |
+| L3 | Éditer la date (jj/mm/aaaa) | Modification visible |
+
+### Planning de la semaine (`#/week-schedule`)
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| W1 | Ouvrir l'écran | ~295 créneaux, gymnase / jour / heure / équipe |
+| W2 | Vérifier la barre d'outils | **Pas** de bouton Créer / Éditer / Supprimer, **pas** de colonne de cases à cocher — écran de consultation |
+| W3 | Trier par gymnase, puis rechercher une équipe | Fonctionnent comme sur les autres écrans |
+
 ### Gymnases (`#/gymnasiums`)
 
 | # | Cas | Attendu |
