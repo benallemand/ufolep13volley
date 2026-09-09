@@ -4,9 +4,9 @@
  * saison en cours, pour vérifier que la home lit bien le calendrier en base.
  *
  * La date est fixée au 15 novembre de l'année d'ouverture de la saison : elle
- * tombe donc toujours dans les mois affichés par AnnualCalendar (septembre à
- * juin), quelle que soit la date d'exécution du test. Le test déplie les mois
- * passés avant d'assertionner, ce qui le rend indépendant du jour de passage.
+ * tombe donc toujours dans les dix mois affichés (septembre à juin), quelle que
+ * soit la date d'exécution du test. Depuis #290 la timeline montre la saison
+ * entière : il n'y a plus de mois passés à déplier.
  *
  * SECURITY: ne doit jamais être déployé en production.
  */

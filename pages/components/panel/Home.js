@@ -1,17 +1,21 @@
 import { defineAsyncComponent } from 'vue';
+import { adaptCalendarEvents, currentSeason } from '../calendar/calendarData.js';
 
 export default {
     components: {
         'today-matches': defineAsyncComponent(() => import('./TodayMatches.js')),
         'news': defineAsyncComponent(() => import('../table/News.js')),
         'photos': defineAsyncComponent(() => import('../carousel/Photos.js')),
-        'annual-calendar': defineAsyncComponent(() => import('../calendar/AnnualCalendar.js')),
+        // Timeline de saison depuis #290, en remplacement d'AnnualCalendar.js :
+        // l'agenda est fait de periodes longues, qui noyaient les grilles
+        // mensuelles du composant precedent.
+        'season-timeline': defineAsyncComponent(() => import('../calendar/SeasonTimeline.js')),
     },
     template: `
       <div class="flex flex-col items-center gap-8 px-2">
         <today-matches/>
         <news/>
-        <annual-calendar :events="importantEvents" :season="currentSeason"/>
+        <season-timeline :events="importantEvents" :season="currentSeason"/>
         <photos/>
       </div>
     `,
@@ -25,11 +29,10 @@ export default {
     },
     computed: {
         currentSeason() {
-            const now = new Date();
-            // Même règle que AnnualCalendar : de juillet à décembre, la saison
-            // affichée est celle qui démarre en septembre de l'année en cours
-            const startYear = now.getMonth() <= 5 ? now.getFullYear() - 1 : now.getFullYear();
-            return `${startYear}-${startYear + 1}`;
+            // Regle partagee avec le back (CalendarEvents::getCurrentSeason) :
+            // de janvier a juin, la saison affichee est celle ouverte en
+            // septembre de l'annee precedente.
+            return currentSeason();
         }
     },
     methods: {
@@ -37,7 +40,8 @@ export default {
             axios
                 .get(this.fetchUrl, { params: { season: this.currentSeason } })
                 .then((response) => {
-                    this.importantEvents = Array.isArray(response.data) ? response.data : [];
+                    const rows = Array.isArray(response.data) ? response.data : [];
+                    this.importantEvents = adaptCalendarEvents(rows);
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement du calendrier:", error);

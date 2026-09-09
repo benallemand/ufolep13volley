@@ -188,7 +188,7 @@ test.afterAll(async ({ request }) => {
 - `messages_setup.php` / `messages_teardown.php` — emails non lus pour responsable d'équipe (issue #221)
 - `today_matches_setup.php` / `today_matches_teardown.php` — match programmé aujourd'hui + une nouvelle, pour l'encart "Matchs du jour" et les nouvelles repliables de la home (issue #230). Le setup recopie les FK d'un match déjà visible dans `matchs_view` (échantillonnage **depuis la vue**, pas la table `matches`, pour éviter les matchs orphelins).
 - `admin_session.php` — ouvre une session administrateur, sans autre effet de bord (issue #265). À préférer à `messages_setup.php` pour les specs d'administration.
-- `calendar_events_setup.php` / `calendar_events_teardown.php` — trois événements de calendrier dans la saison en cours, pour le calendrier de la home alimenté en base (issue #253). Les dates sont posées en novembre de l'année d'ouverture de saison, donc toujours dans les mois affichés ; le test déplie les mois passés pour ne pas dépendre du jour d'exécution.
+- `calendar_events_setup.php` / `calendar_events_teardown.php` — trois événements de calendrier dans la saison en cours, pour le calendrier de la home alimenté en base (issue #253). Les dates sont posées en novembre de l'année d'ouverture de saison, donc toujours dans les dix mois affichés. Depuis #290 la spec cible la timeline : un ponctuel s'assertionne sur l'attribut `title` de son losange, plus sur du texte.
 
 ### Installer les dépendances PHP
 ```bash
@@ -335,6 +335,66 @@ class MonTest extends UfolepTestCase {
 - Composants async via `defineAsyncComponent(() => import(...))` (pas `() => import(...)` direct — pas supporté en Vue 3)
 - `axios`, `Toastify`, `Notyf` exposés sur `window` par chaque entrée pour préserver l'usage en globaux dans les sous-composants
 - `dist/` produit par `npm run build` (voir section "Commandes essentielles")
+
+**Recette** : `pages/RECETTE.md` (pendant de `admin/RECETTE.md`, qui ne couvre que
+l'administration).
+
+### Calendriers (issue #290)
+
+Deux composants, deux formes de données — ne pas les confondre :
+
+| Composant | Pour quoi | Techno |
+|---|---|---|
+| `calendar/SeasonTimeline.js` | agenda de la commission | maison, aucune dépendance |
+| `calendar/MatchCalendar.js` | matchs du responsable | FullCalendar 6 (plugins MIT) |
+
+`calendar/calendarData.js` normalise les deux sources vers une forme commune
+(`startDate`/`endDate` en ISO, `time` en `hh:mm`) et porte `currentSeason()`,
+**qui doit rester alignée sur `CalendarEvents::getCurrentSeason()`** — de janvier
+à juin, la saison est celle ouverte en septembre précédent.
+
+> **Timeline pour l'agenda, calendrier pour les matchs.** L'agenda est fait de
+> périodes longues : regroupées par libellé, elles donnent le rythme de la
+> saison (« Championnats » ×3 sur une ligne). Les matchs sont nombreux et
+> ponctuels : sur une timeline ils s'empilent en un amas illisible. L'inverse
+> est vrai aussi — une période de sept semaines remplit chaque case d'une
+> grille mensuelle de « +2 en plus ». Le comparatif est dans #290.
+
+> **Ne pas ajouter `@fullcalendar/resource-timeline`** : ce plugin est
+> **Premium**, pas MIT (tri-licencié commercial / CC non-commercial / GPLv3), et
+> `composer.json` déclare le dépôt `proprietary`. Écarté pour cette raison, tout
+> comme `vis-timeline`, qui traîne moment.js et sept dépendances de pairs.
+
+> **Chacun ne montre que ce qui le concerne** : l'agenda n'est pas superposé au
+> calendrier des matchs — il est déjà affiché juste en dessous par la timeline.
+> Si l'on devait un jour y remettre des périodes, se souvenir que FullCalendar
+> attend une **fin exclusive** (une période du 3 au 10 se déclare jusqu'au 11)
+> et qu'une période longue doit passer en `display: 'background'`, sinon chaque
+> case se remplit de « +2 en plus ».
+
+> **Week-ends** : les matchs se jouent tous du lundi au vendredi, donc les
+> masquer gagne deux colonnes. Mais **jamais en dur** — c'est ce que faisait
+> `AnnualCalendar.js` : un rendez-vous posé un samedi devenait invisible. Le
+> masquage est conditionné à l'absence d'événement d'un seul jour un week-end
+> (les périodes ne comptent pas, elles restent lisibles en semaine).
+
+> **`heure_reception` est nullable** : sans heure, le match est une « journée
+> entière ». Le placer à 00:00 afficherait un horaire faux.
+
+> **`23:59` signifie « fin de journée »** dans `calendar_events`, comme minuit
+> déjà neutralisé côté SQL. À traiter en journée entière, pas en rendez-vous.
+
+> **`getMyClubMatches` renvoie aussi les matchs de l'équipe** du responsable :
+> `mergeMatchSources()` dédoublonne sur `id_match`, sinon chaque match de
+> l'équipe apparaît deux fois, dans deux couleurs.
+
+> **« Aujourd'hui » peut être hors saison** (juillet, août) : une vue mois
+> ouverte sur la date du jour tomberait sur un mois vide. Se replier sur
+> septembre.
+
+> **FullCalendar est chargé en `defineAsyncComponent`** : 210 Ko (64 Ko gzip)
+> confinés au chunk `MatchCalendar`. La home ne charge que la timeline (5 Ko).
+> Rester en **6.x** : les plugins de vues de la v7 ne sont qu'en RC.
 
 ## Frontend admin
 

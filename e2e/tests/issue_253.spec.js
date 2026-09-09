@@ -4,14 +4,18 @@ const { test, expect } = require('@playwright/test');
 /**
  * E2E — Calendrier de la home alimenté depuis la base (issue #253)
  *
- *  1. Setup : insérer trois événements connus dans la saison en cours
- *     (ponctuel avec heure, période, ponctuel « journée entière »).
- *  2. Ouvrir la home et vérifier que le calendrier les affiche, ce qui prouve
- *     que les données viennent bien de la base et non du tableau supprimé
- *     de Home.js.
- *  3. Vérifier la régression des fériés : un ponctuel à minuit ne doit pas
- *     s'afficher « à 00:00 ».
- *  4. Teardown : supprimer les événements de test.
+ * Réécrit pour la timeline de saison (#290), qui remplace `AnnualCalendar.js` :
+ *
+ *  - il n'y a plus de bouton « Afficher les mois passés » — la timeline montre
+ *    la saison entière, donc plus rien à déplier ;
+ *  - un rendez-vous ponctuel n'est plus une ligne de texte mais un **losange**
+ *    portant une infobulle : on assertionne sur l'attribut `title`, seul
+ *    endroit où son heure apparaît ;
+ *  - une période a sa propre **ligne**, dont le libellé est du texte visible.
+ *
+ * Ce que le test garantit, inchangé depuis #253 : les événements viennent de la
+ * base et non d'un tableau codé en dur, un ponctuel affiche son heure, et un
+ * événement à minuit ne s'affiche PAS « à 00:00 ».
  */
 
 test.describe('Issue #253 — Calendrier de la home en base', () => {
@@ -36,46 +40,40 @@ test.describe('Issue #253 — Calendrier de la home en base', () => {
         await request.get('/e2e/helpers/calendar_events_teardown.php');
     });
 
-    /**
-     * Les événements de test sont posés en novembre. Selon la date d'exécution
-     * ce mois peut être passé, donc masqué par défaut : on déplie d'abord.
-     */
-    async function openCalendarWithPastMonths(page) {
+    async function openCalendar(page) {
         await page.goto('/pages/home.html#/home');
         await expect(page.getByText(`calendrier ${season}`)).toBeVisible({ timeout: 10000 });
-
-        const toggle = page.getByRole('button', { name: /Afficher les mois passés/ });
-        if (await toggle.isVisible().catch(() => false)) {
-            await toggle.click();
-        }
     }
 
-    test('le calendrier affiche les événements lus en base', async ({ page }) => {
-        await openCalendarWithPastMonths(page);
+    test('la timeline affiche les événements lus en base', async ({ page }) => {
+        await openCalendar(page);
 
-        await expect(page.getByText(pointLabel).first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText(periodLabel).first()).toBeVisible();
+        // Une période a sa propre ligne, libellée par son intitulé.
+        await expect(page.getByText(periodLabel).first()).toBeVisible({ timeout: 10000 });
+
+        // Les ponctuels sont regroupés sur une ligne unique.
+        await expect(page.getByText('Réunions et rendez-vous')).toBeVisible();
 
         await page.screenshot({
-            path: 'test-results/issue-253/calendrier_depuis_la_base.png',
+            path: 'test-results/issue-253/timeline_depuis_la_base.png',
             fullPage: true
         });
     });
 
-    test('un événement ponctuel affiche son heure', async ({ page }) => {
-        await openCalendarWithPastMonths(page);
+    test('un événement ponctuel affiche son heure dans son infobulle', async ({ page }) => {
+        await openCalendar(page);
 
-        const entry = page.locator('div.rounded.border-l-4', { hasText: pointLabel }).first();
-        await expect(entry).toBeVisible({ timeout: 10000 });
-        await expect(entry).toContainText('19:30');
+        const losange = page.locator(`[title*="${pointLabel}"]`).first();
+        await expect(losange).toBeVisible({ timeout: 10000 });
+        await expect(losange).toHaveAttribute('title', /19:30/);
     });
 
-    test('un événement sur la journée entière n\'affiche pas 00:00', async ({ page }) => {
-        await openCalendarWithPastMonths(page);
+    test("un événement à minuit n'affiche pas 00:00", async ({ page }) => {
+        await openCalendar(page);
 
-        const entry = page.locator('div.rounded.border-l-4', { hasText: alldayLabel }).first();
-        await expect(entry).toBeVisible({ timeout: 10000 });
-        await expect(entry).not.toContainText('00:00');
+        const losange = page.locator(`[title*="${alldayLabel}"]`).first();
+        await expect(losange).toBeVisible({ timeout: 10000 });
+        await expect(losange).not.toHaveAttribute('title', /00:00/);
 
         await page.screenshot({
             path: 'test-results/issue-253/journee_entiere_sans_heure.png',
