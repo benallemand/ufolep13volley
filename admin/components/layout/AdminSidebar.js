@@ -20,10 +20,14 @@ export default {
         <ul class="menu p-2 flex-1 overflow-y-auto flex-nowrap">
           <template v-for="group in menu" :key="group.label">
             <li class="menu-title">{{ group.label }}</li>
-            <li v-for="item in group.items" :key="item.path">
-              <router-link :to="item.path" active-class="active">
+            <li v-for="item in group.items" :key="item.path || item.href">
+              <router-link v-if="item.path" :to="item.path" active-class="active">
                 <i :class="item.icon"></i> {{ item.label }}
               </router-link>
+              <!-- Entrée Vite à part (admin/matches.html) : lien classique. -->
+              <a v-else :href="item.href">
+                <i :class="item.icon"></i> {{ item.label }}
+              </a>
             </li>
           </template>
         </ul>

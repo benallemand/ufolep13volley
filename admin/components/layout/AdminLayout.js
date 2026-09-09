@@ -49,10 +49,16 @@ const router = createRouter({
 });
 
 /**
- * Écrans migrés, groupés dans l'ordre du menu.
+ * Écrans de l'administration, groupés dans l'ordre du menu.
  *
  * Le regroupement est arrivé avec le lot 3 : à plat, la barre latérale passait
- * de dix à seize entrées, et les lots suivants en ajouteront encore.
+ * de dix à seize entrées, et les lots suivants en ont ajouté d'autres.
+ *
+ * Une entrée porte soit `path` (route de cette SPA), soit `href` (page à part).
+ * `admin/matches.html` est une entrée Vite distincte, antérieure à #265 : elle
+ * n'est pas une route d'ici, mais elle doit figurer au menu — la barre d'outils
+ * d'`admin.php` était son seul point d'accès, et le lot 6 l'a emportée avec
+ * elle.
  */
 export const MENU = [
     {
@@ -69,6 +75,7 @@ export const MENU = [
         label: 'Compétitions',
         items: [
             { path: '/matches', label: 'Matchs', icon: 'fas fa-volleyball' },
+            { href: '/admin/matches.html', label: 'Validation des matchs', icon: 'fas fa-clipboard-check' },
             { path: '/competitions', label: 'Compétitions', icon: 'fas fa-trophy' },
             { path: '/ranks', label: 'Divisions / poules', icon: 'fas fa-list-ol' },
             { path: '/divisions', label: 'Réorganiser les divisions', icon: 'fas fa-arrows-up-down-left-right' },

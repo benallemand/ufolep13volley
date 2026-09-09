@@ -31,6 +31,13 @@ Se connecter en administrateur, puis ouvrir **https://biggyben.freeboxos.fr/admi
 | T3 | Réduire la fenêtre à une largeur mobile | Menu burger, tableau qui défile dans son conteneur, **pas** de défilement horizontal de la page |
 | T4 | Ouvrir `/admin.php` | **Redirige vers `/admin/`** — l'ancienne administration ExtJS a été supprimée au lot 6, l'URL historique est conservée en redirection |
 | T5 | Cliquer « Retour au site » | Arrive sur la home publique |
+| T6 | Cliquer « Validation des matchs » dans le menu *Compétitions* | Arrive sur `/admin/matches.html`, la liste des matchs à certifier se charge |
+| T7 | Depuis cette page, cliquer « Administration » | Revient sur `/admin/` |
+
+> T6/T7 : `admin/matches.html` est une entrée Vite **à part**, pas une route de
+> la SPA. Sa seule porte d'entrée était la barre d'outils d'`admin.php`, et le
+> lot 6 l'a emportée avec elle : l'écran est resté joignable par son URL mais
+> plus aucun lien n'y menait. Repéré par Benjamin en recette.
 
 ## Cas génériques — à rejouer sur **chaque** écran
 
