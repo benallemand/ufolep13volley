@@ -393,7 +393,7 @@ class Team extends Generic
                     $sql .= "$key = ?,";
                     break;
                 case 'is_cup_registered':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = Generic::to_flag($value);
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     $sql .= "$key = ?,";
                     break;

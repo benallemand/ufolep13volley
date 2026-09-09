@@ -39,6 +39,14 @@ export default {
         fetchUrl: { type: String, required: true },
         saveUrl: { type: String, default: null },
         deleteUrl: { type: String, default: null },
+        /**
+         * Forme attendue par l'action de suppression :
+         *   'ids' (défaut) — un seul POST, identifiants joints par des virgules
+         *                    (`Generic::delete()`)
+         *   'id'           — un POST par ligne, pour les endpoints unitaires
+         *                    (`News::deleteNews($id)`, `deleteCalendarEvent($id)`)
+         */
+        deleteMode: { type: String, default: 'ids' },
         idField: { type: String, default: 'id' },
         /** Libellé au singulier, pour les boutons et messages */
         entityLabel: { type: String, default: 'élément' },
@@ -243,6 +251,10 @@ export default {
         search() { this.page = 1; },
         rowFilter() { this.page = 1; },
         pageSize() { this.page = 1; },
+        // Un écran peut faire varier son URL (fenêtre de chargement des
+        // emails, filtre serveur…) : on recharge alors au lieu d'afficher
+        // silencieusement les anciennes lignes.
+        fetchUrl() { this.page = 1; this.fetchRows(); },
     },
     created() {
         this.fetchRows();
@@ -304,14 +316,33 @@ export default {
             if (!window.confirm(`Supprimer ${n} ${this.entityLabel}(s) ? Cette action est irréversible.`)) {
                 return;
             }
-            const formData = new FormData();
-            formData.append('ids', this.selection.join(','));
-            axios.post(this.deleteUrl, formData)
+            const requests = this.deleteMode === 'id'
+                ? this.selection.map((id) => {
+                    const one = new FormData();
+                    one.append('id', id);
+                    return () => axios.post(this.deleteUrl, one);
+                })
+                : [() => {
+                    const all = new FormData();
+                    all.append('ids', this.selection.join(','));
+                    return axios.post(this.deleteUrl, all);
+                }];
+            // En mode unitaire on enchaîne les appels au lieu de les lancer en
+            // parallèle : une erreur sur l'un ne doit pas laisser les autres
+            // en vol, et l'ordre rend le message d'erreur lisible.
+            requests
+                .reduce(
+                    (chain, run) => chain.then((last) => run().then((r) => r || last)),
+                    Promise.resolve(null)
+                )
                 .then((response) => {
                     onSuccess(this, response);
                     this.fetchRows();
                 })
-                .catch((error) => onError(this, error));
+                .catch((error) => {
+                    onError(this, error);
+                    this.fetchRows();
+                });
         },
         exportCsv() {
             const sep = ';';

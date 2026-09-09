@@ -219,6 +219,34 @@ class Generic
     }
 
     /**
+     * Normalise une valeur de case à cocher en 0 ou 1.
+     *
+     * Les formulaires n'envoient pas tous la même chose : une case ExtJS cochée
+     * postait `on` et une case décochée ne postait rien du tout, alors que le
+     * formulaire modal de l'admin Vue envoie toujours la clé, avec `1` ou `0`.
+     * Les comparaisons strictes `$value === 'on' || $value === 1` semées dans
+     * les classes ne voyaient donc pas le `'1'` de l'admin Vue : **toute case
+     * cochée y était enregistrée à 0** (issue #265, lot 4).
+     *
+     * @param mixed $value
+     * @return int 0 ou 1
+     */
+    public static function to_flag(mixed $value): int
+    {
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+        if (is_null($value)) {
+            return 0;
+        }
+        $normalized = strtolower(trim((string)$value));
+        if ($normalized === 'on' || $normalized === 'true' || $normalized === 'yes') {
+            return 1;
+        }
+        return is_numeric($normalized) && (float)$normalized != 0 ? 1 : 0;
+    }
+
+    /**
      * Normalise une liste d'ids reçue de l'extérieur ("1,2,3", un tableau, un
      * entier) en un tableau d'entiers, sans doublon ni valeur non numérique.
      *

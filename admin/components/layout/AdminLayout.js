@@ -32,6 +32,13 @@ const routes = [
     { path: '/incompatible-teams', component: () => import('../screens/IncompatibleTeams.js') },
     { path: '/club-friendships', component: () => import('../screens/ClubFriendships.js') },
     { path: '/city-closures', component: () => import('../screens/CityClosures.js') },
+    { path: '/news', component: () => import('../screens/News.js') },
+    { path: '/calendar-events', component: () => import('../screens/CalendarEvents.js') },
+    { path: '/emails', component: () => import('../screens/Emails.js') },
+    { path: '/surveys', component: () => import('../screens/Surveys.js') },
+    { path: '/commission', component: () => import('../screens/Commission.js') },
+    { path: '/registrations', component: () => import('../screens/Registrations.js') },
+    { path: '/registry', component: () => import('../screens/Registry.js') },
     { path: '/:pathMatch(.*)*', redirect: '/users' },
 ];
 
@@ -76,6 +83,23 @@ export const MENU = [
             { path: '/incompatible-teams', label: 'Équipes incompatibles', icon: 'fas fa-ban' },
             { path: '/club-friendships', label: 'Ententes entre clubs', icon: 'fas fa-handshake' },
             { path: '/city-closures', label: 'Périodes par ville', icon: 'fas fa-city' },
+        ],
+    },
+    {
+        label: 'Contenus',
+        items: [
+            { path: '/news', label: 'News', icon: 'fas fa-newspaper' },
+            { path: '/calendar-events', label: 'Calendrier de la home', icon: 'fas fa-calendar-days' },
+        ],
+    },
+    {
+        label: 'Communication & suivi',
+        items: [
+            { path: '/emails', label: 'Emails', icon: 'fas fa-envelope' },
+            { path: '/surveys', label: 'Sondages', icon: 'fas fa-square-poll-vertical' },
+            { path: '/commission', label: 'Commission', icon: 'fas fa-users-gear' },
+            { path: '/registrations', label: 'Inscriptions', icon: 'fas fa-clipboard-check' },
+            { path: '/registry', label: 'Base de registres', icon: 'fas fa-database' },
         ],
     },
 ];

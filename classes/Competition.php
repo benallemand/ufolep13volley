@@ -324,7 +324,7 @@ class Competition extends Generic
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
                     break;
                 case 'is_home_and_away':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = Generic::to_flag($value);
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     $sql .= "$key = ?,";
                     break;

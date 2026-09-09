@@ -380,8 +380,31 @@ la prop `rowFilter`.
 > **Champ date** : `type: 'date'` rend le sélecteur natif du navigateur, mais
 > l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')`) et l'`<input
 > type="date">` en `aaaa-mm-jj`. `AdminEditModal` convertit dans les deux sens,
-> les écrans n'ont rien à faire. Exception : une colonne stockée en **texte**
-> libre (`dates_limite.date_limite`) reste un champ texte avec un `placeholder`.
+> les écrans n'ont rien à faire. Deux variantes : `dateFormat: 'iso'` pour une
+> colonne déjà en ISO (`news.news_date`), et `type: 'datetime'` pour un
+> `aaaa-mm-jj hh:mm:ss` (`calendar_events`). Exception : une colonne stockée en
+> **texte** libre (`dates_limite.date_limite`) reste un champ texte avec un
+> `placeholder`.
+
+> **Case à cocher** : le formulaire poste `1` ou `0`, et `Generic::to_flag()`
+> les normalise côté PHP. Ne **pas** réintroduire de comparaison stricte du
+> genre `$value === 'on' || $value === 1` : c'est ce qui faisait qu'une case
+> cochée dans l'admin Vue était systématiquement enregistrée à 0 — l'ancien
+> formulaire ExtJS postait `on`, le nouveau poste `1` (#265, lot 4).
+
+> **Champ caché** : `hidden: true` ne rend rien mais reprend la valeur du record
+> et l'envoie. Indispensable pour les endpoints qui déclarent des paramètres
+> obligatoires que l'écran ne montre pas — `Register::register()` en compte
+> quinze.
+
+> **Suppression unitaire** : `delete-mode="id"` sur la grille quand l'endpoint
+> ne prend qu'un identifiant (`News::deleteNews($id)`) au lieu d'une liste
+> `ids`. La grille enchaîne alors un appel par ligne sélectionnée.
+
+> **Écran volumineux** : le routeur accepte `_start`/`_end` et découpe côté
+> serveur. `emails/get` renvoie 11 Mo sans borne (6 000 lignes portant chacune
+> un corps HTML) : l'écran demande donc `?_start=0&_end=499` et propose
+> d'élargir. La grille recharge quand `fetchUrl` change.
 
 **Validation** : la recette manuelle vit dans `admin/RECETTE.md` — cas transverses,
 cas génériques de la grille, et cas par écran. Les écrans d'administration sont

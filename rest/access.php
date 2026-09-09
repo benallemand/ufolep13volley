@@ -226,6 +226,8 @@ return array(
         'fill_ranks' => 'admin',
         'get_register' => 'admin',
         'set_up_season' => 'admin',
+        'unvalidateRegistration' => 'admin',
+        'validateRegistration' => 'admin',
         'deleteMyClubRegistration' => 'user',
         'getMyClubRegistrations' => 'user',
         'register' => 'user',
