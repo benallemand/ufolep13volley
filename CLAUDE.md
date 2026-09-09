@@ -366,9 +366,31 @@ la prop `rowFilter`.
 > **Un paramètre PHP obligatoire que le formulaire n'envoie pas fait échouer le
 > save en 500.** Le routeur appelle la méthode avec des arguments nommés : un
 > `$id_journee` déclaré sans valeur par défaut et absent du formulaire lève une
-> `ArgumentCountError`. Vérifier la signature PHP en écrivant l'écran, et ne
-> déclarer que des champs qui existent en base — `heure_reception` vient d'une
-> jointure de `matchs_view`, l'écrire aurait produit un « Unknown column ».
+> `ArgumentCountError`. Ne déclarer que des champs qui existent en base —
+> `heure_reception` vient d'une jointure de `matchs_view`, l'écrire aurait
+> produit un « Unknown column ».
+>
+> **`AdminScreensTest` vérifie ça mécaniquement** (issue #288) : il lit les
+> écrans, en extrait les champs postés et les compare aux signatures PHP par
+> réflexion. Le défaut est passé trois fois avant d'être outillé — `saveMatch`,
+> `savePlayer`, et les cases à cocher. Donner une valeur par défaut à **tous**
+> les paramètres d'une méthode de save est la règle.
+
+> **Champ fichier** : `type: 'file'` envoie l'objet `File` dans le même
+> `FormData` que le reste, donc en multipart, et remplit `$_FILES` côté PHP.
+> `Players::save()` appelle `savePhoto()` en fin de course : la photo part avec
+> le formulaire, sans second appel. Rien de choisi = clé absente, pour ne pas
+> écraser l'existant.
+
+> **Fenêtre de sélection** : `grid/AdminPickerModal.js` couvre les actions
+> « choisir dans une liste puis confirmer » — associer des joueurs à un club ou
+> à une équipe, nommer un responsable, rattacher un compte à des équipes. En
+> mode `multiple`, **passer les valeurs déjà liées dans `selected`** : sans
+> elles, enregistrer détache tout.
+
+> **Filtrer vide la sélection** : sinon un bouton d'action s'applique à une
+> ligne devenue invisible. La pagination, elle, la conserve — la suppression en
+> masse sur plusieurs pages est un usage légitime.
 
 > **Champ date** : `type: 'date'` rend le sélecteur natif du navigateur, mais
 > l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')`) et l'`<input

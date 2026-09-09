@@ -18,9 +18,11 @@ import { onError, onSuccess } from '../../../toaster.js';
 export default {
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
+        'admin-picker-modal': defineAsyncComponent(() => import('../grid/AdminPickerModal.js')),
     },
     template: `
       <admin-grid
+        ref="grid"
         title="Gestion des utilisateurs"
         entity-label="compte"
         :columns="columns"
@@ -37,15 +39,39 @@ export default {
           </button>
           <button class="btn btn-outline btn-sm"
                   :disabled="selection.length !== 1 || isLoading"
+                  @click="openLinks('teams', selection[0], rows)">
+            <i class="fas fa-people-group"></i> Équipes liées…
+          </button>
+          <button class="btn btn-outline btn-sm"
+                  :disabled="selection.length !== 1 || isLoading"
+                  @click="openLinks('clubs', selection[0], rows)">
+            <i class="fas fa-sitemap"></i> Clubs liés…
+          </button>
+          <button class="btn btn-outline btn-sm"
+                  :disabled="selection.length !== 1 || isLoading"
                   @click="actAs(selection[0], rows)">
             <i class="fas fa-user-secret"></i> Agir en tant que
           </button>
         </template>
       </admin-grid>
+
+      <admin-picker-modal v-if="picker"
+                          :title="picker.title"
+                          :help="picker.help"
+                          :items="picker.items"
+                          :selected="picker.selected"
+                          multiple
+                          confirm-label="Enregistrer les liens"
+                          :is-busy="isLoading"
+                          @confirm="saveLinks"
+                          @close="picker = null"></admin-picker-modal>
     `,
     data() {
         return {
             isLoading: false,
+            teams: [],
+            clubs: [],
+            picker: null,
             columns: [
                 { key: 'login', label: 'Login' },
                 { key: 'email', label: 'Email' },
@@ -60,7 +86,85 @@ export default {
             ],
         };
     },
+    created() {
+        axios.get('/rest/action.php/team/getTeams')
+            .then(({ data }) => { this.teams = data; })
+            .catch(() => { this.teams = []; });
+        axios.get('/rest/action.php/club/get')
+            .then(({ data }) => { this.clubs = data; })
+            .catch(() => { this.clubs = []; });
+    },
     methods: {
+        /**
+         * Rattachement du compte à des équipes ou à des clubs.
+         *
+         * Ce sont ces liens qui **portent les rôles** : une ligne dans
+         * `users_teams` fait un responsable d'équipe, une ligne dans
+         * `users_clubs` un responsable de club (issue #245). Les cocher change
+         * donc les droits du compte, pas seulement un affichage.
+         *
+         * L'API renvoie les liens actuels séparément de la liste complète : on
+         * charge les deux avant d'ouvrir la fenêtre, sinon les cases seraient
+         * décochées et enregistrer détacherait tout.
+         */
+        openLinks(kind, id, rows) {
+            const compte = rows.find((r) => String(r.id) === String(id));
+            const libelle = compte ? (compte.login || compte.email) : 'ce compte';
+            const url = kind === 'teams'
+                ? '/rest/action.php/usermanager/getUserTeamIds'
+                : '/rest/action.php/usermanager/getUserClubIds';
+            this.isLoading = true;
+            axios.get(url, { params: { user_id: id } })
+                .then(({ data }) => {
+                    // L'API renvoie un tableau plat d'entiers (`[1, 4]`), pas
+                    // des objets : `array_column` est fait côté PHP.
+                    const actuels = (data || [])
+                        .map((row) => (row !== null && typeof row === 'object'
+                            ? (kind === 'teams' ? row.team_id : row.club_id)
+                            : row))
+                        .filter((v) => v !== undefined && v !== null);
+                    this.picker = {
+                        kind,
+                        userId: id,
+                        title: kind === 'teams'
+                            ? `Équipes de ${libelle}`
+                            : `Clubs de ${libelle}`,
+                        help: kind === 'teams'
+                            ? "Une équipe cochée fait de ce compte un responsable d'équipe."
+                            : 'Un club coché fait de ce compte un responsable de club.',
+                        selected: actuels.map(String),
+                        items: kind === 'teams'
+                            ? this.teams.map((t) => ({
+                                value: String(t.id_equipe),
+                                label: t.nom_equipe,
+                                hint: t.club,
+                            }))
+                            : this.clubs.map((c) => ({ value: String(c.id), label: c.nom })),
+                    };
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isLoading = false; });
+        },
+        saveLinks(values) {
+            const { kind, userId } = this.picker;
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append(kind === 'teams' ? 'team_ids' : 'club_ids', values.join(','));
+            this.isLoading = true;
+            axios.post(
+                kind === 'teams'
+                    ? '/rest/action.php/usermanager/updateUserTeams'
+                    : '/rest/action.php/usermanager/updateUserClubs',
+                formData
+            )
+                .then((response) => {
+                    onSuccess(this, response);
+                    this.picker = null;
+                    this.$refs.grid.fetchRows();
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isLoading = false; });
+        },
         resetPassword(id, reload) {
             if (!window.confirm('Réinitialiser le mot de passe de ce compte ? Un nouveau mot de passe lui sera envoyé par email.')) {
                 return;

@@ -59,10 +59,11 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G12 | Enregistrer, puis regarder la grille | La date affichée est celle saisie, au format `jj/mm/aaaa` |
 | G13 | Sur un écran à case à cocher, cocher puis enregistrer, puis rouvrir | La case est **restée cochée**. Avant #265 lot 4, elle repartait toujours à zéro : le formulaire postait `1` et le PHP comparait strictement à `'on'` |
 | G14 | Décocher, enregistrer, rouvrir | La case est restée décochée |
+| G15 | Sélectionner une ligne, puis **taper une recherche** qui la masque | La sélection est **vidée** et les boutons d'action se désactivent. Sans ça une action s'appliquerait à une ligne invisible (#288) |
 
 ## Cas par écran
 
-### Utilisateurs (`#/users`)
+### Utilisateurs (`#/users`) — complété par #288
 
 | # | Cas | Attendu |
 |---|-----|---------|
@@ -71,6 +72,14 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | U3 | Sélectionner un compte → « Réinitialiser le mot de passe » | Confirmation demandée, puis message de succès ; **l'email arrive dans Mailpit** (`/mailpit`) |
 | U4 | Supprimer un compte de test | Disparaît de la liste |
 | U5 | Vérifier la colonne « Admin » | « oui » pour les administrateurs, « non » sinon |
+| U7 | Sélectionner un compte → « Équipes liées… » | Fenêtre avec les ~279 équipes, **les équipes actuelles déjà cochées** |
+| U8 | Décocher une équipe, enregistrer, rouvrir | L'état est conservé |
+| U9 | Sélectionner un compte → « Clubs liés… » | Idem avec les ~45 clubs |
+
+> **U7-U9 changent les droits du compte**, pas seulement un affichage : une
+> ligne `users_teams` fait un responsable d'équipe, une ligne `users_clubs` un
+> responsable de club (#245). Vérifier que les cases arrivent **préremplies** :
+> sans ça, enregistrer détacherait tout.
 
 > **Attention** : ne pas supprimer ni réinitialiser un compte réel. Créer un
 > compte de test (`zz_test@…`) et travailler dessus.
@@ -84,7 +93,7 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | C3 | Éditer le club, changer le prénom du responsable | Modification visible |
 | C4 | Supprimer le club de test | Le compteur revient à sa valeur de départ |
 
-### Équipes (`#/teams`)
+### Équipes (`#/teams`) — complété par #288
 
 | # | Cas | Attendu |
 |---|-----|---------|
@@ -97,7 +106,7 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 > À traiter dans un lot ultérieur — en attendant, elle reste disponible dans
 > l'ancienne administration.
 
-### Joueurs (`#/players`)
+### Joueurs (`#/players`) — complété par #288
 
 | # | Cas | Attendu |
 |---|-----|---------|
@@ -106,6 +115,13 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | J3 | Cocher « Sans club » **en plus** | Les filtres se cumulent, le compteur diminue encore |
 | J4 | Décocher tout | Le compteur revient au total |
 | J5 | Éditer un joueur, changer son club | La liste des clubs est remplie, la modification est visible |
+| J6 | Cocher « Dans 2 équipes (même compétition) » | ~18 joueurs — ceux engagés deux fois dans la même compétition, ce qui est irrégulier |
+| J7 | **Créer** un joueur | Créé. `savePlayer` déclarait 15 paramètres obligatoires et le formulaire en envoyait 8 : la création échouait en 500 depuis le lot 1 (#288) |
+| J8 | Éditer un joueur, choisir une **photo**, enregistrer | La photo est enregistrée dans `players_pics/` et sa vignette dans `players_pics_low/` |
+| J9 | Rouvrir le joueur sans toucher au champ photo, enregistrer | La photo précédente est **conservée** |
+| J10 | Sélectionner des joueurs → « Associer à un club » | Fenêtre de sélection avec recherche ; après validation, la colonne Club est à jour |
+| J11 | Idem → « Associer à une équipe » | Le joueur est rattaché à l'équipe, et au club de l'équipe si besoin |
+| J12 | Cliquer « Importer un fichier de licences », choisir le PDF UFOLEP | Les joueurs existants sont mis à jour, les nouveaux créés. **Compter jusqu'à une minute** |
 
 > Non repris du lot 0 : **import d'un fichier de licences**, **association en
 > masse à un club / une équipe**, **photo du joueur**. Restent dans l'ancienne
@@ -136,6 +152,23 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 >
 > **La génération de matchs n'est pas reprise** : scripts Python
 > (`ufolep13volley_python/calendar-agent/`).
+
+### Créneaux (`#/timeslots`) — #288
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| N1 | Ouvrir l'écran | ~295 créneaux : équipe, gymnase, jour, heure, contrainte horaire, priorité |
+| N2 | Ouvrir la création | Équipe (~279) et Gymnase (~73) remplis ; **Jour** limité à lundi-vendredi ; **Heure** de 18:00 à 21:45 par quart d'heure |
+| N3 | Créer un créneau, l'éditer, le supprimer | Cycle complet |
+| N4 | Vérifier la priorité d'utilisation | Entier ≥ 1 ; 1 = créneau principal quand une équipe en a plusieurs |
+
+> Écran **oublié** par la migration : l'admin ExtJS avait *Gestion des créneaux*
+> (ce CRUD) **et** *Planning de la semaine* (la consultation), et l'inventaire
+> du lot 6 les avait confondues.
+>
+> Les scripts Python de génération lisent `creneau` pour placer les matchs, et
+> `matchs_view` en tire l'heure de réception : une erreur ici se propage au
+> calendrier.
 
 ### Compétitions (`#/competitions`)
 
@@ -284,6 +317,8 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | M4 | Passer à « tous » | Charge les ~6 000 emails. **Plusieurs Mo** : c'est lent, c'est normal, c'est la raison de la fenêtre par défaut |
 | M5 | Cliquer « Relancer les erreurs » et confirmer | Les emails en `ERROR` repassent en `TO_DO` (aucun s'il n'y en a pas) |
 | M6 | Cliquer « Récap créneaux » et confirmer | Un email par équipe est **inséré en file** ; les vérifier dans Mailpit après le passage du cron |
+| M7 | **Cliquer une ligne** | Le message s'ouvre en **rendu HTML**, avec expéditeur, destinataires, dates et statut au-dessus (#288) |
+| M8 | Vérifier le rendu | Il s'affiche dans une `iframe` sandboxée : ni script ni image distante ne s'exécute — un corps d'email est du HTML arbitraire |
 
 > **M6 déclenche de vrais envois en production.** À ne jouer en recette que sur
 > le conteneur local, où tout part dans Mailpit.
