@@ -48,6 +48,8 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G8 | Cocher la case d'en-tête | Toutes les lignes de la page en cours sont cochées |
 | G9 | Cliquer « Export » | Un CSV se télécharge, s'ouvre dans Excel **avec les accents corrects**, contient les lignes filtrées |
 | G10 | Cliquer le bouton de rafraîchissement | Les données rechargent, la sélection est vidée |
+| G11 | Sur un écran à date (`type: 'date'`), éditer une ligne existante | Le sélecteur de date **est prérempli** avec la date de la ligne — l'API parle en `jj/mm/aaaa`, l'`<input type="date">` en `aaaa-mm-jj`, la conversion se fait dans les deux sens |
+| G12 | Enregistrer, puis regarder la grille | La date affichée est celle saisie, au format `jj/mm/aaaa` |
 
 ## Cas par écran
 
@@ -181,6 +183,63 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | Y1 | Créer un gymnase | Créé ; « Nombre de terrains » n'accepte que 1 à 6 |
 | Y2 | Éditer, changer la ville | Modification visible |
 | Y3 | Supprimer le gymnase de test | Le compteur revient à sa valeur de départ |
+
+### Dates interdites (`#/blacklist-dates`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| B1 | Ouvrir l'écran | **Peut être vide** : la table `blacklist_date` n'est remplie qu'avant une génération de calendrier |
+| B2 | Créer une date | Le sélecteur de date s'ouvre ; la ligne apparaît au format `jj/mm/aaaa` |
+| B3 | Éditer la date, la changer | Le sélecteur est prérempli, la modification est visible dans la grille |
+| B4 | Supprimer la date de test | Le compteur revient à sa valeur de départ |
+
+### Fermetures de gymnase (`#/gymnasium-closures`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| F1 | Ouvrir l'écran | Une ligne par fermeture, gymnase nommé « Nom (ville) » |
+| F2 | Ouvrir la création | Liste **Gymnase** remplie (~73), libellés « Ville - Nom - Adresse » |
+| F3 | Créer une fermeture, puis la supprimer | Créée puis retirée ; le compteur revient à sa valeur de départ |
+
+> Le même besoin existe côté **responsable de club**, dans son espace : cet écran
+> est la vue d'ensemble de l'administrateur. `saveBlacklistGymnase` porte le
+> contrôle de périmètre, qu'un admin traverse.
+
+### Indisponibilités d'équipe (`#/team-unavailabilities`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| I1 | Ouvrir l'écran | **Peut être vide** ; équipe nommée « Nom (code compétition) » |
+| I2 | Ouvrir la création | Liste **Équipe** remplie (~280), libellés « Équipe (club) - Compétition(division) » |
+| I3 | Créer puis supprimer une indisponibilité | Le compteur revient à sa valeur de départ |
+
+### Équipes incompatibles (`#/incompatible-teams`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| N1 | Ouvrir l'écran | Une ligne par contrainte, deux colonnes d'équipes |
+| N2 | Ouvrir la création | **Deux** listes d'équipes, remplies toutes les deux |
+| N3 | Créer une contrainte, la vérifier dans la grille, la supprimer | Les deux libellés d'équipe s'affichent ; le compteur revient à sa valeur de départ |
+
+### Ententes entre clubs (`#/club-friendships`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| E1 | Ouvrir l'écran | **Peut être vide** ; deux colonnes de clubs |
+| E2 | Ouvrir la création | **Deux** listes de clubs remplies (~45) |
+| E3 | Créer une entente, la vérifier, la supprimer | Les deux noms de clubs s'affichent ; le compteur revient à sa valeur de départ |
+
+### Périodes interdites par ville (`#/city-closures`) — lot 3
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| V1 | Ouvrir l'écran | **Peut être vide** ; colonnes Ville / Du / Au |
+| V2 | Ouvrir la création | Liste **Ville** remplie (~42, villes des gymnases), **deux** sélecteurs de date |
+| V3 | Créer une période, la vérifier, la supprimer | Les deux dates s'affichent en `jj/mm/aaaa` ; le compteur revient à sa valeur de départ |
+
+> Écran créé pendant le COVID pour neutraliser une commune entière. Repris à
+> l'identique : c'est le seul écran de planification qui porte une période et
+> non une date isolée.
 
 ## Après la recette
 

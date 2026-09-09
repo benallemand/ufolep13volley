@@ -13,6 +13,11 @@ import { onError, onSuccess } from '../../../toaster.js';
  *          | 'date' | 'email' | 'password'
  *   options (select) : [{ value, label }]
  *
+ * `date` affiche le sélecteur natif du navigateur — l'équivalent du `datefield`
+ * ExtJS — mais l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')` côté
+ * PHP) alors que `<input type="date">` parle en `aaaa-mm-jj`. La conversion se
+ * fait donc à l'entrée et à la sortie du formulaire, pas dans les écrans.
+ *
  * L'`id` n'est pas un champ : il est repris du record et renvoyé tel quel, ce
  * qui fait qu'un record vide donne un INSERT et un record chargé un UPDATE —
  * convention de `Generic::save()`.
@@ -67,6 +72,13 @@ export default {
                      type="checkbox"
                      class="checkbox checkbox-primary"/>
 
+              <input v-else-if="field.type === 'date'"
+                     :id="'f-' + field.name"
+                     v-model="form[field.name]"
+                     type="date"
+                     class="input input-bordered"
+                     :required="field.required"/>
+
               <input v-else
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
@@ -116,6 +128,11 @@ export default {
         for (const [k, v] of Object.entries(this.record)) {
             form[k] = v;
         }
+        for (const field of this.fields) {
+            if (field.type === 'date') {
+                form[field.name] = this.toInputDate(form[field.name]);
+            }
+        }
         this.form = form;
     },
     methods: {
@@ -124,10 +141,13 @@ export default {
             const formData = new FormData();
             for (const field of this.fields) {
                 const value = this.form[field.name];
-                formData.append(
-                    field.name,
-                    field.type === 'checkbox' ? (value ? '1' : '0') : (value ?? '')
-                );
+                let sent = value ?? '';
+                if (field.type === 'checkbox') {
+                    sent = value ? '1' : '0';
+                } else if (field.type === 'date') {
+                    sent = this.fromInputDate(value);
+                }
+                formData.append(field.name, sent);
             }
             // L'identifiant est TOUJOURS envoyé, vide à la création : c'est ce
             // que faisait le champ caché `id` des formulaires ExtJS, et
@@ -141,6 +161,22 @@ export default {
                     this.$emit('saved');
                 })
                 .catch((error) => onError(this, error));
+        },
+        /** `jj/mm/aaaa` (API) -> `aaaa-mm-jj` (input natif). */
+        toInputDate(value) {
+            if (!value) {
+                return '';
+            }
+            const m = String(value).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            return m ? `${m[3]}-${m[2]}-${m[1]}` : String(value);
+        },
+        /** `aaaa-mm-jj` (input natif) -> `jj/mm/aaaa` (API). */
+        fromInputDate(value) {
+            if (!value) {
+                return '';
+            }
+            const m = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            return m ? `${m[3]}/${m[2]}/${m[1]}` : String(value);
         },
     },
 };

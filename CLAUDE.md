@@ -359,8 +359,9 @@ Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dan
 | `screens/` | un composant par écran |
 
 **Ajouter un écran** revient à déclarer ses colonnes, ses champs et ses URLs, puis
-à l'inscrire dans `routes` et `MENU` (`AdminLayout.js`) — voir
-`screens/Gymnasiums.js`, qui remplace ~180 lignes d'ExtJS par une trentaine.
+à l'inscrire dans `routes` et `MENU` (`AdminLayout.js` — `MENU` est une liste de
+groupes `{label, items}` depuis le lot 3, la barre latérale les rend en sections).
+Voir `screens/Gymnasiums.js`, qui remplace ~180 lignes d'ExtJS par une trentaine.
 Les actions hors CRUD (réinitialiser un mot de passe, nommer un responsable…)
 passent par le slot `actions` de la grille, les filtres par le slot `filters` et
 la prop `rowFilter`.
@@ -368,6 +369,19 @@ la prop `rowFilter`.
 > **L'identifiant est toujours envoyé au save**, vide à la création : plusieurs
 > méthodes PHP le déclarent en paramètre **obligatoire** (`Club::saveClub($id, …)`),
 > et c'est ce que faisait le champ caché `id` des formulaires ExtJS.
+
+> **Un paramètre PHP obligatoire que le formulaire n'envoie pas fait échouer le
+> save en 500.** Le routeur appelle la méthode avec des arguments nommés : un
+> `$id_journee` déclaré sans valeur par défaut et absent du formulaire lève une
+> `ArgumentCountError`. Vérifier la signature PHP en écrivant l'écran, et ne
+> déclarer que des champs qui existent en base — `heure_reception` vient d'une
+> jointure de `matchs_view`, l'écrire aurait produit un « Unknown column ».
+
+> **Champ date** : `type: 'date'` rend le sélecteur natif du navigateur, mais
+> l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')`) et l'`<input
+> type="date">` en `aaaa-mm-jj`. `AdminEditModal` convertit dans les deux sens,
+> les écrans n'ont rien à faire. Exception : une colonne stockée en **texte**
+> libre (`dates_limite.date_limite`) reste un champ texte avec un `placeholder`.
 
 **Validation** : la recette manuelle vit dans `admin/RECETTE.md` — cas transverses,
 cas génériques de la grille, et cas par écran. Les écrans d'administration sont

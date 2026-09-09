@@ -17,12 +17,15 @@ export default {
           <div class="text-xs text-base-content/60 truncate" :title="user.login">{{ user.login }}</div>
         </div>
 
-        <ul class="menu p-2 flex-1">
-          <li v-for="item in menu" :key="item.path">
-            <router-link :to="item.path" active-class="active">
-              <i :class="item.icon"></i> {{ item.label }}
-            </router-link>
-          </li>
+        <ul class="menu p-2 flex-1 overflow-y-auto flex-nowrap">
+          <template v-for="group in menu" :key="group.label">
+            <li class="menu-title">{{ group.label }}</li>
+            <li v-for="item in group.items" :key="item.path">
+              <router-link :to="item.path" active-class="active">
+                <i :class="item.icon"></i> {{ item.label }}
+              </router-link>
+            </li>
+          </template>
         </ul>
 
         <div class="p-2 border-t border-base-300 space-y-1">
