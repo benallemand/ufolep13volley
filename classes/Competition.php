@@ -52,27 +52,6 @@ class Competition extends Generic
      * @return bool
      * @throws Exception
      */
-    public function isCompetitionOver($id): bool
-    {
-        $sql = "SELECT date_limite FROM dates_limite WHERE code_competition IN (SELECT code_competition FROM competitions WHERE id = $id)";
-        $results = $this->sql_manager->execute($sql);
-        if (count($results) !== 1) {
-            throw new Exception("La date limite n'a pas été saisie pour cette compétition !");
-        }
-        $format = "d/m/Y";
-        $limit_date = DateTime::createFromFormat($format, $results[0]['date_limite']);
-        $now_date = new DateTime();
-        if ($now_date > $limit_date) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     * @throws Exception
-     */
     public function isCompetitionStarted($id): bool
     {
         // issue #270
@@ -295,18 +274,6 @@ class Competition extends Generic
     /**
      * @throws Exception
      */
-    public function getTournaments(): array|int|string|null
-    {
-        $sql = "SELECT c.id, c.code_competition, c.libelle 
-        FROM competitions c 
-        WHERE c.code_competition IN (SELECT DISTINCT code_competition FROM classements) 
-        ORDER BY c.libelle";
-        return $this->sql_manager->execute($sql);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function saveCompetition(
         $code_competition,
         $libelle,
@@ -418,19 +385,6 @@ class Competition extends Generic
             $code_competition = $competition['code_competition'];
             $this->rank->resetRankPoints($code_competition);
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getTournamentName($tournamentCode)
-    {
-        $sql = "SELECT 
-        c.libelle AS tournament_name
-        FROM competitions c 
-        WHERE c.code_competition = '$tournamentCode'";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['tournament_name'];
     }
 
     /**
@@ -666,41 +620,6 @@ class Competition extends Generic
         $start_datetime = DateTime::createFromFormat('d/m/Y', $start_date);
         $month = intval($start_datetime->format('m'));
         return $month > 6;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function generate_matches_final_phase_cup($ids, $nommage)
-    {
-        $day_mgr = new Day();
-        if (empty($ids)) {
-            throw new Exception("Il faut sélectionner une ou plusieurs compétitions pour démarrer la génération !");
-        }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            $competition = $this->get_by_id($id);
-            $code_competition = $competition['code_competition'];
-            if (!in_array($competition['code_competition'], array('kf', 'cf'))) {
-                throw new Exception("Cette compétition n'est pas une phase finale de coupe !");
-            }
-            // Clauses WHERE composees a la main : on echappe les valeurs (issue #270).
-            $safe_code = $this->sql_manager->escape($code_competition);
-            $safe_nommage = $this->sql_manager->escape($nommage);
-            $days = $day_mgr->get("j.code_competition = '$safe_code' AND j.nommage = '$safe_nommage'");
-            if (empty($days)) {
-                throw new Exception("Il faut créer la journée avant de générer cette compétition !");
-            }
-            $days_ids = implode(',', array_values(array_column($days, 'id')));
-            // $days_ids est une liste d'identifiants : on la normalise en entiers
-            // avant de la placer dans la clause (issue #270).
-            $safe_days_ids = implode(',', Generic::parse_id_list($days_ids));
-            if ($safe_days_ids === '') {
-                return;
-            }
-            $this->match->delete_matches("code_competition = '$safe_code' AND division = '1' AND id_journee IN ($safe_days_ids)");
-            $this->match->draw_matches($code_competition, '1', $days[0]['id']);
-        }
     }
 
 

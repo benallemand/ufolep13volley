@@ -545,25 +545,6 @@ class Register extends Generic
     /**
      * @throws Exception
      */
-    public function check_data($id_competition)
-    {
-        $sql = "SELECT * 
-                FROM register 
-                WHERE id_competition = ?
-                AND (
-                    (id_court_1 IS NOT NULL AND day_court_1 IS NULL)
-                    OR (id_court_2 IS NOT NULL AND day_court_2 IS NULL)
-                    OR (id_court_2 IS NOT NULL AND id_court_1 IS NULL))";
-        $bindings = array();
-        $bindings[] = array('type' => 'i', 'value' => $id_competition);
-        if (count($this->sql_manager->execute($sql, $bindings)) > 0) {
-            throw new Exception("Au moins une condition est manquante !");
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
     private function init_ranks($id_competition): void
     {
         $competition_manager = new Competition();

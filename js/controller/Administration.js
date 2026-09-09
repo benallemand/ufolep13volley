@@ -150,16 +150,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.generateHallOfFame
             }, 'competitions_grid menuitem[action=resetCompetition]': {
                 click: this.resetCompetition
-            }, 'competitions_grid menuitem[action=generateDays]': {
-                click: this.generateDays
-            }, 'competitions_grid menuitem[action=generateMatches]': {
-                click: this.generateMatches
-            }, 'competitions_grid menuitem[action=generate_matches_final_phase_cup_8]': {
-                click: this.generate_matches_final_phase_cup_8
-            }, 'competitions_grid menuitem[action=generate_matches_final_phase_cup_4]': {
-                click: this.generate_matches_final_phase_cup_4
-            }, 'competitions_grid menuitem[action=generate_matches_final_phase_cup_2]': {
-                click: this.generate_matches_final_phase_cup_2
             }, 'daysgrid button[action=delete]': {
                 click: this.deleteDays
             }, 'limitdatesgrid button[action=delete]': {
@@ -1047,21 +1037,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     resetCompetition: function (button) {
         this.genericRequest(button, 'Reset compétition', '/rest/action.php/competition/resetCompetition');
     },
-    generateDays: function (button) {
-        this.genericRequest(button, 'Générer les journées', '/rest/action.php/day/generateDays');
-    },
-    generateMatches: function (button) {
-        this.genericRequest(button, 'Générer les matches', '/rest/action.php/matchmgr/generateMatches');
-    },
-    generate_matches_final_phase_cup_8: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/8e', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/8e'});
-    },
-    generate_matches_final_phase_cup_4: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/4', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/4'});
-    },
-    generate_matches_final_phase_cup_2: function (button) {
-        this.genericRequest(button, 'Tirer au sort les 1/2', '/rest/action.php/competition/generate_matches_final_phase_cup', false, {'nommage': '1/2'});
-    },
     genericDelete: function (button, url, id_field) {
         var this_controller = this;
         var records = button.up('grid').getSelectionModel().getSelection();
@@ -1335,14 +1310,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                     text: 'Palmarès...', action: 'generateHallOfFame'
                 }, {
                     text: 'Reset compétition...', action: 'resetCompetition'
-                }, {
-                    text: 'Journées...', action: 'generateDays'
-                }, {
-                    text: 'Tirer au sort les 1/8e', action: 'generate_matches_final_phase_cup_8'
-                }, {
-                    text: 'Tirer au sort les 1/4', action: 'generate_matches_final_phase_cup_4'
-                }, {
-                    text: 'Tirer au sort les 1/2', action: 'generate_matches_final_phase_cup_2'
                 },]
             },
             ]

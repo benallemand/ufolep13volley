@@ -19,7 +19,6 @@ Ext.application({
         'manage_survey',
         'manage_register',
         'manage_email',
-        'generate_competition',
         'manage_commission',
         'manage_registry',
         'manage_user',

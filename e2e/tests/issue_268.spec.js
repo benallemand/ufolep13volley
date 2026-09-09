@@ -44,6 +44,13 @@ const NEVER_ROUTABLE = [
     { method: 'GET', path: '/rest/action.php/generic/get' },
     { method: 'POST', path: '/rest/action.php/rank/resetRankPoints', form: {} },
     { method: 'POST', path: '/rest/action.php/matchmgr/generate_matches', form: {} },
+    // Génération retirée du PHP (#279) : elle vit dans les scripts Python de
+    // `ufolep13volley_python`. Ces actions supprimaient les matchs existants
+    // avant de régénérer.
+    { method: 'POST', path: '/rest/action.php/matchmgr/generateAll', form: {} },
+    { method: 'POST', path: '/rest/action.php/matchmgr/generateMatches', form: {} },
+    { method: 'POST', path: '/rest/action.php/competition/generate_matches_final_phase_cup', form: {} },
+    { method: 'POST', path: '/rest/action.php/day/generateDays', form: {} },
 ];
 
 test.describe('Issue #268 — autorisation des endpoints REST admin', () => {
