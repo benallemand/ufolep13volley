@@ -146,7 +146,7 @@ class Register extends Generic
                     if (is_null($value)) {
                         break;
                     }
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = Generic::to_flag($value);
                     $bindings[] = array(
                         'type' => 'i',
                         'value' => $val

@@ -167,6 +167,10 @@ class AdminRestAuthzTest extends UfolepTestCase
             // pages/components/panel/Players.js  ->  /rest/action.php/player/${action}
             'player/set_leader', 'player/set_vice_leader', 'player/set_captain',
             'player/remove_from_team',
+            // js/controller/manage_register.js  ->  'rest/action.php/register/' + action
+            // admin/components/screens/Registrations.js  ->  `/rest/action.php/register/${action}`
+            'register/validateRegistration', 'register/unvalidateRegistration',
+            'register/fill_ranks', 'register/create_teams_and_accounts',
         ];
         foreach ($dynamiques as $key) {
             $referenced[$key] = $referenced[$key] ?? '(URL construite dynamiquement)';
@@ -186,6 +190,82 @@ class AdminRestAuthzTest extends UfolepTestCase
             'Endpoints appelés par un frontend mais absents de rest/access.php : '
             . implode(' | ', $manquants)
         );
+    }
+
+    /**
+     * La liste `$dynamiques` du test précédent est tenue à la main, donc elle
+     * dérive : `register/validateRegistration` y manquait, et les boutons
+     * « Valider / Dévalider » des inscriptions répondaient 403 depuis le refus
+     * par défaut (#272) sans que personne le voie.
+     *
+     * Ce test rend l'oubli mécanique : il repère les URLs construites
+     * dynamiquement et exige que la classe appelée soit couverte par au moins
+     * une entrée de `$dynamiques`. Ajouter un nouveau site d'appel dynamique
+     * fait donc échouer la suite tant que ses actions ne sont pas énumérées.
+     */
+    public function test_toute_classe_appelee_dynamiquement_est_enumeree(): void
+    {
+        $root = realpath(__DIR__ . '/..');
+        $classes_dynamiques = [];
+        foreach ($this->frontendFiles($root) as $file) {
+            $content = file_get_contents($file);
+            // action.php/<classe>/ suivi d'une interpolation ou d'une
+            // concaténation : `${...}`, `' + x` ou `" + x`
+            if (preg_match_all(
+                '#action\.php/([a-z]+)/(?:\$\{|\'\s*\+|"\s*\+)#',
+                $content,
+                $m,
+                PREG_SET_ORDER
+            )) {
+                foreach ($m as $hit) {
+                    $classes_dynamiques[$hit[1]] = str_replace($root, '', $file);
+                }
+            }
+            // /rest/action.php/${classe}/... : la classe elle-même est calculée
+            if (preg_match('#action\.php/\$\{#', $content)) {
+                $classes_dynamiques['(classe calculée)'] = str_replace($root, '', $file);
+            }
+        }
+
+        $enumerees = [];
+        foreach ($this->actionsDynamiquesEnumerees() as $key) {
+            [$class_name] = explode('/', $key, 2);
+            $enumerees[$class_name] = true;
+        }
+
+        $non_couvertes = [];
+        foreach ($classes_dynamiques as $class_name => $origin) {
+            if (!isset($enumerees[$class_name])) {
+                $non_couvertes[] = "$class_name  (appelé dynamiquement depuis $origin)";
+            }
+        }
+
+        self::assertSame(
+            [],
+            $non_couvertes,
+            "Classes appelées via une URL construite dynamiquement mais absentes de "
+            . "la liste \$dynamiques : " . implode(' | ', $non_couvertes)
+        );
+    }
+
+    /**
+     * Actions dont l'URL est construite dynamiquement côté frontend, donc
+     * invisibles à un grep sur les littéraux. Doit rester synchronisée avec la
+     * liste locale de test_tous_les_endpoints_appeles_par_les_frontends_sont_declares.
+     *
+     * @return string[]
+     */
+    private function actionsDynamiquesEnumerees(): array
+    {
+        return [
+            'rank/getRank', 'rank/getRankFFVB', 'rank/addPenalty', 'rank/removePenalty',
+            'rank/incrementReportCount', 'rank/decrementReportCount',
+            'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
+            'player/set_leader', 'player/set_vice_leader', 'player/set_captain',
+            'player/remove_from_team',
+            'register/validateRegistration', 'register/unvalidateRegistration',
+            'register/fill_ranks', 'register/create_teams_and_accounts',
+        ];
     }
 
     /**

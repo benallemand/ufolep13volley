@@ -206,7 +206,7 @@ class Rank extends Generic
                     $sql .= "$key = ?,";
                     break;
                 case 'will_register_again':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = Generic::to_flag($value);
                     $bindings[] = array(
                         'type' => 'i',
                         'value' => $val

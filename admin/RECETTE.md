@@ -50,6 +50,8 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G10 | Cliquer le bouton de rafraîchissement | Les données rechargent, la sélection est vidée |
 | G11 | Sur un écran à date (`type: 'date'`), éditer une ligne existante | Le sélecteur de date **est prérempli** avec la date de la ligne — l'API parle en `jj/mm/aaaa`, l'`<input type="date">` en `aaaa-mm-jj`, la conversion se fait dans les deux sens |
 | G12 | Enregistrer, puis regarder la grille | La date affichée est celle saisie, au format `jj/mm/aaaa` |
+| G13 | Sur un écran à case à cocher, cocher puis enregistrer, puis rouvrir | La case est **restée cochée**. Avant #265 lot 4, elle repartait toujours à zéro : le formulaire postait `1` et le PHP comparait strictement à `'on'` |
+| G14 | Décocher, enregistrer, rouvrir | La case est restée décochée |
 
 ## Cas par écran
 
@@ -240,6 +242,93 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 > Écran créé pendant le COVID pour neutraliser une commune entière. Repris à
 > l'identique : c'est le seul écran de planification qui porte une période et
 > non une date isolée.
+
+### News (`#/news`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| S1 | Ouvrir l'écran | 19 news, la colonne *Texte* est tronquée, *Publiée* en badge vert / gris |
+| S2 | Créer une news avec le sélecteur de date | La date s'affiche en **ISO** (`aaaa-mm-jj`) dans la grille : cette colonne-là est stockée en ISO, contrairement aux autres écrans |
+| S3 | Cocher « Désactivée », enregistrer | *Publiée* passe à **non** ; la news disparaît de la home |
+| S4 | Rouvrir la news | La case « Désactivée » est **cochée** |
+| S5 | Décocher, enregistrer | *Publiée* repasse à **oui** |
+| S6 | Supprimer la news de test | Disparaît. La suppression est unitaire (`deleteNews($id)`) : sélectionner plusieurs lignes enchaîne les appels |
+
+### Calendrier de la home (`#/calendar-events`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| K1 | Ouvrir l'écran | 45 événements ; *Début* / *Fin* en `jj/mm/aaaa hh:mm`, ou **sans heure** quand l'heure est 00:00 (journée entière), et `— (ponctuel)` quand la fin est vide |
+| K2 | Filtrer par saison | Seuls les événements de la saison restent |
+| K3 | Créer un événement avec une saison au mauvais format (`2026`) | Le navigateur refuse : le format `aaaa-aaaa` est exigé |
+| K4 | Créer un événement à 20:30, fin vide | Créé, *Fin* affiche `— (ponctuel)` |
+| K5 | Éditer un événement « journée entière » | Le champ de début est prérempli à `T00:00` — ne pas y mettre d'heure, c'est ce qui fait qu'aucune heure ne s'affiche sur la home |
+| K6 | Supprimer l'événement de test | Le compteur revient à sa valeur de départ |
+
+### Emails (`#/emails`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| M1 | Ouvrir l'écran | Les **500 derniers** emails, les plus récents en tête ; *Statut* en badge (vert `DONE`, orange `TO_DO`, rouge `ERROR`) ; la colonne *Contenu* montre du texte, pas du HTML |
+| M2 | Vérifier la barre d'outils | **Pas** de Créer / Éditer / Supprimer, **pas** de cases à cocher — écran de consultation |
+| M3 | Passer le sélecteur à 2000 | La grille recharge et le compteur suit |
+| M4 | Passer à « tous » | Charge les ~6 000 emails. **Plusieurs Mo** : c'est lent, c'est normal, c'est la raison de la fenêtre par défaut |
+| M5 | Cliquer « Relancer les erreurs » et confirmer | Les emails en `ERROR` repassent en `TO_DO` (aucun s'il n'y en a pas) |
+| M6 | Cliquer « Récap créneaux » et confirmer | Un email par équipe est **inséré en file** ; les vérifier dans Mailpit après le passage du cron |
+
+> **M6 déclenche de vrais envois en production.** À ne jouer en recette que sur
+> le conteneur local, où tout part dans Mailpit.
+
+### Sondages (`#/surveys`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| Q1 | Ouvrir l'écran | ~1 800 sondages renseignés ; la colonne *Match* compose `code (dom vs ext)` |
+| Q2 | Cocher « Afficher aussi les sondages non renseignés » | Le total augmente : une ligne est créée dès qu'un sondage est ouvert, même sans réponse |
+| Q3 | Vérifier la barre d'outils | Écran de consultation, aucune action d'écriture |
+
+### Commission (`#/commission`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| C1 | Ouvrir l'écran | 8 membres, colonne *Divisions attribuées* |
+| C2 | Créer un membre, l'éditer, le supprimer | Cycle complet ; l'identifiant est `id_commission` |
+| C3 | Sélectionner un membre, cliquer « Attribuer les divisions », saisir `m/1,f/2` | Les divisions apparaissent dans la colonne *Divisions attribuées* |
+| C4 | Rejouer avec une saisie vide | Toutes les divisions du membre sont retirées |
+
+> Le format attendu est `code_competition/division` — c'est ce que joignent
+> `matchs_view` et `Commission::getByDivision`. Le prompt ExtJS suggérait
+> `d1m,d2f`, qui ne correspondait à rien.
+
+### Base de registres (`#/registry`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| G1r | Ouvrir l'écran | ~210 entrées clé / valeur |
+| G2r | Créer, éditer, supprimer une entrée `zz.test` | Cycle complet |
+
+> **Écran à manipuler avec précaution** : le tirage au sort des phases finales
+> vit ici, et `generate_huitiemes.py` le relit. Modifier une clé
+> `finals.*` à la main peut casser une génération.
+
+### Inscriptions (`#/registrations`) — lot 4
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| R1r | Ouvrir l'écran | Une ligne par demande ; *Statut* en badge (orange « en attente », vert « validée le … ») |
+| R2r | Filtrer par statut | La liste suit |
+| R3r | Éditer une demande, renseigner division et rang, enregistrer | Les deux valeurs apparaissent — **et rien d'autre n'a bougé** : club, compétition, responsable, créneaux sont transportés en champs cachés |
+| R4r | Sélectionner une demande, cliquer « Valider » | Statut *validée le …*, et un email de notification est mis en file pour le club |
+| R5r | Cliquer « Dévalider » | Retour à *en attente*, date de validation vidée |
+| R6r | Cliquer « Divisions / rangs » | Les divisions et rangs sont calculés pour les demandes sélectionnées |
+| R7r | Cliquer « Équipes / comptes » | Les équipes et les comptes responsables sont créés |
+
+> **R4r/R5r ne fonctionnaient plus depuis le refus par défaut (#272)** :
+> `validateRegistration` n'était pas déclaré dans `rest/access.php` et
+> répondait « Action inconnue ». Corrigé dans ce lot — c'est le cas à vérifier
+> en premier.
+>
+> **R7r est irréversible** : ne le jouer que sur le conteneur local.
 
 ## Après la recette
 

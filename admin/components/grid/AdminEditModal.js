@@ -8,10 +8,16 @@ import { onError, onSuccess } from '../../../toaster.js';
  * validation HTML5 et de l'envoi.
  *
  * Description d'un champ :
- *   { name, label, type?, required?, options?, min?, max?, placeholder?, help? }
+ *   { name, label, type?, required?, options?, min?, max?, placeholder?, help?,
+ *     hidden?, dateFormat?, pattern? }
  *   type : 'text' (défaut) | 'number' | 'textarea' | 'select' | 'checkbox'
- *          | 'date' | 'email' | 'password'
+ *          | 'date' | 'datetime' | 'email' | 'password'
  *   options (select) : [{ value, label }]
+ *
+ * `hidden: true` ne rend rien mais reprend la valeur du record et l'envoie :
+ * l'équivalent du `xtype: 'hidden'` des formulaires ExtJS, indispensable pour
+ * les endpoints qui déclarent quinze paramètres obligatoires
+ * (`Register::register()`).
  *
  * `date` affiche le sélecteur natif du navigateur — l'équivalent du `datefield`
  * ExtJS — mais l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')` côté
@@ -40,7 +46,7 @@ export default {
           </h3>
 
           <form @submit.prevent="submit" class="space-y-3">
-            <div v-for="field in fields" :key="field.name" class="form-control">
+            <div v-for="field in visibleFields" :key="field.name" class="form-control">
               <label class="label py-1" :for="'f-' + field.name">
                 <span class="label-text">
                   {{ field.label }}
@@ -79,6 +85,13 @@ export default {
                      class="input input-bordered"
                      :required="field.required"/>
 
+              <input v-else-if="field.type === 'datetime'"
+                     :id="'f-' + field.name"
+                     v-model="form[field.name]"
+                     type="datetime-local"
+                     class="input input-bordered"
+                     :required="field.required"/>
+
               <input v-else
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
@@ -87,6 +100,7 @@ export default {
                      :required="field.required"
                      :min="field.min"
                      :max="field.max"
+                     :pattern="field.pattern"
                      :placeholder="field.placeholder"/>
 
               <label v-if="field.help" class="label py-0">
@@ -117,6 +131,9 @@ export default {
         isCreation() {
             return !this.record[this.idField];
         },
+        visibleFields() {
+            return this.fields.filter((f) => !f.hidden);
+        },
     },
     created() {
         // On part des champs déclarés pour que Vue voie toutes les clés, puis on
@@ -129,8 +146,12 @@ export default {
             form[k] = v;
         }
         for (const field of this.fields) {
-            if (field.type === 'date') {
-                form[field.name] = this.toInputDate(form[field.name]);
+            if (field.type === 'checkbox') {
+                form[field.name] = this.toCheckbox(form[field.name]);
+            } else if (field.type === 'date') {
+                form[field.name] = this.toInputDate(form[field.name], field.dateFormat);
+            } else if (field.type === 'datetime') {
+                form[field.name] = this.toInputDateTime(form[field.name]);
             }
         }
         this.form = form;
@@ -145,7 +166,9 @@ export default {
                 if (field.type === 'checkbox') {
                     sent = value ? '1' : '0';
                 } else if (field.type === 'date') {
-                    sent = this.fromInputDate(value);
+                    sent = this.fromInputDate(value, field.dateFormat);
+                } else if (field.type === 'datetime') {
+                    sent = this.fromInputDateTime(value);
                 }
                 formData.append(field.name, sent);
             }
@@ -162,21 +185,77 @@ export default {
                 })
                 .catch((error) => onError(this, error));
         },
-        /** `jj/mm/aaaa` (API) -> `aaaa-mm-jj` (input natif). */
-        toInputDate(value) {
+        /**
+         * Normalise une valeur de case a cocher venue de l'API.
+         *
+         * Indispensable : selon la colonne, l'API renvoie l'entier `0` ou la
+         * chaine `'0'` (mysqli ne type pas toutes les colonnes de la meme
+         * facon — `news.is_disabled` sort en `'0'`, `matchs_view.certif` en
+         * `0`). Or `Boolean('0')` vaut `true` : sans cette conversion, une news
+         * active s'affichait cochee « desactivee ».
+         */
+        toCheckbox(value) {
+            if (value === '' || value === null || value === undefined) {
+                return false;
+            }
+            if (typeof value === 'boolean') {
+                return value;
+            }
+            const s = String(value).trim().toLowerCase();
+            if (s === 'on' || s === 'true') {
+                return true;
+            }
+            const n = Number(s);
+            return Number.isNaN(n) ? Boolean(s) : n !== 0;
+        },
+        /**
+         * API -> `aaaa-mm-jj` (input natif).
+         *
+         * Le format de l'API dépend de la colonne : la plupart des écrans
+         * parlent en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')`), mais `news`
+         * stocke et rend de l'ISO. D'où `dateFormat: 'iso'`, qui court-circuite
+         * la conversion.
+         */
+        toInputDate(value, dateFormat) {
             if (!value) {
                 return '';
+            }
+            if (dateFormat === 'iso') {
+                return String(value).slice(0, 10);
             }
             const m = String(value).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
             return m ? `${m[3]}-${m[2]}-${m[1]}` : String(value);
         },
-        /** `aaaa-mm-jj` (input natif) -> `jj/mm/aaaa` (API). */
-        fromInputDate(value) {
+        /** `aaaa-mm-jj` (input natif) -> API. */
+        fromInputDate(value, dateFormat) {
             if (!value) {
                 return '';
             }
+            if (dateFormat === 'iso') {
+                return String(value);
+            }
             const m = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
             return m ? `${m[3]}/${m[2]}/${m[1]}` : String(value);
+        },
+        /**
+         * `aaaa-mm-jj hh:mm:ss` (API) -> `aaaa-mm-jjThh:mm` (input natif).
+         * Une heure à zéro signifie « journée entière » et doit être conservée
+         * telle quelle : c'est ce que lit la home pour ne pas afficher d'heure.
+         */
+        toInputDateTime(value) {
+            if (!value) {
+                return '';
+            }
+            const m = String(value).match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/);
+            return m ? `${m[1]}T${m[2]}` : String(value);
+        },
+        /** `aaaa-mm-jjThh:mm` (input natif) -> `aaaa-mm-jj hh:mm:00` (API). */
+        fromInputDateTime(value) {
+            if (!value) {
+                return '';
+            }
+            const m = String(value).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/);
+            return m ? `${m[1]} ${m[2]}:00` : String(value);
         },
     },
 };

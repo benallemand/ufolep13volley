@@ -614,7 +614,7 @@ class MatchMgr extends Generic
                 case 'is_sign_team_ext':
                 case 'is_sign_match_dom':
                 case 'is_sign_match_ext':
-                    $val = ($value === 'on' || $value === 1) ? 1 : 0;
+                    $val = Generic::to_flag($value);
                     $sql .= "$key = ?,";
                     $bindings[] = array('type' => 'i', 'value' => $val);
                     break;
