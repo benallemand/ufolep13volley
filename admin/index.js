@@ -1,5 +1,5 @@
 // Point d'entrée de l'administration Vue (issue #265, lot 0).
-// Remplace progressivement `admin.php` + `js/administration.js` (ExtJS).
+// Remplace `admin.php` + `js/administration.js` (ExtJS), supprimes au lot 6.
 import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';

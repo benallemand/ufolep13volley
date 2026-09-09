@@ -1,10 +1,10 @@
 import { MENU } from './AdminLayout.js';
 
 /**
- * Barre latérale de navigation de l'administration (issue #265, lot 0).
+ * Barre latérale de navigation de l'administration (issue #265).
  *
- * Elle ne liste que les écrans déjà migrés. Tant que la migration n'est pas
- * terminée, un lien renvoie vers l'admin ExtJS pour le reste.
+ * Depuis le lot 6, elle liste TOUS les écrans : l'admin ExtJS a été supprimée,
+ * et le lien « ancienne administration » avec elle.
  */
 export default {
     props: {
@@ -29,9 +29,6 @@ export default {
         </ul>
 
         <div class="p-2 border-t border-base-300 space-y-1">
-          <a href="/admin.php" class="btn btn-ghost btn-sm w-full justify-start">
-            <i class="fas fa-clock-rotate-left"></i> Ancienne administration
-          </a>
           <a href="/pages/home.html" class="btn btn-ghost btn-sm w-full justify-start">
             <i class="fas fa-home"></i> Retour au site
           </a>

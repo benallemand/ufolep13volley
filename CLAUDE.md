@@ -6,7 +6,7 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 
 - **Backend** : PHP 8.1, MySQL
 - **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI — bundlé via Vite (Node.js 20)
-- **Frontend admin** : Vue.js 3 (`admin/index.html`, cible) + Sencha/ExtJS (`admin.php`, historique) — migration en cours, issue #265
+- **Frontend admin** : Vue.js 3 (`admin/index.html`, servie sur `/admin/`) — ExtJS supprimé par le lot 6 de l'issue #265
 - **Tests unitaires** : PHPUnit (`unit_tests/`)
 - **Tests E2E** : Playwright (`e2e/`)
 - **Reverse proxy local** : Caddy (Docker)
@@ -25,17 +25,12 @@ classes/          # Toutes les classes PHP métier
   ...
 ajax/             # Endpoints AJAX (PHP)
 cron/             # Tâches planifiées (daily, hourly, weekly)
-js/               # JavaScript admin (ExtJS/Sencha)
-  controller/     # Contrôleurs ExtJS
-  model/          # Modèles ExtJS
-  view/           # Vues ExtJS
-  store/          # Stores ExtJS
-admin/            # Interface admin Vue.js (en cours de migration — issue #265)
-  index.html      # Entrée Vite de la nouvelle admin
+admin/            # Interface admin Vue.js (issue #265)
+  index.html      # Entrée Vite de l'administration
   components/
     layout/       # Shell, sidebar, routeur, garde admin
     grid/         # Grille et formulaire modal génériques
-    screens/      # Un composant par écran migré
+    screens/      # Un composant par écran
 src/              # Sources Vite (CSS global)
   css/app.css     # Tailwind + DaisyUI + libs tierces
 helpers/          # Helpers PHP
@@ -224,11 +219,11 @@ npm run build
 - `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — pages publiques / dashboard responsable
 - `admin/index.html` — administration Vue (issue #265), servie aussi sur /admin/
 
-**Hors périmètre du bundle Vite** : `admin.php` seul — dernière page sur les CDN
-ExtJS (interface d'administration historique, migration suivie par l'issue #265).
-`register.php` (#249), `reset_password.php` et `rank_for_cup.php` (#266) ne sont plus
-que des redirections vers les routes Vue correspondantes ; leurs URLs historiques
-sont conservées parce qu'elles circulent en lien externe et en favori.
+**Plus aucune page hors du bundle Vite.** `admin.php` (#265 lot 6),
+`register.php` (#249), `reset_password.php` et `rank_for_cup.php` (#266) ne sont
+plus que des redirections vers les routes Vue correspondantes ; leurs URLs
+historiques sont conservées parce qu'elles circulent en lien externe et en
+favori. Il ne reste **aucune dépendance à un CDN tiers** en production.
 
 ### Versionner et déployer
 
@@ -343,9 +338,7 @@ class MonTest extends UfolepTestCase {
 
 ## Frontend admin
 
-Deux interfaces cohabitent le temps de la migration (issue #265).
-
-### Vue 3 — la cible (`admin/index.html`)
+### Vue 3 (`admin/index.html`, servie sur `/admin/`)
 
 Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dans
 `admin/components/` :
@@ -424,12 +417,15 @@ Conventions backend reprises telles quelles : lecture en GET, écriture en POST
 avec `id` vide pour un INSERT, suppression en POST avec `ids` joints par des
 virgules. Chaque endpoint doit être déclaré `admin` dans `rest/access.php`.
 
-### Sencha/ExtJS — l'historique (`admin.php`)
+### Sencha/ExtJS — supprimé
 
-- Fichiers dans `js/` (controllers, models, views, stores)
-- **Point d'entrée unique : `admin.php` et `js/administration.js`** — depuis #266,
-  plus aucune page publique ne charge ExtJS. Supprimer `admin.php` suffira donc à
-  sortir ExtJS du projet, une fois tous les écrans migrés.
+L'arbre `js/` (150 fichiers, 18 contrôleurs, 68 vues, 40 stores) et `admin.php`
+ont été supprimés au **lot 6 de #265**, après migration des 30 entrées de menu.
+`admin.php` subsiste comme simple redirection vers `/admin/`.
+
+Deux écrans n'étaient pas de simples grilles CRUD et ont demandé un composant
+propre : `screens/Indicators.js` (tableau de bord en tuiles) et
+`screens/Divisions.js` (réorganisation par glisser-déposer, qui ferme #189).
 
 ## GitHub
 
@@ -488,14 +484,11 @@ virgules. Chaque endpoint doit être déclaré `admin` dans `rest/access.php`.
 - Créer un fichier `debug_{feature}.php` pour tester/modifier les données temporairement
 - Permet de mettre à jour les dates pour simuler "aujourd'hui"
 
-### Requêtes AJAX ExtJS
-- Toujours spécifier `method: 'GET'` pour les lectures, `method: 'POST'` pour les écritures
-- Par défaut ExtJS utilise POST, ce qui n'est pas toujours approprié
-
 ### Validation d'ID en PHP
 - Utiliser `!empty($id) && is_numeric($id)` pour vérifier les IDs de base de données
-- ExtJS génère des IDs temporaires comme `"extModel1124-23"` pour les nouveaux records
 - `isset()` retourne true même pour `null`, préférer `!empty()`
+- Le test `is_numeric` venait des IDs temporaires d'ExtJS (`"extModel1124-23"`) ;
+  il reste utile, le formulaire modal Vue envoyant un `id` vide à la création
 
 ### Tests Unitaires Sélectifs
 - Certains tests sont destructifs (modification de données réelles)
@@ -506,12 +499,10 @@ virgules. Chaque endpoint doit être déclaré `admin` dans `rest/access.php`.
 - Le routeur `rest/action.php` appelle les méthodes avec des **paramètres nommés** PHP 8+
 - Les méthodes CRUD doivent accepter les paramètres comme arguments de fonction, pas via `$_POST`
 - Exemple : `public function saveNews($id = null, $title = '', $text = ''): void`
-- ExtJS envoie automatiquement `$dirtyFields` lors du submit — l'ajouter comme paramètre optionnel
-
-### Frontend ExtJS — Patterns Admin
-- **Grilles admin** : utiliser des fenêtres d'édition modales (pattern `window.Window`), pas le plugin `rowediting`
-- Créer : `js/view/{entity}/AdminGrid.js` pour la grille, `js/view/{entity}/Edit.js` pour la fenêtre modale
-- Ajouter les refs : `formPanelEdit{Entity}`, `windowEdit{Entity}`, `manage{Entity}Grid`
+- **Donner une valeur par défaut à TOUS les paramètres** : un paramètre obligatoire
+  que le formulaire n'envoie pas lève une `ArgumentCountError` (500)
+- `$dirtyFields` était envoyé automatiquement par ExtJS ; il reste accepté en
+  paramètre optionnel, plus personne ne l'envoie
 
 ### GitHub CLI
 - Pour créer une issue/PR via `gh`, rédiger le body dans un fichier `.md` temporaire puis utiliser `--body-file`

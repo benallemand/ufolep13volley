@@ -3,16 +3,12 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import { requireRoles } from '../../../pages/components/auth/guard.js';
 
 /**
- * Shell de l'administration Vue (issue #265, lot 0).
+ * Shell de l'administration Vue (issue #265).
  *
- * Remplace le `Ext.container.Viewport` + `tabpanel` de `js/administration.js`.
- * Les écrans sont des routes chargées à la demande ; la navigation est une
- * barre latérale repliable, utilisable sur mobile — ce que l'admin ExtJS
- * n'était pas.
- *
- * Le menu ne liste que les écrans déjà migrés. Les autres restent accessibles
- * dans l'admin ExtJS via le lien « ancienne administration », jusqu'à la fin de
- * la migration.
+ * Remplace le `Ext.container.Viewport` + `tabpanel` de `js/administration.js`,
+ * supprimé au lot 6 avec le reste d'ExtJS. Les écrans sont des routes chargées
+ * à la demande ; la navigation est une barre latérale repliable, utilisable sur
+ * mobile — ce que l'admin ExtJS n'était pas.
  */
 
 const routes = [
@@ -24,6 +20,7 @@ const routes = [
     { path: '/matches', component: () => import('../screens/Matches.js') },
     { path: '/competitions', component: () => import('../screens/Competitions.js') },
     { path: '/ranks', component: () => import('../screens/Ranks.js') },
+    { path: '/divisions', component: () => import('../screens/Divisions.js') },
     { path: '/limit-dates', component: () => import('../screens/LimitDates.js') },
     { path: '/week-schedule', component: () => import('../screens/WeekSchedule.js') },
     { path: '/blacklist-dates', component: () => import('../screens/BlacklistDates.js') },
@@ -74,6 +71,7 @@ export const MENU = [
             { path: '/matches', label: 'Matchs', icon: 'fas fa-volleyball' },
             { path: '/competitions', label: 'Compétitions', icon: 'fas fa-trophy' },
             { path: '/ranks', label: 'Divisions / poules', icon: 'fas fa-list-ol' },
+            { path: '/divisions', label: 'Réorganiser les divisions', icon: 'fas fa-arrows-up-down-left-right' },
             { path: '/limit-dates', label: 'Dates limites', icon: 'fas fa-hourglass-end' },
             { path: '/week-schedule', label: 'Planning semaine', icon: 'fas fa-calendar-week' },
         ],

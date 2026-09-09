@@ -183,7 +183,7 @@ export default {
           <div v-if="isConnected" class="flex gap-1">
             <a class="btn btn-primary"
                v-if="user.is_admin && !isActingAs"
-               href="/admin.php">
+               href="/admin/">
               <span><i class="fas fa-gear mr-2"/>administration</span>
             </a>
             <a class="btn btn-primary"
@@ -280,7 +280,7 @@ export default {
                 .post("/rest/action.php/usermanager/switch_back_to_admin")
                 .then((response) => {
                     if (response.data.success) {
-                        window.location.href = '/admin.php';
+                        window.location.href = '/admin/';
                     } else {
                         alert('Erreur: ' + response.data.message);
                     }

@@ -29,7 +29,7 @@ Se connecter en administrateur, puis ouvrir **https://biggyben.freeboxos.fr/admi
 | T1 | Ouvrir `/admin/` **sans être connecté** | Redirection vers la page de connexion, message « profil suffisant » |
 | T2 | Ouvrir `/admin/` connecté en **responsable d'équipe** (non admin) | Même redirection |
 | T3 | Réduire la fenêtre à une largeur mobile | Menu burger, tableau qui défile dans son conteneur, **pas** de défilement horizontal de la page |
-| T4 | Cliquer « Ancienne administration » | Arrive sur `admin.php`, l'admin ExtJS fonctionne toujours |
+| T4 | Ouvrir `/admin.php` | **Redirige vers `/admin/`** — l'ancienne administration ExtJS a été supprimée au lot 6, l'URL historique est conservée en redirection |
 | T5 | Cliquer « Retour au site » | Arrive sur la home publique |
 
 ## Cas génériques — à rejouer sur **chaque** écran
@@ -137,6 +137,8 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | P1 | Créer une compétition | Créée ; « Matchs aller-retour » se coche |
 | P2 | Éditer les dates (jj/mm/aaaa) | Modification visible dans la grille |
 | P3 | Supprimer la compétition de test | Le compteur revient à sa valeur de départ |
+| P6 | Sélectionner une compétition **non commencée**, cliquer « Remettre les points à zéro », lire la confirmation | Elle nomme la compétition et précise que matchs et engagements ne sont pas touchés |
+| P7 | Confirmer sur une compétition **déjà commencée** | Refusé par le backend (`isCompetitionStarted`), message d'erreur |
 | P4 | Sélectionner une compétition **de test**, cliquer « Initialiser la saison », lire la confirmation | La confirmation nomme la compétition et annonce l'archivage des matchs, la suppression des comptes responsables et des créneaux |
 | P5 | Annuler la confirmation | Rien ne se passe |
 
@@ -396,6 +398,28 @@ appliquent pas.
 >
 > **Après la bascule, la session n'est plus administratrice** : c'est pour ça que
 > l'écran renvoie vers la home et non vers l'admin, qui se refuserait.
+
+### Réorganiser les divisions (`#/divisions`) — lot 6, ferme #189
+
+Écran de manipulation, pas une grille : les cas génériques ne s'y appliquent pas.
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| D1 | Ouvrir l'écran, choisir une compétition | Une colonne « Non affectées » en jaune, puis une colonne par division, numérotées, avec le compte d'équipes en titre |
+| D2 | Glisser une équipe d'une division vers une autre | Elle change de colonne, les numéros de rang se renumérotent des deux côtés, le badge « modifications non enregistrées » apparaît |
+| D3 | Glisser une équipe **sur une autre équipe** | Elle s'insère à cette position, pas en fin de colonne |
+| D4 | **Sur mobile / tablette** : toucher une équipe, puis toucher une colonne | L'équipe se déplace. Le glisser-déposer natif ne marche pas au doigt, d'où ce second geste |
+| D5 | Cliquer « Nouvelle division » | Une colonne vide apparaît, numérotée à la suite |
+| D6 | Fermer une colonne **non vide** | Refusé avec un message : il faut la vider d'abord |
+| D7 | Fermer une colonne vide | Elle disparaît (rien n'est écrit avant l'enregistrement) |
+| D8 | Prendre une équipe **non affectée**, la mettre dans une division, enregistrer | Elle est ajoutée au classement, en dernier rang de la colonne |
+| D9 | Prendre une équipe **d'une division**, la remettre dans « Non affectées », enregistrer | **Une confirmation nomme les équipes qui vont perdre leur classement.** En refusant, rien n'est écrit |
+| D10 | Confirmer en D9 | La ligne de classement est supprimée, rang de départ compris |
+| D11 | Recharger sans enregistrer après des déplacements | Tout revient à l'état en base |
+
+> **D9/D10 suppriment des lignes de classement.** L'écran ExtJS le faisait sans
+> rien demander — c'est comme ça qu'on perd un rang de départ sans s'en
+> apercevoir. La confirmation nominative est un ajout de cette migration.
 
 ## Après la recette
 
