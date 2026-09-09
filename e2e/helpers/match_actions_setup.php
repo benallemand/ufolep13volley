@@ -36,7 +36,7 @@ try {
 
     // Échantillon depuis matchs_view => FK valides garanties (jointures INNER OK).
     $sample = $sql->execute(
-        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium, id_journee
+        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium
          FROM matchs_view
          LIMIT 1"
     );

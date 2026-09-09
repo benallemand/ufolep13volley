@@ -19,7 +19,6 @@ Ext.application({
         'manage_survey',
         'manage_register',
         'manage_email',
-        'generate_competition',
         'manage_commission',
         'manage_registry',
         'manage_user',
@@ -91,11 +90,6 @@ Ext.application({
                                         text: 'Gestion des équipes',
                                         glyph: 'xe905@icomoon',
                                         action: 'manageTeams'
-                                    },
-                                    {
-                                        text: 'Gestion des journées',
-                                        glyph: 'xf073@FontAwesome',
-                                        action: 'manageDays'
                                     },
                                     {
                                         text: 'Gestion des compétitions',

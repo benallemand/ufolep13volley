@@ -32,12 +32,6 @@ INSERT INTO competitions (id, code_competition, libelle, id_compet_maitre, start
   (7, 'kf', 'Coupe Khoury Hanna - Phase Finales',  'kh', CURRENT_DATE - INTERVAL 60 DAY, b'0'),
   (8, 'l',  'Coupe 6x6 Feminin',                   'l',  CURRENT_DATE - INTERVAL 60 DAY, b'0');
 
-INSERT INTO journees (id, code_competition, numero, nommage, libelle, start_date) VALUES
-  (1, 'm', 1, 'J1', 'Journee 1', CURRENT_DATE - INTERVAL 30 DAY),
-  (2, 'm', 2, 'J2', 'Journee 2', CURRENT_DATE + INTERVAL 7 DAY),
-  (3, 'f', 1, 'J1', 'Journee 1', CURRENT_DATE - INTERVAL 30 DAY),
-  (4, 'mo', 1, 'J1', 'Journee 1', CURRENT_DATE - INTERVAL 30 DAY);
-
 -- ---------------------------------------------------------------------------
 -- Clubs, gymnases, equipes
 -- Le club 1 porte 2 equipes avec creneaux : c'est celui que ClubLeaderTest
@@ -184,9 +178,9 @@ INSERT INTO users_clubs (user_id, club_id) VALUES
 -- un match existant (LiveScoreTest, MatchDateModificationTest...).
 -- ---------------------------------------------------------------------------
 INSERT INTO matches (id_match, code_match, code_competition, division, id_equipe_dom, id_equipe_ext,
-                     date_reception, date_original, id_journee, id_gymnasium, match_status) VALUES
-  (1, 'CI001', 'm', '1', 1, 2, CURRENT_DATE - INTERVAL 30 DAY, CURRENT_DATE - INTERVAL 30 DAY, 1, 1, 'CONFIRMED'),
-  (2, 'CI002', 'm', '1', 2, 3, CURRENT_DATE + INTERVAL 7 DAY,  CURRENT_DATE + INTERVAL 7 DAY,  2, 2, 'NOT_CONFIRMED'),
-  (3, 'CI003', 'm', '1', 3, 1, CURRENT_DATE + INTERVAL 14 DAY, CURRENT_DATE + INTERVAL 14 DAY, 2, 3, 'NOT_CONFIRMED');
+                     date_reception, date_original, id_gymnasium, match_status) VALUES
+  (1, 'CI001', 'm', '1', 1, 2, CURRENT_DATE - INTERVAL 30 DAY, CURRENT_DATE - INTERVAL 30 DAY, 1, 'CONFIRMED'),
+  (2, 'CI002', 'm', '1', 2, 3, CURRENT_DATE + INTERVAL 7 DAY,  CURRENT_DATE + INTERVAL 7 DAY,  2, 'NOT_CONFIRMED'),
+  (3, 'CI003', 'm', '1', 3, 1, CURRENT_DATE + INTERVAL 14 DAY, CURRENT_DATE + INTERVAL 14 DAY, 3, 'NOT_CONFIRMED');
 
 SET FOREIGN_KEY_CHECKS = 1;

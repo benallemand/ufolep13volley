@@ -43,18 +43,6 @@ try {
         );
     }
 
-    // --- Journée de test dédiée (créée si absente) ---
-    $existing_journee = $sql->execute(
-        "SELECT id FROM journees WHERE code_competition = 'e2' LIMIT 1"
-    );
-    if (empty($existing_journee)) {
-        $id_journee = $sql->execute(
-            "INSERT INTO journees SET code_competition = 'e2', numero = 99, nommage = 'E2E Test'"
-        );
-    } else {
-        $id_journee = (int)$existing_journee[0]['id'];
-    }
-
     // --- Gymnase de test dédié (créé si absent) ---
     $existing_gym = $sql->execute(
         "SELECT id FROM gymnase WHERE nom = 'Gymnase E2E Test' LIMIT 1"
@@ -83,14 +71,12 @@ try {
             id_equipe_ext   = ?,
             date_reception  = CURRENT_DATE,
             date_original   = CURRENT_DATE,
-            id_journee      = ?,
             id_gymnasium    = ?,
             match_status    = 'CONFIRMED'",
         [
             ['type' => 's', 'value' => $code_match],
             ['type' => 'i', 'value' => $id_equipe_dom],
             ['type' => 'i', 'value' => $id_equipe_ext],
-            ['type' => 'i', 'value' => $id_journee],
             ['type' => 'i', 'value' => $id_gymnasium],
         ]
     );

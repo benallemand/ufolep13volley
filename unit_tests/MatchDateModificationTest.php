@@ -58,14 +58,6 @@ class MatchDateModificationTest extends UfolepTestCase
                                code_competition = 'dm',
                                date_limite = DATE_FORMAT(CURRENT_DATE + INTERVAL 60 DAY, '%d/%m/%Y')");
         
-        // Create day within competition period
-        $id_day = $this->sql_manager->execute("INSERT INTO journees SET 
-                               code_competition = 'dm',
-                               numero = 1,
-                               nommage = 'J1',
-                               libelle = 'J1',
-                               start_date = CURRENT_DATE - INTERVAL 20 DAY");
-        
         // Create clubs
         $id_club1 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'dm test club 1'");
         $id_club2 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'dm test club 2'");
@@ -127,7 +119,6 @@ class MatchDateModificationTest extends UfolepTestCase
                         id_equipe_dom = $id_team1,
                         id_equipe_ext = $id_team2,
                         date_reception = CURRENT_DATE - INTERVAL 15 DAY,
-                        id_journee = $id_day,
                         id_gymnasium = $id_gymnasium1,
                         date_original = CURRENT_DATE - INTERVAL 15 DAY,
                         match_status = 'NOT_CONFIRMED'");
@@ -145,7 +136,6 @@ class MatchDateModificationTest extends UfolepTestCase
         $this->sql_manager->execute("DELETE FROM creneau WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE code_competition = 'dm')");
         $this->sql_manager->execute("DELETE FROM classements WHERE code_competition = 'dm'");
         $this->sql_manager->execute("DELETE FROM equipes WHERE code_competition = 'dm'");
-        $this->sql_manager->execute("DELETE FROM journees WHERE code_competition = 'dm'");
         $this->sql_manager->execute("DELETE FROM dates_limite WHERE code_competition = 'dm'");
         $this->sql_manager->execute("DELETE FROM competitions WHERE code_competition = 'dm'");
         $this->sql_manager->execute("DELETE FROM clubs WHERE nom LIKE 'dm test club %'");

@@ -167,10 +167,6 @@ try {
             require_once __DIR__ . "/../classes/Database.php";
             $manager = new Database();
             break;
-        case 'day':
-            require_once __DIR__ . "/../classes/Day.php";
-            $manager = new Day();
-            break;
         case 'emails':
             require_once __DIR__ . "/../classes/Emails.php";
             $manager = new Emails();

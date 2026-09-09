@@ -27,8 +27,6 @@ class SurveyTest extends UfolepTestCase
                 array('type' => 'i', 'value' => $this->test_user_id),
                 array('type' => 'i', 'value' => $id_team1),
             ));
-        $id_day = $this->sql->execute(
-            "INSERT INTO journees SET code_competition = 'ut', numero = 99, nommage = 'SURVEY_TEST', libelle = 'Survey Test', start_date = CURRENT_DATE");
         $id_court = $this->sql->execute("INSERT INTO gymnase SET nom = 'survey test court'");
         $this->test_match_id = $this->sql->execute(
             "INSERT INTO matches SET
@@ -38,7 +36,6 @@ class SurveyTest extends UfolepTestCase
                 id_equipe_dom = $id_team1,
                 id_equipe_ext = $id_team2,
                 date_reception = CURRENT_DATE,
-                id_journee = $id_day,
                 id_gymnasium = $id_court,
                 date_original = CURRENT_DATE,
                 match_status = 'CONFIRMED'");
@@ -48,7 +45,6 @@ class SurveyTest extends UfolepTestCase
     {
         $this->sql->execute("DELETE FROM survey WHERE id_match IN (SELECT id FROM matches WHERE code_match = 'SURVEY_UT001')");
         $this->sql->execute("DELETE FROM matches WHERE code_match = 'SURVEY_UT001'");
-        $this->sql->execute("DELETE FROM journees WHERE nommage = 'SURVEY_TEST'");
         $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'survey_test_user')");
         $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'survey_test_user'");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'survey test team %'");

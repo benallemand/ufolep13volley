@@ -100,8 +100,8 @@ export default {
                 const t1 = drawMatch.team1_resolved ? drawMatch.team1_resolved.id_equipe : null;
                 const t2 = drawMatch.team2_resolved ? drawMatch.team2_resolved.id_equipe : null;
 
-                // Chercher le vrai match correspondant par id_equipe
-                // (pas de filtre sur journee : les matchs insérés peuvent avoir journee=null)
+                // Chercher le vrai match correspondant par id_equipe : le tour
+                // (1/8, 1/4...) est posé ici côté client, l'API ne le porte pas
                 const realMatch = (t1 && t2) ? this.finalsMatches.find(m =>
                     (parseInt(m.id_equipe_dom) === parseInt(t1) && parseInt(m.id_equipe_ext) === parseInt(t2)) ||
                     (parseInt(m.id_equipe_dom) === parseInt(t2) && parseInt(m.id_equipe_ext) === parseInt(t1))
@@ -358,8 +358,8 @@ export default {
         },
         fetchFinalsMatches() {
             // L'endpoint filtre déjà par competition=kf/cf, tous les matchs retournés
-            // sont des matchs de phases finales. Pas de filtre supplémentaire par journée
-            // car les matchs insérés peuvent avoir journee=null.
+            // sont des matchs de phases finales. Le tour est déduit côté client :
+            // depuis #279, l'API ne porte plus aucune notion de journée.
             return axios.get(this.matchesFetchUrl)
                 .then(response => {
                     this.finalsMatches = response.data;

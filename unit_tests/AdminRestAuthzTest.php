@@ -111,6 +111,14 @@ class AdminRestAuthzTest extends UfolepTestCase
             ['usermanager', 'remove'],
             ['usermanager', 'createUser'],
             ['matchmgr', 'generate_matches'],
+            // Génération retirée du PHP (#279) : elle vit dans les scripts
+            // Python de `ufolep13volley_python`. Ces actions supprimaient les
+            // matchs existants avant de régénérer — les rouvrir permettrait
+            // d'écraser le calendrier produit par Python.
+            ['matchmgr', 'generateAll'],
+            ['matchmgr', 'generateMatches'],
+            ['competition', 'generate_matches_final_phase_cup'],
+            ['day', 'getDays'],
             ['rank', 'resetRankPoints'],
             ['emails', 'send_pending_emails'],
         ];

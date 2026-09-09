@@ -111,7 +111,6 @@ export default {
                 { key: 'code_match', label: 'Code' },
                 { key: 'code_competition', label: 'Comp' },
                 { key: 'division', label: 'Div' },
-                { key: 'numero_journee', label: 'Journée', align: 'right' },
                 { key: 'equipe_dom', label: 'Domicile' },
                 { key: 'resultat', label: 'Résultat' },
                 { key: 'equipe_ext', label: 'Extérieur' },
@@ -138,7 +137,9 @@ export default {
                     options: this.gymnasiums.map((g) => ({ value: g.id, label: g.full_name || g.nom })),
                 },
                 { name: 'date_reception', label: 'Date', placeholder: 'jj/mm/aaaa' },
-                { name: 'heure_reception', label: 'Heure', placeholder: 'hh:mm' },
+                // Pas d'heure : `heure_reception` vient du créneau de l'équipe
+                // recevante (jointure de `matchs_view`), la table `matches`
+                // n'a pas cette colonne.
                 { name: 'certif', label: 'Certifié ?', type: 'checkbox' },
                 { name: 'is_sign_team_dom', label: 'Fiche équipe signée (dom) ?', type: 'checkbox' },
                 { name: 'is_sign_team_ext', label: 'Fiche équipe signée (ext) ?', type: 'checkbox' },

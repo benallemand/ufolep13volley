@@ -26,7 +26,6 @@ export default {
                 Division {{ matchData.division }}
               </a>
             </span>
-            <span v-if="matchData.numero_journee">Journée {{ matchData.numero_journee }}</span>
           </span>
         </div>
         <div class="flex items-center justify-center mb-4">
