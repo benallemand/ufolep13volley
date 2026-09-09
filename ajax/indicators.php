@@ -1,5 +1,27 @@
 <?php
 
+/**
+ * Indicateurs d'administration (tableau de bord).
+ *
+ * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 47 requetes d'exploitation et
+ * renvoie leurs lignes de detail : adresses des responsables, comptes, identite
+ * de joueurs, cotisations. Il etait ouvert a tout le monde (issue #284) --
+ * `ajax/` ne passe pas par `rest/action.php`, donc le refus par defaut de #270
+ * ne le protegeait pas.
+ */
+require_once __DIR__ . '/../classes/UserManager.php';
+
+@session_start();
+if (!UserManager::isAdmin()) {
+    http_response_code(403);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(array(
+        'success' => false,
+        'message' => "Action reservee aux administrateurs !",
+    ));
+    exit();
+}
+
 header('Content-Type: text/html; charset=utf-8');
 
 /**
