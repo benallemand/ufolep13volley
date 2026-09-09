@@ -31,6 +31,11 @@ const routes = [
         component: () => import('../table/History.js')
     },
     {
+        // Agenda de la commission + calendrier des matchs (issue #290)
+        path: '/calendar',
+        component: () => import('../panel/Calendar.js')
+    },
+    {
         path: '/preferences',
         component: () => import('../panel/Preferences.js'),
         props: () => ({fetchUrl: "/rest/action.php/usermanager/getMyPreferences"})

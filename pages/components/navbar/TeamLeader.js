@@ -120,6 +120,10 @@ export default {
                     <router-link to="/club_matchs"><span><i class="fas fa-volleyball mr-2"></i>club</span>
                     </router-link>
                   </li>
+                  <li>
+                    <router-link to="/calendar"><span><i class="fas fa-calendar-days mr-2"></i>calendrier</span>
+                    </router-link>
+                  </li>
                 </ul>
               </div>
               <router-link to="/messages" class="btn btn-ghost relative">
