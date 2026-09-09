@@ -9,10 +9,20 @@
 <body class="bg-base-100">
 <div id="match-app" class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-4">
-        <a href="/" class="flex items-center text-blue-600 font-bold text-xl hover:underline">
-            <i class="fas fa-home text-2xl mr-2"></i>
-            Accueil
-        </a>
+        <div class="flex items-center gap-4">
+            <!-- Cette page est une entrée Vite à part, pas une route de la SPA
+                 d'administration : le retour est un lien classique. Sa seule
+                 porte d'entrée était la barre d'outils d'admin.php jusqu'au
+                 lot 6 de #265. -->
+            <a href="/admin/" class="flex items-center text-blue-600 font-bold text-xl hover:underline">
+                <i class="fas fa-gear text-2xl mr-2"></i>
+                Administration
+            </a>
+            <a href="/" class="flex items-center text-blue-600 hover:underline">
+                <i class="fas fa-home text-xl mr-2"></i>
+                Accueil
+            </a>
+        </div>
         <span class="text-xl">{{ filteredMatches.length }} match(s) trouvé(s)</span>
         <img src="/images/ufolep-logo-cmjn-BOUCHES-DU.jpg" alt="Logo" class="h-12">
     </div>

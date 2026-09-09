@@ -86,9 +86,7 @@ export default {
             const compte = rows.find((r) => String(r.id) === String(id));
             const libelle = compte ? (compte.login || compte.email) : 'ce compte';
             if (!window.confirm(
-                `Agir en tant que ${libelle} ?
-
-`
+                `Agir en tant que ${libelle} ?\n\n`
                 + "Votre session prend son identité et ses droits. Le retour se fait "
                 + "depuis le bandeau du site, avec « revenir à mon compte admin »."
             )) {

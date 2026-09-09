@@ -167,7 +167,6 @@ class AdminRestAuthzTest extends UfolepTestCase
             // pages/components/panel/Players.js  ->  /rest/action.php/player/${action}
             'player/set_leader', 'player/set_vice_leader', 'player/set_captain',
             'player/remove_from_team',
-            // js/controller/manage_register.js  ->  'rest/action.php/register/' + action
             // admin/components/screens/Registrations.js  ->  `/rest/action.php/register/${action}`
             'register/validateRegistration', 'register/unvalidateRegistration',
             'register/fill_ranks', 'register/create_teams_and_accounts',
@@ -274,7 +273,13 @@ class AdminRestAuthzTest extends UfolepTestCase
     private function frontendFiles(string $root): array
     {
         $files = [];
+        // `js/` (ExtJS) a disparu au lot 6 de #265 : on ne scanne plus que les
+        // deux frontends Vue. Le repertoire est neanmoins tolere s'il revenait,
+        // plutot que de faire exploser `RecursiveDirectoryIterator`.
         foreach (['pages', 'admin', 'js'] as $dir) {
+            if (!is_dir("$root/$dir")) {
+                continue;
+            }
             $it = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator("$root/$dir", FilesystemIterator::SKIP_DOTS)
             );

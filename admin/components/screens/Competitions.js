@@ -29,6 +29,11 @@ export default {
         delete-url="/rest/action.php/competition/delete">
 
         <template #actions="{ selection, rows, reload }">
+          <button class="btn btn-sm btn-outline"
+                  :disabled="!selection.length || isSettingUp"
+                  @click="resetCompetition(selection, rows, reload)">
+            <i class="fas fa-eraser"></i> Remettre les points à zéro
+          </button>
           <button class="btn btn-sm btn-error btn-outline"
                   :disabled="!selection.length || isSettingUp"
                   @click="setUpSeason(selection, rows, reload)">
@@ -63,6 +68,37 @@ export default {
         };
     },
     methods: {
+        /** Libellés des compétitions sélectionnées, pour les confirmations. */
+        labelsOf(selection, rows) {
+            return selection
+                .map((id) => rows.find((r) => String(r.id) === String(id)))
+                .map((row) => (row ? row.libelle || row.code_competition : '?'));
+        },
+        /**
+         * « Reset compétition » du menu *Générer* de l'admin ExtJS
+         * (issue #265, lot 6). Ne touche qu'aux points de classement
+         * (`Rank::resetRankPoints`) : les matchs et les engagements restent.
+         * Refusé si la compétition a déjà commencé.
+         */
+        resetCompetition(selection, rows, reload) {
+            const message = 'Remettre les points de classement à zéro pour : '
+                + this.labelsOf(selection, rows).join(', ') + ' ?\n\n'
+                + "Les matchs et les engagements ne sont pas touchés. L'opération est "
+                + "refusée si la compétition a déjà commencé.";
+            if (!window.confirm(message)) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('ids', selection.join(','));
+            this.isSettingUp = true;
+            axios.post('/rest/action.php/competition/resetCompetition', formData)
+                .then((response) => {
+                    onSuccess(this, response);
+                    reload();
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isSettingUp = false; });
+        },
         /**
          * Initialise la saison à partir des engagements : archive les matchs
          * en cours, recrée les équipes, les comptes responsables et les
@@ -73,10 +109,8 @@ export default {
          * la confirmation nominative.
          */
         setUpSeason(selection, rows, reload) {
-            const labels = selection
-                .map((id) => rows.find((r) => String(r.id) === String(id)))
-                .map((row) => (row ? row.libelle || row.code_competition : '?'));
-            const message = 'Initialiser la saison pour : ' + labels.join(', ') + ' ?\n\n'
+            const message = 'Initialiser la saison pour : '
+                + this.labelsOf(selection, rows).join(', ') + ' ?\n\n'
                 + 'Cette opération archive les matchs en cours, supprime les comptes '
                 + 'responsables et les créneaux existants, puis les recrée depuis les '
                 + 'engagements et réinitialise les classements.';
