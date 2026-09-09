@@ -403,8 +403,16 @@ la prop `rowFilter`.
 
 > **Écran volumineux** : le routeur accepte `_start`/`_end` et découpe côté
 > serveur. `emails/get` renvoie 11 Mo sans borne (6 000 lignes portant chacune
-> un corps HTML) : l'écran demande donc `?_start=0&_end=499` et propose
-> d'élargir. La grille recharge quand `fetchUrl` change.
+> un corps HTML) et `activity/getActivity` 2,5 Mo (9 700 lignes) : ces écrans
+> demandent `?_start=0&_end=499` et proposent d'élargir. La grille recharge
+> quand `fetchUrl` change. Ne marche que si la requête est déjà triée du plus
+> récent au plus ancien — le découpage est fait **après** l'`ORDER BY`.
+
+> **Tout n'est pas une grille.** `screens/Indicators.js` est un tableau de bord
+> en tuiles : `ajax/indicators.php?mode=list` rend les 47 libellés, puis un
+> `mode=detail&id=N` par indicateur exécute sa requête, six en vol. Une tuile à
+> zéro n'est pas affichée. C'est le modèle à suivre pour un écran qui n'est pas
+> du CRUD : un composant à part, pas une contorsion de `AdminGrid`.
 
 **Validation** : la recette manuelle vit dans `admin/RECETTE.md` — cas transverses,
 cas génériques de la grille, et cas par écran. Les écrans d'administration sont
