@@ -676,7 +676,6 @@ class Team extends Generic
                 'code_match',
                 'libelle_competition',
                 'division',
-                'journee',
                 'equipe_dom',
                 'equipe_ext',
                 'heure_reception',

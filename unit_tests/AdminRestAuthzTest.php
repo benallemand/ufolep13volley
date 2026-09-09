@@ -118,7 +118,7 @@ class AdminRestAuthzTest extends UfolepTestCase
             ['matchmgr', 'generateAll'],
             ['matchmgr', 'generateMatches'],
             ['competition', 'generate_matches_final_phase_cup'],
-            ['day', 'generateDays'],
+            ['day', 'getDays'],
             ['rank', 'resetRankPoints'],
             ['emails', 'send_pending_emails'],
         ];

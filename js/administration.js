@@ -92,11 +92,6 @@ Ext.application({
                                         action: 'manageTeams'
                                     },
                                     {
-                                        text: 'Gestion des journées',
-                                        glyph: 'xf073@FontAwesome',
-                                        action: 'manageDays'
-                                    },
-                                    {
                                         text: 'Gestion des compétitions',
                                         action: 'displayCompetitions'
                                     },

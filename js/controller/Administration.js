@@ -1,8 +1,8 @@
 Ext.define('Ufolep13Volley.controller.Administration', {
     extend: 'Ext.app.Controller',
-    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'AdminDays', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews', 'AdminCalendarEvents'],
-    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'Day', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News', 'CalendarEvent'],
-    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'day.AdminGrid', 'day.Edit', 'limitdate.Grid', 'limitdate.Edit', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'calendar_events.AdminGrid', 'calendar_events.Edit', 'bilan.Form'],
+    stores: ['Players', 'Clubs', 'Teams', 'RankTeams', 'Competitions', 'ParentCompetitions', 'Users', 'Gymnasiums', 'Activity', 'WeekSchedule', 'AdminMatches', 'LimitDates', 'AdminRanks', 'HallOfFame', 'Timeslots', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'Departements', 'AdminNews', 'AdminCalendarEvents'],
+    models: ['Player', 'Club', 'Team', 'RankTeam', 'Competition', 'User', 'Gymnasium', 'Activity', 'WeekSchedule', 'Match', 'WeekDay', 'LimitDate', 'Rank', 'HallOfFame', 'Timeslot', 'BlacklistGymnase', 'BlacklistTeam', 'BlacklistTeams', 'BlacklistDate', 'News', 'CalendarEvent'],
+    views: ['player.Grid', 'player.Edit', 'club.Select', 'team.Select', 'team.Grid', 'team.Edit', 'match.AdminGrid', 'match.Edit', 'limitdate.Grid', 'limitdate.Edit', 'user.Grid', 'user.Edit', 'gymnasium.Grid', 'gymnasium.Edit', 'club.Grid', 'club.Edit', 'activity.Grid', 'timeslot.WeekScheduleGrid', 'rank.AdminGrid', 'rank.Edit', 'rank.DragDropPanel', 'grid.HallOfFame', 'window.HallOfFame', 'grid.Competitions', 'window.Competition', 'grid.BlacklistGymnase', 'window.BlacklistGymnase', 'grid.BlacklistTeam', 'window.BlacklistTeam', 'grid.BlacklistTeams', 'window.BlacklistTeams', 'grid.BlacklistDate', 'window.BlacklistDate', 'grid.Timeslots', 'window.Timeslot', 'view.Indicators', 'news.AdminGrid', 'news.Edit', 'calendar_events.AdminGrid', 'calendar_events.Edit', 'bilan.Form'],
     refs: [{
         ref: 'ImagePlayer', selector: 'playeredit image'
     }, {
@@ -20,7 +20,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'manageRanksGrid', selector: 'rankgrid'
     }, {
-        ref: 'manageDaysGrid', selector: 'daysgrid'
     }, {
         ref: 'manageLimitDatesGrid', selector: 'limitdatesgrid'
     }, {
@@ -44,7 +43,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'formPanelEditRank', selector: 'rankedit form'
     }, {
-        ref: 'formPanelEditDay', selector: 'dayedit form'
     }, {
         ref: 'formPanelEditLimitDate', selector: 'limitdateedit form'
     }, {
@@ -66,7 +64,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'windowEditRank', selector: 'rankedit'
     }, {
-        ref: 'windowEditDay', selector: 'dayedit'
     }, {
         ref: 'windowEditLimitDate', selector: 'limitdateedit'
     }, {
@@ -112,8 +109,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.addMatch
             }, 'rankgrid button[action=add]': {
                 click: this.addRank
-            }, 'daysgrid button[action=add]': {
-                click: this.addDay
             }, 'limitdatesgrid button[action=add]': {
                 click: this.addLimitDate
             }, 'usersgrid button[action=edit]': {
@@ -126,8 +121,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.editTeam
             }, 'matchesgrid button[action=edit]': {
                 click: this.editMatch
-            }, 'daysgrid button[action=edit]': {
-                click: this.editDay
             }, 'limitdatesgrid button[action=edit]': {
                 click: this.editLimitDate
             }, 'usersgrid button[action=delete]': {
@@ -150,8 +143,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.generateHallOfFame
             }, 'competitions_grid menuitem[action=resetCompetition]': {
                 click: this.resetCompetition
-            }, 'daysgrid button[action=delete]': {
-                click: this.deleteDays
             }, 'limitdatesgrid button[action=delete]': {
                 click: this.deleteLimitDates
             }, 'playersgrid': {
@@ -170,8 +161,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 itemdblclick: this.editMatch
             }, 'rankgrid': {
                 itemdblclick: this.editRank
-            }, 'daysgrid': {
-                itemdblclick: this.editDay
             }, 'limitdatesgrid': {
                 itemdblclick: this.editLimitDate
             }, 'button[action=cancel]': {
@@ -196,8 +185,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
                 click: this.showRanksGrid
             }, 'menuitem[action=manageRanksDragDrop]': {
                 click: this.showRanksDragDrop
-            }, 'menuitem[action=manageDays]': {
-                click: this.showDaysGrid
             }, 'menuitem[action=manageLimitDates]': {
                 click: this.showLimitDatesGrid
             }, 'menuitem[action=displayWeekSchedule]': {
@@ -586,14 +573,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         var widget = Ext.widget('rankedit');
         this.getFormPanelEditRank().loadRecord(record);
     },
-    editDay: function (button) {
-        var record = button.up('grid').getSelectionModel().getSelection()[0];
-        if (!record) {
-            return;
-        }
-        var widget = Ext.widget('dayedit');
-        this.getFormPanelEditDay().loadRecord(record);
-    },
     editLimitDate: function (button) {
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
@@ -661,15 +640,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     addRank: function (button) {
         var widget = Ext.widget('rankedit');
-        var record = button.up('grid').getSelectionModel().getSelection()[0];
-        if (!record) {
-            return;
-        }
-        widget.down('form').loadRecord(record);
-        widget.down('form').getForm().findField('id').setValue("");
-    },
-    addDay: function (button) {
-        var widget = Ext.widget('dayedit');
         var record = button.up('grid').getSelectionModel().getSelection()[0];
         if (!record) {
             return;
@@ -1066,9 +1036,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
             }
         });
     },
-    deleteDays: function (button) {
-        this.genericDelete(button, '/rest/action.php/day/delete', 'id');
-    },
     deleteLimitDates: function (button) {
         this.genericDelete(button, '/rest/action.php/limitdate/delete', 'id_date');
     },
@@ -1144,9 +1111,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     },
     showRanksDragDrop: function () {
         this.showAdministrationGrid('rankdragdroppanel');
-    },
-    showDaysGrid: function () {
-        this.showAdministrationGrid('daysgrid');
     },
     showLimitDatesGrid: function () {
         this.showAdministrationGrid('limitdatesgrid');

@@ -27,12 +27,6 @@ class MatchManagerTest extends UfolepTestCase
                                libelle = 'unit tests',
                                id_compet_maitre = 'ut',
                                start_date = CURRENT_DATE - INTERVAL 30 DAY");
-        $id_day = $this->sql_manager->execute("INSERT INTO journees SET 
-                               code_competition = 'ut',
-                               numero = 1,
-                               nommage = 'J1',
-                               libelle = 'J1',
-                               start_date = CURRENT_DATE - INTERVAL 30 DAY");
         $id_club1 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'test club 1'");
         $id_club2 = $this->sql_manager->execute("INSERT INTO clubs SET nom = 'test club 2'");
         $id_team1 = $this->sql_manager->execute("INSERT INTO equipes SET 
@@ -74,7 +68,6 @@ class MatchManagerTest extends UfolepTestCase
                         id_equipe_dom = $id_team1,
                         id_equipe_ext = $id_team2,
                         date_reception = CURRENT_DATE - INTERVAL 30 DAY,
-                        id_journee = $id_day,
                         id_gymnasium = $id_court1,
                         date_original = CURRENT_DATE - INTERVAL 30 DAY,
                         match_status = 'CONFIRMED'");
@@ -186,8 +179,7 @@ class MatchManagerTest extends UfolepTestCase
         $rank3 = $this->sql_manager->execute("INSERT INTO classements SET code_competition = 'ut', division = '1', id_equipe = $team3, rank_start = 3");
         $court3 = $this->sql_manager->execute("INSERT INTO gymnase SET nom = 'test court 3'");
 
-        $day = $this->get_test_day();
-        $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT002', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_journee = {$day['id']}, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
+        $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT002', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
 
         $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_team_leader', email = 'ut_multi_team_leader@ufolep.test', password_hash = 'x'");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
@@ -214,8 +206,7 @@ class MatchManagerTest extends UfolepTestCase
         $rank3 = $this->sql_manager->execute("INSERT INTO classements SET code_competition = 'ut', division = '1', id_equipe = $team3, rank_start = 3");
         $court3 = $this->sql_manager->execute("INSERT INTO gymnase SET nom = 'test court 3'");
 
-        $day = $this->get_test_day();
-        $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT003', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_journee = {$day['id']}, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
+        $matchId = $this->sql_manager->execute("INSERT INTO matches SET code_match = 'UT003', code_competition='ut', division='1', id_equipe_dom = $team2, id_equipe_ext = $team3, date_reception = CURRENT_DATE - INTERVAL 30 DAY, id_gymnasium = $court3, date_original = CURRENT_DATE - INTERVAL 30 DAY, match_status = 'CONFIRMED'");
 
         $userId = $this->sql_manager->execute("INSERT INTO comptes_acces SET login = 'ut_multi_team_leader2', email = 'ut_multi_team_leader2@ufolep.test', password_hash = 'x'");
         $this->sql_manager->execute("INSERT INTO users_teams SET user_id = $userId, team_id = $team1");
@@ -252,7 +243,6 @@ class MatchManagerTest extends UfolepTestCase
     {
         $this->sql_manager->execute("DELETE FROM competitions WHERE code_competition = 'ut'");
         $this->sql_manager->execute("DELETE FROM matches WHERE code_competition = 'ut'");
-        $this->sql_manager->execute("DELETE FROM journees WHERE code_competition = 'ut'");
         $this->sql_manager->execute("DELETE FROM classements WHERE code_competition = 'ut'");
         $this->sql_manager->execute("DELETE FROM equipes WHERE code_competition = 'ut'");
         $this->sql_manager->execute("DELETE FROM clubs WHERE nom LIKE 'test club %'");
@@ -261,16 +251,6 @@ class MatchManagerTest extends UfolepTestCase
                                                                 FROM gymnase 
                                                                 WHERE nom LIKE 'test court %')");
         $this->sql_manager->execute("DELETE FROM gymnase WHERE nom LIKE 'test court %'");
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function get_test_day(): array
-    {
-        $day = new Day();
-        $results = $day->getDays("j.code_competition = 'ut'");
-        return $results[0];
     }
 
     /**
@@ -684,7 +664,6 @@ class MatchManagerTest extends UfolepTestCase
         $this->sql_manager->execute("INSERT INTO creneau SET id_gymnase = $court3, jour = 'Mercredi', heure = '20:00', id_equipe = $team3");
 
         // Créer un match team2 vs team3
-        $day = $this->get_test_day();
         $matchId = $this->sql_manager->execute("INSERT INTO matches SET
             code_match = 'UT_MULTI',
             code_competition='ut',
@@ -692,7 +671,6 @@ class MatchManagerTest extends UfolepTestCase
             id_equipe_dom = $team2,
             id_equipe_ext = $team3,
             date_reception = CURRENT_DATE - INTERVAL 30 DAY,
-            id_journee = {$day['id']},
             id_gymnasium = $court3,
             date_original = CURRENT_DATE - INTERVAL 30 DAY,
             match_status = 'CONFIRMED'");

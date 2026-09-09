@@ -107,12 +107,6 @@ return array(
         'saveGymnasium' => 'admin',
         'getGymnasiums' => 'public',
     ),
-    'day' => array(
-        'delete' => 'admin',
-        'generateDays' => 'admin',
-        'getDays' => 'admin',
-        'save_day' => 'admin',
-    ),
     'emails' => array(
         'get' => 'admin',
         'insert_email_team_recap' => 'admin',

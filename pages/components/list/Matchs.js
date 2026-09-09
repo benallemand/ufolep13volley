@@ -58,13 +58,11 @@ export default {
         <button @click="resetFilters" class="btn btn-outline">Réinitialiser</button>
       </div>
       <div class="bg-base-200 border border-2 border-base-300 p-4">
-        <!-- Loop through each journee group -->
-        <div v-for="group in matchesByJournee" :key="group.journee" class="mb-8">
-          <!-- Display journee as section title (masqué si la journée n'est pas renseignée) -->
-          <h2 v-if="group.journee" class="text-xl font-bold mb-4 p-2 bg-base-300 rounded-lg">{{ group.journee }}</h2>
-          <!-- Display matches in this journee -->
+        <!-- Plus de regroupement par journée : la notion a été retirée (#279),
+             les matchs sont générés par les scripts Python et triés par date. -->
+        <div class="mb-8">
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <li v-for="match in group.matches" :key="match.id_match" class="card shadow-md bg-base-100">
+            <li v-for="match in displayedMatchs" :key="match.id_match" class="card shadow-md bg-base-100">
               <match-card :match="match">
                 <template v-slot:actions>
                   <div class="card-actions" v-if="isLeader">
@@ -125,20 +123,6 @@ export default {
                 const matchesForbiddenPlayers = !this.filter.showForbiddenPlayer || match.has_forbidden_player === 1;
                 return matchesCertif && matchesNotCertif && matchesForbiddenPlayers;
             }).sort((a, b) => a.date_reception_raw - b.date_reception_raw);
-        }, matchesByJournee() {
-            const groupedMatches = {};
-            this.displayedMatchs.forEach(match => {
-                // journee peut être null : on groupe sous '' pour ne pas afficher "null"
-                const journee = match.journee || '';
-                if (!groupedMatches[journee]) {
-                    groupedMatches[journee] = [];
-                }
-                groupedMatches[journee].push(match);
-            });
-            // Convert to array of objects for v-for
-            return Object.keys(groupedMatches).map(journee => ({
-                journee: journee, matches: groupedMatches[journee]
-            }));
         }, isLeader() {
             return !!(this.user && this.user.is_team_leader);
         },

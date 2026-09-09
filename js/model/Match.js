@@ -26,14 +26,6 @@ Ext.define('Ufolep13Volley.model.Match', {
             type: 'string'
         },
         {
-            name: 'id_journee',
-            type: 'int'
-        },
-        {
-            name: 'journee',
-            type: 'string'
-        },
-        {
             name: 'id_gymnasium',
             type: 'int'
         },

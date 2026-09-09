@@ -37,7 +37,7 @@ try {
 
     // Échantillon depuis la vue : garantit des FK valides (cf. #230).
     $sample = $sql->execute(
-        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium, id_journee
+        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium
          FROM matchs_view
          LIMIT 1"
     );

@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../classes/Generic.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/Rank.php';
-require_once __DIR__ . '/../classes/Day.php';
 require_once __DIR__ . '/../classes/MatchMgr.php';
 
 class Competition extends Generic

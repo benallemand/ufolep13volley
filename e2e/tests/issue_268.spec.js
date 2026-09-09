@@ -50,7 +50,8 @@ const NEVER_ROUTABLE = [
     { method: 'POST', path: '/rest/action.php/matchmgr/generateAll', form: {} },
     { method: 'POST', path: '/rest/action.php/matchmgr/generateMatches', form: {} },
     { method: 'POST', path: '/rest/action.php/competition/generate_matches_final_phase_cup', form: {} },
-    { method: 'POST', path: '/rest/action.php/day/generateDays', form: {} },
+    // Journées retirées (#279) : la classe `Day` n'existe plus.
+    { method: 'GET', path: '/rest/action.php/day/getDays' },
 ];
 
 test.describe('Issue #268 — autorisation des endpoints REST admin', () => {

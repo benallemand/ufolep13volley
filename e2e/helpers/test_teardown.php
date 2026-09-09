@@ -37,7 +37,6 @@ try {
     // Nettoyage des fixtures partagées créées par test_setup.php
     $sql->execute("DELETE FROM matches WHERE code_match LIKE 'E2E_%'");
     $sql->execute("DELETE FROM live_scores WHERE id_match LIKE 'E2E_%'");
-    $sql->execute("DELETE FROM journees WHERE code_competition = 'e2'");
     $sql->execute("DELETE FROM gymnase WHERE nom = 'Gymnase E2E Test'");
     $sql->execute("DELETE FROM competitions WHERE code_competition = 'e2'");
 

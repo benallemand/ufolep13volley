@@ -5,9 +5,10 @@ import { onError, onSuccess } from '../../../toaster.js';
  * Gestion des compétitions (issue #265, lot 2).
  * Remplace `js/view/grid/Competitions.js` + `js/view/window/Competition.js`.
  *
- * Les actions de GÉNÉRATION du menu ExtJS ne sont pas reprises : journées,
- * matchs et phases finales sont générés par les scripts Python du dépôt
- * `ufolep13volley_python` (`calendar-agent/`). Seul le CRUD est migré.
+ * Les actions de GÉNÉRATION du menu ExtJS ne sont pas reprises : matchs et
+ * phases finales sont générés par les scripts Python du dépôt
+ * `ufolep13volley_python` (`calendar-agent/`), et le moteur PHP a été supprimé
+ * (#279). Seul le CRUD est migré.
  *
  * L'initialisation de saison, elle, n'a rien à voir avec la génération et doit
  * rester accessible : c'est le seul point d'entrée de `Register::set_up_season`,

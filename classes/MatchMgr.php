@@ -14,7 +14,6 @@ require_once __DIR__ . '/Players.php';
 require_once __DIR__ . '/Rank.php';
 require_once __DIR__ . '/Register.php';
 require_once __DIR__ . '/Competition.php';
-require_once __DIR__ . '/Day.php';
 require_once __DIR__ . '/UserManager.php';
 require_once __DIR__ . '/Survey.php';
 require_once __DIR__ . '/Registry.php';
@@ -514,41 +513,30 @@ class MatchMgr extends Generic
     }
 
     /**
-     * @param $code_match
-     * @param $parent_code_competition
-     * @param $code_competition
-     * @param $division
-     * @param $id_equipe_dom
-     * @param $id_equipe_ext
-     * @param $id_gymnasium
-     * @param $id_journee
-     * @param $date_reception
-     * @param $certif
-     * @param $is_sign_team_dom
-     * @param $is_sign_team_ext
-     * @param $is_sign_match_dom
-     * @param $is_sign_match_ext
-     * @param $note
-     * @param null $dirtyFields
-     * @param null $id_match
+     * Enregistrement d'un match depuis l'administration.
+     *
+     * Tous les parametres sont optionnels : le routeur REST appelle la methode
+     * avec des arguments nommes, et un formulaire n'envoie que les champs qu'il
+     * declare. Un parametre obligatoire absent leverait une ArgumentCountError
+     * (issue #279).
+     *
      * @throws Exception
      */
     public function saveMatch(
-        $code_match,
-        $parent_code_competition,
-        $code_competition,
-        $division,
-        $id_equipe_dom,
-        $id_equipe_ext,
-        $id_gymnasium,
-        $id_journee,
-        $date_reception,
-        $certif,
-        $is_sign_team_dom,
-        $is_sign_team_ext,
-        $is_sign_match_dom,
-        $is_sign_match_ext,
-        $note,
+        $code_match = null,
+        $code_competition = null,
+        $division = null,
+        $id_equipe_dom = null,
+        $id_equipe_ext = null,
+        $id_gymnasium = null,
+        $date_reception = null,
+        $certif = null,
+        $is_sign_team_dom = null,
+        $is_sign_team_ext = null,
+        $is_sign_match_dom = null,
+        $is_sign_match_ext = null,
+        $note = null,
+        $parent_code_competition = null,
         $dirtyFields = null,
         $id_match = null
     )
@@ -561,7 +549,6 @@ class MatchMgr extends Generic
             'id_equipe_dom' => $id_equipe_dom,
             'id_equipe_ext' => $id_equipe_ext,
             'id_gymnasium' => $id_gymnasium,
-            'id_journee' => $id_journee,
             'date_reception' => $date_reception,
             'certif' => $certif,
             'is_sign_team_dom' => $is_sign_team_dom,
@@ -601,7 +588,6 @@ class MatchMgr extends Generic
                 case 'id_equipe_dom':
                 case 'id_equipe_ext':
                 case 'id_gymnasium':
-                case 'id_journee':
                 case 'set_1_dom':
                 case 'set_1_ext':
                 case 'set_2_dom':
@@ -836,8 +822,7 @@ class MatchMgr extends Generic
         }
         $placeholders = implode(',', array_fill(0, count($id_list), '?'));
         $sql = "UPDATE matches 
-            SET match_status = 'ARCHIVED',
-                id_journee = NULL
+            SET match_status = 'ARCHIVED'
             WHERE id_match IN($placeholders)";
         $bindings = array_map(fn($id) => array('type' => 'i', 'value' => $id), $id_list);
         $this->sql_manager->execute($sql, $bindings);

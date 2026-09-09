@@ -133,18 +133,19 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | P1 | Créer une compétition | Créée ; « Matchs aller-retour » se coche |
 | P2 | Éditer les dates (jj/mm/aaaa) | Modification visible dans la grille |
 | P3 | Supprimer la compétition de test | Le compteur revient à sa valeur de départ |
+| P4 | Sélectionner une compétition **de test**, cliquer « Initialiser la saison », lire la confirmation | La confirmation nomme la compétition et annonce l'archivage des matchs, la suppression des comptes responsables et des créneaux |
+| P5 | Annuler la confirmation | Rien ne se passe |
 
-> Les actions de **génération** du menu ExtJS (journées, matchs, phases finales,
-> palmarès) ne sont **pas** reprises : elles passent par les scripts Python du
-> dépôt `ufolep13volley_python` (`calendar-agent/`).
+> **P4/P5 : ne jamais confirmer sur une compétition réelle.** `set_up_season`
+> archive les matchs en cours, supprime les comptes responsables et les créneaux,
+> puis les recrée depuis les engagements. C'est l'action la plus destructive de
+> l'administration. Elle n'était joignable que par `matchmgr/generateAll`, parti
+> avec le moteur de génération (#279).
 
-### Journées (`#/days`)
-
-| # | Cas | Attendu |
-|---|-----|---------|
-| D1 | Ouvrir l'écran | Liste des journées. **Peut être vide en dev** : les journées sont générées par les scripts Python, et la requête joint `competitions` — une journée orpheline ne remonte pas (l'ancien écran se comporte pareil) |
-| D2 | Créer une journée | Liste des compétitions remplie ; créée avec le bon numéro |
-| D3 | Supprimer la journée de test | Disparaît |
+> Les actions de **génération** du menu ExtJS (matchs, phases finales, palmarès)
+> ne sont **pas** reprises : elles passent par les scripts Python du dépôt
+> `ufolep13volley_python` (`calendar-agent/`). Le moteur PHP a été supprimé (#279),
+> ainsi que l'écran **Journées** : la notion n'existe plus en base.
 
 ### Divisions / poules (`#/ranks`)
 

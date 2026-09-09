@@ -3,10 +3,9 @@
  * E2E test helper (#230) — crée un VRAI match programmé aujourd'hui afin de
  * valider l'encart "Matchs du jour" de la page d'accueil.
  *
- * matchs_view fait plusieurs INNER JOIN (competitions, equipes, gymnase et
- * JOURNEES via id_journee). Pour que la ligne remonte dans la vue, on recopie
- * toutes les clés étrangères d'un match réel déjà visible (y compris
- * id_journee, qui était la pièce manquante) et on ne change que la date.
+ * matchs_view fait plusieurs INNER JOIN (competitions, equipes). Pour que la
+ * ligne remonte dans la vue, on recopie toutes les clés étrangères d'un match
+ * réel déjà visible et on ne change que la date.
  *
  * SECURITY: ne doit jamais être déployé en production.
  */
@@ -38,11 +37,11 @@ try {
     // satisfaites — la nouvelle ligne héritera donc de FK valides et remontera
     // dans la vue. (Échantillonner depuis `matches` risquait de tomber sur un
     // match orphelin, ex. compétition 'ut' supprimée.)
-    // id_journee / id_gymnasium sont des LEFT JOIN dans la vue (non requis pour
-    // la visibilité), donc on n'impose pas qu'ils soient non-null : on prend
+    // id_gymnasium est un LEFT JOIN dans la vue (non requis pour la
+    // visibilité), donc on n'impose pas qu'il soit non-null : on prend
     // n'importe quelle ligne de la vue.
     $sample = $sql->execute(
-        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium, id_journee
+        "SELECT code_competition, division, id_equipe_dom, id_equipe_ext, id_gymnasium
          FROM matchs_view
          LIMIT 1"
     );

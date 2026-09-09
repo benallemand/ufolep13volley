@@ -180,29 +180,6 @@ Ext.define('Ufolep13Volley.view.match.Edit', {
                 forceSelection: true
             },
             {
-                xtype: 'combo',
-                fieldLabel: 'Journée',
-                name: 'id_journee',
-                displayField: 'display_combo',
-                valueField: 'id',
-                store: {
-                    type: 'AdminDays'
-                },
-                queryMode: 'local',
-                allowBlank: true,
-                forceSelection: true,
-                listeners: {
-                    focus: function (combo) {
-                        var code_competition = combo.up('form').down('combo[name=code_competition]').getValue();
-                        combo.getStore().filter({
-                            property: 'code_competition',
-                            value: code_competition,
-                            exactMatch: true
-                        });
-                    }
-                }
-            },
-            {
                 xtype: 'datefield',
                 fieldLabel: 'Date',
                 name: 'date_reception',

@@ -169,11 +169,6 @@ Ext.define('Ufolep13Volley.view.match.AdminGrid', {
                 },
             },
             {
-                header: 'Journée',
-                dataIndex: 'numero_journee',
-                width: 50,
-            },
-            {
                 header: 'Domicile',
                 dataIndex: 'equipe_dom',
                 flex: 1,
