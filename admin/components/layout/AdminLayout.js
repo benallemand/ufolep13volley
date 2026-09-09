@@ -26,6 +26,12 @@ const routes = [
     { path: '/ranks', component: () => import('../screens/Ranks.js') },
     { path: '/limit-dates', component: () => import('../screens/LimitDates.js') },
     { path: '/week-schedule', component: () => import('../screens/WeekSchedule.js') },
+    { path: '/blacklist-dates', component: () => import('../screens/BlacklistDates.js') },
+    { path: '/gymnasium-closures', component: () => import('../screens/GymnasiumClosures.js') },
+    { path: '/team-unavailabilities', component: () => import('../screens/TeamUnavailabilities.js') },
+    { path: '/incompatible-teams', component: () => import('../screens/IncompatibleTeams.js') },
+    { path: '/club-friendships', component: () => import('../screens/ClubFriendships.js') },
+    { path: '/city-closures', component: () => import('../screens/CityClosures.js') },
     { path: '/:pathMatch(.*)*', redirect: '/users' },
 ];
 
@@ -34,18 +40,44 @@ const router = createRouter({
     routes,
 });
 
-/** Écrans migrés, dans l'ordre du menu. */
+/**
+ * Écrans migrés, groupés dans l'ordre du menu.
+ *
+ * Le regroupement est arrivé avec le lot 3 : à plat, la barre latérale passait
+ * de dix à seize entrées, et les lots suivants en ajouteront encore.
+ */
 export const MENU = [
-    { path: '/users', label: 'Utilisateurs', icon: 'fas fa-users' },
-    { path: '/clubs', label: 'Clubs', icon: 'fas fa-sitemap' },
-    { path: '/teams', label: 'Équipes', icon: 'fas fa-people-group' },
-    { path: '/players', label: 'Joueurs', icon: 'fas fa-person-running' },
-    { path: '/gymnasiums', label: 'Gymnases', icon: 'fas fa-building' },
-    { path: '/matches', label: 'Matchs', icon: 'fas fa-volleyball' },
-    { path: '/competitions', label: 'Compétitions', icon: 'fas fa-trophy' },
-    { path: '/ranks', label: 'Divisions / poules', icon: 'fas fa-list-ol' },
-    { path: '/limit-dates', label: 'Dates limites', icon: 'fas fa-hourglass-end' },
-    { path: '/week-schedule', label: 'Planning semaine', icon: 'fas fa-calendar-week' },
+    {
+        label: 'Référentiel',
+        items: [
+            { path: '/users', label: 'Utilisateurs', icon: 'fas fa-users' },
+            { path: '/clubs', label: 'Clubs', icon: 'fas fa-sitemap' },
+            { path: '/teams', label: 'Équipes', icon: 'fas fa-people-group' },
+            { path: '/players', label: 'Joueurs', icon: 'fas fa-person-running' },
+            { path: '/gymnasiums', label: 'Gymnases', icon: 'fas fa-building' },
+        ],
+    },
+    {
+        label: 'Compétitions',
+        items: [
+            { path: '/matches', label: 'Matchs', icon: 'fas fa-volleyball' },
+            { path: '/competitions', label: 'Compétitions', icon: 'fas fa-trophy' },
+            { path: '/ranks', label: 'Divisions / poules', icon: 'fas fa-list-ol' },
+            { path: '/limit-dates', label: 'Dates limites', icon: 'fas fa-hourglass-end' },
+            { path: '/week-schedule', label: 'Planning semaine', icon: 'fas fa-calendar-week' },
+        ],
+    },
+    {
+        label: 'Planification',
+        items: [
+            { path: '/blacklist-dates', label: 'Dates interdites', icon: 'fas fa-calendar-xmark' },
+            { path: '/gymnasium-closures', label: 'Fermetures de gymnase', icon: 'fas fa-door-closed' },
+            { path: '/team-unavailabilities', label: "Indispos d'équipe", icon: 'fas fa-user-clock' },
+            { path: '/incompatible-teams', label: 'Équipes incompatibles', icon: 'fas fa-ban' },
+            { path: '/club-friendships', label: 'Ententes entre clubs', icon: 'fas fa-handshake' },
+            { path: '/city-closures', label: 'Périodes par ville', icon: 'fas fa-city' },
+        ],
+    },
 ];
 
 export default {

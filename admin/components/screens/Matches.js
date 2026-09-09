@@ -136,7 +136,7 @@ export default {
                     name: 'id_gymnasium', label: 'Gymnase', type: 'select',
                     options: this.gymnasiums.map((g) => ({ value: g.id, label: g.full_name || g.nom })),
                 },
-                { name: 'date_reception', label: 'Date', placeholder: 'jj/mm/aaaa' },
+                { name: 'date_reception', label: 'Date', type: 'date' },
                 // Pas d'heure : `heure_reception` vient du créneau de l'équipe
                 // recevante (jointure de `matchs_view`), la table `matches`
                 // n'a pas cette colonne.
