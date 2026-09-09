@@ -39,6 +39,10 @@ const routes = [
     { path: '/commission', component: () => import('../screens/Commission.js') },
     { path: '/registrations', component: () => import('../screens/Registrations.js') },
     { path: '/registry', component: () => import('../screens/Registry.js') },
+    { path: '/indicators', component: () => import('../screens/Indicators.js') },
+    { path: '/activity', component: () => import('../screens/Activity.js') },
+    { path: '/hall-of-fame', component: () => import('../screens/HallOfFame.js') },
+    { path: '/bilan', component: () => import('../screens/Bilan.js') },
     { path: '/:pathMatch(.*)*', redirect: '/users' },
 ];
 
@@ -100,6 +104,15 @@ export const MENU = [
             { path: '/commission', label: 'Commission', icon: 'fas fa-users-gear' },
             { path: '/registrations', label: 'Inscriptions', icon: 'fas fa-clipboard-check' },
             { path: '/registry', label: 'Base de registres', icon: 'fas fa-database' },
+        ],
+    },
+    {
+        label: 'Consultation & outils',
+        items: [
+            { path: '/indicators', label: 'Indicateurs', icon: 'fas fa-gauge-high' },
+            { path: '/activity', label: 'Activité', icon: 'fas fa-clock-rotate-left' },
+            { path: '/hall-of-fame', label: 'Palmarès', icon: 'fas fa-medal' },
+            { path: '/bilan', label: 'Bilan annuel', icon: 'fas fa-file-pdf' },
         ],
     },
 ];

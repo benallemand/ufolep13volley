@@ -124,12 +124,16 @@ class Generic
             LEFT JOIN users_teams ut ON ca.id = ut.user_id
             LEFT JOIN equipes e ON e.id_equipe=ut.team_id
             LEFT JOIN competitions c ON c.code_competition=e.code_competition";
+        // `$id_team` vient de la session pour un non-admin, mais un admin peut
+        // le poster : on lie la valeur au lieu de la concatener (issue #270).
+        $bindings = array();
         if (!empty($id_team)) {
-            $sql .= " WHERE e.id_equipe = $id_team";
+            $sql .= " WHERE e.id_equipe = ?";
+            $bindings[] = array('type' => 'i', 'value' => $id_team);
         }
         $sql .= " GROUP BY a.activity_date, a.comment, ca.login, ca.email";
         $sql .= " ORDER BY a.activity_date DESC";
-        return $this->sql_manager->execute($sql);
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     protected function build_activity($subject, $dirty_fields, $inputs): ?string

@@ -330,6 +330,73 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 >
 > **R7r est irréversible** : ne le jouer que sur le conteneur local.
 
+### Indicateurs (`#/indicators`) — lot 5
+
+Le seul écran qui n'est pas une grille : les cas génériques G1-G14 ne s'y
+appliquent pas.
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| X1 | Ouvrir l'écran | Les tuiles apparaissent **progressivement** (six requêtes en vol), le compteur « n / 47 calculés » avance, des tuiles grises marquent ce qui reste. Compter ~30 s pour les 47 |
+| X2 | Regarder le résultat | Une vingtaine de tuiles : **les alertes en rouge d'abord**, puis les informations en bleu, par valeur décroissante |
+| X3 | Vérifier qu'aucune tuile n'affiche 0 | Un indicateur à zéro **n'est pas affiché** — le tableau de bord ne montre que ce sur quoi il y a à faire |
+| X4 | Cocher « Alertes seulement » | Seules les tuiles rouges restent |
+| X5 | Rechercher `joueurs` | Seuls les indicateurs dont le libellé contient le terme restent |
+| X6 | Cliquer une tuile | Fenêtre avec le détail en tableau, une colonne par champ de la requête |
+| X7 | Cliquer « Export » dans la fenêtre | Un CSV se télécharge, **accents corrects dans Excel** (BOM UTF-8) |
+| X8 | Cliquer le bouton de rafraîchissement | Tout est recalculé depuis zéro |
+
+> `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
+> depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux
+> administrateurs », c'est que la session n'est pas admin.
+
+### Activité (`#/activity`) — lot 5
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| A1 | Ouvrir l'écran | Les **500 dernières** entrées, les plus récentes en tête ; la description est du texte, pas du HTML |
+| A2 | Vérifier la barre d'outils | Écran de consultation : pas de Créer / Éditer / Supprimer, pas de cases à cocher |
+| A3 | Passer le sélecteur à 2000, puis « toutes » | La grille recharge ; « toutes » représente ~2,5 Mo et 9 700 lignes, c'est lent, c'est la raison de la fenêtre |
+
+### Palmarès (`#/hall-of-fame`) — lot 5
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| H1 | Ouvrir l'écran | ~500 titres, colonnes Période / Catégorie / Titre / Équipe |
+| H2 | Filtrer par période | La liste se réduit à la saison choisie |
+| H3 | Créer, éditer, supprimer un titre de test | Cycle complet |
+| H4 | Sélectionner une ou deux lignes, cliquer « Diplômes » | Un PDF **paysage** s'ouvre dans un onglet, une page par titre |
+| H5 | Cliquer « Générer depuis les matchs » | Fenêtre avec la compétition (9 choix), deux dates, la période et le type |
+| H6 | Générer sur une compétition et une plage de dates réelles | Les titres sont créés et la grille se recharge |
+
+> **H6 écrit dans le palmarès.** À ne jouer qu'en connaissance de cause : la
+> génération insère les vainqueurs déduits des matchs de la plage, sans effacer
+> ce qui existe. Un double appel crée des doublons.
+
+### Bilan annuel (`#/bilan`) — lot 5
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| Z1 | Ouvrir l'écran | La saison est préremplie avec la **dernière saison terminée** (une saison finit en juin) |
+| Z2 | Saisir `2026` | Message de format ; le bouton reste désactivé |
+| Z3 | Cliquer « Charger les chiffres » | Tableau des matchs par compétition avec son total, puis clubs / licenciés / équipes récompensées / coupes, et la liste des coupes décernées |
+| Z4 | Compléter les commentaires, cliquer « Télécharger le PDF » | Un PDF s'ouvre dans un onglet |
+| Z5 | Vérifier les chiffres du PDF | Ils correspondent à l'aperçu — **`bilanPdf.php` les recalcule côté serveur**, seuls les commentaires viennent du formulaire |
+
+### Agir en tant que — lot 5, sur l'écran Utilisateurs
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| U4 | Sélectionner un compte, cliquer « Agir en tant que », lire la confirmation | Elle nomme le compte et rappelle que le retour se fait depuis le bandeau du site |
+| U5 | Confirmer | Redirection vers la home, la session porte l'identité du compte cible |
+| U6 | Cliquer « revenir à mon compte admin » dans le bandeau | Retour au compte administrateur, l'admin est de nouveau accessible |
+
+> L'admin ExtJS en faisait une fenêtre séparée avec sa propre liste de comptes.
+> L'action est ici sur l'écran qui les liste déjà.
+>
+> **Après la bascule, la session n'est plus administratrice** : c'est pour ça que
+> l'écran renvoie vers la home et non vers l'admin, qui se refuserait.
+
 ## Après la recette
 
 Vérifier qu'**aucune donnée de test ne subsiste** : rechercher `ZZ` ou le préfixe
