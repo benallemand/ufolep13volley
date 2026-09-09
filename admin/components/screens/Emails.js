@@ -16,6 +16,12 @@ import { onError, onSuccess } from '../../../toaster.js';
  * ExtJS. On borne donc la fenêtre avec la pagination du routeur
  * (`_start`/`_end`, qui découpe côté serveur), les emails sortant déjà en
  * `ORDER BY id DESC`. Le sélecteur permet de l'élargir à la demande.
+ *
+ * Un clic sur une ligne ouvre le **rendu HTML** du message (issue #288) : la
+ * grille n'en montre que le texte aplati, ce qui suffit pour survoler mais pas
+ * pour vérifier un email. Le rendu se fait dans une `iframe` **sandboxée** —
+ * un corps d'email est du HTML arbitraire, l'injecter dans la page exécuterait
+ * ses scripts.
  */
 export default {
     components: {
@@ -28,7 +34,9 @@ export default {
         entity-label="email"
         :columns="columns"
         :selectable="false"
-        :fetch-url="fetchUrl">
+        row-clickable
+        :fetch-url="fetchUrl"
+        @row-click="opened = $event">
 
         <template #filters>
           <label class="flex items-center gap-2 text-sm">
@@ -60,11 +68,41 @@ export default {
           </button>
         </template>
       </admin-grid>
+
+      <dialog v-if="opened" class="modal modal-open">
+        <div class="modal-box max-w-5xl">
+          <h3 class="font-bold text-lg">{{ opened.subject || '(sans sujet)' }}</h3>
+          <div class="text-sm text-base-content/70 mt-2 space-y-1">
+            <p><span class="font-semibold">De</span> : {{ opened.from_email }}</p>
+            <p><span class="font-semibold">À</span> : {{ opened.to_email }}</p>
+            <p v-if="opened.cc"><span class="font-semibold">Cc</span> : {{ opened.cc }}</p>
+            <p v-if="opened.bcc"><span class="font-semibold">Cci</span> : {{ opened.bcc }}</p>
+            <p>
+              <span class="font-semibold">Créé le</span> {{ opened.creation_date }}
+              <span v-if="opened.sent_date"> · <span class="font-semibold">envoyé le</span> {{ opened.sent_date }}</span>
+              · <span :class="statusBadge(opened)">{{ opened.sending_status }}</span>
+            </p>
+          </div>
+
+          <div class="mt-4 border border-base-300 rounded overflow-hidden bg-white">
+            <iframe :srcdoc="opened.body || '<p>(corps vide)</p>'"
+                    sandbox=""
+                    class="w-full h-[55vh]"
+                    title="Rendu du message"></iframe>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn btn-sm" @click="opened = null">Fermer</button>
+          </div>
+        </div>
+        <div class="modal-backdrop" @click="opened = null"></div>
+      </dialog>
     `,
     data() {
         return {
             windowSize: 500,
             isBusy: false,
+            opened: null,
         };
     },
     computed: {
@@ -77,13 +115,7 @@ export default {
                 { key: 'sent_date', label: 'Envoyé le' },
                 {
                     key: 'sending_status', label: 'Statut',
-                    // Trois valeurs en base : DONE, TO_DO, ERROR
-                    // (cf. `sql/retry_error_emails.sql`, qui repasse ERROR en TO_DO).
-                    badge: (r) => 'badge badge-sm ' + ({
-                        DONE: 'badge-success',
-                        TO_DO: 'badge-warning',
-                        ERROR: 'badge-error',
-                    }[r.sending_status] || 'badge-ghost'),
+                    badge: (r) => this.statusBadge(r),
                 },
                 { key: 'to_email', label: 'Destinataire' },
                 { key: 'cc', label: 'Cc' },
@@ -101,6 +133,17 @@ export default {
         },
     },
     methods: {
+        /**
+         * Trois valeurs en base : DONE, TO_DO, ERROR
+         * (cf. `sql/retry_error_emails.sql`, qui repasse ERROR en TO_DO).
+         */
+        statusBadge(row) {
+            return 'badge badge-sm ' + ({
+                DONE: 'badge-success',
+                TO_DO: 'badge-warning',
+                ERROR: 'badge-error',
+            }[row.sending_status] || 'badge-ghost');
+        },
         run(url, question, reload) {
             if (!window.confirm(question)) {
                 return;

@@ -11,7 +11,7 @@ import { onError, onSuccess } from '../../../toaster.js';
  *   { name, label, type?, required?, options?, min?, max?, placeholder?, help?,
  *     hidden?, dateFormat?, pattern? }
  *   type : 'text' (défaut) | 'number' | 'textarea' | 'select' | 'checkbox'
- *          | 'date' | 'datetime' | 'email' | 'password'
+ *          | 'date' | 'datetime' | 'email' | 'password' | 'file'
  *   options (select) : [{ value, label }]
  *
  * `hidden: true` ne rend rien mais reprend la valeur du record et l'envoie :
@@ -92,6 +92,19 @@ export default {
                      class="input input-bordered"
                      :required="field.required"/>
 
+              <!-- Fichier : la valeur ne passe pas par form, elle reste sur
+                   l'input. FormData transporte l'objet File tel quel, ce qui
+                   fait un envoi multipart et remplit $_FILES cote PHP.
+                   (Pas d'accent grave dans ce commentaire : il terminerait le
+                   template literal qui porte le template.) -->
+              <input v-else-if="field.type === 'file'"
+                     :id="'f-' + field.name"
+                     :ref="'file-' + field.name"
+                     type="file"
+                     class="file-input file-input-bordered"
+                     :accept="field.accept"
+                     :required="field.required"/>
+
               <input v-else
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
@@ -161,6 +174,16 @@ export default {
             this.isLoading = true;
             const formData = new FormData();
             for (const field of this.fields) {
+                if (field.type === 'file') {
+                    const input = this.$refs['file-' + field.name];
+                    const chosen = (Array.isArray(input) ? input[0] : input)?.files?.[0];
+                    // Rien de choisi : on n'envoie pas la cle, sinon PHP
+                    // recevrait un fichier vide et ecraserait l'existant.
+                    if (chosen) {
+                        formData.append(field.name, chosen);
+                    }
+                    continue;
+                }
                 const value = this.form[field.name];
                 let sent = value ?? '';
                 if (field.type === 'checkbox') {

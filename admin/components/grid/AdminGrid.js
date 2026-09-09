@@ -58,7 +58,15 @@ export default {
          * n'ont pas toujours d'identifiant sur lequel s'appuyer.
          */
         selectable: { type: Boolean, default: null },
+        /**
+         * Rend les lignes visuellement cliquables. `row-click` est emis dans
+         * tous les cas ; cette prop ne fait que le curseur et le survol -- un
+         * emit declare disparait de `$attrs`, on ne peut donc pas deviner si
+         * l'ecran ecoute.
+         */
+        rowClickable: { type: Boolean, default: false },
     },
+    emits: ['row-click'],
     template: `
       <div class="p-4">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -141,8 +149,11 @@ export default {
             <tbody>
             <tr v-for="(row, i) in pageRows"
                 :key="row[idField] ?? i"
-                :class="{'bg-primary/10': canSelect && isSelected(row)}"
-                @click="canSelect && toggle(row)">
+                :class="[
+                  canSelect && isSelected(row) ? 'bg-primary/10' : '',
+                  rowClickable ? 'cursor-pointer hover' : '',
+                ]"
+                @click="onRowClick(row)">
               <td v-if="canSelect"><input type="checkbox" class="checkbox checkbox-xs" :checked="isSelected(row)" @click.stop="toggle(row)"/></td>
               <td v-for="col in columns"
                   :key="col.key"
@@ -243,13 +254,19 @@ export default {
                 ? this.selectable
                 : Boolean(this.saveUrl || this.deleteUrl);
         },
+
         allPageSelected() {
             return this.pageRows.length > 0 && this.pageRows.every((r) => this.isSelected(r));
         },
     },
     watch: {
-        search() { this.page = 1; },
-        rowFilter() { this.page = 1; },
+        // Filtrer VIDE la selection : sinon une action s'appliquerait a des
+        // lignes devenues invisibles. Reperee en recette de #288 -- une
+        // recherche avait masque la ligne selectionnee, et le bouton agissait
+        // toujours sur elle. La pagination, elle, conserve la selection : la
+        // suppression en masse sur plusieurs pages est un usage legitime.
+        search() { this.page = 1; this.selection = []; },
+        rowFilter() { this.page = 1; this.selection = []; },
         pageSize() { this.page = 1; },
         // Un écran peut faire varier son URL (fenêtre de chargement des
         // emails, filtre serveur…) : on recharge alors au lieu d'afficher
@@ -266,6 +283,17 @@ export default {
         },
         isSelected(row) {
             return this.selection.includes(row[this.idField]);
+        },
+        /**
+         * Un clic sur la ligne coche la case quand la selection existe, et
+         * previent l'ecran dans tous les cas : le journal des emails s'en sert
+         * pour ouvrir le message, sans colonne de selection.
+         */
+        onRowClick(row) {
+            if (this.canSelect) {
+                this.toggle(row);
+            }
+            this.$emit('row-click', row);
         },
         toggle(row) {
             const id = row[this.idField];

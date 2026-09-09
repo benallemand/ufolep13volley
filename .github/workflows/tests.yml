@@ -54,7 +54,14 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Install MySQL client
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+        # `apt-get update` complet echoue des qu'un depot tiers du runner sert
+        # un index corrompu -- vu le 2026-09-09 avec dl.google.com/linux/chrome
+        # (« Hash Sum mismatch »), ce qui bloquait toutes les PR alors que le
+        # job n'a besoin que d'un paquet Ubuntu. On ne rafraichit donc que les
+        # sources de base, en ignorant /etc/apt/sources.list.d/.
+        run: |
+          sudo apt-get update -qq -o Dir::Etc::sourcelist=/etc/apt/sources.list -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
+          sudo apt-get install -y -qq mysql-client
 
       - name: Configure MySQL
         # Deux ecarts entre un MySQL 8 par defaut et la base de dev/prod :

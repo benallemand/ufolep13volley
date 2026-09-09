@@ -229,24 +229,32 @@ class Players extends Generic
     }
 
     /**
+     * Enregistrement d'un joueur depuis l'administration.
+     *
+     * Tous les parametres ont une valeur par defaut : le routeur REST appelle
+     * la methode avec des arguments nommes, et un formulaire n'envoie que les
+     * champs qu'il declare. Les quinze parametres etaient obligatoires, et
+     * l'ecran Vue n'en envoyait que huit -- creer ou editer un joueur echouait
+     * en 500 depuis le lot 1 de #265 (issue #288).
+     *
      * @throws Exception
      */
     public function savePlayer(
-        $dirtyFields,
-        $id,
-        $id_team,
-        $prenom,
-        $nom,
-        $num_licence,
-        $date_homologation,
-        $sexe,
-        $departement_affiliation,
-        $id_club,
-        $est_responsable_club,
-        $telephone,
-        $email,
-        $telephone2,
-        $email2,
+        $prenom = null,
+        $nom = null,
+        $num_licence = null,
+        $date_homologation = null,
+        $sexe = null,
+        $departement_affiliation = null,
+        $id_club = null,
+        $est_responsable_club = null,
+        $telephone = null,
+        $email = null,
+        $telephone2 = null,
+        $email2 = null,
+        $id_team = null,
+        $dirtyFields = null,
+        $id = null,
     )
     {
         $inputs = array(
