@@ -20,7 +20,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'manageRanksGrid', selector: 'rankgrid'
     }, {
-    }, {
         ref: 'manageLimitDatesGrid', selector: 'limitdatesgrid'
     }, {
         ref: 'mainPanel', selector: 'tabpanel'
@@ -43,7 +42,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
     }, {
         ref: 'formPanelEditRank', selector: 'rankedit form'
     }, {
-    }, {
         ref: 'formPanelEditLimitDate', selector: 'limitdateedit form'
     }, {
         ref: 'windowSelectClub', selector: 'clubselect'
@@ -63,7 +61,6 @@ Ext.define('Ufolep13Volley.controller.Administration', {
         ref: 'windowEditMatch', selector: 'matchedit'
     }, {
         ref: 'windowEditRank', selector: 'rankedit'
-    }, {
     }, {
         ref: 'windowEditLimitDate', selector: 'limitdateedit'
     }, {
