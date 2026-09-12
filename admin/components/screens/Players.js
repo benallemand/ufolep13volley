@@ -120,6 +120,14 @@ export default {
         // une méthode du composant.
         columns() {
             return [
+                // La vignette utilise `path_photo_low`, déjà renvoyé par
+                // `getPlayers` : l'afficher ne coûte aucune donnée
+                // supplémentaire (issue #295). `adjust_photo_path_from_results`
+                // garantit une image de repli quand le fichier manque.
+                {
+                    key: 'path_photo_low', label: '', image: true,
+                    alt: (row) => (row.prenom || '') + ' ' + (row.nom || ''),
+                },
                 { key: 'nom', label: 'Nom' },
                 { key: 'prenom', label: 'Prénom' },
                 { key: 'sexe', label: 'Sexe' },

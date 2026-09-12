@@ -482,6 +482,29 @@ la prop `rowFilter`.
 > ligne devenue invisible. La pagination, elle, la conserve — la suppression en
 > masse sur plusieurs pages est un usage légitime.
 
+> **Colonne image** : `image: true` rend une vignette ronde chargée en différé,
+> à partir du chemin contenu dans la colonne. `alt: (row) => …` fournit le texte
+> alternatif. Troisième forme de cellule, aux côtés de `links` et `badge`
+> (issue #295).
+
+> **Tri des dates** : le comparateur reconnaît `jj/mm/aaaa[ hh:mm[:ss]]` et trie
+> **chronologiquement**. Aucune colonne à annoter : la détection porte sur les
+> valeurs, et ne s'applique que si les **deux** valeurs comparées sont des dates
+> françaises. Avant l'issue #296, ces colonnes se triaient comme du texte —
+> `02/12/2025` avant `15/11/2025` — sur 18 colonnes réparties dans 13 écrans.
+> Les colonnes déjà en ISO se trient correctement en texte et ne passent pas par
+> là.
+
+> **Coût des photos de joueurs** : `players_view` renvoie déjà `path_photo` et
+> `path_photo_low` ; les afficher ne coûte **rien** en données transférées.
+> C'est la **vérification d'existence** côté PHP qui coûtait cher —
+> `Players::adjust_photo_path_from_results()` faisait un `file_exists()` par
+> joueur, soit 3 651 accès disque pour un appel à `getPlayers` (3,98 s sur 4,46,
+> la requête SQL n'en prenant que 0,87). Elle indexe désormais chaque répertoire
+> une fois. **Ne pas revenir à un accès par ligne** : `PlayerPhotoPathTest` le
+> vérifie sur la source, car un tel retour ne casserait aucun test de
+> comportement.
+
 > **Champ date** : `type: 'date'` rend le sélecteur natif du navigateur, mais
 > l'API parle en `jj/mm/aaaa` (`STR_TO_DATE(?, '%d/%m/%Y')`) et l'`<input
 > type="date">` en `aaaa-mm-jj`. `AdminEditModal` convertit dans les deux sens,
