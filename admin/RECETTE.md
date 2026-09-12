@@ -64,6 +64,7 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G17 | Trier une colonne de date dans l'autre sens | L'ordre s'inverse exactement |
 | G18 | Sur un écran à colonne image (joueurs), faire défiler la liste | Les vignettes se chargent **au fur et à mesure** (`loading="lazy"`), pas toutes d'un coup ; une photo absente affiche l'image de repli, jamais une icône cassée (#295) |
 | G19 | Même écran, **console du navigateur ouverte** | **Aucun 404** sur `players_pics_low/`. La vignette est déduite du chemin plein par un `REPLACE` SQL et n'existe pas toujours : le serveur se rabat alors sur la photo pleine. Sans ce repli, la console s'emplissait de 404 |
+| G20 | Sur **dates limites, matchs, équipes, commission**, créer une ligne puis en éditer une | L'enregistrement **aboutit** dans les deux cas. Ces quatre écrans déclarent un identifiant non standard (`id_date`, `id_match`, `id_equipe`, `id_commission`) : le formulaire doit poster CE nom-là. Sinon 500 — ou, pour commission, un **doublon** au lieu d'une mise à jour (#299) |
 
 ## Cas par écran
 

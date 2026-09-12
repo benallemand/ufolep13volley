@@ -194,11 +194,17 @@ export default {
           <button class="btn btn-sm" :disabled="page === pageCount" @click="page++">»</button>
         </div>
 
+        <!-- id-field doit descendre jusqu'au formulaire : c'est LUI qui poste
+             l'identifiant. Sans cette liaison il retombait sur son defaut
+             'id', et les quatre ecrans a identifiant non standard postaient un
+             parametre que la methode PHP ne declare pas — 500 pour trois
+             d'entre eux, duplication silencieuse pour le quatrieme (#299). -->
         <admin-edit-modal v-if="editing"
                           :title="title"
                           :fields="fields"
                           :record="editing"
                           :save-url="saveUrl"
+                          :id-field="idField"
                           @close="editing = null"
                           @saved="onSaved"/>
       </div>
