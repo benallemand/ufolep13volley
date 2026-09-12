@@ -56,6 +56,66 @@ class PlayerPhotoPathTest extends TestCase
         self::assertSame($chemin, $resultat[0]['path_photo_low']);
     }
 
+    /**
+     * Le cas qui a échappé à la première version de ce test.
+     *
+     * `path_photo_low` est **déduit** de `path_photo` par un `REPLACE` dans
+     * `players_view` : rien ne garantit que la vignette existe, et elle manque
+     * pour une bonne part des joueurs — seules les photos téléversées depuis
+     * l'application passent par `generateLowPhoto()`. Vérifié en production :
+     * `players_pics/akkouchearnaud1.jpg` répond 200, sa vignette 404.
+     *
+     * Le défaut est ancien, mais il est resté invisible tant qu'aucun écran
+     * n'affichait la vignette. La grille des joueurs le fait depuis #295, d'où
+     * une volée de 404 en console.
+     *
+     * Mon test initial passait le **même** fichier dans les deux chemins : il ne
+     * pouvait donc pas voir la différence. C'est ce cas-ci qui garde le
+     * correctif.
+     */
+    public function test_une_vignette_manquante_se_rabat_sur_la_photo_pleine(): void
+    {
+        $plein = 'players_pics/' . $this->nom_fichier;
+        $vignette = 'players_pics_low/' . $this->nom_fichier; // jamais créée
+
+        $resultat = Players::adjust_photo_path_from_results([
+            ['path_photo' => $plein, 'path_photo_low' => $vignette, 'sexe' => 'M'],
+        ]);
+
+        self::assertSame($plein, $resultat[0]['path_photo']);
+        self::assertSame(
+            $plein,
+            $resultat[0]['path_photo_low'],
+            "sans repli, le navigateur demande une vignette inexistante et récolte un 404"
+        );
+    }
+
+    /**
+     * Quand la vignette existe, c'est bien elle qui est servie — le repli ne
+     * doit pas écraser le cas nominal.
+     */
+    public function test_une_vignette_presente_est_conservee(): void
+    {
+        $dossier_bas = __DIR__ . '/../players_pics_low';
+        if (!is_dir($dossier_bas)) {
+            mkdir($dossier_bas, 0777, true);
+        }
+        $vignette_fichier = $dossier_bas . '/' . $this->nom_fichier;
+        file_put_contents($vignette_fichier, 'vignette factice');
+
+        try {
+            $plein = 'players_pics/' . $this->nom_fichier;
+            $vignette = 'players_pics_low/' . $this->nom_fichier;
+            $resultat = Players::adjust_photo_path_from_results([
+                ['path_photo' => $plein, 'path_photo_low' => $vignette, 'sexe' => 'M'],
+            ]);
+
+            self::assertSame($vignette, $resultat[0]['path_photo_low']);
+        } finally {
+            unlink($vignette_fichier);
+        }
+    }
+
     public function test_une_photo_absente_est_remplacee_selon_le_sexe(): void
     {
         $absent = 'players_pics/ce_fichier_n_existe_pas_295.jpg';

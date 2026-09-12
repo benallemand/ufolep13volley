@@ -1224,6 +1224,23 @@ class Players extends Generic
                     default:
                         break;
                 }
+                continue;
+            }
+            // La vignette est DEDUITE du chemin plein par un REPLACE dans
+            // `players_view` : rien ne garantit que le fichier existe, et il
+            // manque effectivement pour une bonne part des joueurs — seules
+            // les photos televersees depuis l'application passent par
+            // `generateLowPhoto()`. Le defaut est ancien, mais il est reste
+            // invisible tant qu'aucun ecran n'affichait `path_photo_low` : la
+            // grille des joueurs le fait depuis #295, d'ou une volee de 404.
+            //
+            // On se rabat sur la photo pleine, qui elle existe. Le surcout est
+            // negligeable : ces photos de licence pesent 12 Ko en moyenne,
+            // 24 Ko au maximum sur un echantillon de production. Generer les
+            // milliers de vignettes manquantes ne rapporterait donc presque
+            // rien.
+            if (!self::photoFileExists($results[$index]['path_photo_low'], $existants)) {
+                $results[$index]['path_photo_low'] = $results[$index]['path_photo'];
             }
         }
         return $results;
