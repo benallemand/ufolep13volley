@@ -13,6 +13,38 @@ require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
 
 class Emails extends Generic
 {
+    /**
+     * Echappement des donnees inserees dans un gabarit d'email (issue #292).
+     *
+     * Les gabarits de `templates/emails/` sont du HTML, et les valeurs qu'on y
+     * substitue viennent de la base : noms d'equipe et de joueur, saisis par
+     * des responsables sans aucun filtrage a l'entree. Sans echappement, un nom
+     * d'equipe valant `<img src=x onerror=...>` se retrouvait tel quel dans
+     * `emails.body`, puis execute chez le destinataire qui ouvrait le message.
+     *
+     * A appliquer meme maintenant que le journal des messages rend le corps
+     * dans une iframe cloisonnee : ces corps partent aussi par email, vers des
+     * clients de messagerie dont on ne maitrise pas le rendu.
+     */
+    private static function escapeHtml(?string $value): string
+    {
+        return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    /**
+     * Meme chose, pour une valeur dont le HTML est VOULU.
+     *
+     * `players_view.teams_list` est un `GROUP_CONCAT(... SEPARATOR '<br/>')` :
+     * les sauts de ligne font partie du format. Les echapper afficherait
+     * « &lt;br/&gt; » dans le mail. On echappe donc chaque element de la liste
+     * et on laisse les separateurs intacts.
+     */
+    private static function escapeHtmlList(?string $value): string
+    {
+        $parts = explode('<br/>', (string)$value);
+        return implode('<br/>', array_map([self::class, 'escapeHtml'], $parts));
+    }
+
     private MatchMgr $match;
     private Team $team;
 
@@ -150,8 +182,8 @@ class Emails extends Generic
     public function sendMailNewUser($email, $login, $password): void
     {
         $message = file_get_contents(__DIR__ . '/../templates/emails/sendMailNewUser.fr.html');
-        $message = str_replace('%login%', $login, $message);
-        $message = str_replace('%password%', $password ?: '', $message);
+        $message = str_replace('%login%', self::escapeHtml($login), $message);
+        $message = str_replace('%password%', self::escapeHtml($password ?: ''), $message);
         $this->insert_email(
             "[UFOLEP13VOLLEY]Identifiants de connexion",
             $message,
@@ -170,9 +202,9 @@ class Emails extends Generic
         }
 
         $message = file_get_contents('../templates/emails/send_reset_password.fr.html');
-        $message = str_replace('%login%', $login, $message);
-        $message = str_replace('%team_name%', implode(',', $team_names), $message);
-        $message = str_replace('%url%', $url, $message);
+        $message = str_replace('%login%', self::escapeHtml($login), $message);
+        $message = str_replace('%team_name%', self::escapeHtml(implode(',', $team_names)), $message);
+        $message = str_replace('%url%', self::escapeHtml($url), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Réinitialisation de mot de passe",
@@ -194,9 +226,9 @@ class Emails extends Generic
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAskForReport.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        $message = str_replace('%reason%', $reason, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
+        $message = str_replace('%reason%', self::escapeHtml($reason), $message);
+        $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match",
@@ -217,9 +249,9 @@ class Emails extends Generic
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailGiveReportDate.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        $message = str_replace('%report_date%', $report_date, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
+        $message = str_replace('%report_date%', self::escapeHtml($report_date), $message);
+        $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match",
@@ -240,9 +272,9 @@ class Emails extends Generic
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReport.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        $message = str_replace('%reason%', $reason, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
+        $message = str_replace('%reason%', self::escapeHtml($reason), $message);
+        $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match",
@@ -262,8 +294,8 @@ class Emails extends Generic
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailAcceptReport.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        $message = str_replace('%team_name%', $teamName, $message);
+        $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
+        $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match",
@@ -282,8 +314,8 @@ class Emails extends Generic
         $to = implode(';', $teams_emails);
 
         $message = file_get_contents('../templates/emails/sendMailRefuseReportAdmin.fr.html');
-        $message = str_replace('%code_match%', $code_match, $message);
-        $message = str_replace('%reason%', $reason, $message);
+        $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
+        $message = str_replace('%reason%', self::escapeHtml($reason), $message);
 
         $this->insert_email(
             "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match",
@@ -452,9 +484,9 @@ class Emails extends Generic
             return 0;
         }
         $message = file_get_contents(__DIR__ . '/../templates/emails/notify_activated_player.fr.html');
-        $message = str_replace('%full_name%', $player['full_name'], $message);
-        $message = str_replace('%date_homologation%', $player['date_homologation'], $message);
-        $message = str_replace('%teams_list%', $player['teams_list'] === null ? '' : $player['teams_list'], $message);
+        $message = str_replace('%full_name%', self::escapeHtml($player['full_name']), $message);
+        $message = str_replace('%date_homologation%', self::escapeHtml($player['date_homologation']), $message);
+        $message = str_replace('%teams_list%', self::escapeHtmlList($player['teams_list'] === null ? '' : $player['teams_list']), $message);
         return $this->insert_email(
             "[UFOLEP13VOLLEY]La licence de " . $player['full_name'] . " a été validée par la commission",
             $message,
