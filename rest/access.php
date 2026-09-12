@@ -246,6 +246,10 @@ return array(
         'getTeam' => 'public',
         'getWebSites' => 'public',
         'getMyTeam' => 'user',
+        // Verrouillage de l'effectif en Coupe Khoury Hanna (issue #32) : l'écran
+        // de l'effectif s'en sert pour masquer les actions d'ajout. Le refus
+        // reste appliqué côté serveur, ceci n'est qu'un confort d'affichage.
+        'getMySquadLock' => 'user',
         'load_register_for_my_club' => 'user',
         'saveTeam' => 'user',
     ),

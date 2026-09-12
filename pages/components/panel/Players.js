@@ -3,7 +3,24 @@ import {onError, onSuccess} from "../../../toaster.js";
 export default {
     template: `
       <div>
-        <div class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-1">
+        <!-- Effectif figé (issue #32) : on retire les actions d'ajout au lieu de
+             laisser le responsable les tenter pour rien. Le serveur refuse de
+             toute façon, ceci n'est que la version lisible du refus. -->
+        <div v-if="squadLock.locked" class="alert alert-warning mb-4">
+          <i class="fas fa-lock"></i>
+          <div>
+            <div class="font-semibold">Effectif figé pour cette compétition</div>
+            <div class="text-sm">
+              Depuis la signature de la fiche du match {{ squadLock.match }}
+              <span v-if="squadLock.date">du {{ squadLock.date }}</span>, plus aucun
+              joueur ne peut être ajouté à cette équipe. La règle évite qu'une
+              équipe se renforce en cours de compétition.
+              Contactez la commission si un ajout est justifié.
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!squadLock.locked" class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-1">
           <span class="label-text">Ajouter un joueur existant</span>
           <input
               type="text"
@@ -166,6 +183,10 @@ export default {
             filteredPlayers: [],
             selectedPdfFile: null,
             isUploading: false,
+            // Verrouillage de l'effectif (issue #32). On part de « ouvert » :
+            // si l'appel echoue, l'ecran reste utilisable et c'est le serveur
+            // qui refusera, plutot que de bloquer sur une erreur reseau.
+            squadLock: { locked: false, match: null, date: null, competition: null },
         };
     },
     methods: {
@@ -198,6 +219,16 @@ export default {
                         onError(this, error)
                     });
             }
+        },
+        fetchSquadLock() {
+            axios
+                .get('/rest/action.php/team/getMySquadLock')
+                .then(({ data }) => {
+                    if (data && typeof data === 'object') {
+                        this.squadLock = data;
+                    }
+                })
+                .catch(() => { /* voir le commentaire sur squadLock */ });
         },
         fetchTeamPlayers() {
             axios
@@ -381,5 +412,6 @@ export default {
     created() {
         this.fetchTeamPlayers();
         this.fetchAllPlayers();
+        this.fetchSquadLock();
     },
 };

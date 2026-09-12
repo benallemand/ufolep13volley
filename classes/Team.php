@@ -465,6 +465,88 @@ class Team extends Generic
         return $results[0]['id_club'];
     }
 
+    /**
+     * Compétitions dont l'effectif se verrouille au premier match (issue #32).
+     *
+     * La Coupe Khoury Hanna est la seule à faire l'objet d'inscriptions
+     * d'équipe qui lui sont propres : 62 équipes portent `code_competition =
+     * 'kh'`, là où les autres coupes réutilisent les équipes de championnat.
+     * L'effectif inscrit en KH est donc une entité en soi, qu'on peut geler.
+     *
+     * Les matchs de phase finale sont en 'kf' mais réutilisent les mêmes
+     * `id_equipe` : les deux codes comptent pour le verrou.
+     */
+    private const CUP_LOCKED_TEAM_COMPETITION = 'kh';
+    private const CUP_LOCKED_MATCH_COMPETITIONS = ['kh', 'kf'];
+
+    /**
+     * L'effectif de cette équipe est-il gelé, et depuis quel match ?
+     *
+     * Règle (issue #32, ouverte depuis 2017) : dès qu'une équipe de la Coupe
+     * Khoury Hanna a signé la fiche d'un de ses matchs, elle ne peut plus
+     * recruter — l'objet est d'empêcher qu'elle se renforce en cours de
+     * compétition.
+     *
+     * On se fie à `is_sign_team_dom/ext`, l'état de signature du camp
+     * concerné. Attention à ne pas confondre avec `is_sign_match_*`, qui est
+     * la signature de la feuille de match, bien plus tardive dans le
+     * workflow (présents -> fiche équipe -> score -> feuille).
+     *
+     * @return array|null null si l'effectif reste ouvert ; sinon le match qui
+     *                    a déclenché le verrou (le plus ancien signé).
+     */
+    public function getSquadLock($idTeam): ?array
+    {
+        if (empty($idTeam) || !is_numeric($idTeam)) {
+            return null;
+        }
+        $placeholders = implode(',', array_fill(0, count(self::CUP_LOCKED_MATCH_COMPETITIONS), '?'));
+        $sql = "SELECT m.code_match,
+                       m.date_reception,
+                       c.libelle AS competition
+                FROM matches m
+                JOIN equipes e
+                  ON e.id_equipe = ?
+                 AND e.code_competition = ?
+                JOIN competitions c ON c.code_competition = m.code_competition
+                WHERE m.code_competition IN ($placeholders)
+                  AND (
+                        (m.id_equipe_dom = e.id_equipe AND m.is_sign_team_dom = 1)
+                     OR (m.id_equipe_ext = e.id_equipe AND m.is_sign_team_ext = 1)
+                      )
+                ORDER BY m.date_reception, m.code_match
+                LIMIT 1";
+        $bindings = array(
+            array('type' => 'i', 'value' => (int)$idTeam),
+            array('type' => 's', 'value' => self::CUP_LOCKED_TEAM_COMPETITION),
+        );
+        foreach (self::CUP_LOCKED_MATCH_COMPETITIONS as $code) {
+            $bindings[] = array('type' => 's', 'value' => $code);
+        }
+        $rows = $this->sql_manager->execute($sql, $bindings);
+        return empty($rows) ? null : $rows[0];
+    }
+
+    /**
+     * État du verrou pour l'équipe COURANTE de la session (issue #32).
+     *
+     * Sert à l'écran « effectif » du responsable, qui masque les actions
+     * d'ajout plutôt que de laisser l'utilisateur se heurter à un refus.
+     * Le refus côté serveur reste la seule garantie : cet endpoint n'est
+     * qu'un confort d'affichage.
+     */
+    public function getMySquadLock(): array
+    {
+        @session_start();
+        $lock = $this->getSquadLock($_SESSION['id_equipe'] ?? null);
+        return array(
+            'locked' => $lock !== null,
+            'match' => $lock === null ? null : $lock['code_match'],
+            'date' => $lock === null ? null : $lock['date_reception'],
+            'competition' => $lock === null ? null : $lock['competition'],
+        );
+    }
+
     public function getTeamName($idTeam)
     {
         if ($idTeam === 0) {
