@@ -60,6 +60,9 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G13 | Sur un écran à case à cocher, cocher puis enregistrer, puis rouvrir | La case est **restée cochée**. Avant #265 lot 4, elle repartait toujours à zéro : le formulaire postait `1` et le PHP comparait strictement à `'on'` |
 | G14 | Décocher, enregistrer, rouvrir | La case est restée décochée |
 | G15 | Sélectionner une ligne, puis **taper une recherche** qui la masque | La sélection est **vidée** et les boutons d'action se désactivent. Sans ça une action s'appliquerait à une ligne invisible (#288) |
+| G16 | Trier une colonne de **date** (homologation, réception, fermeture…) | Tri **chronologique**, pas alphabétique. Le piège : `02/12/2025` doit venir **après** `15/11/2025`, alors qu'en texte il passait avant (#296) |
+| G17 | Trier une colonne de date dans l'autre sens | L'ordre s'inverse exactement |
+| G18 | Sur un écran à colonne image (joueurs), faire défiler la liste | Les vignettes se chargent **au fur et à mesure** (`loading="lazy"`), pas toutes d'un coup ; une photo absente affiche l'image de repli, jamais une icône cassée (#295) |
 
 ## Cas par écran
 
