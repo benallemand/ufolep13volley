@@ -1,3 +1,22 @@
+/**
+ * Journal des messages du responsable d'équipe.
+ *
+ * Le corps du message est affiché dans une **iframe cloisonnée** (issue #292),
+ * et non rendu directement dans la page. Ce n'est pas une précaution
+ * théorique : ces corps sont construits par `str_replace` à partir de noms
+ * d'équipe et de joueur, saisis par des responsables sans aucun filtrage à
+ * l'entrée. Un rendu direct exécutait donc leur contenu — un nom d'équipe
+ * valant `<img src=x onerror=…>` suffisait, et le cookie de session partait
+ * alors sans `HttpOnly`.
+ *
+ * Un `sandbox` vide retire tout : scripts, formulaires, navigation, accès au
+ * document parent. Même protection que l'écran d'administration
+ * (`admin/components/screens/Emails.js`), qui l'avait déjà.
+ *
+ * Les valeurs sont par ailleurs échappées à la source (`Emails::escapeHtml()`),
+ * parce que ces corps partent aussi par email, vers des clients de messagerie
+ * dont on ne maîtrise pas le rendu.
+ */
 export default {
     data() {
         return {
@@ -179,7 +198,12 @@ export default {
                 </div>
               </div>
               <div class="divider"></div>
-              <div class="prose max-w-none" v-html="selectedEmail.body"></div>
+              <!-- Corps rendu en iframe cloisonnee : voir l'en-tete du fichier. -->
+              <iframe :srcdoc="selectedEmail.body || '<p>(corps vide)</p>'"
+                      sandbox=""
+                      referrerpolicy="no-referrer"
+                      class="w-full h-[55vh] bg-white rounded border border-base-300"
+                      title="Contenu du message"></iframe>
             </div>
           </div>
         </div>

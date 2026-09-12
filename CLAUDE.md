@@ -283,6 +283,36 @@ class MaClasse extends Generic {
 ### Endpoints AJAX
 Les fichiers dans `ajax/` sont des points d'entrée HTTP. Ils instancient les classes et retournent du JSON.
 
+### Cookie de session et corps d'emails (issue #292)
+
+`bootstrap.php` pose `HttpOnly`, `Secure` et `SameSite` sur le cookie de session.
+**Tout nouveau point d'entrée PHP susceptible d'ouvrir une session doit
+l'inclure en première ligne** — avant le premier `session_start()`, sinon le
+cookie est déjà parti. `SessionCookieTest` fait échouer la suite sinon.
+
+> **Pourquoi en PHP et pas en configuration.** Le `php.ini` de la prod est géré
+> par OVH, et les deux contournements ne couvrent chacun qu'un SAPI :
+> `.user.ini` n'est lu qu'en PHP-FPM/CGI, `.htaccess php_flag` qu'en mod_php (et
+> provoque une 500 en FPM). Notre image est `php:8.1-apache` (mod_php), OVH est
+> en FPM : on validerait sur biggyben autre chose que la prod.
+
+> **`Secure` ne se déduit pas de `$_SERVER['HTTPS']`.** Caddy fait
+> `reverse_proxy php:80` : PHP reçoit du HTTP en clair et `HTTPS` vaut `NULL`
+> même quand le visiteur est en HTTPS. `ufolep_is_https()` regarde aussi
+> `X-Forwarded-Proto` et le port. Forcer `secure = true` casserait les sessions
+> en dev sur `http://localhost`.
+
+> **Un corps d'email ne se rend jamais en `v-html`.** Il est construit par
+> `str_replace` à partir de noms d'équipe et de joueur saisis par des
+> responsables : c'était un XSS stocké. Les deux écrans qui l'affichent
+> (`TeamLeaderMessages.js`, `admin/screens/Emails.js`) passent par un
+> `<iframe sandbox="">`.
+
+> **Les valeurs substituées dans un gabarit d'email sont échappées** par
+> `Emails::escapeHtml()`. Exception : `escapeHtmlList()` pour `teams_list`, dont
+> le `GROUP_CONCAT(... SEPARATOR '<br/>')` porte du HTML **voulu** — l'échapper
+> en bloc afficherait « &lt;br/&gt; » dans le mail.
+
 ### Autorisation des endpoints REST — refus par défaut (issues #268, #270)
 
 `rest/action.php` dispatche **n'importe quelle méthode publique** des classes
