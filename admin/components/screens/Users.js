@@ -49,6 +49,11 @@ export default {
           </button>
           <button class="btn btn-outline btn-sm"
                   :disabled="selection.length !== 1 || isLoading"
+                  @click="toggleAdmin(selection[0], rows, reload)">
+            <i class="fas fa-user-shield"></i> {{ adminLabel(selection, rows) }}
+          </button>
+          <button class="btn btn-outline btn-sm"
+                  :disabled="selection.length !== 1 || isLoading"
                   @click="actAs(selection[0], rows)">
             <i class="fas fa-user-secret"></i> Agir en tant que
           </button>
@@ -161,6 +166,64 @@ export default {
                     onSuccess(this, response);
                     this.picker = null;
                     this.$refs.grid.fetchRows();
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isLoading = false; });
+        },
+        /**
+         * Le compte sélectionné, ou null. Les identifiants transitent en
+         * chaînes côté sélection et en entiers côté API, d'où la comparaison
+         * sur `String`.
+         */
+        selectedRow(selection, rows) {
+            if (selection.length !== 1) {
+                return null;
+            }
+            return rows.find((r) => String(r.id) === String(selection[0])) || null;
+        },
+        /**
+         * Le libellé dit ce que le clic va faire, pas l'état courant : sans
+         * sélection il n'y a rien à annoncer, on garde le terme neutre.
+         */
+        adminLabel(selection, rows) {
+            const compte = this.selectedRow(selection, rows);
+            if (compte === null) {
+                return 'Rôle administrateur';
+            }
+            return Number(compte.is_admin)
+                ? 'Retirer le rôle administrateur'
+                : 'Donner le rôle administrateur';
+        },
+        /**
+         * Donne ou retire le rôle administrateur (issue #301).
+         *
+         * Troisième rôle éditable depuis cet écran, après les liens équipes et
+         * clubs — et le plus lourd de conséquences, d'où la confirmation
+         * nominative. Le refus de se rétrograder soi-même est posé côté
+         * serveur : c'est là qu'il tient, la console suffirait à contourner un
+         * contrôle fait ici.
+         */
+        toggleAdmin(id, rows, reload) {
+            const compte = rows.find((r) => String(r.id) === String(id));
+            const libelle = compte ? (compte.login || compte.email) : 'ce compte';
+            const donner = !Number(compte ? compte.is_admin : 0);
+            if (!window.confirm(
+                donner
+                    ? `Donner le rôle administrateur à ${libelle} ?\n\n`
+                      + "Ce compte pourra tout modifier sur le site, y compris les "
+                      + "droits des autres comptes."
+                    : `Retirer le rôle administrateur à ${libelle} ?`
+            )) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('user_id', id);
+            formData.append('is_admin', donner ? 'true' : 'false');
+            this.isLoading = true;
+            axios.post('/rest/action.php/usermanager/setAdmin', formData)
+                .then((response) => {
+                    onSuccess(this, response);
+                    reload();
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isLoading = false; });

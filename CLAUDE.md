@@ -718,6 +718,24 @@ compétition.
   garde des pages match via `requireRoles(['admin', 'team_leader'])` (`pages/components/auth/guard.js`)
 - « Agir en tant que » : sauvegarde/restauration des flags via `original_admin_*` en session
 
+> **Les trois rôles s'éditent depuis l'écran Utilisateurs**, et tous les trois
+> par un **bouton d'action**, pas par un champ du formulaire : « Équipes
+> liées… » et « Clubs liés… » écrivent dans `users_teams` / `users_clubs`, le
+> troisième appelle `usermanager/setAdmin`. Une élévation de privilèges mérite
+> sa confirmation, et non d'être basculée en passant par une correction
+> d'adresse email.
+>
+> Le bouton admin avait disparu à la migration ExtJS → Vue (#265) : la méthode,
+> sa règle d'accès et ses tests étaient restés, seul le câblage manquait, et il
+> a fallu passer par la base pendant ce temps (#301). **Vérifier qu'un écran
+> migré n'a pas perdu une action au passage** — le CRUD se voit, une action de
+> barre d'outils non.
+>
+> **On ne peut pas se retirer son propre rôle admin** : le dernier
+> administrateur qui se rétrograde n'a plus aucun moyen de revenir depuis
+> l'application. Le refus est **côté serveur** (`UserManager::setAdmin`), pas
+> dans le bouton.
+
 ### Multi-club et équipe courante
 - Un compte peut être rattaché à **plusieurs clubs** : la session porte
   `club_ids` (tous les clubs, `users_clubs`) **et** `id_club` (le club **courant**,
