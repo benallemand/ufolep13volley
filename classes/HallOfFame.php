@@ -190,6 +190,22 @@ class HallOfFame extends Generic
     }
 
     /**
+     * Convertit de l'UTF-8 vers l'ISO-8859-1, seul encodage compris par les
+     * polices standard de FPDF (Arial & co. sont des fontes « core » Latin-1).
+     *
+     * Remplace `utf8_decode()`, dépréciée depuis PHP 8.2 et supprimée en PHP 9.
+     * Le cast couvre les valeurs non-string remontées de la base (`null`
+     * notamment : le passer à une fonction interne est déprécié depuis 8.1).
+     *
+     * @param mixed $value
+     * @return string
+     */
+    private function pdf_text($value): string
+    {
+        return mb_convert_encoding((string)$value, 'ISO-8859-1', 'UTF-8');
+    }
+
+    /**
      * @param $id
      * @param FPDF $pdf
      * @return void
@@ -199,7 +215,7 @@ class HallOfFame extends Generic
     {
         $diploma_data = $this->get_by_id($id);
         foreach ($diploma_data as $key => $value) {
-            $diploma_data[$key] = utf8_decode($value);
+            $diploma_data[$key] = $this->pdf_text($value);
         }
         // Ajout d'une nouvelle page
         $pdf->AddPage();
@@ -234,9 +250,9 @@ class HallOfFame extends Generic
         $pdf->SetXY(0, $top_left_y + 50);
         $determinant = self::starts_with(strtolower($diploma_data['league']), "championnat") ? 'le' : 'la';
         $centered_text = implode(PHP_EOL, array(
-            utf8_decode("Les membres de la Commission Technique"),
-            utf8_decode("de l'UFOLEP Volley-Ball des Bouches-du-Rhône"),
-            utf8_decode("décernent, pour $determinant ") . $diploma_data['league'] . utf8_decode(", le titre de"),
+            $this->pdf_text("Les membres de la Commission Technique"),
+            $this->pdf_text("de l'UFOLEP Volley-Ball des Bouches-du-Rhône"),
+            $this->pdf_text("décernent, pour $determinant ") . $diploma_data['league'] . $this->pdf_text(", le titre de"),
         ));
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
@@ -247,7 +263,7 @@ class HallOfFame extends Generic
         $pdf->SetFont('Arial', 'B', 24);
         $pdf->MultiCell($pdf->GetPageWidth(), 10, $centered_text, 0, 'C');
         $this->pdf_add_separator($pdf);
-        $centered_text = utf8_decode(implode(PHP_EOL, array(
+        $centered_text = $this->pdf_text(implode(PHP_EOL, array(
             "à l'équipe de",
         )));
         $pdf->SetFont('Arial', 'B', 12);

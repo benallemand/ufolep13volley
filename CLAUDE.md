@@ -4,7 +4,7 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 
 ## Stack Technique
 
-- **Backend** : PHP 8.1, MySQL
+- **Backend** : PHP 8.3, MySQL
 - **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI — bundlé via Vite (Node.js 20)
 - **Frontend admin** : Vue.js 3 (`admin/index.html`, servie sur `/admin/`) — ExtJS supprimé par le lot 6 de l'issue #265
 - **Tests unitaires** : PHPUnit (`unit_tests/`)
@@ -225,6 +225,35 @@ plus que des redirections vers les routes Vue correspondantes ; leurs URLs
 historiques sont conservées parce qu'elles circulent en lien externe et en
 favori. Il ne reste **aucune dépendance à un CDN tiers** en production.
 
+### Mesure d'audience (Matomo auto-hébergé)
+
+Le traceur est **injecté au build** par le plugin `matomoTracking()` de
+`vite.config.js`, pas recopié dans les pages : les entrées HTML n'ont aucun
+partiel commun, et six copies d'un snippet dériveraient à la première
+modification. Les constantes (`MATOMO_URL`, `MATOMO_SITE_ID`, `MATOMO_HOSTS`)
+sont en tête de fichier.
+
+- **L'administration n'est pas mesurée** : les pages sous `admin/` sont exclues
+  par le plugin. L'usage interne n'a rien à faire dans l'audience publique.
+- **Rien n'est envoyé hors production** : le dev local et biggyben servent le
+  même bundle, un test sur `location.hostname` les écarte. Pour vérifier qu'une
+  page est bien instrumentée, `grep stats.ufolep13volley.org dist/**/*.html`.
+- **Le suivi est servi depuis `stat.js` / `stat.php`**, copies de `matomo.js` /
+  `matomo.php` faites côté serveur. Les noms d'origine sont dans toutes les
+  listes de filtrage et coûtent 20 à 30 % des mesures. Ce sont des **copies**,
+  pas des renommages — Matomo continue d'utiliser ses propres fichiers, et ses
+  mises à jour ne cassent pas. **À recopier après chaque montée de version de
+  Matomo**, sinon le traceur servi se fige.
+
+Matomo vit hors du dépôt, dans `~/stats` sur l'hébergement OVH — pas dans
+`~/www`, qui est la copie de travail git : un `git clean` l'effacerait. Son
+archivage est un cron horaire (`~/stats/cron-archive.sh`), l'archivage à la
+volée depuis le navigateur devant rester désactivé sur mutualisé.
+
+`disableCookies` côté page, plus l'anonymisation d'IP côté Matomo, placent la
+mesure dans les conditions d'exemption de consentement de la CNIL : **pas de
+bandeau cookies** à afficher.
+
 ### Versionner et déployer
 
 **Le tag est automatique.** À chaque merge sur `master`, `.github/workflows/auto-tag.yml`
@@ -255,6 +284,35 @@ Workflow* → **Run workflow** → choisir le tag comme ref.
 > version en Release plutôt qu'un `CHANGELOG.md` versionné.
 > Les 48 tags horodatés historiques (`YYYYMMDDHHMM`) cohabitent sans souci :
 > le script ne considère que les tags commençant par `v`.
+
+**La version PHP de la prod est dans le dépôt** (`.ovhconfig` à la racine, donc
+à la racine web puisque `main.yml` fait un `git pull` dans `www/`) :
+
+```
+http.firewall=none
+container.image=stable64
+environment=production
+app.engine=php
+app.engine.version=8.3
+```
+
+Sans ce fichier, OVH applique la « version PHP globale » de l'hébergement, un
+réglage qui vit dans le manager et peut bouger sans qu'on le voie passer.
+C'est lui qui fait tourner `www/` en 8.3 alors que le réglage global du compte
+est resté en 8.1 — le prompt SSH affiche la version effective du répertoire
+courant, ce qui permet de vérifier d'un coup d'œil quelle version s'applique.
+
+**Le contenu ci-dessus est celui qui existait déjà sur le serveur**, recopié à
+l'identique : le versionner ne devait rien changer au comportement de la prod.
+`http.firewall=none` désactive le pare-feu applicatif HTTP d'OVH — pas un
+défaut, un choix, qu'on peut désormais discuter en PR au lieu de le découvrir
+en SSH.
+
+> Ce fichier n'a d'effet qu'**au déploiement suivant**, qui est manuel (ci-dessus).
+>
+> Il a longtemps vécu sur le serveur sans être versionné, d'où le garde-fou de
+> `main.yml` qui le neutralise avant le `git pull` (voir le commentaire de
+> l'étape *Deploy source code*).
 
 Poser un tag à la main reste possible :
 ```bash
@@ -293,7 +351,7 @@ cookie est déjà parti. `SessionCookieTest` fait échouer la suite sinon.
 > **Pourquoi en PHP et pas en configuration.** Le `php.ini` de la prod est géré
 > par OVH, et les deux contournements ne couvrent chacun qu'un SAPI :
 > `.user.ini` n'est lu qu'en PHP-FPM/CGI, `.htaccess php_flag` qu'en mod_php (et
-> provoque une 500 en FPM). Notre image est `php:8.1-apache` (mod_php), OVH est
+> provoque une 500 en FPM). Notre image est `php:8.3-apache` (mod_php), OVH est
 > en FPM : on validerait sur biggyben autre chose que la prod.
 
 > **`Secure` ne se déduit pas de `$_SERVER['HTTPS']`.** Caddy fait

@@ -15,6 +15,7 @@
     "ext-mysqli": "*",
     "ext-zip": "*",
     "ext-json": "*",
+    "ext-mbstring": "*",
     "vlucas/phpdotenv": "*",
     "mashape/unirest-php": "3.*",
     "ext-dom": "*",

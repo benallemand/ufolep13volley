@@ -15,7 +15,7 @@
  *   - `.user.ini`            : lu par PHP-FPM / CGI, ignore par mod_php ;
  *   - `.htaccess php_flag`   : lu par mod_php, provoque une 500 en FPM.
  *
- * Notre image Docker est `php:8.1-apache`, donc mod_php ; OVH mutualise est en
+ * Notre image Docker est `php:8.3-apache`, donc mod_php ; OVH mutualise est en
  * FPM. Aucun des deux fichiers ne vaudrait pour les deux environnements, et
  * l'on validerait sur biggyben un comportement different de la production.
  * `session.cookie_httponly` etant `PHP_INI_ALL`, le reglage a l'execution est,

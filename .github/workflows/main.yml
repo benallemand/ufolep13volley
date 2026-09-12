@@ -48,6 +48,17 @@ jobs:
           rsync -avz --delete dist/ ufolepvocb@ftp.cluster020.hosting.ovh.net:www/dist/
 
       - name: Deploy source code (git pull on OVH)
+        # composer.phar et .ovhconfig vivent sur le serveur sans etre forcement
+        # versionnes. Des qu'un fichier de ce genre entre dans le depot, le
+        # `git pull` avorte sur « untracked working tree files would be
+        # overwritten by merge » et le deploiement echoue.
+        #
+        # Pour chacun : s'il est deja suivi, on annule la derive locale ; sinon
+        # on l'efface pour laisser le pull poser la version du depot. C'est le
+        # traitement qu'avait deja composer.phar, generalise a la liste.
+        #
+        # .ovhconfig porte la version PHP : pendant le pull, le site retombe
+        # quelques centiemes de seconde sur la version globale de l'hebergement.
         run: |
-          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "cd www && if git ls-files --error-unmatch composer.phar >/dev/null 2>&1; then git checkout -- composer.phar; else rm -f composer.phar; fi && git pull"
+          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net 'cd www && for f in composer.phar .ovhconfig; do if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then git checkout -- "$f"; else rm -f "$f"; fi; done && git pull'
           echo "Deployment completed successfully!"

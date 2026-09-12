@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Étape 3 : image PHP finale
-FROM php:8.1-apache
+FROM php:8.3-apache
 
 # Installer les extensions PHP nécessaires
 RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
