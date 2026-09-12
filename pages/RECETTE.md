@@ -72,3 +72,40 @@ est décidé côté serveur (session), pas par le front.
 
 Déconnecté, sur `/pages/home.html` : la timeline de l'agenda s'affiche, et
 **aucun match nominatif** n'apparaît.
+
+---
+
+## Effectif figé en Coupe Khoury Hanna (issue #32)
+
+### K1 — Avant le premier match signé
+
+Responsable d'une équipe **KH** dont aucune fiche n'est encore signée, écran
+**effectif** : la recherche « Ajouter un joueur existant », le bouton
+**créer…** et l'import PDF sont présents, et l'ajout fonctionne.
+
+### K2 — Après signature de la fiche
+
+Même écran, pour une équipe KH ayant signé la fiche d'un de ses matchs :
+
+| À vérifier | Attendu |
+|---|---|
+| Bandeau | « Effectif figé pour cette compétition », avec le code du match et sa date |
+| Actions d'ajout | recherche, **créer…** et import PDF **absents** |
+| Liste de l'effectif | toujours affichée, les rôles (responsable, suppléant, capitaine) restent modifiables |
+| Refus serveur | forcer l'appel `player/addPlayerToMyTeam` doit répondre **403** avec le message, pas 500 |
+
+### K3 — Les autres compétitions ne sont pas touchées
+
+Basculer sur une équipe de **championnat** du même club : l'ajout reste
+possible, aucun bandeau. La règle ne vaut que pour la Khoury Hanna.
+
+### K4 — La phase finale verrouille aussi
+
+Une équipe dont la seule fiche signée l'a été sur un match **`kf`** doit être
+figée : les matchs de phase finale réutilisent les identifiants d'équipe `kh`.
+
+### K5 — Dérogation par la commission
+
+Depuis l'administration, associer un joueur à une équipe KH figée : l'ajout
+**passe**. Vérifier ensuite dans l'écran **Activité** la trace
+« Ajout DEROGATOIRE de … (effectif fige depuis le match …) ».

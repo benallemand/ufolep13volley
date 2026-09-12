@@ -74,10 +74,12 @@ $indicators[] = new Indicator(
     "Transferts suspect de joueurs",
     file_get_contents(__DIR__ . '/../sql/suspect_transfers.sql'),
     'alert');
-$indicators[] = new Indicator(
-    "Joueurs inscrits hors délai en Coupe Khoury Hanna",
-    file_get_contents(__DIR__ . '/../sql/kh_late_registered_players.sql'),
-    'alert');
+// L'indicateur « Joueurs inscrits hors délai en Coupe Khoury Hanna » (#233) a
+// été retiré avec l'issue #32 : il détectait a posteriori, par recoupement de
+// chaînes du journal d'activité, ce que le verrouillage de l'effectif empêche
+// désormais à la source. Le seul ajout tardif encore possible est la dérogation
+// d'un administrateur, journalisée explicitement (« Ajout DEROGATOIRE de … »)
+// et donc consultable depuis l'écran Activité.
 $indicators[] = new Indicator(
     "Joueurs sans numéro de licence",
     file_get_contents(__DIR__ . '/../sql/no_licence.sql'),

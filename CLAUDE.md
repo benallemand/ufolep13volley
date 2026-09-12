@@ -514,7 +514,7 @@ la prop `rowFilter`.
 > récent au plus ancien — le découpage est fait **après** l'`ORDER BY`.
 
 > **Tout n'est pas une grille.** `screens/Indicators.js` est un tableau de bord
-> en tuiles : `ajax/indicators.php?mode=list` rend les 47 libellés, puis un
+> en tuiles : `ajax/indicators.php?mode=list` rend les 46 libellés, puis un
 > `mode=detail&id=N` par indicateur exécute sa requête, six en vol. Une tuile à
 > zéro n'est pas affichée. C'est le modèle à suivre pour un écran qui n'est pas
 > du CRUD : un composant à part, pas une contorsion de `AdminGrid`.
@@ -562,6 +562,39 @@ propre : `screens/Indicators.js` (tableau de bord en tuiles) et
 - Vérifier côté backend ET frontend
 - Pattern : Admin OU responsable de l'équipe concernée
 - Stocker `id_equipe` en session pour les vérifications
+
+### Effectif figé en Coupe Khoury Hanna (issue #32)
+
+Dès qu'une équipe **`kh`** a signé la fiche équipe d'un de ses matchs (`kh` en
+poules, `kf` en finales, qui réutilise les mêmes `id_equipe`), plus aucun joueur
+ne peut lui être ajouté : l'objet est d'empêcher qu'elle se renforce en cours de
+compétition.
+
+- `Team::getSquadLock($id)` dit si l'effectif est figé, et depuis quel match ;
+- `Players::assertSquadIsOpen()` applique le refus, en **403** (refus métier,
+  pas panne) ;
+- l'écran effectif du responsable masque les actions d'ajout via
+  `team/getMySquadLock` — confort d'affichage, le refus serveur reste la
+  garantie.
+
+> **`joueur_equipe` ne doit être alimentée que par `addPlayerToTeam`.** C'est le
+> seul endroit qui porte le contrôle. `add_to_team` en portait une copie de
+> l'INSERT, ce qui offrait un chemin d'ajout hors verrou ; elle y a été ramenée,
+> et `SquadLockTest` échoue si un second INSERT réapparaît.
+
+> **L'administrateur n'est pas bloqué** : la commission doit pouvoir corriger
+> une saisie ou accorder une dérogation. Son ajout est journalisé
+> distinctement — `Ajout DEROGATOIRE de … (effectif fige depuis le match …)` —
+> et donc repérable depuis l'écran Activité.
+
+> **La règle ne vaut QUE pour la Khoury Hanna**, seule compétition à avoir ses
+> propres inscriptions d'équipe (62 équipes en `code_competition = 'kh'`). Les
+> autres coupes réutilisent les équipes de championnat : y étendre le verrou
+> gèlerait tout le monde.
+
+> L'indicateur « Joueurs inscrits hors délai en Coupe Khoury Hanna » (#233) a
+> été **supprimé** avec ce lot : il reconstituait a posteriori, par recoupement
+> de chaînes du journal d'activité, ce que le verrou empêche à la source.
 
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :

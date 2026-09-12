@@ -575,6 +575,46 @@ class Players extends Generic
     }
 
     /**
+     * Refuse l'ajout si l'effectif de l'équipe est gelé (issue #32).
+     *
+     * Point de passage unique : les trois actions REST qui rattachent un joueur
+     * — `addPlayersToTeam`, `addPlayerToMyTeam`, `set_leader` — appellent toutes
+     * `addPlayerToTeam`, et `add_to_team` y a été ramené pour qu'aucun chemin
+     * ne contourne le contrôle.
+     *
+     * **L'administrateur n'est pas concerné.** Le verrou vise le responsable
+     * d'équipe ; la commission garde la main pour corriger une saisie ou
+     * accorder une dérogation, et son ajout reste tracé dans le journal
+     * d'activité, donc vérifiable après coup.
+     *
+     * @return array|null le verrou franchi par un administrateur, s'il y en a
+     *                    un — l'appelant s'en sert pour journaliser la
+     *                    dérogation de façon distincte d'un ajout ordinaire.
+     * @throws Exception si l'équipe a déjà signé la fiche d'un de ses matchs
+     */
+    private function assertSquadIsOpen($idTeam): ?array
+    {
+        $lock = $this->team->getSquadLock($idTeam);
+        if ($lock === null) {
+            return null;
+        }
+        if (UserManager::isAdmin()) {
+            return $lock;
+        }
+        // 403 et non 500 : c'est un refus métier, pas une panne. Le routeur
+        // rend le message tel quel au client (rest/action.php), et seul le 401
+        // y déclenche une redirection vers la connexion.
+        throw new Exception(sprintf(
+            "L'effectif de cette équipe est figé depuis la signature de la fiche "
+            . "du match %s (%s, %s) : aucun joueur ne peut plus y être ajouté. "
+            . "Contactez la commission si un ajout est justifié.",
+            $lock['code_match'],
+            $lock['competition'],
+            $lock['date_reception']
+        ), 403);
+    }
+
+    /**
      * @throws Exception
      */
     public function addPlayerToTeam($idPlayer, $idTeam)
@@ -582,6 +622,7 @@ class Players extends Generic
         if ($this->isPlayerInTeam($idPlayer, $idTeam)) {
             return true;
         }
+        $lock = $this->assertSquadIsOpen($idTeam);
         // $idPlayer vient du client (actions du responsable d'équipe) — issue #270
         $sql = "INSERT joueur_equipe SET id_joueur = ?, id_equipe = ?";
         $bindings = array(
@@ -589,7 +630,17 @@ class Players extends Generic
             array('type' => 'i', 'value' => $idTeam),
         );
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Ajout de " . $this->getPlayerFullName($idPlayer) . " a l'equipe " . $this->team->getTeamName($idTeam));
+        // Un ajout dans un effectif deja fige ne peut venir que d'un
+        // administrateur : on le journalise distinctement (issue #32). Sans ce
+        // marqueur, une derogation serait indiscernable d'un ajout ordinaire, et
+        // il faudrait la reconstituer par recoupement — c'est precisement ce que
+        // fait, laborieusement, l'indicateur de l'issue #233.
+        $this->addActivity(
+            ($lock === null ? "Ajout de " : "Ajout DEROGATOIRE de ")
+            . $this->getPlayerFullName($idPlayer)
+            . " a l'equipe " . $this->team->getTeamName($idTeam)
+            . ($lock === null ? "" : " (effectif fige depuis le match " . $lock['code_match'] . ")")
+        );
         return true;
     }
 
@@ -889,17 +940,11 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // Delegue a addPlayerToTeam plutot que de redupliquer l'INSERT : cette
+        // methode en portait une copie, ce qui aurait laisse un chemin
+        // d'ajout hors du controle de verrouillage (issue #32).
         foreach ($ids as $id_player) {
-            if ($this->isPlayerInTeam($id_player, $id_team)) {
-                continue;
-            }
-            $sql = "INSERT joueur_equipe SET id_joueur = ?, id_equipe = ?";
-            $bindings = array(
-                array('type' => 'i', 'value' => $id_player),
-                array('type' => 'i', 'value' => $id_team),
-            );
-            $this->sql_manager->execute($sql, $bindings);
-            $this->addActivity("Ajout de " . $this->getPlayerFullName($id_player) . " a l'equipe " . $this->team->getTeamName($id_team));
+            $this->addPlayerToTeam($id_player, $id_team);
         }
     }
 
