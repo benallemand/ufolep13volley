@@ -95,6 +95,105 @@ class AdminScreensTest extends TestCase
     }
 
     /**
+     * Le câblage lui-même : `AdminGrid` doit transmettre son `id-field` au
+     * formulaire (issue #299).
+     *
+     * Ce test existe parce que le contrôle « champ posté inconnu » ci-dessous
+     * **ne suffit pas**, ce que j'ai constaté en le vérifiant : `postedFields()`
+     * déduit l'identifiant du `id-field` **déclaré par l'écran**, donc il
+     * modélise l'intention, pas la réalité. Retirer la liaison dans `AdminGrid`
+     * ne change aucune source d'écran, et le contrôle reste vert alors que trois
+     * écrans sont en 500.
+     *
+     * D'où cette assertion structurelle, la seule qui morde sur ce défaut :
+     * c'est la grille qui rend le formulaire, c'est donc elle qui doit lui
+     * passer l'identifiant.
+     */
+    public function test_la_grille_transmet_son_id_field_au_formulaire(): void
+    {
+        $grille = file_get_contents(__DIR__ . '/../admin/components/grid/AdminGrid.js');
+
+        $debut = strpos($grille, '<admin-edit-modal');
+        self::assertNotFalse($debut, 'la fenêtre d\'édition a été renommée ?');
+        $balise = substr($grille, $debut, (int)strpos($grille, '/>', $debut) - $debut);
+
+        self::assertStringContainsString(
+            ':id-field="idField"',
+            $balise,
+            "AdminGrid doit passer son id-field a AdminEditModal.\n"
+            . "Sans cette liaison le formulaire retombe sur son defaut 'id' et\n"
+            . "poste un parametre que la methode PHP ne declare pas : 500 pour\n"
+            . "LimitDates, Matches et Teams, duplication silencieuse pour\n"
+            . "Commission (methode variadique, donc pas d'erreur).\n"
+        );
+    }
+
+    /**
+     * Le contrôle **inverse**, et c'est celui qui manquait (issue #299).
+     *
+     * Le routeur appelle les méthodes en arguments nommés. Il y a donc deux
+     * façons d'échouer, pas une :
+     *
+     *  - un paramètre obligatoire non envoyé -> `ArgumentCountError` ;
+     *  - un champ envoyé que la méthode ne déclare pas -> `Error : Unknown
+     *    named parameter`.
+     *
+     * Le test ne couvrait que la première. La seconde a laissé passer un défaut
+     * qui mettait **trois écrans en 500** — dates limites, matchs, équipes — et
+     * en faisait **dupliquer un quatrième** en silence : `AdminGrid` ne
+     * transmettait pas son `id-field` au formulaire, qui postait donc `id` là
+     * où la méthode attend `id_date`, `id_match` ou `id_equipe`.
+     *
+     * Les méthodes **variadiques** sont exclues : `Generic::save_with_args()`
+     * collecte tout argument nommé inconnu, elle ne peut pas échouer ainsi.
+     * C'est d'ailleurs pourquoi l'écran Commission dupliquait au lieu de
+     * planter — un silence plus coûteux qu'une erreur.
+     */
+    public function test_aucun_champ_poste_n_est_inconnu_de_la_methode(): void
+    {
+        $problemes = [];
+        foreach ($this->screens() as $file => $src) {
+            if (!preg_match('#save-url="/rest/action\.php/([a-z]+)/([a-zA-Z_]+)"#', $src, $m)) {
+                continue;
+            }
+            [, $classKey, $action] = $m;
+            $method = $this->reflect($classKey, $action, $file, $problemes);
+            if ($method === null) {
+                continue;
+            }
+            $variadique = false;
+            $acceptes = [];
+            foreach ($method->getParameters() as $parameter) {
+                $acceptes[] = $parameter->getName();
+                $variadique = $variadique || $parameter->isVariadic();
+            }
+            if ($variadique) {
+                continue;
+            }
+            foreach ($this->postedFields($src) as $champ) {
+                if (!in_array($champ, $acceptes, true)) {
+                    $problemes[] = sprintf(
+                        '%s : %s/%s ne déclare pas $%s, que le formulaire envoie',
+                        $file,
+                        $classKey,
+                        $action,
+                        $champ
+                    );
+                }
+            }
+        }
+
+        self::assertSame(
+            [],
+            $problemes,
+            "Champs postés inconnus — l'enregistrement échouera en 500 :\n"
+            . implode("\n", $problemes)
+            . "\n\nCorriger en renommant le champ de l'écran, ou en ajoutant le "
+            . "paramètre à la méthode PHP avec une valeur par défaut."
+        );
+    }
+
+    /**
      * Garde-fou plus large : toute action citée par un écran doit exister comme
      * méthode publique. Un `delete-url` mal orthographié répondrait 403 (refus
      * par défaut) et passerait pour un problème de droits.
@@ -154,7 +253,17 @@ class AdminScreensTest extends TestCase
         $fields[] = $idField;
         $fields[] = 'dirtyFields';
 
-        return array_values(array_unique($fields));
+        // Les champs FICHIER ne sont pas des arguments nommés : `FormData`
+        // transporte l'objet `File`, PHP le range dans `$_FILES` et non dans
+        // `$_POST`, et le routeur ne construit ses arguments que depuis
+        // `$_POST`. `Players::save()` récupère la photo par `$_FILES` en fin de
+        // course. Les compter fausserait les deux sens du contrôle.
+        $fichiers = array();
+        if (preg_match_all("#name: '([a-zA-Z_0-9]+)'[^}]*type: 'file'#", $src, $m)) {
+            $fichiers = $m[1];
+        }
+
+        return array_values(array_diff(array_unique($fields), $fichiers));
     }
 
     /**

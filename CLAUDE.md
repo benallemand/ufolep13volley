@@ -460,11 +460,33 @@ la prop `rowFilter`.
 > `heure_reception` vient d'une jointure de `matchs_view`, l'écrire aurait
 > produit un « Unknown column ».
 >
-> **`AdminScreensTest` vérifie ça mécaniquement** (issue #288) : il lit les
-> écrans, en extrait les champs postés et les compare aux signatures PHP par
-> réflexion. Le défaut est passé trois fois avant d'être outillé — `saveMatch`,
-> `savePlayer`, et les cases à cocher. Donner une valeur par défaut à **tous**
-> les paramètres d'une méthode de save est la règle.
+> **Un champ posté que la méthode ne déclare PAS échoue aussi**, et c'est
+> l'autre moitié du piège : `Error : Unknown named parameter $x`, donc 500
+> également. Le routeur en arguments nommés échoue donc dans les deux sens.
+>
+> C'est ce second mode qui a mis **trois écrans en 500** (#299) : `AdminGrid`
+> ne transmettait pas son `id-field` à `AdminEditModal`, qui postait donc `id`
+> là où la méthode attend `id_date`, `id_match` ou `id_equipe`. **Toute prop de
+> la grille qui décrit ce que le formulaire envoie doit lui être transmise.**
+
+> **Une méthode variadique ne plante pas — elle fait pire.**
+> `Generic::save_with_args(...$args)` collecte tout argument nommé inconnu :
+> aucune erreur, mais `Generic::save()` décide insertion ou mise à jour sur
+> `$inputs[$this->id_name]`. Un identifiant mal nommé y produit donc un
+> **doublon silencieux** à chaque édition, pas un 500.
+
+> **`AdminScreensTest` vérifie ça mécaniquement** (issues #288, #299) : il lit
+> les écrans, en extrait les champs postés et les compare aux signatures PHP par
+> réflexion, **dans les deux sens**. Il vérifie en plus le câblage
+> `AdminGrid` → `AdminEditModal`, parce que la comparaison écran/PHP modélise
+> l'intention et non ce qui part réellement — elle est restée verte pendant que
+> trois écrans étaient en 500. Le défaut est passé quatre fois avant d'être
+> outillé : `saveMatch`, `savePlayer`, les cases à cocher, puis l'identifiant.
+> Donner une valeur par défaut à **tous** les paramètres d'une méthode de save
+> reste la règle.
+>
+> Les champs `type: 'file'` sont exclus de ces contrôles : `FormData` les range
+> dans `$_FILES`, ils ne deviennent jamais des arguments nommés.
 
 > **Champ fichier** : `type: 'file'` envoie l'objet `File` dans le même
 > `FormData` que le reste, donc en multipart, et remplit `$_FILES` côté PHP.
