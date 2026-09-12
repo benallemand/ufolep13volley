@@ -78,8 +78,9 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | U4 | Supprimer un compte de test | Disparaît de la liste |
 | U5 | Vérifier la colonne « Admin » | « oui » pour les administrateurs, « non » sinon |
 | U5a | Sélectionner un compte **non admin** | Le bouton annonce « Donner le rôle administrateur » |
-| U5b | Cliquer, confirmer, laisser la liste se recharger | La colonne « Admin » passe à « oui », le bouton s'inverse, et l'écran Activité journalise « … a obtenu le rôle administrateur » |
-| U5c | Recliquer, confirmer | Retour à « non », journalisé « a perdu » |
+| U5b | Cliquer, confirmer, laisser la liste se recharger | La colonne « Admin » passe à « oui » et l'écran Activité journalise « … a obtenu le rôle administrateur ». Le rechargement **vide la sélection** : le bouton redevient neutre et grisé |
+| U5c | Resélectionner le compte | Le bouton annonce maintenant « Retirer le rôle administrateur » |
+| U5c bis | Cliquer, confirmer | Retour à « non », journalisé « a perdu » |
 | U5d | Sélectionner **son propre compte** et tenter de retirer le rôle | **Refusé** avec un message explicite ; la colonne reste à « oui » |
 | U7 | Sélectionner un compte → « Équipes liées… » | Fenêtre avec les ~279 équipes, **les équipes actuelles déjà cochées** |
 | U8 | Décocher une équipe, enregistrer, rouvrir | L'état est conservé |
