@@ -339,6 +339,13 @@ class UserManager extends Generic
 
     /**
      * Donne ou retire le rôle admin à un compte.
+     *
+     * Un administrateur ne peut pas se retirer le rôle à lui-même (issue #301).
+     * C'est la seule manœuvre de cet écran qui puisse être irréversible : s'il
+     * est le dernier administrateur, plus aucun compte ne peut le lui rendre
+     * depuis l'application, et il faut aller écrire dans la base. Une
+     * rétrogradation légitime se demande à un autre administrateur.
+     *
      * @throws Exception
      */
     public function setAdmin($user_id, $is_admin, $dirtyFields = null): void
@@ -347,6 +354,15 @@ class UserManager extends Generic
             throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
         }
         $is_admin_bool = filter_var($is_admin, FILTER_VALIDATE_BOOLEAN);
+        if (!$is_admin_bool
+            && isset($_SESSION['id_user'])
+            && (int)$_SESSION['id_user'] === (int)$user_id) {
+            throw new Exception(
+                "Vous ne pouvez pas retirer votre propre rôle administrateur : "
+                . "demandez-le à un autre administrateur.",
+                403
+            );
+        }
         $sql = "UPDATE comptes_acces SET is_admin = ? WHERE id = ?";
         $bindings = array(
             array('type' => 'i', 'value' => $is_admin_bool ? 1 : 0),

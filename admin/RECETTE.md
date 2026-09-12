@@ -77,9 +77,18 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | U3 | Sélectionner un compte → « Réinitialiser le mot de passe » | Confirmation demandée, puis message de succès ; **l'email arrive dans Mailpit** (`/mailpit`) |
 | U4 | Supprimer un compte de test | Disparaît de la liste |
 | U5 | Vérifier la colonne « Admin » | « oui » pour les administrateurs, « non » sinon |
+| U5a | Sélectionner un compte **non admin** | Le bouton annonce « Donner le rôle administrateur » |
+| U5b | Cliquer, confirmer, laisser la liste se recharger | La colonne « Admin » passe à « oui », le bouton s'inverse, et l'écran Activité journalise « … a obtenu le rôle administrateur » |
+| U5c | Recliquer, confirmer | Retour à « non », journalisé « a perdu » |
+| U5d | Sélectionner **son propre compte** et tenter de retirer le rôle | **Refusé** avec un message explicite ; la colonne reste à « oui » |
 | U7 | Sélectionner un compte → « Équipes liées… » | Fenêtre avec les ~279 équipes, **les équipes actuelles déjà cochées** |
 | U8 | Décocher une équipe, enregistrer, rouvrir | L'état est conservé |
 | U9 | Sélectionner un compte → « Clubs liés… » | Idem avec les ~45 clubs |
+
+> **U5d se vérifie côté serveur.** Le bouton se laisse cliquer — c'est
+> volontaire : le refus doit venir de l'API, sinon la console d'un navigateur
+> suffirait à le contourner. Sans ce garde-fou, un dernier administrateur qui
+> se rétrograde n'a plus aucun moyen de revenir depuis l'application.
 
 > **U7-U9 changent les droits du compte**, pas seulement un affichage : une
 > ligne `users_teams` fait un responsable d'équipe, une ligne `users_clubs` un

@@ -220,6 +220,48 @@ class RolesTest extends UfolepTestCase
         $this->assertEquals(0, (int)$row[0]['is_admin']);
     }
 
+    /**
+     * Issue #301 — l'écran Utilisateurs rend le rôle admin modifiable, donc
+     * révocable, donc révocable sur soi-même par mégarde. Un dernier
+     * administrateur qui se rétrograde n'a plus aucun moyen de revenir depuis
+     * l'application : il faut aller écrire dans la base.
+     *
+     * Le contrôle doit tenir côté serveur, pas seulement dans le bouton : la
+     * console d'un navigateur suffit à poster la requête à la main.
+     */
+    public function test_setAdmin_refuse_l_auto_retrogradation()
+    {
+        $userId = $this->create_account(true);
+        $this->connect_as_admin();
+        $_SESSION['id_user'] = $userId;
+
+        try {
+            (new UserManager())->setAdmin($userId, 'false');
+            $this->fail("se retirer son propre rôle admin aurait dû être refusé");
+        } catch (Exception $e) {
+            $this->assertStringContainsString('votre propre', $e->getMessage());
+        }
+
+        $row = $this->sql->execute("SELECT is_admin FROM comptes_acces WHERE id = $userId");
+        $this->assertEquals(1, (int)$row[0]['is_admin'], "le rôle ne doit pas avoir été retiré");
+    }
+
+    /**
+     * Le garde-fou ne doit pas déborder : rien n'interdit de se *donner* le
+     * rôle qu'on a déjà, ni d'en priver un autre compte.
+     */
+    public function test_setAdmin_laisse_retirer_le_role_a_un_autre_compte()
+    {
+        $userId = $this->create_account(true);
+        $this->connect_as_admin();
+        $_SESSION['id_user'] = $userId + 1;
+
+        (new UserManager())->setAdmin($userId, 'false');
+
+        $row = $this->sql->execute("SELECT is_admin FROM comptes_acces WHERE id = $userId");
+        $this->assertEquals(0, (int)$row[0]['is_admin']);
+    }
+
     public function test_setAdmin_refused_for_non_admin()
     {
         $userId = $this->create_account(false);
