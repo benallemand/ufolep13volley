@@ -225,6 +225,35 @@ plus que des redirections vers les routes Vue correspondantes ; leurs URLs
 historiques sont conservées parce qu'elles circulent en lien externe et en
 favori. Il ne reste **aucune dépendance à un CDN tiers** en production.
 
+### Mesure d'audience (Matomo auto-hébergé)
+
+Le traceur est **injecté au build** par le plugin `matomoTracking()` de
+`vite.config.js`, pas recopié dans les pages : les entrées HTML n'ont aucun
+partiel commun, et six copies d'un snippet dériveraient à la première
+modification. Les constantes (`MATOMO_URL`, `MATOMO_SITE_ID`, `MATOMO_HOSTS`)
+sont en tête de fichier.
+
+- **L'administration n'est pas mesurée** : les pages sous `admin/` sont exclues
+  par le plugin. L'usage interne n'a rien à faire dans l'audience publique.
+- **Rien n'est envoyé hors production** : le dev local et biggyben servent le
+  même bundle, un test sur `location.hostname` les écarte. Pour vérifier qu'une
+  page est bien instrumentée, `grep stats.ufolep13volley.org dist/**/*.html`.
+- **Le suivi est servi depuis `stat.js` / `stat.php`**, copies de `matomo.js` /
+  `matomo.php` faites côté serveur. Les noms d'origine sont dans toutes les
+  listes de filtrage et coûtent 20 à 30 % des mesures. Ce sont des **copies**,
+  pas des renommages — Matomo continue d'utiliser ses propres fichiers, et ses
+  mises à jour ne cassent pas. **À recopier après chaque montée de version de
+  Matomo**, sinon le traceur servi se fige.
+
+Matomo vit hors du dépôt, dans `~/stats` sur l'hébergement OVH — pas dans
+`~/www`, qui est la copie de travail git : un `git clean` l'effacerait. Son
+archivage est un cron horaire (`~/stats/cron-archive.sh`), l'archivage à la
+volée depuis le navigateur devant rester désactivé sur mutualisé.
+
+`disableCookies` côté page, plus l'anonymisation d'IP côté Matomo, placent la
+mesure dans les conditions d'exemption de consentement de la CNIL : **pas de
+bandeau cookies** à afficher.
+
 ### Versionner et déployer
 
 **Le tag est automatique.** À chaque merge sur `master`, `.github/workflows/auto-tag.yml`
