@@ -260,19 +260,30 @@ Workflow* → **Run workflow** → choisir le tag comme ref.
 à la racine web puisque `main.yml` fait un `git pull` dans `www/`) :
 
 ```
+http.firewall=none
+container.image=stable64
+environment=production
 app.engine=php
 app.engine.version=8.3
 ```
 
 Sans ce fichier, OVH applique la « version PHP globale » de l'hébergement, un
-réglage qui vit dans le manager et peut bouger sans qu'on le voie passer. Le
-versionner garantit que démo et prod tournent sur la même version, et qu'un
-changement de version est une PR relue comme une autre.
+réglage qui vit dans le manager et peut bouger sans qu'on le voie passer.
+C'est lui qui fait tourner `www/` en 8.3 alors que le réglage global du compte
+est resté en 8.1 — le prompt SSH affiche la version effective du répertoire
+courant, ce qui permet de vérifier d'un coup d'œil quelle version s'applique.
 
-> `http.firewall` est volontairement absent : on ne déclare que ce qu'on veut
-> piloter, le reste garde les défauts OVH.
->
+**Le contenu ci-dessus est celui qui existait déjà sur le serveur**, recopié à
+l'identique : le versionner ne devait rien changer au comportement de la prod.
+`http.firewall=none` désactive le pare-feu applicatif HTTP d'OVH — pas un
+défaut, un choix, qu'on peut désormais discuter en PR au lieu de le découvrir
+en SSH.
+
 > Ce fichier n'a d'effet qu'**au déploiement suivant**, qui est manuel (ci-dessus).
+>
+> Il a longtemps vécu sur le serveur sans être versionné, d'où le garde-fou de
+> `main.yml` qui le neutralise avant le `git pull` (voir le commentaire de
+> l'étape *Deploy source code*).
 
 Poser un tag à la main reste possible :
 ```bash
