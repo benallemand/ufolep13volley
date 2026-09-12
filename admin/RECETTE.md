@@ -63,6 +63,7 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G16 | Trier une colonne de **date** (homologation, réception, fermeture…) | Tri **chronologique**, pas alphabétique. Le piège : `02/12/2025` doit venir **après** `15/11/2025`, alors qu'en texte il passait avant (#296) |
 | G17 | Trier une colonne de date dans l'autre sens | L'ordre s'inverse exactement |
 | G18 | Sur un écran à colonne image (joueurs), faire défiler la liste | Les vignettes se chargent **au fur et à mesure** (`loading="lazy"`), pas toutes d'un coup ; une photo absente affiche l'image de repli, jamais une icône cassée (#295) |
+| G19 | Même écran, **console du navigateur ouverte** | **Aucun 404** sur `players_pics_low/`. La vignette est déduite du chemin plein par un `REPLACE` SQL et n'existe pas toujours : le serveur se rabat alors sur la photo pleine. Sans ce repli, la console s'emplissait de 404 |
 
 ## Cas par écran
 

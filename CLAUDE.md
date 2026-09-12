@@ -495,6 +495,15 @@ la prop `rowFilter`.
 > Les colonnes déjà en ISO se trient correctement en texte et ne passent pas par
 > là.
 
+> **`path_photo_low` n'existe pas toujours.** La vignette est **déduite** du
+> chemin plein par un `REPLACE` dans `players_view` ; seules les photos
+> téléversées depuis l'application passent par `generateLowPhoto()`, les autres
+> n'ont pas de vignette sur le disque. `adjust_photo_path_from_results()` se
+> rabat donc sur la photo pleine. Le défaut est ancien mais est resté invisible
+> jusqu'à ce que la grille des joueurs affiche la vignette (#295) : la console
+> s'est alors emplie de 404. Le surcoût du repli est négligeable — ces photos de
+> licence pèsent 12 Ko en moyenne, 24 Ko au maximum.
+
 > **Coût des photos de joueurs** : `players_view` renvoie déjà `path_photo` et
 > `path_photo_low` ; les afficher ne coûte **rien** en données transférées.
 > C'est la **vérification d'existence** côté PHP qui coûtait cher —
