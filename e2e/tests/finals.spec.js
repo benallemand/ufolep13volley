@@ -3,13 +3,35 @@ const { test, expect } = require('@playwright/test');
 // Codes de compétition à tester
 const COMPETITIONS = ['kf', 'cf'];
 
+/**
+ * Matchs de 1/8 réellement créés, par code de compétition.
+ *
+ * `finals_setup.php` ne peut en créer que si le tirage des phases finales
+ * résout des équipes — donc si la base contient des équipes classées dans la
+ * coupe. C'est le cas de la base de développement, ce ne l'est pas du jeu
+ * fictif de la CI, qui ne peuple que les trois championnats (issue #316).
+ *
+ * Les tests qui ont besoin d'un vrai match se sautent alors d'eux-mêmes, sur ce
+ * signal-là et non sur un « si CI » : le jour où le seed portera les coupes,
+ * ils se rallumeront sans qu'on touche à ce fichier.
+ */
+let createdMatches = {};
+
 // Setup global : crée les matchs de test 1/8 avec date et gymnase
 test.beforeAll(async ({ request }) => {
     const res = await request.get('/e2e/helpers/finals_setup.php');
     expect(res.status(), 'finals_setup.php doit répondre 200').toBe(200);
     const body = await res.json();
     expect(body.error, `Erreur setup finals : ${body.error}`).toBeUndefined();
+    createdMatches = body.matches || {};
 });
+
+/** Message de saut, commun aux trois tests qui exigent un match réel. */
+function noDrawReason(code) {
+    return `Pas de match de 1/8 pour ${code.toUpperCase()} : le jeu de données n'a `
+        + "aucune équipe classée dans cette coupe, le tirage ne résout donc personne "
+        + '(voir #316).';
+}
 
 // Teardown global : supprime les matchs de test
 test.afterAll(async ({ request }) => {
@@ -49,6 +71,7 @@ for (const code of COMPETITIONS) {
         });
 
         test('les matchs de 1/8 affichent des équipes réelles (pas des labels de tirage)', async ({ page }) => {
+            test.skip(!createdMatches[code], noDrawReason(code));
             const bracket = page.locator('.brackets-viewer');
             await expect(bracket).toBeVisible({ timeout: 15000 });
 
@@ -67,6 +90,7 @@ for (const code of COMPETITIONS) {
         });
 
         test('les matchs de 1/8 affichent la date directement dans l\'arbre', async ({ page }) => {
+            test.skip(!createdMatches[code], noDrawReason(code));
             const bracket = page.locator('.brackets-viewer');
             await expect(bracket).toBeVisible({ timeout: 15000 });
 
@@ -82,6 +106,7 @@ for (const code of COMPETITIONS) {
         });
 
         test('un clic sur un match de 1/8 ouvre la modal avec date et gymnase', async ({ page }) => {
+            test.skip(!createdMatches[code], noDrawReason(code));
             const bracket = page.locator('.brackets-viewer');
             await expect(bracket).toBeVisible({ timeout: 15000 });
 

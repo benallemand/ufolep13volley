@@ -190,6 +190,38 @@ test.afterAll(async ({ request }) => {
 - `admin_session.php` — ouvre une session administrateur, sans autre effet de bord (issue #265). À préférer à `messages_setup.php` pour les specs d'administration.
 - `calendar_events_setup.php` / `calendar_events_teardown.php` — trois événements de calendrier dans la saison en cours, pour le calendrier de la home alimenté en base (issue #253). Les dates sont posées en novembre de l'année d'ouverture de saison, donc toujours dans les dix mois affichés. Depuis #290 la spec cible la timeline : un ponctuel s'assertionne sur l'attribut `title` de son losange, plus sur du texte.
 
+### Campagne E2E nocturne (issue #316)
+
+`.github/workflows/e2e-nightly.yml` rejoue la campagne toutes les nuits sur
+`master`, contre le **même jeu fictif que PHPUnit** (`.github/ci/schema.sql` +
+`seed.sql`) et non contre la base de dev. Toute la stack tient dans
+`docker-compose.e2e-ci.yml`, reproductible en local :
+
+```bash
+docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml build php
+docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml up -d
+docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml --profile test run --rm playwright
+docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml down -v
+```
+
+> **Le `-p` n'est pas décoratif** : sans lui Compose prend le nom du répertoire,
+> donc le même projet que le mode dev ou home server, et recrée leur service
+> `php` avec cette définition-ci. Aucun port n'est publié ici : les deux stacks
+> cohabitent.
+>
+> **Le `down -v` non plus** : MySQL ne rejoue ses scripts d'initialisation que
+> sur un répertoire de données vide. Sans lui, une modification de `seed.sql`
+> reste sans effet et on teste l'ancien jeu.
+
+> **Le jeu fictif ne peuple que les trois championnats.** Les compétitions de
+> coupe existent mais n'ont ni équipe ni classement, donc ni tirage de phases
+> finales ni poules. Les neuf tests qui en dépendent (`finals.spec.js`,
+> `issue_266.spec.js`, `issue_218.spec.js`) **se sautent d'eux-mêmes** — sur un
+> signal lu dans la donnée (`finals_setup.php` ne rend aucun match,
+> `rank/sort_cup_rank` répond vide, `rank/getDivisions` n'a aucune poule de
+> coupe), jamais sur un « si CI ». Ils se rallument seuls le jour où le seed
+> portera les coupes ; contre la base de dev, ils tournent tous.
+
 ### Installer les dépendances PHP
 ```bash
 c:\php\php.exe composer.phar install
