@@ -126,25 +126,8 @@ class UserManager extends Generic
      */
     public function create_or_update_leader_account($email, $team_id, bool $send_now = true): void
     {
-        $login = strtolower($email);
-        // recherche par email : un email = un compte (issue #247), même si le
-        // compte existant porte un login historique différent de l'email
-        $bindings = array();
-        $bindings[] = array('type' => 's', 'value' => $login);
-        $user = $this->get_one("email = ?", $bindings);
-        if (!$user) {
-            $password = Generic::randomPassword();
-            $this->insert_user($login, $email, $password);
-            $user = $this->get_one("email = ?", $bindings);
-            $this->email->sendMailNewUser($email, $login, $password, $send_now);
-            $this->activity->add("Compte $login créé");
-            error_log("le compte $login n'existe pas, création ok");
-        } else {
-            error_log("le compte $login existe déjà, ok");
-        }
-        if (!$user) {
-            throw new Exception("Impossible de créer le compte $login !");
-        }
+        $user = $this->ensure_account($email, $send_now);
+        $login = $user['login'];
         // link team if not already linked
         if (!$this->is_existing_user_team($user['id'], $team_id)) {
             $this->insert_user_team($user['id'], $team_id);
@@ -155,6 +138,107 @@ class UserManager extends Generic
         } else {
             error_log("le compte $login est déjà lié à l'équipe, ok");
         }
+    }
+
+    /**
+     * Crée si besoin le compte porteur de cet email, et le rattache au club
+     * (issue #326).
+     *
+     * Le pendant club de `create_or_update_leader_account`. C'est la ligne
+     * `users_clubs` qui fait le rôle (issue #245) : le compte d'un club peut
+     * dès lors inscrire ses équipes, créer les comptes de leurs responsables,
+     * et déclarer ses indisponibilités.
+     *
+     * @param bool $send_now voir `create_or_update_leader_account`. Ici le
+     *                       défaut `true` est le bon : la création d'un compte
+     *                       de club se fait à l'unité, depuis l'écran Clubs.
+     * @throws Exception
+     */
+    public function create_or_update_club_account($email, $club_id, bool $send_now = true): void
+    {
+        $user = $this->ensure_account($email, $send_now);
+        $login = $user['login'];
+        $club_id = (int)$club_id;
+        if ($this->is_existing_user_club($user['id'], $club_id)) {
+            return;
+        }
+        $this->insert_user_club($user['id'], $club_id);
+        $this->activity->add("Compte $login responsable du club " . (new Club())->getClubName($club_id));
+    }
+
+    /**
+     * Assure l'existence du compte porteur de cet email, et le renvoie.
+     *
+     * Recherche **par email** : un email = un compte (issue #247), même si le
+     * compte existant porte un login historique différent de l'email. Partagé
+     * par les deux rattachements, équipe et club, pour qu'un référent qui est
+     * déjà responsable d'une équipe ne se voie pas créer un second compte.
+     *
+     * @throws Exception
+     */
+    private function ensure_account($email, bool $send_now): array
+    {
+        $login = strtolower($email);
+        $bindings = array(array('type' => 's', 'value' => $login));
+        $user = $this->get_one("email = ?", $bindings);
+        if (!$user) {
+            $password = Generic::randomPassword();
+            $this->insert_user($login, $email, $password);
+            $user = $this->get_one("email = ?", $bindings);
+            if (!$user) {
+                throw new Exception("Impossible de créer le compte $login !");
+            }
+            $this->email->sendMailNewUser($email, $login, $password, $send_now);
+            $this->activity->add("Compte $login créé");
+            error_log("le compte $login n'existe pas, création ok");
+        } else {
+            error_log("le compte $login existe déjà, ok");
+        }
+        $this->link_person_to_account((int)$user['id'], $email);
+        return $user;
+    }
+
+    /**
+     * Rattache au compte la personne qui porte cet email (issue #326).
+     *
+     * Le compte est la source de vérité pour l'email et le login ; `joueurs`
+     * ne fournit que l'habillage — nom, prénom, téléphone, photo. Le lien est
+     * posé **explicitement** plutôt que redéduit d'une comparaison d'emails à
+     * chaque lecture : `joueurs` porte `email` ET `email2`, les deux tables ont
+     * des collations différentes, et 6 comptes sur 146 correspondent à
+     * plusieurs personnes.
+     *
+     * Ne fait rien, sans erreur, dans les trois cas où le lien serait un pari :
+     * le compte est déjà rattaché, aucune personne ne porte cet email, ou
+     * plusieurs le portent — adresse de famille, adresse générique de club.
+     * Ces cas se règlent à la main, et c'est bien ce qu'on veut.
+     *
+     * @throws Exception
+     */
+    private function link_person_to_account(int $user_id, $email): void
+    {
+        // `uq_joueurs_compte` : un compte, au plus une personne.
+        $deja = $this->sql_manager->execute(
+            "SELECT COUNT(*) AS cnt FROM joueurs WHERE id_compte = ?",
+            array(array('type' => 'i', 'value' => $user_id))
+        );
+        if ((int)$deja[0]['cnt'] > 0) {
+            return;
+        }
+        $candidats = $this->sql_manager->execute(
+            "SELECT id FROM joueurs WHERE email = ? AND id_compte IS NULL",
+            array(array('type' => 's', 'value' => $email))
+        );
+        if (count($candidats) !== 1) {
+            return;
+        }
+        $this->sql_manager->execute(
+            "UPDATE joueurs SET id_compte = ? WHERE id = ?",
+            array(
+                array('type' => 'i', 'value' => $user_id),
+                array('type' => 'i', 'value' => (int)$candidats[0]['id']),
+            )
+        );
     }
 
     /**
@@ -623,6 +707,39 @@ class UserManager extends Generic
         $bindings = array(
             array('type' => 'i', 'value' => $user_id),
             array('type' => 'i', 'value' => $team_id),
+        );
+        $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
+     * Pendant club de `is_existing_user_team` (issue #326).
+     * @throws Exception
+     */
+    private function is_existing_user_club($user_id, $club_id): bool
+    {
+        $sql = "SELECT *
+                FROM users_clubs
+                WHERE user_id = ?
+                  AND club_id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+            array('type' => 'i', 'value' => $club_id),
+        );
+        return count($this->sql_manager->execute($sql, $bindings)) > 0;
+    }
+
+    /**
+     * Pendant club de `insert_user_team` (issue #326).
+     * @throws Exception
+     */
+    private function insert_user_club(int $user_id, $club_id): void
+    {
+        $sql = "INSERT INTO users_clubs SET
+                        user_id = ?,
+                        club_id = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $user_id),
+            array('type' => 'i', 'value' => $club_id),
         );
         $this->sql_manager->execute($sql, $bindings);
     }

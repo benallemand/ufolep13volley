@@ -73,7 +73,9 @@ return array(
         'getCalendarEvents' => 'public',
     ),
     'club' => array(
+        'createClubAccount' => 'admin',
         'deleteClubs' => 'admin',
+        'getAccountCandidates' => 'admin',
         'saveClub' => 'admin',
         'get' => 'public',
         'getMyClubTeams' => 'user',
