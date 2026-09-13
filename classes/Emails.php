@@ -177,17 +177,26 @@ class Emails extends Generic
      * @param $email
      * @param $login
      * @param $password
+     * @param bool $send_now false pour les creations de comptes en lot
+     *                       (`Register::set_up_season`, `create_teams_and_accounts`),
+     *                       ou N envois synchrones depasseraient
+     *                       `max_execution_time` sur le mutualise OVH : ces
+     *                       emails-la restent au cron horaire.
      * @throws Exception
      */
-    public function sendMailNewUser($email, $login, $password): void
+    public function sendMailNewUser($email, $login, $password, bool $send_now = true): void
     {
         $message = file_get_contents(__DIR__ . '/../templates/emails/sendMailNewUser.fr.html');
         $message = str_replace('%login%', self::escapeHtml($login), $message);
         $message = str_replace('%password%', self::escapeHtml($password ?: ''), $message);
-        $this->insert_email(
+        $email_id = $this->insert_email(
             "[UFOLEP13VOLLEY]Identifiants de connexion",
             $message,
             $email);
+        if ($send_now) {
+            // identifiants de connexion : le destinataire attend devant son ecran
+            $this->send_email_now($email_id);
+        }
     }
 
     /**
@@ -206,11 +215,10 @@ class Emails extends Generic
         $message = str_replace('%team_name%', self::escapeHtml(implode(',', $team_names)), $message);
         $message = str_replace('%url%', self::escapeHtml($url), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Réinitialisation de mot de passe",
             $message,
-            $email);
-        $this->send_pending_emails();
+            $email));
     }
 
     /**
@@ -230,10 +238,10 @@ class Emails extends Generic
         $message = str_replace('%reason%', self::escapeHtml($reason), $message);
         $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Demande de report de $teamName pour le match $code_match",
             $message,
-            $to);
+            $to));
     }
 
     /**
@@ -253,10 +261,10 @@ class Emails extends Generic
         $message = str_replace('%report_date%', self::escapeHtml($report_date), $message);
         $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Transmission de date de report de $teamName pour le match $code_match",
             $message,
-            $to);
+            $to));
     }
 
     /**
@@ -276,10 +284,10 @@ class Emails extends Generic
         $message = str_replace('%reason%', self::escapeHtml($reason), $message);
         $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Refus de report de $teamName pour le match $code_match",
             $message,
-            $to);
+            $to));
     }
 
     /**
@@ -297,10 +305,10 @@ class Emails extends Generic
         $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
         $message = str_replace('%team_name%', self::escapeHtml($teamName), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Report accepté par $teamName pour le match $code_match",
             $message,
-            $to);
+            $to));
     }
 
     /**
@@ -317,10 +325,10 @@ class Emails extends Generic
         $message = str_replace('%code_match%', self::escapeHtml($code_match), $message);
         $message = str_replace('%reason%', self::escapeHtml($reason), $message);
 
-        $this->insert_email(
+        $this->send_email_now($this->insert_email(
             "[UFOLEP13VOLLEY]Refus de report par la commission pour le match $code_match",
             $message,
-            $to);
+            $to));
     }
 
     /**
@@ -344,7 +352,7 @@ class Emails extends Generic
         }
         $url_match = 'https://www.ufolep13volley.org/team_sheets.html?id_match=' . $match['id_match'];
         // insert for sending
-        $this->insert_generic_email(
+        $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/team_sheet_to_be_signed.fr.html',
             array(
                 'code_match' => $code_match,
@@ -353,8 +361,7 @@ class Emails extends Generic
             ),
             $to,
             $cc
-        );
-        $this->send_pending_emails();
+        ));
     }
 
     /**
@@ -378,7 +385,7 @@ class Emails extends Generic
         }
         $url_match = 'https://www.ufolep13volley.org/match.html?id_match=' . $match['id_match'];
         // insert for sending
-        $this->insert_generic_email(
+        $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/match_sheet_to_be_signed.fr.html',
             array(
                 'code_match' => $code_match,
@@ -387,8 +394,7 @@ class Emails extends Generic
             ),
             $to,
             $cc
-        );
-        $this->send_pending_emails();
+        ));
     }
 
     /**
@@ -406,15 +412,14 @@ class Emails extends Generic
         }
         $url_match = 'https://www.ufolep13volley.org/match.html?id_match=' . $match['id_match'];
         // insert for sending
-        $this->insert_generic_email(
+        $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/team_sheet_signed.fr.html',
             array(
                 'code_match' => $code_match,
                 'url_match' => $url_match,
             ),
             $to
-        );
-        $this->send_pending_emails();
+        ));
     }
 
     /**
@@ -432,15 +437,14 @@ class Emails extends Generic
         }
         $url_survey = 'https://www.ufolep13volley.org/survey.html?id_match=' . $match['id_match'];
         // insert for sending
-        $this->insert_generic_email(
+        $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/match_sheet_signed.fr.html',
             array(
                 'code_match' => $code_match,
                 'url_survey' => $url_survey,
             ),
             $to
-        );
-        $this->send_pending_emails();
+        ));
     }
 
     /**
@@ -574,11 +578,68 @@ class Emails extends Generic
             }
             $message = str_replace("%$param%", $register[$param], $message);
         }
-        return $this->insert_email(
+        $email_id = $this->insert_email(
             "[UFOLEP13VOLLEY]L'inscription de l'équipe " . $register['new_team_name'] . " a bien été prise en compte",
             $message,
             implode(';', array($register['leader_email'])),
             "contact@ufolep13volley.org");
+        // accuse de reception d'inscription : le responsable vient de valider le
+        // formulaire, il attend la confirmation tout de suite (issue #305)
+        $this->send_email_now($email_id);
+        return $email_id;
+    }
+
+    /**
+     * Envoie tout de suite un email qu'on vient de mettre en file (issue #305).
+     *
+     * Les emails partent normalement au passage du cron horaire
+     * (`cron/hourly.php`). C'est le bon fonctionnement pour les envois groupes,
+     * pas pour ceux qui repondent a une action que l'utilisateur vient de faire :
+     * identifiants de connexion, prise en compte d'une inscription, workflow de
+     * report de match, modification de date. Le destinataire est devant son
+     * ecran, il ne va pas attendre une heure.
+     *
+     * Ne PAS utiliser `send_pending_emails()` pour ca : cette methode vide toute
+     * la file (jusqu'a 50 mails, dont les groupes qu'on voulait laisser au cron)
+     * de facon synchrone dans la requete HTTP, et ecrit sur la sortie standard en
+     * cas d'echec, ce qui pollue le JSON des reponses AJAX.
+     *
+     * L'echec d'envoi ne remonte jamais a l'appelant : une creation de compte ne
+     * doit pas echouer parce que le SMTP est indisponible. La ligne reste alors
+     * en `ERROR` et l'admin la rejoue avec « Relancer les emails en erreur »
+     * (`retry_error_emails`).
+     *
+     * @param int|string $email_id identifiant rendu par `insert_email()`
+     */
+    public function send_email_now(int|string $email_id): void
+    {
+        $email_id = (int)$email_id;
+        if ($email_id <= 0) {
+            return;
+        }
+        try {
+            $emails = $this->get_emails("id = $email_id AND sending_status = 'TO_DO'");
+            if (count($emails) === 0) {
+                return;
+            }
+            $email = $emails[0];
+            $this->sendEmail(
+                $email['subject'],
+                $email['body'],
+                $email['to_email'],
+                $email['cc'],
+                $email['bcc']
+            );
+            $this->set_email_status($email_id, 'DONE');
+            $this->set_sent_date($email_id);
+        } catch (Exception $exception) {
+            error_log("Envoi immediat de l'email $email_id en echec : " . $exception->getMessage());
+            try {
+                $this->set_email_status($email_id, 'ERROR');
+            } catch (Exception $ignored) {
+                error_log("Impossible de marquer l'email $email_id en erreur : " . $ignored->getMessage());
+            }
+        }
     }
 
     /**
@@ -641,9 +702,10 @@ class Emails extends Generic
      * @param $destination_email
      * @param string $cc
      * @param string $bcc
+     * @return int|string identifiant de la ligne inseree, pour `send_email_now()`
      * @throws Exception
      */
-    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = "", string $bcc = ""): void
+    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = "", string $bcc = ""): int|string
     {
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
@@ -656,22 +718,20 @@ class Emails extends Generic
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         switch ($serverName) {
             case 'localhost':
-                $this->insert_email(
+                return $this->insert_email(
                     $subject,
                     $message,
                     implode(";", array("benallemand@gmail.com")),
                     $cc,
                     $bcc
                 );
-                break;
             default:
-                $this->insert_email(
+                return $this->insert_email(
                     $subject,
                     $message,
                     $destination_email,
                     $cc,
                     $bcc);
-                break;
         }
     }
 

@@ -2263,7 +2263,9 @@ class MatchMgr extends Generic
         }
 
         $emails = new Emails();
-        $emails->insert_generic_email(
+        // changement de date : les deux equipes doivent le savoir tout de suite,
+        // pas au prochain passage du cron horaire (issue #305)
+        $emails->send_email_now($emails->insert_generic_email(
             __DIR__ . '/../templates/emails/sendMailDateModification.fr.html',
             array(
                 'code_match' => $match['code_match'],
@@ -2277,6 +2279,6 @@ class MatchMgr extends Generic
             ),
             $email_dom,
             $email_ext
-        );
+        ));
     }
 }

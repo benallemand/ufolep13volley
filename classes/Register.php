@@ -380,7 +380,9 @@ class Register extends Generic
             foreach ($registered_teams as $registered_team) {
                 $id_team = $this->create_or_update_team($registered_team);
                 $team = $this->team->getTeam($id_team);
-                $this->user->create_or_update_leader_account($registered_team['leader_email'], $id_team);
+                // init de saison : autant de comptes crees que d'inscriptions, on
+                // laisse les identifiants au cron horaire (issue #305)
+                $this->user->create_or_update_leader_account($registered_team['leader_email'], $id_team, false);
                 $this->createTimeslots($registered_team, $id_team);
                 $this->add_leader_informations($registered_team, $id_team);
             }
@@ -769,7 +771,9 @@ class Register extends Generic
         $register = $this->get_register($id);
         error_log($register['new_team_name']);
         $id_team = $this->create_or_update_team($register);
-        $this->user->create_or_update_leader_account($register['leader_email'], $id_team);
+        // traitement en lot (l'admin selectionne N inscriptions dans la grille) :
+        // les identifiants restent en file et partent au cron horaire (issue #305)
+        $this->user->create_or_update_leader_account($register['leader_email'], $id_team, false);
     }
 
 }
