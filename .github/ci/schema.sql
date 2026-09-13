@@ -29,7 +29,7 @@ CREATE TABLE `activity` (
   `user_id` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26985 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26737 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +76,7 @@ CREATE TABLE `blacklist_gymnase` (
   PRIMARY KEY (`id`),
   KEY `id_gymnase` (`id_gymnase`),
   CONSTRAINT `blacklist_gymnase_ibfk_1` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `blacklist_team` (
   PRIMARY KEY (`id`),
   KEY `id_team` (`id_team`),
   CONSTRAINT `blacklist_team_ibfk_1` FOREIGN KEY (`id_team`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ CREATE TABLE `calendar_events` (
   `date_end` datetime DEFAULT NULL COMMENT 'NULL = evenement ponctuel',
   PRIMARY KEY (`id`),
   KEY `idx_calendar_events_season` (`season`,`date_start`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `classements` (
   KEY `fk_classements_equipes` (`id_equipe`),
   KEY `id` (`id`),
   CONSTRAINT `fk_classements_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3909 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3730 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,14 +167,9 @@ CREATE TABLE `clubs` (
   `nom` varchar(200) DEFAULT NULL,
   `id` smallint NOT NULL AUTO_INCREMENT,
   `affiliation_number` varchar(200) DEFAULT NULL,
-  `nom_responsable` varchar(200) DEFAULT NULL,
-  `prenom_responsable` varchar(200) DEFAULT NULL,
-  `tel1_responsable` varchar(200) DEFAULT NULL,
-  `tel2_responsable` varchar(200) DEFAULT NULL,
-  `email_responsable` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -234,7 +229,7 @@ CREATE TABLE `competitions` (
   `start_register_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,7 +248,7 @@ CREATE TABLE `comptes_acces` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_email` (`email`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1474 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1337 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -277,7 +272,7 @@ CREATE TABLE `creneau` (
   KEY `fk_creneau_equipes` (`id_equipe`),
   CONSTRAINT `fk_creneau_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_creneau_gymnase` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=2087 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1965 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -293,7 +288,7 @@ CREATE TABLE `dates_limite` (
   `date_limite` varchar(40) NOT NULL,
   PRIMARY KEY (`id_date`),
   KEY `id_date` (`id_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +311,7 @@ CREATE TABLE `emails` (
   `sending_status` enum('TO_DO','DONE','ERROR') NOT NULL DEFAULT 'TO_DO',
   `is_read` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24353 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21920 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -338,7 +333,7 @@ CREATE TABLE `equipes` (
   KEY `fk_equipes_clubs` (`id_club`),
   KEY `id_equipe` (`id_equipe`),
   CONSTRAINT `fk_equipes_clubs` FOREIGN KEY (`id_club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=1032 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=722 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -378,7 +373,7 @@ CREATE TABLE `gymnase` (
   `remarques` text,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -447,7 +442,7 @@ CREATE TABLE `joueurs` (
   UNIQUE KEY `uq_joueurs_compte` (`id_compte`),
   KEY `id` (`id`),
   CONSTRAINT `fk_joueurs_compte` FOREIGN KEY (`id_compte`) REFERENCES `comptes_acces` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4548 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4395 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -481,7 +476,7 @@ CREATE TABLE `live_scores` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_match` (`id_match`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +495,7 @@ CREATE TABLE `match_player` (
   KEY `id_player` (`id_player`),
   CONSTRAINT `match_player_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `match_player_ibfk_2` FOREIGN KEY (`id_player`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=56708 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=56408 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -571,7 +566,7 @@ CREATE TABLE `matches` (
   CONSTRAINT `fk_matches_equipesdom` FOREIGN KEY (`id_equipe_dom`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_equipesext` FOREIGN KEY (`id_equipe_ext`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_gymnasium` FOREIGN KEY (`id_gymnasium`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=81252 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=81122 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -673,7 +668,7 @@ CREATE TABLE `news` (
   `text` text,
   `is_disabled` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -688,7 +683,7 @@ CREATE TABLE `photos` (
   `path_photo` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5195 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=5191 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -803,7 +798,7 @@ CREATE TABLE `register` (
   CONSTRAINT `register_ibfk_3` FOREIGN KEY (`old_team_id`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_4` FOREIGN KEY (`id_court_1`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_5` FOREIGN KEY (`id_court_2`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=531 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=492 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -819,7 +814,7 @@ CREATE TABLE `registry` (
   `registry_value` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=298 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -844,7 +839,7 @@ CREATE TABLE `survey` (
   KEY `id_match` (`id_match`),
   CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19025 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19021 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

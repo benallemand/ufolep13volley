@@ -51,23 +51,14 @@ export default {
             columns: [
                 { key: 'nom', label: 'Nom' },
                 { key: 'affiliation_number', label: "N° d'affiliation" },
-                // Le compte du club passe avant les coordonnées libres : c'est
-                // lui le référent, et c'est son absence qu'on vient corriger.
+                // Le référent du club, c'est son compte — les cinq colonnes de
+                // coordonnées libres ont été retirées par #327.
                 { key: 'comptes', label: 'Compte(s)' },
-                { key: 'nom_responsable', label: 'Responsable' },
-                { key: 'prenom_responsable', label: 'Prénom' },
-                { key: 'tel1_responsable', label: 'Tél. 1' },
-                { key: 'tel2_responsable', label: 'Tél. 2' },
-                { key: 'email_responsable', label: 'Email' },
+                { key: 'referents', label: 'Référent(s)' },
             ],
             fields: [
                 { name: 'nom', label: 'Nom', required: true },
                 { name: 'affiliation_number', label: "Numéro d'affiliation", required: true },
-                { name: 'nom_responsable', label: 'Nom du responsable', required: true },
-                { name: 'prenom_responsable', label: 'Prénom du responsable', required: true },
-                { name: 'tel1_responsable', label: 'Téléphone du responsable', required: true },
-                { name: 'tel2_responsable', label: 'Autre téléphone' },
-                { name: 'email_responsable', label: 'Email du responsable', type: 'email', required: true },
             ],
         };
     },

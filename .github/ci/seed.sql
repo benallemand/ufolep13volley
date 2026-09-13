@@ -37,10 +37,14 @@ INSERT INTO competitions (id, code_competition, libelle, id_compet_maitre, start
 -- Le club 1 porte 2 equipes avec creneaux : c'est celui que ClubLeaderTest
 -- selectionne dynamiquement (HAVING nb >= 2 + JOIN creneau).
 -- ---------------------------------------------------------------------------
-INSERT INTO clubs (id, nom, affiliation_number, nom_responsable, prenom_responsable, tel1_responsable, email_responsable) VALUES
-  (1, 'CI Club Alpha', '013001', 'Martin', 'Alex', '0600000001', 'alpha@example.test'),
-  (2, 'CI Club Beta',  '013002', 'Durand', 'Camille', '0600000002', 'beta@example.test'),
-  (3, 'CI Club Gamma', '013003', 'Petit',  'Dominique', '0600000003', 'gamma@example.test');
+-- Les coordonnees libres du responsable ont ete retirees par l'issue #327 : le
+-- referent d'un club, c'est son compte (`users_clubs`), et la personne qui le
+-- porte (`joueurs.id_compte`). Le club 1 en a un, les clubs 2 et 3 non : c'est
+-- ce qui alimente l'indicateur « Clubs engages sans compte de club ».
+INSERT INTO clubs (id, nom, affiliation_number) VALUES
+  (1, 'CI Club Alpha', '013001'),
+  (2, 'CI Club Beta',  '013002'),
+  (3, 'CI Club Gamma', '013003');
 
 -- id 45 code en dur par MatchManagerTest::create_test_blacklist_gymnase
 -- gps doit etre renseigne : Team::getSql concatene ville/nom/adresse/gps sans
@@ -178,6 +182,11 @@ INSERT INTO users_teams (user_id, team_id) VALUES
 
 INSERT INTO users_clubs (user_id, club_id) VALUES
   (5, 1);
+
+-- La personne derriere le compte du club (issue #326). Son email differe de
+-- celui du compte, exactement le cas pour lequel la FK existe : une jointure
+-- sur l'email ne l'aurait pas trouvee.
+UPDATE joueurs SET id_compte = 5 WHERE id = 1;
 
 -- ---------------------------------------------------------------------------
 -- Matchs : un passe (confirme) et un a venir, pour les tests qui piochent
