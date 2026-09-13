@@ -54,7 +54,7 @@ jobs:
       # qui reste une fois le runner détruit.
       - name: Rapport Playwright
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
