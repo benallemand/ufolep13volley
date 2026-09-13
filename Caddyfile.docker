@@ -6,7 +6,7 @@ biggyben.freeboxos.fr {
 	# Mailpit tourne avec MP_WEBROOT=mailpit : on ne retire donc PAS le préfixe.
 	handle /mailpit* {
 		basic_auth {
-			mailpit $2a$14$eoT7zU/WYoWLo1RuN0yGvuZ7Jfcb3NMGp8zx0vHEBJTEMb9FoYNpO
+			mailpit $2a$14$aykjdAc7mWNfH67CQe.qLeiK5CSk2.0Zk1iNL.Mmt8eUrYV493Euq
 		}
 		reverse_proxy mailpit:8025
 	}
