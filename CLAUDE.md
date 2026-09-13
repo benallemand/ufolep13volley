@@ -341,6 +341,32 @@ class MaClasse extends Generic {
 ### Endpoints AJAX
 Les fichiers dans `ajax/` sont des points d'entrée HTTP. Ils instancient les classes et retournent du JSON.
 
+### File d'emails : cron horaire ou envoi immédiat (issue #305)
+
+Tout email passe d'abord par `Emails::insert_email()`, qui pose une ligne en
+`sending_status = 'TO_DO'` dans la table `emails`. Deux sorties ensuite :
+
+| Sortie | Méthode | Pour quoi |
+|---|---|---|
+| Cron horaire | `cron/hourly.php` → `send_pending_emails()` | envois groupés : récap d'activité, matchs non saisis, prochains matchs, licences manquantes, rappels de signature, inscriptions non payées |
+| Immédiat | `send_email_now($id)` | emails qui répondent à une action que l'utilisateur vient de faire : identifiants de connexion, réinitialisation de mot de passe, prise en compte d'inscription, workflow de report de match, modification de date, fiches et feuilles à signer |
+
+> **Pour un envoi immédiat, appeler `send_email_now($id)`, jamais
+> `send_pending_emails()`.** La seconde vide **toute** la file (jusqu'à 50 mails,
+> dont les groupés qu'on voulait justement laisser au cron) de façon synchrone
+> dans la requête HTTP, et écrit sur la sortie standard en cas d'échec, ce qui
+> pollue le JSON des réponses AJAX.
+
+`send_email_now()` ne remonte jamais d'exception : une création de compte ne doit
+pas échouer parce que le SMTP est indisponible. La ligne reste alors en `ERROR`,
+que l'admin rejoue depuis l'écran Emails (« Relancer les emails en erreur »).
+
+Un appel dans une **boucle** sur N enregistrements garde la mise en file : c'est
+le sens du paramètre `$send_now = false` de `sendMailNewUser()` et de
+`UserManager::create_or_update_leader_account()`, passé par
+`Register::set_up_season()` et `Register::create_teams_and_accounts()`. N envois
+SMTP synchrones dépasseraient `max_execution_time` sur le mutualisé OVH.
+
 ### Cookie de session et corps d'emails (issue #292)
 
 `bootstrap.php` pose `HttpOnly`, `Secure` et `SameSite` sur le cookie de session.

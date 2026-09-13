@@ -116,9 +116,15 @@ class UserManager extends Generic
     /**
      * @param $email
      * @param $team_id
+     * @param bool $send_now false quand l'appel est dans une boucle sur N
+     *                       inscriptions (`Register::set_up_season`,
+     *                       `create_teams_and_accounts`) : les identifiants
+     *                       repartent alors au cron horaire, pour ne pas
+     *                       enchainer N envois SMTP dans une seule requete
+     *                       (issue #305).
      * @throws Exception
      */
-    public function create_or_update_leader_account($email, $team_id): void
+    public function create_or_update_leader_account($email, $team_id, bool $send_now = true): void
     {
         $login = strtolower($email);
         // recherche par email : un email = un compte (issue #247), même si le
@@ -130,7 +136,7 @@ class UserManager extends Generic
             $password = Generic::randomPassword();
             $this->insert_user($login, $email, $password);
             $user = $this->get_one("email = ?", $bindings);
-            $this->email->sendMailNewUser($email, $login, $password);
+            $this->email->sendMailNewUser($email, $login, $password, $send_now);
             $this->activity->add("Compte $login créé");
             error_log("le compte $login n'existe pas, création ok");
         } else {
