@@ -65,6 +65,18 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G18 | Sur un écran à colonne image (joueurs), faire défiler la liste | Les vignettes se chargent **au fur et à mesure** (`loading="lazy"`), pas toutes d'un coup ; une photo absente affiche l'image de repli, jamais une icône cassée (#295) |
 | G19 | Même écran, **console du navigateur ouverte** | **Aucun 404** sur `players_pics_low/`. La vignette est déduite du chemin plein par un `REPLACE` SQL et n'existe pas toujours : le serveur se rabat alors sur la photo pleine. Sans ce repli, la console s'emplissait de 404 |
 | G20 | Sur **dates limites, matchs, équipes, commission**, créer une ligne puis en éditer une | L'enregistrement **aboutit** dans les deux cas. Ces quatre écrans déclarent un identifiant non standard (`id_date`, `id_match`, `id_equipe`, `id_commission`) : le formulaire doit poster CE nom-là. Sinon 500 — ou, pour commission, un **doublon** au lieu d'une mise à jour (#299) |
+| G21 | Sur un écran **sans** tiroir (gymnases), cliquer une ligne | La case se coche, comme avant : le comportement historique du clic ne change que là où un tiroir est déclaré (#308) |
+| G22 | Sur un écran **avec** tiroir (joueurs), cliquer une ligne | Le tiroir s'ouvre à droite ; la ligne **n'est pas cochée** et « Supprimer » reste désactivé — consulter n'est pas sélectionner |
+| G23 | Tiroir ouvert, regarder la barre d'outils | « Export », le bouton de rafraîchissement et les actions de l'écran **restent visibles et cliquables** : le tiroir commence sous la barre d'outils, il ne la recouvre pas |
+| G24 | Tiroir ouvert, cliquer les chevrons ‹ et › | On passe à la ligne précédente / suivante **sans refermer** ; en bout de liste le chevron est désactivé |
+| G25 | Tiroir ouvert sur la dernière ligne d'une page, cliquer › | La grille **change de page** pour suivre, la ligne mise en avant reste visible derrière le tiroir |
+| G26 | Tiroir ouvert, taper une recherche qui masque la ligne | Le tiroir **se referme** : il ne doit pas rester ouvert sur une ligne devenue invisible |
+| G27 | Tiroir ouvert, cliquer « Éditer » dans son pied | La fenêtre d'édition s'ouvre sur **cette** ligne |
+| G28 | Sur l'écran joueurs, cocher une case sans cliquer la ligne | La sélection se fait, le tiroir **ne s'ouvre pas** |
+| G29 | Réduire la fenêtre en dessous de 1024 px, cliquer une ligne | Le tiroir devient une **feuille ancrée en bas**, la grille reste lisible derrière |
+| G30 | Tiroir ouvert, naviguer au **clavier** (Tab jusqu'à une ligne, Entrée) | La ligne s'ouvre : les lignes cliquables sont atteignables au clavier |
+| G31 | Mettre « par page » sur **tout**, puis ouvrir le tiroir | Ses **boutons d'action restent à l'écran**, sans avoir à descendre au bas des 3 650 lignes. Le panneau colle au défilement et sa hauteur est plafonnée à celle de la fenêtre ; il s'étirait auparavant sur toute la hauteur du tableau |
+| G32 | Même situation, faire défiler la page | Le tiroir **suit**, et ne peut jamais remonter au-dessus de la barre d'outils |
 
 ## Cas par écran
 
@@ -137,6 +149,10 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | J10 | Sélectionner des joueurs → « Associer à un club » | Fenêtre de sélection avec recherche ; après validation, la colonne Club est à jour |
 | J11 | Idem → « Associer à une équipe » | Le joueur est rattaché à l'équipe, et au club de l'équipe si besoin |
 | J12 | Cliquer « Importer un fichier de licences », choisir le PDF UFOLEP | Les joueurs existants sont mis à jour, les nouveaux créés. **Compter jusqu'à une minute** |
+| J13 | Regarder les colonnes | Six colonnes depuis #308 : photo, Nom, Prénom, Sexe, Homologation, Club, Équipes actives. N° de licence, Équipes inactives et Valide sont passés dans le tiroir |
+| J14 | Cliquer une ligne | Le tiroir montre la licence (numéro, homologation, département), le contact (email, téléphone, email 2, téléphone 2) et les équipes actives **et** inactives |
+| J15 | Ouvrir le tiroir sur un joueur **sans licence** | Le badge est rouge, « Licence non validée » ; les champs vides affichent « — » et non une case blanche |
+| J16 | Ouvrir le tiroir sur un joueur **sans photo** | L'image de repli s'affiche, jamais une icône cassée — même repli que la vignette de la grille (#295) |
 
 > Non repris du lot 0 : **import d'un fichier de licences**, **association en
 > masse à un club / une équipe**, **photo du joueur**. Restent dans l'ancienne
