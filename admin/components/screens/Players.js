@@ -23,6 +23,7 @@ export default {
         entity-label="joueur"
         :columns="columns"
         :fields="fields"
+        :detail="detail"
         :row-filter="rowFilter"
         fetch-url="/rest/action.php/player/getPlayers"
         save-url="/rest/action.php/player/savePlayer"
@@ -118,6 +119,12 @@ export default {
     computed: {
         // Calculées et non déclarées dans `data()` : leurs `format` appellent
         // une méthode du composant.
+        /**
+         * Six colonnes depuis l'issue #308, contre onze auparavant : numéro de
+         * licence, équipes inactives et validité sont passés dans le tiroir de
+         * détail, qui les montre au clic sur la ligne. Ce qui reste sert à
+         * retrouver un joueur ; le reste sert à le consulter.
+         */
         columns() {
             return [
                 // La vignette utilise `path_photo_low`, déjà renvoyé par
@@ -131,15 +138,55 @@ export default {
                 { key: 'nom', label: 'Nom' },
                 { key: 'prenom', label: 'Prénom' },
                 { key: 'sexe', label: 'Sexe' },
-                { key: 'num_licence', label: 'N° licence' },
                 { key: 'date_homologation', label: 'Homologation' },
                 { key: 'club', label: 'Club' },
-                // Ces deux colonnes arrivent agrégées en HTML (`<br/>`) : on
-                // les aplatit, la grille affiche du texte.
+                // Cette colonne arrive agrégée en HTML (`<br/>`) : on l'aplatit,
+                // la grille affiche du texte.
                 { key: 'active_teams_list', label: 'Équipes actives', format: (v) => this.teamEntries(v).join(' · ') },
-                { key: 'inactive_teams_list', label: 'Équipes inactives', format: (v) => this.teamEntries(v).join(' · ') },
-                { key: 'est_actif', label: 'Valide', format: (v) => (Number(v) ? 'oui' : 'non') },
             ];
+        },
+        /**
+         * Tiroir de détail (issue #308). Il porte les colonnes retirées de la
+         * grille, et surtout les champs que la grille n'a jamais montrés :
+         * département d'affiliation, téléphones et emails. Tous sont déjà dans
+         * la réponse de `getPlayers` — aucun appel supplémentaire.
+         */
+        detail() {
+            return {
+                title: (row) => ((row.prenom || '') + ' ' + (row.nom || '')).trim(),
+                subtitle: (row) => row.club || '',
+                image: (row) => row.path_photo_low || row.path_photo || '',
+                badge: (row) => (Number(row.est_actif)
+                    ? { label: 'Licence validée', tone: 'success' }
+                    : { label: 'Licence non validée', tone: 'error' }),
+                sections: [
+                    {
+                        title: 'Licence',
+                        fields: [
+                            { key: 'num_licence', label: 'N° de licence' },
+                            { key: 'date_homologation', label: 'Homologation' },
+                            { key: 'departement_affiliation', label: 'Département' },
+                            { key: 'sexe', label: 'Sexe', format: (v) => (v === 'F' ? 'Féminin' : 'Masculin') },
+                        ],
+                    },
+                    {
+                        title: 'Contact',
+                        fields: [
+                            { key: 'email', label: 'Email' },
+                            { key: 'telephone', label: 'Téléphone' },
+                            { key: 'email2', label: 'Email 2' },
+                            { key: 'telephone2', label: 'Téléphone 2' },
+                        ],
+                    },
+                    {
+                        title: 'Équipes',
+                        fields: [
+                            { key: 'active_teams_list', label: 'Actives', format: (v) => this.teamEntries(v).join(' · ') },
+                            { key: 'inactive_teams_list', label: 'Inactives', format: (v) => this.teamEntries(v).join(' · ') },
+                        ],
+                    },
+                ],
+            };
         },
         fields() {
             return [

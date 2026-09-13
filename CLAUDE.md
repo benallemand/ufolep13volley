@@ -522,6 +522,7 @@ Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dan
 | `layout/AdminLayout.js` | shell, routeur, garde ; `MENU` liste les écrans migrés |
 | `layout/AdminSidebar.js` | navigation repliable (utilisable sur mobile) |
 | `grid/AdminGrid.js` | grille générique : recherche multi-termes, tri, pagination, sélection, suppression en masse, export CSV |
+| `grid/AdminDetailDrawer.js` | tiroir de détail ouvert au clic sur une ligne (issue #308) |
 | `grid/AdminEditModal.js` | formulaire modal générique |
 | `screens/` | un composant par écran |
 
@@ -577,6 +578,27 @@ la prop `rowFilter`.
 > `Players::save()` appelle `savePhoto()` en fin de course : la photo part avec
 > le formulaire, sans second appel. Rien de choisi = clé absente, pour ne pas
 > écraser l'existant.
+
+> **Tiroir de détail** (issue #308) : la prop `detail` de `AdminGrid` ouvre
+> `grid/AdminDetailDrawer.js` au clic sur une ligne. `:detail="true"` suffit — les
+> sections sont alors déduites des colonnes ; un objet
+> `{ title, subtitle?, badge?, image?, sections }` permet de montrer les champs que
+> la grille n'affiche pas (voir `screens/Players.js`).
+>
+> **Le clic sur la ligne change de sens là où un tiroir est déclaré** : il l'ouvre
+> au lieu de cocher la case, et la sélection passe alors par la case elle-même —
+> sinon consulter une ligne l'aurait sélectionnée, et la barre d'outils aurait agi
+> sur des lignes qu'on n'a fait que regarder. Les écrans sans `detail` gardent le
+> comportement historique.
+>
+> Le tiroir est ancré sur la **zone de tableau**, pas sur l'écran entier : ancré
+> plus haut, il recouvrirait `Export`, le bouton de rafraîchissement et les actions
+> de l'écran, qui sont alignés à droite. Il flotte par-dessus la table plutôt que de
+> la pousser — rétrécir une grille de onze colonnes la ferait défiler
+> horizontalement. Sous `lg`, il devient une feuille ancrée en bas.
+>
+> Il se **referme quand la ligne sort du filtre**, comme la sélection se vide : un
+> tiroir ouvert sur une ligne invisible est un mensonge.
 
 > **Fenêtre de sélection** : `grid/AdminPickerModal.js` couvre les actions
 > « choisir dans une liste puis confirmer » — associer des joueurs à un club ou

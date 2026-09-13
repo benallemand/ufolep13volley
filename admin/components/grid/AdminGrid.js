@@ -29,6 +29,7 @@ import { onError, onSuccess } from '../../../toaster.js';
 export default {
     components: {
         'admin-edit-modal': defineAsyncComponent(() => import('./AdminEditModal.js')),
+        'admin-detail-drawer': defineAsyncComponent(() => import('./AdminDetailDrawer.js')),
     },
     props: {
         title: { type: String, required: true },
@@ -65,6 +66,18 @@ export default {
          * l'ecran ecoute.
          */
         rowClickable: { type: Boolean, default: false },
+        /**
+         * Tiroir de detail ouvert au clic sur une ligne (issue #308).
+         *
+         *   `true`   — sections deduites des colonnes de la grille
+         *   objet    — { title(row), subtitle?, badge?, image?, sections? }
+         *
+         * Quand il est actif, le clic sur la ligne OUVRE LE TIROIR au lieu de
+         * cocher la case : la selection passe alors par la case elle-meme. Les
+         * ecrans qui ne declarent pas de tiroir gardent le comportement
+         * historique, clic = selection.
+         */
+        detail: { type: [Boolean, Object], default: false },
     },
     emits: ['row-click'],
     template: `
@@ -126,7 +139,12 @@ export default {
           <span>Aucune donnée.</span>
         </div>
 
-        <div v-else class="overflow-x-auto">
+        <!-- Conteneur de reference du tiroir : il est ancre sur la ZONE DE
+             TABLEAU, pas sur l'ecran entier, pour ne pas recouvrir la barre
+             d'outils dont les derniers boutons sont alignes a droite. La
+             hauteur minimale evite un tiroir riquiqui sur une grille courte. -->
+        <div v-else class="relative lg:min-h-[32rem]">
+        <div class="overflow-x-auto">
           <table class="table table-xs md:table-sm table-pin-rows">
             <thead>
             <tr>
@@ -151,10 +169,18 @@ export default {
                 :key="row[idField] ?? i"
                 :class="[
                   canSelect && isSelected(row) ? 'bg-primary/10' : '',
-                  rowClickable ? 'cursor-pointer hover' : '',
+                  detailConfig && isDetailed(row) ? 'bg-primary/10' : '',
+                  rowClickable || detailConfig ? 'cursor-pointer hover' : '',
                 ]"
-                @click="onRowClick(row)">
-              <td v-if="canSelect"><input type="checkbox" class="checkbox checkbox-xs" :checked="isSelected(row)" @click.stop="toggle(row)"/></td>
+                :role="detailConfig ? 'button' : null"
+                :tabindex="detailConfig ? 0 : null"
+                @click="onRowClick(row)"
+                @keydown.enter.prevent="onRowClick(row)"
+                @keydown.space.prevent="onRowClick(row)">
+              <!-- Avec un tiroir, le clic sur la ligne l'ouvre : la case doit
+                   donc rester cochable seule, cellule comprise — viser une
+                   case de 16 px a la souris est deja assez ingrat. -->
+              <td v-if="canSelect" @click.stop="toggle(row)"><input type="checkbox" class="checkbox checkbox-xs" :checked="isSelected(row)" @click.stop="toggle(row)"/></td>
               <td v-for="col in columns"
                   :key="col.key"
                   :class="col.align === 'right' ? 'text-right' : ''">
@@ -186,6 +212,22 @@ export default {
             </tr>
             </tbody>
           </table>
+        </div>
+
+          <admin-detail-drawer v-if="detailRow"
+                               :detail="detailConfig"
+                               :row="detailRow"
+                               :has-prev="hasPrevDetail"
+                               :has-next="hasNextDetail"
+                               :can-edit="Boolean(saveUrl)"
+                               @close="detailId = null"
+                               @prev="stepDetail(-1)"
+                               @next="stepDetail(1)"
+                               @edit="openEditFromDetail">
+            <template #detail-actions="{ row }">
+              <slot name="detail-actions" :row="row" :reload="fetchRows"></slot>
+            </template>
+          </admin-detail-drawer>
         </div>
 
         <div v-if="pageCount > 1" class="flex justify-center items-center gap-2 mt-4">
@@ -220,6 +262,12 @@ export default {
             pageSize: 25,
             selection: [],
             editing: null,
+            /**
+             * Identifiant de la ligne ouverte dans le tiroir, et non la ligne
+             * elle-meme : apres un rechargement la ligne est un autre objet,
+             * et le tiroir doit suivre la donnee fraiche, pas garder une copie.
+             */
+            detailId: null,
         };
     },
     computed: {
@@ -278,6 +326,48 @@ export default {
         allPageSelected() {
             return this.pageRows.length > 0 && this.pageRows.every((r) => this.isSelected(r));
         },
+
+        /**
+         * Normalise la prop `detail`. `detail` a `true` suffit a avoir un
+         * tiroir utilisable : on reprend les colonnes de la grille, libelles
+         * et `format` compris, en ecartant celles qui n'ont rien a dire hors
+         * du tableau (vignette, colonne d'icones, colonne sans libelle).
+         */
+        detailConfig() {
+            if (!this.detail) {
+                return null;
+            }
+            const config = this.detail === true ? {} : { ...this.detail };
+            if (!config.sections) {
+                const fields = this.columns
+                    .filter((c) => c.label && !c.image && !c.links)
+                    .map((c) => ({ key: c.key, label: c.label, format: c.format }));
+                config.sections = [{ title: '', fields }];
+            }
+            if (!config.title) {
+                const first = this.columns.find((c) => c.label && !c.image && !c.links);
+                config.title = (row) => (first ? String(row[first.key] ?? '') : '');
+            }
+            return config;
+        },
+        /** La ligne ouverte, relue dans les lignes visibles a chaque rendu. */
+        detailRow() {
+            if (!this.detailConfig || this.detailId === null) {
+                return null;
+            }
+            return this.filteredRows.find((r) => r[this.idField] === this.detailId) || null;
+        },
+        detailIndex() {
+            return this.detailRow
+                ? this.filteredRows.findIndex((r) => r[this.idField] === this.detailId)
+                : -1;
+        },
+        hasPrevDetail() {
+            return this.detailIndex > 0;
+        },
+        hasNextDetail() {
+            return this.detailIndex !== -1 && this.detailIndex < this.filteredRows.length - 1;
+        },
     },
     watch: {
         // Filtrer VIDE la selection : sinon une action s'appliquerait a des
@@ -285,8 +375,11 @@ export default {
         // recherche avait masque la ligne selectionnee, et le bouton agissait
         // toujours sur elle. La pagination, elle, conserve la selection : la
         // suppression en masse sur plusieurs pages est un usage legitime.
-        search() { this.page = 1; this.selection = []; },
-        rowFilter() { this.page = 1; this.selection = []; },
+        // Le tiroir se referme avec la selection : il porte le nom d'une ligne
+        // qui vient peut-etre d'etre filtree hors de la liste, et un tiroir
+        // ouvert sur une ligne invisible est un mensonge.
+        search() { this.page = 1; this.selection = []; this.detailId = null; },
+        rowFilter() { this.page = 1; this.selection = []; this.detailId = null; },
         pageSize() { this.page = 1; },
         // Un écran peut faire varier son URL (fenêtre de chargement des
         // emails, filtre serveur…) : on recharge alors au lieu d'afficher
@@ -310,10 +403,40 @@ export default {
          * pour ouvrir le message, sans colonne de selection.
          */
         onRowClick(row) {
-            if (this.canSelect) {
+            // Avec un tiroir, le clic l'ouvre ; sans, il coche la case comme
+            // il l'a toujours fait. Les deux a la fois selectionnerait une
+            // ligne a chaque consultation, et la barre d'outils agirait sur
+            // des lignes qu'on n'a fait que regarder.
+            if (this.detailConfig) {
+                this.detailId = row[this.idField];
+            } else if (this.canSelect) {
                 this.toggle(row);
             }
             this.$emit('row-click', row);
+        },
+        isDetailed(row) {
+            return this.detailId !== null && row[this.idField] === this.detailId;
+        },
+        /**
+         * Ligne precedente / suivante dans les lignes VISIBLES, filtre et tri
+         * compris. On suit la pagination pour que la ligne mise en avant reste
+         * a l'ecran derriere le tiroir.
+         */
+        stepDetail(delta) {
+            // L'index est releve AVANT d'ouvrir la ligne suivante : une fois
+            // `detailId` change, `detailIndex` designe deja la nouvelle ligne.
+            const index = this.detailIndex + delta;
+            const target = this.filteredRows[index];
+            if (!target) {
+                return;
+            }
+            this.detailId = target[this.idField];
+            this.page = Math.floor(index / this.pageSize) + 1;
+        },
+        openEditFromDetail() {
+            if (this.detailRow) {
+                this.editing = { ...this.detailRow };
+            }
         },
         toggle(row) {
             const id = row[this.idField];
