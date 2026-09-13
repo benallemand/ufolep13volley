@@ -53,7 +53,8 @@ export default {
              role="dialog"
              aria-modal="false"
              :aria-label="title">
-      <div class="max-h-[85vh] rounded-t-2xl border-t border-base-300
+      <div ref="panel"
+           class="max-h-[85vh] rounded-t-2xl border-t border-base-300
                   lg:sticky lg:top-2 lg:max-h-[calc(100vh-1rem)] lg:rounded-none lg:rounded-l-box
                   lg:border-t-0 lg:border-l
                   bg-base-100 shadow-2xl flex flex-col overflow-hidden">
@@ -119,6 +120,21 @@ export default {
       </div>
       </aside>
     `,
+    mounted() {
+        /**
+         * Le panneau colle au defilement, mais sa boite commence SOUS la barre
+         * d'outils : au sommet de la page il demarre donc ~140 px plus bas,
+         * alors que sa hauteur est plafonnee a celle de la fenetre entiere. Sur
+         * un ecran court, son pied — ses boutons d'action — tombe sous la ligne
+         * de flottaison tant qu'on n'a pas defile.
+         *
+         * `block: 'nearest'` ne defile que du strict necessaire, et ne fait rien
+         * quand le panneau tient deja a l'ecran. Le defaut ne se voyait pas sur
+         * une fenetre haute : c'est le test Playwright, en 1280x720, qui l'a
+         * sorti.
+         */
+        this.$refs.panel?.scrollIntoView({ block: 'nearest' });
+    },
     computed: {
         title() {
             return this.call(this.detail.title, '');
