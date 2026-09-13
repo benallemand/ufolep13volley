@@ -36,13 +36,27 @@ export default {
     },
     emits: ['close', 'prev', 'next', 'edit'],
     template: `
-      <aside class="fixed inset-x-0 bottom-0 top-auto z-30 max-h-[85vh] rounded-t-2xl
-                    lg:absolute lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:max-h-none lg:w-[420px] lg:rounded-none
-                    bg-base-100 border-t lg:border-t-0 lg:border-l border-base-300
-                    shadow-2xl flex flex-col"
+      <!--
+        Deux boites : celle-ci se contente d'occuper la colonne de droite sur
+        toute la hauteur du tableau, et le panneau qu'elle contient COLLE au
+        defilement.
+
+        Sans ca, le panneau s'etirait jusqu'en bas du tableau : avec « tout »
+        par page et 3 650 lignes, ses boutons d'action se retrouvaient a des
+        milliers de pixels du regard. Un panneau simplement fixe dans la fenetre
+        reglerait le probleme mais recouvrirait la barre d'outils en haut de
+        page ; colle dans une boite qui commence sous elle, il ne peut pas
+        remonter plus haut qu'elle.
+      -->
+      <aside class="fixed inset-x-0 bottom-0 top-auto z-30
+                    lg:absolute lg:inset-x-auto lg:inset-y-0 lg:right-0 lg:w-[420px]"
              role="dialog"
              aria-modal="false"
              :aria-label="title">
+      <div class="max-h-[85vh] rounded-t-2xl border-t border-base-300
+                  lg:sticky lg:top-2 lg:max-h-[calc(100vh-1rem)] lg:rounded-none lg:rounded-l-box
+                  lg:border-t-0 lg:border-l
+                  bg-base-100 shadow-2xl flex flex-col overflow-hidden">
 
         <!-- Poignee : repere de feuille sur mobile, inutile sur desktop -->
         <div class="lg:hidden flex justify-center pt-2.5 pb-1.5">
@@ -102,6 +116,7 @@ export default {
           <!-- Actions propres a l'ecran : la grille ne les connait pas. -->
           <slot name="detail-actions" :row="row"></slot>
         </div>
+      </div>
       </aside>
     `,
     computed: {

@@ -75,6 +75,8 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G28 | Sur l'écran joueurs, cocher une case sans cliquer la ligne | La sélection se fait, le tiroir **ne s'ouvre pas** |
 | G29 | Réduire la fenêtre en dessous de 1024 px, cliquer une ligne | Le tiroir devient une **feuille ancrée en bas**, la grille reste lisible derrière |
 | G30 | Tiroir ouvert, naviguer au **clavier** (Tab jusqu'à une ligne, Entrée) | La ligne s'ouvre : les lignes cliquables sont atteignables au clavier |
+| G31 | Mettre « par page » sur **tout**, puis ouvrir le tiroir | Ses **boutons d'action restent à l'écran**, sans avoir à descendre au bas des 3 650 lignes. Le panneau colle au défilement et sa hauteur est plafonnée à celle de la fenêtre ; il s'étirait auparavant sur toute la hauteur du tableau |
+| G32 | Même situation, faire défiler la page | Le tiroir **suit**, et ne peut jamais remonter au-dessus de la barre d'outils |
 
 ## Cas par écran
 

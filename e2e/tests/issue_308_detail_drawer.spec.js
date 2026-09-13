@@ -89,6 +89,31 @@ test.describe('Issue #308 — tiroir de détail', () => {
         await expect(drawer).toHaveCount(0);
     });
 
+    test('sur une longue page, les boutons du tiroir restent à l\'écran', async ({ page, request, baseURL }) => {
+        await loginAsAdmin(page, request, baseURL);
+        await page.goto('/admin/index.html#/players');
+
+        const rows = page.locator('tbody tr');
+        await expect(rows.first()).toBeVisible({ timeout: 60000 });
+
+        // 100 lignes suffisent à rendre le tableau bien plus haut que la
+        // fenêtre, ce qui est le cas signalé : le tiroir s'étirait jusqu'en bas
+        // du tableau et son pied partait hors de portée.
+        await page.locator('label:has-text("par page") select').selectOption('100');
+        await expect.poll(async () => rows.count()).toBe(100);
+
+        await rows.nth(0).click();
+        const drawer = page.getByRole('dialog');
+        await expect(drawer).toBeVisible({ timeout: 15000 });
+
+        const edit = drawer.getByRole('button', { name: /Éditer/ });
+        await expect(edit).toBeInViewport();
+
+        // Et il y reste une fois qu'on a fait défiler la page.
+        await page.mouse.wheel(0, 3000);
+        await expect(edit).toBeInViewport();
+    });
+
     test('la case à cocher sélectionne sans ouvrir le tiroir', async ({ page, request, baseURL }) => {
         await loginAsAdmin(page, request, baseURL);
         await page.goto('/admin/index.html#/players');
