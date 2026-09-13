@@ -815,6 +815,51 @@ compétition.
 > été **supprimé** avec ce lot : il reconstituait a posteriori, par recoupement
 > de chaînes du journal d'activité, ce que le verrou empêche à la source.
 
+### Membre non jouant d'une équipe (issue #325)
+
+`joueur_equipe.est_jouant` (BIT, défaut `b'1'`) dit si l'appartenance est
+jouante. Le cas type : un joueur du championnat masculin qui est aussi
+**responsable d'une équipe féminine**. Il doit être rattaché à l'équipe pour la
+piloter, mais il n'en est pas un membre jouant.
+
+> **Le drapeau porte sur l'appartenance, pas sur la personne.** Un flag sur
+> `joueurs` ne saurait pas dire « jouant en masculin, non jouant en féminin ».
+> Le **référent de club qui n'est pas joueur** est un autre besoin, et il ne
+> demande aucune colonne : une ligne `joueurs` avec `id_club` et **aucune**
+> ligne `joueur_equipe` suffit — tous les contrôles « joueur » partent de
+> `joueur_equipe` et lui sont donc déjà aveugles (voir #326).
+
+Ce qui **filtre** sur `est_jouant + 0 > 0` :
+
+| Où | Pourquoi |
+|----|----------|
+| `sql/no_licence.sql`, `sql/not_valid_players.sql` | un responsable non jouant n'a pas besoin de licence à ce titre |
+| `sql/teams_incomplete.sql` (jointures `j_masc` / `j_fem` **seules**) | sans ça, la règle `garcons > 0` déclarait une équipe féminine incomplète à vie |
+| `sql/players_in_many_teams.sql` | une appartenance non jouante ne fait pas jouer plus |
+| `MatchMgr::getNotMatchPlayers`, `Players::getPlayers($query, $id_match)` | **la garantie fonctionnelle** : sinon on peut coucher un non-licencié sur une feuille de match |
+| `Players::getPlayersPdf` (fiche d'équipe), `getLivePlayersFromTeam` | la fiche liste les licenciés présentables |
+
+Ce qui ne filtre **surtout pas** : toutes les résolutions `is_leader` /
+`is_vice_leader` — `Team.php`, `teams_view`, `matchs_view`,
+`sql/team_recaps.sql`, `sql/no_leader_team.sql`,
+`sql/team_leaders_without_email.sql`. Un responsable non jouant reste le
+responsable à qui l'on écrit ; c'est toute la raison d'être du drapeau.
+`sql/no_photo.sql` et `match_players_count_view` partent de `match_player`, donc
+d'une feuille de match : déjà protégés.
+
+- **Un capitaine joue** : `set_captain` refuse un membre non jouant, et
+  `set_playing` refuse de rendre non jouant le capitaine en poste.
+- **Le réglage** passe par `player/set_playing` (bouton « joue dans l'équipe »
+  de l'écran effectif du responsable) et par la case « Ne joue pas dans cette
+  équipe » du sélecteur « Nommer responsable » de l'écran Équipes.
+- `set_leader($ids, $id_team, $est_jouant = null)` : **`null` veut dire « ne
+  touche pas »**. Les appels qui ne s'en préoccupent pas ne doivent pas
+  rebasculer en jouant un membre déclaré non jouant.
+- `players_view.non_playing_teams_list` liste les équipes où la personne figure
+  sans y jouer. `active_teams_list`, `inactive_teams_list` et `teams_list` ne
+  changent pas — une appartenance reste une appartenance, et le filtre
+  « engagé » comme le `%teams_list%` des emails gardent leur sens.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

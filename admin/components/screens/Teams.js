@@ -43,6 +43,7 @@ export default {
                           :help="picker.help"
                           :items="picker.items"
                           confirm-label="Nommer responsable"
+                          option-label="Ne joue pas dans cette équipe"
                           :is-busy="isBusy"
                           @confirm="setLeader"
                           @close="picker = null"></admin-picker-modal>
@@ -118,10 +119,19 @@ export default {
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isBusy = false; });
         },
-        setLeader(values) {
+        /**
+         * @param values      identifiants choisis (un seul ici)
+         * @param doesNotPlay case « Ne joue pas dans cette équipe » (issue
+         *                    #325) : le responsable d'une équipe féminine peut
+         *                    être un homme, qui la pilote sans y jouer. Le
+         *                    drapeau part à chaque fois, y compris décoché,
+         *                    pour que décocher remette un membre en jouant.
+         */
+        setLeader(values, doesNotPlay) {
             const formData = new FormData();
             formData.append('ids', values[0]);
             formData.append('id_team', this.picker.teamId);
+            formData.append('est_jouant', doesNotPlay ? 0 : 1);
             this.isBusy = true;
             axios.post('/rest/action.php/player/set_leader', formData)
                 .then((response) => {

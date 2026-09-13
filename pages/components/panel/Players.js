@@ -144,6 +144,20 @@ export default {
                         @click="onMedalClick(player, 'is_captain')">
                       <i class="fas fa-medal"/>capitaine
                     </button>
+                    <!-- Membre non jouant (issue #325) : rattache a l'equipe
+                         pour la piloter, sans y jouer. Il ne compte pas dans
+                         l'effectif, n'a pas besoin de licence a ce titre, et
+                         n'apparait ni sur la fiche d'equipe ni parmi les
+                         joueurs presentables en match. -->
+                    <button
+                        :class="'btn btn-xs ' + (Number(player.est_jouant) === 1 ? 'btn-primary':'btn-outline line-through')"
+                        :title="Number(player.est_jouant) === 1 ? 'Ce joueur joue dans cette équipe' : 'Membre non jouant : hors effectif, hors feuille de match'"
+                        @click="onPlayingClick(player)">
+                      <i class="fas fa-volleyball"/>joue dans l'équipe
+                    </button>
+                  </div>
+                  <div v-if="Number(player.est_jouant) !== 1" class="text-warning text-sm">
+                    <i class="fas fa-circle-info mr-2"/>membre non jouant : hors effectif, hors feuille de match
                   </div>
                   <div v-if="player.email !== null"><i class="fas fa-envelope mr-2"/>{{ player.email }}</div>
                   <div v-if="player.email2 !== null"><i class="fas fa-envelope mr-2"/>{{ player.email2 }}</div>
@@ -308,6 +322,26 @@ export default {
                 })
                 .catch((error) => {
                     onError(this, error)
+                });
+        },
+        /**
+         * Bascule « joue / ne joue pas dans cette équipe » (issue #325).
+         *
+         * Le serveur refuse de rendre non jouant le capitaine de l'équipe —
+         * un capitaine joue. Le message d'erreur remonte tel quel.
+         */
+        onPlayingClick(player) {
+            const formData = new FormData();
+            formData.append('ids[]', player.id);
+            formData.append('est_jouant', Number(player.est_jouant) === 1 ? 0 : 1);
+            axios
+                .post('/rest/action.php/player/set_playing', formData)
+                .then((response) => {
+                    onSuccess(this, response);
+                    this.fetchTeamPlayers();
+                })
+                .catch((error) => {
+                    onError(this, error);
                 });
         },
         onRemovePlayerFromTeamClick(player) {

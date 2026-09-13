@@ -897,6 +897,12 @@ class MatchMgr extends Generic
                          JOIN equipes e ON e.id_equipe = je.id_equipe
                 WHERE m.id_match = $id_match
                   AND je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
+                  -- Un membre non jouant (issue #325) est rattache a l'equipe
+                  -- pour la piloter, pas pour y jouer : il ne doit pas etre
+                  -- proposable sur une feuille de match. C'est la garantie
+                  -- fonctionnelle du flag — sans elle, on pourrait y coucher un
+                  -- non-licencie.
+                  AND je.est_jouant + 0 > 0
                   AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = $id_match)";
         $results = $this->sql_manager->execute($sql);
         return Players::adjust_photo_path_from_results($results);

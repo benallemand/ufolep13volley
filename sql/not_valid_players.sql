@@ -10,6 +10,9 @@ FROM players_view j
          JOIN equipes e on je.id_equipe = e.id_equipe
          JOIN competitions c2 on e.code_competition = c2.code_competition
 WHERE j.est_actif = 0
+  -- Voir `no_licence.sql` : une appartenance non jouante (issue #325) n'attend
+  -- aucune homologation.
+  AND je.est_jouant + 0 > 0
   AND je.id_equipe IN (SELECT id_equipe FROM classements)
   AND CURRENT_DATE >= c2.start_date
 ORDER BY j.id

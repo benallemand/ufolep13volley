@@ -134,6 +134,9 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | E2 | Créer une équipe | Créée, avec le bon club et la bonne compétition |
 | E3 | Cocher « Inscrite à la coupe » puis enregistrer | La colonne « Coupe » passe à « oui » |
 | E4 | Supprimer l'équipe de test | Disparaît |
+| E5 | Sélectionner une équipe **féminine** → « Nommer responsable », choisir un **homme**, cocher « Ne joue pas dans cette équipe » | Il devient responsable et est rattaché à l'équipe, **sans compter dans l'effectif** (#325) |
+| E6 | Ouvrir l'indicateur « Équipes incomplètes » (après la date limite d'inscription) | L'équipe de E5 n'y figure **pas** : la règle « aucun garçon » ignore les membres non jouants |
+| E7 | Refaire E5 en **décochant** la case | Le même homme redevient jouant, et l'équipe féminine est signalée incomplète |
 
 > Non repris du lot 0 : l'action **« Nommer responsable »** de la grille ExtJS.
 > À traiter dans un lot ultérieur — en attendant, elle reste disponible dans
@@ -159,6 +162,14 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | J14 | Cliquer une ligne | Le tiroir montre la licence (numéro, homologation, département), le contact (email, téléphone, email 2, téléphone 2) et les équipes actives **et** inactives |
 | J15 | Ouvrir le tiroir sur un joueur **sans licence** | Le badge est rouge, « Licence non validée » ; les champs vides affichent « — » et non une case blanche |
 | J16 | Ouvrir le tiroir sur un joueur **sans photo** | L'image de repli s'affiche, jamais une icône cassée — même repli que la vignette de la grille (#295) |
+| J17 | Ouvrir le tiroir sur le responsable non jouant créé en E5 | La section Équipes montre une ligne **« Sans y jouer »** avec l'équipe féminine ; celle-ci reste listée dans « Actives » — une appartenance reste une appartenance (#325) |
+| J18 | Cocher « Dans 2 équipes (même compétition) » | Le responsable de E5 n'y apparaît pas à ce titre : une appartenance non jouante n'est pas un double engagement |
+
+> **Côté responsable d'équipe** (hors administration, `#/team/players`) : le
+> bouton « joue dans l'équipe » bascule le drapeau, et un bandeau « membre non
+> jouant » s'affiche sur la carte. Le serveur refuse de rendre non jouant le
+> **capitaine** de l'équipe, et refuse de nommer capitaine un membre non jouant
+> — un capitaine joue (#325).
 
 > Non repris du lot 0 : **import d'un fichier de licences**, **association en
 > masse à un club / une équipe**, **photo du joueur**. Restent dans l'ancienne

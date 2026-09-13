@@ -185,6 +185,7 @@ return array(
         'remove_from_team' => 'user',
         'set_captain' => 'user',
         'set_leader' => 'user',
+        'set_playing' => 'user',
         'set_vice_leader' => 'user',
         'update_from_licence_file' => 'user',
         'update_player' => 'user',

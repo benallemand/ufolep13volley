@@ -15,6 +15,11 @@ FROM joueur_equipe je
          JOIN clubs c ON c.id = j.id_club
 WHERE (j.num_licence IS NULL
     OR j.num_licence = '')
+  -- Un membre non jouant (issue #325) n'a pas besoin de licence : le
+  -- responsable d'une equipe ou il ne joue pas n'est pas une anomalie. La
+  -- jointure `jeresp` ci-dessus, elle, n'est pas filtree — un responsable non
+  -- jouant reste le responsable a qui l'on ecrit.
+  AND je.est_jouant + 0 > 0
   AND e.id_equipe IN (SELECT id_equipe FROM classements)
   AND CURRENT_DATE >= comp.start_date
 ORDER BY equipe

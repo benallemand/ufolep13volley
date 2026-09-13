@@ -109,12 +109,38 @@ class Players extends Generic
             FROM joueur_equipe 
             WHERE id_equipe = $id_team
         )");
+        // `players_view` agrege les roles toutes equipes confondues : on les
+        // ramene a l'equipe courante. `est_jouant` est porte par
+        // l'appartenance, il n'est donc pas dans la vue — on le lit a part
+        // (issue #325).
+        $playing = $this->getPlayingFlagsByTeam($id_team);
         foreach ($players as $index => $player) {
             $players[$index]['is_captain'] = empty($player['id_captain']) ? 0 : in_array($id_team, explode(',', $player['id_captain']));
             $players[$index]['is_vice_leader'] = empty($player['id_vl']) ? 0 : in_array($id_team, explode(',', $player['id_vl']));
             $players[$index]['is_leader'] = empty($player['id_l']) ? 0 : in_array($id_team, explode(',', $player['id_l']));
+            $players[$index]['est_jouant'] = $playing[(int)$player['id']] ?? 1;
         }
         return $players;
+    }
+
+    /**
+     * `est_jouant` de chaque membre d'une equipe, indexe par identifiant de
+     * joueur (issue #325).
+     *
+     * @return array<int, int>
+     * @throws Exception
+     */
+    private function getPlayingFlagsByTeam($id_team): array
+    {
+        $sql = "SELECT id_joueur, est_jouant + 0 AS est_jouant
+                FROM joueur_equipe
+                WHERE id_equipe = ?";
+        $bindings = array(array('type' => 'i', 'value' => (int)$id_team));
+        $flags = array();
+        foreach ($this->sql_manager->execute($sql, $bindings) as $row) {
+            $flags[(int)$row['id_joueur']] = (int)$row['est_jouant'];
+        }
+        return $flags;
     }
 
     /**
@@ -617,17 +643,18 @@ class Players extends Generic
     /**
      * @throws Exception
      */
-    public function addPlayerToTeam($idPlayer, $idTeam)
+    public function addPlayerToTeam($idPlayer, $idTeam, bool $est_jouant = true)
     {
         if ($this->isPlayerInTeam($idPlayer, $idTeam)) {
             return true;
         }
         $lock = $this->assertSquadIsOpen($idTeam);
         // $idPlayer vient du client (actions du responsable d'équipe) — issue #270
-        $sql = "INSERT joueur_equipe SET id_joueur = ?, id_equipe = ?";
+        $sql = "INSERT joueur_equipe SET id_joueur = ?, id_equipe = ?, est_jouant = ?";
         $bindings = array(
             array('type' => 'i', 'value' => $idPlayer),
             array('type' => 'i', 'value' => $idTeam),
+            array('type' => 'i', 'value' => $est_jouant ? 1 : 0),
         );
         $this->sql_manager->execute($sql, $bindings);
         // Un ajout dans un effectif deja fige ne peut venir que d'un
@@ -639,6 +666,7 @@ class Players extends Generic
             ($lock === null ? "Ajout de " : "Ajout DEROGATOIRE de ")
             . $this->getPlayerFullName($idPlayer)
             . " a l'equipe " . $this->team->getTeamName($idTeam)
+            . ($est_jouant ? "" : " (membre non jouant)")
             . ($lock === null ? "" : " (effectif fige depuis le match " . $lock['code_match'] . ")")
         );
         return true;
@@ -695,17 +723,19 @@ class Players extends Generic
         }
         // filter available match players by id_match (known teams)
         if (!empty($id_match)) {
+            // Les membres non jouants (issue #325) ne sont pas presentables.
             $where .= " AND j.id IN (
-                            SELECT id_joueur 
-                            FROM joueur_equipe 
-                            WHERE id_equipe IN (
-                                SELECT id_equipe_dom 
-                                FROM matches 
+                            SELECT id_joueur
+                            FROM joueur_equipe
+                            WHERE est_jouant + 0 > 0
+                            AND (id_equipe IN (
+                                SELECT id_equipe_dom
+                                FROM matches
                                 WHERE id_match = $id_match)
                             OR id_equipe IN (
-                                SELECT id_equipe_ext 
-                                FROM matches 
-                                WHERE id_match = $id_match)
+                                SELECT id_equipe_ext
+                                FROM matches
+                                WHERE id_match = $id_match))
                             )";
         }
         return $this->get_players($where, "j.club IS NULL, j.club, j.nom");
@@ -722,11 +752,15 @@ class Players extends Generic
         if (!$this->team->isTeamSheetAllowedForUser($idTeam)) {
             throw new Exception("Vous n'avez pas la permission de consulter cette équipe !");
         }
-        $players = $this->get_players("j.id IN 
+        // La fiche d'equipe est la liste des licencies presentables en match :
+        // les membres non jouants (issue #325) n'y figurent pas, meme quand ils
+        // sont responsables de l'equipe.
+        $players = $this->get_players("j.id IN
         (
-            SELECT id_joueur 
-            FROM joueur_equipe 
+            SELECT id_joueur
+            FROM joueur_equipe
             WHERE id_equipe = $idTeam
+              AND est_jouant + 0 > 0
         )");
         foreach ($players as $index => $player) {
             $players[$index]['is_captain'] = empty($player['id_captain']) ? 0 : in_array($idTeam, explode(',', $player['id_captain']));
@@ -755,12 +789,13 @@ class Players extends Generic
         j.id_club, 
         j.telephone2, 
         j.email2, 
-        j.est_responsable_club, 
-        je.is_captain, 
-        je.is_vice_leader, 
-        je.is_leader, 
-        j.id, 
-        j.date_homologation 
+        j.est_responsable_club,
+        je.is_captain,
+        je.is_vice_leader,
+        je.is_leader,
+        je.est_jouant + 0 AS est_jouant,
+        j.id,
+        j.date_homologation
         FROM joueur_equipe je
         LEFT JOIN players_view j ON j.id=je.id_joueur
         WHERE id_equipe = $id_equipe";
@@ -781,18 +816,23 @@ class Players extends Generic
         if (!is_array($players)) {
             return array();
         }
+        // Les membres non jouants (issue #325) ne sont pas marquables : ils
+        // sont rattaches a l'equipe pour la piloter, pas pour jouer.
+        $playing = array_filter($players, static function ($player) {
+            return (int)($player['est_jouant'] ?? 1) === 1;
+        });
         return array_values(array_map(static function ($player) {
             return array(
                 'id' => (int)$player['id'],
                 'full_name' => $player['full_name'],
             );
-        }, $players));
+        }, $playing));
     }
 
     /**
      * @throws Exception
      */
-    public function set_leader($ids, $id_team = null)
+    public function set_leader($ids, $id_team = null, $est_jouant = null)
     {
         if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
             throw new Exception("Cette action n'est pas autorisée !");
@@ -809,8 +849,18 @@ class Players extends Generic
             if (empty($player['email']) || empty($player['telephone'])) {
                 throw new Exception("Ce joueur doit avoir une adresse email et un numéro de téléphone pour devenir responsable d'équipe !");
             }
+            // On peut nommer responsable quelqu'un qui n'est pas encore dans
+            // l'equipe : c'est la que se decide s'il y joue (issue #325). Le
+            // cas type est l'homme qui pilote une equipe feminine — il est
+            // ajoute non jouant. Le drapeau s'applique aussi a un membre deja
+            // present : c'est le seul endroit ou un administrateur le regle.
+            // `$est_jouant` a null veut dire « ne touche pas » : les appels qui
+            // ne s'en preoccupent pas ne doivent pas rebasculer en jouant un
+            // membre declare non jouant.
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
-                $this->addPlayerToTeam($id_player, $id_team);
+                $this->addPlayerToTeam($id_player, $id_team, $est_jouant === null || (int)$est_jouant === 1);
+            } elseif ($est_jouant !== null) {
+                $this->applyPlayingFlag($id_player, $id_team, (int)$est_jouant === 1);
             }
             $sql = "UPDATE joueur_equipe SET is_leader = 0 WHERE id_equipe = ?";
             $bindings = array(
@@ -846,6 +896,11 @@ class Players extends Generic
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
                 throw new Exception("Ce joueur n'est pas dans l'équipe !");
             }
+            // Un capitaine joue : le capitanat n'a pas de sens sur une
+            // appartenance non jouante (issue #325).
+            if (!$this->isPlayingInTeam($id_player, $id_team)) {
+                throw new Exception("Ce joueur ne joue pas dans cette équipe : il ne peut pas en être le capitaine !");
+            }
             $sql = "UPDATE joueur_equipe SET is_captain = 0 WHERE id_equipe = ?";
             $bindings = array(
                 array('type' => 'i', 'value' => $id_team),
@@ -859,6 +914,113 @@ class Players extends Generic
             $this->sql_manager->execute($sql, $bindings);
             $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau capitaine : " . $this->getPlayerFullName($id_player));
         }
+    }
+
+    /**
+     * Déclare qu'un membre joue — ou ne joue pas — dans l'équipe (issue #325).
+     *
+     * Une personne peut appartenir à une équipe sans y jouer : le cas type est
+     * un joueur du championnat masculin qui est aussi responsable d'une équipe
+     * féminine. Il doit être rattaché à l'équipe pour la piloter, mais il n'en
+     * est pas un membre jouant — il ne compte pas dans l'effectif, n'a pas
+     * besoin de licence à ce titre, et n'est pas présentable en match.
+     *
+     * Un responsable d'équipe n'agit que sur la sienne : contrairement à
+     * `set_captain` et `set_leader`, `$id_team` n'est pris en compte que pour
+     * un administrateur.
+     *
+     * @throws Exception
+     */
+    public function set_playing($ids, $id_team = null, $est_jouant = 1): void
+    {
+        if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
+            throw new Exception("Cette action n'est pas autorisée !");
+        }
+        if (!UserManager::isAdmin()) {
+            @session_start();
+            $id_team = $_SESSION['id_equipe'] ?? null;
+        }
+        if (empty($id_team)) {
+            throw new Exception("Aucune équipe n'est désignée !");
+        }
+        if (is_string($ids)) {
+            $ids = array($ids);
+        }
+        $plays = (int)$est_jouant === 1;
+        foreach ($ids as $id_player) {
+            if (!$this->isPlayerInTeam($id_player, $id_team)) {
+                throw new Exception("Ce joueur n'est pas dans l'équipe !");
+            }
+            $this->applyPlayingFlag($id_player, $id_team, $plays);
+        }
+    }
+
+    /**
+     * Pose `est_jouant` sur une appartenance existante, et le journalise
+     * (issue #325). Partagé par `set_playing` et `set_leader` : nommer
+     * responsable quelqu'un qui ne joue pas dans l'équipe est le cas d'usage
+     * principal du drapeau, il doit donc se régler au même endroit.
+     *
+     * @throws Exception si le membre est capitaine de l'équipe — un capitaine
+     *                   joue.
+     */
+    private function applyPlayingFlag($id_player, $id_team, bool $plays): void
+    {
+        if ($this->isPlayingInTeam($id_player, $id_team) === $plays) {
+            return;
+        }
+        if (!$plays && $this->isCaptainOfTeam($id_player, $id_team)) {
+            throw new Exception("Le capitaine joue : nommez un autre capitaine avant de déclarer celui-ci non jouant !");
+        }
+        $sql = "UPDATE joueur_equipe SET est_jouant = ? WHERE id_equipe = ? AND id_joueur = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => $plays ? 1 : 0),
+            array('type' => 'i', 'value' => (int)$id_team),
+            array('type' => 'i', 'value' => (int)$id_player),
+        );
+        $this->sql_manager->execute($sql, $bindings);
+        $this->addActivity(
+            $this->getPlayerFullName($id_player)
+            . ($plays ? " joue desormais dans l'equipe " : " ne joue pas dans l'equipe ")
+            . $this->team->getTeamName($id_team)
+        );
+    }
+
+    /**
+     * Cette appartenance est-elle jouante ? (issue #325)
+     *
+     * @throws Exception
+     */
+    public function isPlayingInTeam($idPlayer, $idTeam): bool
+    {
+        $sql = "SELECT est_jouant + 0 AS est_jouant
+                FROM joueur_equipe
+                WHERE id_joueur = ? AND id_equipe = ?";
+        $bindings = array(
+            array('type' => 'i', 'value' => (int)$idPlayer),
+            array('type' => 'i', 'value' => (int)$idTeam),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        if (count($results) === 0) {
+            return false;
+        }
+        return (int)$results[0]['est_jouant'] === 1;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function isCaptainOfTeam($idPlayer, $idTeam): bool
+    {
+        $sql = "SELECT COUNT(*) AS cnt
+                FROM joueur_equipe
+                WHERE id_joueur = ? AND id_equipe = ? AND is_captain + 0 > 0";
+        $bindings = array(
+            array('type' => 'i', 'value' => (int)$idPlayer),
+            array('type' => 'i', 'value' => (int)$idTeam),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
+        return (int)$results[0]['cnt'] > 0;
     }
 
     /**

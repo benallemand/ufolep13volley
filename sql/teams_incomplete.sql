@@ -27,8 +27,16 @@ FROM equipes e
          LEFT JOIN joueurs j_resp ON je.id_joueur = j_resp.id AND je.is_leader = 1
          LEFT JOIN joueurs j_resp2 ON je.id_joueur = j_resp2.id AND je.is_vice_leader = 1
          LEFT JOIN joueurs j_cap ON je.id_joueur = j_cap.id AND je.is_captain = 1
-         LEFT JOIN joueurs j_masc ON je.id_joueur = j_masc.id AND j_masc.sexe = 'M'
-         LEFT JOIN joueurs j_fem ON je.id_joueur = j_fem.id AND j_fem.sexe = 'F'
+         -- Seules les appartenances jouantes comptent dans l'effectif
+         -- (issue #325) : sans ce filtre, l'homme responsable d'une equipe
+         -- feminine la rend « incomplete » a vie par la regle `garcons > 0`
+         -- ci-dessous. Les trois jointures de role au-dessus ne sont
+         -- volontairement pas filtrees : un responsable non jouant reste un
+         -- responsable.
+         LEFT JOIN joueurs j_masc
+                   ON je.id_joueur = j_masc.id AND j_masc.sexe = 'M' AND je.est_jouant + 0 > 0
+         LEFT JOIN joueurs j_fem
+                   ON je.id_joueur = j_fem.id AND j_fem.sexe = 'F' AND je.est_jouant + 0 > 0
 WHERE c.limit_register_date < CURRENT_DATE
   AND e.id_equipe IN (SELECT id_equipe FROM classements)
 GROUP BY e.nom_equipe, c.code_competition

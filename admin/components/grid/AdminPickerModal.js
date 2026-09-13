@@ -21,6 +21,14 @@ export default {
         confirmLabel: { type: String, default: 'Valider' },
         /** Texte d'aide sous le titre */
         help: { type: String, default: '' },
+        /**
+         * Case à cocher facultative, sous la liste : certaines actions ont une
+         * variante à trancher au moment de valider (issue #325 : le
+         * responsable nommé joue-t-il dans l'équipe ?). Vide = pas de case.
+         * Sa valeur part en second argument de `confirm`.
+         */
+        optionLabel: { type: String, default: '' },
+        optionChecked: { type: Boolean, default: false },
         isBusy: { type: Boolean, default: false },
     },
     emits: ['confirm', 'close'],
@@ -59,6 +67,11 @@ export default {
             </label>
           </div>
 
+          <label v-if="optionLabel" class="flex items-center gap-2 mt-3 cursor-pointer">
+            <input type="checkbox" class="checkbox checkbox-sm checkbox-primary" v-model="option"/>
+            <span class="text-sm">{{ optionLabel }}</span>
+          </label>
+
           <p class="text-xs text-base-content/60 mt-2">
             {{ visible.length }} / {{ items.length }} —
             <span v-if="multiple">{{ chosen.length }} sélectionné(s)</span>
@@ -81,6 +94,7 @@ export default {
             search: '',
             chosen: [...this.selected],
             single: null,
+            option: this.optionChecked,
         };
     },
     computed: {
@@ -102,7 +116,7 @@ export default {
     },
     methods: {
         confirm() {
-            this.$emit('confirm', this.multiple ? this.chosen : [this.single]);
+            this.$emit('confirm', this.multiple ? this.chosen : [this.single], this.option);
         },
     },
 };
