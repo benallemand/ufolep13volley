@@ -37,11 +37,8 @@ class ClubAccountTest extends UfolepTestCase
         $this->email = strtolower($this->suffixe) . '@ufolep.test';
 
         $this->id_club = (int)$this->sql->execute(
-            "INSERT INTO clubs SET nom = ?, email_responsable = ?",
-            [
-                ['type' => 's', 'value' => "Club $this->suffixe"],
-                ['type' => 's', 'value' => $this->email],
-            ]
+            "INSERT INTO clubs SET nom = ?",
+            [['type' => 's', 'value' => "Club $this->suffixe"]]
         );
         // Une équipe engagée : l'indicateur ne regarde que les clubs actifs.
         $this->id_equipe = (int)$this->sql->execute(
@@ -206,9 +203,10 @@ class ClubAccountTest extends UfolepTestCase
 
     /**
      * Les adresses proposées évitent une ressaisie — donc une faute de frappe
-     * dans l'adresse à laquelle partent les identifiants.
+     * dans l'adresse à laquelle partent les identifiants. Elles viennent des
+     * personnes du club : depuis #327, le club n'a plus de coordonnées libres.
      */
-    public function test_les_adresses_proposees_viennent_du_club_et_de_ses_personnes(): void
+    public function test_les_adresses_proposees_viennent_des_personnes_du_club(): void
     {
         $autre = strtolower($this->suffixe) . '.joueur@ufolep.test';
         $this->creerPersonne($autre, 'Joueur');
@@ -218,8 +216,26 @@ class ClubAccountTest extends UfolepTestCase
 
         self::assertContains($this->email, $emails);
         self::assertContains($autre, $emails);
-        // L'adresse du club et celle de la personne sont la même : une seule
-        // entrée, pas deux lignes identiques à départager.
-        self::assertSame(count($emails), count(array_unique($emails)));
+        self::assertSame(count($emails), count(array_unique($emails)),
+            "pas deux fois la même adresse à départager");
+    }
+
+    /**
+     * La grille des clubs remplace les cinq colonnes retirées par ce qu'elles
+     * prétendaient porter : le compte, et la personne derrière (issue #327).
+     */
+    public function test_la_grille_des_clubs_montre_le_compte_et_le_referent(): void
+    {
+        $this->connect_as_admin();
+        $this->club->createClubAccount($this->id_club, $this->email);
+
+        $lignes = $this->sql->execute($this->club->getSql("c.id = $this->id_club"));
+
+        self::assertCount(1, $lignes);
+        self::assertSame($this->email, $lignes[0]['comptes']);
+        self::assertStringContainsString('Referent', $lignes[0]['referents'],
+            "la personne rattachée au compte est nommée");
+        self::assertArrayNotHasKey('email_responsable', $lignes[0],
+            "les colonnes de coordonnées libres ont disparu");
     }
 }

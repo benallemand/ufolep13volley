@@ -71,9 +71,13 @@ test.describe('Issue #326 — compte de club', () => {
 
         const rows = page.locator('tbody tr');
         await expect(rows.first()).toBeVisible({ timeout: 60000 });
-        // La colonne ajoutée par #326 : le compte du club, avant les
-        // coordonnées libres.
+        // Les colonnes ajoutées par #326, et celles que #327 a retirées : le
+        // référent d'un club est son compte et la personne derrière, plus les
+        // cinq champs libres qu'on saisissait à la main.
         await expect(page.getByRole('columnheader', { name: 'Compte(s)' })).toBeVisible();
+        await expect(page.getByRole('columnheader', { name: 'Référent(s)' })).toBeVisible();
+        await expect(page.getByRole('columnheader', { name: 'Tél. 1' })).toHaveCount(0);
+        await expect(page.getByRole('columnheader', { name: 'Responsable', exact: true })).toHaveCount(0);
 
         await rows.first().locator('input[type="checkbox"]').check();
         await page.getByRole('button', { name: /Créer le compte du club/ }).click();

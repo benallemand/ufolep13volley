@@ -24,13 +24,32 @@ param(
     [string]$User = 'root',
     [string]$Password = 'test',
     [string]$Database = 'ufolep_13volley',
-    [string]$MysqlDump = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe'
+    [string]$MysqlDump = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe',
+    [string]$Mysql = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
 )
 
 $ErrorActionPreference = 'Stop'
 
 if (-not (Test-Path $MysqlDump)) {
     throw "mysqldump introuvable : $MysqlDump (passer -MysqlDump <chemin>)"
+}
+
+# Les sauvegardes prises avant une migration destructrice sont nommees
+# `zz_backup_*` (convention posee par l'issue #327). Elles vivent dans la base
+# de reference, mais n'ont rien a faire dans le schema de CI : les y laisser
+# ferait croire a une table du modele.
+$ignoreArgs = @()
+if (Test-Path $Mysql) {
+    $backups = & $Mysql "--host=$Server" "--port=$Port" "--user=$User" "--password=$Password" `
+        --skip-column-names --batch $Database `
+        -e "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE 'zz\\_backup\\_%'" 2>$null
+    foreach ($t in $backups) {
+        $t = $t.Trim()
+        if ($t) { $ignoreArgs += "--ignore-table=$Database.$t" }
+    }
+    if ($ignoreArgs.Count -gt 0) {
+        Write-Host "Tables de sauvegarde ecartees : $($ignoreArgs.Count)"
+    }
 }
 
 $outFile = Join-Path $PSScriptRoot 'schema.sql'
@@ -42,6 +61,7 @@ try {
         "-h$Server" "-P$Port" "-u$User" "-p$Password" `
         --no-data --routines --triggers --events `
         --skip-dump-date --column-statistics=0 `
+        @ignoreArgs `
         "--result-file=$tmpFile" `
         $Database
     if ($LASTEXITCODE -ne 0) {

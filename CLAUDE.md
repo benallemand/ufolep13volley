@@ -865,8 +865,14 @@ d'une feuille de match : déjà protégés.
 Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un
 club, le référent d'un club **est** la ligne `users_clubs` → `comptes_acces` :
 seule table où l'email est à la fois obligatoire et **unique** (`uq_email`), et
-seule qui porte le rôle (#245). Les colonnes `clubs.*_responsable` ne sont plus
-qu'un contact de dernier recours ; #327 les retirera.
+seule qui porte le rôle (#245).
+
+Les cinq colonnes `clubs.*_responsable` ont été **retirées par #327**. Elles
+n'étaient pas décoratives : contact de dernier recours quand une équipe n'a pas
+de responsable, et **adresse d'expédition** dans cinq requêtes
+(`team_recaps.sql`, `teams_incomplete.sql`, `teams_with_missing_licences.sql`,
+`register_invoices.sql`, `register_not_paid.sql`), toutes passées au compte du
+club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
 
 - `Club::createClubAccount($id_club, $email)` (admin) crée le compte ou rattache
   un compte existant, et envoie les identifiants **immédiatement** — la création
@@ -878,8 +884,21 @@ qu'un contact de dernier recours ; #327 les retirera.
 - `Club::getAccountCandidates()` propose les adresses déjà connues (coordonnées
   du club, personnes du club) : le rattrapage se fait sans ressaisie.
 - L'indicateur **« Clubs engagés sans compte de club »** est actionnable (#312) :
-  sa tuile ouvre l'écran Clubs filtré, où l'action corrige. La grille porte une
-  colonne `Compte(s)`, servie par `Club::getSql()`.
+  sa tuile ouvre l'écran Clubs filtré, où l'action corrige. La grille porte les
+  colonnes `Compte(s)` et `Référent(s)`, servies par `Club::getSql()` — elles
+  remplacent, en données vivantes, les nom / prénom / téléphone qu'on saisissait
+  à la main.
+
+> **L'ordre de déploiement de #327 est l'INVERSE de #325 et #326.** Ces deux-là
+> ajoutaient ce que le code allait lire : SQL d'abord, déploiement ensuite.
+> #327 retire ce que le code lisait : **déploiement d'abord**, `DROP COLUMN`
+> ensuite. Dans l'autre sens, le code encore en place cherche des colonnes
+> disparues.
+
+> Les sauvegardes prises avant une migration destructrice se nomment
+> **`zz_backup_*`** (convention posée par #327, `zz_backup_clubs_responsable_327`
+> en est la première). `dump-schema.ps1` les écarte du schéma de CI : les y
+> laisser ferait croire à une table du modèle.
 
 > **`joueurs.id_compte` (FK, `ON DELETE SET NULL`, `UNIQUE`) au lieu d'une
 > jointure sur l'email.** Trois raisons, toutes vérifiées en base : `joueurs`

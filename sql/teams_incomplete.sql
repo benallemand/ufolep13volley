@@ -3,8 +3,10 @@ WITH first_responsable AS (SELECT ca.id,
                                   ROW_NUMBER() OVER (PARTITION BY ut.team_id ORDER BY ca.id) AS rn
                            FROM comptes_acces ca
                                     JOIN users_teams ut ON ca.id = ut.user_id)
-SELECT e.nom_equipe                     AS equipe,
-       c.libelle                        AS competition,
+SELECT e.nom_equipe AS equipe,
+       c.libelle    AS competition,
+       -- Dernier recours : le ou les comptes du club (`users_clubs`), depuis
+       -- que les colonnes `clubs.*_responsable` ont été retirées (issue #327).
        COALESCE(ca.email,
                 j_resp.email,
                 j_resp.email2,
@@ -12,7 +14,10 @@ SELECT e.nom_equipe                     AS equipe,
                 j_resp2.email2,
                 j_cap.email,
                 j_cap.email2,
-                club.email_responsable) AS contact_email,
+                (SELECT GROUP_CONCAT(DISTINCT ca_club.email ORDER BY ca_club.email SEPARATOR ';')
+                 FROM users_clubs uc
+                          JOIN comptes_acces ca_club ON ca_club.id = uc.user_id
+                 WHERE uc.club_id = club.id)) AS contact_email,
        COUNT(j_masc.id)                 AS garcons,
        COUNT(j_fem.id)                  AS filles,
        COUNT(j_resp.id)                 AS reponsable_ok,

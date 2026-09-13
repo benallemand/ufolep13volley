@@ -121,10 +121,11 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 
 | # | Cas | Attendu |
 |---|-----|---------|
-| C1 | Créer un club (tous champs obligatoires remplis) | Créé, visible dans la liste |
+| C1 | Créer un club (nom + n° d'affiliation) | Créé, visible dans la liste |
 | C2 | Créer un club en laissant un champ obligatoire vide | Le navigateur bloque l'envoi |
-| C3 | Éditer le club, changer le prénom du responsable | Modification visible |
+| C3 | Éditer le club, changer son n° d'affiliation | Modification visible. Le formulaire n'a plus que deux champs depuis #327 : les coordonnées du responsable se règlent par le compte du club |
 | C4 | Supprimer le club de test | Le compteur revient à sa valeur de départ |
+| C4b | Regarder les colonnes | **Compte(s)** et **Référent(s)** ont remplacé les cinq colonnes Responsable / Prénom / Tél. 1 / Tél. 2 / Email (#327) ; le référent est la personne rattachée au compte, avec son téléphone |
 | C5 | Regarder la colonne **Compte(s)** | Les clubs qui ont un compte (`users_clubs`) l'affichent ; la colonne est vide pour les autres — c'est le rattrapage de #326 |
 | C6 | Tableau de bord → tuile « Clubs engagés sans compte de club » → « Corriger ces N ligne(s) » | L'écran Clubs s'ouvre filtré sur ces seuls clubs, colonne Compte(s) vide |
 | C7 | Sélectionner un de ces clubs → « Créer le compte du club » | La fenêtre propose les adresses connues : coordonnées du club, personnes du club (responsables d'équipe en tête) |
@@ -135,6 +136,15 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 > Le compte créé porte le rôle **responsable de club** (#245) : il peut dès lors
 > inscrire les équipes du club, créer les comptes de leurs responsables et
 > déclarer les indisponibilités. Vérifier une fois avec « Agir en tant que ».
+
+> **À vérifier après #327**, parce que ces cinq requêtes envoyaient des emails à
+> `clubs.email_responsable` et visent désormais le compte du club : le
+> récapitulatif d'équipe, la relance « licences manquantes », les factures et la
+> relance d'inscription impayée. Le plus simple est de déclencher le cron
+> hebdomadaire sur biggyben et de lire Mailpit : **aucun message ne doit partir
+> sans destinataire**, et l'équipe sans responsable doit afficher un contact club
+> exploitable — nom, téléphone et email de la personne rattachée au compte — et
+> non « inconnu ».
 
 ### Équipes (`#/teams`) — complété par #288
 

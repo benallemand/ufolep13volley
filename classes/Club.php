@@ -14,14 +14,24 @@ class Club extends Generic
     public function getSql($query = "1=1"): string
     {
         // `comptes` : les comptes rattachés au club (issue #326). C'est eux, le
-        // référent du club — pas les colonnes `*_responsable`, qui partiront
-        // avec #327. La grille d'administration en fait une colonne, pour que
-        // le manque se voie là où on le corrige.
+        // référent du club — les colonnes `*_responsable` ont été retirées par
+        // #327. La grille d'administration en fait une colonne, pour que le
+        // manque se voie là où on le corrige.
+        //
+        // `referents` : les personnes derrière ces comptes, par
+        // `joueurs.id_compte`. C'est ce qui remplace, en données vivantes, les
+        // nom / prénom / téléphone qu'on saisissait à la main dans le club.
         return "SELECT c.*,
                        (SELECT GROUP_CONCAT(DISTINCT ca.email ORDER BY ca.email SEPARATOR ', ')
                           FROM users_clubs uc
                                    JOIN comptes_acces ca ON ca.id = uc.user_id
-                         WHERE uc.club_id = c.id) AS comptes
+                         WHERE uc.club_id = c.id) AS comptes,
+                       (SELECT GROUP_CONCAT(DISTINCT CONCAT(j.prenom, ' ', j.nom,
+                                                            IFNULL(CONCAT(' (', NULLIF(j.telephone, ''), ')'), ''))
+                                            SEPARATOR ', ')
+                          FROM users_clubs uc
+                                   JOIN joueurs j ON j.id_compte = uc.user_id
+                         WHERE uc.club_id = c.id) AS referents
                 FROM $this->table_name c
                 WHERE $query
                 ORDER BY c.nom";
@@ -36,14 +46,14 @@ class Club extends Generic
     /**
      * @throws Exception
      */
+    /**
+     * Les cinq colonnes `*_responsable` ont été retirées par l'issue #327 : le
+     * référent d'un club, c'est son compte (`users_clubs`), et il se règle par
+     * « Créer le compte du club » et « Clubs liés… », pas par ce formulaire.
+     */
     public function saveClub($id,
                              $nom,
                              $affiliation_number,
-                             $nom_responsable,
-                             $prenom_responsable,
-                             $tel1_responsable,
-                             $tel2_responsable,
-                             $email_responsable,
                              $dirtyFields = null
     ): array|int|string|null
     {
@@ -51,11 +61,6 @@ class Club extends Generic
             'id' => $id,
             'nom' => $nom,
             'affiliation_number' => $affiliation_number,
-            'nom_responsable' => $nom_responsable,
-            'prenom_responsable' => $prenom_responsable,
-            'tel1_responsable' => $tel1_responsable,
-            'tel2_responsable' => $tel2_responsable,
-            'email_responsable' => $email_responsable,
             'dirtyFields' => $dirtyFields,
         ));
     }
@@ -86,12 +91,13 @@ class Club extends Generic
      * Adresses proposables pour créer le compte d'un club (issue #326).
      *
      * Le rattrapage des comptes manquants se fait club par club, et l'adresse
-     * à reprendre est presque toujours déjà quelque part : dans les
-     * coordonnées du club, ou chez l'une de ses personnes. Les proposer évite
-     * de la ressaisir — et donc de la saisir de travers.
+     * à reprendre est presque toujours déjà quelque part : chez l'une des
+     * personnes du club. Les proposer évite de la ressaisir — et donc de la
+     * saisir de travers.
      *
-     * `email_responsable` disparaîtra avec les colonnes `clubs.*_responsable`
-     * (#327) ; les personnes du club, elles, resteront.
+     * Les coordonnées libres du club en étaient une source jusqu'à #327, qui a
+     * retiré les colonnes `clubs.*_responsable` ; les personnes du club, elles,
+     * restent.
      *
      * @throws Exception
      */
@@ -104,19 +110,9 @@ class Club extends Generic
         $binding = array(array('type' => 'i', 'value' => $id_club));
         $candidats = array();
 
-        $club = $this->sql_manager->execute(
-            "SELECT nom, prenom_responsable, nom_responsable, email_responsable
-             FROM clubs WHERE id = ?", $binding);
+        $club = $this->sql_manager->execute("SELECT nom FROM clubs WHERE id = ?", $binding);
         if (count($club) === 0) {
             throw new Exception("Ce club n'existe pas !");
-        }
-        $email_club = trim((string)($club[0]['email_responsable'] ?? ''));
-        if ($email_club !== '') {
-            $candidats[strtolower($email_club)] = array(
-                'email' => $email_club,
-                'label' => trim(($club[0]['prenom_responsable'] ?? '') . ' ' . ($club[0]['nom_responsable'] ?? '')),
-                'origine' => 'coordonnées du club',
-            );
         }
 
         // Les personnes du club qui ont une adresse. Un responsable d'équipe
