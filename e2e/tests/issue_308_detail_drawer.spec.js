@@ -96,11 +96,17 @@ test.describe('Issue #308 — tiroir de détail', () => {
         const rows = page.locator('tbody tr');
         await expect(rows.first()).toBeVisible({ timeout: 60000 });
 
-        // 100 lignes suffisent à rendre le tableau bien plus haut que la
-        // fenêtre, ce qui est le cas signalé : le tiroir s'étirait jusqu'en bas
-        // du tableau et son pied partait hors de portée.
-        await page.locator('label:has-text("par page") select').selectOption('100');
-        await expect.poll(async () => rows.count()).toBe(100);
+        // Ce qui compte est que le tableau soit bien plus haut que la fenêtre —
+        // c'est le cas signalé : le tiroir s'étirait jusqu'en bas du tableau et
+        // son pied partait hors de portée. On demande donc « tout », sans
+        // présumer du nombre de lignes : la base de développement en a 3 650,
+        // le jeu de la CI une soixantaine, et les deux font l'affaire.
+        const perPage = page.locator('label:has-text("par page") select');
+        await perPage.selectOption({ label: 'tout' });
+        await expect.poll(
+            async () => page.evaluate(() => document.body.scrollHeight > window.innerHeight * 2),
+            { message: 'Le tableau doit être nettement plus haut que la fenêtre' }
+        ).toBe(true);
 
         await rows.nth(0).click();
         const drawer = page.getByRole('dialog');

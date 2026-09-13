@@ -86,7 +86,32 @@ test.describe('Issue #266 — pages ExtJS migrées en Vue', () => {
 
     test.describe('Classement général d\'une coupe', () => {
 
+        /**
+         * Le classement d'une coupe n'existe que si des équipes y sont
+         * engagées. C'est le cas de la base de développement, ce ne l'est pas
+         * du jeu fictif de la CI, qui ne peuple que les trois championnats
+         * (issue #316).
+         *
+         * On interroge donc l'endpoint que la page consomme, et on saute sur
+         * une réponse vide — pas sur un « si CI ». Le jour où le seed portera
+         * les coupes, ces tests se rallumeront sans qu'on touche à ce fichier.
+         */
+        let hasCupRanking = false;
+
+        test.beforeAll(async ({ request }) => {
+            const res = await request.get('/rest/action.php/rank/sort_cup_rank?code_competition=c');
+            if (!res.ok()) {
+                return;
+            }
+            const rows = await res.json().catch(() => null);
+            hasCupRanking = Array.isArray(rows) && rows.length > 0;
+        });
+
+        const noCupReason = "Aucune équipe engagée dans la coupe « c » : le jeu de "
+            + 'données ne peuple que les championnats (voir #316).';
+
         test('la route Vue affiche le classement et surligne les qualifiés', async ({ page }) => {
+            test.skip(!hasCupRanking, noCupReason);
             await page.goto('/pages/home.html#/rank_for_cup/c');
 
             await expect(page.getByRole('heading', { name: 'Classement général' })).toBeVisible();
@@ -115,6 +140,7 @@ test.describe('Issue #266 — pages ExtJS migrées en Vue', () => {
         });
 
         test('la recherche multi-termes filtre les lignes', async ({ page }) => {
+            test.skip(!hasCupRanking, noCupReason);
             await page.goto('/pages/home.html#/rank_for_cup/c');
 
             const rows = page.locator('tbody tr');

@@ -1,0 +1,72 @@
+###############################################################################
+# Campagne E2E nocturne (issue #316)
+#
+# La campagne Playwright ne tournait qu'à la main, sur la machine de
+# développement, avant une PR. Un test cassé pouvait donc le rester des jours —
+# c'est arrivé à `issue_221.spec.js`, resté sur le rendu d'avant l'issue #292.
+#
+# Ici elle tourne contre le MÊME jeu de données fictif que PHPUnit
+# (`.github/ci/schema.sql` + `seed.sql`), monté de zéro dans un conteneur MySQL.
+# Toute la stack vit dans `docker-compose.e2e-ci.yml`, qui se reproduit à
+# l'identique en local — voir son en-tête.
+#
+# Les tests qui exigent des données absentes du jeu fictif (coupes, phases
+# finales) se sautent d'eux-mêmes, sur un signal lu dans la donnée. Ils
+# reviendront sans qu'on touche à ce fichier le jour où le seed portera les
+# coupes.
+###############################################################################
+name: E2E nightly
+
+on:
+  schedule:
+    # 02:00 UTC — 3 h ou 4 h à Paris selon la saison.
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+# Une seule campagne à la fois : deux runs concurrents se disputeraient le
+# démon Docker du runner pour rien.
+concurrency:
+  group: e2e-nightly
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: Campagne Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # Le Dockerfile fait tout : Composer, build Vite, image PHP finale. Le
+      # runner n'a donc besoin ni de Node ni de PHP.
+      - name: Build de l'image applicative
+        run: docker compose -f docker-compose.e2e-ci.yml build php
+
+      - name: Démarrage de la stack
+        run: docker compose -f docker-compose.e2e-ci.yml up -d --wait
+
+      - name: Campagne Playwright
+        run: docker compose -f docker-compose.e2e-ci.yml --profile test run --rm playwright
+
+      # Le rapport HTML et les captures des tests tombés : c'est la seule chose
+      # qui reste une fois le runner détruit.
+      - name: Rapport Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/report
+            e2e/test-results
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Journaux des conteneurs en cas d'échec
+        if: failure()
+        run: docker compose -f docker-compose.e2e-ci.yml logs --tail 200
+
+      - name: Démontage
+        if: always()
+        run: docker compose -f docker-compose.e2e-ci.yml down -v

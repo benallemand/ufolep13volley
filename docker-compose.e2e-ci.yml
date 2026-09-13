@@ -1,0 +1,88 @@
+###############################################################################
+# docker-compose.e2e-ci.yml
+#
+# Stack E2E **autoportante**, pour le job nocturne (issue #316) — et pour le
+# reproduire à la main :
+#
+#   docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml build php
+#   docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml up -d
+#   docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml run --rm playwright
+#   docker compose -p ufolep-e2e-ci -f docker-compose.e2e-ci.yml down -v
+#
+# Le `-p` n'est pas décoratif : sans lui, Compose prend le nom du répertoire,
+# donc le même projet que la stack de dev ou de home server — et recrée leur
+# service `php` avec cette définition-ci. Aucun port n'est publié ici, les deux
+# stacks peuvent donc tourner côte à côte.
+#
+# Ce fichier ne s'additionne PAS à `docker-compose.yml` : il se suffit à
+# lui-même. Les autres modes servent la base de développement, dont les
+# volumes de données sont ceux de la vraie saison ; ici la base est montée de
+# zéro à partir de `.github/ci/`, avec le même jeu fictif que PHPUnit.
+#
+# Le `down -v` compte : MySQL ne rejoue les scripts d'initialisation que sur un
+# répertoire de données vide. Sans lui, une modification de `seed.sql` reste
+# sans effet et on teste l'ancien jeu de données.
+###############################################################################
+
+services:
+  db:
+    image: mysql:8.0
+    # Les deux réglages que `tests.yml` applique à chaud faute de pouvoir
+    # passer des arguments à un service container GitHub. Ici on les donne
+    # directement au serveur.
+    #   - sql_mode sans ONLY_FULL_GROUP_BY : aligné sur dev et prod
+    #   - log_bin_trust_function_creators : la fonction stockée SPLIT_STRING
+    #     n'est pas déclarée DETERMINISTIC
+    command: >
+      --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+      --log-bin-trust-function-creators=1
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: ufolep_13volley
+    volumes:
+      # Joués dans l'ordre alphabétique, au premier démarrage seulement.
+      - ./.github/ci/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./.github/ci/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      # Le healthcheck ne passe qu'une fois les scripts d'initialisation joués :
+      # c'est ce qui empêche php de démarrer sur une base encore vide.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ptest"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # Autorise les helpers de `e2e/helpers/` (sans quoi ils répondent 403)
+      - APP_ENV=test
+    volumes:
+      - ./.github/ci/e2e.env:/var/www/html/.env:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  playwright:
+    # Derrière un profil, comme dans les autres fichiers E2E : `up -d` monte la
+    # stack sans lancer la campagne, qu'on déclenche ensuite avec
+    # `--profile test run --rm playwright`.
+    profiles: ["test"]
+    image: mcr.microsoft.com/playwright:v1.58.2-jammy
+    working_dir: /app/e2e
+    volumes:
+      - .:/app
+    environment:
+      - BASE_URL=http://php
+      - CI=true
+      # `e2e/global-setup.js` se connecte directement à la base
+      - DB_SERVER=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=test
+      - DB_NAME=ufolep_13volley
+    command: sh -c "npm install --no-audit --no-fund && npx playwright test --reporter=list"
+    depends_on:
+      - php

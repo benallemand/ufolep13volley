@@ -62,7 +62,24 @@ test.describe('Issue #218 — Dropdown Coupes en 4 sous-menus collapsibles', () 
         });
     });
 
-    test('le sous-menu Poules affiche des numéros compacts en grille', async ({ page }) => {
+    /**
+     * Le sous-menu Poules ne se remplit que si les coupes ont des divisions.
+     * C'est le cas de la base de développement, ce ne l'est pas du jeu fictif
+     * de la CI, qui ne peuple que les trois championnats (issue #316). On
+     * interroge donc l'endpoint dont la barre de navigation se sert, et on
+     * saute sur une réponse sans poule de coupe — pas sur un « si CI ».
+     */
+    test('le sous-menu Poules affiche des numéros compacts en grille', async ({ page, request }) => {
+        const res = await request.get('/rest/action.php/rank/getDivisions');
+        const divisions = res.ok() ? await res.json().catch(() => []) : [];
+        const cupDivisions = (Array.isArray(divisions) ? divisions : [])
+            .filter((d) => ['c', 'kh', 'l'].includes(d.code_competition));
+        test.skip(
+            cupDivisions.length === 0,
+            "Aucune poule dans les coupes : le jeu de données ne peuple que les "
+            + 'championnats (voir #316).'
+        );
+
         await page.goto('/');
 
         const coupesBtn = page.locator('.navbar .dropdown').filter({ hasText: 'Coupes' }).first();
