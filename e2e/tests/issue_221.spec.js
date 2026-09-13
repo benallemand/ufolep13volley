@@ -14,6 +14,12 @@ const { test, expect } = require('@playwright/test');
  *  7. Retour à la liste → vérifier que le message n'est plus en gras / le badge ● a disparu
  *  8. Cliquer "Marquer comme non lu" → vérifier que le badge ● réapparaît
  *  9. Teardown : nettoyer les données de test
+ *
+ * Le corps du message est rendu dans une **iframe cloisonnée** depuis l'issue
+ * #292, et non plus en `v-html`. Ce test cherchait encore le `<div class="prose">`
+ * d'avant : il était rouge depuis, sans que personne le voie — la campagne ne
+ * tourne qu'à la main. C'est l'un des arguments de l'issue #316, qui vise à la
+ * passer en nightly.
  */
 
 test.describe('Issue #221 — Messages Team Leader', () => {
@@ -77,8 +83,15 @@ test.describe('Issue #221 — Messages Team Leader', () => {
         // Le destinataire doit être affiché (champ À)
         await expect(page.locator('.card-body')).toContainText('À :');
 
-        // Le corps doit être présent
-        await expect(page.locator('.prose')).toContainText('message de test E2E');
+        // Le corps doit être présent. Depuis l'issue #292 il n'est plus rendu
+        // dans un `<div class="prose" v-html>` mais dans une iframe cloisonnée
+        // (`sandbox=""`) : un corps d'email est du HTML arbitraire, l'injecter
+        // dans la page exécuterait ses scripts. On vérifie donc ce que la page
+        // confie à l'iframe, et non le contenu du document cloisonné — son
+        // origine est opaque, l'y lire dépendrait du bon vouloir du navigateur.
+        const body = page.locator('iframe[title="Contenu du message"]');
+        await expect(body).toBeVisible();
+        await expect(body).toHaveAttribute('srcdoc', /message de test E2E/);
 
         // Le statut passe à "Lu" automatiquement à l'ouverture
         await expect(page.locator('.card-body .badge-success')).toBeVisible({ timeout: 5000 });
