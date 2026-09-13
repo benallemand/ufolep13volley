@@ -1,4 +1,6 @@
-SELECT DISTINCT j.prenom,
+-- `indicator_id` : voir `no_licence.sql` (issue #312).
+SELECT DISTINCT j.id                                                  AS indicator_id,
+                j.prenom,
                 j.nom,
                 CONCAT(j.departement_affiliation, '_', j.num_licence) AS num_licence,
                 e.nom_equipe                                          AS nom_equipe

@@ -92,6 +92,16 @@ export default {
               </table>
             </div>
             <div class="modal-action">
+              <!-- Le tableau de bord dit CE QUI ne va pas ; ce bouton dit OÙ
+                   aller le corriger (issue #312). Il n'apparaît que sur les
+                   indicateurs qui déclarent un écran cible : la plupart
+                   croisent plusieurs entités et n'en ont pas. -->
+              <button v-if="opened.target && opened.ids && opened.ids.length"
+                      class="btn btn-primary btn-sm"
+                      @click="openTarget(opened)">
+                <i class="fas fa-arrow-right"></i>
+                Corriger ces {{ opened.ids.length }} ligne(s)
+              </button>
               <button class="btn btn-ghost btn-sm" @click="exportCsv">
                 <i class="fas fa-file-csv"></i> Export
               </button>
@@ -143,6 +153,18 @@ export default {
         this.load();
     },
     methods: {
+        /**
+         * Ouvre l'écran de correction, filtré sur les lignes de l'indicateur
+         * (issue #312). `AdminGrid` lit `?ids=` tout seul : aucun écran n'a à
+         * le déclarer.
+         */
+        openTarget(indicator) {
+            this.opened = null;
+            this.$router.push({
+                path: '/' + indicator.target,
+                query: { ids: indicator.ids.join(',') },
+            });
+        },
         load() {
             this.indicators = [];
             this.done = 0;
@@ -185,6 +207,10 @@ export default {
                                 type: ind.type,
                                 value,
                                 details: (data && data.details) || [],
+                                // Écran de correction et lignes concernées, quand
+                                // l'indicateur en déclare (issue #312).
+                                target: (data && data.target) || null,
+                                ids: (data && data.ids) || [],
                             });
                             this.indicators.sort((a, b) => {
                                 if (a.type !== b.type) {

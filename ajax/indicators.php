@@ -80,21 +80,29 @@ $indicators[] = new Indicator(
 // désormais à la source. Le seul ajout tardif encore possible est la dérogation
 // d'un administrateur, journalisée explicitement (« Ajout DEROGATOIRE de … »)
 // et donc consultable depuis l'écran Activité.
+// Les indicateurs qui déclarent un écran cible et une colonne d'identifiant
+// rendent leur tuile ACTIONNABLE (issue #312) : le tableau de bord y ajoute un
+// bouton qui ouvre l'écran filtré sur ces seules lignes. Les autres restent de
+// simples constats — la plupart croisent plusieurs entités, il n'y a pas
+// d'écran évident où les corriger.
 $indicators[] = new Indicator(
     "Joueurs sans numéro de licence",
     file_get_contents(__DIR__ . '/../sql/no_licence.sql'),
-    'alert');
+    'alert',
+    'players', 'indicator_id');
 $indicators[] = new Indicator(
     "Equipes",
     file_get_contents(__DIR__ . '/../sql/teams_in_championship.sql'));
 $indicators[] = new Indicator(
     "Joueurs avec équipe mais sans club",
     file_get_contents(__DIR__ . '/../sql/no_club.sql'),
-    'alert');
+    'alert',
+    'players', 'indicator_id');
 $indicators[] = new Indicator(
     "Joueurs en attente de validation",
     file_get_contents(__DIR__ . '/../sql/not_valid_players.sql'),
-    'alert');
+    'alert',
+    'players', 'indicator_id');
 $indicators[] = new Indicator(
     "Evènements",
     file_get_contents(__DIR__ . '/../sql/activity.sql'));
@@ -108,7 +116,8 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Club non renseigné",
     file_get_contents(__DIR__ . '/../sql/teams_without_club.sql'),
-    'alert');
+    'alert',
+    'teams', 'indicator_id');
 $indicators[] = new Indicator(
     "Licences dupliquées",
     file_get_contents(__DIR__ . '/../sql/licence_duplicates.sql'),
@@ -124,7 +133,8 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Equipes actives sans responsable",
     file_get_contents(__DIR__ . '/../sql/no_leader_team.sql'),
-    'alert');
+    'alert',
+    'teams', 'indicator_id');
 $indicators[] = new Indicator(
     "Equipes actives sans créneau de réception",
     file_get_contents(__DIR__ . '/../sql/no_timeslot_teams.sql'));

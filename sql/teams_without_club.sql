@@ -1,4 +1,6 @@
-SELECT e.nom_equipe,
+-- `indicator_id` : voir `no_licence.sql` (issue #312).
+SELECT e.id_equipe AS indicator_id,
+       e.nom_equipe,
        comp.libelle,
        c.division
 FROM equipes e

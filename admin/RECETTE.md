@@ -77,6 +77,10 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G30 | Tiroir ouvert, naviguer au **clavier** (Tab jusqu'à une ligne, Entrée) | La ligne s'ouvre : les lignes cliquables sont atteignables au clavier |
 | G31 | Mettre « par page » sur **tout**, puis ouvrir le tiroir | Ses **boutons d'action restent à l'écran**, sans avoir à descendre au bas des 3 650 lignes. Le panneau colle au défilement et sa hauteur est plafonnée à celle de la fenêtre ; il s'étirait auparavant sur toute la hauteur du tableau |
 | G32 | Même situation, faire défiler la page | Le tiroir **suit**, et ne peut jamais remonter au-dessus de la barre d'outils |
+| G33 | Depuis les **Indicateurs**, ouvrir « Joueurs en attente de validation » puis « Corriger ces N ligne(s) » | L'écran Joueurs s'ouvre **filtré sur ces seules lignes**, un bandeau bleu l'annonce, et le compteur affiche `N / total` |
+| G34 | Cliquer « Voir tout » dans ce bandeau | Le bandeau disparaît, la grille retrouve toutes ses lignes, et `?ids=` sort de l'URL |
+| G35 | Recharger la page pendant que le filtre est actif | Le filtre **tient** : il vit dans l'URL, elle est donc partageable et survit à un F5 |
+| G36 | Filtre actif, cocher une ligne puis cliquer « Voir tout » | La sélection est **vidée** : les lignes visibles ont changé |
 
 ## Cas par écran
 

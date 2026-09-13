@@ -1,4 +1,7 @@
-SELECT e.id_equipe,
+-- `indicator_id` : voir `no_licence.sql` (issue #312). Cette requête
+-- sélectionnait déjà l'identifiant, on ne fait que le nommer.
+SELECT e.id_equipe AS indicator_id,
+       e.id_equipe,
        e.nom_equipe AS equipe,
        c.libelle    AS competition
 FROM equipes e
