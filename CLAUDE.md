@@ -546,8 +546,10 @@ Deux composants, deux formes de données — ne pas les confondre :
 
 ### Vue 3 (`admin/index.html`, servie sur `/admin/`)
 
-Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. Le socle vit dans
-`admin/components/` :
+Entrée Vite, routeur à hash, garde `requireRoles(['admin'])`. **La page d'accueil
+est le tableau de bord des indicateurs** (issue #313) : on atterrissait jusque-là
+sur la grille des utilisateurs, par défaut de repli et non par choix. Le socle vit
+dans `admin/components/` :
 
 | | |
 |---|---|

@@ -41,7 +41,14 @@ const routes = [
     { path: '/activity', component: () => import('../screens/Activity.js') },
     { path: '/hall-of-fame', component: () => import('../screens/HallOfFame.js') },
     { path: '/bilan', component: () => import('../screens/Bilan.js') },
-    { path: '/:pathMatch(.*)*', redirect: '/users' },
+    // Page d'accueil : le tableau de bord (issue #313). On atterrissait
+    // jusqu'ici sur la grille des utilisateurs, par defaut de repli et non par
+    // choix — un ecran de maintenance de comptes, rarement ce pour quoi on
+    // ouvre l'administration. Les indicateurs ne montrent que les anomalies non
+    // vides, et leurs tuiles ouvrent depuis #312 l'ecran de correction
+    // pre-filtre : l'accueil devient une liste de taches.
+    { path: '/', redirect: '/indicators' },
+    { path: '/:pathMatch(.*)*', redirect: '/indicators' },
 ];
 
 const router = createRouter({

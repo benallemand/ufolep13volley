@@ -81,6 +81,8 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G34 | Cliquer « Voir tout » dans ce bandeau | Le bandeau disparaît, la grille retrouve toutes ses lignes, et `?ids=` sort de l'URL |
 | G35 | Recharger la page pendant que le filtre est actif | Le filtre **tient** : il vit dans l'URL, elle est donc partageable et survit à un F5 |
 | G36 | Filtre actif, cocher une ligne puis cliquer « Voir tout » | La sélection est **vidée** : les lignes visibles ont changé |
+| G37 | Ouvrir `/admin/index.html` **sans rien après** | On atterrit sur les **Indicateurs**, pas sur la grille des utilisateurs (#313). Les premières tuiles s'affichent en quelques secondes, le compteur « n / m calculés » avance |
+| G38 | Ouvrir une route inconnue, `#/nimportequoi` | Même repli sur les Indicateurs, sans page blanche |
 
 ## Cas par écran
 
