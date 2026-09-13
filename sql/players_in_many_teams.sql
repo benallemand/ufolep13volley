@@ -7,6 +7,9 @@ FROM (SELECT GROUP_CONCAT(CONCAT(e.nom_equipe, ' (', e.code_competition, ')') OR
                JOIN joueur_equipe je ON e.id_equipe = je.id_equipe
                JOIN joueurs j ON je.id_joueur = j.id
       WHERE e.id_equipe IN (SELECT id_equipe FROM classements)
+        -- Une appartenance non jouante (issue #325) ne fait pas jouer plus :
+        -- elle ne doit pas gonfler le compte des multi-equipes.
+        AND je.est_jouant + 0 > 0
       GROUP BY j.prenom, j.nom
       HAVING COUNT(e.nom_equipe) > 1
       order by equipes) sub_sql

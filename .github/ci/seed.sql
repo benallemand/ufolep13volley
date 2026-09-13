@@ -138,18 +138,24 @@ INSERT INTO joueurs (id, prenom, nom, sexe, email, telephone, num_licence, depar
   (57, 'Joueuse27', 'CiTest', 'F', 'joueuse27@example.test', '0710000027', 'LIC1027', 13, 3, CURRENT_DATE - INTERVAL 200 DAY),
   (58, 'Joueuse28', 'CiTest', 'F', 'joueuse28@example.test', '0710000028', 'LIC1028', 13, 1, CURRENT_DATE - INTERVAL 200 DAY),
   (59, 'Joueuse29', 'CiTest', 'F', 'joueuse29@example.test', '0710000029', 'LIC1029', 13, 2, CURRENT_DATE - INTERVAL 200 DAY),
-  (60, 'Joueuse30', 'CiTest', 'F', 'joueuse30@example.test', '0710000030', 'LIC1030', 13, 3, CURRENT_DATE - INTERVAL 200 DAY);
+  (60, 'Joueuse30', 'CiTest', 'F', 'joueuse30@example.test', '0710000030', 'LIC1030', 13, 3, CURRENT_DATE - INTERVAL 200 DAY),
+  -- Membre non jouant (issue #325) : un homme, sans licence ni homologation,
+  -- rattache a l'equipe feminine CI Beta 2 pour la piloter. Il ne doit jamais
+  -- etre compte dans un effectif, ni signale comme joueur sans licence, ni
+  -- proposable sur une feuille de match.
+  (61, 'Referent01', 'CiTest', 'M', 'referent01@example.test', '0700000061', NULL, 13, 2, NULL);
 
-INSERT INTO joueur_equipe (id_joueur, id_equipe, is_leader, is_vice_leader, is_captain) VALUES
-  (1,  1, b'1', b'0', b'1'),
-  (2,  1, b'0', b'1', b'0'),
-  (3,  1, b'0', b'0', b'0'),
-  (4,  2, b'1', b'0', b'1'),
-  (5,  2, b'0', b'1', b'0'),
-  (6,  3, b'1', b'0', b'1'),
-  (31, 4, b'1', b'0', b'1'),
-  (32, 4, b'0', b'1', b'0'),
-  (41, 5, b'1', b'0', b'1');
+INSERT INTO joueur_equipe (id_joueur, id_equipe, est_jouant, is_leader, is_vice_leader, is_captain) VALUES
+  (1,  1, b'1', b'1', b'0', b'1'),
+  (2,  1, b'1', b'0', b'1', b'0'),
+  (3,  1, b'1', b'0', b'0', b'0'),
+  (4,  2, b'1', b'1', b'0', b'1'),
+  (5,  2, b'1', b'0', b'1', b'0'),
+  (6,  3, b'1', b'1', b'0', b'1'),
+  (31, 4, b'1', b'1', b'0', b'1'),
+  (32, 4, b'1', b'0', b'1', b'0'),
+  (61, 4, b'0', b'0', b'0', b'0'),
+  (41, 5, b'1', b'1', b'0', b'1');
 
 -- ---------------------------------------------------------------------------
 -- Comptes d'acces et roles (issue #245 : roles derives et cumulables)

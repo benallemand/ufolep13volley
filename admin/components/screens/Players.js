@@ -183,6 +183,14 @@ export default {
                         fields: [
                             { key: 'active_teams_list', label: 'Actives', format: (v) => this.teamEntries(v).join(' · ') },
                             { key: 'inactive_teams_list', label: 'Inactives', format: (v) => this.teamEntries(v).join(' · ') },
+                            // Les équipes où la personne figure sans y jouer
+                            // (issue #325) : responsable d'une équipe féminine
+                            // alors qu'elle joue en masculin, par exemple. Ces
+                            // équipes restent dans les listes ci-dessus — une
+                            // appartenance reste une appartenance — et cette
+                            // ligne dit lesquelles ne comptent pas dans un
+                            // effectif.
+                            { key: 'non_playing_teams_list', label: 'Sans y jouer', format: (v) => this.teamEntries(v).join(' · ') },
                         ],
                     },
                 ],
@@ -251,9 +259,15 @@ export default {
          * forme « Équipe (Compétition) », séparées par des `<br/>` — pas par
          * des virgules, et un nom d'équipe peut en contenir une. Le filtre
          * compte les compétitions qui reviennent.
+         *
+         * Les appartenances non jouantes (issue #325) sont retirées d'abord :
+         * être responsable d'une équipe où l'on ne joue pas ne constitue pas
+         * un double engagement.
          */
         hasTwoTeamsInSameCompetition(row) {
+            const nonPlaying = new Set(this.teamEntries(row.non_playing_teams_list));
             const competitions = this.teamEntries(row.active_teams_list)
+                .filter((entree) => !nonPlaying.has(entree))
                 .map((entree) => {
                     const m = entree.match(/\(([^)]*)\)\s*$/);
                     return m ? m[1].trim() : null;
