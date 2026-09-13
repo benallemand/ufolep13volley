@@ -106,6 +106,19 @@ export default {
           </div>
         </div>
 
+        <!-- Ouverture depuis une tuile du tableau de bord (#312) : on annonce
+             d'où vient le filtre, sinon la grille paraît amputée sans raison. -->
+        <div v-if="focusIds.length" class="alert alert-info mb-3 py-2">
+          <i class="fas fa-filter"></i>
+          <span>
+            Affichage restreint à {{ focusIds.length }} {{ entityLabel }}(s)
+            signalé(s) par les indicateurs.
+          </span>
+          <button class="btn btn-sm btn-ghost" @click="clearFocus">
+            <i class="fas fa-xmark"></i> Voir tout
+          </button>
+        </div>
+
         <!-- Filtres propres à l'écran, au-dessus de la recherche -->
         <div v-if="$slots.filters" class="flex flex-wrap items-center gap-4 mb-3">
           <slot name="filters" :rows="rows"></slot>
@@ -271,10 +284,30 @@ export default {
         };
     },
     computed: {
+        /**
+         * Identifiants passés dans l'URL (`?ids=12,34`) — issue #312.
+         *
+         * C'est ainsi qu'une tuile du tableau de bord ouvre l'écran sur les
+         * seules lignes qu'elle signale. La grille le lit ici plutôt que chaque
+         * écran dans son coin : les 29 écrans en profitent sans rien déclarer.
+         *
+         * Comparaison en chaînes : un identifiant vient de l'URL, la ligne le
+         * porte parfois en nombre selon l'endpoint.
+         */
+        focusIds() {
+            const raw = this.$route && this.$route.query ? this.$route.query.ids : null;
+            if (!raw) {
+                return [];
+            }
+            return String(raw).split(',').map((id) => id.trim()).filter((id) => id.length);
+        },
         filteredRows() {
-            const base = this.rowFilter
-                ? this.sortedRows.filter((r) => this.rowFilter(r))
+            const focused = this.focusIds.length
+                ? this.sortedRows.filter((r) => this.focusIds.includes(String(r[this.idField])))
                 : this.sortedRows;
+            const base = this.rowFilter
+                ? focused.filter((r) => this.rowFilter(r))
+                : focused;
             if (!this.search) {
                 return base;
             }
@@ -380,6 +413,9 @@ export default {
         // ouvert sur une ligne invisible est un mensonge.
         search() { this.page = 1; this.selection = []; this.detailId = null; },
         rowFilter() { this.page = 1; this.selection = []; this.detailId = null; },
+        // Même raison : les lignes visibles changent sous les pieds de la
+        // sélection et du tiroir (#312).
+        focusIds() { this.page = 1; this.selection = []; this.detailId = null; },
         pageSize() { this.page = 1; },
         // Un écran peut faire varier son URL (fenêtre de chargement des
         // emails, filtre serveur…) : on recharge alors au lieu d'afficher
@@ -416,6 +452,12 @@ export default {
         },
         isDetailed(row) {
             return this.detailId !== null && row[this.idField] === this.detailId;
+        },
+        /** Retire `?ids=` de l'URL : la grille retrouve toutes ses lignes. */
+        clearFocus() {
+            const query = { ...this.$route.query };
+            delete query.ids;
+            this.$router.replace({ path: this.$route.path, query });
         },
         /**
          * Ligne precedente / suivante dans les lignes VISIBLES, filtre et tri

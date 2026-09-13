@@ -632,6 +632,31 @@ la prop `rowFilter`.
 > Il se **referme quand la ligne sort du filtre**, comme la sélection se vide : un
 > tiroir ouvert sur une ligne invisible est un mensonge.
 
+> **Indicateurs actionnables** (issue #312) : un indicateur qui déclare un écran
+> cible et une colonne d'identifiant gagne un bouton « Corriger ces N ligne(s) »
+> dans son détail, qui ouvre l'écran **filtré sur ces seules lignes**.
+>
+> ```php
+> new Indicator("Joueurs en attente de validation", $sql, 'alert',
+>               'players', 'indicator_id');
+> ```
+>
+> La requête doit sélectionner l'identifiant sous le nom convenu ;
+> `Indicator::getResult()` l'extrait dans `ids`, **le dédoublonne** (une jointure
+> sur `joueur_equipe` ramène le même joueur autant de fois qu'il a d'équipes) et
+> le **retire du détail affiché** — une colonne d'identifiants bruts n'apprend
+> rien dans le tableau.
+>
+> Côté grille, `AdminGrid` lit `?ids=` dans la route : **les 29 écrans en
+> profitent sans rien déclarer**, l'identifiant comparé étant celui de `id-field`.
+> Le filtre vit dans l'URL, donc il survit à un rechargement et se partage. Un
+> bandeau l'annonce, avec un bouton pour tout revoir.
+>
+> Cinq indicateurs sont câblés à ce jour — trois vers `players`, deux vers
+> `teams`. Les autres restent de simples constats : la plupart croisent plusieurs
+> entités et n'ont pas d'écran de correction évident. Mieux vaut les laisser
+> non cliquables que d'inventer une correspondance douteuse.
+
 > **Fenêtre de sélection** : `grid/AdminPickerModal.js` couvre les actions
 > « choisir dans une liste puis confirmer » — associer des joueurs à un club ou
 > à une équipe, nommer un responsable, rattacher un compte à des équipes. En

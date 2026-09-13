@@ -1,4 +1,8 @@
-SELECT CONCAT(j.nom, ' ', j.prenom)                  AS joueur,
+-- `indicator_id` alimente le bouton « corriger » du tableau de bord (#312) :
+-- il est retiré du détail affiché par `Indicator::getResult()`, et sert à
+-- ouvrir l'écran des joueurs filtré sur ces seules lignes.
+SELECT j.id                                          AS indicator_id,
+       CONCAT(j.nom, ' ', j.prenom)                  AS joueur,
        c.nom                                         AS club,
        CONCAT(e.nom_equipe, ' (', comp.libelle, ')') AS equipe,
        jresp.email                                   AS responsable
