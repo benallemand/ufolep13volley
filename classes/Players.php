@@ -936,8 +936,18 @@ class Players extends Generic
         if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
             throw new Exception("Cette action n'est pas autorisée !");
         }
-        if (!UserManager::isAdmin()) {
-            @session_start();
+        // Les rôles se cumulent (issue #245) : l'administrateur est très
+        // souvent AUSSI responsable d'une équipe, et il agit alors depuis
+        // l'écran effectif, qui n'envoie pas d'`id_team` — l'équipe est celle
+        // de la session. Ne retomber sur la session que pour les non-admins
+        // renvoyait « Aucune équipe n'est désignée ! » à tout administrateur
+        // utilisant cet écran.
+        //
+        // Le resserrage reste, et c'est lui qui compte : un responsable
+        // d'équipe n'agit QUE sur la sienne, même s'il poste un autre
+        // `id_team`.
+        @session_start();
+        if (!UserManager::isAdmin() || empty($id_team)) {
             $id_team = $_SESSION['id_equipe'] ?? null;
         }
         if (empty($id_team)) {

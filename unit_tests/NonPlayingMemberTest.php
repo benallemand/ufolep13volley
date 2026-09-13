@@ -239,6 +239,50 @@ class NonPlayingMemberTest extends UfolepTestCase
         self::assertFalse($this->players->isPlayingInTeam($this->id_homme, $this->id_team));
     }
 
+    /**
+     * L'écran effectif du responsable n'envoie pas d'`id_team` : l'équipe est
+     * celle de la session. Comme les rôles se cumulent (issue #245), un
+     * administrateur qui est aussi responsable passe par là — et recevait
+     * « Aucune équipe n'est désignée ! », le repli sur la session ayant été
+     * réservé aux non-admins. Relevé en recette par Benjamin.
+     */
+    public function test_un_admin_responsable_agit_sur_l_equipe_de_sa_session(): void
+    {
+        $this->connect_as_team_leader($this->id_team);
+        $_SESSION['is_admin'] = true;
+
+        $this->players->set_playing([$this->id_homme], null, 1);
+
+        self::assertTrue($this->players->isPlayingInTeam($this->id_homme, $this->id_team));
+    }
+
+    /**
+     * Le resserrage, lui, reste : un responsable d'équipe n'agit que sur la
+     * sienne, même s'il poste un autre `id_team`.
+     */
+    public function test_un_responsable_ne_peut_pas_agir_sur_une_autre_equipe(): void
+    {
+        $autre_equipe = (int)$this->sql->execute(
+            "INSERT INTO equipes SET nom_equipe = ?, code_competition = 'f', id_club = ?",
+            [
+                ['type' => 's', 'value' => "Autre $this->suffixe"],
+                ['type' => 'i', 'value' => $this->id_club],
+            ]
+        );
+        $this->connect_as_team_leader($autre_equipe);
+
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage("n'est pas dans l'équipe");
+            // L'`id_team` posté est ignoré au profit de celui de la session :
+            // le joueur n'est pas dans l'équipe de la session, donc refus.
+            $this->players->set_playing([$this->id_homme], $this->id_team, 1);
+        } finally {
+            $this->sql->execute("DELETE FROM equipes WHERE id_equipe = ?",
+                [['type' => 'i', 'value' => $autre_equipe]]);
+        }
+    }
+
     /** Un capitaine joue : le capitanat n'a pas de sens sans cela. */
     public function test_un_membre_non_jouant_ne_peut_pas_etre_capitaine(): void
     {
