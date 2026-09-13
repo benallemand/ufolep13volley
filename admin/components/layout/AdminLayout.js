@@ -70,6 +70,17 @@ const router = createRouter({
  */
 export const MENU = [
     {
+        // Les indicateurs sont la page d'accueil depuis l'issue #313, et leurs
+        // tuiles ouvrent l'écran de correction pré-filtré depuis #312 : ils
+        // ouvrent donc le menu au lieu d'être rangés en fin de liste sous
+        // « Consultation & outils », où ils passaient pour un écran de
+        // consultation parmi d'autres.
+        label: 'Accueil',
+        items: [
+            { path: '/indicators', label: 'Indicateurs', icon: 'fas fa-gauge-high' },
+        ],
+    },
+    {
         label: 'Référentiel',
         items: [
             { path: '/users', label: 'Utilisateurs', icon: 'fas fa-users' },
@@ -123,7 +134,6 @@ export const MENU = [
     {
         label: 'Consultation & outils',
         items: [
-            { path: '/indicators', label: 'Indicateurs', icon: 'fas fa-gauge-high' },
             { path: '/activity', label: 'Activité', icon: 'fas fa-clock-rotate-left' },
             { path: '/hall-of-fame', label: 'Palmarès', icon: 'fas fa-medal' },
             { path: '/bilan', label: 'Bilan annuel', icon: 'fas fa-file-pdf' },
