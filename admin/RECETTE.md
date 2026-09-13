@@ -125,6 +125,16 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | C2 | Créer un club en laissant un champ obligatoire vide | Le navigateur bloque l'envoi |
 | C3 | Éditer le club, changer le prénom du responsable | Modification visible |
 | C4 | Supprimer le club de test | Le compteur revient à sa valeur de départ |
+| C5 | Regarder la colonne **Compte(s)** | Les clubs qui ont un compte (`users_clubs`) l'affichent ; la colonne est vide pour les autres — c'est le rattrapage de #326 |
+| C6 | Tableau de bord → tuile « Clubs engagés sans compte de club » → « Corriger ces N ligne(s) » | L'écran Clubs s'ouvre filtré sur ces seuls clubs, colonne Compte(s) vide |
+| C7 | Sélectionner un de ces clubs → « Créer le compte du club » | La fenêtre propose les adresses connues : coordonnées du club, personnes du club (responsables d'équipe en tête) |
+| C8 | Choisir une adresse et valider | Le compte est créé, rattaché au club, la colonne Compte(s) se remplit, et **les identifiants arrivent tout de suite** dans Mailpit |
+| C9 | Rejouer C7–C8 sur le même club avec la même adresse | Aucun doublon : le compte existant est simplement rattaché |
+| C10 | Ouvrir le tableau de bord à nouveau | La tuile a baissé d'autant |
+
+> Le compte créé porte le rôle **responsable de club** (#245) : il peut dès lors
+> inscrire les équipes du club, créer les comptes de leurs responsables et
+> déclarer les indisponibilités. Vérifier une fois avec « Agir en tant que ».
 
 ### Équipes (`#/teams`) — complété par #288
 

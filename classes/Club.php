@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
+require_once __DIR__ . '/../classes/UserManager.php';
 
 class Club extends Generic
 {
@@ -12,10 +13,18 @@ class Club extends Generic
 
     public function getSql($query = "1=1"): string
     {
-        return "SELECT * 
-                FROM $this->table_name
+        // `comptes` : les comptes rattachés au club (issue #326). C'est eux, le
+        // référent du club — pas les colonnes `*_responsable`, qui partiront
+        // avec #327. La grille d'administration en fait une colonne, pour que
+        // le manque se voie là où on le corrige.
+        return "SELECT c.*,
+                       (SELECT GROUP_CONCAT(DISTINCT ca.email ORDER BY ca.email SEPARATOR ', ')
+                          FROM users_clubs uc
+                                   JOIN comptes_acces ca ON ca.id = uc.user_id
+                         WHERE uc.club_id = c.id) AS comptes
+                FROM $this->table_name c
                 WHERE $query
-                ORDER BY nom";
+                ORDER BY c.nom";
     }
 
     /**
@@ -71,6 +80,109 @@ class Club extends Generic
         WHERE c.id = $idClub";
         $results = $this->sql_manager->execute($sql);
         return $results[0]['club_name'];
+    }
+
+    /**
+     * Adresses proposables pour créer le compte d'un club (issue #326).
+     *
+     * Le rattrapage des comptes manquants se fait club par club, et l'adresse
+     * à reprendre est presque toujours déjà quelque part : dans les
+     * coordonnées du club, ou chez l'une de ses personnes. Les proposer évite
+     * de la ressaisir — et donc de la saisir de travers.
+     *
+     * `email_responsable` disparaîtra avec les colonnes `clubs.*_responsable`
+     * (#327) ; les personnes du club, elles, resteront.
+     *
+     * @throws Exception
+     */
+    public function getAccountCandidates($id_club): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut faire ça !", 403);
+        }
+        $id_club = (int)$id_club;
+        $binding = array(array('type' => 'i', 'value' => $id_club));
+        $candidats = array();
+
+        $club = $this->sql_manager->execute(
+            "SELECT nom, prenom_responsable, nom_responsable, email_responsable
+             FROM clubs WHERE id = ?", $binding);
+        if (count($club) === 0) {
+            throw new Exception("Ce club n'existe pas !");
+        }
+        $email_club = trim((string)($club[0]['email_responsable'] ?? ''));
+        if ($email_club !== '') {
+            $candidats[strtolower($email_club)] = array(
+                'email' => $email_club,
+                'label' => trim(($club[0]['prenom_responsable'] ?? '') . ' ' . ($club[0]['nom_responsable'] ?? '')),
+                'origine' => 'coordonnées du club',
+            );
+        }
+
+        // Les personnes du club qui ont une adresse. Un responsable d'équipe
+        // est proposé en premier : c'est le profil le plus probable.
+        $personnes = $this->sql_manager->execute(
+            "SELECT j.prenom,
+                    j.nom,
+                    j.email,
+                    EXISTS(SELECT 1
+                             FROM joueur_equipe je
+                            WHERE je.id_joueur = j.id
+                              AND je.is_leader + 0 > 0) AS est_responsable
+             FROM joueurs j
+             WHERE j.id_club = ?
+               AND NULLIF(TRIM(j.email), '') IS NOT NULL
+             ORDER BY est_responsable DESC, j.nom, j.prenom", $binding);
+        foreach ($personnes as $personne) {
+            $cle = strtolower(trim($personne['email']));
+            if (isset($candidats[$cle])) {
+                continue;
+            }
+            $candidats[$cle] = array(
+                'email' => trim($personne['email']),
+                'label' => trim($personne['prenom'] . ' ' . $personne['nom']),
+                'origine' => ((int)$personne['est_responsable'] === 1)
+                    ? "responsable d'équipe"
+                    : 'personne du club',
+            );
+        }
+        return array_values($candidats);
+    }
+
+    /**
+     * Crée le compte d'un club, ou rattache au club un compte existant
+     * (issue #326).
+     *
+     * Le référent d'un club, c'est son compte : `users_clubs` est la seule
+     * source où l'email est à la fois obligatoire et unique, et c'est cette
+     * ligne qui porte le rôle (issue #245). Les identifiants partent
+     * immédiatement, pas au cron horaire — la création se fait à l'unité, en
+     * face de quelqu'un qui attend (issue #305).
+     *
+     * @throws Exception
+     */
+    public function createClubAccount($id_club, $email): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut faire ça !", 403);
+        }
+        $id_club = (int)$id_club;
+        $email = trim((string)$email);
+        if ($id_club <= 0) {
+            throw new Exception("Aucun club n'est désigné !");
+        }
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new Exception("« $email » n'est pas une adresse email valide !");
+        }
+        $club = $this->sql_manager->execute(
+            "SELECT nom FROM clubs WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id_club))
+        );
+        if (count($club) === 0) {
+            throw new Exception("Ce club n'existe pas !");
+        }
+        (new UserManager())->create_or_update_club_account($email, $id_club);
+        $this->addActivity("Compte de club rattache a " . $club[0]['nom'] . " : $email");
     }
 
     /**

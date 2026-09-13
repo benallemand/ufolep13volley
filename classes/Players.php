@@ -273,7 +273,6 @@ class Players extends Generic
         $sexe = null,
         $departement_affiliation = null,
         $id_club = null,
-        $est_responsable_club = null,
         $telephone = null,
         $email = null,
         $telephone2 = null,
@@ -294,7 +293,6 @@ class Players extends Generic
             'sexe' => $sexe,
             'departement_affiliation' => $departement_affiliation,
             'id_club' => $id_club,
-            'est_responsable_club' => $est_responsable_club,
             'telephone' => $telephone,
             'email' => $email,
             'telephone2' => $telephone2,
@@ -351,14 +349,6 @@ class Players extends Generic
                         'value' => $value
                     );
                     $sql .= "$key = DATE(STR_TO_DATE(?, '%d/%m/%Y')),";
-                    break;
-                case 'est_responsable_club':
-                    $val = Generic::to_flag($value);
-                    $bindings[] = array(
-                        'type' => 'i',
-                        'value' => $val
-                    );
-                    $sql .= "$key = ?,";
                     break;
                 default:
                     $bindings[] = array(
@@ -789,7 +779,6 @@ class Players extends Generic
         j.id_club, 
         j.telephone2, 
         j.email2, 
-        j.est_responsable_club,
         je.is_captain,
         je.is_vice_leader,
         je.is_leader,

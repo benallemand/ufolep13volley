@@ -131,6 +131,11 @@ $indicators[] = new Indicator(
     file_get_contents(__DIR__ . '/../sql/missing_team_leader_account.sql'),
     'alert');
 $indicators[] = new Indicator(
+    "Clubs engagés sans compte de club",
+    file_get_contents(__DIR__ . '/../sql/clubs_without_account.sql'),
+    'alert',
+    'clubs', 'indicator_id');
+$indicators[] = new Indicator(
     "Equipes actives sans responsable",
     file_get_contents(__DIR__ . '/../sql/no_leader_team.sql'),
     'alert',

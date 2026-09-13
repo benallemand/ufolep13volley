@@ -860,6 +860,44 @@ d'une feuille de match : déjà protégés.
   changent pas — une appartenance reste une appartenance, et le filtre
   « engagé » comme le `%teams_list%` des emails gardent leur sens.
 
+### Le référent d'un club, c'est son compte (issue #326)
+
+Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un
+club, le référent d'un club **est** la ligne `users_clubs` → `comptes_acces` :
+seule table où l'email est à la fois obligatoire et **unique** (`uq_email`), et
+seule qui porte le rôle (#245). Les colonnes `clubs.*_responsable` ne sont plus
+qu'un contact de dernier recours ; #327 les retirera.
+
+- `Club::createClubAccount($id_club, $email)` (admin) crée le compte ou rattache
+  un compte existant, et envoie les identifiants **immédiatement** — la création
+  se fait à l'unité, en face de quelqu'un qui attend (#305).
+- `UserManager::create_or_update_club_account()` est le pendant club de
+  `create_or_update_leader_account()` ; les deux passent par `ensure_account()`,
+  pour qu'un référent déjà responsable d'équipe ne se voie pas créer un second
+  compte.
+- `Club::getAccountCandidates()` propose les adresses déjà connues (coordonnées
+  du club, personnes du club) : le rattrapage se fait sans ressaisie.
+- L'indicateur **« Clubs engagés sans compte de club »** est actionnable (#312) :
+  sa tuile ouvre l'écran Clubs filtré, où l'action corrige. La grille porte une
+  colonne `Compte(s)`, servie par `Club::getSql()`.
+
+> **`joueurs.id_compte` (FK, `ON DELETE SET NULL`, `UNIQUE`) au lieu d'une
+> jointure sur l'email.** Trois raisons, toutes vérifiées en base : `joueurs`
+> porte `email` **et** `email2` ; `comptes_acces`/`clubs` sont en **latin1** et
+> `joueurs` en **utf8mb3**, donc la comparaison force une conversion et rend
+> l'index inutilisable ; et **6 comptes sur 146** correspondent à *plusieurs*
+> personnes — adresses de famille, adresse générique de club, doublon de saisie.
+
+> **`UserManager::link_person_to_account()` ne lie que l'évident**, et se tait
+> dans les trois cas où le lien serait un pari : compte déjà rattaché, aucune
+> personne avec cet email, ou plusieurs. Ces cas-là se règlent à la main — c'est
+> le but. La reprise initiale (134 liens sur 146 comptes en dev) suit la même
+> règle.
+
+> `joueurs.est_responsable_club` a été **supprimée** avec ce lot : jamais lue —
+> ni droit, ni indicateur, ni requête. C'était un troisième marqueur de ce que
+> porte `users_clubs`.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;
