@@ -2,7 +2,9 @@ import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';
 import ScoreBoard from './pages/components/live/ScoreBoard.js';
+import ScorerBoard from './pages/components/live/ScorerBoard.js';
 import ScorerControls from './pages/components/live/ScorerControls.js';
+import ScorerLineup from './pages/components/live/ScorerLineup.js';
 import ActiveMatchList from './pages/components/live/ActiveMatchList.js';
 import MatchDetails from './pages/components/live/MatchDetails.js';
 import {getCurrentUser} from './pages/components/auth/guard.js';
@@ -26,10 +28,29 @@ function createEmptyLineup() {
     };
 }
 
+/**
+ * Ne garde d'une composition que les valeurs qui sont des identifiants de
+ * joueur (issue #332). Les brouillons enregistrés avant ce lot portaient des
+ * noms complets : les afficher tels quels donnerait des postes remplis qu'aucune
+ * vignette ne peut suivre, mieux vaut les laisser libres.
+ */
+function keepPlayerIds(lineup) {
+    const cleaned = createEmptyLineup();
+    Object.keys(cleaned).forEach((position) => {
+        const value = lineup ? lineup[position] : '';
+        if (value !== '' && value !== null && value !== undefined && !Number.isNaN(Number(value))) {
+            cleaned[position] = value;
+        }
+    });
+    return cleaned;
+}
+
 createApp({
     components: {
         'score-board': ScoreBoard,
+        'scorer-board': ScorerBoard,
         'scorer-controls': ScorerControls,
+        'scorer-lineup': ScorerLineup,
         'active-match-list': ActiveMatchList,
         'match-details': MatchDetails
     },
@@ -67,11 +88,28 @@ createApp({
                 tm2: { used: false, countdown: 0, timer: null }
             }
         },
+        // Positions : { dom: {1: idJoueur, …}, ext: … }. Les valeurs sont des
+        // IDENTIFIANTS de joueur depuis l'issue #332 — c'est ce qui permet
+        // d'afficher la vignette. Les brouillons d'avant portaient des noms :
+        // `restoreFromLocalStorage` les écarte au lieu de les afficher de
+        // travers (un brouillon ne survit de toute façon qu'à un match).
         lineups: {
             dom: createEmptyLineup(),
             ext: createEmptyLineup()
         },
+        // Composition du set précédent, pour le raccourci « reprendre ».
+        previousLineups: {
+            dom: null,
+            ext: null
+        },
         servingTeam: null,
+        // Pile d'annulation (issue #332). Chaque entrée est l'état AVANT le
+        // point : score, service et positions. Annuler restitue les trois — un
+        // `-1` qui ne rendait que le point laissait la rotation décalée pour
+        // tout le reste du set, sans que rien ne le signale.
+        pointHistory: [],
+        maxHistory: 60,
+        showLineup: false,
         // Autosave state (issue #196)
         saveStatus: 'saved',
         version: 1,
@@ -117,6 +155,25 @@ createApp({
         isRotationModeEnabled() {
             const competitionCode = (this.match?.code_competition || '').toString().trim().toLowerCase();
             return ROTATION_COMPETITION_CODES.includes(competitionCode);
+        },
+        canUndo() {
+            return this.pointHistory.length > 0;
+        },
+        // Le plein écran arbitre ne prend la main qu'une fois le live démarré :
+        // avant, il n'y a rien à marquer (issue #332).
+        scorerFullScreen() {
+            return this.canScore && this.isScorer && this.isLive;
+        },
+        // Les deux camps tels que l'écran de composition les attend, dans
+        // l'ordre affiché (gauche d'abord) — pas dans l'ordre dom/ext.
+        lineupSides() {
+            return [this.leftTeamKey, this.rightTeamKey].map((key) => ({
+                key,
+                name: key === 'dom' ? this.teamDomName : this.teamExtName,
+                lineup: this.lineups[key],
+                players: this.teamPlayersBySide[key] || [],
+                hasPrevious: Boolean(this.previousLineups[key]),
+            }));
         },
         localStorageKey() {
             return 'live_score_draft_' + this.idMatch;
@@ -196,14 +253,20 @@ createApp({
                 await this.loadTeamPlayers();
             }
         },
+        // Effectifs avec vignettes, RESERVES AU SCOREUR du match (issue #332).
+        // `player/getLivePlayersFromTeam` reste volontairement sans PII et en
+        // niveau `user` (issue #228) : on ne l'elargit pas aux photos, sinon
+        // tout compte connecte pourrait lister n'importe quelle equipe. Cet
+        // appel-ci est garde par `canModifyLiveScore()`, et la page publique
+        // ne le fait jamais — elle n'affiche pas les compositions.
         async loadTeamPlayers() {
             try {
-                const [domRes, extRes] = await Promise.all([
-                    axios.get(`/rest/action.php/player/getLivePlayersFromTeam?id_equipe=${this.match.id_equipe_dom}`),
-                    axios.get(`/rest/action.php/player/getLivePlayersFromTeam?id_equipe=${this.match.id_equipe_ext}`),
-                ]);
-                this.teamPlayersBySide.dom = Array.isArray(domRes.data) ? domRes.data : [];
-                this.teamPlayersBySide.ext = Array.isArray(extRes.data) ? extRes.data : [];
+                const { data } = await axios.get(
+                    `/ajax/live_score.php?id_match=${encodeURIComponent(this.idMatch)}&what=rosters`
+                );
+                const rosters = (data && data.data) || {};
+                this.teamPlayersBySide.dom = Array.isArray(rosters.dom) ? rosters.dom : [];
+                this.teamPlayersBySide.ext = Array.isArray(rosters.ext) ? rosters.ext : [];
             } catch (e) {
                 console.error('Erreur lors du chargement des joueurs:', e);
             }
@@ -246,12 +309,6 @@ createApp({
         incrementRight() {
             this.incrementScore(this.rightTeamKey);
         },
-        decrementLeft() {
-            this.decrementScore(this.leftTeamKey);
-        },
-        decrementRight() {
-            this.decrementScore(this.rightTeamKey);
-        },
         nextSetLeft() {
             this.nextSet(this.leftTeamKey);
         },
@@ -261,18 +318,54 @@ createApp({
 
         // --- Local state modification (no AJAX) ---
         incrementScore(team) {
-            if (this.isRotationModeEnabled) {
-                this.handleServiceAndRotation(team);
-            }
+            this.pushHistory();
+            this.handleServiceAndRotation(team);
             const key = 'score_' + team;
             this.score[key] = (parseInt(this.score[key]) || 0) + 1;
             this.markAsUnsaved();
         },
-        decrementScore(team) {
-            const key = 'score_' + team;
-            const current = parseInt(this.score[key]) || 0;
-            this.score[key] = Math.max(0, current - 1);
+        /**
+         * Empile l'état AVANT le point (issue #332).
+         *
+         * Les positions sont copiées, pas référencées : `rotateTeamPositions`
+         * remplace l'objet, mais une copie de surface protège des reprises
+         * futures sans coûter quoi que ce soit ici.
+         */
+        pushHistory() {
+            this.pointHistory.push({
+                score: Object.assign({}, this.score),
+                servingTeam: this.servingTeam,
+                lineups: {
+                    dom: Object.assign({}, this.lineups.dom),
+                    ext: Object.assign({}, this.lineups.ext)
+                }
+            });
+            if (this.pointHistory.length > this.maxHistory) {
+                this.pointHistory.shift();
+            }
+        },
+        /**
+         * Annule le dernier point — score, service ET rotation.
+         *
+         * C'est le point qui a motivé le remplacement des deux `-1` par camp :
+         * `decrementScore()` ne rendait que le point. Si ce point avait provoqué
+         * une reprise de service, l'équipe avait tourné d'un cran, et la
+         * rotation restait fausse jusqu'à la fin du set sans que rien ne le
+         * signale.
+         */
+        undoLastPoint() {
+            const previous = this.pointHistory.pop();
+            if (!previous) {
+                return;
+            }
+            this.score = Object.assign({}, previous.score);
+            this.servingTeam = previous.servingTeam;
+            this.lineups = {
+                dom: Object.assign({}, previous.lineups.dom),
+                ext: Object.assign({}, previous.lineups.ext)
+            };
             this.markAsUnsaved();
+            this.persistToLocalStorage();
         },
         nextSet(winner) {
             const setNum = parseInt(this.score.set_en_cours) || 1;
@@ -294,11 +387,29 @@ createApp({
             this.score.score_ext = 0;
             this.score.set_en_cours = setNum + 1;
             this.resetTimeouts();
+            // La composition du set qui s'achève alimente le raccourci
+            // « reprendre » du set suivant : une équipe change rarement son six
+            // de départ en cours de match (issue #332).
+            this.previousLineups = {
+                dom: Object.assign({}, this.lineups.dom),
+                ext: Object.assign({}, this.lineups.ext)
+            };
             this.resetPositions();
             this.servingTeam = null;
+            // On n'annule pas au travers d'une fin de set : le score du set
+            // précédent est figé, une annulation le laisserait incohérent.
+            this.pointHistory = [];
             this.markAsUnsaved();
             this.showToast('Set terminé !', 'success');
         },
+        /**
+         * Qui sert, et — en compétition à 6 — qui tourne.
+         *
+         * Les deux étaient liés : le service n'était suivi que si la rotation
+         * l'était. Savoir qui sert est pourtant utile dans TOUTES les
+         * compétitions, c'est la rotation des six postes qui est spécifique
+         * (issue #332).
+         */
         handleServiceAndRotation(team) {
             if (!['dom', 'ext'].includes(team)) {
                 return;
@@ -308,7 +419,10 @@ createApp({
                 return;
             }
             if (this.servingTeam !== team) {
-                this.rotateTeamPositions(team);
+                // Side-out : l'équipe qui reprend le service tourne d'un cran.
+                if (this.isRotationModeEnabled) {
+                    this.rotateTeamPositions(team);
+                }
                 this.servingTeam = team;
             }
         },
@@ -325,7 +439,14 @@ createApp({
             this.lineups[team] = rotated;
             this.persistToLocalStorage();
         },
-        updatePosition(team, position, value) {
+        /**
+         * Place un joueur à un poste. La valeur est son IDENTIFIANT — c'est lui
+         * qui permet de retrouver la vignette (issue #332).
+         *
+         * Un joueur déjà placé ailleurs libère son ancien poste : sans ça, on
+         * peut se retrouver avec le même joueur à deux endroits du terrain.
+         */
+        placeInLineup(team, position, idPlayer) {
             if (!this.isRotationModeEnabled || !['dom', 'ext'].includes(team)) {
                 return;
             }
@@ -333,9 +454,29 @@ createApp({
             if (!Number.isInteger(normalizedPosition) || normalizedPosition < 1 || normalizedPosition > 6) {
                 return;
             }
-            const sanitizedValue = (value || '').toString().trim().slice(0, 100);
-            const updated = Object.assign({}, this.lineups[team], { [normalizedPosition]: sanitizedValue });
+            const updated = Object.assign({}, this.lineups[team]);
+            Object.keys(updated).forEach((key) => {
+                if (String(updated[key]) === String(idPlayer)) {
+                    updated[key] = '';
+                }
+            });
+            updated[normalizedPosition] = idPlayer;
             this.lineups[team] = updated;
+            this.persistToLocalStorage();
+        },
+        clearLineup(team) {
+            if (!this.isRotationModeEnabled || !['dom', 'ext'].includes(team)) {
+                return;
+            }
+            this.lineups[team] = createEmptyLineup();
+            this.persistToLocalStorage();
+        },
+        repeatPreviousLineup(team) {
+            const previous = this.previousLineups[team];
+            if (!previous) {
+                return;
+            }
+            this.lineups[team] = Object.assign({}, previous);
             this.persistToLocalStorage();
         },
         resetPositions() {
@@ -433,6 +574,7 @@ createApp({
                 const draft = {
                     score: this.score,
                     lineups: this.lineups,
+                    previousLineups: this.previousLineups,
                     servingTeam: this.servingTeam,
                     version: this.version,
                     timestamp: Date.now()
@@ -451,7 +593,19 @@ createApp({
                 if (draft.timestamp && (Date.now() - draft.timestamp) < 86400000) {
                     this.score = draft.score;
                     if (draft.lineups?.dom && draft.lineups?.ext) {
-                        this.lineups = draft.lineups;
+                        // Les brouillons antérieurs à l'issue #332 portaient des
+                        // NOMS ; on ne garde que ce qui ressemble à un
+                        // identifiant, le reste laisse le poste libre.
+                        this.lineups = {
+                            dom: keepPlayerIds(draft.lineups.dom),
+                            ext: keepPlayerIds(draft.lineups.ext)
+                        };
+                    }
+                    if (draft.previousLineups?.dom || draft.previousLineups?.ext) {
+                        this.previousLineups = {
+                            dom: draft.previousLineups.dom ? keepPlayerIds(draft.previousLineups.dom) : null,
+                            ext: draft.previousLineups.ext ? keepPlayerIds(draft.previousLineups.ext) : null
+                        };
                     }
                     this.servingTeam = draft.servingTeam || null;
                     this.version = draft.version;

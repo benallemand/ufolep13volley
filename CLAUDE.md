@@ -860,6 +860,49 @@ d'une feuille de match : déjà protégés.
   changent pas — une appartenance reste une appartenance, et le filtre
   « engagé » comme le `%teams_list%` des emails gardent leur sens.
 
+### Live scoring : deux écrans, deux publics (issue #332)
+
+`live.html` sert **deux usages qu'il ne faut pas confondre** :
+
+- la **page publique**, consultée par les spectateurs : score, sets, détails du
+  match. Elle n'affiche **pas** les compositions et n'en a pas besoin ;
+- le **mode arbitre** (`?mode=scorer`), utilisé debout, sur un téléphone, par un
+  responsable d'équipe ou un administrateur.
+
+Dès que le live est démarré, le mode arbitre passe en **plein écran** (`fixed
+inset-0`, computed `scorerFullScreen`) et remplace la page ordinaire :
+
+| Composant | Rôle |
+|---|---|
+| `ScorerBoard.js` | les deux moitiés d'écran — **le terrain est le bouton**, `+1` en touchant la moitié qui marque |
+| `ScorerControls.js` | ligne de service, barre au pouce, et les trois feuilles (positions, temps morts, plus) |
+| `ScorerCourt.js` | un terrain 4-3-2 / 5-6-1 avec vignettes, partagé par la feuille et la composition |
+| `ScorerLineup.js` | composition du set |
+| `ScoreBoard.js` | **page publique uniquement**, lecture seule depuis ce lot |
+
+> **Rien n'occupe l'écran en permanence si l'arbitre n'en a pas besoin à chaque
+> échange.** Les positions tenaient plus d'un écran de téléphone en 12 `select`
+> dépliés en continu ; il n'en reste qu'une ligne — qui sert — et le terrain
+> complet s'ouvre à la demande.
+
+> **`lineups` contient des IDENTIFIANTS de joueur**, plus des noms : c'est ce
+> qui permet d'afficher la vignette. `keepPlayerIds()` écarte les brouillons
+> `localStorage` antérieurs, qui portaient des noms complets.
+
+> **Annuler défait la rotation.** `handleServiceAndRotation()` fait tourner
+> l'équipe qui reprend le service ; l'ancien `-1` ne rendait que le point, donc
+> une reprise de service annulée laissait la rotation fausse jusqu'à la fin du
+> set, sans que rien ne le signale. `pointHistory` empile l'état **avant** chaque
+> point — score, service, positions — et `undoLastPoint()` restitue les trois.
+> La pile est **vidée à chaque fin de set** : on n'annule pas au travers.
+
+> **Les vignettes ne sont servies qu'au scoreur.**
+> `ajax/live_score.php?what=rosters` → `LiveScore::getScorerRosters()`, derrière
+> le `canModifyLiveScore()` qui garde déjà les POST. On n'a **pas** élargi
+> `player/getLivePlayersFromTeam` : il est en niveau `user`, donc tout compte
+> connecté pourrait alors lister les photos de n'importe quelle équipe — il
+> reste sans PII (issue #228). Les membres **non jouants** (#325) en sont exclus.
+
 ### Le référent d'un club, c'est son compte (issue #326)
 
 Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un
