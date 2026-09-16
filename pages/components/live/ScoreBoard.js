@@ -1,3 +1,10 @@
+/**
+ * Tableau de score de la page PUBLIQUE — lecture seule.
+ *
+ * Il portait aussi les boutons du scoreur ; depuis l'issue #332 le marquage a
+ * son propre écran plein page (`ScorerBoard`), où les deux zones tactiles
+ * remplacent les `+1` / `-1`. Ce composant n'a donc plus d'état d'édition.
+ */
 export default {
     template: `
       <div class="card bg-base-100 shadow-xl mb-4">
@@ -8,10 +15,6 @@ export default {
             <div>
               <p class="font-bold text-lg truncate">{{ leftTeamName }}</p>
               <p class="text-xs text-gray-500">{{ leftTeamLabel }}</p>
-              <div v-if="isScorer" class="flex flex-col gap-1 mt-2">
-                <button @click="$emit('increment-left')" class="btn btn-primary text-2xl w-full" style="height:4rem">+1</button>
-                <button @click="$emit('decrement-left')" class="btn btn-outline btn-sm w-full">-1</button>
-              </div>
             </div>
 
             <!-- Score -->
@@ -38,10 +41,6 @@ export default {
             <div>
               <p class="font-bold text-lg truncate">{{ rightTeamName }}</p>
               <p class="text-xs text-gray-500">{{ rightTeamLabel }}</p>
-              <div v-if="isScorer" class="flex flex-col gap-1 mt-2">
-                <button @click="$emit('increment-right')" class="btn btn-secondary text-2xl w-full" style="height:4rem">+1</button>
-                <button @click="$emit('decrement-right')" class="btn btn-outline btn-sm w-full">-1</button>
-              </div>
             </div>
           </div>
         </div>
@@ -54,8 +53,7 @@ export default {
         leftTeamLabel: { type: String, default: '' },
         rightTeamLabel: { type: String, default: '' },
         leftTeamKey: { type: String, required: true },
-        rightTeamKey: { type: String, required: true },
-        isScorer: { type: Boolean, default: false }
+        rightTeamKey: { type: String, required: true }
     },
     computed: {
         leftScore() {

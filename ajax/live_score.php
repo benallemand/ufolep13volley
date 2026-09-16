@@ -51,7 +51,30 @@ try {
 
     if ($method === 'GET') {
         $id_match = filter_input(INPUT_GET, 'id_match', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        
+        $what = filter_input(INPUT_GET, 'what', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        // Effectifs des deux equipes, avec vignettes : RESERVE AU SCOREUR DU
+        // MATCH (issue #332). Les compositions ne concernent que le mode
+        // arbitre ; la page publique ne les affiche pas et n'appelle pas ceci.
+        //
+        // `player/getLivePlayersFromTeam` reste volontairement sans PII
+        // (issue #228) et en niveau `user` : on ne l'elargit pas aux photos,
+        // sinon tout compte connecte pourrait lister n'importe quelle equipe.
+        if ($what === 'rosters') {
+            if (!$id_match) {
+                throw new Exception("Missing required parameter: id_match");
+            }
+            if (!canModifyLiveScore($id_match)) {
+                http_response_code(403);
+                throw new Exception("Non autorisé: vous devez être administrateur ou responsable d'une des équipes du match");
+            }
+            echo json_encode([
+                'success' => true,
+                'data' => $liveScore->getScorerRosters($id_match)
+            ]);
+            exit();
+        }
+
         if ($id_match) {
             $result = $liveScore->getLiveScore($id_match);
             echo json_encode([

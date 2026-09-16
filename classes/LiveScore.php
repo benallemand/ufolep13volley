@@ -28,6 +28,72 @@ class LiveScore extends Generic
     }
 
     /**
+     * Effectifs des deux équipes d'un match, pour l'écran arbitre (issue #332).
+     *
+     * **Réservé au scoreur du match** : l'autorisation est faite par
+     * `ajax/live_score.php`, seul appelant, avec le `canModifyLiveScore()` qui
+     * garde déjà les POST. Les compositions ne concernent que le mode arbitre —
+     * la page publique ne les affiche pas.
+     *
+     * C'est pourquoi les vignettes ne sont PAS ajoutées à
+     * `player/getLivePlayersFromTeam` : cet endpoint est en niveau `user`, donc
+     * tout compte connecté pourrait lister les photos de n'importe quelle
+     * équipe. Il reste sans PII (issue #228).
+     *
+     * `nom_court` est le prénom suivi de l'initiale du nom : un nom de famille
+     * entier ne tient pas dans une case de terrain de 55 px, et c'est la
+     * vignette qui fait reconnaître le joueur.
+     *
+     * Les membres **non jouants** (issue #325) sont exclus : ils sont rattachés
+     * à l'équipe pour la piloter, pas pour y jouer.
+     *
+     * @return array{dom: array, ext: array}
+     * @throws Exception
+     */
+    public function getScorerRosters(string|int $id_match): array
+    {
+        require_once __DIR__ . '/MatchMgr.php';
+        require_once __DIR__ . '/Players.php';
+
+        $match = (new MatchMgr())->get_match_by_code_match($id_match);
+        if (empty($match)) {
+            throw new Exception("Match introuvable !");
+        }
+        return array(
+            'dom' => $this->getRosterForTeam($match['id_equipe_dom']),
+            'ext' => $this->getRosterForTeam($match['id_equipe_ext']),
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getRosterForTeam($id_equipe): array
+    {
+        $sql = "SELECT j.id,
+                       j.prenom,
+                       j.nom,
+                       CONCAT(j.prenom, ' ', UPPER(LEFT(j.nom, 1)), '.') AS nom_court,
+                       j.full_name,
+                       -- `adjust_photo_path_from_results` lit `path_photo` et
+                       -- `sexe` pour choisir l'image de repli : les deux doivent
+                       -- etre selectionnees meme si seule la vignette est affichee.
+                       j.path_photo,
+                       j.path_photo_low,
+                       j.sexe,
+                       j.est_actif
+                FROM players_view j
+                         JOIN joueur_equipe je ON je.id_joueur = j.id
+                WHERE je.id_equipe = ?
+                  AND je.est_jouant + 0 > 0
+                ORDER BY j.nom, j.prenom";
+        $bindings = array(array('type' => 'i', 'value' => (int)$id_equipe));
+        $players = $this->sql_manager->execute($sql, $bindings);
+        // Garantit une image de repli quand le fichier manque (issue #295).
+        return array_values(Players::adjust_photo_path_from_results($players));
+    }
+
+    /**
      * Start a new live score session for a match
      * @param int $id_match
      * @return int|string Insert ID

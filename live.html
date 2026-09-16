@@ -8,6 +8,83 @@
 </head>
 <body>
 <div id="app" class="min-h-screen bg-base-200">
+    <!--
+      Mode ARBITRE (issue #332) : plein écran, sans navbar ni conteneur centré.
+      L'arbitre est debout, sur un téléphone, et son seul geste entre deux points
+      est « +1 pour cette équipe » — ce geste occupe donc tout ce qui reste une
+      fois la barre au pouce posée. Tout le reste s'ouvre à la demande.
+
+      La page publique, elle, ne bouge pas : elle n'affiche pas les compositions
+      et n'en a pas besoin.
+    -->
+    <div v-if="match && scorerFullScreen" class="fixed inset-0 flex flex-col bg-base-200">
+        <scorer-board
+            :score="score"
+            :left-team-name="leftTeamName"
+            :right-team-name="rightTeamName"
+            :left-team-key="leftTeamKey"
+            :right-team-key="rightTeamKey"
+            :serving-team="servingTeam"
+            :is-live="isLive"
+            @point-left="incrementLeft"
+            @point-right="incrementRight">
+        </scorer-board>
+
+        <scorer-controls
+            :score="score"
+            :match="match"
+            :is-live="isLive"
+            :is-rotation-mode-enabled="isRotationModeEnabled"
+            :save-status="saveStatus"
+            :is-online="isOnline"
+            :can-undo="canUndo"
+            :left-team-name="leftTeamName"
+            :right-team-name="rightTeamName"
+            :left-team-key="leftTeamKey"
+            :right-team-key="rightTeamKey"
+            :left-lineup="lineups[leftTeamKey]"
+            :right-lineup="lineups[rightTeamKey]"
+            :left-team-players="leftTeamPlayers"
+            :right-team-players="rightTeamPlayers"
+            :left-timeouts="leftTimeouts"
+            :right-timeouts="rightTimeouts"
+            :serving-team="servingTeam"
+            @undo="undoLastPoint"
+            @next-set-left="nextSetLeft"
+            @next-set-right="nextSetRight"
+            @open-lineup="showLineup = true"
+            @save-score="saveScore"
+            @save-to-match="saveToMatch"
+            @end-live="endLiveScore"
+            @start-timeout="startTimeout"
+            @swap-sides="toggleSwapSides">
+        </scorer-controls>
+
+        <scorer-lineup v-if="showLineup"
+                       :set-number="Number(score.set_en_cours)"
+                       :sides="lineupSides"
+                       :initial-side="leftTeamKey"
+                       @place="placeInLineup"
+                       @clear="clearLineup"
+                       @repeat-previous="repeatPreviousLineup"
+                       @close="showLineup = false">
+        </scorer-lineup>
+    </div>
+
+    <!--
+      La page ordinaire n'est PAS rendue en mode arbitre. Ce n'est pas qu'une
+      question d'empilement : `position: fixed` crée toujours un contexte
+      d'empilement, donc le `z-index` des feuilles du plein écran y est
+      enfermé et un élément positionné placé plus bas dans le DOM — la carte
+      des infos du match — repassait par-dessus la composition, jusqu'à la
+      rendre inutilisable sur un petit téléphone.
+
+      Ne rien rendre supprime la classe entière de problème, évite un
+      défilement fantôme derrière le plein écran, et vaut aussi sur le fond :
+      date et gymnase sont des informations secondaires, qui ont leur place
+      dans la feuille « Plus » et nulle part ailleurs (issue #332).
+    -->
+    <template v-if="!scorerFullScreen">
     <!-- Header -->
     <div class="navbar bg-primary text-primary-content">
         <div class="flex-1">
@@ -66,56 +143,24 @@
                  consultation : le bloc "Résultat final" ci-dessus le remplace.
                  Reste visible en mode scoreur ou pendant un live en cours. -->
             <score-board
-                v-if="isScorer || isLive || !isMatchFinished"
+                v-if="!scorerFullScreen && (isScorer || isLive || !isMatchFinished)"
                 :score="score"
                 :left-team-name="leftTeamName"
                 :right-team-name="rightTeamName"
                 :left-team-label="leftTeamLabel"
                 :right-team-label="rightTeamLabel"
                 :left-team-key="leftTeamKey"
-                :right-team-key="rightTeamKey"
-                :is-scorer="canScore && isScorer && isLive"
-                @increment-left="incrementLeft"
-                @increment-right="incrementRight"
-                @decrement-left="decrementLeft"
-                @decrement-right="decrementRight">
+                :right-team-key="rightTeamKey">
             </score-board>
 
-            <!-- Scorer Controls (only for authorized users in scorer mode) -->
-            <template v-if="canScore && isScorer">
-                <scorer-controls
-                    :score="score"
-                    :is-live="isLive"
-                    :is-rotation-mode-enabled="isRotationModeEnabled"
-                    :save-status="saveStatus"
-                    :is-online="isOnline"
-                    :left-team-name="leftTeamName"
-                    :right-team-name="rightTeamName"
-                    :left-team-key="leftTeamKey"
-                    :right-team-key="rightTeamKey"
-                    :left-lineup="lineups[leftTeamKey]"
-                    :right-lineup="lineups[rightTeamKey]"
-                    :left-team-players="leftTeamPlayers"
-                    :right-team-players="rightTeamPlayers"
-                    :left-timeouts="leftTimeouts"
-                    :right-timeouts="rightTimeouts"
-                    @increment-left="incrementLeft"
-                    @increment-right="incrementRight"
-                    @decrement-left="decrementLeft"
-                    @decrement-right="decrementRight"
-                    @next-set-left="nextSetLeft"
-                    @next-set-right="nextSetRight"
-                    @update-position="updatePosition"
-                    @reset-positions="resetPositions"
-                    @save-score="saveScore"
-                    @save-to-match="saveToMatch"
-                    @end-live="endLiveScore"
-                    @start-timeout="startTimeout"
-                    @swap-sides="toggleSwapSides">
-                </scorer-controls>
-
-                <!-- Start Live Button -->
-                <div class="text-center mb-4" v-if="!isLive">
+            <!--
+              Avant le démarrage, le scoreur reste sur la page ordinaire : il n'y
+              a rien à marquer, donc rien qui justifie le plein écran. Une fois
+              le live démarré, c'est le bloc arbitre en tête de page qui prend la
+              main (issue #332).
+            -->
+            <template v-if="canScore && isScorer && !isLive">
+                <div class="text-center mb-4">
                     <button @click="startLiveScore()" class="btn btn-success btn-lg">
                         <i class="fas fa-play mr-2"></i> Démarrer le Live Score
                     </button>
@@ -141,6 +186,7 @@
         <!-- No match selected - show active live scores -->
         <active-match-list v-else :active-live-scores="activeLiveScores"></active-match-list>
     </div>
+    </template>
 </div>
 <script src="./live.js" type="module"></script>
 </body>
