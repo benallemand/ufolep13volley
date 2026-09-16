@@ -175,6 +175,49 @@ test('live score : marque sans défilement + 2 sets reportés dans le match', as
 });
 
 /**
+ * La page ordinaire ne doit pas être rendue derrière le plein écran arbitre
+ * (issue #332).
+ *
+ * Elle l'était, et la carte des infos du match repassait par-dessus les
+ * feuilles : `position: fixed` crée toujours un contexte d'empilement, donc le
+ * `z-index` des feuilles y était enfermé, et un élément positionné placé plus
+ * bas dans le DOM peignait au-dessus. Sur un iPhone SE, la composition en
+ * devenait inutilisable.
+ *
+ * Relevé en recette par Benjamin, sur un écran de 375 × 667.
+ */
+test("le plein écran arbitre ne laisse rien de la page ordinaire derrière lui", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+
+    await page.goto('/e2e/helpers/test_setup.php');
+    const setupData = JSON.parse(await page.locator('body').innerText());
+    expect(setupData.error, `Erreur setup : ${setupData.error}`).toBeUndefined();
+    codeMatch = setupData.code_match;
+
+    await page.goto(`/live.html?id_match=${codeMatch}&mode=scorer`);
+    const startBtn = page.getByRole('button', { name: /Démarrer le Live Score/i });
+    await expect(startBtn).toBeVisible();
+    await Promise.all([
+        page.waitForResponse(resp =>
+            resp.url().includes('/ajax/live_score.php') && resp.request().method() === 'POST'
+        ),
+        startBtn.click(),
+    ]);
+
+    // Plus rien de la page ordinaire : ni barre de navigation, ni carte d'infos.
+    await expect(page.getByRole('link', { name: /UFOLEP 13/ })).toHaveCount(0);
+    await expect(page.getByText(/Mise à jour automatique/)).toHaveCount(0);
+
+    // Date et gymnase sont devenus une information secondaire, dans la feuille.
+    await page.getByRole('button', { name: /Plus/ }).click();
+    await expect(page.getByText(/Gymnase|gymnase non défini/).first()).toBeVisible();
+
+    // Et la feuille est bien cliquable de bout en bout : si quelque chose la
+    // recouvrait, Playwright refuserait le clic au lieu de le simuler.
+    await page.getByRole('button', { name: /Inverser les camps/ }).click();
+});
+
+/**
  * L'annulation doit défaire le service ET la rotation (issue #332).
  *
  * C'est le défaut qui a motivé le remplacement des deux `-1` par camp :

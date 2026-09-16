@@ -43,23 +43,26 @@ export default {
             </button>
           </div>
 
+          <!--
+            Au premier set il n'y a rien à reprendre : le bouton disparaît au
+            lieu d'annoncer « Reprendre le set 0 », et vider prend sa place.
+          -->
           <div class="flex gap-2">
-            <button type="button"
+            <button v-if="hasPrevious"
+                    type="button"
                     class="btn btn-primary flex-1"
-                    :disabled="!hasPrevious"
                     @click="$emit('repeat-previous', currentSide)">
               Reprendre le set {{ setNumber - 1 }}
             </button>
             <button type="button"
-                    class="btn btn-outline btn-square"
+                    class="btn btn-outline"
+                    :class="hasPrevious ? 'btn-square' : 'flex-1'"
                     title="Vider la composition"
                     @click="clearSide">
               <i class="fas fa-rotate-left"></i>
+              <span v-if="!hasPrevious">Vider la composition</span>
             </button>
           </div>
-          <p v-if="!hasPrevious" class="text-xs text-center opacity-60 -mt-1">
-            Pas de composition précédente pour ce set.
-          </p>
 
           <scorer-court :lineup="side.lineup"
                         :players="side.players"

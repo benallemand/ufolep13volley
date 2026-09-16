@@ -122,6 +122,16 @@ export default {
         <!-- Feuille « plus » : ce qui se fait une fois par set, ou une fois par match -->
         <dialog v-if="sheet === 'more'" class="modal modal-open modal-bottom">
           <div class="modal-box flex flex-col gap-2">
+            <!--
+              Date et gymnase : information secondaire, utile seulement pour
+              verifier qu'on est sur le bon match. Elle occupait l'ecran en
+              permanence, et par-dessus la composition sur un petit telephone.
+            -->
+            <div v-if="match" class="text-xs opacity-60 flex flex-wrap gap-x-3 gap-y-1 pb-2 border-b border-base-300">
+              <span><i class="fas fa-calendar mr-1"></i>{{ match.date_reception || 'date non définie' }}</span>
+              <span v-if="match.heure_reception"><i class="fas fa-clock mr-1"></i>{{ match.heure_reception }}</span>
+              <span class="w-full"><i class="fas fa-map-marker-alt mr-1"></i>{{ match.gymnasium || 'gymnase non défini' }}</span>
+            </div>
             <div class="flex items-center justify-between pb-1">
               <span class="text-sm">Enregistrement</span>
               <span v-if="saveStatus === 'saved'" class="badge badge-success gap-1">
@@ -186,6 +196,7 @@ export default {
     `,
     props: {
         score: { type: Object, required: true },
+        match: { type: Object, default: null },
         isLive: { type: Boolean, required: true },
         isRotationModeEnabled: { type: Boolean, default: false },
         saveStatus: { type: String, default: 'saved' },

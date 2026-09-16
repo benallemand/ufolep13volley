@@ -32,6 +32,7 @@
 
         <scorer-controls
             :score="score"
+            :match="match"
             :is-live="isLive"
             :is-rotation-mode-enabled="isRotationModeEnabled"
             :save-status="saveStatus"
@@ -70,6 +71,20 @@
         </scorer-lineup>
     </div>
 
+    <!--
+      La page ordinaire n'est PAS rendue en mode arbitre. Ce n'est pas qu'une
+      question d'empilement : `position: fixed` crée toujours un contexte
+      d'empilement, donc le `z-index` des feuilles du plein écran y est
+      enfermé et un élément positionné placé plus bas dans le DOM — la carte
+      des infos du match — repassait par-dessus la composition, jusqu'à la
+      rendre inutilisable sur un petit téléphone.
+
+      Ne rien rendre supprime la classe entière de problème, évite un
+      défilement fantôme derrière le plein écran, et vaut aussi sur le fond :
+      date et gymnase sont des informations secondaires, qui ont leur place
+      dans la feuille « Plus » et nulle part ailleurs (issue #332).
+    -->
+    <template v-if="!scorerFullScreen">
     <!-- Header -->
     <div class="navbar bg-primary text-primary-content">
         <div class="flex-1">
@@ -171,6 +186,7 @@
         <!-- No match selected - show active live scores -->
         <active-match-list v-else :active-live-scores="activeLiveScores"></active-match-list>
     </div>
+    </template>
 </div>
 <script src="./live.js" type="module"></script>
 </body>
