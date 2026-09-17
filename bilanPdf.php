@@ -14,13 +14,14 @@ require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/classes/UserManager.php';
 require_once __DIR__ . '/classes/Bilan.php';
+require_once __DIR__ . '/classes/PdfText.php';
 
 use Fpdf\Fpdf;
 
 /** Convertit une chaine UTF-8 vers l'encodage attendu par FPDF (cp1252). */
 function toWellFormatted($string): string
 {
-    return !empty($string) ? iconv('UTF-8', 'windows-1252//TRANSLIT', $string) : '';
+    return PdfText::encode($string);
 }
 
 if (!UserManager::isAdmin()) {
