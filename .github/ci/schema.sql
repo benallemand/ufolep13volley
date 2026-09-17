@@ -29,7 +29,7 @@ CREATE TABLE `activity` (
   `user_id` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26737 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26746 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `blacklist_by_city` (
   `from_date` datetime NOT NULL,
   `to_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -59,7 +59,7 @@ CREATE TABLE `blacklist_date` (
   `id` smallint NOT NULL AUTO_INCREMENT,
   `closed_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +76,7 @@ CREATE TABLE `blacklist_gymnase` (
   PRIMARY KEY (`id`),
   KEY `id_gymnase` (`id_gymnase`),
   CONSTRAINT `blacklist_gymnase_ibfk_1` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `blacklist_team` (
   PRIMARY KEY (`id`),
   KEY `id_team` (`id_team`),
   CONSTRAINT `blacklist_team_ibfk_1` FOREIGN KEY (`id_team`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,7 +112,7 @@ CREATE TABLE `blacklist_teams` (
   KEY `id_team_2` (`id_team_2`),
   CONSTRAINT `blacklist_teams_ibfk_1` FOREIGN KEY (`id_team_1`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `blacklist_teams_ibfk_2` FOREIGN KEY (`id_team_2`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `classements` (
   KEY `fk_classements_equipes` (`id_equipe`),
   KEY `id` (`id`),
   CONSTRAINT `fk_classements_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3730 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3730 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +169,7 @@ CREATE TABLE `clubs` (
   `affiliation_number` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,7 +191,7 @@ CREATE TABLE `commission` (
   `type` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_commission`),
   KEY `id_commission` (`id_commission`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,7 +208,7 @@ CREATE TABLE `commission_division` (
   PRIMARY KEY (`id`),
   KEY `id_commission` (`id_commission`),
   CONSTRAINT `commission_division_ibfk_1` FOREIGN KEY (`id_commission`) REFERENCES `commission` (`id_commission`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `competitions` (
   `start_register_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,7 +248,7 @@ CREATE TABLE `comptes_acces` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_email` (`email`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1337 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1338 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,7 +272,7 @@ CREATE TABLE `creneau` (
   KEY `fk_creneau_equipes` (`id_equipe`),
   CONSTRAINT `fk_creneau_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_creneau_gymnase` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=1965 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1965 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -288,7 +288,7 @@ CREATE TABLE `dates_limite` (
   `date_limite` varchar(40) NOT NULL,
   PRIMARY KEY (`id_date`),
   KEY `id_date` (`id_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,18 +300,18 @@ DROP TABLE IF EXISTS `emails`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `emails` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `from_email` text NOT NULL,
-  `to_email` text NOT NULL,
-  `cc` text NOT NULL,
-  `bcc` text NOT NULL,
-  `subject` text NOT NULL,
-  `body` text NOT NULL,
+  `from_email` mediumtext NOT NULL,
+  `to_email` mediumtext NOT NULL,
+  `cc` mediumtext NOT NULL,
+  `bcc` mediumtext NOT NULL,
+  `subject` mediumtext NOT NULL,
+  `body` mediumtext NOT NULL,
   `creation_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `sent_date` datetime DEFAULT NULL,
   `sending_status` enum('TO_DO','DONE','ERROR') NOT NULL DEFAULT 'TO_DO',
   `is_read` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21920 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21947 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `equipes` (
   KEY `fk_equipes_clubs` (`id_club`),
   KEY `id_equipe` (`id_equipe`),
   CONSTRAINT `fk_equipes_clubs` FOREIGN KEY (`id_club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=722 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -352,7 +352,7 @@ CREATE TABLE `friendships` (
   KEY `id_club_2` (`id_club_2`),
   CONSTRAINT `friendships_ibfk_1` FOREIGN KEY (`id_club_1`) REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `friendships_ibfk_2` FOREIGN KEY (`id_club_2`) REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -370,10 +370,10 @@ CREATE TABLE `gymnase` (
   `gps` varchar(20) DEFAULT NULL,
   `id` smallint NOT NULL AUTO_INCREMENT,
   `nb_terrain` smallint NOT NULL DEFAULT '3',
-  `remarques` text,
+  `remarques` mediumtext,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -391,7 +391,7 @@ CREATE TABLE `hall_of_fame` (
   `league` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=513 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=513 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,7 +413,7 @@ CREATE TABLE `joueur_equipe` (
   KEY `fk_joueur_equipe_joueur` (`id_joueur`),
   CONSTRAINT `fk_joueur_equipe_equipe` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_joueur_equipe_joueur` FOREIGN KEY (`id_joueur`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -442,7 +442,7 @@ CREATE TABLE `joueurs` (
   UNIQUE KEY `uq_joueurs_compte` (`id_compte`),
   KEY `id` (`id`),
   CONSTRAINT `fk_joueurs_compte` FOREIGN KEY (`id_compte`) REFERENCES `comptes_acces` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4395 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4395 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,7 +495,7 @@ CREATE TABLE `match_player` (
   KEY `id_player` (`id_player`),
   CONSTRAINT `match_player_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `match_player_ibfk_2` FOREIGN KEY (`id_player`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=56408 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=56408 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -546,7 +546,7 @@ CREATE TABLE `matches` (
   `set_5_ext` tinyint NOT NULL DEFAULT '0',
   `date_reception` date DEFAULT NULL,
   `certif` tinyint(1) NOT NULL DEFAULT '0',
-  `note` text,
+  `note` mediumtext,
   `report_status` varchar(100) DEFAULT 'NOT_ASKED',
   `date_original` date DEFAULT NULL,
   `match_status` enum('NOT_CONFIRMED','CONFIRMED','ARCHIVED') NOT NULL DEFAULT 'NOT_CONFIRMED',
@@ -566,7 +566,7 @@ CREATE TABLE `matches` (
   CONSTRAINT `fk_matches_equipesdom` FOREIGN KEY (`id_equipe_dom`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_equipesext` FOREIGN KEY (`id_equipe_ext`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_gymnasium` FOREIGN KEY (`id_gymnasium`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=81122 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=81122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -665,10 +665,10 @@ CREATE TABLE `news` (
   `title` varchar(500) NOT NULL,
   `file_path` varchar(200) NOT NULL,
   `news_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `text` text,
+  `text` mediumtext,
   `is_disabled` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -683,7 +683,7 @@ CREATE TABLE `photos` (
   `path_photo` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5191 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=5191 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -798,7 +798,7 @@ CREATE TABLE `register` (
   CONSTRAINT `register_ibfk_3` FOREIGN KEY (`old_team_id`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_4` FOREIGN KEY (`id_court_1`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_5` FOREIGN KEY (`id_court_2`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=492 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=518 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -814,7 +814,7 @@ CREATE TABLE `registry` (
   `registry_value` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,13 +833,13 @@ CREATE TABLE `survey` (
   `referee` tinyint DEFAULT '0',
   `catering` tinyint DEFAULT '0',
   `global` tinyint DEFAULT '0',
-  `comment` text,
+  `comment` mediumtext,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `id_match` (`id_match`),
   CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19021 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19021 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -931,7 +931,7 @@ CREATE TABLE `users_clubs` (
   KEY `fk_uc_c` (`club_id`),
   CONSTRAINT `fk_uc_c` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_uc_u` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -948,7 +948,7 @@ CREATE TABLE `users_teams` (
   KEY `fk_ut_t` (`team_id`),
   CONSTRAINT `fk_ut_t` FOREIGN KEY (`team_id`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE,
   CONSTRAINT `fk_ut_u` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -966,13 +966,14 @@ CREATE TABLE `users_teams` (
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE FUNCTION `SPLIT_STRING`(`str` VARCHAR(255), `delim` VARCHAR(12), `pos` INT) RETURNS varchar(255) CHARSET latin1
+CREATE FUNCTION `SPLIT_STRING`(str VARCHAR(255) CHARSET utf8mb4,
+                             delim VARCHAR(12) CHARSET utf8mb4,
+                             pos INT) RETURNS varchar(255) CHARSET utf8mb4
 RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(str, delim, pos),
-
-                           LENGTH(SUBSTRING_INDEX(str, delim, pos - 1)) + 1),
-                 delim, '') ;;
+                             LENGTH(SUBSTRING_INDEX(str, delim, pos - 1)) + 1),
+                   delim, '') ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1028,7 +1029,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 SQL SECURITY INVOKER */
-/*!50001 VIEW `players_view` AS select concat(upper(`j`.`nom`),' ',`j`.`prenom`,' (',ifnull(`j`.`num_licence`,''),')') AS `full_name`,`j`.`prenom` AS `prenom`,upper(`j`.`nom`) AS `nom`,`j`.`telephone` AS `telephone`,`j`.`email` AS `email`,`j`.`num_licence` AS `num_licence`,concat(convert(lpad(`j`.`departement_affiliation`,3,'0') using utf8mb3),`j`.`num_licence`) AS `num_licence_ext`,`p`.`path_photo` AS `path_photo`,replace(`p`.`path_photo`,'players_pics','players_pics_low') AS `path_photo_low`,`j`.`sexe` AS `sexe`,`j`.`departement_affiliation` AS `departement_affiliation`,(case when (`j`.`date_homologation` is null) then 0 when (`j`.`date_homologation` > now()) then 0 when (`j`.`num_licence` is null) then 0 when (month(`comp`.`start_date`) > 7) then (case when ((year(`j`.`date_homologation`) = year(`comp`.`start_date`)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = (year(`comp`.`start_date`) + 1)) then 1 else 0 end) when (month(`comp`.`start_date`) <= 7) then (case when ((year(`j`.`date_homologation`) = (year(`comp`.`start_date`) - 1)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = year(`comp`.`start_date`)) then 1 else 0 end) when (`je`.`id_joueur` is null) then (case when (month(`min_comp`.`start_date`) > 7) then (case when ((year(`j`.`date_homologation`) = year(`min_comp`.`start_date`)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = (year(`min_comp`.`start_date`) + 1)) then 1 else 0 end) when (month(`min_comp`.`start_date`) <= 7) then (case when ((year(`j`.`date_homologation`) = (year(`min_comp`.`start_date`) - 1)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = year(`min_comp`.`start_date`)) then 1 else 0 end) end) else 0 end) AS `est_actif`,`j`.`id_club` AS `id_club`,`c`.`nom` AS `club`,`j`.`telephone2` AS `telephone2`,`j`.`email2` AS `email2`,`j`.`id_compte` AS `id_compte`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_captain` = 1)),1,0) AS `is_captain`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_vice_leader` = 1)),1,0) AS `is_vice_leader`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_leader` = 1)),1,0) AS `is_leader`,group_concat(distinct `je_cap`.`id_equipe` separator ',') AS `id_captain`,group_concat(distinct `je_vl`.`id_equipe` separator ',') AS `id_vl`,group_concat(distinct `je_l`.`id_equipe` separator ',') AS `id_l`,`j`.`id` AS `id`,group_concat(distinct (case when (`cl`.`id` is not null) then concat(convert(`e`.`nom_equipe` using utf8mb3),' (',`comp`.`libelle`,')') end) separator '<br/>') AS `active_teams_list`,group_concat(distinct (case when (`cl`.`id` is null) then concat(convert(`e`.`nom_equipe` using utf8mb3),' (',`comp`.`libelle`,')') end) separator '<br/>') AS `inactive_teams_list`,group_concat(distinct concat(convert(`e`.`nom_equipe` using utf8mb3),' (',`comp`.`libelle`,')') separator '<br/>') AS `teams_list`,group_concat(distinct (case when ((`je`.`est_jouant` + 0) = 0) then concat(convert(`e`.`nom_equipe` using utf8mb3),' (',`comp`.`libelle`,')') end) separator '<br/>') AS `non_playing_teams_list`,group_concat(distinct `e_l`.`nom_equipe` separator '<br/>') AS `team_leader_list`,date_format(`j`.`date_homologation`,'%d/%m/%Y') AS `date_homologation` from (((((((((((`joueurs` `j` left join `joueur_equipe` `je_cap` on(((`je_cap`.`id_joueur` = `j`.`id`) and (`je_cap`.`is_captain` = 1)))) left join `joueur_equipe` `je_vl` on(((`je_vl`.`id_joueur` = `j`.`id`) and (`je_vl`.`is_vice_leader` = 1)))) left join `joueur_equipe` `je_l` on(((`je_l`.`id_joueur` = `j`.`id`) and (`je_l`.`is_leader` = 1)))) left join `joueur_equipe` `je` on((`je`.`id_joueur` = `j`.`id`))) left join `equipes` `e` on((`e`.`id_equipe` = `je`.`id_equipe`))) left join `equipes` `e_l` on((`e_l`.`id_equipe` = `je_l`.`id_equipe`))) left join `clubs` `c` on((`c`.`id` = `j`.`id_club`))) left join `photos` `p` on((`p`.`id` = `j`.`id_photo`))) left join `classements` `cl` on((`cl`.`id_equipe` = `e`.`id_equipe`))) left join `competitions` `comp` on((`comp`.`code_competition` = `e`.`code_competition`))) join `competitions` `min_comp` on((`min_comp`.`start_date` = (select min(`competitions`.`start_date`) from `competitions`)))) where (1 = 1) group by `j`.`id`,`j`.`sexe`,upper(`j`.`nom`) order by upper(`full_name`) */;
+/*!50001 VIEW `players_view` AS select concat(upper(`j`.`nom`),' ',`j`.`prenom`,' (',ifnull(`j`.`num_licence`,''),')') AS `full_name`,`j`.`prenom` AS `prenom`,upper(`j`.`nom`) AS `nom`,`j`.`telephone` AS `telephone`,`j`.`email` AS `email`,`j`.`num_licence` AS `num_licence`,concat(lpad(`j`.`departement_affiliation`,3,'0'),`j`.`num_licence`) AS `num_licence_ext`,`p`.`path_photo` AS `path_photo`,replace(`p`.`path_photo`,'players_pics','players_pics_low') AS `path_photo_low`,`j`.`sexe` AS `sexe`,`j`.`departement_affiliation` AS `departement_affiliation`,(case when (`j`.`date_homologation` is null) then 0 when (`j`.`date_homologation` > now()) then 0 when (`j`.`num_licence` is null) then 0 when (month(`comp`.`start_date`) > 7) then (case when ((year(`j`.`date_homologation`) = year(`comp`.`start_date`)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = (year(`comp`.`start_date`) + 1)) then 1 else 0 end) when (month(`comp`.`start_date`) <= 7) then (case when ((year(`j`.`date_homologation`) = (year(`comp`.`start_date`) - 1)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = year(`comp`.`start_date`)) then 1 else 0 end) when (`je`.`id_joueur` is null) then (case when (month(`min_comp`.`start_date`) > 7) then (case when ((year(`j`.`date_homologation`) = year(`min_comp`.`start_date`)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = (year(`min_comp`.`start_date`) + 1)) then 1 else 0 end) when (month(`min_comp`.`start_date`) <= 7) then (case when ((year(`j`.`date_homologation`) = (year(`min_comp`.`start_date`) - 1)) and (month(`j`.`date_homologation`) > 7)) then 1 when (year(`j`.`date_homologation`) = year(`min_comp`.`start_date`)) then 1 else 0 end) end) else 0 end) AS `est_actif`,`j`.`id_club` AS `id_club`,`c`.`nom` AS `club`,`j`.`telephone2` AS `telephone2`,`j`.`email2` AS `email2`,`j`.`id_compte` AS `id_compte`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_captain` = 1)),1,0) AS `is_captain`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_vice_leader` = 1)),1,0) AS `is_vice_leader`,if(`j`.`id` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`is_leader` = 1)),1,0) AS `is_leader`,group_concat(distinct `je_cap`.`id_equipe` separator ',') AS `id_captain`,group_concat(distinct `je_vl`.`id_equipe` separator ',') AS `id_vl`,group_concat(distinct `je_l`.`id_equipe` separator ',') AS `id_l`,`j`.`id` AS `id`,group_concat(distinct (case when (`cl`.`id` is not null) then concat(`e`.`nom_equipe`,' (',`comp`.`libelle`,')') end) separator '<br/>') AS `active_teams_list`,group_concat(distinct (case when (`cl`.`id` is null) then concat(`e`.`nom_equipe`,' (',`comp`.`libelle`,')') end) separator '<br/>') AS `inactive_teams_list`,group_concat(distinct concat(`e`.`nom_equipe`,' (',`comp`.`libelle`,')') separator '<br/>') AS `teams_list`,group_concat(distinct (case when ((`je`.`est_jouant` + 0) = 0) then concat(`e`.`nom_equipe`,' (',`comp`.`libelle`,')') end) separator '<br/>') AS `non_playing_teams_list`,group_concat(distinct `e_l`.`nom_equipe` separator '<br/>') AS `team_leader_list`,date_format(`j`.`date_homologation`,'%d/%m/%Y') AS `date_homologation` from (((((((((((`joueurs` `j` left join `joueur_equipe` `je_cap` on(((`je_cap`.`id_joueur` = `j`.`id`) and (`je_cap`.`is_captain` = 1)))) left join `joueur_equipe` `je_vl` on(((`je_vl`.`id_joueur` = `j`.`id`) and (`je_vl`.`is_vice_leader` = 1)))) left join `joueur_equipe` `je_l` on(((`je_l`.`id_joueur` = `j`.`id`) and (`je_l`.`is_leader` = 1)))) left join `joueur_equipe` `je` on((`je`.`id_joueur` = `j`.`id`))) left join `equipes` `e` on((`e`.`id_equipe` = `je`.`id_equipe`))) left join `equipes` `e_l` on((`e_l`.`id_equipe` = `je_l`.`id_equipe`))) left join `clubs` `c` on((`c`.`id` = `j`.`id_club`))) left join `photos` `p` on((`p`.`id` = `j`.`id_photo`))) left join `classements` `cl` on((`cl`.`id_equipe` = `e`.`id_equipe`))) left join `competitions` `comp` on((`comp`.`code_competition` = `e`.`code_competition`))) join `competitions` `min_comp` on((`min_comp`.`start_date` = (select min(`competitions`.`start_date`) from `competitions`)))) where (1 = 1) group by `j`.`id`,`j`.`sexe`,upper(`j`.`nom`) order by upper(`full_name`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1100,7 +1101,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 SQL SECURITY INVOKER */
-/*!50001 VIEW `teams_view` AS select `e`.`code_competition` AS `code_competition`,`comp`.`libelle` AS `libelle_competition`,`e`.`nom_equipe` AS `nom_equipe`,concat(convert(`e`.`nom_equipe` using utf8mb3),' (',convert(`c`.`nom` using utf8mb3),') - ',group_concat(distinct concat(`comp`.`libelle`,convert(ifnull(concat('(',`cl`.`division`,')'),'') using utf8mb3)) order by `comp`.`libelle` ASC separator ',')) AS `team_full_name`,`e`.`id_club` AS `id_club`,`c`.`nom` AS `club`,`e`.`id_equipe` AS `id_equipe`,concat(`jresp`.`prenom`,' ',`jresp`.`nom`) AS `responsable`,to_base64(concat(`jresp`.`prenom`,' ',`jresp`.`nom`)) AS `responsable_base64`,`jresp`.`telephone` AS `telephone_1`,to_base64(`jresp`.`telephone`) AS `telephone_1_base64`,`jsupp`.`telephone` AS `telephone_2`,to_base64(`jsupp`.`telephone`) AS `telephone_2_base64`,`jresp`.`email` AS `email`,to_base64(`jresp`.`email`) AS `email_base64`,group_concat(distinct concat(concat(`g`.`ville`,' - ',`g`.`nom`,' - ',`g`.`adresse`,' - ',`g`.`gps`),' (',convert(`cr`.`jour` using utf8mb3),' à ',convert(`cr`.`heure` using utf8mb3),')',convert(if((`cr`.`has_time_constraint` > 0),' (CONTRAINTE HORAIRE FORTE)','') using utf8mb3)) separator ', ') AS `gymnasiums_list`,`e`.`web_site` AS `web_site`,`e`.`id_photo` AS `id_photo`,`p`.`path_photo` AS `path_photo`,`e`.`is_cup_registered` AS `is_cup_registered`,if((`cl`.`id` is null),0,1) AS `is_active_team` from ((((((((((`equipes` `e` left join `classements` `cl` on((`cl`.`id_equipe` = `e`.`id_equipe`))) left join `photos` `p` on((`p`.`id` = `e`.`id_photo`))) join `clubs` `c` on((`c`.`id` = `e`.`id_club`))) join `competitions` `comp` on((`comp`.`code_competition` = ifnull(`cl`.`code_competition`,`e`.`code_competition`)))) left join `joueur_equipe` `jeresp` on(((`jeresp`.`id_equipe` = `e`.`id_equipe`) and ((`jeresp`.`is_leader` + 0) > 0)))) left join `joueur_equipe` `jesupp` on(((`jesupp`.`id_equipe` = `e`.`id_equipe`) and ((`jesupp`.`is_vice_leader` + 0) > 0)))) left join `joueurs` `jresp` on((`jresp`.`id` = `jeresp`.`id_joueur`))) left join `joueurs` `jsupp` on((`jsupp`.`id` = `jesupp`.`id_joueur`))) left join `creneau` `cr` on((`cr`.`id_equipe` = `e`.`id_equipe`))) left join `gymnase` `g` on((`g`.`id` = `cr`.`id_gymnase`))) where (1 = 1) group by `e`.`id_equipe`,`e`.`nom_equipe` order by `e`.`nom_equipe` */;
+/*!50001 VIEW `teams_view` AS select `e`.`code_competition` AS `code_competition`,`comp`.`libelle` AS `libelle_competition`,`e`.`nom_equipe` AS `nom_equipe`,concat(`e`.`nom_equipe`,' (',`c`.`nom`,') - ',group_concat(distinct concat(`comp`.`libelle`,ifnull(concat('(',`cl`.`division`,')'),'')) order by `comp`.`libelle` ASC separator ',')) AS `team_full_name`,`e`.`id_club` AS `id_club`,`c`.`nom` AS `club`,`e`.`id_equipe` AS `id_equipe`,concat(`jresp`.`prenom`,' ',`jresp`.`nom`) AS `responsable`,to_base64(concat(`jresp`.`prenom`,' ',`jresp`.`nom`)) AS `responsable_base64`,`jresp`.`telephone` AS `telephone_1`,to_base64(`jresp`.`telephone`) AS `telephone_1_base64`,`jsupp`.`telephone` AS `telephone_2`,to_base64(`jsupp`.`telephone`) AS `telephone_2_base64`,`jresp`.`email` AS `email`,to_base64(`jresp`.`email`) AS `email_base64`,group_concat(distinct concat(concat(`g`.`ville`,' - ',`g`.`nom`,' - ',`g`.`adresse`,' - ',`g`.`gps`),' (',`cr`.`jour`,' à ',`cr`.`heure`,')',if((`cr`.`has_time_constraint` > 0),' (CONTRAINTE HORAIRE FORTE)','')) separator ', ') AS `gymnasiums_list`,`e`.`web_site` AS `web_site`,`e`.`id_photo` AS `id_photo`,`p`.`path_photo` AS `path_photo`,`e`.`is_cup_registered` AS `is_cup_registered`,if((`cl`.`id` is null),0,1) AS `is_active_team` from ((((((((((`equipes` `e` left join `classements` `cl` on((`cl`.`id_equipe` = `e`.`id_equipe`))) left join `photos` `p` on((`p`.`id` = `e`.`id_photo`))) join `clubs` `c` on((`c`.`id` = `e`.`id_club`))) join `competitions` `comp` on((`comp`.`code_competition` = ifnull(`cl`.`code_competition`,`e`.`code_competition`)))) left join `joueur_equipe` `jeresp` on(((`jeresp`.`id_equipe` = `e`.`id_equipe`) and ((`jeresp`.`is_leader` + 0) > 0)))) left join `joueur_equipe` `jesupp` on(((`jesupp`.`id_equipe` = `e`.`id_equipe`) and ((`jesupp`.`is_vice_leader` + 0) > 0)))) left join `joueurs` `jresp` on((`jresp`.`id` = `jeresp`.`id_joueur`))) left join `joueurs` `jsupp` on((`jsupp`.`id` = `jesupp`.`id_joueur`))) left join `creneau` `cr` on((`cr`.`id_equipe` = `e`.`id_equipe`))) left join `gymnase` `g` on((`g`.`id` = `cr`.`id_gymnase`))) where (1 = 1) group by `e`.`id_equipe`,`e`.`nom_equipe` order by `e`.`nom_equipe` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
