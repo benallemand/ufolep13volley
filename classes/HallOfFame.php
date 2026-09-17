@@ -6,6 +6,7 @@
  * Time: 14:28
  */
 require_once __DIR__ . '/Generic.php';
+require_once __DIR__ . '/PdfText.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Fpdf\Fpdf;
@@ -190,19 +191,18 @@ class HallOfFame extends Generic
     }
 
     /**
-     * Convertit de l'UTF-8 vers l'ISO-8859-1, seul encodage compris par les
-     * polices standard de FPDF (Arial & co. sont des fontes « core » Latin-1).
+     * Convertit de l'UTF-8 vers l'encodage des polices « core » de FPDF.
      *
-     * Remplace `utf8_decode()`, dépréciée depuis PHP 8.2 et supprimée en PHP 9.
-     * Le cast couvre les valeurs non-string remontées de la base (`null`
-     * notamment : le passer à une fonction interne est déprécié depuis 8.1).
+     * Visait l'ISO-8859-1, qui ne connaît pas l'apostrophe courbe : le nom
+     * d'équipe « Les Jeu’nettes » perdait la sienne sur son diplôme. Le détail
+     * est dans `PdfText`.
      *
      * @param mixed $value
      * @return string
      */
     private function pdf_text($value): string
     {
-        return mb_convert_encoding((string)$value, 'ISO-8859-1', 'UTF-8');
+        return PdfText::encode($value);
     }
 
     /**

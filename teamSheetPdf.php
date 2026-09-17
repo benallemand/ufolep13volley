@@ -4,9 +4,11 @@
 // point d'entree (issue #292).
 require_once __DIR__ . '/bootstrap.php';
 
-function toWellFormatted($string)
+require_once __DIR__ . '/classes/PdfText.php';
+
+function toWellFormatted($string): string
 {
-    return !empty($string) ? iconv('UTF-8', 'windows-1252', $string) : '';
+    return PdfText::encode($string);
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
