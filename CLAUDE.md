@@ -960,6 +960,49 @@ club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
 > ni droit, ni indicateur, ni requête. C'était un troisième marqueur de ce que
 > porte `users_clubs`.
 
+### Toute la base est en utf8mb4 (issue #334)
+
+Un responsable de club n'a pas pu renommer son équipe : le formulaire renvoyait
+`Conversion from collation utf8mb3_general_ci into latin1_swedish_ci impossible
+for parameter`. Trente tables étaient en **latin1** ou **utf8mb3**, et la
+connexion annonçait `utf8` — l'alias d'utf8mb3. Le script
+`sql/updates/2026/017-convert_to_utf8mb4.sql` les a converties, et
+`Database.php` annonce désormais `utf8mb4`.
+
+> **Le « latin1 » de MySQL est en réalité cp1252.** C'est pourquoi les accents,
+> l'apostrophe courbe, le tiret cadratin et l'euro passaient, alors que l'emoji,
+> le « ✓ » et surtout **U+202F, l'espace insécable étroite, échouaient**. Cette
+> dernière est le cas à retenir : **iOS en français l'insère tout seul avant
+> `?`, `!`, `;` et `:`**, elle est invisible, et l'utilisateur ne peut donc ni
+> la voir ni la retirer.
+
+> **La conversion se joue sur le paramètre lié, pas sur la requête.** Un simple
+> `UPDATE equipes SET nom_equipe = ?` échouait : MySQL convertit le paramètre
+> vers le jeu de la colonne avant de l'écrire.
+
+> **Une vue ne conserve pas le texte qu'on lui a donné.** MySQL le normalise et
+> injecte un `convert(... using utf8mb3)` partout où un `CONCAT` mélangeait deux
+> jeux — six dans `teams_view`, cinq dans `players_view`. Ces conversions ne
+> sont **pas** dans les fichiers de `sql/views/` : il suffit de les rejouer
+> après la conversion. Les laisser **retronquerait** ce qu'on vient d'élargir,
+> et un emoji intact en base ressortirait en « ? » à l'écran.
+> `Utf8mb4Test::test_la_vue_des_equipes_ne_retronque_pas_le_nom` le vérifie.
+
+> **Ordre de déploiement : le code d'abord**, contrairement à #327. Une
+> connexion utf8mb4 vers des tables encore en latin1 se comporte exactement
+> comme avant — même jeu refusé, aucune régression. L'inverse laisserait les
+> emoji se faire refuser sans raison visible.
+
+> **Une nouvelle table doit rester en `utf8mb4_0900_ai_ci`**, la collation de la
+> base et des 32 tables. Une table créée dans une autre ferait échouer toute
+> jointure sur une colonne texte (« Illegal mix of collations »). La fonction
+> stockée `SPLIT_STRING`, qui rendait du latin1 depuis 2019, a été recréée pour
+> la même raison.
+
+> `zz_backup_clubs_responsable_327` reste volontairement en latin1 : c'est une
+> sauvegarde destinée à disparaître, elle n'est jointe à rien, et
+> `dump-schema.ps1` l'écarte déjà du schéma de CI.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

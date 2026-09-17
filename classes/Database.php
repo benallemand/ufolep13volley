@@ -36,7 +36,14 @@ class Database
         if (self::$_db === false) {
             throw new Exception("Impossible de se connecter à la base de données !");
         }
-        mysqli_set_charset(self::$_db, "utf8");
+        // `utf8` est l'alias MySQL de `utf8mb3`, qui s'arrete au plan
+        // multilingue de base : aucun caractere sur 4 octets ne peut traverser
+        // la connexion, emoji compris (issue #334). Le jeu annonce ici sert
+        // aussi a convertir les parametres lies vers le jeu des colonnes —
+        // c'est lui qui produisait « Conversion from collation
+        // utf8mb3_general_ci into latin1_swedish_ci impossible for parameter »
+        // des qu'une saisie sortait de cp1252.
+        mysqli_set_charset(self::$_db, "utf8mb4");
         mysqli_query(self::$_db, "SET lc_time_names = 'fr_FR'");
         mysqli_autocommit(self::$_db, true);
         return self::$_db;
