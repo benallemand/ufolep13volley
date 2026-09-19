@@ -7,7 +7,7 @@ require_once __DIR__ . '/../bootstrap.php';
 /**
  * Indicateurs d'administration (tableau de bord).
  *
- * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 47 requetes d'exploitation et
+ * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 48 requetes d'exploitation et
  * renvoie leurs lignes de detail : adresses des responsables, comptes, identite
  * de joueurs, cotisations. Il etait ouvert a tout le monde (issue #284) --
  * `ajax/` ne passe pas par `rest/action.php`, donc le refus par defaut de #270
@@ -189,6 +189,14 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Equipes non réengagées",
     file_get_contents(__DIR__ . '/../sql/not_registered_teams.sql'));
+// Maille club, alors que « Equipes non réengagées » est à la maille équipe :
+// un club qui n'a rien inscrit du tout n'a pas commencé sa saisie. La tuile
+// s'éteint d'elle-même passée la date limite d'inscription (issue #338).
+$indicators[] = new Indicator(
+    "Clubs sans aucune inscription",
+    file_get_contents(__DIR__ . '/../sql/clubs_without_registration.sql'),
+    'alert',
+    'clubs', 'indicator_id');
 $indicators[] = new Indicator(
     "Equipes qui ne s'engageront pas",
     file_get_contents(__DIR__ . '/../sql/will_not_register_teams.sql'));

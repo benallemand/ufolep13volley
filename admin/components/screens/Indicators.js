@@ -6,7 +6,7 @@
  * indicateur, cliquable pour voir le détail.
  *
  * `ajax/indicators.php` fonctionne en deux temps, et on garde ce découpage :
- * `mode=list` rend les 47 libellés tout de suite, puis un `mode=detail&id=N`
+ * `mode=list` rend les 48 libellés tout de suite, puis un `mode=detail&id=N`
  * par indicateur exécute sa requête. Tout charger d'un coup prendrait des
  * dizaines de secondes avant le premier pixel.
  *
@@ -184,7 +184,7 @@ export default {
                 });
         },
         /**
-         * Les 47 requêtes ne partent pas d'un bloc : chacune exécute du SQL
+         * Les 48 requêtes ne partent pas d'un bloc : chacune exécute du SQL
          * d'exploitation, et le navigateur n'ouvre de toute façon que quelques
          * connexions par hôte. On en garde six en vol, ce qui laisse les
          * premières tuiles s'afficher vite.

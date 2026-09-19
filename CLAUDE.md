@@ -654,10 +654,10 @@ la prop `rowFilter`.
 > Le filtre vit dans l'URL, donc il survit à un rechargement et se partage. Un
 > bandeau l'annonce, avec un bouton pour tout revoir.
 >
-> Cinq indicateurs sont câblés à ce jour — trois vers `players`, deux vers
-> `teams`. Les autres restent de simples constats : la plupart croisent plusieurs
-> entités et n'ont pas d'écran de correction évident. Mieux vaut les laisser
-> non cliquables que d'inventer une correspondance douteuse.
+> Sept indicateurs sont câblés à ce jour — trois vers `players`, deux vers
+> `teams`, deux vers `clubs`. Les autres restent de simples constats : la plupart
+> croisent plusieurs entités et n'ont pas d'écran de correction évident. Mieux
+> vaut les laisser non cliquables que d'inventer une correspondance douteuse.
 
 > **Fenêtre de sélection** : `grid/AdminPickerModal.js` couvre les actions
 > « choisir dans une liste puis confirmer » — associer des joueurs à un club ou
@@ -1002,6 +1002,29 @@ connexion annonçait `utf8` — l'alias d'utf8mb3. Le script
 > `zz_backup_clubs_responsable_327` reste volontairement en latin1 : c'est une
 > sauvegarde destinée à disparaître, elle n'est jointe à rien, et
 > `dump-schema.ps1` l'écarte déjà du schéma de CI.
+
+### Retardataires d'inscription (issue #338)
+- L'indicateur **« Clubs sans aucune inscription »** (`sql/clubs_without_registration.sql`)
+  travaille à la **maille club**, pas équipe : un club qui n'a rien inscrit du
+  tout n'a pas commencé sa saisie. Celui qui en a inscrit deux sur trois relève
+  de « Equipes non réengagées », qui liste les équipes une par une.
+- La population attendue vient de `classements` — avoir joué la saison passée,
+  et ne pas avoir déclaré forfait (`will_register_again`). Un club qui a dit
+  qu'il ne revenait pas n'est pas en retard, il est parti.
+
+> **Le garde-fou est la fenêtre d'inscription.** `register` garde ses lignes
+> toute la saison : sans borne, les clubs absents resteraient signalés jusqu'au
+> prochain millésime. La requête est donc encadrée par
+> `competitions.start_register_date` / `limit_register_date` (bornes incluses,
+> comme `Competition::is_registration_available()`), ce qui donne au passage
+> `jours_restants` et **éteint la tuile toute seule** passée la date limite.
+> Repousser cette date dans l'écran Compétitions rallonge d'autant la vie de
+> l'indicateur.
+>
+> Conséquence pour les tests : `LateClubsTest` **ouvre lui-même la fenêtre** des
+> trois championnats et la restaure dans son `tearDown`, sinon il passerait sans
+> rien vérifier dix mois sur douze. Même parti pris que `registrations_setup.php`
+> côté E2E.
 
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
