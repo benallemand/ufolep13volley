@@ -449,7 +449,7 @@ appliquent pas.
 
 | # | Cas | Attendu |
 |---|-----|---------|
-| X1 | Ouvrir l'écran | Les tuiles apparaissent **progressivement** (six requêtes en vol), le compteur « n / 47 calculés » avance, des tuiles grises marquent ce qui reste. Compter ~30 s pour les 47 |
+| X1 | Ouvrir l'écran | Les tuiles apparaissent **progressivement** (six requêtes en vol), le compteur « n / 48 calculés » avance, des tuiles grises marquent ce qui reste. Compter ~30 s pour les 48 |
 | X2 | Regarder le résultat | Une vingtaine de tuiles : **les alertes en rouge d'abord**, puis les informations en bleu, par valeur décroissante |
 | X3 | Vérifier qu'aucune tuile n'affiche 0 | Un indicateur à zéro **n'est pas affiché** — le tableau de bord ne montre que ce sur quoi il y a à faire |
 | X4 | Cocher « Alertes seulement » | Seules les tuiles rouges restent |
@@ -457,6 +457,9 @@ appliquent pas.
 | X6 | Cliquer une tuile | Fenêtre avec le détail en tableau, une colonne par champ de la requête |
 | X7 | Cliquer « Export » dans la fenêtre | Un CSV se télécharge, **accents corrects dans Excel** (BOM UTF-8) |
 | X8 | Cliquer le bouton de rafraîchissement | Tout est recalculé depuis zéro |
+| X9 | Ouvrir « **Clubs sans aucune inscription** » pendant la campagne | Un club par ligne — jamais une équipe — avec ses compétitions de la saison passée, la date limite, les jours restants et l'adresse à relancer. « Corriger ces N ligne(s) » ouvre l'écran Clubs filtré (#338) |
+| X10 | Inscrire **une seule** équipe pour un de ces clubs, puis rafraîchir | Le club disparaît de la tuile : ses équipes manquantes relèvent désormais de « Equipes non réengagées » |
+| X11 | Passer la date limite d'inscription des championnats (écran Compétitions), puis rafraîchir | La tuile **disparaît entièrement**, même si des clubs n'ont rien inscrit : hors campagne, personne n'est en retard |
 
 > `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
 > depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux
