@@ -1,3 +1,5 @@
+import { compareCells } from '../grid/compareCells.js';
+
 /**
  * Tableau de bord des indicateurs (issue #265, lot 5).
  * Remplace `js/view/view/Indicators.js`.
@@ -77,16 +79,54 @@ export default {
 
         <dialog v-if="opened" class="modal modal-open">
           <div class="modal-box max-w-6xl">
-            <h3 class="font-bold text-lg mb-1">{{ opened.fieldLabel }}</h3>
-            <p class="text-sm text-base-content/60 mb-4">{{ opened.details.length }} ligne(s)</p>
-            <div class="overflow-x-auto max-h-[60vh]">
-              <table class="table table-zebra table-sm">
+            <h3 class="font-bold text-lg mb-3">{{ opened.fieldLabel }}</h3>
+            <!-- Recherche rapide, filtres par colonne et tri (issue #340) :
+                 mêmes conventions que les grilles d'administration. -->
+            <div class="flex flex-wrap items-center gap-3 mb-3">
+              <input v-model.trim="detailSearch"
+                     type="text"
+                     class="input input-bordered input-sm w-full sm:w-96"
+                     aria-label="Recherche rapide dans le détail"
+                     placeholder="Rechercher… (plusieurs termes séparés par des virgules)"/>
+              <span class="text-sm text-base-content/60" data-testid="detail-count">
+                {{ detailRows.length }} / {{ opened.details.length }} ligne(s)
+              </span>
+              <button v-if="hasDetailFilters" class="btn btn-ghost btn-xs" @click="resetDetailFilters">
+                <i class="fas fa-filter-circle-xmark"></i> Effacer les filtres
+              </button>
+            </div>
+            <div class="overflow-auto max-h-[60vh]">
+              <table class="table table-zebra table-sm table-pin-rows">
                 <thead>
-                  <tr><th v-for="c in detailColumns" :key="c">{{ c }}</th></tr>
+                  <tr>
+                    <th v-for="c in detailColumns"
+                        :key="c"
+                        class="cursor-pointer select-none whitespace-nowrap"
+                        :title="'Trier par ' + c"
+                        @click="sortDetailBy(c)">
+                      {{ c }}
+                      <i v-if="detailSort.key === c"
+                         :class="detailSort.asc ? 'fas fa-caret-up' : 'fas fa-caret-down'"></i>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th v-for="c in detailColumns" :key="'filtre-' + c" class="py-1">
+                      <input v-model.trim="columnFilters[c]"
+                             type="text"
+                             class="input input-bordered input-xs w-full min-w-24 font-normal"
+                             :aria-label="'Filtrer la colonne ' + c"
+                             placeholder="Filtrer…"/>
+                    </th>
+                  </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, i) in opened.details" :key="i">
+                  <tr v-for="(row, i) in detailRows" :key="i">
                     <td v-for="c in detailColumns" :key="c">{{ row[c] }}</td>
+                  </tr>
+                  <tr v-if="!detailRows.length">
+                    <td :colspan="detailColumns.length" class="text-center text-base-content/60 py-6">
+                      Aucune ligne ne correspond aux filtres.
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -102,7 +142,7 @@ export default {
                 <i class="fas fa-arrow-right"></i>
                 Corriger ces {{ opened.ids.length }} ligne(s)
               </button>
-              <button class="btn btn-ghost btn-sm" @click="exportCsv">
+              <button class="btn btn-ghost btn-sm" :disabled="!detailRows.length" @click="exportCsv">
                 <i class="fas fa-file-csv"></i> Export
               </button>
               <button class="btn btn-sm" @click="opened = null">Fermer</button>
@@ -121,7 +161,18 @@ export default {
             alertsOnly: false,
             opened: null,
             error: null,
+            // État du détail ouvert, remis à zéro à chaque ouverture : un
+            // filtre posé sur un indicateur n'a aucun sens sur le suivant.
+            detailSearch: '',
+            columnFilters: {},
+            detailSort: { key: null, asc: true },
         };
+    },
+    watch: {
+        opened() {
+            this.resetDetailFilters();
+            this.detailSort = { key: null, asc: true };
+        },
     },
     computed: {
         pending() {
@@ -148,11 +199,58 @@ export default {
             const first = this.opened && this.opened.details && this.opened.details[0];
             return first ? Object.keys(first) : [];
         },
+        /**
+         * Lignes du détail telles qu'affichées ET exportées : filtres par
+         * colonne (tous doivent correspondre), puis recherche rapide (un des
+         * termes suffit, comme dans `AdminGrid`), puis tri.
+         */
+        detailRows() {
+            if (!this.opened) {
+                return [];
+            }
+            const text = (v) => String(v ?? '').toLowerCase();
+            const filters = Object.entries(this.columnFilters)
+                .map(([c, v]) => [c, text(v).trim()])
+                .filter(([, v]) => v.length);
+            const terms = this.detailSearch.split(',')
+                .map((t) => t.trim().toLowerCase())
+                .filter((t) => t.length);
+            const rows = (this.opened.details || []).filter((row) => {
+                if (!filters.every(([c, v]) => text(row[c]).includes(v))) {
+                    return false;
+                }
+                if (!terms.length) {
+                    return true;
+                }
+                const haystack = this.detailColumns.map((c) => text(row[c])).join(' ');
+                return terms.some((t) => haystack.includes(t));
+            });
+            const { key, asc } = this.detailSort;
+            if (!key) {
+                return rows;
+            }
+            // `filter` a déjà rendu une copie : on peut trier sur place.
+            return rows.sort((a, b) => compareCells(a[key], b[key]) * (asc ? 1 : -1));
+        },
+        hasDetailFilters() {
+            return this.detailSearch.length > 0
+                || Object.values(this.columnFilters).some((v) => String(v ?? '').trim().length);
+        },
     },
     created() {
         this.load();
     },
     methods: {
+        /** Un clic trie par ordre croissant, le suivant inverse. */
+        sortDetailBy(key) {
+            this.detailSort = this.detailSort.key === key
+                ? { key, asc: !this.detailSort.asc }
+                : { key, asc: true };
+        },
+        resetDetailFilters() {
+            this.detailSearch = '';
+            this.columnFilters = {};
+        },
         /**
          * Ouvre l'écran de correction, filtré sur les lignes de l'indicateur
          * (issue #312). `AdminGrid` lit `?ids=` tout seul : aucun écran n'a à
@@ -235,7 +333,9 @@ export default {
                 return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
             };
             const lines = [this.detailColumns.map(escape).join(sep)];
-            for (const row of this.opened.details) {
+            // Ce qu'on voit, dans l'ordre où on le voit : filtres et tri
+            // compris, comme l'export des grilles d'administration.
+            for (const row of this.detailRows) {
                 lines.push(this.detailColumns.map((c) => escape(row[c])).join(sep));
             }
             // BOM : sans lui Excel lit le CSV en latin-1 et casse les accents.

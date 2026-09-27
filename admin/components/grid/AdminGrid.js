@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue';
 import { onError, onSuccess } from '../../../toaster.js';
+import { compareCells } from './compareCells.js';
 
 /**
  * Grille d'administration générique (issue #265, lot 0).
@@ -329,19 +330,8 @@ export default {
             }
             const key = this.sort.key;
             const dir = this.sort.asc ? 1 : -1;
-            return [...this.rows].sort((a, b) => {
-                const va = a[key], vb = b[key];
-                const na = Number(va), nb = Number(vb);
-                if (va !== '' && vb !== '' && !Number.isNaN(na) && !Number.isNaN(nb)) {
-                    return (na - nb) * dir;
-                }
-                // Dates francaises : comparees chronologiquement (issue #296).
-                const da = this.sortableDate(va), db = this.sortableDate(vb);
-                if (da !== null && db !== null) {
-                    return da.localeCompare(db) * dir;
-                }
-                return String(va ?? '').localeCompare(String(vb ?? ''), 'fr') * dir;
-            });
+            // Nombres, dates françaises puis texte : voir `compareCells.js`.
+            return [...this.rows].sort((a, b) => compareCells(a[key], b[key]) * dir);
         },
         pageCount() {
             return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
@@ -494,33 +484,6 @@ export default {
             this.selection = checked
                 ? [...new Set([...this.selection, ...ids])]
                 : this.selection.filter((id) => !ids.includes(id));
-        },
-        /**
-         * Une date `jj/mm/aaaa[ hh:mm[:ss]]` -> clef triable `aaaammjjhhmmss`.
-         *
-         * Sans cela, une colonne de date se triait comme du texte : `02/12/2025`
-         * passait avant `15/11/2025` (issue #296). Le defaut touchait 18
-         * colonnes sur 13 ecrans ; le corriger ici les couvre toutes, et un
-         * futur ecran en profite sans rien declarer.
-         *
-         * La conversion n'est appliquee que si les DEUX valeurs comparees sont
-         * des dates francaises : une colonne texte ne peut donc pas basculer
-         * par accident. Les colonnes deja en ISO (`aaaa-mm-jj hh:mm:ss`,
-         * `calendar_events`) se triaient correctement en texte et ne passent
-         * pas par ici.
-         *
-         * @returns {string|null} null si la valeur n'est pas une date francaise
-         */
-        sortableDate(value) {
-            if (value === null || value === undefined) {
-                return null;
-            }
-            const m = String(value).trim()
-                .match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
-            if (!m) {
-                return null;
-            }
-            return m[3] + m[2] + m[1] + (m[4] || '00') + (m[5] || '00') + (m[6] || '00');
         },
         sortBy(key) {
             this.sort = this.sort.key === key
