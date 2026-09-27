@@ -737,6 +737,13 @@ la prop `rowFilter`.
 > `mode=detail&id=N` par indicateur exécute sa requête, six en vol. Une tuile à
 > zéro n'est pas affichée. C'est le modèle à suivre pour un écran qui n'est pas
 > du CRUD : un composant à part, pas une contorsion de `AdminGrid`.
+>
+> Le détail d'une tuile se trie, se filtre par colonne et se cherche (issue #340),
+> avec les conventions des grilles : recherche multi-termes séparés par des
+> virgules (un terme suffit), filtres de colonne cumulés, export CSV de **ce qui
+> est affiché**. La comparaison des cellules — nombres, dates françaises, texte —
+> vit dans `grid/compareCells.js`, **partagée avec `AdminGrid`** : un correctif de
+> tri (comme #296) doit y être fait une fois pour les deux.
 
 **Validation** : la recette manuelle vit dans `admin/RECETTE.md` — cas transverses,
 cas génériques de la grille, et cas par écran. Les écrans d'administration sont

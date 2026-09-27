@@ -460,6 +460,11 @@ appliquent pas.
 | X9 | Ouvrir « **Clubs sans aucune inscription** » pendant la campagne | Un club par ligne — jamais une équipe — avec ses compétitions de la saison passée, la date limite, les jours restants et l'adresse à relancer. « Corriger ces N ligne(s) » ouvre l'écran Clubs filtré (#338) |
 | X10 | Inscrire **une seule** équipe pour un de ces clubs, puis rafraîchir | Le club disparaît de la tuile : ses équipes manquantes relèvent désormais de « Equipes non réengagées » |
 | X11 | Passer la date limite d'inscription des championnats (écran Compétitions), puis rafraîchir | La tuile **disparaît entièrement**, même si des clubs n'ont rien inscrit : hors campagne, personne n'est en retard |
+| X12 | Dans un détail, cliquer un en-tête, puis le recliquer | Tri croissant (caret ▲) puis décroissant (▼) ; les nombres et les dates `jj/mm/aaaa` se trient comme tels, pas comme du texte (#340) |
+| X13 | Saisir une valeur dans le champ « Filtrer… » d'une colonne, puis dans une deuxième | Les filtres **se cumulent** ; insensibles à la casse ; le compteur affiche `affichées / total` |
+| X14 | Saisir deux termes séparés par une virgule dans la recherche rapide | Restent les lignes qui contiennent **l'un ou l'autre** terme, dans n'importe quelle colonne. Sans résultat : « Aucune ligne ne correspond aux filtres. » et Export grisé |
+| X15 | Filtrer, trier, puis « Export » | Le CSV contient **les seules lignes affichées, dans l'ordre affiché** |
+| X16 | « Effacer les filtres », puis fermer et rouvrir une autre tuile | Le premier remet toutes les lignes (le tri reste) ; la tuile suivante s'ouvre sans filtre ni tri |
 
 > `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
 > depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux
