@@ -147,7 +147,6 @@ return array(
         'getWeekMatches' => 'public',
         'get_match' => 'public',
         'get_match_by_code_match' => 'public',
-        'get_survey' => 'public',
         'getMatchPlayers' => 'user',
         'getMatchReadAccess' => 'user',
         'getMesMatches' => 'user',
@@ -156,6 +155,8 @@ return array(
         'getNotMatchPlayers' => 'user',
         'getReinforcementPlayers' => 'user',
         'get_available_dates_for_match' => 'user',
+        // public jusqu'à #351 : livrait tous les sondages sans connexion
+        'get_survey' => 'user',
         'manage_match_players' => 'user',
         'modify_match_date' => 'user',
         'save_match' => 'user',
