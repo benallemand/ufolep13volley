@@ -7,7 +7,7 @@ require_once __DIR__ . '/../bootstrap.php';
 /**
  * Indicateurs d'administration (tableau de bord).
  *
- * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 48 requetes d'exploitation et
+ * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 49 requetes d'exploitation et
  * renvoie leurs lignes de detail : adresses des responsables, comptes, identite
  * de joueurs, cotisations. Il etait ouvert a tout le monde (issue #284) --
  * `ajax/` ne passe pas par `rest/action.php`, donc le refus par defaut de #270
@@ -197,6 +197,11 @@ $indicators[] = new Indicator(
     file_get_contents(__DIR__ . '/../sql/clubs_without_registration.sql'),
     'alert',
     'clubs', 'indicator_id');
+// Pénalités automatiques de la feuille de match non signée à 48 h (#345)
+$indicators[] = new Indicator(
+    "Pénalités automatiques",
+    file_get_contents(__DIR__ . '/../sql/auto_penalties.sql'),
+    'alert');
 $indicators[] = new Indicator(
     "Equipes qui ne s'engageront pas",
     file_get_contents(__DIR__ . '/../sql/will_not_register_teams.sql'));

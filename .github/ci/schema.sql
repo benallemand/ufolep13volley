@@ -480,6 +480,28 @@ CREATE TABLE `live_scores` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `match_penalties`
+--
+
+DROP TABLE IF EXISTS `match_penalties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `match_penalties` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_match` bigint NOT NULL,
+  `id_equipe` smallint NOT NULL,
+  `code_competition` varchar(2) NOT NULL,
+  `reason` varchar(50) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_match_team_reason` (`id_match`,`id_equipe`,`reason`),
+  KEY `id_equipe` (`id_equipe`),
+  CONSTRAINT `match_penalties_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE,
+  CONSTRAINT `match_penalties_ibfk_2` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `match_player`
 --
 

@@ -348,6 +348,10 @@ export default {
             <ul class="list-disc pl-5 mb-2">
               <li>Les sanctions sont prononcées par la commission selon la gravité des faits.</li>
               <li>Un barème des sanctions est disponible sur demande.</li>
+              <li>En championnat, une feuille de match qui n'est pas signée par les deux équipes 48 heures après le
+                match entraîne automatiquement 1 point de pénalité pour chacune des deux équipes. La pénalité reste
+                acquise si la feuille est signée ensuite.
+              </li>
             </ul>
           </div>
           <div id="article-25" class="bg-base-200 rounded-xl p-4">
