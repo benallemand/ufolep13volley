@@ -77,7 +77,9 @@ return array(
         'deleteClubs' => 'admin',
         'getAccountCandidates' => 'admin',
         'saveClub' => 'admin',
-        'get' => 'public',
+        // public jusqu'à #354 : emails des comptes, téléphones des référents
+        'get' => 'admin',
+        'getClubList' => 'public',
         'getMyClubTeams' => 'user',
         'getMyClubs' => 'user',
     ),

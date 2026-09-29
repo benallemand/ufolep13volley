@@ -3,6 +3,7 @@
 // passer AVANT le premier session_start(), d'ou cette place en tete de
 // point d'entree (issue #292).
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/raw_sql_guard.php';
 header('Access-Control-Allow-Origin: *');
 
 
@@ -246,6 +247,7 @@ try {
                 $parameters = array();
             }
             $parameters = exclude_ignored_parameters($parameters);
+            assert_no_raw_sql_parameter($manager, $action_name, $parameters);
             call_user_func_array(
                 array($manager, $action_name),
                 $parameters);
@@ -256,6 +258,7 @@ try {
                 $parameters = array();
             }
             $parameters = exclude_ignored_parameters($parameters);
+            assert_no_raw_sql_parameter($manager, $action_name, $parameters);
             $results = call_user_func_array(
                 array($manager, $action_name),
                 $parameters);

@@ -466,6 +466,16 @@ ce qu'un grep sur les littéraux ne voit pas.
 Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier les
 valeurs. Ne jamais concaténer (suivi dans #270).
 
+**Arguments SQL bruts** : le routeur passe chaque paramètre de la requête en
+argument nommé, donc `Generic::get($query)` et consorts (`getCompetitions`,
+`getTeams`, `get_emails($where)`…) devenaient une clause WHERE libre —
+sans connexion sur `club/get` (#354). `rest/raw_sql_guard.php` refuse (400) tout
+paramètre nommé `query`, `where`, `bindings`, `order`, `order_by` ou `sql` qui
+correspond à un argument de la méthode, et toute clé numérique (argument
+positionnel). Une méthode où `query` est un **terme de recherche** lié ou échappé
+se déclare dans `SEARCH_TERM_PARAMETERS`. `RawSqlGuardTest` parcourt toutes les
+actions de `rest/access.php`.
+
 **Chemins de fichiers reçus du client** : jamais de `readfile`/`file_get_contents`
 direct. `photo/get_photo`, public, servait tout fichier du site — `.env` et code
 source compris (#352). Résoudre par `realpath`, exiger un répertoire autorisé et une

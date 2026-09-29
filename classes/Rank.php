@@ -73,11 +73,14 @@ class Rank extends Generic
      */
     public function getDivisionsFromCompetition($code_competition): array
     {
-        $sql = "SELECT DISTINCT division 
+        // endpoint public : paramètre lié (issue #354)
+        $sql = "SELECT DISTINCT division
             FROM classements
-            WHERE code_competition = '$code_competition'
+            WHERE code_competition = ?
             ORDER BY CAST(division AS UNSIGNED)";
-        return $this->sql_manager->execute($sql);
+        return $this->sql_manager->execute($sql, array(
+            array('type' => 's', 'value' => (string)$code_competition),
+        ));
     }
 
     /**
