@@ -49,6 +49,7 @@ class SurveyTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM matches WHERE code_match = 'SURVEY_UT001'");
         $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'survey_test_user')");
         $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'survey_test_user'");
+        $this->sql->execute("DELETE FROM classements WHERE code_competition = 'us'");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'survey test team %'");
         $this->sql->execute("DELETE FROM clubs WHERE nom LIKE 'survey test club %'");
         $this->sql->execute("DELETE FROM creneau WHERE id_gymnase IN (SELECT id FROM gymnase WHERE nom = 'survey test court')");
@@ -66,108 +67,119 @@ class SurveyTest extends UfolepTestCase
         $_SESSION['id_user'] = $this->test_user_id;
     }
 
-    public function test_save_survey_rejects_on_time_above_10()
+    // --- Échelle -- - = + ++ stockée en -2..+2 (issue #350)
+
+    private function save(array $ratings, ?string $comment = null, $id = null)
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
+        $ratings += array('on_time' => 0, 'spirit' => 0, 'referee' => 0, 'catering' => 0, 'global' => 0);
+        return $this->match_manager->save_survey(
             id_match: $this->test_match_id,
-            on_time: 11,
-            spirit: 5,
-            referee: 5,
-            catering: 5,
-            global: 5
+            on_time: $ratings['on_time'],
+            spirit: $ratings['spirit'],
+            referee: $ratings['referee'],
+            catering: $ratings['catering'],
+            global: $ratings['global'],
+            comment: $comment,
+            id: $id
         );
     }
 
-    public function test_save_survey_rejects_negative_on_time()
+    /**
+     * En boucle et non en `@dataProvider` : UfolepTestCase redéfinit le
+     * constructeur sans transmettre les données du fournisseur.
+     */
+    public function test_save_survey_refuse_une_note_hors_echelle()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: -1,
-            spirit: 5,
-            referee: 5,
-            catering: 5,
-            global: 5
+        $cases = array(
+            'ponctualité 3' => array('on_time', 3),
+            'état d\'esprit -3' => array('spirit', -3),
+            'arbitrage 10 (ancienne échelle)' => array('referee', 10),
+            'apéro non entier' => array('catering', '1.5'),
+            'global texte' => array('global', 'abc'),
         );
+        foreach ($cases as $label => [$field, $value]) {
+            try {
+                $this->save(array($field => $value));
+                self::fail("$label : la note devait être refusée");
+            } catch (InvalidArgumentException $e) {
+                self::assertStringContainsString("'$field'", $e->getMessage(), $label);
+            }
+        }
     }
 
-    public function test_save_survey_rejects_spirit_above_10()
+    public function test_save_survey_accepte_les_bornes_de_l_echelle()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 5,
-            spirit: 15,
-            referee: 5,
-            catering: 5,
-            global: 5
-        );
+        self::assertNotNull($this->save(array('on_time' => 2, 'spirit' => -1, 'global' => 1)));
+        self::assertNotNull($this->save(array('referee' => -2), 'arbitre absent, match arbitré par un joueur'));
     }
 
-    public function test_save_survey_rejects_referee_above_10()
+    public function test_une_note_tres_insatisfaisante_exige_un_commentaire()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 5,
-            spirit: 5,
-            referee: 12,
-            catering: 5,
-            global: 5
-        );
+        try {
+            $this->save(array('spirit' => -2), '   ');
+            self::fail('Une note à -- sans commentaire doit être refusée');
+        } catch (InvalidArgumentException $e) {
+            self::assertStringContainsString('commentaire', $e->getMessage());
+        }
     }
 
-    public function test_save_survey_rejects_catering_above_10()
+    public function test_le_formulaire_neuf_est_prerempli_a_egal()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 5,
-            spirit: 5,
-            referee: 5,
-            catering: 11,
-            global: 5
-        );
+        $survey = $this->match_manager->get_survey($this->test_match_id);
+        self::assertNull($survey['id']);
+        self::assertSame(2, $survey['scale_version']);
+        foreach (array('on_time', 'spirit', 'referee', 'catering', 'global') as $field) {
+            self::assertSame(0, $survey[$field], "$field doit être prérempli à =");
+        }
     }
 
-    public function test_save_survey_rejects_global_above_10()
+    public function test_un_sondage_enregistre_porte_l_echelle_courante()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 5,
-            spirit: 5,
-            referee: 5,
-            catering: 5,
-            global: 11
-        );
+        $this->save(array('global' => 1));
+        $survey = $this->match_manager->get_survey($this->test_match_id);
+        self::assertNotNull($survey['id']);
+        self::assertSame(2, (int)$survey['scale_version']);
+        self::assertSame(1, (int)$survey['global']);
     }
 
-    public function test_save_survey_accepts_value_10()
+    public function test_un_sondage_de_l_ancienne_echelle_n_est_pas_repris()
     {
-        $result = $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 10,
-            spirit: 10,
-            referee: 10,
-            catering: 10,
-            global: 10
-        );
-        $this->assertNotNull($result);
+        // un sondage 0..10 d'une saison passée : le formulaire repart à `=`
+        $this->sql->execute(
+            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
+            array(
+                array('type' => 'i', 'value' => $this->test_user_id),
+                array('type' => 'i', 'value' => $this->test_match_id),
+            ));
+        $survey = $this->match_manager->get_survey($this->test_match_id);
+        self::assertNull($survey['id']);
+        self::assertSame(0, $survey['global']);
     }
 
-    public function test_save_survey_accepts_value_0()
+    public function test_un_sondage_tout_a_egal_compte_pour_le_fair_play()
     {
-        $result = $this->match_manager->save_survey(
-            id_match: $this->test_match_id,
-            on_time: 0,
-            spirit: 0,
-            referee: 0,
-            catering: 0,
-            global: 0
-        );
-        $this->assertNotNull($result);
+        // L'ancien filtre « somme > 0 » de survey_view_raw écartait ce sondage.
+        $this->sql->execute("INSERT INTO classements (code_competition, division, id_equipe)
+                             SELECT 'us', '1', id_equipe FROM equipes WHERE nom_equipe = 'survey test team 2'");
+        $this->save(array());
+        $rows = $this->sql->execute("SELECT on_time, global FROM survey_view_raw WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->test_match_id)));
+        self::assertCount(1, $rows);
+        self::assertSame(0, (int)$rows[0]['global']);
+    }
+
+    public function test_l_ancienne_echelle_est_exclue_du_fair_play()
+    {
+        $this->sql->execute("INSERT INTO classements (code_competition, division, id_equipe)
+                             SELECT 'us', '1', id_equipe FROM equipes WHERE nom_equipe = 'survey test team 2'");
+        $this->sql->execute(
+            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
+            array(
+                array('type' => 'i', 'value' => $this->test_user_id),
+                array('type' => 'i', 'value' => $this->test_match_id),
+            ));
+        self::assertCount(0, $this->sql->execute("SELECT id FROM survey_view_raw WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->test_match_id))));
     }
 
     protected function tearDown(): void

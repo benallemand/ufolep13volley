@@ -3,6 +3,15 @@ require_once __DIR__ . "/Generic.php";
 
 class Survey extends Generic
 {
+    /**
+     * Échelle du sondage (issue #350). Version 1 : 0..10 étoiles, 0 = non
+     * noté — les sondages des saisons passées. Version 2 : -2..+2, soit
+     * -- - = + ++, 0 (=) par défaut. Le classement fair-play ne compte que
+     * la version courante, pour ne jamais mélanger les deux.
+     */
+    const SCALE_VERSION = 2;
+    const MIN_RATING = -2;
+    const MAX_RATING = 2;
 
     public function __construct()
     {
@@ -31,6 +40,7 @@ class Survey extends Generic
                 case 'referee':
                 case 'catering':
                 case 'global':
+                case 'scale_version':
                     $bindings[] = array('type' => 'i', 'value' => $value);
                     $sql .= "$key = ?,";
                     break;
@@ -64,6 +74,7 @@ class Survey extends Generic
                 s.referee,
                 s.catering,
                 s.global,
+                s.scale_version,
                 s.comment,
                 u.login
                 FROM matchs_view m

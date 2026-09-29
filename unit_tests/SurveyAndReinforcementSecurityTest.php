@@ -97,7 +97,8 @@ class SurveyAndReinforcementSecurityTest extends UfolepTestCase
 
     private function ratings(): array
     {
-        return array('on_time' => 5, 'spirit' => 5, 'referee' => 5, 'catering' => 5, 'global' => 5);
+        // échelle -2..+2 depuis #350
+        return array('on_time' => 1, 'spirit' => 1, 'referee' => 1, 'catering' => 1, 'global' => 1);
     }
 
     // --- Sondage : lecture
@@ -156,7 +157,7 @@ class SurveyAndReinforcementSecurityTest extends UfolepTestCase
     public function test_save_survey_ne_reecrit_pas_le_sondage_d_un_autre_compte(): void
     {
         $id_other_survey = $this->sql->execute(
-            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 1, spirit = 1, referee = 1, catering = 1, global = 1",
+            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 1, spirit = 1, referee = 1, catering = 1, global = -1",
             array(
                 array('type' => 'i', 'value' => $this->other_user_id),
                 array('type' => 'i', 'value' => $this->match_a),
@@ -171,7 +172,7 @@ class SurveyAndReinforcementSecurityTest extends UfolepTestCase
         $row = $this->sql->execute("SELECT user_id, global FROM survey WHERE id = ?",
             array(array('type' => 'i', 'value' => $id_other_survey)));
         self::assertSame($this->other_user_id, (int)$row[0]['user_id']);
-        self::assertSame(1, (int)$row[0]['global']);
+        self::assertSame(-1, (int)$row[0]['global']);
     }
 
     public function test_save_survey_fonctionne_pour_son_propre_match(): void
@@ -180,10 +181,10 @@ class SurveyAndReinforcementSecurityTest extends UfolepTestCase
         $this->match_manager->save_survey($this->match_a, ...array_values($this->ratings()));
         $survey = $this->match_manager->get_survey($this->match_a);
         self::assertNotNull($survey['id']);
-        self::assertSame(5, (int)$survey['global']);
+        self::assertSame(1, (int)$survey['global']);
         // et la mise à jour de son propre sondage reste possible
-        $this->match_manager->save_survey($this->match_a, 5, 5, 5, 5, 7, id: $survey['id']);
-        self::assertSame(7, (int)$this->match_manager->get_survey($this->match_a)['global']);
+        $this->match_manager->save_survey($this->match_a, 1, 1, 1, 1, 2, id: $survey['id']);
+        self::assertSame(2, (int)$this->match_manager->get_survey($this->match_a)['global']);
     }
 
     // --- Renforts
