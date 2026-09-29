@@ -102,6 +102,12 @@ class Team extends Generic
      */
     public function getTeam($id): mixed
     {
+        // `getTeams()` prend une clause WHERE toute faite : on valide avant de
+        // composer. Endpoint public (issue #354).
+        if (!is_numeric($id)) {
+            throw new Exception("Identifiant d'équipe invalide !");
+        }
+        $id = (int)$id;
         $results = $this->getTeams("e.id_equipe = $id");
         if (count($results) < 1) {
             throw new Exception("Erreur pendant la récupération des données de l'équipe !");

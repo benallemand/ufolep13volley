@@ -113,7 +113,7 @@ export default {
                 });
         },
         fetchClubs() {
-            axios.get("/rest/action.php/club/get")
+            axios.get("/rest/action.php/club/getClubList")
                 .then((response) => {
                     this.clubs = response.data || [];
                 })

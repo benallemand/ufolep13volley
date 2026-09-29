@@ -38,6 +38,18 @@ class Club extends Generic
     }
 
     /**
+     * Liste des clubs pour les formulaires du responsable : identifiant et nom
+     * seulement. `club/get`, qui renvoie aussi les emails des comptes et le
+     * téléphone des référents, était public ; il est désormais réservé à
+     * l'admin (issue #354).
+     * @throws Exception
+     */
+    public function getClubList(): array
+    {
+        return $this->sql_manager->execute("SELECT id, nom FROM clubs ORDER BY nom");
+    }
+
+    /**
      * @throws Exception
      */
     public function deleteClubs($ids) {
