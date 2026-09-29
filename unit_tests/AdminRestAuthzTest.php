@@ -170,6 +170,9 @@ class AdminRestAuthzTest extends UfolepTestCase
             // admin/components/screens/Registrations.js  ->  `/rest/action.php/register/${action}`
             'register/validateRegistration', 'register/unvalidateRegistration',
             'register/fill_ranks', 'register/create_teams_and_accounts',
+            // utils/reportUtils.js  ->  `/rest/action.php/matchmgr/${actionName}`
+            'matchmgr/askForReport', 'matchmgr/acceptReport',
+            'matchmgr/refuseReport', 'matchmgr/giveReportDate',
         ];
         foreach ($dynamiques as $key) {
             $referenced[$key] = $referenced[$key] ?? '(URL construite dynamiquement)';
@@ -264,6 +267,8 @@ class AdminRestAuthzTest extends UfolepTestCase
             'player/remove_from_team',
             'register/validateRegistration', 'register/unvalidateRegistration',
             'register/fill_ranks', 'register/create_teams_and_accounts',
+            'matchmgr/askForReport', 'matchmgr/acceptReport',
+            'matchmgr/refuseReport', 'matchmgr/giveReportDate',
         ];
     }
 
@@ -276,7 +281,9 @@ class AdminRestAuthzTest extends UfolepTestCase
         // `js/` (ExtJS) a disparu au lot 6 de #265 : on ne scanne plus que les
         // deux frontends Vue. Le repertoire est neanmoins tolere s'il revenait,
         // plutot que de faire exploser `RecursiveDirectoryIterator`.
-        foreach (['pages', 'admin', 'js'] as $dir) {
+        // `utils/` porte des appels REST partages (reportUtils.js) : sans lui,
+        // le workflow de report a repondu 403 sans qu'aucun test ne le voie.
+        foreach (['pages', 'admin', 'js', 'utils'] as $dir) {
             if (!is_dir("$root/$dir")) {
                 continue;
             }

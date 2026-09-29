@@ -1194,6 +1194,66 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Qui peut agir dans le workflow de report, et dans quel état du match.
+     * Mêmes règles que `utils/reportUtils.js` (`canAskReport`…), qui ne font
+     * qu'afficher les boutons : c'est ici qu'elles s'appliquent.
+     *
+     * L'équipe qui agit est celle de la session (`id_equipe`) — c'est elle qui
+     * signe les emails et le journal —, et elle doit jouer le match.
+     *
+     * @return int|null l'équipe qui agit ; null pour la commission, à qui seul
+     *                  `refuseReport` est ouvert, sans condition d'état
+     * @throws Exception
+     */
+    private function assert_report_action_allowed(string $action, array $match): ?int
+    {
+        if (!UserManager::is_connected()) {
+            throw new Exception("Utilisateur non connecté !");
+        }
+        // les emails du workflow ne partent que pour un match confirmé
+        if ($match['match_status'] !== 'CONFIRMED') {
+            throw new Exception("Seuls les matchs confirmés peuvent faire l'objet d'un report !", 409);
+        }
+        $id_team = (int)($_SESSION['id_equipe'] ?? 0);
+        $id_dom = (int)$match['id_equipe_dom'];
+        $id_ext = (int)$match['id_equipe_ext'];
+        if (!UserManager::isTeamLeader() || !in_array($id_team, array($id_dom, $id_ext), true)) {
+            if ($action === 'refuseReport' && UserManager::isAdmin()) {
+                return null;
+            }
+            throw new Exception("Seul le responsable d'une des deux équipes du match peut agir sur son report !", 403);
+        }
+        if ((int)$match['is_match_score_filled'] === 1) {
+            throw new Exception("Le score de ce match est déjà saisi : il ne peut plus être reporté !", 409);
+        }
+        $is_dom = $id_team === $id_dom;
+        $report_status = $match['report_status'];
+        switch ($action) {
+            case 'askForReport':
+                if ($report_status !== 'NOT_ASKED') {
+                    throw new Exception("Un report a déjà été demandé pour ce match !", 409);
+                }
+                break;
+            case 'acceptReport':
+            case 'refuseReport':
+                // on répond à la demande de l'adversaire, pas à la sienne
+                if ($report_status !== ($is_dom ? 'ASKED_BY_EXT' : 'ASKED_BY_DOM')) {
+                    throw new Exception("Aucune demande de report de l'équipe adverse n'est en attente pour ce match !", 409);
+                }
+                break;
+            case 'giveReportDate':
+                // c'est l'équipe qui a accepté le report qui propose la date
+                if ($report_status !== ($is_dom ? 'ACCEPTED_BY_DOM' : 'ACCEPTED_BY_EXT')) {
+                    throw new Exception("Seule l'équipe qui a accepté le report peut en transmettre la date !", 409);
+                }
+                break;
+            default:
+                throw new Exception("Action de report inconnue : $action");
+        }
+        return $id_team;
+    }
+
+    /**
      * @param $code_match
      * @param $reason
      * @return bool
@@ -1202,15 +1262,13 @@ class MatchMgr extends Generic
     public function askForReport($code_match, $reason)
     {
         $match = $this->get_match_by_code_match($code_match);
-        if ($match['match_status'] !== 'CONFIRMED') {
-            throw new Exception("Seuls les matchs confirmés peuvent faire l'objet d'une demande de report !");
-        }
-        $sessionIdEquipe = $_SESSION['id_equipe'];
+        $code_match = $match['code_match'];
+        $sessionIdEquipe = $this->assert_report_action_allowed(__FUNCTION__, $match);
         $this->check_team_allowed_to_ask_report($sessionIdEquipe, $code_match);
-        $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+        $report_status = $sessionIdEquipe === (int)$match['id_equipe_dom']
             ? 'ASKED_BY_DOM'
             : 'ASKED_BY_EXT';
-        $this->set_report_status($match['code_match'], $report_status);
+        $this->set_report_status($code_match, $report_status);
         $this->addActivity("Report demandé par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
         (new Emails())->sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
         return true;
@@ -1224,7 +1282,8 @@ class MatchMgr extends Generic
     public function giveReportDate($code_match, $report_date)
     {
         $match = $this->get_match_by_code_match($code_match);
-        $this->is_action_allowed(__FUNCTION__, $match['id_match']);
+        $code_match = $match['code_match'];
+        $sessionIdEquipe = $this->assert_report_action_allowed(__FUNCTION__, $match);
         $report_datetime = DateTime::createFromFormat('d/m/Y', $report_date);
         if (!$report_datetime) {
             throw new Exception("Impossible de déterminer la date de report, merci de respecter le format jj/mm/aaaa (exemple: 03/01/2023 pour le 3 Janvier 2023) !");
@@ -1249,7 +1308,6 @@ class MatchMgr extends Generic
             'value' => $code_match
         );
         $this->sql_manager->execute($sql, $bindings);
-        $sessionIdEquipe = $_SESSION['id_equipe'];
         $this->addActivity("Date de report transmise par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
         (new Emails())->sendMailGiveReportDate($code_match, $report_date, $sessionIdEquipe);
     }
@@ -1265,9 +1323,12 @@ class MatchMgr extends Generic
         // un code inconnu échoue ici, avant toute écriture
         $match = $this->get_match_by_code_match($code_match);
         $code_match = $match['code_match'];
-        if (UserManager::isTeamLeader()) {
-            $sessionIdEquipe = $_SESSION['id_equipe'];
-            $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+        // une seule voie : l'équipe du match si la session en est responsable,
+        // sinon la commission — un admin également responsable ne refuse plus
+        // deux fois (statut réécrit, deux emails)
+        $sessionIdEquipe = $this->assert_report_action_allowed(__FUNCTION__, $match);
+        if ($sessionIdEquipe !== null) {
+            $report_status = $sessionIdEquipe === (int)$match['id_equipe_dom']
                 ? 'REFUSED_BY_DOM'
                 : 'REFUSED_BY_EXT';
             $this->set_report_status($code_match, $report_status);
@@ -1275,8 +1336,7 @@ class MatchMgr extends Generic
                 "Report refusé par " . $this->team->getTeamName($sessionIdEquipe) .
                 " pour le match $code_match, raison: " . $reason);
             (new Emails())->sendMailRefuseReport($code_match, $reason, $sessionIdEquipe);
-        }
-        if (UserManager::isAdmin()) {
+        } else {
             $this->set_report_status($code_match, 'REFUSED_BY_ADMIN');
             $this->addActivity("Report refusé par la commission" .
                 " pour le match $code_match, raison: " . $reason);
@@ -1292,20 +1352,18 @@ class MatchMgr extends Generic
      */
     public function acceptReport($code_match)
     {
-        // un report s'accepte au nom d'une équipe : il faut le rôle
-        // responsable d'équipe (cumulable avec admin — issue #251)
-        if (!UserManager::isTeamLeader()) {
-            throw new Exception("Seul un responsable d'équipe peut accepter un report !");
-        }
         // un code inconnu échoue ici, avant toute écriture
         $this_match = $this->get_match_by_code_match($code_match);
         $code_match = $this_match['code_match'];
-        $sessionIdEquipe = $_SESSION['id_equipe'];
-        $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+        // un report s'accepte au nom d'une équipe : il faut le rôle
+        // responsable d'équipe (cumulable avec admin — issue #251), et la
+        // demande doit venir de l'adversaire
+        $sessionIdEquipe = $this->assert_report_action_allowed(__FUNCTION__, $this_match);
+        $report_status = $sessionIdEquipe === (int)$this_match['id_equipe_dom']
             ? 'ACCEPTED_BY_DOM'
             : 'ACCEPTED_BY_EXT';
         $this->set_report_status($code_match, $report_status);
-        if ($sessionIdEquipe == $this_match['id_equipe_dom']) {
+        if ($sessionIdEquipe === (int)$this_match['id_equipe_dom']) {
             $this->rank->incrementReportCount($this_match['code_competition'], $this_match['id_equipe_ext']);
         } else {
             $this->rank->incrementReportCount($this_match['code_competition'], $this_match['id_equipe_dom']);
@@ -1577,20 +1635,6 @@ class MatchMgr extends Generic
                     return;
                 }
                 throw new Exception("Seule la commission est autorisée à valider un match !");
-            case 'giveReportDate':
-                // allow admin
-                if (UserManager::isAdmin()) {
-                    return;
-                }
-                // allow only playing teams
-                if ($userTeamId === null) {
-                    throw new Exception("Seules les équipes participant au match peuvent donner une date de report !");
-                }
-                // allow only team leaders
-                if (!UserManager::isTeamLeader()) {
-                    throw new Exception("Seuls les responsables d'équipes peuvent donner une date de report !");
-                }
-                break;
             case 'manage_match_players':
             case 'add_match_player':
             case 'delete_match_player':
