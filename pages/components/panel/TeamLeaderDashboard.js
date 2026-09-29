@@ -44,6 +44,8 @@ export default {
           <span class="loading loading-spinner loading-lg"></span>
         </div>
         <template v-else>
+          <!-- Alertes en tête, pour le responsable d'équipe comme de club (issue #346) -->
+          <team-leader-alerts></team-leader-alerts>
           <div v-if="isClubLeader" :class="{ 'mb-8': isTeamLeader || isActingAs }">
             <h1 class="text-2xl font-bold mb-2"><i class="fas fa-people-group mr-2"></i>Espace responsable de club</h1>
             <p class="opacity-70 mb-6">
@@ -86,7 +88,6 @@ export default {
             </div>
           </div>
           <div v-if="isTeamLeader || isActingAs || !isClubLeader">
-            <team-leader-alerts></team-leader-alerts>
             <team-leader-infos></team-leader-infos>
           </div>
         </template>

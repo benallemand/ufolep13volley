@@ -1,8 +1,29 @@
 <?php
 require_once __DIR__ . '/Generic.php';
+require_once __DIR__ . '/UserManager.php';
 
+/**
+ * Alertes du tableau de bord responsable (issue #346).
+ *
+ * Une alerte porte : l'équipe concernée, un texte, une criticité
+ * (error / warning / info), un code d'aide (`expected_action`, décliné en
+ * texte par TeamLeaderAlerts.js) et le lien de l'écran où la corriger.
+ *
+ * Portée : l'équipe courante de la session (responsable d'équipe) et, pour un
+ * responsable de club, les équipes engagées de ses clubs. Trois familles,
+ * retenues par la commission : actions de match en attente (et pénalités
+ * reçues), joueurs (licence, photo, validation), effectif et rôles.
+ */
 class Alerts extends Generic
 {
+    const LINK_PLAYERS = '/pages/my_page.html#/players';
+    const LINK_TIMESLOTS = '/pages/my_page.html#/timeslots';
+    const LINK_MATCHES = '/pages/my_page.html#/team_matchs';
+
+    /** Effectif minimal et nombre minimal de femmes / d'hommes, par compétition. */
+    const MIN_PLAYERS = array('m' => 6, 'c' => 6, 'cf' => 6, 'mo' => 4, 'f' => 4, 't' => 4, 'ff' => 4, 'kh' => 4, 'kf' => 4);
+    const MIN_WOMEN = array('f' => 4, 't' => 4, 'ff' => 4, 'kh' => 2, 'kf' => 2, 'mo' => 1);
+    const MIN_MEN = array('mo' => 1);
 
     public function __construct()
     {
@@ -18,329 +39,231 @@ class Alerts extends Generic
         );
     }
 
-    public function getAlerts()
+    /**
+     * @throws Exception
+     */
+    public function getAlerts(): array
     {
-        $results = array();
+        @session_start();
         if (UserManager::isAdmin()) {
-            return $results;
+            return array();
         }
-        if (!UserManager::isTeamLeader()) {
-            return $results;
+        $results = array();
+        foreach ($this->alert_teams() as $id_equipe => $team_name) {
+            foreach ($this->team_alerts($id_equipe) as $alert) {
+                $results[] = $alert + array('id_equipe' => $id_equipe, 'team' => $team_name);
+            }
         }
-        $sessionIdEquipe = $_SESSION['id_equipe'];
-        $sessionLogin = $_SESSION['login'];
-        if (!$this->hasEnoughPlayers($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas assez de joueurs dans l'équipe",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpAddPlayer'
-            );
+        foreach ($this->pending_match_alerts() as $alert) {
+            $results[] = $alert;
         }
-        if (!$this->hasEnoughWomen($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas assez de filles dans l'équipe",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpAddPlayer'
-            );
-        }
-        if (!$this->hasEnoughMen($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas assez de garçons dans l'équipe",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpAddPlayer'
-            );
-        }
-        if (!$this->hasLeader($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Responsable d'équipe non défini",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpSelectLeader'
-            );
-        }
-        if (!$this->hasViceLeader($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Responsable suppléant d'équipe non défini",
-                'criticity' => 'warning',
-                'expected_action' => 'showHelpSelectViceLeader'
-            );
-        }
-        if (!$this->hasCaptain($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Capitaine d'équipe non défini",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpSelectCaptain'
-            );
-        }
-        if (!$this->hasTimeSlot($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas de gymnase de réception",
-                'criticity' => 'info',
-                'expected_action' => 'showHelpSelectTimeSlot'
-            );
-        }
-        if (!$this->hasAnyPhone($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas de numéro de téléphone",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpAddPhoneNumber'
-            );
-        }
-        if (!$this->hasAnyEmail($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Pas d'email",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpAddEmail'
-            );
-        }
-        if ($this->hasInactivePlayers($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Joueurs inactifs",
-                'criticity' => 'info',
-                'expected_action' => 'showHelpInactivePlayers'
-            );
-        }
-        if ($this->hasNotLicencedPlayers($sessionIdEquipe)) {
-            $results[] = array(
-                'owner' => $sessionLogin,
-                'issue' => "Joueurs sans licence",
-                'criticity' => 'error',
-                'expected_action' => 'showHelpPlayersWithoutLicenceNumber'
-            );
+        foreach ($results as $index => $alert) {
+            $results[$index]['owner'] = $_SESSION['login'] ?? null;
         }
         return $results;
     }
 
-    public function hasNotLicencedPlayers($sessionIdEquipe)
+    /**
+     * Équipes dont le compte connecté voit les alertes : id_equipe => nom.
+     * @return array<int, string>
+     * @throws Exception
+     */
+    private function alert_teams(): array
     {
-        $sql = "SELECT 
-        COUNT(*) AS cnt 
-        FROM joueur_equipe je 
-        JOIN joueurs j ON j.id = je.id_joueur
-        WHERE 
-        je.id_equipe = $sessionIdEquipe
-        AND (j.num_licence = '' OR j.num_licence IS NULL)";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
+        $teams = array();
+        if (UserManager::isTeamLeader() && !empty($_SESSION['id_equipe'])) {
+            $id = Generic::parse_id($_SESSION['id_equipe'], "identifiant d'équipe");
+            $teams[$id] = $this->team_name($id);
         }
-        return true;
+        if (UserManager::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            $club_ids = (new Club())->getMyClubIds();
+            $placeholders = implode(',', array_fill(0, count($club_ids), '?'));
+            // équipes engagées cette saison seulement : une équipe sans
+            // classement n'a ni match ni effectif à surveiller
+            $rows = $this->sql_manager->execute(
+                "SELECT DISTINCT e.id_equipe, e.nom_equipe
+                 FROM equipes e JOIN classements c ON c.id_equipe = e.id_equipe
+                 WHERE e.id_club IN ($placeholders)
+                 ORDER BY e.nom_equipe",
+                array_map(static fn($id) => array('type' => 'i', 'value' => $id), $club_ids));
+            foreach ($rows as $row) {
+                $teams[(int)$row['id_equipe']] = $row['nom_equipe'];
+            }
+        }
+        return $teams;
     }
 
-    public function hasEnoughPlayers($sessionIdEquipe)
+    private function team_name(int $id_equipe): string
     {
-        $sql = "SELECT 
-        COUNT(*) AS cnt, 
-        e.code_competition
-        FROM joueur_equipe je 
-        JOIN equipes e ON e.id_equipe = je.id_equipe
-        WHERE je.id_equipe = $sessionIdEquipe";
-        $results = $this->sql_manager->execute($sql);
-        $minCount = 0;
-        switch ($results[0]['code_competition']) {
-            case 'm':
-            case 'c':
-            case 'cf':
-                $minCount = 6;
-                break;
-            case 'mo':
-            case 'f':
-            case 't':
-            case 'ff':
-            case 'kh':
-            case 'kf':
-                $minCount = 4;
-                break;
-            default:
-                break;
-        }
-        if (intval($results[0]['cnt']) < $minCount) {
-            return false;
-        }
-        return true;
+        $rows = $this->sql_manager->execute("SELECT nom_equipe FROM equipes WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        return $rows[0]['nom_equipe'] ?? '';
+    }
+
+    private function alert(string $issue, string $criticity, string $expected_action, string $link): array
+    {
+        return array('issue' => $issue, 'criticity' => $criticity, 'expected_action' => $expected_action, 'link' => $link);
     }
 
     /**
+     * Effectif, rôles et joueurs d'une équipe.
      * @throws Exception
      */
-    public function hasInactivePlayers($sessionIdEquipe): bool
+    public function team_alerts(int $id_equipe): array
     {
-        $sql = "SELECT 
-        COUNT(*) AS cnt 
-        FROM joueur_equipe je 
-        JOIN players_view j ON j.id = je.id_joueur
-        WHERE 
-        je.id_equipe = $sessionIdEquipe
-        AND j.est_actif = 0";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
+        $alerts = array();
+        $squad = $this->squad($id_equipe);
+        $code = $squad['code_competition'];
+        if ($squad['total'] < (self::MIN_PLAYERS[$code] ?? 0)) {
+            $alerts[] = $this->alert("Pas assez de joueurs dans l'équipe ({$squad['total']})", 'error', 'showHelpAddPlayer', self::LINK_PLAYERS);
         }
-        return true;
+        if ($squad['women'] < (self::MIN_WOMEN[$code] ?? 0)) {
+            $alerts[] = $this->alert("Pas assez de filles dans l'équipe", 'error', 'showHelpAddPlayer', self::LINK_PLAYERS);
+        }
+        if ($squad['men'] < (self::MIN_MEN[$code] ?? 0)) {
+            $alerts[] = $this->alert("Pas assez de garçons dans l'équipe", 'error', 'showHelpAddPlayer', self::LINK_PLAYERS);
+        }
+        if (!$this->has_role($id_equipe, 'is_leader')) {
+            $alerts[] = $this->alert("Responsable d'équipe non défini", 'error', 'showHelpSelectLeader', self::LINK_PLAYERS);
+        }
+        if (!$this->has_role($id_equipe, 'is_vice_leader')) {
+            $alerts[] = $this->alert("Responsable suppléant d'équipe non défini", 'warning', 'showHelpSelectViceLeader', self::LINK_PLAYERS);
+        }
+        if (!$this->has_role($id_equipe, 'is_captain')) {
+            $alerts[] = $this->alert("Capitaine d'équipe non défini", 'error', 'showHelpSelectCaptain', self::LINK_PLAYERS);
+        }
+        if (!$this->hasTimeSlot($id_equipe)) {
+            $alerts[] = $this->alert("Pas de gymnase de réception", 'info', 'showHelpSelectTimeSlot', self::LINK_TIMESLOTS);
+        }
+        if (!$this->has_leader_contact($id_equipe, 'telephone', 'telephone2')) {
+            $alerts[] = $this->alert("Pas de numéro de téléphone", 'error', 'showHelpAddPhoneNumber', self::LINK_PLAYERS);
+        }
+        if (!$this->has_leader_contact($id_equipe, 'email', 'email2')) {
+            $alerts[] = $this->alert("Pas d'email", 'error', 'showHelpAddEmail', self::LINK_PLAYERS);
+        }
+        $without_photo = $this->playing_names($id_equipe, "NULLIF(TRIM(j.path_photo), '') IS NULL");
+        if (!empty($without_photo)) {
+            $alerts[] = $this->alert("Joueurs sans photo : " . $this->name_list($without_photo), 'error',
+                'showHelpPlayersWithoutPhoto', self::LINK_PLAYERS);
+        }
+        $without_licence = $this->playing_names($id_equipe, "NULLIF(TRIM(j.num_licence), '') IS NULL");
+        if (!empty($without_licence)) {
+            $alerts[] = $this->alert("Joueurs sans licence : " . $this->name_list($without_licence), 'error',
+                'showHelpPlayersWithoutLicenceNumber', self::LINK_PLAYERS);
+        }
+        $inactive = $this->playing_names($id_equipe, "j.est_actif = 0 AND NULLIF(TRIM(j.num_licence), '') IS NOT NULL");
+        if (!empty($inactive)) {
+            $alerts[] = $this->alert("Licence non encore validée : " . $this->name_list($inactive), 'info',
+                'showHelpInactivePlayers', self::LINK_PLAYERS);
+        }
+        foreach ($this->recent_penalties($id_equipe) as $penalty) {
+            $alerts[] = $this->alert("Pénalité automatique (-1 pt) : feuille de match {$penalty['code_match']} "
+                . "non signée à 48 h", 'warning', 'showHelpPenalty', self::LINK_MATCHES);
+        }
+        return $alerts;
     }
 
-    public function hasEnoughWomen($sessionIdEquipe)
+    /**
+     * Actions en attente sur les matchs joués de l'équipe courante (#240) :
+     * présents, fiche équipe, score, feuille de match, sondage.
+     * @throws Exception
+     */
+    private function pending_match_alerts(): array
     {
-        $sql = "SELECT 
-        COUNT(*) AS cnt, 
-        e.code_competition
-        FROM joueur_equipe je 
-        JOIN equipes e ON e.id_equipe = je.id_equipe
-        JOIN joueurs j ON j.id = je.id_joueur
-        WHERE 
-        je.id_equipe = $sessionIdEquipe
-        AND j.sexe = 'F'";
-        $results = $this->sql_manager->execute($sql);
-        $minCount = 0;
-        switch ($results[0]['code_competition']) {
-            case 'm':
-            case 'c':
-            case 'cf':
-                $minCount = 0;
-                break;
-            case 'f':
-            case 't':
-            case 'ff':
-                $minCount = 4;
-                break;
-            case 'kh':
-            case 'kf':
-                $minCount = 2;
-                break;
-            case 'mo':
-                $minCount = 1;
-                break;
-            default:
-                break;
+        if (empty($_SESSION['id_equipe'])) {
+            return array();
         }
-        if (intval($results[0]['cnt']) < $minCount) {
-            return false;
+        require_once __DIR__ . '/MatchMgr.php';
+        $team_name = $this->team_name((int)$_SESSION['id_equipe']);
+        $alerts = array();
+        foreach ((new MatchMgr())->getMyPendingMatchActions() as $action) {
+            $alerts[] = $this->alert("Match du {$action['date_reception']} contre {$action['equipe_adverse']} : {$action['label']}",
+                    'warning', 'showHelpMatchAction', $action['url'])
+                + array('id_equipe' => (int)$_SESSION['id_equipe'], 'team' => $team_name);
         }
-        return true;
+        return $alerts;
     }
 
-    public function hasEnoughMen($sessionIdEquipe)
+    /** Effectif jouant (#325) : total, femmes, hommes, et compétition de l'équipe. */
+    private function squad(int $id_equipe): array
     {
-        $sql = "SELECT 
-        COUNT(*) AS cnt, 
-        e.code_competition
-        FROM joueur_equipe je 
-        JOIN equipes e ON e.id_equipe = je.id_equipe
-        JOIN joueurs j ON j.id = je.id_joueur
-        WHERE 
-        je.id_equipe = $sessionIdEquipe
-        AND j.sexe = 'M'";
-        $results = $this->sql_manager->execute($sql);
-        $minCount = 0;
-        switch ($results[0]['code_competition']) {
-            case 'm':
-            case 'c':
-            case 'cf':
-            case 'f':
-            case 't':
-            case 'ff':
-            case 'kh':
-            case 'kf':
-                $minCount = 0;
-                break;
-            case 'mo':
-                $minCount = 1;
-                break;
-            default:
-                break;
-        }
-        if (intval($results[0]['cnt']) < $minCount) {
-            return false;
-        }
-        return true;
+        $rows = $this->sql_manager->execute(
+            "SELECT e.code_competition,
+                    COUNT(j.id) AS total,
+                    COALESCE(SUM(j.sexe = 'F'), 0) AS women,
+                    COALESCE(SUM(j.sexe = 'M'), 0) AS men
+             FROM equipes e
+             LEFT JOIN joueur_equipe je ON je.id_equipe = e.id_equipe AND je.est_jouant + 0 > 0
+             LEFT JOIN joueurs j ON j.id = je.id_joueur
+             WHERE e.id_equipe = ?
+             GROUP BY e.code_competition",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        $row = $rows[0] ?? array('code_competition' => null, 'total' => 0, 'women' => 0, 'men' => 0);
+        return array('code_competition' => $row['code_competition'], 'total' => (int)$row['total'],
+                     'women' => (int)$row['women'], 'men' => (int)$row['men']);
     }
 
-    public function hasLeader($sessionIdEquipe)
+    private function has_role(int $id_equipe, string $role): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_leader+0 > 0";
-        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        // $role vient du code (colonne fixe), jamais du client
+        $rows = $this->sql_manager->execute(
+            "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND $role + 0 > 0",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        return (int)$rows[0]['cnt'] > 0;
     }
 
-    public function hasViceLeader($sessionIdEquipe)
+    public function hasTimeSlot($id_equipe): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_vice_leader+0 > 0";
-        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        $rows = $this->sql_manager->execute("SELECT COUNT(*) AS cnt FROM creneau WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => (int)$id_equipe)));
+        return (int)$rows[0]['cnt'] > 0;
     }
 
-    public function hasCaptain($sessionIdEquipe)
+    /** Le responsable ou son suppléant a-t-il un téléphone / un email ? */
+    private function has_leader_contact(int $id_equipe, string $column, string $column2): bool
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe WHERE id_equipe = ? AND is_captain+0 > 0";
-        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        // colonnes fixes du code, jamais du client
+        $rows = $this->sql_manager->execute(
+            "SELECT COUNT(*) AS cnt FROM joueur_equipe je
+             JOIN joueurs j ON j.id = je.id_joueur
+             WHERE je.id_equipe = ?
+               AND (je.is_leader + 0 > 0 OR je.is_vice_leader + 0 > 0)
+               AND (NULLIF(TRIM(j.$column), '') IS NOT NULL OR NULLIF(TRIM(j.$column2), '') IS NOT NULL)",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        return (int)$rows[0]['cnt'] > 0;
     }
 
-    public function hasTimeSlot($sessionIdEquipe)
+    /**
+     * Noms des joueurs jouants de l'équipe qui vérifient la condition.
+     * @param string $condition fragment SQL fixe du code, sur players_view `j`
+     */
+    private function playing_names(int $id_equipe, string $condition): array
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM creneau WHERE id_equipe = ?";
-        $bindings = array(array('type' => 'i', 'value' => $sessionIdEquipe));
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        $rows = $this->sql_manager->execute(
+            "SELECT CONCAT(j.prenom, ' ', j.nom) AS name
+             FROM joueur_equipe je
+             JOIN players_view j ON j.id = je.id_joueur
+             WHERE je.id_equipe = ? AND je.est_jouant + 0 > 0 AND $condition
+             ORDER BY j.nom, j.prenom",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        return array_column($rows, 'name');
     }
 
-    public function hasAnyPhone($sessionIdEquipe)
+    private function name_list(array $names): string
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe je
-        JOIN joueurs j ON j.id=je.id_joueur AND (
-            (j.telephone IS NOT NULL AND j.telephone != '')
-            OR 
-            (j.telephone2 IS NOT NULL AND j.telephone2 != '')
-            )
-        WHERE je.id_equipe = $sessionIdEquipe 
-        AND (je.is_leader+0 > 0 OR je.is_vice_leader+0 > 0)";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        $shown = array_slice($names, 0, 5);
+        $more = count($names) - count($shown);
+        return implode(', ', $shown) . ($more > 0 ? " et $more autre(s)" : '');
     }
 
-    public function hasAnyEmail($sessionIdEquipe)
+    /** Pénalités automatiques des 60 derniers jours (#345). */
+    private function recent_penalties(int $id_equipe): array
     {
-        $sql = "SELECT COUNT(*) AS cnt FROM joueur_equipe je
-        JOIN joueurs j ON j.id=je.id_joueur AND (
-            (j.email IS NOT NULL AND j.email != '')
-            OR 
-            (j.email2 IS NOT NULL AND j.email2 != '')
-        )
-        WHERE je.id_equipe = $sessionIdEquipe 
-        AND (je.is_leader+0 > 0 OR je.is_vice_leader+0 > 0)";
-        $results = $this->sql_manager->execute($sql);
-        if (intval($results[0]['cnt']) === 0) {
-            return false;
-        }
-        return true;
+        return $this->sql_manager->execute(
+            "SELECT m.code_match FROM match_penalties p JOIN matches m ON m.id_match = p.id_match
+             WHERE p.id_equipe = ? AND p.created_at >= NOW() - INTERVAL 60 DAY
+             ORDER BY p.created_at DESC",
+            array(array('type' => 'i', 'value' => $id_equipe)));
     }
-
-
 }
