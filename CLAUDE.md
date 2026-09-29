@@ -924,6 +924,21 @@ d'une feuille de match : déjà protégés.
   changent pas — une appartenance reste une appartenance, et le filtre
   « engagé » comme le `%teams_list%` des emails gardent leur sens.
 
+### Encart d'alertes du tableau de bord (issue #346)
+
+`alerts/getAlerts` (`classes/Alerts.php`) couvre l'équipe courante de la session
+**et**, pour un responsable de club, les équipes engagées (avec classement) de
+ses clubs ; rien pour l'admin. Chaque alerte porte `team`, `issue`, `criticity`
+(error / warning / info), `expected_action` (code d'aide, décliné en texte par
+`TeamLeaderAlerts.js`) et `link` (l'écran où corriger). Trois familles retenues :
+actions de match en attente (`MatchMgr::getMyPendingMatchActions`, #240) et
+pénalités automatiques des 60 derniers jours (#345) ; joueurs sans photo (#343),
+sans licence, licence non validée ; effectif (joueurs **jouants**, #325), mixité,
+rôles, créneau, contacts. Toutes les requêtes sont liées ; les rares fragments
+interpolés (nom de colonne, condition) sont des constantes du code.
+L'encart est en tête du tableau de bord, pour tous les responsables ; les toasts
+de #240 restent.
+
 ### Live scoring : deux écrans, deux publics (issue #332)
 
 `live.html` sert **deux usages qu'il ne faut pas confondre** :
