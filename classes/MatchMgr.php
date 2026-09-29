@@ -880,11 +880,16 @@ class MatchMgr extends Generic
      */
     public function isTeamDomForMatch($id_team, $code_match)
     {
-        $sql = "SELECT * FROM matches 
-        WHERE id_equipe_dom=$id_team 
-        AND code_match='$code_match'
+        // `$code_match` vient du client (workflow de report) : valeurs liées
+        $sql = "SELECT * FROM matches
+        WHERE id_equipe_dom = ?
+        AND code_match = ?
         AND match_status = 'CONFIRMED'";
-        $results = $this->sql_manager->execute($sql);
+        $bindings = array(
+            array('type' => 'i', 'value' => $id_team),
+            array('type' => 's', 'value' => $code_match),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         return count($results) > 0;
     }
 
@@ -1113,9 +1118,12 @@ class MatchMgr extends Generic
                     m.code_competition,
                     LEFT(m.division, 1) AS division
                 FROM matches m
-                WHERE m.code_match = '$code_match'
+                WHERE m.code_match = ?
                 AND m.match_status = 'CONFIRMED'";
-        $results = $this->sql_manager->execute($sql);
+        $bindings = array(
+            array('type' => 's', 'value' => $code_match),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             throw new Exception("Impossible de récupérer le match $code_match !");
         }
@@ -1136,9 +1144,12 @@ class MatchMgr extends Generic
       m.id_equipe_ext,
       m.code_competition
       FROM matches m
-      WHERE m.code_match = '$code_match'
+      WHERE m.code_match = ?
         AND m.match_status = 'CONFIRMED'";
-        $results = $this->sql_manager->execute($sql);
+        $bindings = array(
+            array('type' => 's', 'value' => $code_match),
+        );
+        $results = $this->sql_manager->execute($sql, $bindings);
         if (count($results) != 1) {
             throw new Exception("Impossible de récupérer le match $code_match !");
         }
@@ -1156,8 +1167,7 @@ class MatchMgr extends Generic
      */
     public function check_team_allowed_to_ask_report($team_id, $match_code)
     {
-        $matches = $this->get_matches("m.code_match = '$match_code'");
-        $this_match = $matches[0];
+        $this_match = $this->get_match_by_code_match($match_code);
         $code_competition = $this_match['code_competition'];
         $rank = new Rank();
         $report_count = $rank->get_report_count($team_id, $code_competition);
@@ -1166,6 +1176,21 @@ class MatchMgr extends Generic
                 throw new Exception("Demande refusée. Votre équipe a déjà demandé un report pour cette compétition.");
             }
         }
+    }
+
+    /**
+     * Seule écriture du workflow de report : `$code_match` vient du client,
+     * il est lié, jamais concaténé.
+     * @throws Exception
+     */
+    private function set_report_status(string $code_match, string $report_status): void
+    {
+        $sql = "UPDATE matches SET report_status = ? WHERE code_match = ?";
+        $bindings = array(
+            array('type' => 's', 'value' => $report_status),
+            array('type' => 's', 'value' => $code_match),
+        );
+        $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -1182,12 +1207,10 @@ class MatchMgr extends Generic
         }
         $sessionIdEquipe = $_SESSION['id_equipe'];
         $this->check_team_allowed_to_ask_report($sessionIdEquipe, $code_match);
-        if ($this->isTeamDomForMatch($sessionIdEquipe, $code_match)) {
-            $sql = "UPDATE matches SET report_status = 'ASKED_BY_DOM' WHERE code_match = '$code_match'";
-        } else {
-            $sql = "UPDATE matches SET report_status = 'ASKED_BY_EXT' WHERE code_match = '$code_match'";
-        }
-        $this->sql_manager->execute($sql);
+        $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+            ? 'ASKED_BY_DOM'
+            : 'ASKED_BY_EXT';
+        $this->set_report_status($match['code_match'], $report_status);
         $this->addActivity("Report demandé par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
         (new Emails())->sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
         return true;
@@ -1239,32 +1262,22 @@ class MatchMgr extends Generic
      */
     public function refuseReport($code_match, $reason)
     {
+        // un code inconnu échoue ici, avant toute écriture
+        $match = $this->get_match_by_code_match($code_match);
+        $code_match = $match['code_match'];
         if (UserManager::isTeamLeader()) {
             $sessionIdEquipe = $_SESSION['id_equipe'];
-            if ($this->isTeamDomForMatch($sessionIdEquipe, $code_match)) {
-                $report_status = 'REFUSED_BY_DOM';
-            } else {
-                $report_status = 'REFUSED_BY_EXT';
-            }
-            $bindings = array();
-            $bindings[] = array(
-                'type' => 's',
-                'value' => $report_status
-            );
-            $bindings[] = array(
-                'type' => 's',
-                'value' => $code_match
-            );
-            $sql = "UPDATE matches SET report_status = ? WHERE code_match = ?";
-            $this->sql_manager->execute($sql, $bindings);
+            $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+                ? 'REFUSED_BY_DOM'
+                : 'REFUSED_BY_EXT';
+            $this->set_report_status($code_match, $report_status);
             $this->addActivity(
                 "Report refusé par " . $this->team->getTeamName($sessionIdEquipe) .
                 " pour le match $code_match, raison: " . $reason);
             (new Emails())->sendMailRefuseReport($code_match, $reason, $sessionIdEquipe);
         }
         if (UserManager::isAdmin()) {
-            $sql = "UPDATE matches SET report_status = 'REFUSED_BY_ADMIN' WHERE code_match = '$code_match'";
-            $this->sql_manager->execute($sql);
+            $this->set_report_status($code_match, 'REFUSED_BY_ADMIN');
             $this->addActivity("Report refusé par la commission" .
                 " pour le match $code_match, raison: " . $reason);
             (new Emails())->sendMailRefuseReportAdmin($code_match, $reason);
@@ -1284,15 +1297,14 @@ class MatchMgr extends Generic
         if (!UserManager::isTeamLeader()) {
             throw new Exception("Seul un responsable d'équipe peut accepter un report !");
         }
+        // un code inconnu échoue ici, avant toute écriture
+        $this_match = $this->get_match_by_code_match($code_match);
+        $code_match = $this_match['code_match'];
         $sessionIdEquipe = $_SESSION['id_equipe'];
-        if ($this->isTeamDomForMatch($sessionIdEquipe, $code_match)) {
-            $sql = "UPDATE matches SET report_status = 'ACCEPTED_BY_DOM' WHERE code_match = '$code_match'";
-        } else {
-            $sql = "UPDATE matches SET report_status = 'ACCEPTED_BY_EXT' WHERE code_match = '$code_match'";
-        }
-        $this->sql_manager->execute($sql);
-        $matches = $this->get_matches("m.code_match = '$code_match'");
-        $this_match = $matches[0];
+        $report_status = $this->isTeamDomForMatch($sessionIdEquipe, $code_match)
+            ? 'ACCEPTED_BY_DOM'
+            : 'ACCEPTED_BY_EXT';
+        $this->set_report_status($code_match, $report_status);
         if ($sessionIdEquipe == $this_match['id_equipe_dom']) {
             $this->rank->incrementReportCount($this_match['code_competition'], $this_match['id_equipe_ext']);
         } else {
