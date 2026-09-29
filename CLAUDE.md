@@ -1021,8 +1021,6 @@ non concernées.
 `match_players_count_view` compte les renforts **par équipe** et par sexe : en
 mixte, une renforte satisfait la mixité de son équipe (sinon celle-ci ne
 pourrait jamais signer). Un renfort sans équipe compte pour les deux, comme avant.
-⚠️ `ufolep13volley_python/sql/views/matchs_view.sql` est périmé (il lit encore
-`journees`, supprimée par #279) : ne pas le rejouer tel quel.
 
 ### Le référent d'un club, c'est son compte (issue #326)
 
