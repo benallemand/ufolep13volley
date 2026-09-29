@@ -5,7 +5,7 @@ export default {
           <h1 class="text-3xl font-bold text-center">Règlement général</h1>
           <h2 class="text-xl text-center mt-2">Chaque équipe doit l'appliquer et posséder un exemplaire récent du
             règlement de la Fédération Française de Volley Ball (F.F.V.B.)</h2>
-          <h3 class="text-lg text-center mt-2">Dernière mise à jour le : <span class="font-bold">30 Août 2025</span>
+          <h3 class="text-lg text-center mt-2">Dernière mise à jour le : <span class="font-bold">29 septembre 2026</span>
           </h3>
         </div>
         <table
@@ -224,29 +224,42 @@ export default {
           </div>
           <div id="article-12" class="bg-base-200 rounded-xl p-4">
             <h4 class="font-bold text-lg mb-2">Article 12 : Attribution des points</h4>
+            <p class="mb-2">Championnats (barème FFVB, selon le score du match) :</p>
             <table class="table table-compact w-full mb-2">
               <tr>
-                <td>Victoire (même effectif réduit)</td>
+                <td>Victoire 3-0 ou 3-1 (même effectif réduit)</td>
                 <td>3 points</td>
               </tr>
               <tr>
-                <td>Défaite</td>
+                <td>Victoire 3-2</td>
+                <td>2 points</td>
+              </tr>
+              <tr>
+                <td>Défaite 2-3</td>
                 <td>1 point</td>
               </tr>
               <tr>
-                <td>Forfait</td>
+                <td>Défaite 0-3 ou 1-3</td>
                 <td>0 point</td>
               </tr>
+              <tr>
+                <td>Forfait</td>
+                <td>-1 point</td>
+              </tr>
             </table>
+            <p class="mb-2">Coupes : victoire 3 points, défaite 1 point, forfait 0 point.</p>
             <p>Forfait général possible en cas de forfaits répétés.</p>
           </div>
           <div id="article-13" class="bg-base-200 rounded-xl p-4">
             <h4 class="font-bold text-lg mb-2">Article 13 : Classement</h4>
             <ul class="list-disc pl-5 mb-2">
-              <li>Classement par points, puis différence sets gagnés/perdus, puis résultat de la rencontre
-                directe.
+              <li>Championnats : classement par points, puis nombre de victoires, puis quotient sets
+                gagnés/perdus, puis quotient points marqués/encaissés.
               </li>
-              <li>En cas d'égalité à 3, différence sets/points entre les 3 équipes, puis fair-play.</li>
+              <li>Coupes : classement par points, puis différence sets gagnés/perdus, puis résultat de la
+                rencontre directe ; en cas d'égalité à 3, différence sets/points entre les 3 équipes, puis
+                fair-play.
+              </li>
             </ul>
           </div>
           <div id="article-14" class="bg-base-200 rounded-xl p-4">
