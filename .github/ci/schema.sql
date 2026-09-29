@@ -29,7 +29,7 @@ CREATE TABLE `activity` (
   `user_id` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26746 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27289 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +76,7 @@ CREATE TABLE `blacklist_gymnase` (
   PRIMARY KEY (`id`),
   KEY `id_gymnase` (`id_gymnase`),
   CONSTRAINT `blacklist_gymnase_ibfk_1` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `blacklist_team` (
   PRIMARY KEY (`id`),
   KEY `id_team` (`id_team`),
   CONSTRAINT `blacklist_team_ibfk_1` FOREIGN KEY (`id_team`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `classements` (
   KEY `fk_classements_equipes` (`id_equipe`),
   KEY `id` (`id`),
   CONSTRAINT `fk_classements_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3730 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4429 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +169,7 @@ CREATE TABLE `clubs` (
   `affiliation_number` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1074 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `competitions` (
   `start_register_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=368 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,7 +248,7 @@ CREATE TABLE `comptes_acces` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_email` (`email`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1338 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1780 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,7 +272,7 @@ CREATE TABLE `creneau` (
   KEY `fk_creneau_equipes` (`id_equipe`),
   CONSTRAINT `fk_creneau_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_creneau_gymnase` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=1965 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2201 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,7 +311,7 @@ CREATE TABLE `emails` (
   `sending_status` enum('TO_DO','DONE','ERROR') NOT NULL DEFAULT 'TO_DO',
   `is_read` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21947 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22126 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `equipes` (
   KEY `fk_equipes_clubs` (`id_club`),
   KEY `id_equipe` (`id_equipe`),
   CONSTRAINT `fk_equipes_clubs` FOREIGN KEY (`id_club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -373,7 +373,7 @@ CREATE TABLE `gymnase` (
   `remarques` mediumtext,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=541 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -442,7 +442,7 @@ CREATE TABLE `joueurs` (
   UNIQUE KEY `uq_joueurs_compte` (`id_compte`),
   KEY `id` (`id`),
   CONSTRAINT `fk_joueurs_compte` FOREIGN KEY (`id_compte`) REFERENCES `comptes_acces` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4395 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5015 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -476,7 +476,7 @@ CREATE TABLE `live_scores` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_match` (`id_match`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -490,12 +490,15 @@ CREATE TABLE `match_player` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `id_match` bigint NOT NULL,
   `id_player` smallint NOT NULL,
+  `id_team_reinforced` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_match` (`id_match`),
   KEY `id_player` (`id_player`),
+  KEY `id_team_reinforced` (`id_team_reinforced`),
   CONSTRAINT `match_player_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  CONSTRAINT `match_player_ibfk_2` FOREIGN KEY (`id_player`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=56408 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `match_player_ibfk_2` FOREIGN KEY (`id_player`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `match_player_ibfk_3` FOREIGN KEY (`id_team_reinforced`) REFERENCES `equipes` (`id_equipe`) ON DELETE SET NULL ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=57097 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -517,6 +520,8 @@ SET @saved_cs_client     = @@character_set_client;
  1 AS `count_masc_ext`,
  1 AS `count_fem_ext`,
  1 AS `count_renfort`,
+ 1 AS `count_renfort_dom`,
+ 1 AS `count_renfort_ext`,
  1 AS `count_status`*/;
 SET character_set_client = @saved_cs_client;
 
@@ -566,7 +571,7 @@ CREATE TABLE `matches` (
   CONSTRAINT `fk_matches_equipesdom` FOREIGN KEY (`id_equipe_dom`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_equipesext` FOREIGN KEY (`id_equipe_ext`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_gymnasium` FOREIGN KEY (`id_gymnasium`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=81122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=81666 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -683,7 +688,7 @@ CREATE TABLE `photos` (
   `path_photo` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5191 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5257 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -798,7 +803,7 @@ CREATE TABLE `register` (
   CONSTRAINT `register_ibfk_3` FOREIGN KEY (`old_team_id`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_4` FOREIGN KEY (`id_court_1`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_5` FOREIGN KEY (`id_court_2`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=518 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=610 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -814,7 +819,7 @@ CREATE TABLE `registry` (
   `registry_value` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,13 +838,14 @@ CREATE TABLE `survey` (
   `referee` tinyint DEFAULT '0',
   `catering` tinyint DEFAULT '0',
   `global` tinyint DEFAULT '0',
+  `scale_version` tinyint NOT NULL DEFAULT '2',
   `comment` mediumtext,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `id_match` (`id_match`),
   CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19021 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19062 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -966,11 +972,9 @@ CREATE TABLE `users_teams` (
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE FUNCTION `SPLIT_STRING`(str VARCHAR(255) CHARSET utf8mb4,
-                             delim VARCHAR(12) CHARSET utf8mb4,
-                             pos INT) RETURNS varchar(255) CHARSET utf8mb4
+CREATE FUNCTION `SPLIT_STRING`(`str` VARCHAR(255) CHARSET utf8mb4, `delim` VARCHAR(12) CHARSET utf8mb4, `pos` INT) RETURNS varchar(255) CHARSET utf8mb4
 RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(str, delim, pos),
                              LENGTH(SUBSTRING_INDEX(str, delim, pos - 1)) + 1),
                    delim, '') ;;
@@ -993,7 +997,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 SQL SECURITY INVOKER */
-/*!50001 VIEW `match_players_count_view` AS select `a`.`id_match` AS `id_match`,`a`.`code_match` AS `code_match`,`a`.`code_competition` AS `code_competition`,sum(`a`.`count_dom`) AS `count_dom`,sum(`a`.`count_masc_dom`) AS `count_masc_dom`,sum(`a`.`count_fem_dom`) AS `count_fem_dom`,sum(`a`.`count_ext`) AS `count_ext`,sum(`a`.`count_masc_ext`) AS `count_masc_ext`,sum(`a`.`count_fem_ext`) AS `count_fem_ext`,sum(`a`.`count_renfort`) AS `count_renfort`,(case when ((sum(`a`.`count_dom`) = 0) and (sum(`a`.`count_ext`) = 0)) then 'fiches équipes non remplies' when (sum(`a`.`count_dom`) = 0) then 'fiche équipe à domicile non remplie' when (sum(`a`.`count_ext`) = 0) then 'fiche équipe à l\'extérieur non remplie' when ((`a`.`code_competition` in ('kh','kf','ut')) and (sum(`a`.`count_fem_dom`) < 2)) then 'pas assez de filles à domicile' when ((`a`.`code_competition` in ('kh','kf','ut')) and (sum(`a`.`count_fem_ext`) < 2)) then 'pas assez de filles à l\'extérieur' when ((`a`.`code_competition` in ('mo','ut')) and ((sum(`a`.`count_masc_dom`) = 0) or (sum(`a`.`count_fem_dom`) = 0))) then 'mixité obligatoire à domicile non respectée' when ((`a`.`code_competition` in ('mo','ut')) and ((sum(`a`.`count_masc_ext`) = 0) or (sum(`a`.`count_fem_ext`) = 0))) then 'mixité obligatoire à l\'extérieur non respectée' end) AS `count_status` from (select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `mp_dom`.`id_player` end)) AS `count_dom`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `j_masc_dom`.`id` end)) AS `count_masc_dom`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `j_fem_dom`.`id` end)) AS `count_fem_dom`,0 AS `count_ext`,0 AS `count_masc_ext`,0 AS `count_fem_ext`,0 AS `count_renfort` from ((((`matches` `m` left join `match_player` `mp_dom` on((`mp_dom`.`id_match` = `m`.`id_match`))) left join `joueur_equipe` `jed` on((`jed`.`id_joueur` = `mp_dom`.`id_player`))) left join `joueurs` `j_masc_dom` on(((`jed`.`id_joueur` = `j_masc_dom`.`id`) and (`j_masc_dom`.`sexe` = 'M')))) left join `joueurs` `j_fem_dom` on(((`jed`.`id_joueur` = `j_fem_dom`.`id`) and (`j_fem_dom`.`sexe` = 'F')))) where (`m`.`match_status` = 'CONFIRMED') group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition` union all select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,0 AS `count_dom`,0 AS `count_masc_dom`,0 AS `count_fem_dom`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `mp_ext`.`id_player` end)) AS `count_ext`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `j_masc_ext`.`id` end)) AS `count_masc_ext`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `j_fem_ext`.`id` end)) AS `count_fem_ext`,0 AS `count_renfort` from ((((`matches` `m` left join `match_player` `mp_ext` on((`mp_ext`.`id_match` = `m`.`id_match`))) left join `joueur_equipe` `jee` on((`jee`.`id_joueur` = `mp_ext`.`id_player`))) left join `joueurs` `j_masc_ext` on(((`jee`.`id_joueur` = `j_masc_ext`.`id`) and (`j_masc_ext`.`sexe` = 'M')))) left join `joueurs` `j_fem_ext` on(((`jee`.`id_joueur` = `j_fem_ext`.`id`) and (`j_fem_ext`.`sexe` = 'F')))) where (`m`.`match_status` = 'CONFIRMED') group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition` union all select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,0 AS `count_dom`,0 AS `count_masc_dom`,0 AS `count_fem_dom`,0 AS `count_ext`,0 AS `count_masc_ext`,0 AS `count_fem_ext`,count(distinct `mp_renfort`.`id_player`) AS `count_renfort` from (`matches` `m` left join `match_player` `mp_renfort` on((`mp_renfort`.`id_match` = `m`.`id_match`))) where (`mp_renfort`.`id_player` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`))) is false and (`m`.`match_status` = 'CONFIRMED')) group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition`) `a` group by `a`.`id_match`,`a`.`code_match`,`a`.`code_competition` having ((((sum(`a`.`count_dom`) + sum(`a`.`count_renfort`)) >= if((`a`.`code_competition` in ('m','c','cf')),5,3)) and ((sum(`a`.`count_ext`) + sum(`a`.`count_renfort`)) >= if((`a`.`code_competition` in ('m','c','cf')),5,3))) or (`count_status` is not null)) */;
+/*!50001 VIEW `match_players_count_view` AS select `a`.`id_match` AS `id_match`,`a`.`code_match` AS `code_match`,`a`.`code_competition` AS `code_competition`,sum(`a`.`count_dom`) AS `count_dom`,sum(`a`.`count_masc_dom`) AS `count_masc_dom`,sum(`a`.`count_fem_dom`) AS `count_fem_dom`,sum(`a`.`count_ext`) AS `count_ext`,sum(`a`.`count_masc_ext`) AS `count_masc_ext`,sum(`a`.`count_fem_ext`) AS `count_fem_ext`,sum(`a`.`count_renfort`) AS `count_renfort`,sum(`a`.`count_renfort_dom`) AS `count_renfort_dom`,sum(`a`.`count_renfort_ext`) AS `count_renfort_ext`,(case when ((sum(`a`.`count_dom`) = 0) and (sum(`a`.`count_ext`) = 0)) then 'fiches équipes non remplies' when (sum(`a`.`count_dom`) = 0) then 'fiche équipe à domicile non remplie' when (sum(`a`.`count_ext`) = 0) then 'fiche équipe à l\'extérieur non remplie' when ((`a`.`code_competition` in ('kh','kf','ut')) and (sum(`a`.`count_fem_dom`) < 2)) then 'pas assez de filles à domicile' when ((`a`.`code_competition` in ('kh','kf','ut')) and (sum(`a`.`count_fem_ext`) < 2)) then 'pas assez de filles à l\'extérieur' when ((`a`.`code_competition` in ('mo','ut')) and (((sum(`a`.`count_masc_dom`) + sum(`a`.`count_renfort_masc_dom`)) = 0) or ((sum(`a`.`count_fem_dom`) + sum(`a`.`count_renfort_fem_dom`)) = 0))) then 'mixité obligatoire à domicile non respectée' when ((`a`.`code_competition` in ('mo','ut')) and (((sum(`a`.`count_masc_ext`) + sum(`a`.`count_renfort_masc_ext`)) = 0) or ((sum(`a`.`count_fem_ext`) + sum(`a`.`count_renfort_fem_ext`)) = 0))) then 'mixité obligatoire à l\'extérieur non respectée' end) AS `count_status` from (select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `mp_dom`.`id_player` end)) AS `count_dom`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `j_masc_dom`.`id` end)) AS `count_masc_dom`,count(distinct (case when (`jed`.`id_equipe` = `m`.`id_equipe_dom`) then `j_fem_dom`.`id` end)) AS `count_fem_dom`,0 AS `count_ext`,0 AS `count_masc_ext`,0 AS `count_fem_ext`,0 AS `count_renfort`,0 AS `count_renfort_dom`,0 AS `count_renfort_masc_dom`,0 AS `count_renfort_fem_dom`,0 AS `count_renfort_ext`,0 AS `count_renfort_masc_ext`,0 AS `count_renfort_fem_ext` from ((((`matches` `m` left join `match_player` `mp_dom` on((`mp_dom`.`id_match` = `m`.`id_match`))) left join `joueur_equipe` `jed` on((`jed`.`id_joueur` = `mp_dom`.`id_player`))) left join `joueurs` `j_masc_dom` on(((`jed`.`id_joueur` = `j_masc_dom`.`id`) and (`j_masc_dom`.`sexe` = 'M')))) left join `joueurs` `j_fem_dom` on(((`jed`.`id_joueur` = `j_fem_dom`.`id`) and (`j_fem_dom`.`sexe` = 'F')))) where (`m`.`match_status` = 'CONFIRMED') group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition` union all select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,0 AS `count_dom`,0 AS `count_masc_dom`,0 AS `count_fem_dom`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `mp_ext`.`id_player` end)) AS `count_ext`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `j_masc_ext`.`id` end)) AS `count_masc_ext`,count(distinct (case when (`jee`.`id_equipe` = `m`.`id_equipe_ext`) then `j_fem_ext`.`id` end)) AS `count_fem_ext`,0 AS `count_renfort`,0 AS `count_renfort_dom`,0 AS `count_renfort_masc_dom`,0 AS `count_renfort_fem_dom`,0 AS `count_renfort_ext`,0 AS `count_renfort_masc_ext`,0 AS `count_renfort_fem_ext` from ((((`matches` `m` left join `match_player` `mp_ext` on((`mp_ext`.`id_match` = `m`.`id_match`))) left join `joueur_equipe` `jee` on((`jee`.`id_joueur` = `mp_ext`.`id_player`))) left join `joueurs` `j_masc_ext` on(((`jee`.`id_joueur` = `j_masc_ext`.`id`) and (`j_masc_ext`.`sexe` = 'M')))) left join `joueurs` `j_fem_ext` on(((`jee`.`id_joueur` = `j_fem_ext`.`id`) and (`j_fem_ext`.`sexe` = 'F')))) where (`m`.`match_status` = 'CONFIRMED') group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition` union all select `m`.`id_match` AS `id_match`,`m`.`code_match` AS `code_match`,`m`.`code_competition` AS `code_competition`,0 AS `count_dom`,0 AS `count_masc_dom`,0 AS `count_fem_dom`,0 AS `count_ext`,0 AS `count_masc_ext`,0 AS `count_fem_ext`,count(distinct (case when (`mp_renfort`.`id_team_reinforced` is null) then `mp_renfort`.`id_player` end)) AS `count_renfort`,count(distinct (case when (`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_dom`) then `mp_renfort`.`id_player` end)) AS `count_renfort_dom`,count(distinct (case when ((`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_dom`) and (`j`.`sexe` = 'M')) then `mp_renfort`.`id_player` end)) AS `count_renfort_masc_dom`,count(distinct (case when ((`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_dom`) and (`j`.`sexe` = 'F')) then `mp_renfort`.`id_player` end)) AS `count_renfort_fem_dom`,count(distinct (case when (`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_ext`) then `mp_renfort`.`id_player` end)) AS `count_renfort_ext`,count(distinct (case when ((`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_ext`) and (`j`.`sexe` = 'M')) then `mp_renfort`.`id_player` end)) AS `count_renfort_masc_ext`,count(distinct (case when ((`mp_renfort`.`id_team_reinforced` = `m`.`id_equipe_ext`) and (`j`.`sexe` = 'F')) then `mp_renfort`.`id_player` end)) AS `count_renfort_fem_ext` from ((`matches` `m` left join `match_player` `mp_renfort` on((`mp_renfort`.`id_match` = `m`.`id_match`))) left join `joueurs` `j` on((`j`.`id` = `mp_renfort`.`id_player`))) where (`mp_renfort`.`id_player` in (select `joueur_equipe`.`id_joueur` from `joueur_equipe` where (`joueur_equipe`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`))) is false and (`m`.`match_status` = 'CONFIRMED')) group by `m`.`id_match`,`m`.`code_match`,`m`.`code_competition`) `a` group by `a`.`id_match`,`a`.`code_match`,`a`.`code_competition` having ((((sum(`a`.`count_dom`) + sum(`a`.`count_renfort`)) + sum(`a`.`count_renfort_dom`)) >= if((`a`.`code_competition` in ('m','c','cf')),5,3)) and (((sum(`a`.`count_ext`) + sum(`a`.`count_renfort`)) + sum(`a`.`count_renfort_ext`)) >= if((`a`.`code_competition` in ('m','c','cf')),5,3))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1083,7 +1087,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 SQL SECURITY INVOKER */
-/*!50001 VIEW `survey_view_raw` AS select `s`.`id` AS `id`,`e_sondeuse`.`id_equipe` AS `id_team_sondeuse`,`m`.`code_match` AS `code_match`,`m`.`id_match` AS `id_match`,`e_sondee`.`nom_equipe` AS `equipe`,`c_sondee`.`nom` AS `club`,`s`.`on_time` AS `on_time`,2 AS `coef_on_time`,`s`.`spirit` AS `spirit`,3 AS `coef_spirit`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else `s`.`referee` end) AS `referee`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else 3 end) AS `coef_referee`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else `s`.`catering` end) AS `catering`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else 2 end) AS `coef_catering`,`s`.`global` AS `global`,5 AS `coef_global`,`c`.`penalite` AS `nb_penalites` from (((((((`survey` `s` join `matches` `m` on((`s`.`id_match` = `m`.`id_match`))) join `comptes_acces` `ca` on((`ca`.`id` = `s`.`user_id`))) join `users_teams` `ut` on((`ca`.`id` = `ut`.`user_id`))) join `equipes` `e_sondeuse` on((`ut`.`team_id` = `e_sondeuse`.`id_equipe`))) join `equipes` `e_sondee` on(((`e_sondee`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondeuse`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondee`.`id_equipe` <> `e_sondeuse`.`id_equipe`)))) join `clubs` `c_sondee` on((`e_sondee`.`id_club` = `c_sondee`.`id`))) join `classements` `c` on(((`e_sondee`.`id_equipe` = `c`.`id_equipe`) and (`c`.`code_competition` = `m`.`code_competition`)))) where (((((`s`.`on_time` + `s`.`spirit`) + `s`.`referee`) + `s`.`catering`) + `s`.`global`) > 0) order by `s`.`id` */;
+/*!50001 VIEW `survey_view_raw` AS select `s`.`id` AS `id`,`e_sondeuse`.`id_equipe` AS `id_team_sondeuse`,`m`.`code_match` AS `code_match`,`m`.`id_match` AS `id_match`,`e_sondee`.`nom_equipe` AS `equipe`,`c_sondee`.`nom` AS `club`,`s`.`on_time` AS `on_time`,2 AS `coef_on_time`,`s`.`spirit` AS `spirit`,3 AS `coef_spirit`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else `s`.`referee` end) AS `referee`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else 3 end) AS `coef_referee`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else `s`.`catering` end) AS `catering`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else 2 end) AS `coef_catering`,`s`.`global` AS `global`,5 AS `coef_global`,`c`.`penalite` AS `nb_penalites` from (((((((`survey` `s` join `matches` `m` on((`s`.`id_match` = `m`.`id_match`))) join `comptes_acces` `ca` on((`ca`.`id` = `s`.`user_id`))) join `users_teams` `ut` on((`ca`.`id` = `ut`.`user_id`))) join `equipes` `e_sondeuse` on((`ut`.`team_id` = `e_sondeuse`.`id_equipe`))) join `equipes` `e_sondee` on(((`e_sondee`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondeuse`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondee`.`id_equipe` <> `e_sondeuse`.`id_equipe`)))) join `clubs` `c_sondee` on((`e_sondee`.`id_club` = `c_sondee`.`id`))) join `classements` `c` on(((`e_sondee`.`id_equipe` = `c`.`id_equipe`) and (`c`.`code_competition` = `m`.`code_competition`)))) where (`s`.`scale_version` = 2) order by `s`.`id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

@@ -38,6 +38,13 @@
                             @add-player="addPlayer">
                     </player-list>
                     <div class="border border-2 border-black">
+                        <!-- L'équipe renforcée (issue #348) : un responsable ne renforce que la sienne -->
+                        <label class="flex items-center gap-2 mb-2">Renfort pour
+                            <select v-model.number="renfortTeam" class="select select-bordered select-sm"
+                                    aria-label="Équipe renforcée" data-testid="renfort-team">
+                                <option v-for="team in renfortTeams" :key="team.id" :value="team.id">{{ team.name }}</option>
+                            </select>
+                        </label>
                         <label>Renfort
                             <input v-model="query"
                                    @input="search"
@@ -47,8 +54,9 @@
                             />
                         </label>
                         <div role="alert" class="alert">
-                            1 joueur autorisé par match et par équipe. <br/>
-                            Le même renfort ne peut pas être utilisé sur 2 matchs dans la même demi-saison
+                            Un renfort par match et par équipe, seulement pour compléter l'équipe jusqu'à
+                            6 joueurs (masculin) ou 4 (féminin, mixte), en respectant la mixité. <br/>
+                            Un même renfort ne joue qu'un match par demi-saison (coupure au 1er janvier).
                         </div>
                         <player-list
                                 :players="renforts.filter(player => !matchPlayers.includes(player))"
@@ -56,7 +64,7 @@
                                 :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
                                 mode="add"
                                 :enforce-rules="!isAdmin"
-                                @add-player="addPlayer">
+                                @add-player="addRenfort">
                         </player-list>
                     </div>
                 </div>
@@ -79,6 +87,7 @@
                     <player-list
                             :players="matchPlayers.filter(player => player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom)"
                             team-name="Renfort"
+                            :team-names="teamNames"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
                             mode="remove"
                             @remove-player="removePlayer">

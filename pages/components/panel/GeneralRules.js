@@ -290,11 +290,16 @@ export default {
             <h4 class="font-bold text-lg mb-2">Article 20 : Prêt de joueur</h4>
             <p>Le prêt de joueur (renfort) est autorisé sous certaines conditions:</p>
             <ul class="list-disc pl-5 mb-2">
-              <li>Une équipe peut faire un prêt pour être au maximum 8 joueurs (en 6x6) ou 5 joueurs (en 4x4) sur la
-                fiche d'équipe.
+              <li>En championnat, le prêt ne sert qu'à compléter l'équipe : une équipe de moins de 6 joueurs (6x6)
+                ou de moins de 4 joueurs (4x4) peut faire un prêt, sans dépasser 6 ou 4 joueurs sur la fiche d'équipe.
+              </li>
+              <li>Le prêt respecte la mixité : une joueuse en championnat féminin ; en championnat mixte, le joueur
+                prêté comble le sexe absent de l'équipe.
               </li>
               <li>Une équipe ne peut avoir qu'un seul joueur prêté par match.</li>
-              <li>Un joueur prêté ne peut l'être qu'une fois par demi-saison.</li>
+              <li>Un joueur prêté ne peut l'être qu'une fois par demi-saison (septembre à décembre, puis janvier à
+                juin).
+              </li>
               <li>En championnat, un joueur prêté doit évoluer dans un autre championnat, ou dans une division
                 strictement inférieure à celle de l'équipe demandant le prêt : ni dans la même division, ni dans une
                 division supérieure.

@@ -710,10 +710,11 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function add_match_player($id_match, $player_id)
+    public function add_match_player($id_match, $player_id, $id_team_reinforced = null)
     {
-        $sql = "INSERT INTO match_player(id_match, id_player) 
-                VALUE (?, ?) 
+        // id_team_reinforced : l'équipe qu'un renfort renforce (issue #348), NULL sinon.
+        $sql = "INSERT INTO match_player(id_match, id_player, id_team_reinforced)
+                VALUE (?, ?, ?) 
                 ON DUPLICATE KEY UPDATE id_match = id_match, 
                                         id_player = id_player";
         $bindings = array();
@@ -724,6 +725,10 @@ class MatchMgr extends Generic
         $bindings[] = array(
             'type' => 'i',
             'value' => $player_id
+        );
+        $bindings[] = array(
+            'type' => 'i',
+            'value' => $id_team_reinforced === null ? null : (int)$id_team_reinforced
         );
         $this->sql_manager->execute($sql, $bindings);
     }
@@ -884,6 +889,7 @@ class MatchMgr extends Generic
     {
         $sql = "SELECT  DISTINCT j.*,
                         e.nom_equipe AS equipe,
+                        mp.id_team_reinforced,
                         m.date_reception,
                         m.id_match
                 FROM matchs_view m
@@ -1239,7 +1245,8 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null, $dirtyFields = null): void
+    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null, $dirtyFields = null,
+                                         $reinforcements = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         if (!isset($id_match)) {
@@ -1253,7 +1260,10 @@ class MatchMgr extends Generic
             is_array($player_ids) ? $player_ids : array(),
             empty($reinforcement_player_id) ? array() : array($reinforcement_player_id));
         $this->assert_players_have_photo($all_players);
-        $this->assert_reinforcements_eligible($all_players, $this->get_match($id_match));
+        $match = $this->get_match($id_match);
+        $this->assert_reinforcements_eligible($all_players, $match);
+        $team_for = $this->normalize_reinforcements($reinforcements, $all_players, $match);
+        $this->assert_reinforcement_rules($all_players, $team_for, $match);
         $this->delete_match_players($id_match);
         if (!empty($reinforcement_player_id)) {
             $player_ids[] = $reinforcement_player_id;
@@ -1264,13 +1274,165 @@ class MatchMgr extends Generic
                     unset($player_ids[$index]);
                     continue;
                 }
-                $this->add_match_player($id_match, $player_id);
+                $this->add_match_player($id_match, $player_id, $team_for[(int)$player_id] ?? null);
             }
         }
         if (count($player_ids) > 0) {
             $match = $this->get_match($id_match);
             $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
             $this->addActivity($comment);
+        }
+    }
+
+    /**
+     * Équipe renforcée par chaque renfort, telle qu'envoyée par la fiche
+     * (`reinforcements[id_joueur] = id_equipe`) : seulement pour les renforts,
+     * et seulement l'une des deux équipes du match (issue #348).
+     * @return array<int, int> id_joueur => id_equipe
+     * @throws Exception 400
+     */
+    private function normalize_reinforcements($reinforcements, array $all_players, array $match): array
+    {
+        $renforts = $this->reinforcements_among($all_players, $match);
+        $teams = array((int)$match['id_equipe_dom'], (int)$match['id_equipe_ext']);
+        $team_for = array();
+        foreach ((is_array($reinforcements) ? $reinforcements : array()) as $id_player => $id_team) {
+            if (!is_numeric($id_player) || !in_array((int)$id_player, $renforts, true)) {
+                continue;
+            }
+            if (!is_numeric($id_team) || !in_array((int)$id_team, $teams, true)) {
+                throw new Exception("Un renfort ne peut renforcer que l'une des deux équipes du match !", 400);
+            }
+            $team_for[(int)$id_player] = (int)$id_team;
+        }
+        return $team_for;
+    }
+
+    /**
+     * Règles de renfort en championnat (issue #348) :
+     * - chaque renfort renforce une équipe désignée, que l'on gère ;
+     * - un seul renfort par match et par équipe ;
+     * - seulement pour compléter l'équipe jusqu'à 6 (masculin) ou 4 (féminin,
+     *   mixte) : l'équipe doit en compter moins, sans dépasser avec le renfort ;
+     * - mixité : renfort féminin en championnat féminin ; en mixte, le renfort
+     *   comble le sexe absent de l'équipe ;
+     * - un même joueur n'est renfort qu'une fois par demi-saison (coupure au
+     *   1er janvier).
+     * L'admin corrige une fiche sans condition ; les coupes n'y sont pas soumises.
+     * @throws Exception
+     */
+    private function assert_reinforcement_rules(array $all_players, array $team_for, array $match): void
+    {
+        if (UserManager::isAdmin()
+            || !in_array($match['code_competition'], self::REINFORCEMENT_RULE_COMPETITIONS, true)) {
+            return;
+        }
+        $renforts = $this->reinforcements_among($all_players, $match);
+        if (empty($renforts)) {
+            return;
+        }
+        $players = new Players();
+        foreach ($renforts as $id_player) {
+            if (!isset($team_for[$id_player])) {
+                throw new Exception("Préciser l'équipe renforcée par " . $players->getPlayerFullName($id_player) . " !", 400);
+            }
+        }
+        $user_manager = new UserManager();
+        foreach (array_unique($team_for) as $id_team) {
+            if (!$user_manager->canManageTeam($id_team)) {
+                throw new Exception("Vous ne pouvez prendre un renfort que pour votre équipe !", 403);
+            }
+        }
+        $size = $match['code_competition'] === 'm' ? 6 : 4;
+        $ids = Generic::parse_id_list($all_players);
+        foreach (array((int)$match['id_equipe_dom'] => $match['equipe_dom'],
+                       (int)$match['id_equipe_ext'] => $match['equipe_ext']) as $id_team => $team_name) {
+            $team_renforts = array_keys($team_for, $id_team, true);
+            if (empty($team_renforts)) {
+                continue;
+            }
+            if (count($team_renforts) > 1) {
+                throw new Exception("$team_name : un seul renfort par match et par équipe !", 409);
+            }
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $bindings = array(array('type' => 'i', 'value' => $id_team));
+            foreach ($ids as $id) {
+                $bindings[] = array('type' => 'i', 'value' => $id);
+            }
+            $own = $this->sql_manager->execute(
+                "SELECT j.id, j.sexe FROM joueur_equipe je JOIN joueurs j ON j.id = je.id_joueur
+                 WHERE je.id_equipe = ? AND je.est_jouant + 0 > 0 AND je.id_joueur IN ($placeholders)",
+                $bindings);
+            if (count($own) >= $size) {
+                throw new Exception("$team_name compte déjà " . count($own) . " joueurs : un renfort n'est possible "
+                    . "que pour compléter l'équipe jusqu'à $size.", 409);
+            }
+            $sexes = array_column($own, 'sexe');
+            $renfort_sexe = $this->sql_manager->execute("SELECT sexe FROM joueurs WHERE id = ?",
+                array(array('type' => 'i', 'value' => $team_renforts[0])))[0]['sexe'] ?? null;
+            $needed = null;
+            if ($match['code_competition'] === 'f') {
+                $needed = 'F';
+            } elseif ($match['code_competition'] === 'mo' && !in_array('F', $sexes, true)) {
+                $needed = 'F';
+            } elseif ($match['code_competition'] === 'mo' && !in_array('M', $sexes, true)) {
+                $needed = 'M';
+            }
+            if ($needed !== null && $renfort_sexe !== $needed) {
+                throw new Exception("$team_name : le renfort doit être " . ($needed === 'F' ? 'une joueuse' : 'un joueur')
+                    . " pour respecter la mixité.", 409);
+            }
+        }
+        $this->assert_once_per_half_season($renforts, $match);
+    }
+
+    /**
+     * Un même renfort ne joue qu'un match de championnat par demi-saison :
+     * juillet-décembre, puis janvier-juin (issue #348). Les renforts d'avant
+     * #348 comptent aussi : ils sont reconnus comme présents membres d'aucune
+     * des deux équipes, sans dépendre de id_team_reinforced.
+     * @throws Exception 409
+     */
+    private function assert_once_per_half_season(array $renforts, array $match): void
+    {
+        $date = $this->sql_manager->execute("SELECT date_reception FROM matches WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => (int)$match['id_match'])))[0]['date_reception'] ?? null;
+        if (empty($date)) {
+            return;
+        }
+        $year = (int)substr($date, 0, 4);
+        $first_half = (int)substr($date, 5, 2) >= 7;
+        $start = $first_half ? "$year-07-01" : "$year-01-01";
+        $end = $first_half ? "$year-12-31" : "$year-06-30";
+        $competitions = implode(',', array_fill(0, count(self::REINFORCEMENT_RULE_COMPETITIONS), '?'));
+        foreach ($renforts as $id_player) {
+            $bindings = array(
+                array('type' => 'i', 'value' => $id_player),
+                array('type' => 'i', 'value' => (int)$match['id_match']),
+                array('type' => 's', 'value' => $start),
+                array('type' => 's', 'value' => $end),
+            );
+            foreach (self::REINFORCEMENT_RULE_COMPETITIONS as $code) {
+                $bindings[] = array('type' => 's', 'value' => $code);
+            }
+            $other = $this->sql_manager->execute(
+                "SELECT m.code_match, DATE_FORMAT(m.date_reception, '%d/%m/%Y') AS date_match
+                 FROM match_player mp
+                 JOIN matches m ON m.id_match = mp.id_match
+                 WHERE mp.id_player = ?
+                   AND m.id_match <> ?
+                   AND m.match_status <> 'ARCHIVED'
+                   AND m.date_reception BETWEEN ? AND ?
+                   AND m.code_competition IN ($competitions)
+                   AND mp.id_player NOT IN (SELECT id_joueur FROM joueur_equipe
+                                            WHERE id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
+                 LIMIT 1",
+                $bindings);
+            if (!empty($other)) {
+                throw new Exception((new Players())->getPlayerFullName($id_player)
+                    . " a déjà été renfort le {$other[0]['date_match']} (match {$other[0]['code_match']}) : "
+                    . "un même renfort ne joue qu'une fois par demi-saison.", 409);
+            }
         }
     }
 
