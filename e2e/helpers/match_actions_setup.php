@@ -107,14 +107,15 @@ try {
     }
     $_SESSION['is_admin']     = true;
     $_SESSION['login']        = 'e2e_test';
+    $_SESSION['id_user']      = 1;
+    $_SESSION['id_equipe']    = $id_equipe;
+
     // ?role=leader : vrai responsable de l'équipe dom, sans les droits admin —
     // pour tester une règle dont l'admin est exempté (issue #344).
     if (($_GET['role'] ?? '') === 'leader') {
         $_SESSION['is_admin']       = false;
         $_SESSION['is_team_leader'] = true;
     }
-    $_SESSION['id_user']      = 1;
-    $_SESSION['id_equipe']    = $id_equipe;
 
     echo json_encode([
         'success'        => true,
