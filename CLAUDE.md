@@ -460,6 +460,11 @@ ce qu'un grep sur les littéraux ne voit pas.
 Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier les
 valeurs. Ne jamais concaténer (suivi dans #270).
 
+**Chemins de fichiers reçus du client** : jamais de `readfile`/`file_get_contents`
+direct. `photo/get_photo`, public, servait tout fichier du site — `.env` et code
+source compris (#352). Résoudre par `realpath`, exiger un répertoire autorisé et une
+extension attendue : voir `Photo::resolve_servable_path()`.
+
 ## Tests unitaires
 
 ```php
