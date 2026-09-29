@@ -159,8 +159,8 @@ class AdminRestAuthzTest extends UfolepTestCase
         // litteraux. Les tenir a jour ici fait echouer le test si l'on en ajoute
         // une sans la declarer dans access.php.
         $dynamiques = [
-            // pages/components/table/Rank.js  ->  /rest/action.php/rank/${endpoint}
-            'rank/getRank', 'rank/getRankFFVB', 'rank/addPenalty', 'rank/removePenalty',
+            // pages/components/table/Rank.js  ->  /rest/action.php/rank/${action}
+            'rank/getRank', 'rank/addPenalty', 'rank/removePenalty',
             'rank/incrementReportCount', 'rank/decrementReportCount',
             // pages/components/panel/Timeslots.js  ->  /rest/action.php/timeslot/${action}
             'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
@@ -257,7 +257,7 @@ class AdminRestAuthzTest extends UfolepTestCase
     private function actionsDynamiquesEnumerees(): array
     {
         return [
-            'rank/getRank', 'rank/getRankFFVB', 'rank/addPenalty', 'rank/removePenalty',
+            'rank/getRank', 'rank/addPenalty', 'rank/removePenalty',
             'rank/incrementReportCount', 'rank/decrementReportCount',
             'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
             'player/set_leader', 'player/set_vice_leader', 'player/set_captain',

@@ -15,6 +15,13 @@
     <match-summary :match-data="matchData"
                    @sign-match="signMatch"
                    @sign-team-sheets="signTeamSheets"></match-summary>
+    <!-- Score verrouillé tant que les fiches équipes ne sont pas signées (issue #344) -->
+    <div v-if="scoreLocked" role="alert" class="alert alert-warning mb-4" data-testid="score-locked">
+        <i class="fas fa-lock"></i>
+        <span>Le score se saisit après la signature des deux fiches équipes.
+            Fiche non signée : <strong>{{ missingTeamSheets.join(', ') }}</strong>.
+            En cas de forfait, utilisez « Déclarer forfait » plus bas.</span>
+    </div>
     <form @submit.prevent="submitForm">
         <div>
             <div class="grid grid-cols-3 gap-4 flex items-center border mb-4">
@@ -30,8 +37,10 @@
                     <div class="grid grid-cols-3 gap-4 flex items-center">
                         <label class="input flex items-center gap-3 text-lg">Set {{ set }}</label>
                         <input class="input input-bordered" type="number" min="0" max="50"
+                               :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_dom"
                                v-model.number="matchData['set_' + set + '_dom']"/>
                         <input class="input input-bordered" type="number" min="0" max="50"
+                               :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_ext"
                                v-model.number="matchData['set_' + set + '_ext']"/>
                     </div>
                 </div>
@@ -62,6 +71,19 @@
             </button>
         </div>
     </form>
+    <div class="mb-4 p-4 border" v-if="canDeclareForfeit" data-testid="forfeit">
+        <h3 class="text-xl font-bold mb-2">Déclarer forfait</h3>
+        <p class="text-sm mb-2">Une équipe ne s'est pas présentée : le score 25-0 sur trois sets est
+            enregistré pour l'équipe présente, sans fiche équipe à signer.</p>
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="btn btn-warning btn-outline" @click="declareForfeit('dom')">
+                <i class="fas fa-flag mr-2"></i>{{ matchData.equipe_dom }} déclare forfait
+            </button>
+            <button type="button" class="btn btn-warning btn-outline" @click="declareForfeit('ext')">
+                <i class="fas fa-flag mr-2"></i>{{ matchData.equipe_ext }} déclare forfait
+            </button>
+        </div>
+    </div>
     <div class="mb-4 p-4 border" v-if="isLeader">
         <h3 class="text-xl font-bold mb-4">Demande de report</h3>
         <div class="flex flex-wrap gap-2">

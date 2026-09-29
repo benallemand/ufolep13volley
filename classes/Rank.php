@@ -11,6 +11,29 @@ require_once __DIR__ . '/Registry.php';
 
 class Rank extends Generic
 {
+    /**
+     * Championnats classés au barème FFVB (issue #347) : 3-0/3-1 = 3 pts,
+     * 3-2 = 2, 2-3 = 1, 0-3/1-3 = 0, forfait = -1 ; départage par victoires,
+     * quotient de sets, quotient de points. Les coupes gardent le barème
+     * UFOLEP (3/1/0, départage par différence de sets puis confrontation
+     * directe).
+     */
+    const FFVB_COMPETITIONS = array('m', 'f', 'mo');
+    /** Début de la première saison au barème FFVB (palmarès des saisons passées). */
+    const FFVB_SINCE = '2026-09-01';
+
+    /**
+     * La compétition — et, si une date de fin de période est donnée, cette
+     * période — se classe-t-elle au barème FFVB ?
+     */
+    public static function uses_ffvb_scale(?string $code_competition, ?string $period_end = null): bool
+    {
+        if (!in_array($code_competition, self::FFVB_COMPETITIONS, true)) {
+            return false;
+        }
+        return $period_end === null || $period_end >= self::FFVB_SINCE;
+    }
+
     private Team $team;
     private Registry $registry;
 
@@ -265,6 +288,22 @@ class Rank extends Generic
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $competition);
         $bindings[] = array('type' => 's', 'value' => $division);
+        if (self::uses_ffvb_scale($competition)) {
+            // Championnat : barème et départage FFVB entièrement en SQL, sans
+            // confrontation directe (issue #347).
+            $sql = file_get_contents(__DIR__ . '/../sql/get_rank_ffvb_by_competition_division.sql');
+            $bindings[] = array('type' => 's', 'value' => $competition);
+            $bindings[] = array('type' => 's', 'value' => $division);
+            $results = $this->sql_manager->execute($sql, $bindings);
+            if (empty($id_team)) {
+                return $results;
+            }
+            // ranks_view garde le barème UFOLEP des coupes : pour une équipe
+            // de championnat, on filtre le classement de sa division.
+            return array_values(array_filter($results, static function ($row) use ($id_team) {
+                return (int)$row['id_equipe'] === (int)$id_team;
+            }));
+        }
         if (empty($id_team)) {
             $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition_division.sql');
             // La requête référence code_competition/division deux fois (CTE matches + jointure classements)
@@ -437,26 +476,6 @@ class Rank extends Generic
         return 0; // parfaitement à égalité sur la confrontation directe
     }
 
-    /**
-     * Classement calculé selon le barème FFVB (aperçu réservé aux administrateurs).
-     * Voir sql/get_rank_ffvb_by_competition_division.sql pour les règles.
-     * @throws Exception
-     */
-    public function getRankFFVB($competition, $division): array|int|string|null
-    {
-        if (!UserManager::isAdmin()) {
-            throw new Exception("Accès réservé aux administrateurs !", 403);
-        }
-        $sql = file_get_contents(__DIR__ . '/../sql/get_rank_ffvb_by_competition_division.sql');
-        $bindings = array(
-            array('type' => 's', 'value' => $competition),
-            array('type' => 's', 'value' => $division),
-            array('type' => 's', 'value' => $competition),
-            array('type' => 's', 'value' => $division),
-        );
-        return $this->sql_manager->execute($sql, $bindings);
-    }
-
     public function getDivisions()
     {
         $sql = "SELECT
@@ -585,12 +604,48 @@ class Rank extends Generic
     }
 
     /**
+     * Classement de tout un championnat, division par division, au barème
+     * FFVB (issue #347) : même ordre que les classements affichés — sert à
+     * composer les poules de coupe (init_classements_isoardi). Comme la
+     * requête UFOLEP, seules les équipes inscrites en coupe sont gardées.
+     * @throws Exception
+     */
+    private function get_full_championship_rank(string $code_competition): array
+    {
+        $clubs = array();
+        foreach ($this->sql_manager->execute(
+            "SELECT e.id_equipe, cl.nom AS club
+             FROM classements c
+             JOIN equipes e ON e.id_equipe = c.id_equipe
+             LEFT JOIN clubs cl ON cl.id = e.id_club
+             WHERE c.code_competition = ? AND e.is_cup_registered = 1",
+            array(array('type' => 's', 'value' => $code_competition))) as $row) {
+            $clubs[(int)$row['id_equipe']] = $row['club'];
+        }
+        $full = array();
+        foreach ($this->getDivisionsFromCompetition($code_competition) as $division) {
+            foreach ($this->getRank($code_competition, $division['division']) as $row) {
+                if (!array_key_exists((int)$row['id_equipe'], $clubs)) {
+                    continue;
+                }
+                $row['club'] = $clubs[(int)$row['id_equipe']];
+                $row['rang'] = count($full) + 1;
+                $full[] = $row;
+            }
+        }
+        return $full;
+    }
+
+    /**
      * @param string $code_competition
      * @return array|int|string|null
      * @throws Exception
      */
     public function get_full_competition_rank(string $code_competition): array|int|string|null
     {
+        if (self::uses_ffvb_scale($code_competition)) {
+            return $this->get_full_championship_rank($code_competition);
+        }
         $sql = file_get_contents(__DIR__ . '/../sql/get_rank_by_competition.sql');
         $bindings = array();
         $bindings[] = array('type' => 's', 'value' => $code_competition);

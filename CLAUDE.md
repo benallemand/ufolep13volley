@@ -1050,6 +1050,20 @@ club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
 > ni droit, ni indicateur, ni requête. C'était un troisième marqueur de ce que
 > porte `users_clubs`.
 
+### Score saisi après les fiches équipes, forfait déclaré (issue #344)
+
+`MatchMgr::save_match` (responsables) refuse un score (409, fiches manquantes
+nommées) tant que les **deux** fiches équipes (`is_sign_team_dom/ext`) ne sont
+pas signées — `assert_team_sheets_signed()`, admin exempté. Enregistrer seulement
+l'arbitrage ou le commentaire, sans set saisi, reste libre. La saisie en direct
+(`LiveScore::saveToMatch`) applique le même verrou.
+
+**Forfait** : paramètre `forfeit` (`dom` | `ext`, l'équipe forfait), bouton
+« Déclarer forfait » de `match.html`. Le serveur écrit lui-même 25-0 sur trois sets
+(`MatchMgr::forfeit_sets`) et n'exige **aucune** fiche équipe : l'équipe
+présente ne pourrait pas signer la sienne, `count_status` signalant la fiche vide
+de l'absente. Les colonnes de sets sont `NOT NULL` : un set non joué vaut 0.
+
 ### Toute la base est en utf8mb4 (issue #334)
 
 Un responsable de club n'a pas pu renommer son équipe : le formulaire renvoyait
@@ -1092,6 +1106,28 @@ connexion annonçait `utf8` — l'alias d'utf8mb3. Le script
 > `zz_backup_clubs_responsable_327` reste volontairement en latin1 : c'est une
 > sauvegarde destinée à disparaître, elle n'est jointe à rien, et
 > `dump-schema.ps1` l'écarte déjà du schéma de CI.
+
+### Classement : barème FFVB pour les championnats (issue #347)
+
+`Rank::uses_ffvb_scale()` décide du barème. **Championnats** (`m`, `f`, `mo`,
+`Rank::FFVB_COMPETITIONS`) : 3-0/3-1 = 3 pts, 3-2 = 2, 2-3 = 1, 0-3/1-3 = 0,
+forfait = -1 ; départage **victoires → quotient de sets → quotient de points**,
+entièrement en SQL (`sql/get_rank_ffvb_by_competition_division.sql`), sans
+confrontation directe. **Coupes** : barème UFOLEP inchangé (3/1/0, différence de
+sets puis confrontation directe dans `Rank::applyHeadToHeadTieBreak`).
+
+- Une équipe sans set concédé a un quotient **infini** (1e9 dans le tri) : un
+  `NULL` trié en ordre décroissant l'aurait mise en dernier.
+- `ranks_view` garde le barème UFOLEP (elle ne sert plus qu'aux coupes) : pour
+  une équipe de championnat, `getRank(..., $id_team)` filtre le classement FFVB
+  de sa division.
+- `get_full_competition_rank('m')` (poules de la coupe Isoardi) concatène les
+  classements FFVB division par division.
+- Palmarès (`HallOfFame::getTop2ByDivision`) : barème FFVB seulement pour une
+  période qui finit après `Rank::FFVB_SINCE` (2026-09-01) — régénérer une saison
+  passée ne la réécrit pas. `sql/get_top2_by_division.sql` reçoit ses fragments
+  de points et de tri par `str_replace` : jetons fixes, jamais une valeur du
+  client, et jamais écrits tels quels dans un commentaire de la requête.
 
 ### Retardataires d'inscription (issue #338)
 - L'indicateur **« Clubs sans aucune inscription »** (`sql/clubs_without_registration.sql`)
