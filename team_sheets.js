@@ -21,13 +21,15 @@ const PlayerList = {
         // 'add' : bouton vert "+" qui emet add-player
         // 'remove' : bouton rouge "poubelle" qui emet remove-player
         mode: {type: String, default: 'add'},
-        // Pas de photo, pas de match (issue #343) — faux pour l'admin, qui corrige.
-        blockMissingPhoto: {type: Boolean, default: false},
+        // Règles d'ajout — photo obligatoire (#343), éligibilité du renfort
+        // (#349) : faux pour l'admin, qui corrige une fiche.
+        enforceRules: {type: Boolean, default: false},
     },
     emits: ['add-player', 'remove-player'],
     methods: {
         isBlocked(player) {
-            return this.mode === 'add' && this.blockMissingPhoto && Number(player.has_photo) === 0;
+            return this.mode === 'add' && this.enforceRules
+                && (Number(player.has_photo) === 0 || !!player.reinforcement_blocked);
         },
         handleClick(player) {
             this.$emit(this.mode === 'add' ? 'add-player' : 'remove-player', player);
@@ -61,12 +63,16 @@ const PlayerList = {
           <span v-if="Number(player.has_photo) === 0" class="text-sm text-red-500 ml-2" data-testid="missing-photo">
             (Photo manquante{{ isBlocked(player) ? ' : ne peut pas jouer' : '' }})
           </span>
+          <span v-if="mode === 'add' && player.reinforcement_blocked" class="text-sm text-red-500 ml-2"
+                data-testid="reinforcement-blocked">
+            (Renfort impossible : {{ player.reinforcement_blocked }})
+          </span>
           <span
               v-if="player.est_actif === 1 && player.date_reception && player.date_homologation && compareDates(player.date_reception, player.date_homologation)"
               class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
           <button v-if="!isSigned"
                   :disabled="isBlocked(player)"
-                  :title="isBlocked(player) ? 'Photo manquante : à ajouter depuis la page Joueurs' : ''"
+                  :title="isBlocked(player) ? 'Ajout impossible : voir le motif affiché' : ''"
                   class="btn ml-auto"
                   :class="{'btn-success': mode === 'add', 'btn-error': mode === 'remove'}"
                   @click="handleClick(player)">

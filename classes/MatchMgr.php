@@ -20,6 +20,9 @@ require_once __DIR__ . '/Registry.php';
 
 class MatchMgr extends Generic
 {
+    /** Championnats soumis aux règles de renfort (issues #348, #349) ; les coupes n'y sont pas. */
+    const REINFORCEMENT_RULE_COMPETITIONS = array('m', 'f', 'mo');
+
     private Survey $survey;
 
     private Team $team;
@@ -962,7 +965,73 @@ class MatchMgr extends Generic
             array('type' => 'i', 'value' => (int)$match['id_equipe_dom']),
             array('type' => 'i', 'value' => (int)$match['id_equipe_ext']),
         ));
+        // Proposés quand même, avec le motif : l'écran explique le refus (#349).
+        $blocked = $this->reinforcement_ineligibility(array_column($results, 'id'), $match);
+        foreach ($results as $index => $row) {
+            $results[$index]['reinforcement_blocked'] = $blocked[(int)$row['id']] ?? null;
+        }
         return Players::adjust_photo_path_from_results($results);
+    }
+
+    /**
+     * Renforts inéligibles en championnat (issue #349) : un joueur peut venir
+     * d'un autre championnat, ou du même championnat mais d'une division
+     * **strictement inférieure** (numéro plus grand). Seules comptent ses
+     * appartenances jouantes (#325) : un membre non jouant n'évolue pas dans
+     * l'équipe. Les coupes n'ont pas de niveau de division : pas de règle.
+     *
+     * @return array<int, string> id_joueur => motif, pour les seuls inéligibles
+     * @throws Exception
+     */
+    private function reinforcement_ineligibility(array $player_ids, array $match): array
+    {
+        $ids = Generic::parse_id_list($player_ids);
+        if (empty($ids) || !in_array($match['code_competition'], self::REINFORCEMENT_RULE_COMPETITIONS, true)
+            || !is_numeric($match['division'])) {
+            return array();
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $bindings = array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids);
+        $bindings[] = array('type' => 's', 'value' => $match['code_competition']);
+        $bindings[] = array('type' => 'i', 'value' => (int)$match['division']);
+        $rows = $this->sql_manager->execute(
+            "SELECT je.id_joueur, MIN(CAST(c.division AS UNSIGNED)) AS division
+             FROM joueur_equipe je
+             JOIN classements c ON c.id_equipe = je.id_equipe
+             WHERE je.id_joueur IN ($placeholders)
+               AND je.est_jouant + 0 > 0
+               AND c.code_competition = ?
+             GROUP BY je.id_joueur
+             HAVING division <= ?",
+            $bindings);
+        $blocked = array();
+        foreach ($rows as $row) {
+            $blocked[(int)$row['id_joueur']] = "joue en division {$row['division']} du même championnat : "
+                . "un renfort doit venir d'une division inférieure ou d'un autre championnat";
+        }
+        return $blocked;
+    }
+
+    /**
+     * Joueurs de la liste qui ne sont membres d'aucune des deux équipes du
+     * match : les renforts.
+     * @return int[]
+     * @throws Exception
+     */
+    private function reinforcements_among(array $player_ids, array $match): array
+    {
+        $ids = Generic::parse_id_list($player_ids);
+        if (empty($ids)) {
+            return array();
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $bindings = array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids);
+        $bindings[] = array('type' => 'i', 'value' => (int)$match['id_equipe_dom']);
+        $bindings[] = array('type' => 'i', 'value' => (int)$match['id_equipe_ext']);
+        $members = array_map('intval', array_column($this->sql_manager->execute(
+            "SELECT DISTINCT id_joueur FROM joueur_equipe WHERE id_joueur IN ($placeholders) AND id_equipe IN (?, ?)",
+            $bindings), 'id_joueur'));
+        return array_values(array_diff($ids, $members));
     }
 
 
@@ -1180,9 +1249,11 @@ class MatchMgr extends Generic
             throw new Exception("id_match vide !");
         }
         // Vérifié AVANT d'effacer les présents : un refus laisse la fiche intacte.
-        $this->assert_players_have_photo(array_merge(
+        $all_players = array_merge(
             is_array($player_ids) ? $player_ids : array(),
-            empty($reinforcement_player_id) ? array() : array($reinforcement_player_id)));
+            empty($reinforcement_player_id) ? array() : array($reinforcement_player_id));
+        $this->assert_players_have_photo($all_players);
+        $this->assert_reinforcements_eligible($all_players, $this->get_match($id_match));
         $this->delete_match_players($id_match);
         if (!empty($reinforcement_player_id)) {
             $player_ids[] = $reinforcement_player_id;
@@ -1201,6 +1272,26 @@ class MatchMgr extends Generic
             $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
             $this->addActivity($comment);
         }
+    }
+
+    /**
+     * Refuse un renfort inéligible (issue #349). L'admin corrige sans condition.
+     * @throws Exception 409 en nommant les joueurs et le motif
+     */
+    private function assert_reinforcements_eligible(array $player_ids, array $match): void
+    {
+        if (UserManager::isAdmin()) {
+            return;
+        }
+        $blocked = $this->reinforcement_ineligibility($this->reinforcements_among($player_ids, $match), $match);
+        if (empty($blocked)) {
+            return;
+        }
+        $names = array();
+        foreach ($blocked as $id_player => $reason) {
+            $names[] = (new Players())->getPlayerFullName($id_player) . " ($reason)";
+        }
+        throw new Exception("Renfort refusé : " . implode(' ; ', $names) . ".", 409);
     }
 
     /**
