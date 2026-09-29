@@ -64,7 +64,9 @@ export function postReportAction(axios, codeMatch, actionName, onSuccess, onErro
         })
         .catch(error => {
             console.error("Erreur:", error);
-            alert("Une erreur est survenue...");
+            // un refus (403, 409) porte un message métier : le montrer
+            const message = error?.response?.data?.message;
+            alert(message ? "Erreur : " + message : "Une erreur est survenue...");
             if (onError) onError();
         });
 }

@@ -468,7 +468,14 @@ créneaux d'une autre équipe, et `save_match` sans `id_match` créait un match 
 **Pour ajouter un endpoint** : l'inscrire dans `rest/access.php`, sinon il répondra
 403. Et vérifier qu'il n'est pas appelé via une URL construite dynamiquement —
 `pages/components/panel/Players.js` fait `` `/rest/action.php/player/${action}` ``,
-ce qu'un grep sur les littéraux ne voit pas.
+ce qu'un grep sur les littéraux ne voit pas. Même chose pour
+`utils/reportUtils.js` (`matchmgr/${actionName}`) : le répertoire `utils/`
+n'était pas parcouru par `AdminRestAuthzTest`, et le workflow de report a
+répondu 403 aux responsables sans qu'aucun test le voie. Ses quatre actions
+passent par `MatchMgr::assert_report_action_allowed()` : équipe de la session
+dans le match, demande de l'adversaire pour accepter/refuser, date donnée par
+l'équipe qui a accepté, rien une fois le score saisi ; la commission peut
+seulement refuser.
 
 Listes d'ids reçues du client : passer par `Generic::parse_id_list()` puis lier les
 valeurs. Ne jamais concaténer (suivi dans #270).

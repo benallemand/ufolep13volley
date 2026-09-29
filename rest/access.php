@@ -149,6 +149,12 @@ return array(
         'getWeekMatches' => 'public',
         'get_match' => 'public',
         'get_match_by_code_match' => 'public',
+        // workflow de report (utils/reportUtils.js, URL construite
+        // dynamiquement) : équipe du match et état vérifiés dans MatchMgr
+        'acceptReport' => 'user',
+        'askForReport' => 'user',
+        'giveReportDate' => 'user',
+        'refuseReport' => 'user',
         'getMatchPlayers' => 'user',
         'getMatchReadAccess' => 'user',
         'getMesMatches' => 'user',
