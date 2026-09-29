@@ -312,8 +312,9 @@ export default {
               </li>
               <li>Une équipe ne peut avoir qu'un seul joueur prêté par match.</li>
               <li>Un joueur prêté ne peut l'être qu'une fois par demi-saison.</li>
-              <li>Un joueur prêté ne doit pas évoluer dans une division supérieure à celle de l'équipe demandant le
-                prêt.
+              <li>En championnat, un joueur prêté doit évoluer dans un autre championnat, ou dans une division
+                strictement inférieure à celle de l'équipe demandant le prêt : ni dans la même division, ni dans une
+                division supérieure.
               </li>
             </ul>
           </div>

@@ -964,6 +964,17 @@ monde. `adjust_photo_path_from_results` expose `has_photo` (0/1) avant de
 substituer l'image de repli, qui reste un simple affichage. `team_sheets.html`
 grise le bouton d'ajout d'un joueur sans photo (sauf pour l'admin).
 
+### Renforts : éligibilité en championnat (issue #349)
+
+En championnat (`MatchMgr::REINFORCEMENT_RULE_COMPETITIONS` = `m`, `f`, `mo` ;
+les coupes n'ont pas de niveau de division), un renfort doit venir d'un autre
+championnat, ou d'une division **strictement inférieure** (numéro plus grand)
+du même championnat — `reinforcement_ineligibility()`. Seules comptent ses
+appartenances **jouantes** (#325). Un renfort, c'est un présent membre d'aucune
+des deux équipes (`reinforcements_among()`). `getReinforcementPlayers` renvoie
+quand même les inéligibles, avec `reinforcement_blocked` (le motif) pour que
+l'écran explique ; `manage_match_players` les refuse (409), admin exempté.
+
 ### Le référent d'un club, c'est son compte (issue #326)
 
 Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un
