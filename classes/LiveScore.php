@@ -232,6 +232,12 @@ class LiveScore extends Generic
         if (!$liveScore) {
             throw new Exception("No live score found for this match");
         }
+        // Même verrou que la saisie du score (issue #344) : pas de score
+        // définitif avant la signature des deux fiches équipes (admin exempté).
+        require_once __DIR__ . '/MatchMgr.php';
+        $match_manager = new MatchMgr();
+        $match = $match_manager->get_match_by_code_match($id_match);
+        $match_manager->assert_team_sheets_signed($match['id_match']);
 
         $sql = "UPDATE matches SET 
                     set_1_dom = ?, set_1_ext = ?,

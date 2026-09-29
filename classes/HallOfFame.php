@@ -7,6 +7,7 @@
  */
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/PdfText.php';
+require_once __DIR__ . '/Rank.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Fpdf\Fpdf;
@@ -119,6 +120,45 @@ class HallOfFame extends Generic
     }
 
     /**
+     * Deux premiers de chaque division sur la période, au barème de la
+     * compétition et de la période (issue #347).
+     * @throws Exception
+     */
+    public function getTop2ByDivision($code_competition, $date_debut, $date_fin): array
+    {
+        // Requête pour obtenir les 2 premiers de chaque division
+        $sql = file_get_contents(__DIR__ . '/../sql/get_top2_by_division.sql');
+        // Barème de la période : FFVB pour un championnat à partir de 2026-2027
+        // (issue #347), UFOLEP sinon — régénérer une saison passée ne la
+        // réécrit pas avec le nouveau barème.
+        if (Rank::uses_ffvb_scale($code_competition, $date_fin)) {
+            $points = "SUM(CASE WHEN forfait = 1 THEN -1
+                                WHEN score_pour = 3 AND score_contre <= 1 THEN 3
+                                WHEN score_pour = 3 THEN 2
+                                WHEN score_contre = 3 AND score_pour = 2 THEN 1
+                                ELSE 0 END)";
+            $order = "points DESC, gagnes DESC,
+                      CASE WHEN sets_contre > 0 THEN sets_pour / sets_contre WHEN sets_pour > 0 THEN 1e9 ELSE 0 END DESC,
+                      CASE WHEN pts_contre > 0 THEN pts_pour / pts_contre WHEN pts_pour > 0 THEN 1e9 ELSE 0 END DESC";
+        } else {
+            $points = "SUM(IF(score_pour = 3, 3, 0)) + SUM(IF(score_contre = 3 AND forfait = 0, 1, 0))";
+            $order = "points DESC, diff DESC, sets_pour DESC";
+        }
+        $sql = str_replace(array('{POINTS}', '{ORDER}'), array($points, $order), $sql);
+
+        $bindings = array(
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $date_debut),
+            array('type' => 's', 'value' => $date_fin),
+            array('type' => 's', 'value' => $code_competition),
+            array('type' => 's', 'value' => $date_debut),
+            array('type' => 's', 'value' => $date_fin),
+        );
+
+        return $this->sql_manager->execute($sql, $bindings);
+    }
+
+    /**
      * Génère le palmarès à partir des matchs certifiés entre deux dates
      * @param string $code_competition Code de la compétition (m, f, mo)
      * @param string $date_debut Date de début (format Y-m-d)
@@ -144,19 +184,7 @@ class HallOfFame extends Generic
         }
         $libelle_competition = $competitions[0]['libelle'];
 
-        // Requête pour obtenir les 2 premiers de chaque division
-        $sql = file_get_contents(__DIR__ . '/../sql/get_top2_by_division.sql');
-
-        $bindings = array(
-            array('type' => 's', 'value' => $code_competition),
-            array('type' => 's', 'value' => $date_debut),
-            array('type' => 's', 'value' => $date_fin),
-            array('type' => 's', 'value' => $code_competition),
-            array('type' => 's', 'value' => $date_debut),
-            array('type' => 's', 'value' => $date_fin),
-        );
-
-        $results = $this->sql_manager->execute($sql, $bindings);
+        $results = $this->getTop2ByDivision($code_competition, $date_debut, $date_fin);
 
         if (empty($results)) {
             throw new Exception("Aucun résultat trouvé pour cette période !");

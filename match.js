@@ -76,6 +76,28 @@ createApp({
         isAdmin() {
             return !!(this.user && this.user.is_admin);
         },
+        // Fiches équipes non signées : tant qu'il en reste, le score est
+        // verrouillé pour les responsables (issue #344).
+        missingTeamSheets() {
+            const missing = [];
+            if (Number(this.matchData.is_sign_team_dom) !== 1) {
+                missing.push(this.matchData.equipe_dom);
+            }
+            if (Number(this.matchData.is_sign_team_ext) !== 1) {
+                missing.push(this.matchData.equipe_ext);
+            }
+            return missing;
+        },
+        scoreLocked() {
+            return !this.isAdmin && this.matchData.id_match !== undefined && this.missingTeamSheets.length > 0;
+        },
+        canDeclareForfeit() {
+            return this.matchData.id_match !== undefined && Number(this.matchData.certif) !== 1
+                && !(Number(this.matchData.is_sign_match_dom) === 1 && Number(this.matchData.is_sign_match_ext) === 1);
+        },
+        isAdmin() {
+            return !!(this.user && this.user.is_admin);
+        },
         isMatchDay() {
             if (!this.matchData.date_reception) return false;
             const today = new Date().toLocaleDateString('fr-FR');
@@ -161,6 +183,32 @@ createApp({
                 )
                 .catch(error => {
                     onError(this, error)
+                });
+        },
+        declareForfeit(side) {
+            const team = side === 'dom' ? this.matchData.equipe_dom : this.matchData.equipe_ext;
+            if (!window.confirm(`Confirmer le forfait de ${team} ? Le score 25-0 × 3 sera enregistré pour l'adversaire.`)) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('id_match', this.matchData.id_match);
+            formData.append('code_match', this.matchData.code_match);
+            // save_match attend tous les sets : le serveur les remplace par le score du forfait
+            for (const s of [1, 2, 3, 4, 5]) {
+                formData.append(`set_${s}_dom`, 0);
+                formData.append(`set_${s}_ext`, 0);
+            }
+            formData.append('referee', this.matchData.referee ?? '');
+            formData.append('note', this.matchData.note ?? '');
+            formData.append('forfeit', side);
+            this.isLoading = true;
+            axios.post('/rest/action.php/matchmgr/save_match', formData)
+                .then(response => {
+                    onSuccess(this, response);
+                    this.reloadData();
+                })
+                .catch(error => {
+                    onError(this, error);
                 });
         },
         setScores() {
