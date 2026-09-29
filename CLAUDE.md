@@ -1074,6 +1074,22 @@ connexion annonçait `utf8` — l'alias d'utf8mb3. Le script
 > rien vérifier dix mois sur douze. Même parti pris que `registrations_setup.php`
 > côté E2E.
 
+### Sondage fair-play : échelle -- - = + ++ (issue #350)
+
+Depuis la saison 2026-2027, chaque critère se note `--` `-` `=` `+` `++`, stocké
+en **-2..+2** dans les mêmes colonnes (`tinyint` signé), prérempli à `=` (0).
+Une note `--` exige un commentaire (contrôle serveur et formulaire).
+
+`survey.scale_version` distingue les échelles : **1** = 0..10 étoiles (tous les
+sondages d'avant, 0 = non noté), **2** = l'échelle courante (`Survey::SCALE_VERSION`).
+`survey_view_raw` — donc le classement fair-play — ne retient que la version 2 :
+les deux échelles ne se mélangent jamais. Elle ne filtre plus sur « somme des
+notes > 0 », qui écartait un sondage tout à `=`. Un sondage de l'ancienne échelle
+n'est pas repris dans le formulaire (`get_survey` renvoie un formulaire neuf).
+
+Un sondage ne se relit que par l'équipe sondeuse : `Survey::getSql()` passe par
+`users_teams`. Celui d'un admin hors équipe s'enregistre mais ne se relit pas.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

@@ -29,7 +29,7 @@ CREATE TABLE `activity` (
   `user_id` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26746 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +76,7 @@ CREATE TABLE `blacklist_gymnase` (
   PRIMARY KEY (`id`),
   KEY `id_gymnase` (`id_gymnase`),
   CONSTRAINT `blacklist_gymnase_ibfk_1` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `blacklist_team` (
   PRIMARY KEY (`id`),
   KEY `id_team` (`id_team`),
   CONSTRAINT `blacklist_team_ibfk_1` FOREIGN KEY (`id_team`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `classements` (
   KEY `fk_classements_equipes` (`id_equipe`),
   KEY `id` (`id`),
   CONSTRAINT `fk_classements_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3730 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3827 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +169,7 @@ CREATE TABLE `clubs` (
   `affiliation_number` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=496 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `competitions` (
   `start_register_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,7 +248,7 @@ CREATE TABLE `comptes_acces` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_email` (`email`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1338 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1567 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,7 +272,7 @@ CREATE TABLE `creneau` (
   KEY `fk_creneau_equipes` (`id_equipe`),
   CONSTRAINT `fk_creneau_equipes` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_creneau_gymnase` FOREIGN KEY (`id_gymnase`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=1965 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2076 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,7 +311,7 @@ CREATE TABLE `emails` (
   `sending_status` enum('TO_DO','DONE','ERROR') NOT NULL DEFAULT 'TO_DO',
   `is_read` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21947 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22090 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `equipes` (
   KEY `fk_equipes_clubs` (`id_club`),
   KEY `id_equipe` (`id_equipe`),
   CONSTRAINT `fk_equipes_clubs` FOREIGN KEY (`id_club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -373,7 +373,7 @@ CREATE TABLE `gymnase` (
   `remarques` mediumtext,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=235 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -442,7 +442,7 @@ CREATE TABLE `joueurs` (
   UNIQUE KEY `uq_joueurs_compte` (`id_compte`),
   KEY `id` (`id`),
   CONSTRAINT `fk_joueurs_compte` FOREIGN KEY (`id_compte`) REFERENCES `comptes_acces` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4395 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4648 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,7 +495,7 @@ CREATE TABLE `match_player` (
   KEY `id_player` (`id_player`),
   CONSTRAINT `match_player_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `match_player_ibfk_2` FOREIGN KEY (`id_player`) REFERENCES `joueurs` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=56408 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=56608 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -566,7 +566,7 @@ CREATE TABLE `matches` (
   CONSTRAINT `fk_matches_equipesdom` FOREIGN KEY (`id_equipe_dom`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_equipesext` FOREIGN KEY (`id_equipe_ext`) REFERENCES `equipes` (`id_equipe`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_gymnasium` FOREIGN KEY (`id_gymnasium`) REFERENCES `gymnase` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=81122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=81285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -683,7 +683,7 @@ CREATE TABLE `photos` (
   `path_photo` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5191 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5202 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -798,7 +798,7 @@ CREATE TABLE `register` (
   CONSTRAINT `register_ibfk_3` FOREIGN KEY (`old_team_id`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_4` FOREIGN KEY (`id_court_1`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `register_ibfk_5` FOREIGN KEY (`id_court_2`) REFERENCES `gymnase` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=518 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=608 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -814,7 +814,7 @@ CREATE TABLE `registry` (
   `registry_value` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,13 +833,14 @@ CREATE TABLE `survey` (
   `referee` tinyint DEFAULT '0',
   `catering` tinyint DEFAULT '0',
   `global` tinyint DEFAULT '0',
+  `scale_version` tinyint NOT NULL DEFAULT '2',
   `comment` mediumtext,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `id_match` (`id_match`),
   CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `comptes_acces` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19021 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19032 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -966,11 +967,9 @@ CREATE TABLE `users_teams` (
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE FUNCTION `SPLIT_STRING`(str VARCHAR(255) CHARSET utf8mb4,
-                             delim VARCHAR(12) CHARSET utf8mb4,
-                             pos INT) RETURNS varchar(255) CHARSET utf8mb4
+CREATE FUNCTION `SPLIT_STRING`(`str` VARCHAR(255) CHARSET utf8mb4, `delim` VARCHAR(12) CHARSET utf8mb4, `pos` INT) RETURNS varchar(255) CHARSET utf8mb4
 RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(str, delim, pos),
                              LENGTH(SUBSTRING_INDEX(str, delim, pos - 1)) + 1),
                    delim, '') ;;
@@ -1083,7 +1082,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 SQL SECURITY INVOKER */
-/*!50001 VIEW `survey_view_raw` AS select `s`.`id` AS `id`,`e_sondeuse`.`id_equipe` AS `id_team_sondeuse`,`m`.`code_match` AS `code_match`,`m`.`id_match` AS `id_match`,`e_sondee`.`nom_equipe` AS `equipe`,`c_sondee`.`nom` AS `club`,`s`.`on_time` AS `on_time`,2 AS `coef_on_time`,`s`.`spirit` AS `spirit`,3 AS `coef_spirit`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else `s`.`referee` end) AS `referee`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else 3 end) AS `coef_referee`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else `s`.`catering` end) AS `catering`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else 2 end) AS `coef_catering`,`s`.`global` AS `global`,5 AS `coef_global`,`c`.`penalite` AS `nb_penalites` from (((((((`survey` `s` join `matches` `m` on((`s`.`id_match` = `m`.`id_match`))) join `comptes_acces` `ca` on((`ca`.`id` = `s`.`user_id`))) join `users_teams` `ut` on((`ca`.`id` = `ut`.`user_id`))) join `equipes` `e_sondeuse` on((`ut`.`team_id` = `e_sondeuse`.`id_equipe`))) join `equipes` `e_sondee` on(((`e_sondee`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondeuse`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondee`.`id_equipe` <> `e_sondeuse`.`id_equipe`)))) join `clubs` `c_sondee` on((`e_sondee`.`id_club` = `c_sondee`.`id`))) join `classements` `c` on(((`e_sondee`.`id_equipe` = `c`.`id_equipe`) and (`c`.`code_competition` = `m`.`code_competition`)))) where (((((`s`.`on_time` + `s`.`spirit`) + `s`.`referee`) + `s`.`catering`) + `s`.`global`) > 0) order by `s`.`id` */;
+/*!50001 VIEW `survey_view_raw` AS select `s`.`id` AS `id`,`e_sondeuse`.`id_equipe` AS `id_team_sondeuse`,`m`.`code_match` AS `code_match`,`m`.`id_match` AS `id_match`,`e_sondee`.`nom_equipe` AS `equipe`,`c_sondee`.`nom` AS `club`,`s`.`on_time` AS `on_time`,2 AS `coef_on_time`,`s`.`spirit` AS `spirit`,3 AS `coef_spirit`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else `s`.`referee` end) AS `referee`,(case when ((`m`.`referee` = 'HOME') and (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`)) then 0 when ((`m`.`referee` = 'AWAY') and (`m`.`id_equipe_ext` = `e_sondeuse`.`id_equipe`)) then 0 when (`m`.`referee` = 'BOTH') then 0 else 3 end) AS `coef_referee`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else `s`.`catering` end) AS `catering`,(case when (`m`.`id_equipe_dom` = `e_sondeuse`.`id_equipe`) then 0 else 2 end) AS `coef_catering`,`s`.`global` AS `global`,5 AS `coef_global`,`c`.`penalite` AS `nb_penalites` from (((((((`survey` `s` join `matches` `m` on((`s`.`id_match` = `m`.`id_match`))) join `comptes_acces` `ca` on((`ca`.`id` = `s`.`user_id`))) join `users_teams` `ut` on((`ca`.`id` = `ut`.`user_id`))) join `equipes` `e_sondeuse` on((`ut`.`team_id` = `e_sondeuse`.`id_equipe`))) join `equipes` `e_sondee` on(((`e_sondee`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondeuse`.`id_equipe` in (`m`.`id_equipe_dom`,`m`.`id_equipe_ext`)) and (`e_sondee`.`id_equipe` <> `e_sondeuse`.`id_equipe`)))) join `clubs` `c_sondee` on((`e_sondee`.`id_club` = `c_sondee`.`id`))) join `classements` `c` on(((`e_sondee`.`id_equipe` = `c`.`id_equipe`) and (`c`.`code_competition` = `m`.`code_competition`)))) where (`s`.`scale_version` = 2) order by `s`.`id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

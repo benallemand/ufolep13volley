@@ -398,6 +398,8 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | Q1 | Ouvrir l'écran | ~1 800 sondages renseignés ; la colonne *Match* compose `code (dom vs ext)` |
 | Q2 | Cocher « Afficher aussi les sondages non renseignés » | Le total augmente : une ligne est créée dès qu'un sondage est ouvert, même sans réponse |
 | Q3 | Vérifier la barre d'outils | Écran de consultation, aucune action d'écriture |
+| Q4 | Sondage d'une saison passée (#350) | Notes affichées en `n/10` |
+| Q5 | Sondage de la nouvelle échelle (#350) | Notes affichées en `--` `-` `=` `+` `++` ; un sondage tout à `=` est compté comme renseigné |
 
 ### Commission (`#/commission`) — lot 4
 
