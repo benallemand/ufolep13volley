@@ -1,8 +1,11 @@
--- Classement calculé selon le barème FFVB « championnat fédéral » (aperçu admin).
+-- Classement d'une division de CHAMPIONNAT (m, f, mo) au barème FFVB (issue #347).
 --   Victoire 3-0 / 3-1 = 3 pts | Victoire 3-2 = 2 pts | Défaite 2-3 = 1 pt
---   Défaite 0-3 / 1-3 = 0 pt   | Forfait = -1 pt (défaite 0-3)
---   Pénalités manuelles (classements.penalite) déduites des points.
+--   Défaite 0-3 / 1-3 = 0 pt   | Défaite par forfait = -1 pt
+--   Pénalités (classements.penalite) déduites des points.
 -- Départage : points -> victoires -> quotient de sets -> quotient de points -> rank_start.
+--   Une équipe sans set (ou point) concédé a un quotient infini : elle passe
+--   devant, et non derrière comme le ferait un NULL trié en ordre décroissant.
+-- Les coupes gardent le barème UFOLEP : sql/get_rank_by_competition_division.sql.
 -- Calculé depuis la table `matches` (et non la vue matchs_view, trop coûteuse).
 -- Paramètres (dans l'ordre) : code_competition, division, code_competition, division
 WITH m AS (
@@ -54,13 +57,23 @@ agg AS (
                    ELSE 0 END) AS raw_ffvb
     FROM perf
     GROUP BY id_equipe
+),
+q AS (
+    SELECT a.*,
+           CASE WHEN a.sets_contre > 0 THEN a.sets_pour / a.sets_contre
+                WHEN a.sets_pour > 0 THEN 1e9 ELSE 0 END AS q_sets,
+           CASE WHEN a.points_contre > 0 THEN a.points_pour / a.points_contre
+                WHEN a.points_pour > 0 THEN 1e9 ELSE 0 END AS q_points
+    FROM agg a
 )
 SELECT
+    c.code_competition,
+    c.division,
     RANK() OVER (
         ORDER BY COALESCE(a.raw_ffvb,0) - c.penalite DESC,
                  COALESCE(a.gagnes,0) DESC,
-                 a.sets_pour / NULLIF(a.sets_contre,0) DESC,
-                 a.points_pour / NULLIF(a.points_contre,0) DESC,
+                 COALESCE(a.q_sets,0) DESC,
+                 COALESCE(a.q_points,0) DESC,
                  c.rank_start
         ) AS rang,
     c.id_equipe,
@@ -79,6 +92,6 @@ SELECT
     c.report_count
 FROM classements c
 JOIN equipes e ON e.id_equipe = c.id_equipe
-LEFT JOIN agg a ON a.id_equipe = c.id_equipe
+LEFT JOIN q a ON a.id_equipe = c.id_equipe
 WHERE c.code_competition = ? AND c.division = ?
 ORDER BY rang

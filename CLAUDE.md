@@ -1074,6 +1074,28 @@ connexion annonçait `utf8` — l'alias d'utf8mb3. Le script
 > rien vérifier dix mois sur douze. Même parti pris que `registrations_setup.php`
 > côté E2E.
 
+### Classement : barème FFVB pour les championnats (issue #347)
+
+`Rank::uses_ffvb_scale()` décide du barème. **Championnats** (`m`, `f`, `mo`,
+`Rank::FFVB_COMPETITIONS`) : 3-0/3-1 = 3 pts, 3-2 = 2, 2-3 = 1, 0-3/1-3 = 0,
+forfait = -1 ; départage **victoires → quotient de sets → quotient de points**,
+entièrement en SQL (`sql/get_rank_ffvb_by_competition_division.sql`), sans
+confrontation directe. **Coupes** : barème UFOLEP inchangé (3/1/0, différence de
+sets puis confrontation directe dans `Rank::applyHeadToHeadTieBreak`).
+
+- Une équipe sans set concédé a un quotient **infini** (1e9 dans le tri) : un
+  `NULL` trié en ordre décroissant l'aurait mise en dernier.
+- `ranks_view` garde le barème UFOLEP (elle ne sert plus qu'aux coupes) : pour
+  une équipe de championnat, `getRank(..., $id_team)` filtre le classement FFVB
+  de sa division.
+- `get_full_competition_rank('m')` (poules de la coupe Isoardi) concatène les
+  classements FFVB division par division.
+- Palmarès (`HallOfFame::getTop2ByDivision`) : barème FFVB seulement pour une
+  période qui finit après `Rank::FFVB_SINCE` (2026-09-01) — régénérer une saison
+  passée ne la réécrit pas. `sql/get_top2_by_division.sql` reçoit ses fragments
+  de points et de tri par `str_replace` : jetons fixes, jamais une valeur du
+  client, et jamais écrits tels quels dans un commentaire de la requête.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

@@ -1,11 +1,9 @@
 export default {
     template: `
       <div>
-        <div v-if="canManagePoints" class="flex items-center justify-end gap-2 mb-2">
-          <span v-if="ffvbMode" class="text-xs text-base-content/60 italic">Aperçu admin — barème FFVB (3/2/1/0) · départage : victoires → quotient sets → quotient points</span>
-          <button @click="toggleFfvb" class="btn btn-sm" :class="ffvbMode ? 'btn-primary' : 'btn-outline btn-primary'">
-            {{ ffvbMode ? 'Revenir au classement actuel' : '🧪 Voir en mode FFVB' }}
-          </button>
+        <div v-if="ffvbMode" class="text-xs text-base-content/60 italic text-right mb-2" data-testid="rank-scale">
+          Barème FFVB : 3-0 / 3-1 = 3 pts · 3-2 = 2 · 2-3 = 1 · 0-3 / 1-3 = 0 · forfait = -1 —
+          départage : victoires, quotient de sets, quotient de points
         </div>
         <table class="table table-pin-rows">
         <thead>
@@ -67,8 +65,8 @@ export default {
             </span>
           </td>
           <td v-if="!ffvbMode" class="text-center">{{ team.diff }}</td>
-          <td v-if="ffvbMode" class="text-center">{{ team.quotient_sets }}</td>
-          <td v-if="ffvbMode" class="text-center">{{ team.quotient_points }}</td>
+          <td v-if="ffvbMode" class="text-center">{{ team.quotient_sets ?? (team.sets_pour > 0 ? "∞" : "-") }}</td>
+          <td v-if="ffvbMode" class="text-center">{{ team.quotient_points ?? (team.sets_pour > 0 ? "∞" : "-") }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_pour }}</td>
           <td class="hidden md:table-cell text-center">{{ team.sets_contre }}</td>
           <td class="hidden md:table-cell text-center">{{ team.report_count }}</td>
@@ -107,12 +105,16 @@ export default {
             searchQuery: "",
             user: null,
             limitDate: '',
-            ffvbMode: false,
         };
     },
     computed: {
         canManagePoints() {
             return !!(this.user && this.user.is_admin);
+        },
+        // Les championnats sont classés au barème FFVB (issue #347) : le serveur
+        // renvoie alors les quotients, les coupes gardent la différence de sets.
+        ffvbMode() {
+            return this.ranks.length > 0 && 'quotient_sets' in this.ranks[0];
         },
     },
     methods: {
@@ -129,21 +131,15 @@ export default {
                 });
         },
         fetch() {
-            const endpoint = this.ffvbMode ? 'getRankFFVB' : 'getRank';
             axios
-                .get(
-                    `/rest/action.php/rank/${endpoint}?competition=${this.code_competition}&division=${this.division}`
-                )
+                .get('/rest/action.php/rank/getRank',
+                    {params: {competition: this.code_competition, division: this.division}})
                 .then((response) => {
                     this.ranks = response.data;
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement :", error);
                 });
-        },
-        toggleFfvb() {
-            this.ffvbMode = !this.ffvbMode;
-            this.fetch();
         },
         fetchUserDetails() {
             axios
