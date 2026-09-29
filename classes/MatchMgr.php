@@ -493,6 +493,11 @@ class MatchMgr extends Generic
                                $note,
                                $dirtyFields = null)
     {
+        // Sans id_match, save() sautait is_match_update_allowed et faisait un
+        // INSERT : tout compte connecté créait un match (issue #356).
+        if (empty($id_match)) {
+            throw new Exception("Match non précisé !", 400);
+        }
         $this->save(array(
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,

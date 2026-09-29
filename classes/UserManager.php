@@ -1049,6 +1049,94 @@ class UserManager extends Generic
     }
 
     /**
+     * Équipes sur lesquelles le compte connecté agit comme responsable : celles
+     * de users_teams et l'équipe courante de la session (qui peut venir d'un
+     * club géré, cf. switchCurrentUserTeam).
+     * @return int[]
+     * @throws Exception
+     */
+    private function getMyLedTeamIds(): array
+    {
+        @session_start();
+        $team_ids = empty($_SESSION['id_user'])
+            ? array()
+            : array_map('intval', $this->getUserTeamIds((int)$_SESSION['id_user']));
+        if (!empty($_SESSION['id_equipe'])) {
+            $team_ids[] = (int)$_SESSION['id_equipe'];
+        }
+        return array_values(array_unique($team_ids));
+    }
+
+    /**
+     * Le compte connecté peut-il agir sur cette équipe ? Admin, équipe dont il
+     * est responsable, ou équipe d'un club qu'il gère (issue #356).
+     * @throws Exception
+     */
+    public function canManageTeam($id_equipe): bool
+    {
+        if (self::isAdmin()) {
+            return true;
+        }
+        $id_equipe = Generic::parse_id($id_equipe, "identifiant d'équipe");
+        if (in_array($id_equipe, $this->getMyLedTeamIds(), true)) {
+            return true;
+        }
+        if (self::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            return (new Club())->getClubIdOfManagedTeam($id_equipe) !== null;
+        }
+        return false;
+    }
+
+    /**
+     * Les endpoints `user` qui prennent un `id_team`/`id_equipe` du client
+     * doivent l'appeler : sans cela, un responsable agissait sur l'équipe
+     * d'un autre club (issue #356).
+     * @throws Exception 403
+     */
+    public function assertCanManageTeam($id_equipe): void
+    {
+        if (!$this->canManageTeam($id_equipe)) {
+            throw new Exception("Vous ne gérez pas cette équipe !", 403);
+        }
+    }
+
+    /**
+     * Un joueur est modifiable par l'admin, ou par un responsable si le joueur
+     * est dans l'une de ses équipes, ou licencié dans le club de l'une d'elles,
+     * ou dans un club qu'il gère (issue #356).
+     * @throws Exception 403
+     */
+    public function assertCanManagePlayer($id_player): void
+    {
+        if (self::isAdmin()) {
+            return;
+        }
+        $id_player = Generic::parse_id($id_player, 'identifiant de joueur');
+        $team_ids = $this->getMyLedTeamIds() ?: array(0);
+        $club_ids = array(0);
+        if (self::isClubLeader()) {
+            require_once __DIR__ . '/Club.php';
+            $club_ids = (new Club())->getMyClubIds() ?: array(0);
+        }
+        $teams = implode(',', array_fill(0, count($team_ids), '?'));
+        $clubs = implode(',', array_fill(0, count($club_ids), '?'));
+        $sql = "SELECT j.id FROM joueurs j
+                WHERE j.id = ?
+                  AND (EXISTS (SELECT 1 FROM joueur_equipe je
+                               WHERE je.id_joueur = j.id AND je.id_equipe IN ($teams))
+                       OR j.id_club IN (SELECT e.id_club FROM equipes e WHERE e.id_equipe IN ($teams))
+                       OR j.id_club IN ($clubs))";
+        $bindings = array(array('type' => 'i', 'value' => $id_player));
+        foreach (array_merge($team_ids, $team_ids, $club_ids) as $id) {
+            $bindings[] = array('type' => 'i', 'value' => $id);
+        }
+        if (count($this->sql_manager->execute($sql, $bindings)) === 0) {
+            throw new Exception("Ce joueur ne fait partie ni de vos équipes ni de votre club !", 403);
+        }
+    }
+
+    /**
      * Récupère les IDs des clubs gérés par un utilisateur (users_clubs)
      * @throws Exception
      */

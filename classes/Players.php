@@ -194,6 +194,11 @@ class Players extends Generic
             'id' => $id,
             'dirtyFields' => $dirtyFields,
         );
+        // modifier un joueur existant : il doit être dans vos équipes ou votre club —
+        // sinon n'importe quel joueur était modifié, puis ajouté à l'équipe (issue #356)
+        if (!empty($parameters['id'])) {
+            (new UserManager())->assertCanManagePlayer($parameters['id']);
+        }
         if (empty($parameters['id'])) {
             if (!empty($parameters['num_licence'])) {
                 if ($this->isPlayerExists($parameters['num_licence'])) {
@@ -430,6 +435,7 @@ class Players extends Generic
 
     public function uploadPhoto($id, $nom, $prenom)
     {
+        (new UserManager())->assertCanManagePlayer($id); // issue #356
         $this->savePhoto(array(
             'id' => $id,
             'nom' => $nom,
@@ -841,6 +847,8 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // sans cela, un responsable agissait sur l'équipe d'un autre club (issue #356)
+        (new UserManager())->assertCanManageTeam($id_team);
         if (is_string($ids)) {
             $ids = array($ids);
         }
@@ -889,6 +897,8 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // sans cela, un responsable agissait sur l'équipe d'un autre club (issue #356)
+        (new UserManager())->assertCanManageTeam($id_team);
         if (is_string($ids)) {
             $ids = array($ids);
         }
@@ -1045,6 +1055,8 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // sans cela, un responsable agissait sur l'équipe d'un autre club (issue #356)
+        (new UserManager())->assertCanManageTeam($id_team);
         if (is_string($ids)) {
             $ids = array($ids);
         }
@@ -1083,6 +1095,8 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // sans cela, un responsable agissait sur l'équipe d'un autre club (issue #356)
+        (new UserManager())->assertCanManageTeam($id_team);
         foreach ($ids as $id_player) {
             if (!$this->isPlayerInTeam($id_player, $id_team)) {
                 throw new Exception("Ce joueur n'est pas dans l'équipe !");
@@ -1112,6 +1126,8 @@ class Players extends Generic
             @session_start();
             $id_team = $_SESSION['id_equipe'];
         }
+        // sans cela, un responsable agissait sur l'équipe d'un autre club (issue #356)
+        (new UserManager())->assertCanManageTeam($id_team);
         // Delegue a addPlayerToTeam plutot que de redupliquer l'INSERT : cette
         // methode en portait une copie, ce qui aurait laisse un chemin
         // d'ajout hors du controle de verrouillage (issue #32).
