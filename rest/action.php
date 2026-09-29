@@ -4,6 +4,7 @@
 // point d'entree (issue #292).
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/raw_sql_guard.php';
+require_once __DIR__ . '/error_response.php';
 header('Access-Control-Allow-Origin: *');
 
 
@@ -284,25 +285,26 @@ try {
         'message' => 'Modification OK'
     ));
 } catch (Exception $exception) {
-    $resp_code = empty($exception->getCode()) ? 500 : $exception->getCode();
+    // Plus de message MySQL brut ni d'errno en code HTTP (issue #355).
+    [$resp_code, $client_message] = client_error_response($exception);
     switch ($resp_code) {
         case 401:
             // redirect to login page
-            header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . $exception->getMessage());
+            header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . urlencode($client_message));
             exit(0);
         case 201:
         case 200:
             http_response_code($resp_code);
             echo json_encode(array(
                 'success' => true,
-                'message' => $exception->getMessage()
+                'message' => $client_message
             ));
             break;
         default:
             http_response_code($resp_code);
             echo json_encode(array(
                 'success' => false,
-                'message' => $exception->getMessage()
+                'message' => $client_message
             ));
             error_log($exception->getMessage());
             break;
@@ -313,7 +315,18 @@ catch (ArgumentCountError $argumentCountError) {
     http_response_code(500);
     echo json_encode(array(
         'success' => false,
-        'message' => $argumentCountError->getMessage()
+        // la signature de la méthode n'a rien à faire chez le client
+        'message' => "Paramètres manquants pour cette action !"
     ));
 
+}
+catch (Error $error) {
+    // TypeError (argument typé `int` reçu `12 OR 1=1`), paramètre nommé
+    // inconnu… : fatale sinon, avec la trace en réponse si display_errors.
+    error_log(get_class($error) . ': ' . $error->getMessage());
+    http_response_code(400);
+    echo json_encode(array(
+        'success' => false,
+        'message' => "Paramètres invalides pour cette action !"
+    ));
 }

@@ -466,9 +466,12 @@ class Team extends Generic
         $sql = "SELECT 
         e.id_club
         FROM equipes e 
-        WHERE e.id_equipe = $idTeam";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['id_club'];
+        WHERE e.id_equipe = ?";
+        // valeur du client via player/addPlayersToTeam : liee (issue #355)
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($idTeam, "identifiant d'équipe")),
+        ));
+        return $results[0]['id_club'] ?? null;
     }
 
     /**
@@ -561,9 +564,13 @@ class Team extends Generic
         $sql = "SELECT 
         CONCAT(e.nom_equipe, '(',e.code_competition,')') AS team_name 
         FROM equipes e 
-        WHERE e.id_equipe = $idTeam";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['team_name'];
+        WHERE e.id_equipe = ?";
+        // Appelé avec l'id_team du client par set_leader, set_captain,
+        // remove_from_team, saveTimeSlot, addPenalty… : lié (issue #355).
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($idTeam, "identifiant d'équipe")),
+        ));
+        return $results[0]['team_name'] ?? 'Non renseigné';
     }
 
     public function getMyTeamIdClub()

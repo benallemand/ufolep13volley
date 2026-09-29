@@ -729,9 +729,13 @@ class MatchMgr extends Generic
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $sql = "DELETE FROM match_player 
-            WHERE id_match = $id_match
-            AND id_player = $id_player";
-        $this->sql_manager->execute($sql);
+            WHERE id_match = ?
+            AND id_player = ?";
+        // paramètres liés (issue #355)
+        $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($id_match, 'identifiant de match')),
+            array('type' => 'i', 'value' => Generic::parse_id($id_player, 'identifiant de joueur')),
+        ));
     }
 
     /**
@@ -879,9 +883,12 @@ class MatchMgr extends Generic
                          JOIN players_view j on mp.id_player = j.id
                          LEFT JOIN joueur_equipe je ON je.id_joueur = j.id AND (je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext))
                          LEFT JOIN equipes e ON je.id_equipe = e.id_equipe
-                WHERE m.id_match = $id_match
+                WHERE m.id_match = ?
                 ORDER BY equipe, sexe, nom, prenom";
-        $results = $this->sql_manager->execute($sql);
+        // paramètre lié (issue #355)
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($id_match, 'identifiant de match')),
+        ));
         return Players::adjust_photo_path_from_results($results);
     }
 
@@ -895,7 +902,7 @@ class MatchMgr extends Generic
                          JOIN matches m ON (m.id_equipe_dom = je.id_equipe OR m.id_equipe_ext = je.id_equipe)
                          JOIN players_view j on j.id = je.id_joueur
                          JOIN equipes e ON e.id_equipe = je.id_equipe
-                WHERE m.id_match = $id_match
+                WHERE m.id_match = ?
                   AND je.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
                   -- Un membre non jouant (issue #325) est rattache a l'equipe
                   -- pour la piloter, pas pour y jouer : il ne doit pas etre
@@ -903,8 +910,13 @@ class MatchMgr extends Generic
                   -- fonctionnelle du flag — sans elle, on pourrait y coucher un
                   -- non-licencie.
                   AND je.est_jouant + 0 > 0
-                  AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = $id_match)";
-        $results = $this->sql_manager->execute($sql);
+                  AND je.id_joueur NOT IN (SELECT id_player FROM match_player where id_match = ?)";
+        // paramètres liés (issue #355)
+        $id_match = Generic::parse_id($id_match, 'identifiant de match');
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => $id_match),
+            array('type' => 'i', 'value' => $id_match),
+        ));
         return Players::adjust_photo_path_from_results($results);
     }
 
@@ -1541,8 +1553,10 @@ class MatchMgr extends Generic
     public function delete_match_players($id_match): void
     {
         $sql = "DELETE FROM match_player 
-            WHERE id_match = $id_match";
-        $this->sql_manager->execute($sql);
+            WHERE id_match = ?";
+        $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($id_match, 'identifiant de match')),
+        ));
 
     }
 

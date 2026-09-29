@@ -667,11 +667,14 @@ class Players extends Generic
      */
     public function getPlayersIdClub($idPlayer)
     {
+        // valeur du client via addPlayerToMyTeam : liee (issue #355)
         $sql = "SELECT j.id_club
         FROM joueurs j
-        WHERE j.id = $idPlayer";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['id_club'];
+        WHERE j.id = ?";
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($idPlayer, 'identifiant de joueur')),
+        ));
+        return $results[0]['id_club'] ?? null;
     }
 
     /**
@@ -713,6 +716,8 @@ class Players extends Generic
         }
         // filter available match players by id_match (known teams)
         if (!empty($id_match)) {
+            // interpolé deux fois plus bas : validé d'abord (issue #355)
+            $id_match = Generic::parse_id($id_match, 'identifiant de match');
             // Les membres non jouants (issue #325) ne sont pas presentables.
             $where .= " AND j.id IN (
                             SELECT id_joueur
@@ -739,6 +744,9 @@ class Players extends Generic
         if ($idTeam === NULL) {
             return false;
         }
+        // `get_players()` prend une clause toute faite : on valide avant de
+        // composer — `teamSheetPdf.php` passe `$_GET['id']` (issue #355).
+        $idTeam = Generic::parse_id($idTeam, "identifiant d'équipe");
         if (!$this->team->isTeamSheetAllowedForUser($idTeam)) {
             throw new Exception("Vous n'avez pas la permission de consulter cette équipe !");
         }
@@ -787,8 +795,11 @@ class Players extends Generic
         j.date_homologation
         FROM joueur_equipe je
         LEFT JOIN players_view j ON j.id=je.id_joueur
-        WHERE id_equipe = $id_equipe";
-        return $this->sql_manager->execute($sql);
+        WHERE id_equipe = ?";
+        // valeur du client via getLivePlayersFromTeam : liee (issue #355)
+        return $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($id_equipe, "identifiant d'équipe")),
+        ));
     }
 
     /**
