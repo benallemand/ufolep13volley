@@ -15,6 +15,9 @@ import { defineAsyncComponent } from 'vue';
  *   portent au moins une note ou un commentaire, sinon la grille affiche
  *   surtout du bruit.
  *
+ * Depuis l'issue #350, les notes vont de -- à ++ (`scale_version = 2`) ; les
+ * sondages des saisons passées restent en 0..10 et s'affichent en `n/10`.
+ *
  * La colonne « Compte » (`login`) du modèle ExtJS n'est pas reprise :
  * `get_survey` ne la renvoie pas, elle était vide.
  */
@@ -50,11 +53,11 @@ export default {
                 { key: 'surveyor', label: 'Équipe sondeuse' },
                 { key: 'surveyed', label: 'Équipe sondée' },
                 { key: 'surveyed_club', label: 'Club sondé' },
-                { key: 'on_time', label: 'Ponctualité', align: 'right' },
-                { key: 'spirit', label: "État d'esprit", align: 'right' },
-                { key: 'referee', label: 'Arbitrage', align: 'right' },
-                { key: 'catering', label: 'Apéro', align: 'right' },
-                { key: 'global', label: 'Global', align: 'right' },
+                { key: 'on_time', label: 'Ponctualité', align: 'right', format: formatRating },
+                { key: 'spirit', label: "État d'esprit", align: 'right', format: formatRating },
+                { key: 'referee', label: 'Arbitrage', align: 'right', format: formatRating },
+                { key: 'catering', label: 'Apéro', align: 'right', format: formatRating },
+                { key: 'global', label: 'Global', align: 'right', format: formatRating },
                 { key: 'comment', label: 'Commentaire' },
             ],
         };
@@ -66,9 +69,27 @@ export default {
     },
     methods: {
         isFilled(row) {
+            // Échelle -- - = + ++ (issue #350) : un sondage enregistré est une
+            // réponse, même tout à `=` (0) — ne pas le prendre pour du vide.
+            if (Number(row.scale_version) === 2) {
+                return true;
+            }
             const notes = ['on_time', 'spirit', 'referee', 'catering', 'global']
                 .reduce((total, key) => total + Number(row[key] ?? 0), 0);
             return notes > 0 || Boolean(String(row.comment ?? '').trim());
         },
     },
 };
+
+const SCALE_LABELS = { '-2': '--', '-1': '-', '0': '=', '1': '+', '2': '++' };
+
+/** Note lisible : `--`…`++` pour l'échelle actuelle, `n/10` pour l'ancienne. */
+export function formatRating(value, row) {
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+    if (Number(row.scale_version) === 2) {
+        return SCALE_LABELS[String(Number(value))] ?? String(value);
+    }
+    return `${value}/10`;
+}

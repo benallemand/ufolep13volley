@@ -1770,7 +1770,9 @@ class MatchMgr extends Generic
             array('type' => 'i', 'value' => $id_user),
         ));
         $count_results = count($results);
-        if ($count_results === 0) {
+        // Pas encore de sondage, ou un sondage de l'ancienne échelle 0..10 :
+        // on repart d'un formulaire neuf, tout à `=` (issue #350).
+        if ($count_results === 0 || (int)$results[0]['scale_version'] !== Survey::SCALE_VERSION) {
             return array(
                 'id' => null,
                 'user_id' => $id_user,
@@ -1781,6 +1783,7 @@ class MatchMgr extends Generic
                 'catering' => 0,
                 'global' => 0,
                 'comment' => null,
+                'scale_version' => Survey::SCALE_VERSION,
             );
         }
         if ($count_results > 1) {
@@ -1802,11 +1805,19 @@ class MatchMgr extends Generic
                                 $dirtyFields = null,
                                 $id = null): int|array|string|null
     {
+        // Échelle -- - = + ++ stockée en -2..+2 (issue #350).
         $ratings = ['on_time' => $on_time, 'spirit' => $spirit, 'referee' => $referee, 'catering' => $catering, 'global' => $global];
         foreach ($ratings as $field => $value) {
-            if ($value < 0 || $value > 10) {
-                throw new InvalidArgumentException("La note '$field' doit être comprise entre 0 et 10 (reçu: $value)");
+            if (filter_var($value, FILTER_VALIDATE_INT) === false
+                || (int)$value < Survey::MIN_RATING || (int)$value > Survey::MAX_RATING) {
+                throw new InvalidArgumentException("La note '$field' doit être comprise entre "
+                    . Survey::MIN_RATING . " et " . Survey::MAX_RATING . " (reçu: $value)");
             }
+            $ratings[$field] = (int)$value;
+        }
+        // une note -- doit être expliquée, pour que la commission sache quoi traiter
+        if (in_array(Survey::MIN_RATING, $ratings, true) && trim((string)$comment) === '') {
+            throw new InvalidArgumentException("Une note à -- doit être expliquée en commentaire !");
         }
         $userDetails = $this->getCurrentUserDetails();
         $id_user = $userDetails['id_user'];
@@ -1830,12 +1841,13 @@ class MatchMgr extends Generic
             'id' => $id,
             'user_id' => $id_user,
             'id_match' => $id_match,
-            'on_time' => $on_time,
-            'spirit' => $spirit,
-            'referee' => $referee,
-            'catering' => $catering,
-            'global' => $global,
+            'on_time' => $ratings['on_time'],
+            'spirit' => $ratings['spirit'],
+            'referee' => $ratings['referee'],
+            'catering' => $ratings['catering'],
+            'global' => $ratings['global'],
             'comment' => $comment,
+            'scale_version' => Survey::SCALE_VERSION,
         );
         return $this->survey->save($inputs);
     }

@@ -9,6 +9,25 @@ import MatchMenu from "./pages/components/match/MatchMenu.js";
 import MatchSummary from "./pages/components/match/MatchSummary.js";
 
 window.axios = axios;
+
+/**
+ * Échelle du sondage fair-play (issue #350) : -2..+2, stockée telle quelle
+ * (`survey.scale_version = 2`). Les sondages d'avant restent en 0..10.
+ */
+export const SURVEY_SCALE = [
+    {value: -2, label: '--', meaning: 'Très insatisfaisant : problème sérieux, à expliquer en commentaire'},
+    {value: -1, label: '-', meaning: "Insatisfaisant, en dessous de ce qu'on attend"},
+    {value: 0, label: '=', meaning: 'Conforme, rien à signaler'},
+    {value: 1, label: '+', meaning: "Bien, au-dessus de ce qu'on attend"},
+    {value: 2, label: '++', meaning: 'Excellent, remarquable'},
+];
+export const SURVEY_CRITERIA = [
+    {key: 'on_time', label: 'Ponctualité'},
+    {key: 'spirit', label: "Etat d'esprit"},
+    {key: 'referee', label: 'Arbitrage'},
+    {key: 'catering', label: 'Apéro'},
+    {key: 'global', label: 'Global'},
+];
 window.Toastify = Toastify;
 window.Notyf = Notyf;
 
@@ -22,7 +41,18 @@ createApp({
         matchData: {},
         surveyData: {},
         isLoading: false,
+        scale: SURVEY_SCALE,
+        criteria: SURVEY_CRITERIA,
     }; },
+    computed: {
+        // une note -- exige un commentaire (issue #350)
+        commentRequired() {
+            return this.criteria.some(c => Number(this.surveyData[c.key]) === -2);
+        },
+        hasComment() {
+            return !!(this.surveyData.comment && this.surveyData.comment.trim());
+        },
+    },
     async created() {
         // Contrôle d'accès côté client (remplace les vérifs PHP de survey.php)
         const user = await requireMatchAccess(this.id_match, ['admin', 'team_leader']);
@@ -64,6 +94,11 @@ createApp({
                 });
         },
         submitForm() {
+            if (this.commentRequired && !this.hasComment) {
+                // même forme qu'une réponse d'erreur axios, attendue par onError
+                onError(this, {response: {data: {message: 'Une note à -- doit être expliquée en commentaire.'}}});
+                return;
+            }
             const formData = new FormData()
             formData.append('id_match', this.surveyData.id_match)
             formData.append('on_time', this.surveyData.on_time)

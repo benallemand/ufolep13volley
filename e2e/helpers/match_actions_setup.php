@@ -107,7 +107,15 @@ try {
     }
     $_SESSION['is_admin']     = true;
     $_SESSION['login']        = 'e2e_test';
-    $_SESSION['id_user']      = 1;
+    // Le compte 1 existe dans la base de CI (seed.sql) ; une copie de prod peut
+    // ne pas l'avoir, et toute écriture rattachée au compte (sondage, #350)
+    // échouerait sur la clé étrangère : repli sur le premier admin.
+    $account = $sql->execute(
+        "SELECT id FROM comptes_acces WHERE id = 1
+         UNION ALL
+         SELECT MIN(id) FROM comptes_acces WHERE is_admin + 0 > 0
+         LIMIT 1");
+    $_SESSION['id_user']      = (int)($account[0]['id'] ?? 1);
     $_SESSION['id_equipe']    = $id_equipe;
 
     // ?role=leader : vrai responsable de l'équipe dom, sans les droits admin —
