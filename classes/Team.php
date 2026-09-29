@@ -380,6 +380,14 @@ class Team extends Generic
         if (UserManager::isTeamLeader()) {
             $inputs['id_equipe'] = $_SESSION['id_equipe'];
         }
+        // Hors admin : pas de création d'équipe, et seulement une équipe gérée —
+        // un responsable de club modifiait n'importe quelle équipe (issue #356).
+        if (!UserManager::isAdmin()) {
+            if (empty($inputs['id_equipe'])) {
+                throw new Exception("La création d'une équipe est réservée à l'administration !", 403);
+            }
+            (new UserManager())->assertCanManageTeam($inputs['id_equipe']);
+        }
         if (empty($inputs['id_equipe'])) {
             $sql = "INSERT INTO";
         } else {

@@ -139,6 +139,12 @@ class TimeSlot extends Generic
             @session_start();
             $id_equipe = $_SESSION['id_equipe'];
         }
+        // l'équipe visée, et celle du créneau modifié, doivent être gérées (issue #356)
+        $user_manager = new UserManager();
+        $user_manager->assertCanManageTeam($id_equipe);
+        if (!empty($id)) {
+            $user_manager->assertCanManageTeam($this->getTimeSlotTeamId($id));
+        }
         $bindings = array();
         $inputs = array(
             'id' => $id,
@@ -207,6 +213,20 @@ class TimeSlot extends Generic
     }
 
     /**
+     * Équipe d'un créneau existant (contrôle d'appartenance, issue #356).
+     * @throws Exception
+     */
+    private function getTimeSlotTeamId($id): int
+    {
+        $results = $this->sql_manager->execute("SELECT id_equipe FROM creneau WHERE id = ?",
+            array(array('type' => 'i', 'value' => Generic::parse_id($id, 'identifiant de créneau'))));
+        if (count($results) !== 1) {
+            throw new Exception("Créneau introuvable !", 404);
+        }
+        return (int)$results[0]['id_equipe'];
+    }
+
+    /**
      * @throws Exception
      */
     public function removeTimeSlot($id)
@@ -214,6 +234,8 @@ class TimeSlot extends Generic
         if (!UserManager::isAdmin() && !UserManager::isTeamLeader()) {
             throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
         }
+        // supprimait n'importe quel créneau (issue #356)
+        (new UserManager())->assertCanManageTeam($this->getTimeSlotTeamId($id));
         // $id vient du client — issue #270
         $sql = "DELETE FROM creneau WHERE id = ?";
         $bindings = array(array('type' => 'i', 'value' => $id));

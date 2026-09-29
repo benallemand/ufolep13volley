@@ -452,6 +452,13 @@ concerne l'équipe de la session (`isUserTeamInMatch`, admin exempté). Le sonda
 (`get_survey`/`save_survey`) et la recherche de renforts ne le faisaient pas, et
 `get_survey` sans `id_match`, public, livrait tous les sondages (#351).
 
+Même règle pour une équipe ou un joueur désignés par le client (`id_team`,
+`id_equipe`, `id`) : `UserManager::assertCanManageTeam()` (admin, équipe du
+compte ou de la session, équipe d'un club géré) et `assertCanManagePlayer()`
+(joueur d'une de ces équipes ou de leurs clubs). Sans eux, un responsable
+modifiait n'importe quel joueur — puis l'ajoutait à son équipe —, les rôles et
+créneaux d'une autre équipe, et `save_match` sans `id_match` créait un match (#356).
+
 > **Pourquoi le refus par défaut.** La première version (#268) listait les actions
 > d'administration, déduites de ce que les frontends appellent. Elle laissait donc
 > ouvertes les ~99 méthodes publiques qu'aucun frontend n'appelle — dont
