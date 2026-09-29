@@ -975,6 +975,24 @@ des deux équipes (`reinforcements_among()`). `getReinforcementPlayers` renvoie
 quand même les inéligibles, avec `reinforcement_blocked` (le motif) pour que
 l'écran explique ; `manage_match_players` les refuse (409), admin exempté.
 
+### Renforts : compléter l'équipe, mixité, demi-saison (issue #348)
+
+`match_player.id_team_reinforced` dit quelle équipe un renfort renforce (NULL
+pour un joueur de l'équipe et pour les renforts saisis avant #348). La fiche
+envoie `reinforcements[id_joueur] = id_equipe` ; un responsable ne renforce
+que son équipe. En championnat, `assert_reinforcement_rules()` impose : un
+renfort par équipe ; seulement si l'équipe compte moins de 6 (masculin) ou 4
+(féminin, mixte) joueurs jouants présents ; renfort féminin en féminin, et en
+mixte le sexe absent de l'équipe ; une fois par demi-saison (juillet-décembre,
+janvier-juin), les renforts d'avant #348 comptant aussi. Admin exempté, coupes
+non concernées.
+
+`match_players_count_view` compte les renforts **par équipe** et par sexe : en
+mixte, une renforte satisfait la mixité de son équipe (sinon celle-ci ne
+pourrait jamais signer). Un renfort sans équipe compte pour les deux, comme avant.
+⚠️ `ufolep13volley_python/sql/views/matchs_view.sql` est périmé (il lit encore
+`journees`, supprimée par #279) : ne pas le rejouer tel quel.
+
 ### Le référent d'un club, c'est son compte (issue #326)
 
 Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un

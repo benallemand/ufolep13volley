@@ -24,12 +24,18 @@ const PlayerList = {
         // Règles d'ajout — photo obligatoire (#343), éligibilité du renfort
         // (#349) : faux pour l'admin, qui corrige une fiche.
         enforceRules: {type: Boolean, default: false},
+        // id_equipe => nom, pour afficher l'équipe qu'un renfort renforce (#348)
+        teamNames: {type: Object, default: () => ({})},
     },
     emits: ['add-player', 'remove-player'],
     methods: {
         isBlocked(player) {
             return this.mode === 'add' && this.enforceRules
                 && (Number(player.has_photo) === 0 || !!player.reinforcement_blocked);
+        },
+        reinforcedTeam(player) {
+            const id = player.renfort_for ?? player.id_team_reinforced;
+            return id ? (this.teamNames[id] || '') : '';
         },
         handleClick(player) {
             this.$emit(this.mode === 'add' ? 'add-player' : 'remove-player', player);
@@ -62,6 +68,9 @@ const PlayerList = {
           <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
           <span v-if="Number(player.has_photo) === 0" class="text-sm text-red-500 ml-2" data-testid="missing-photo">
             (Photo manquante{{ isBlocked(player) ? ' : ne peut pas jouer' : '' }})
+          </span>
+          <span v-if="mode === 'remove' && reinforcedTeam(player)" class="text-sm ml-2" data-testid="renfort-for">
+            (renfort de {{ reinforcedTeam(player) }})
           </span>
           <span v-if="mode === 'add' && player.reinforcement_blocked" class="text-sm text-red-500 ml-2"
                 data-testid="reinforcement-blocked">
@@ -99,8 +108,28 @@ createApp({
         query: '',
         renforts: [],
         isAdmin: false,
+        userTeamId: null,
+        renfortTeam: null,
     }; },
     computed: {
+        teamNames() {
+            return {
+                [this.matchData.id_equipe_dom]: this.matchData.equipe_dom,
+                [this.matchData.id_equipe_ext]: this.matchData.equipe_ext,
+            };
+        },
+        // Équipes qu'on peut renforcer : les deux pour l'admin, la sienne sinon (#348).
+        renfortTeams() {
+            const teams = [
+                {id: Number(this.matchData.id_equipe_dom), name: this.matchData.equipe_dom},
+                {id: Number(this.matchData.id_equipe_ext), name: this.matchData.equipe_ext},
+            ].filter(team => team.id);
+            if (this.isAdmin) {
+                return teams;
+            }
+            const own = teams.filter(team => team.id === Number(this.userTeamId));
+            return own.length ? own : teams;
+        },
         availablePlayersDom() {
             return this.availablePlayers.filter(player => player.equipe === this.matchData.equipe_dom && !this.matchPlayers.includes(player));
         },
@@ -115,6 +144,7 @@ createApp({
             return; // redirection déjà déclenchée par la garde
         }
         this.isAdmin = !!user.is_admin;
+        this.userTeamId = user.id_equipe ? Number(user.id_equipe) : null;
         this.reloadData();
     },
     methods: {
@@ -137,6 +167,9 @@ createApp({
             return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`)
                 .then(response => {
                     this.matchData = response.data;
+                    if (!this.renfortTeam && this.renfortTeams.length) {
+                        this.renfortTeam = this.renfortTeams[0].id;
+                    }
                 })
                 .catch(error => {
                     onError(this, error)
@@ -166,6 +199,10 @@ createApp({
         signTeamSheets() {
             genericSignSheet(this, this.id_match);
         },
+        addRenfort(player) {
+            player.renfort_for = this.renfortTeam || (this.renfortTeams[0] && this.renfortTeams[0].id);
+            this.addPlayer(player);
+        },
         addPlayer(player) {
             if (!this.matchPlayers.includes(player)) {
                 this.matchPlayers.push(player);
@@ -186,6 +223,15 @@ createApp({
             formData.append('id_match', this.id_match)
             this.matchPlayers.forEach((player) => {
                 formData.append('player_ids[]', player.id)
+                // équipe renforcée (#348) ; un renfort saisi avant #348 n'en a
+                // pas : il est rattaché à l'équipe choisie dans « Renfort pour »
+                const isRenfort = player.equipe !== this.matchData.equipe_dom && player.equipe !== this.matchData.equipe_ext;
+                if (isRenfort) {
+                    const team = player.renfort_for ?? player.id_team_reinforced ?? this.renfortTeam;
+                    if (team) {
+                        formData.append(`reinforcements[${player.id}]`, team)
+                    }
+                }
             })
             this.isLoading = true;
             axios.post('/rest/action.php/matchmgr/manage_match_players', formData)
