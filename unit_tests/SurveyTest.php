@@ -13,14 +13,16 @@ class SurveyTest extends UfolepTestCase
     private function create_test_data(): void
     {
         $this->delete_test_data();
+        // `save_survey` relit le match par `matchs_view`, qui exige sa competition (#351)
+        $this->sql->execute("INSERT INTO competitions SET code_competition = 'us', libelle = 'survey tests', id_compet_maitre = 'us'");
         $this->test_user_id = $this->sql->execute(
             "INSERT INTO comptes_acces SET login = 'survey_test_user', email = 'survey_test@test.fr', password_hash = MD5('test'), is_admin = 1");
         $id_club = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 1'");
         $id_club2 = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 2'");
         $id_team1 = $this->sql->execute(
-            "INSERT INTO equipes SET code_competition = 'ut', nom_equipe = 'survey test team 1', id_club = $id_club");
+            "INSERT INTO equipes SET code_competition = 'us', nom_equipe = 'survey test team 1', id_club = $id_club");
         $id_team2 = $this->sql->execute(
-            "INSERT INTO equipes SET code_competition = 'ut', nom_equipe = 'survey test team 2', id_club = $id_club2");
+            "INSERT INTO equipes SET code_competition = 'us', nom_equipe = 'survey test team 2', id_club = $id_club2");
         $this->sql->execute(
             "INSERT INTO users_teams SET user_id = ?, team_id = ?",
             array(
@@ -31,7 +33,7 @@ class SurveyTest extends UfolepTestCase
         $this->test_match_id = $this->sql->execute(
             "INSERT INTO matches SET
                 code_match = 'SURVEY_UT001',
-                code_competition = 'ut',
+                code_competition = 'us',
                 division = '1',
                 id_equipe_dom = $id_team1,
                 id_equipe_ext = $id_team2,
@@ -51,6 +53,7 @@ class SurveyTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM clubs WHERE nom LIKE 'survey test club %'");
         $this->sql->execute("DELETE FROM creneau WHERE id_gymnase IN (SELECT id FROM gymnase WHERE nom = 'survey test court')");
         $this->sql->execute("DELETE FROM gymnase WHERE nom = 'survey test court'");
+        $this->sql->execute("DELETE FROM competitions WHERE code_competition = 'us'");
     }
 
     protected function setUp(): void

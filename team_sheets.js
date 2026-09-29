@@ -102,7 +102,9 @@ createApp({
     methods: {
         search() {
             if (this.query.length > 3) {
-                return axios.get(`/rest/action.php/matchmgr/getReinforcementPlayers?id_match=${this.id_match}&query=${this.query}`)
+                // params : la recherche est encodée (un `&` ou un `#` tronquait l'URL)
+                return axios.get('/rest/action.php/matchmgr/getReinforcementPlayers',
+                    {params: {id_match: this.id_match, query: this.query}})
                     .then(response => {
                         this.renforts = response.data;
                     })

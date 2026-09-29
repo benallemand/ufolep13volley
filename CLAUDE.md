@@ -446,6 +446,12 @@ Principe : les lectures sont publiques, sauf celles qui exposent des données
 personnelles ou scopées à la session (`getMy*`, activité, emails d'équipe) ; les
 écritures exigent une connexion ; les actions d'administration exigent le rôle.
 
+Les gardes client (`pages/components/auth/guard.js`) ne protègent rien côté API :
+chaque méthode `user` qui prend un `id_match` doit vérifier elle-même que le match
+concerne l'équipe de la session (`isUserTeamInMatch`, admin exempté). Le sondage
+(`get_survey`/`save_survey`) et la recherche de renforts ne le faisaient pas, et
+`get_survey` sans `id_match`, public, livrait tous les sondages (#351).
+
 > **Pourquoi le refus par défaut.** La première version (#268) listait les actions
 > d'administration, déduites de ce que les frontends appellent. Elle laissait donc
 > ouvertes les ~99 méthodes publiques qu'aucun frontend n'appelle — dont

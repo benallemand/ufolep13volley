@@ -918,20 +918,33 @@ class MatchMgr extends Generic
     {
         if (empty($query)) {
             throw new Exception("Merci de rechercher un joueur en commençant à taper son nom !");
-        } else {
-            $query = "j.full_name LIKE '%$query%'";
         }
+        // Les deux paramètres étaient interpolés tels quels : injection SQL
+        // ouverte à tout compte connecté (issue #351). `get_match` valide
+        // l'identifiant ; la recherche passe par un paramètre lié, avec `%`
+        // et `_` échappés pour qu'ils restent des caractères ordinaires.
+        $match = $this->get_match($id_match);
+        $this->getCurrentUserDetails();
+        if (!UserManager::isAdmin() && !$this->isUserTeamInMatch($match)) {
+            throw new Exception("Vous ne pouvez chercher un renfort que pour un match de votre équipe !");
+        }
+        $id_match = (int)$match['id_match'];
+        $like = '%' . addcslashes($query, '\\%_') . '%';
         $sql = "SELECT DISTINCT j.*
                 FROM players_view j
-                WHERE $query 
-                AND j.id NOT IN (SELECT id_player 
-                                   FROM match_player 
-                                   WHERE id_match = $id_match)
-                AND j.id NOT IN (SELECT id_joueur 
-                                 FROM joueur_equipe 
-                                 WHERE id_equipe IN (SELECT id_equipe_dom FROM matches WHERE id_match = $id_match)
-                                 OR id_equipe IN (SELECT id_equipe_ext FROM matches WHERE id_match = $id_match))";
-        $results = $this->sql_manager->execute($sql);
+                WHERE j.full_name LIKE ?
+                AND j.id NOT IN (SELECT id_player
+                                   FROM match_player
+                                   WHERE id_match = ?)
+                AND j.id NOT IN (SELECT id_joueur
+                                 FROM joueur_equipe
+                                 WHERE id_equipe IN (?, ?))";
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 's', 'value' => $like),
+            array('type' => 'i', 'value' => $id_match),
+            array('type' => 'i', 'value' => (int)$match['id_equipe_dom']),
+            array('type' => 'i', 'value' => (int)$match['id_equipe_ext']),
+        ));
         return Players::adjust_photo_path_from_results($results);
     }
 
@@ -1416,16 +1429,41 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Un sondage ne se lit ou ne s'écrit que pour un match de sa propre
+     * équipe, sauf pour un admin (issue #351).
+     * @return int l'identifiant de match, validé
+     * @throws Exception
+     */
+    private function assert_survey_allowed($id_match): int
+    {
+        $match = $this->get_match($id_match);
+        if (!UserManager::isAdmin() && !$this->isUserTeamInMatch($match)) {
+            throw new Exception("Vous ne pouvez répondre au sondage que pour un match de votre équipe !");
+        }
+        return (int)$match['id_match'];
+    }
+
+    /**
      * @throws Exception
      */
     public function get_survey($id_match = null)
     {
+        // Endpoint longtemps public : sans id_match, il livrait à n'importe
+        // qui tous les sondages, commentaires et logins compris (issue #351).
+        $userDetails = $this->getCurrentUserDetails();
         if (empty($id_match)) {
+            // liste complète : écran admin des sondages
+            if (!UserManager::isAdmin()) {
+                throw new Exception("Seul un admin peut consulter l'ensemble des sondages !");
+            }
             return $this->survey->get();
         }
-        $userDetails = $this->getCurrentUserDetails();
-        $id_user = $userDetails['id_user'];
-        $results = $this->survey->get("s.id_match = $id_match AND s.user_id = $id_user");
+        $id_match = $this->assert_survey_allowed($id_match);
+        $id_user = (int)$userDetails['id_user'];
+        $results = $this->survey->get("s.id_match = ? AND s.user_id = ?", array(
+            array('type' => 'i', 'value' => $id_match),
+            array('type' => 'i', 'value' => $id_user),
+        ));
         $count_results = count($results);
         if ($count_results === 0) {
             return array(
@@ -1467,6 +1505,21 @@ class MatchMgr extends Generic
         }
         $userDetails = $this->getCurrentUserDetails();
         $id_user = $userDetails['id_user'];
+        $id_match = $this->assert_survey_allowed($id_match);
+        // Sans ce contrôle, un `id` quelconque réécrivait le sondage d'un autre
+        // compte, en se l'attribuant au passage (issue #351).
+        if (!empty($id)) {
+            $own = $this->sql_manager->execute(
+                "SELECT id FROM survey WHERE id = ? AND user_id = ? AND id_match = ?",
+                array(
+                    array('type' => 'i', 'value' => (int)$id),
+                    array('type' => 'i', 'value' => (int)$id_user),
+                    array('type' => 'i', 'value' => $id_match),
+                ));
+            if (count($own) !== 1) {
+                throw new Exception("Ce sondage ne vous appartient pas !");
+            }
+        }
         $inputs = array(
             'dirtyFields' => $dirtyFields,
             'id' => $id,
