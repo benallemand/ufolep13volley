@@ -273,6 +273,24 @@ class Generic
     }
 
     /**
+     * Un identifiant reçu de l'extérieur, en entier — ou une exception.
+     * `is_numeric` refuse `12 OR 1=1`, là où un cast `(int)` seul le
+     * ramènerait silencieusement à 12 (issue #355).
+     *
+     * @throws Exception
+     */
+    public static function parse_id(mixed $id, string $label = 'identifiant'): int
+    {
+        if (is_int($id)) {
+            return $id;
+        }
+        if (!is_string($id) || !preg_match('/^\s*\d+\s*$/', $id)) {
+            throw new Exception(ucfirst($label) . " invalide !");
+        }
+        return (int)trim($id);
+    }
+
+    /**
      * @param $inputs
      * @return array|int|string|null
      * @throws Exception

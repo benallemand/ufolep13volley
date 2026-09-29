@@ -136,7 +136,9 @@ class HallOfFame extends Generic
         // Récupérer le libellé de la compétition
         require_once __DIR__ . '/Competition.php';
         $competition_manager = new Competition();
-        $competitions = $competition_manager->getCompetitions("c.code_competition = '$code_competition'");
+        // paramètre lié (issue #355)
+        $competitions = $competition_manager->getCompetitions("c.code_competition = ?",
+            array(array('type' => 's', 'value' => (string)$code_competition)));
         if (count($competitions) === 0) {
             throw new Exception("Compétition non trouvée pour le code: $code_competition");
         }

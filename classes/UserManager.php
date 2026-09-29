@@ -470,9 +470,12 @@ class UserManager extends Generic
         $sql = "SELECT 
         ca.login AS login
         FROM comptes_acces ca
-        WHERE ca.id = $idUser";
-        $results = $this->sql_manager->execute($sql);
-        return $results[0]['login'];
+        WHERE ca.id = ?";
+        // valeur du client via usermanager/setAdmin : liee (issue #355)
+        $results = $this->sql_manager->execute($sql, array(
+            array('type' => 'i', 'value' => Generic::parse_id($idUser, 'identifiant de compte')),
+        ));
+        return $results[0]['login'] ?? null;
     }
 
     public static function is_connected(): bool

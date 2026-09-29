@@ -40,10 +40,10 @@ class Competition extends Generic
      * @return array
      * @throws Exception
      */
-    public function getCompetitions(string $query = "1=1"): array
+    public function getCompetitions(string $query = "1=1", array $bindings = array()): array
     {
         $sql = $this->getSql($query);
-        return $this->sql_manager->execute($sql);
+        return $this->sql_manager->execute($sql, $bindings);
     }
 
     /**
@@ -371,9 +371,9 @@ class Competition extends Generic
         if (empty($ids)) {
             throw new Exception("Aucune compétition sélectionnée !");
         }
-        $ids = explode(',', $ids);
-        foreach ($ids as $id) {
-            $competitions = $this->getCompetitions("c.id = $id");
+        // ids du client : normalisés en entiers (issue #355)
+        foreach (Generic::parse_id_list($ids) as $id) {
+            $competitions = $this->getCompetitions("c.id = ?", array(array('type' => 'i', 'value' => $id)));
             if (count($competitions) !== 1) {
                 throw new Exception("Une seule compétition doit être trouvée !");
             }

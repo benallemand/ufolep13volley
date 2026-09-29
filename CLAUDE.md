@@ -476,6 +476,19 @@ positionnel). Une méthode où `query` est un **terme de recherche** lié ou éc
 se déclare dans `SEARCH_TERM_PARAMETERS`. `RawSqlGuardTest` parcourt toutes les
 actions de `rest/access.php`.
 
+**Helpers internes** (`getTeamName`, `getIdClubFromIdTeam`, `getPlayersIdClub`,
+`getUserLogin`…) : ils lient leurs paramètres **eux-mêmes**, via
+`Generic::parse_id()` — un appelant qui leur passe une valeur du client ne doit
+pas avoir à y penser (#355). `parse_id` refuse `12 OR 1=1`, qu'un `(int)` seul
+ramènerait silencieusement à 12.
+
+**Erreurs renvoyées au client** : jamais de message MySQL brut. Sans
+`mysqli_report()` explicite, PHP 8 lève `mysqli_sql_exception` (les `=== FALSE`
+de `SqlManager` ne servent donc pas) ; `rest/error_response.php` la traduit :
+doublon (1062) et intégrité (1451/1452) en 409 reformulés, le reste en 500
+générique avec une référence retrouvable dans le log serveur. Un code
+d'exception hors 200-599 (un errno) devient 500.
+
 **Chemins de fichiers reçus du client** : jamais de `readfile`/`file_get_contents`
 direct. `photo/get_photo`, public, servait tout fichier du site — `.env` et code
 source compris (#352). Résoudre par `realpath`, exiger un répertoire autorisé et une
