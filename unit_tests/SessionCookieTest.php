@@ -50,6 +50,8 @@ class SessionCookieTest extends TestCase
         // Le bootstrap lui-même, et la table d'autorisations qui est une donnée.
         'bootstrap.php' => 'c\'est le bootstrap',
         'rest/access.php' => 'tableau de configuration, pas un point d\'entrée',
+        'rest/raw_sql_guard.php' => 'fonctions incluses par rest/action.php (#354)',
+        'rest/error_response.php' => 'fonctions incluses par rest/action.php (#355)',
     ];
 
     /** Fichiers PHP joignables par le web, hors classes et helpers. */
