@@ -203,6 +203,9 @@ export default {
                 (dépôt complet non traité par affiligue) ou "validée" (dépôt complet traité par affiligue).
               </li>
               <li>La fiche équipe doit faire apparaitre les joueurs présents avec leur photo</li>
+              <li>La photo est obligatoire : un joueur sans photo ne peut pas être inscrit sur la fiche équipe,
+                renfort compris.
+              </li>
               <li>La signature des responsables atteste de la conformité des joueurs présents.</li>
               <li>Tout manquement peut être sanctionné.</li>
             </ul>

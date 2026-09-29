@@ -25,6 +25,7 @@
                             :team-name="matchData.equipe_dom"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
                             mode="add"
+                            :block-missing-photo="!isAdmin"
                             @add-player="addPlayer">
                     </player-list>
 
@@ -33,6 +34,7 @@
                             :team-name="matchData.equipe_ext"
                             :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
                             mode="add"
+                            :block-missing-photo="!isAdmin"
                             @add-player="addPlayer">
                     </player-list>
                     <div class="border border-2 border-black">
@@ -53,6 +55,7 @@
                                 team-name="Renfort"
                                 :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
                                 mode="add"
+                                :block-missing-photo="!isAdmin"
                                 @add-player="addPlayer">
                         </player-list>
                     </div>

@@ -951,6 +951,19 @@ inset-0`, computed `scorerFullScreen`) et remplace la page ordinaire :
 > connecté pourrait alors lister les photos de n'importe quelle équipe — il
 > reste sans PII (issue #228). Les membres **non jouants** (#325) en sont exclus.
 
+### Pas de photo, pas de match (issue #343)
+
+`MatchMgr::manage_match_players` refuse (409, joueurs nommés) tout présent ou
+renfort **sans photo enregistrée**, avant d'effacer quoi que ce soit : un refus
+laisse la fiche intacte. L'admin est exempté pour corriger une fiche.
+
+« Sans photo » veut dire **sans chemin en base** (`Players::has_photo_path`), pas
+« fichier absent du disque » : la CI n'a aucun fichier photo et la base de dev
+n'en a qu'une petite partie, un contrôle sur le fichier y bloquerait tout le
+monde. `adjust_photo_path_from_results` expose `has_photo` (0/1) avant de
+substituer l'image de repli, qui reste un simple affichage. `team_sheets.html`
+grise le bouton d'ajout d'un joueur sans photo (sauf pour l'admin).
+
 ### Le référent d'un club, c'est son compte (issue #326)
 
 Depuis que la création des comptes d'équipe est déléguée au compte rattaché à un

@@ -21,9 +21,14 @@ const PlayerList = {
         // 'add' : bouton vert "+" qui emet add-player
         // 'remove' : bouton rouge "poubelle" qui emet remove-player
         mode: {type: String, default: 'add'},
+        // Pas de photo, pas de match (issue #343) — faux pour l'admin, qui corrige.
+        blockMissingPhoto: {type: Boolean, default: false},
     },
     emits: ['add-player', 'remove-player'],
     methods: {
+        isBlocked(player) {
+            return this.mode === 'add' && this.blockMissingPhoto && Number(player.has_photo) === 0;
+        },
         handleClick(player) {
             this.$emit(this.mode === 'add' ? 'add-player' : 'remove-player', player);
         },
@@ -53,10 +58,15 @@ const PlayerList = {
                         {{ player.prenom }} {{ player.nom }}
                     </span>
           <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>
+          <span v-if="Number(player.has_photo) === 0" class="text-sm text-red-500 ml-2" data-testid="missing-photo">
+            (Photo manquante{{ isBlocked(player) ? ' : ne peut pas jouer' : '' }})
+          </span>
           <span
               v-if="player.est_actif === 1 && player.date_reception && player.date_homologation && compareDates(player.date_reception, player.date_homologation)"
               class="text-sm text-red-500 ml-2">(Non homologué le jour du match)</span>
           <button v-if="!isSigned"
+                  :disabled="isBlocked(player)"
+                  :title="isBlocked(player) ? 'Photo manquante : à ajouter depuis la page Joueurs' : ''"
                   class="btn ml-auto"
                   :class="{'btn-success': mode === 'add', 'btn-error': mode === 'remove'}"
                   @click="handleClick(player)">
@@ -82,6 +92,7 @@ createApp({
         isLoading: false,
         query: '',
         renforts: [],
+        isAdmin: false,
     }; },
     computed: {
         availablePlayersDom() {
@@ -97,6 +108,7 @@ createApp({
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }
+        this.isAdmin = !!user.is_admin;
         this.reloadData();
     },
     methods: {
