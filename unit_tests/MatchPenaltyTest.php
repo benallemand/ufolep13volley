@@ -28,7 +28,7 @@ class MatchPenaltyTest extends UfolepTestCase
         $this->sql->execute("INSERT INTO competitions SET code_competition = 'us', libelle = 'issue345 coupe', id_compet_maitre = 'us'");
         $id_club = $this->sql->execute("INSERT INTO clubs SET nom = 'issue345 club'");
         $this->id_court = $this->sql->execute("INSERT INTO gymnase SET nom = 'issue345 court'");
-        foreach (array('A' => 'm', 'B' => 'm', 'C' => 'us', 'D' => 'us') as $k => $code) {
+        foreach (array('A' => 'm', 'B' => 'm', 'C' => 'us', 'D' => 'us', 'E' => 'm', 'F' => 'm') as $k => $code) {
             $this->team[$k] = $this->sql->execute("INSERT INTO equipes SET code_competition = ?, nom_equipe = ?, id_club = ?",
                 array(array('type' => 's', 'value' => $code), array('type' => 's', 'value' => "issue345 $k"),
                       array('type' => 'i', 'value' => $id_club)));
@@ -36,6 +36,15 @@ class MatchPenaltyTest extends UfolepTestCase
                 array(array('type' => 's', 'value' => $code), array('type' => 's', 'value' => $code === 'm' ? '95' : '1'),
                       array('type' => 'i', 'value' => $this->team[$k])));
         }
+        // Match parasite, hors des matchs de test : comme ceux de la base de CI,
+        // il est pénalisé dans la même passe et ne doit fausser aucun test.
+        $this->sql->execute(
+            "INSERT INTO matches SET code_match = 'N345', code_competition = 'm', division = '95',
+                id_equipe_dom = ?, id_equipe_ext = ?, id_gymnasium = ?,
+                date_reception = ?, date_original = ?, match_status = 'CONFIRMED'",
+            array(array('type' => 'i', 'value' => $this->team['E']), array('type' => 'i', 'value' => $this->team['F']),
+                  array('type' => 'i', 'value' => $this->id_court),
+                  array('type' => 's', 'value' => $this->days_ago(3)), array('type' => 's', 'value' => $this->days_ago(3))));
         $this->connect_as_admin();
     }
 
@@ -60,8 +69,8 @@ class MatchPenaltyTest extends UfolepTestCase
 
     private function delete_test_data(): void
     {
-        $this->sql->execute("DELETE FROM match_penalties WHERE id_match IN (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%')");
-        $this->sql->execute("DELETE FROM matches WHERE code_match LIKE 'ISS345_%'");
+        $this->sql->execute("DELETE FROM match_penalties WHERE id_match IN (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%' OR code_match = 'N345')");
+        $this->sql->execute("DELETE FROM matches WHERE code_match LIKE 'ISS345_%' OR code_match = 'N345'");
         $this->sql->execute("DELETE FROM activity WHERE comment LIKE '%ISS345_%'");
         $this->sql->execute("DELETE FROM classements WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE nom_equipe LIKE 'issue345 %')");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'issue345 %'");
@@ -83,6 +92,17 @@ class MatchPenaltyTest extends UfolepTestCase
             array(array('type' => 'i', 'value' => $this->team[$k])))[0]['penalite'];
     }
 
+    /**
+     * Pénalités posées sur les matchs de test. On ne compte jamais le total
+     * renvoyé par apply_unsigned_sheet_penalties() : la base de CI contient
+     * d'autres matchs récents et non signés, pénalisés dans la même passe.
+     */
+    private function fixture_penalties(): int
+    {
+        return (int)$this->sql->execute("SELECT COUNT(*) AS n FROM match_penalties WHERE id_match IN
+                                         (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%')")[0]['n'];
+    }
+
     private function days_ago(int $days): string
     {
         return date('Y-m-d', strtotime("-$days days"));
@@ -92,7 +112,8 @@ class MatchPenaltyTest extends UfolepTestCase
     {
         // l'équipe à domicile a signé : les deux sont pénalisées quand même
         $this->match('m', 'A', 'B', $this->days_ago(3), 1, 0);
-        self::assertSame(2, $this->penalty->apply_unsigned_sheet_penalties($this->since));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        self::assertSame(2, $this->fixture_penalties());
         self::assertSame(1, $this->penalite('A'));
         self::assertSame(1, $this->penalite('B'));
         $rows = $this->sql->execute("SELECT reason FROM match_penalties WHERE id_match IN
@@ -105,7 +126,8 @@ class MatchPenaltyTest extends UfolepTestCase
     {
         $this->match('m', 'A', 'B', $this->days_ago(3));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(0, $this->penalty->apply_unsigned_sheet_penalties($this->since));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        self::assertSame(2, $this->fixture_penalties());
         self::assertSame(1, $this->penalite('A'));
     }
 
@@ -113,7 +135,8 @@ class MatchPenaltyTest extends UfolepTestCase
     {
         $this->match('m', 'A', 'B', date('Y-m-d'));                // aujourd'hui : délai non écoulé
         $this->match('m', 'A', 'B', $this->days_ago(3), 1, 1);     // signée des deux côtés
-        self::assertSame(0, $this->penalty->apply_unsigned_sheet_penalties($this->since));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        self::assertSame(0, $this->fixture_penalties());
         self::assertSame(0, $this->penalite('A'));
     }
 
@@ -123,7 +146,9 @@ class MatchPenaltyTest extends UfolepTestCase
         $this->match('m', 'A', 'B', $this->days_ago(3), 0, 0, 'CONFIRMED', 1);   // certifié
         $this->match('us', 'C', 'D', $this->days_ago(3));                        // coupe
         $this->match('m', 'A', 'B', $this->days_ago(60));                        // avant la mise en service
-        self::assertSame(0, $this->penalty->apply_unsigned_sheet_penalties($this->since));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        self::assertSame(0, $this->fixture_penalties());
+        self::assertSame(0, $this->penalite('A') + $this->penalite('C'));
     }
 
     public function test_la_penalite_reste_apres_une_signature_tardive(): void
