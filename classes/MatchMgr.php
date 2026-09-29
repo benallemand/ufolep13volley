@@ -491,30 +491,91 @@ class MatchMgr extends Generic
                                $set_5_ext,
                                $referee,
                                $note,
-                               $dirtyFields = null)
+                               $dirtyFields = null,
+                               $forfeit = null)
     {
         // Sans id_match, save() sautait is_match_update_allowed et faisait un
         // INSERT : tout compte connecté créait un match (issue #356).
         if (empty($id_match)) {
             throw new Exception("Match non précisé !", 400);
         }
-        $this->save(array(
+        $sets = array(
+            'set_1_dom' => $set_1_dom, 'set_2_dom' => $set_2_dom, 'set_3_dom' => $set_3_dom,
+            'set_4_dom' => $set_4_dom, 'set_5_dom' => $set_5_dom,
+            'set_1_ext' => $set_1_ext, 'set_2_ext' => $set_2_ext, 'set_3_ext' => $set_3_ext,
+            'set_4_ext' => $set_4_ext, 'set_5_ext' => $set_5_ext,
+        );
+        if (!empty($forfeit)) {
+            // Forfait déclaré : le score est écrit par le serveur, et aucune
+            // fiche équipe n'est exigée — l'équipe absente n'en a pas (#344).
+            $sets = self::forfeit_sets($forfeit);
+        } elseif (self::has_score($sets)) {
+            $this->assert_team_sheets_signed($id_match);
+        }
+        $this->save(array_merge(array(
             'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
             'code_match' => $code_match,
-            'set_1_dom' => $set_1_dom,
-            'set_2_dom' => $set_2_dom,
-            'set_3_dom' => $set_3_dom,
-            'set_4_dom' => $set_4_dom,
-            'set_5_dom' => $set_5_dom,
-            'set_1_ext' => $set_1_ext,
-            'set_2_ext' => $set_2_ext,
-            'set_3_ext' => $set_3_ext,
-            'set_4_ext' => $set_4_ext,
-            'set_5_ext' => $set_5_ext,
+        ), $sets, array(
             'referee' => $referee,
             'note' => $note,
-        ));
+        )));
+    }
+
+    /**
+     * Score d'un forfait : 25-0 sur trois sets pour l'équipe présente.
+     * @param string $forfeit côté qui déclare forfait : 'dom' ou 'ext'
+     * @throws Exception
+     */
+    public static function forfeit_sets($forfeit): array
+    {
+        if (!in_array($forfeit, array('dom', 'ext'), true)) {
+            throw new Exception("Forfait invalide : préciser l'équipe forfait !", 400);
+        }
+        $present = $forfeit === 'dom' ? 'ext' : 'dom';
+        $sets = array();
+        foreach (array(1, 2, 3, 4, 5) as $s) {
+            // colonnes NOT NULL : un set non joué vaut 0
+            $sets["set_{$s}_$forfeit"] = 0;
+            $sets["set_{$s}_$present"] = $s <= 3 ? 25 : 0;
+        }
+        return $sets;
+    }
+
+    /** Au moins un set saisi ? Enregistrer seulement l'arbitrage ou un commentaire reste libre. */
+    private static function has_score(array $sets): bool
+    {
+        foreach ($sets as $value) {
+            if ($value !== null && $value !== '' && (int)$value !== 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Le score ne se saisit qu'une fois les deux fiches équipes signées
+     * (issue #344). L'admin corrige un score sans condition.
+     * @throws Exception 409 en nommant la ou les fiches manquantes
+     */
+    public function assert_team_sheets_signed($id_match): void
+    {
+        if (UserManager::isAdmin()) {
+            return;
+        }
+        $match = $this->get_match($id_match);
+        $missing = array();
+        if ((int)$match['is_sign_team_dom'] !== 1) {
+            $missing[] = $match['equipe_dom'];
+        }
+        if ((int)$match['is_sign_team_ext'] !== 1) {
+            $missing[] = $match['equipe_ext'];
+        }
+        if (!empty($missing)) {
+            throw new Exception("Le score ne peut être saisi qu'après la signature des fiches équipes. "
+                . "Fiche non signée : " . implode(', ', $missing) . ". "
+                . "En cas de forfait, utiliser « Déclarer forfait ».", 409);
+        }
     }
 
     /**

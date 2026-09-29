@@ -1008,6 +1008,20 @@ club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
 > ni droit, ni indicateur, ni requête. C'était un troisième marqueur de ce que
 > porte `users_clubs`.
 
+### Score saisi après les fiches équipes, forfait déclaré (issue #344)
+
+`MatchMgr::save_match` (responsables) refuse un score (409, fiches manquantes
+nommées) tant que les **deux** fiches équipes (`is_sign_team_dom/ext`) ne sont
+pas signées — `assert_team_sheets_signed()`, admin exempté. Enregistrer seulement
+l'arbitrage ou le commentaire, sans set saisi, reste libre. La saisie en direct
+(`LiveScore::saveToMatch`) applique le même verrou.
+
+**Forfait** : paramètre `forfeit` (`dom` | `ext`, l'équipe forfait), bouton
+« Déclarer forfait » de `match.html`. Le serveur écrit lui-même 25-0 sur trois sets
+(`MatchMgr::forfeit_sets`) et n'exige **aucune** fiche équipe : l'équipe
+présente ne pourrait pas signer la sienne, `count_status` signalant la fiche vide
+de l'absente. Les colonnes de sets sont `NOT NULL` : un set non joué vaut 0.
+
 ### Toute la base est en utf8mb4 (issue #334)
 
 Un responsable de club n'a pas pu renommer son équipe : le formulaire renvoyait

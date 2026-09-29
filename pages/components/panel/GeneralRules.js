@@ -157,6 +157,10 @@ export default {
                 sanctions.
               </li>
               <li>L’équipe perdante doit vérifier la saisie, sinon elle doit la faire dans les 10 jours.</li>
+              <li>Le score ne peut être saisi qu’après la signature des deux fiches équipes. En cas de forfait, le
+                forfait est déclaré sur la page du match : le score 25-0 sur trois sets est alors enregistré pour
+                l’équipe présente, sans fiche équipe à signer.
+              </li>
               <li>L’idée est de donner un maximum de visibilité des résultats aux autres équipes engagées dans la
                 compétition.
               </li>
