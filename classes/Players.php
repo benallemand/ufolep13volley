@@ -1372,6 +1372,14 @@ class Players extends Generic
     }
 
     /**
+     * Photo enregistrée en base (issue #343) : ce qui autorise à jouer.
+     */
+    public static function has_photo_path(?string $path_photo): bool
+    {
+        return trim((string)$path_photo) !== '';
+    }
+
+    /**
      * @param int|array|string|null $results
      * @return array|int|string|null
      */
@@ -1396,6 +1404,10 @@ class Players extends Generic
     {
         $existants = array();
         foreach ($results as $index => $result) {
+            // Photo enregistrée en base (issue #343) : c'est elle qui autorise à
+            // jouer, indépendamment de la présence du fichier sur ce serveur —
+            // l'image de remplacement ci-dessous n'est qu'un affichage.
+            $results[$index]['has_photo'] = self::has_photo_path($result['path_photo'] ?? null) ? 1 : 0;
             $results[$index]['path_photo'] = Generic::accentedToNonAccented($result['path_photo']);
             $results[$index]['path_photo_low'] = Generic::accentedToNonAccented($result['path_photo_low']);
             if (($results[$index]['path_photo'] == '')

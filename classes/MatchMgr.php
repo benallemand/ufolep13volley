@@ -1240,6 +1240,10 @@ class MatchMgr extends Generic
         if (empty($id_match)) {
             throw new Exception("id_match vide !");
         }
+        // Vérifié AVANT d'effacer les présents : un refus laisse la fiche intacte.
+        $this->assert_players_have_photo(array_merge(
+            is_array($player_ids) ? $player_ids : array(),
+            empty($reinforcement_player_id) ? array() : array($reinforcement_player_id)));
         $this->delete_match_players($id_match);
         if (!empty($reinforcement_player_id)) {
             $player_ids[] = $reinforcement_player_id;
@@ -1257,6 +1261,37 @@ class MatchMgr extends Generic
             $match = $this->get_match($id_match);
             $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
             $this->addActivity($comment);
+        }
+    }
+
+    /**
+     * Pas de photo, pas de match (issue #343) : un joueur sans photo
+     * enregistrée ne peut pas être présent, renfort compris. L'admin garde
+     * la main pour corriger une fiche.
+     * @throws Exception 409 en nommant les joueurs concernés
+     */
+    private function assert_players_have_photo(array $player_ids): void
+    {
+        if (UserManager::isAdmin()) {
+            return;
+        }
+        $ids = Generic::parse_id_list($player_ids);
+        if (empty($ids)) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $rows = $this->sql_manager->execute(
+            "SELECT id, full_name, path_photo FROM players_view WHERE id IN ($placeholders)",
+            array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids));
+        $missing = array();
+        foreach ($rows as $row) {
+            if (!Players::has_photo_path($row['path_photo'])) {
+                $missing[] = $row['full_name'];
+            }
+        }
+        if (!empty($missing)) {
+            throw new Exception("Photo manquante : " . implode(', ', $missing)
+                . ". Un joueur sans photo ne peut pas jouer : ajoutez sa photo avant de l'inscrire sur la fiche.", 409);
         }
     }
 
