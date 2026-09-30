@@ -1256,6 +1256,30 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   remplacés : n'envoyer que le champ modifié viderait les autres colonnes.
   Un appel par ligne, arrêt à la première erreur en nommant la ligne.
 
+### Grilles d'administration : en-tête figé (#386)
+
+La grille occupe la hauteur de la fenêtre et **défile dans sa propre zone**
+(`data-testid="grid-scroller"`), pas la page. Un `thead` ne peut coller qu'à
+son conteneur défilant, et le défilement horizontal des tables larges en impose
+un.
+
+- **lg et plus** : titre, compteur et actions (`grid-toolbar`) restent en haut ;
+  filtres de l'écran, recherche et table défilent dessous, et le `thead` (ligne
+  des filtres de colonnes comprise) colle en haut de la zone.
+- **Plus petit** : c'est la racine (`grid-root`) qui défile ; seul le `thead`
+  colle.
+- Les blocs au-dessus de la table portent `sticky left-0`, sinon ils suivraient
+  le défilement horizontal.
+- Le tiroir de détail (#308) est **frère** de la zone défilante, pas enfant : il
+  ne défile pas avec les lignes et ne recouvre pas la barre d'outils.
+- **Pas de `table-pin-rows`** (chaque ligne collerait à top 0, la ligne des
+  filtres couvrirait les titres) ni de bordure entre les lignes du `thead` : en
+  `border-collapse`, la bordure appartient à la table, ne suit pas l'en-tête
+  collé, et les lignes transparaissaient par cette fente. Le trait sous l'en-tête
+  est une ombre.
+- Un test E2E qui fait défiler une grille agit sur `grid-scroller`
+  (`scrollHeight`, `scrollTo`), plus sur `document.body`.
+
 ### Inscriptions en cours, publiques en page d'accueil (issue #379)
 
 `register/getPublicRegistrations` (**public**) alimente `PublicRegistrations.js`

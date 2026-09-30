@@ -37,16 +37,11 @@ export default {
     emits: ['close', 'prev', 'next', 'edit'],
     template: `
       <!--
-        Deux boites : celle-ci se contente d'occuper la colonne de droite sur
-        toute la hauteur du tableau, et le panneau qu'elle contient COLLE au
-        defilement.
-
-        Sans ca, le panneau s'etirait jusqu'en bas du tableau : avec « tout »
-        par page et 3 650 lignes, ses boutons d'action se retrouvaient a des
-        milliers de pixels du regard. Un panneau simplement fixe dans la fenetre
-        reglerait le probleme mais recouvrirait la barre d'outils en haut de
-        page ; colle dans une boite qui commence sous elle, il ne peut pas
-        remonter plus haut qu'elle.
+        Sur desktop, cette boite occupe la droite de la ZONE DEFILANTE de la
+        grille, dont elle est soeur et non enfant (#386) : elle ne defile pas
+        avec les lignes, et commence sous la barre d'outils, qu'elle ne peut
+        donc pas recouvrir. Le panneau est plafonne a sa hauteur : avec « tout »
+        par page et 3 650 lignes, ses boutons d'action restent a portee (#308).
       -->
       <aside class="fixed inset-x-0 bottom-0 top-auto z-30
                     lg:absolute lg:inset-x-auto lg:inset-y-0 lg:right-0 lg:w-[420px]"
@@ -55,7 +50,7 @@ export default {
              :aria-label="title">
       <div ref="panel"
            class="max-h-[85vh] rounded-t-2xl border-t border-base-300
-                  lg:sticky lg:top-2 lg:max-h-[calc(100vh-1rem)] lg:rounded-none lg:rounded-l-box
+                  lg:max-h-full lg:rounded-none lg:rounded-l-box
                   lg:border-t-0 lg:border-l
                   bg-base-100 shadow-2xl flex flex-col overflow-hidden">
 
