@@ -27,11 +27,9 @@ class LimitDate extends Generic
         $code_competition,
         $date_limite,
         $id_date = null,
-        $dirtyFields = null,
     )
     {
         $inputs = array(
-            'dirtyFields' => $dirtyFields,
             'id_date' => $id_date,
             'code_competition' => $code_competition,
             'date_limite' => $date_limite,
@@ -51,7 +49,6 @@ class LimitDate extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id_date':
-                case 'dirtyFields':
                     break;
                 default:
                     $bindings[] = array('type' => 's', 'value' => $value);

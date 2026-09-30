@@ -139,7 +139,6 @@ export default {
                     case 'telephone2':
                     case 'email2':
                     case 'id':
-                    case 'dirtyFields':
                         formData.append(key, this.form[key]);
                         break;
                 }

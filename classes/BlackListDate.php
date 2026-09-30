@@ -13,12 +13,11 @@ class BlackListDate extends Generic
     /**
      * @throws Exception
      */
-    public function saveBlacklistDate($closed_date, $id = null, $dirtyFields = null): int|array|string|null
+    public function saveBlacklistDate($closed_date, $id = null): int|array|string|null
     {
         $inputs = array(
             'closed_date' => $closed_date,
             'id' => $id,
-            'dirtyFields' => $dirtyFields,
         );
         return $this->save($inputs);
     }
@@ -40,7 +39,6 @@ class BlackListDate extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'closed_date':
                     $bindings[] = array('type' => 's', 'value' => $value);

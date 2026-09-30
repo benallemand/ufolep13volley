@@ -102,8 +102,7 @@ class CalendarEvents extends Generic
         $season = '',
         $label = '',
         $date_start = null,
-        $date_end = null,
-        $dirtyFields = null
+        $date_end = null
     ): void
     {
         @session_start();

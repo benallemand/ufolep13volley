@@ -27,7 +27,6 @@ class BlackListTeams extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'id_team_1':
                 case 'id_team_2':
@@ -69,11 +68,10 @@ class BlackListTeams extends Generic
     /**
      * @throws Exception
      */
-    public function saveBlacklistTeams($id_team_1, $id_team_2, $dirtyFields=null, $id=null) {
+    public function saveBlacklistTeams($id_team_1, $id_team_2, $id=null) {
         $inputs = array(
             'id_team_1' => $id_team_1,
             'id_team_2' => $id_team_2,
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
         return $this->save($inputs);

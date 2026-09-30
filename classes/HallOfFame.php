@@ -76,8 +76,7 @@ class HallOfFame extends Generic
         $title,
         $team_name,
         $period,
-        $league,
-        $dirtyFields = null
+        $league
     ): int|array|string|null
     {
         $inputs = array(
@@ -86,7 +85,6 @@ class HallOfFame extends Generic
             'team_name' => $team_name,
             'period' => $period,
             'league' => $league,
-            'dirtyFields' => $dirtyFields,
         );
         return $this->save($inputs);
     }
@@ -103,7 +101,6 @@ class HallOfFame extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 default:
                     $bindings[] = array('type' => 's', 'value' => $value);

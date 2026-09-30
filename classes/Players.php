@@ -175,8 +175,7 @@ class Players extends Generic
         $email = null,
         $telephone2 = null,
         $email2 = null,
-        $id = null,
-        $dirtyFields = null): array|int|string|null
+        $id = null): array|int|string|null
     {
         $parameters = array(
             'id_team' => $id_team,
@@ -192,7 +191,6 @@ class Players extends Generic
             'telephone2' => $telephone2,
             'email2' => $email2,
             'id' => $id,
-            'dirtyFields' => $dirtyFields,
         );
         // modifier un joueur existant : il doit être dans vos équipes ou votre club —
         // sinon n'importe quel joueur était modifié, puis ajouté à l'équipe (issue #356)
@@ -283,12 +281,10 @@ class Players extends Generic
         $telephone2 = null,
         $email2 = null,
         $id_team = null,
-        $dirtyFields = null,
         $id = null,
     )
     {
         $inputs = array(
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
             'id_team' => $id_team,
             'prenom' => $prenom,
@@ -331,8 +327,7 @@ class Players extends Generic
         foreach ($inputs as $key => $value) {
             if (in_array($key, array(
                 'id',
-                'id_team',
-                'dirtyFields'))) {
+                'id_team'))) {
                 continue;
             }
             if (empty($value) || $value == 'null') {
@@ -372,6 +367,7 @@ class Players extends Generic
             );
             $sql .= " WHERE id = ?";
         }
+        $before = $this->row_before($inputs['id'] ?? null, 'joueurs', 'id');
         $newId = $this->sql_manager->execute($sql, $bindings);
         if (UserManager::isTeamLeader()) {
             if (!$this->addPlayerToMyTeam(!empty($newId) ? $newId : $inputs['id'])) {
@@ -384,16 +380,9 @@ class Players extends Generic
             $comment = "Creation d'un nouveau joueur : $firstName $name";
             $this->addActivity($comment);
         } else {
-            $dirtyFields = filter_input(INPUT_POST, 'dirtyFields');
-            if ($dirtyFields) {
-                $fieldsArray = explode(',', $dirtyFields);
-                foreach ($fieldsArray as $fieldName) {
-                    $fieldValue = filter_input(INPUT_POST, $fieldName);
-                    $firstName = $inputs['prenom'];
-                    $name = $inputs['nom'];
-                    $comment = "$firstName $name : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-                    $this->addActivity($comment);
-                }
+            $activity = $this->build_activity($inputs['prenom'] . ' ' . $inputs['nom'], $before, $inputs);
+            if ($activity !== null) {
+                $this->addActivity($activity);
             }
         }
         $this->savePhoto($inputs, $newId);
@@ -551,7 +540,7 @@ class Players extends Generic
     /**
      * @throws Exception
      */
-    public function addPlayersToTeam($id_players, $id_team, $dirtyFields = null)
+    public function addPlayersToTeam($id_players, $id_team)
     {
         if (!UserManager::isAdmin()) {
             return false;
@@ -571,7 +560,7 @@ class Players extends Generic
     /**
      * @throws Exception
      */
-    public function addPlayersToClub($id_players, $id_club, $dirtyFields = null)
+    public function addPlayersToClub($id_players, $id_club)
     {
         if (!UserManager::isAdmin()) {
             if (!UserManager::isTeamLeader()) {
@@ -1256,7 +1245,6 @@ class Players extends Generic
             $newClubId = $this->club->save(array(
                 'nom' => $licence['club'],
                 'affiliation_number' => $licence['licence_club'],
-                'dirtyFields' => null,
             ));
             $cur_club = array('id' => $newClubId);
         }

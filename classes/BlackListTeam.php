@@ -13,7 +13,6 @@ class BlackListTeam extends Generic
 
     public function saveBlacklistTeam($id_team,
                                       $closed_date,
-                                      $dirtyFields = null,
                                       $id = null)
     {
         // Un responsable de club ne peut déclarer une indisponibilité que pour
@@ -27,7 +26,6 @@ class BlackListTeam extends Generic
         $inputs = array();
         $inputs['id_team'] = $id_team;
         $inputs['closed_date'] = $closed_date;
-        $inputs['dirtyFields'] = $dirtyFields;
         $inputs['id'] = $id;
         $this->save($inputs);
     }
@@ -81,7 +79,6 @@ class BlackListTeam extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'closed_date':
                     $bindings[] = array('type' => 's', 'value' => $value);

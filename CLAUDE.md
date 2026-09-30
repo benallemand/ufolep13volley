@@ -1314,8 +1314,15 @@ plus d'une fois toutes les 5 minutes.
 - Exemple : `public function saveNews($id = null, $title = '', $text = ''): void`
 - **Donner une valeur par défaut à TOUS les paramètres** : un paramètre obligatoire
   que le formulaire n'envoie pas lève une `ArgumentCountError` (500)
-- `$dirtyFields` était envoyé automatiquement par ExtJS ; il reste accepté en
-  paramètre optionnel, plus personne ne l'envoie
+- **Pas de `$dirtyFields`** (issue #377) : c'était ExtJS qui listait les champs
+  modifiés ; il a été retiré de toutes les signatures (`AdminScreensTest` le
+  garde). Pour tracer une modification dans le journal d'activité, le serveur
+  compare lui-même : `$before = $this->row_before($id)` avant l'écriture, puis
+  `build_activity($sujet, $before, $inputs)` (création, ou « - champ : ancien →
+  nouveau », null si rien n'a changé)
+- Retirer un paramètre d'une signature décale les **appels positionnels**, et
+  PHP ignore sans erreur un argument en trop : chercher les appelants (tests
+  compris) avant de toucher à l'ordre des paramètres
 
 ### GitHub CLI
 - Pour créer une issue/PR via `gh`, rédiger le body dans un fichier `.md` temporaire puis utiliser `--body-file`

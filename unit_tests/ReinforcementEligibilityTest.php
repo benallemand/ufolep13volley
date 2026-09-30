@@ -129,7 +129,7 @@ class ReinforcementEligibilityTest extends UfolepTestCase
     {
         // un renfort à la fois, rattaché à l'équipe du responsable (#348)
         foreach (array('DOWN', 'OTHER') as $k) {
-            $this->match_manager->manage_match_players($this->id_match, array($this->player[$k]), null, null,
+            $this->match_manager->manage_match_players($this->id_match, array($this->player[$k]), null,
                 array($this->player[$k] => $this->team['DOM']));
             self::assertCount(1, $this->sql->execute("SELECT id_player FROM match_player WHERE id_match = ?",
                 array(array('type' => 'i', 'value' => $this->id_match))), $k);

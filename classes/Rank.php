@@ -190,8 +190,7 @@ class Rank extends Generic
                              $division,
                              $id_equipe,
                              $rank_start,
-                             $will_register_again,
-                             $dirtyFields): int|array|string|null
+                             $will_register_again): int|array|string|null
     {
         return $this->save(array(
             'id' => $id,
@@ -200,7 +199,6 @@ class Rank extends Generic
             'id_equipe' => $id_equipe,
             'rank_start' => $rank_start,
             'will_register_again' => $will_register_again,
-            'dirtyFields' => $dirtyFields,
         ));
     }
 
@@ -216,7 +214,6 @@ class Rank extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'id_equipe':
                 case 'rank_start':

@@ -201,8 +201,8 @@ class OwnershipChecksTest extends UfolepTestCase
     {
         $this->connect_as_club_leader_of_b();
         $team = new Team();
-        $this->assert_forbidden(fn() => $team->saveTeam(null, null, $this->team['A'], null, null, null, 'issue356 team pirate'));
-        $this->assert_forbidden(fn() => $team->saveTeam(null, $this->club['B'], null, null, null, 'm', 'issue356 team nouvelle'));
+        $this->assert_forbidden(fn() => $team->saveTeam(null, null, $this->team['A'], null, null, 'issue356 team pirate'));
+        $this->assert_forbidden(fn() => $team->saveTeam(null, $this->club['B'], null, null, 'm', 'issue356 team nouvelle'));
         self::assertCount(0, $this->sql->execute("SELECT id_equipe FROM equipes WHERE nom_equipe IN ('issue356 team pirate', 'issue356 team nouvelle')"));
         // son équipe reste modifiable
         $team->saveTeam('https://example.org', null, $this->team['B']);

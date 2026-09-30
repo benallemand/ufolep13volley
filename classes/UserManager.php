@@ -361,8 +361,7 @@ class UserManager extends Generic
     public function saveUser(
         $id,
         $login,
-        $email,
-        $dirtyFields = null)
+        $email)
     {
         // un email = un compte (issue #247) : le login des nouveaux comptes est l'email
         if (empty($id) && empty($login)) {
@@ -410,20 +409,16 @@ class UserManager extends Generic
             );
             $sql .= " WHERE id = ?";
         }
+        $before = $this->row_before($id);
         $this->sql_manager->execute($sql, $bindings);
         if (empty($id)) {
             $comment = "Creation d'un nouvel utilisateur : $login";
             $this->addActivity($comment);
             return;
         }
-        if (empty($dirtyFields)) {
-            return;
-        }
-        $fieldsArray = explode(',', $dirtyFields);
-        foreach ($fieldsArray as $fieldName) {
-            $fieldValue = filter_input(INPUT_POST, $fieldName);
-            $comment = "$login : Modification du champ $fieldName, nouvelle valeur : $fieldValue";
-            $this->addActivity($comment);
+        $activity = $this->build_activity("Compte $login", $before, $inputs);
+        if ($activity !== null) {
+            $this->addActivity($activity);
         }
     }
 
@@ -438,7 +433,7 @@ class UserManager extends Generic
      *
      * @throws Exception
      */
-    public function setAdmin($user_id, $is_admin, $dirtyFields = null): void
+    public function setAdmin($user_id, $is_admin): void
     {
         if (!self::isAdmin()) {
             throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
@@ -628,8 +623,7 @@ class UserManager extends Generic
      * @throws Exception
      */
     public function request_reset_password($user_email,
-                                           $login = null,
-                                           $dirtyFields = null): void
+                                           $login = null): void
     {
         $bindings = array(array('type' => 's', 'value' => $user_email));
         $results = $this->get("email = ?", $bindings);

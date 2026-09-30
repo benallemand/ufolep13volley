@@ -136,18 +136,68 @@ class Generic
         return $this->sql_manager->execute($sql, $bindings);
     }
 
-    protected function build_activity($subject, $dirty_fields, $inputs): ?string
+    /**
+     * Ligne en base avant une écriture, pour que le journal d'activité dise ce
+     * qui a réellement changé (issue #377). Null pour une création.
+     * @throws Exception
+     */
+    protected function row_before($id, ?string $table = null, ?string $id_name = null): ?array
     {
-        if (empty($dirty_fields)) {
+        if (empty($id)) {
             return null;
         }
-        $fieldsArray = explode(',', $dirty_fields);
-        $comment = "$subject : " . "<br/>";
-        foreach ($fieldsArray as $fieldName) {
-            $fieldValue = $inputs[$fieldName];
-            $comment .= "- $fieldName => $fieldValue" . "<br/>";
+        $table = $table ?? $this->table_name;
+        $id_name = $id_name ?? $this->id_name;
+        $rows = $this->sql_manager->execute("SELECT * FROM $table WHERE $id_name = ?",
+            array(array('type' => 'i', 'value' => (int)$id)));
+        return $rows[0] ?? null;
+    }
+
+    /**
+     * Ligne d'activité décrivant une écriture : création, ou liste des champs
+     * modifiés (« - nom : ancien → nouveau »), calculée en comparant la ligne
+     * d'avant (`row_before`) aux valeurs écrites. Remplace `dirtyFields`, que
+     * seul ExtJS envoyait (issue #377). Null si rien n'a changé.
+     */
+    protected function build_activity(string $subject, ?array $before, array $inputs): ?string
+    {
+        if ($before === null) {
+            return "Création : $subject";
         }
-        return $comment;
+        $changes = array();
+        foreach ($inputs as $field => $value) {
+            if (!array_key_exists($field, $before)) {
+                continue; // paramètre qui n'est pas une colonne (id_team…)
+            }
+            $old = self::comparable_value($before[$field]);
+            $new = self::comparable_value($value);
+            if ($old !== $new) {
+                $changes[] = "- $field : " . ($old === '' ? '(vide)' : $old) . ' → ' . ($new === '' ? '(vide)' : $new);
+            }
+        }
+        if (empty($changes)) {
+            return null;
+        }
+        return "$subject : <br/>" . implode('<br/>', $changes);
+    }
+
+    /**
+     * Valeur ramenée à une forme comparable entre la base et un formulaire :
+     * bit(1) lu en binaire, date jj/mm/aaaa, « null » posté en texte.
+     */
+    private static function comparable_value(mixed $value): string
+    {
+        if (is_string($value) && strlen($value) === 1 && ord($value) < 2) {
+            return (string)ord($value);
+        }
+        $value = trim((string)$value);
+        if ($value === 'null') {
+            return '';
+        }
+        if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $value, $m)) {
+            return "$m[3]-$m[2]-$m[1]";
+        }
+        return $value;
     }
 
     public function getSql($query = "1=1"): string
@@ -307,7 +357,6 @@ class Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case $this->id_name:
-                case 'dirtyFields':
                     break;
                 default:
                     $bindings[] = array(

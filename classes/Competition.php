@@ -90,21 +90,18 @@ class Competition extends Generic
      * @param $id
      * @param $id_club_1
      * @param $id_club_2
-     * @param null $dirtyFields
      * @throws Exception
      */
     public function save_friendships(
         $id,
         $id_club_1,
-        $id_club_2,
-        $dirtyFields = null
+        $id_club_2
     )
     {
         $inputs = array(
             'id' => $id,
             'id_club_1' => $id_club_1,
             'id_club_2' => $id_club_2,
-            'dirtyFields' => $dirtyFields,
         );
         $bindings = array();
         if (empty($inputs['id'])) {
@@ -116,7 +113,6 @@ class Competition extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'id_club_1':
                 case 'id_club_2':
@@ -194,19 +190,16 @@ class Competition extends Generic
      * @param $city
      * @param $from_date
      * @param $to_date
-     * @param null $dirtyFields
      * @throws Exception
      */
     public function save_blacklist_by_city(
         $id,
         $city,
         $from_date,
-        $to_date,
-        $dirtyFields = null
+        $to_date
     )
     {
         $inputs = array(
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
             'city' => $city,
             'from_date' => $from_date,
@@ -222,7 +215,6 @@ class Competition extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'from_date':
                 case 'to_date':
@@ -281,12 +273,10 @@ class Competition extends Generic
         $start_register_date,
         $limit_register_date,
         $is_home_and_away,
-        $id = null,
-        $dirtyFields = null
+        $id = null
     ): int|array|string|null
     {
         $inputs = array(
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
             'code_competition' => $code_competition,
             'libelle' => $libelle,
@@ -311,7 +301,6 @@ class Competition extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'start_date':
                 case 'start_register_date':

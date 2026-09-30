@@ -65,15 +65,13 @@ class Club extends Generic
      */
     public function saveClub($id,
                              $nom,
-                             $affiliation_number,
-                             $dirtyFields = null
+                             $affiliation_number
     ): array|int|string|null
     {
         return $this->save(array(
             'id' => $id,
             'nom' => $nom,
             'affiliation_number' => $affiliation_number,
-            'dirtyFields' => $dirtyFields,
         ));
     }
 
@@ -83,9 +81,12 @@ class Club extends Generic
      */
     public function save($inputs)
     {
+        $before = $this->row_before($inputs['id'] ?? null);
         $result = parent::save($inputs);
-        $subject = "Club " . $inputs['nom'];
-        $this->addActivity($this->build_activity($subject, $inputs['dirtyFields'] ?? null, $inputs));
+        $activity = $this->build_activity("Club " . $inputs['nom'], $before, $inputs);
+        if ($activity !== null) {
+            $this->addActivity($activity);
+        }
         return $result;
     }
 

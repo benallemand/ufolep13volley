@@ -350,7 +350,6 @@ class Team extends Generic
         $id_club = null,
         $id_equipe = null,
         $is_cup_registered = null,
-        $dirtyFields = null,
         $code_competition = null,
         $nom_equipe = null)
     {
@@ -367,9 +366,6 @@ class Team extends Generic
         }
         if (!is_null($is_cup_registered)) {
             $inputs['is_cup_registered'] = $is_cup_registered;
-        }
-        if (!is_null($dirtyFields)) {
-            $inputs['dirtyFields'] = $dirtyFields;
         }
         if (!is_null($code_competition)) {
             $inputs['code_competition'] = $code_competition;
@@ -397,7 +393,6 @@ class Team extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id_equipe':
-                case 'dirtyFields':
                     break;
                 case 'id_club':
                     $bindings[] = array(
