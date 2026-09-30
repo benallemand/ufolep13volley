@@ -4,6 +4,7 @@ import { adaptCalendarEvents, currentSeason } from '../calendar/calendarData.js'
 export default {
     components: {
         'today-matches': defineAsyncComponent(() => import('./TodayMatches.js')),
+        'public-registrations': defineAsyncComponent(() => import('./PublicRegistrations.js')),
         'news': defineAsyncComponent(() => import('../table/News.js')),
         'photos': defineAsyncComponent(() => import('../carousel/Photos.js')),
         // Timeline de saison depuis #290, en remplacement d'AnnualCalendar.js :
@@ -14,6 +15,7 @@ export default {
     template: `
       <div class="flex flex-col items-center gap-8 px-2">
         <today-matches/>
+        <public-registrations/>
         <news/>
         <season-timeline :events="importantEvents" :season="currentSeason"/>
         <photos/>

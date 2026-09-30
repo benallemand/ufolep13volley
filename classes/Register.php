@@ -200,6 +200,94 @@ class Register extends Generic
         return $registration;
     }
 
+    /** Seules colonnes de la liste publique : rien sur les personnes (issue #379). */
+    public const PUBLIC_REGISTRATION_FIELDS = array('club', 'equipe', 'status', 'type', 'ancien_nom');
+
+    /**
+     * Liste publique des inscriptions, affichée en page d'accueil (issue #379).
+     *
+     * Une compétition y figure dès l'ouverture de ses inscriptions et jusqu'à
+     * son démarrage. `start_date` est celle de la saison précédente tant que la
+     * commission n'a pas saisi la nouvelle : une date antérieure à l'ouverture
+     * des inscriptions ne masque donc pas la liste.
+     *
+     * Pour chaque compétition : les demandes déposées depuis l'ouverture (tous
+     * statuts, refus compris, sans motif), et en championnat les équipes du
+     * classement actuel qui ne se sont pas réinscrites (`NOT_REGISTERED`).
+     *
+     * **Public** : chaque ligne ne porte que PUBLIC_REGISTRATION_FIELDS — ni
+     * responsable, ni gymnase, ni remarque, ni paiement, ni motif de refus.
+     *
+     * @return array<int, array{libelle: string, code_competition: string,
+     *               limit_register_date: ?string, teams: array}>
+     * @throws Exception
+     */
+    public function getPublicRegistrations(): array
+    {
+        $competitions = $this->sql_manager->execute(
+            "SELECT id, code_competition, libelle,
+                    DATE_FORMAT(limit_register_date, '%d/%m/%Y') AS limit_register_date
+             FROM competitions
+             WHERE start_register_date IS NOT NULL
+               AND start_register_date <= CURDATE()
+               AND (start_date IS NULL OR start_date <= start_register_date OR start_date > CURDATE())
+             ORDER BY libelle");
+        if (empty($competitions)) {
+            return array();
+        }
+        $ids = array_map(static fn($c) => (int)$c['id'], $competitions);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $bindings = array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids);
+        $championships = implode(',', array_map(static fn($code) => "'$code'", Competition::CHAMPIONSHIPS));
+
+        $registered = $this->sql_manager->execute(
+            "SELECT r.id_competition, cl.nom AS club, r.new_team_name AS equipe, r.status,
+                    IF(r.old_team_id IS NULL, 'new', 'renewal') AS type,
+                    IF(e.nom_equipe <> r.new_team_name, e.nom_equipe, NULL) AS ancien_nom
+             FROM register r
+                      JOIN competitions c ON c.id = r.id_competition
+                      JOIN clubs cl ON cl.id = r.id_club
+                      LEFT JOIN equipes e ON e.id_equipe = r.old_team_id
+             WHERE r.id_competition IN ($placeholders)
+               AND r.creation_date >= c.start_register_date",
+            $bindings);
+        // Réinscription reconnue à `old_team_id`, quelle que soit la
+        // compétition demandée : une équipe passée du féminin au mixte n'est
+        // pas « non réinscrite ».
+        $not_registered = $this->sql_manager->execute(
+            "SELECT comp.id AS id_competition, cl.nom AS club, e.nom_equipe AS equipe,
+                    'NOT_REGISTERED' AS status, NULL AS type, NULL AS ancien_nom
+             FROM classements c
+                      JOIN competitions comp ON comp.code_competition = c.code_competition
+                      JOIN equipes e ON e.id_equipe = c.id_equipe
+                      LEFT JOIN clubs cl ON cl.id = e.id_club
+             WHERE comp.id IN ($placeholders)
+               AND comp.code_competition IN ($championships)
+               AND NOT EXISTS (SELECT 1
+                               FROM register r
+                               WHERE r.old_team_id = c.id_equipe
+                                 AND r.creation_date >= comp.start_register_date)",
+            $bindings);
+
+        $teams = array();
+        foreach (array_merge($registered, $not_registered) as $row) {
+            $teams[(int)$row['id_competition']][] = array_intersect_key($row, array_flip(self::PUBLIC_REGISTRATION_FIELDS));
+        }
+        $result = array();
+        foreach ($competitions as $competition) {
+            $list = $teams[(int)$competition['id']] ?? array();
+            usort($list, static fn($a, $b) => array((string)$a['club'], (string)$a['equipe'])
+                <=> array((string)$b['club'], (string)$b['equipe']));
+            $result[] = array(
+                'libelle' => $competition['libelle'],
+                'code_competition' => $competition['code_competition'],
+                'limit_register_date' => $competition['limit_register_date'],
+                'teams' => $list,
+            );
+        }
+        return $result;
+    }
+
     /**
      * Liste les inscriptions du club du responsable connecté.
      * @throws Exception
