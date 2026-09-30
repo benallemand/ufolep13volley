@@ -97,7 +97,7 @@ class ReinforcementRulesTest extends UfolepTestCase
     private function save(int $id_match, array $players, array $reinforcements, string $as_team): void
     {
         $this->connect_as_team_leader($this->team[$as_team]);
-        $this->match_manager->manage_match_players($id_match, $players, null, null, $reinforcements);
+        $this->match_manager->manage_match_players($id_match, $players, null, $reinforcements);
     }
 
     private function assert_refused(callable $call, int $code, string $expected): void

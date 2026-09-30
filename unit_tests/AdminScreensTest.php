@@ -212,6 +212,35 @@ class AdminScreensTest extends TestCase
         self::assertSame([], $problemes, implode("\n", $problemes));
     }
 
+    /**
+     * `dirtyFields` est un reste d'ExtJS qu'aucun client n'envoie plus
+     * (issue #377) : une méthode exposée qui le déclare encore est soit morte
+     * (paramètre toujours vide), soit en 500 s'il est obligatoire.
+     */
+    public function test_aucune_action_exposee_ne_declare_dirtyFields(): void
+    {
+        $access = require __DIR__ . '/../rest/access.php';
+        $problemes = [];
+        foreach ($access as $classKey => $actions) {
+            $className = self::CLASSES[$classKey] ?? null;
+            if ($className === null || !file_exists(__DIR__ . "/../classes/$className.php")) {
+                continue;
+            }
+            require_once __DIR__ . "/../classes/$className.php";
+            foreach (array_keys($actions) as $action) {
+                if (!method_exists($className, $action)) {
+                    continue;
+                }
+                foreach ((new ReflectionMethod($className, $action))->getParameters() as $parameter) {
+                    if ($parameter->getName() === 'dirtyFields') {
+                        $problemes[] = "$className::$action() déclare encore \$dirtyFields";
+                    }
+                }
+            }
+        }
+        self::assertSame([], $problemes, implode("\n", $problemes));
+    }
+
     /** @return array<string, string> nom de fichier => source */
     private function screens(): array
     {
@@ -229,8 +258,11 @@ class AdminScreensTest extends TestCase
      * Deux formes cohabitent : la déclaration explicite `name: 'x'`, et la
      * liste de champs cachés de `Registrations.js`, un tableau de chaînes
      * étalé dans `fields` (`...caches.map((name) => ({ name, hidden: true }))`).
-     * `AdminEditModal` envoie toujours en plus l'identifiant, et les méthodes
-     * PHP acceptent `dirtyFields` par héritage d'ExtJS.
+     * `AdminEditModal` envoie toujours en plus l'identifiant — et rien d'autre.
+     * Ce contrôle ajoutait autrefois `dirtyFields` d'office, héritage d'ExtJS
+     * qu'aucun formulaire n'envoyait plus : un `$dirtyFields` obligatoire
+     * (`Rank::saveRank`) passait donc inaperçu, et l'écran Divisions / poules
+     * était en 500 (issue #377).
      *
      * @return string[]
      */
@@ -251,7 +283,6 @@ class AdminScreensTest extends TestCase
 
         $idField = preg_match('#id-field="([a-z_]+)"#', $src, $m) ? $m[1] : 'id';
         $fields[] = $idField;
-        $fields[] = 'dirtyFields';
 
         // Les champs FICHIER ne sont pas des arguments nommés : `FormData`
         // transporte l'objet `File`, PHP le range dans `$_FILES` et non dans

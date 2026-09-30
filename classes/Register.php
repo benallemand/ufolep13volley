@@ -58,7 +58,6 @@ class Register extends Generic
         $is_cup_registered = null,
         $is_seeding_tournament_requested = null,
         $can_seeding_tournament_setup = null,
-        $dirtyFields = null,
         $id = null
     ): void
     {
@@ -111,7 +110,6 @@ class Register extends Generic
             'is_cup_registered' => $is_cup_registered,
             'is_seeding_tournament_requested' => $is_seeding_tournament_requested,
             'can_seeding_tournament_setup' => $can_seeding_tournament_setup,
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
         $bindings = array();
@@ -124,7 +122,6 @@ class Register extends Generic
         foreach ($parameters as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'id_club':
                 case 'old_team_id':

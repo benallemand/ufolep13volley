@@ -494,7 +494,6 @@ class MatchMgr extends Generic
                                $set_5_ext,
                                $referee,
                                $note,
-                               $dirtyFields = null,
                                $forfeit = null)
     {
         // Sans id_match, save() sautait is_match_update_allowed et faisait un
@@ -516,7 +515,6 @@ class MatchMgr extends Generic
             $this->assert_team_sheets_signed($id_match);
         }
         $this->save(array_merge(array(
-            'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
             'code_match' => $code_match,
         ), $sets, array(
@@ -606,7 +604,6 @@ class MatchMgr extends Generic
         $is_sign_match_ext = null,
         $note = null,
         $parent_code_competition = null,
-        $dirtyFields = null,
         $id_match = null
     )
     {
@@ -625,7 +622,6 @@ class MatchMgr extends Generic
             'is_sign_match_dom' => $is_sign_match_dom,
             'is_sign_match_ext' => $is_sign_match_ext,
             'note' => $note,
-            'dirtyFields' => $dirtyFields,
             'id_match' => $id_match,
         );
         $this->save($inputs);
@@ -649,7 +645,6 @@ class MatchMgr extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id_match':
-                case 'dirtyFields':
                 case 'parent_code_competition':
                 case 'equipe_dom':
                 case 'equipe_ext':
@@ -1376,7 +1371,7 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null, $dirtyFields = null,
+    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null,
                                          $reinforcements = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
@@ -1919,7 +1914,6 @@ class MatchMgr extends Generic
                                 $catering,
                                 $global,
                                 $comment = null,
-                                $dirtyFields = null,
                                 $id = null): int|array|string|null
     {
         // Échelle -- - = + ++ stockée en -2..+2 (issue #350).
@@ -1954,7 +1948,6 @@ class MatchMgr extends Generic
             }
         }
         $inputs = array(
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
             'user_id' => $id_user,
             'id_match' => $id_match,

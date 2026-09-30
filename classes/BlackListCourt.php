@@ -23,7 +23,6 @@ class BlackListCourt extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'closed_date':
                     $bindings[] = array('type' => 's', 'value' => $value);
@@ -66,7 +65,7 @@ class BlackListCourt extends Generic
     /**
      * @throws Exception
      */
-    public function saveBlacklistGymnase($id_gymnase, $closed_date, $dirtyFields=null, $id=null) {
+    public function saveBlacklistGymnase($id_gymnase, $closed_date, $id=null) {
         // Un responsable de club ne peut fermer qu'un gymnase utilisé par son club.
         if (!UserManager::isAdmin()) {
             if (!UserManager::isClubLeader()) {
@@ -77,7 +76,6 @@ class BlackListCourt extends Generic
         $inputs = array(
             'id_gymnase' => $id_gymnase,
             'closed_date' => $closed_date,
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
         return $this->save($inputs);

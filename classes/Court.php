@@ -44,7 +44,6 @@ class Court extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'code_postal':
                 case 'nb_terrain':
@@ -71,9 +70,12 @@ class Court extends Generic
             );
             $sql .= " WHERE id = ?";
         }
+        $before = $this->row_before($inputs['id'] ?? null);
         $this->sql_manager->execute($sql, $bindings);
-        $subject = "Gymnase " . $inputs['nom'];
-        $this->addActivity($this->build_activity($subject, $inputs['dirtyFields'], $inputs));
+        $activity = $this->build_activity("Gymnase " . $inputs['nom'], $before, $inputs);
+        if ($activity !== null) {
+            $this->addActivity($activity);
+        }
     }
 
     /**
@@ -86,7 +88,6 @@ class Court extends Generic
         $ville,
         $gps,
         $nb_terrain,
-        $dirtyFields = null,
         $id = null,
         $remarques = null
     )
@@ -99,7 +100,6 @@ class Court extends Generic
             'gps' => $gps,
             'nb_terrain' => $nb_terrain,
             'remarques' => $remarques,
-            'dirtyFields' => $dirtyFields,
             'id' => $id,
         );
         $this->save($inputs);

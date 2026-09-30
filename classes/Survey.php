@@ -31,7 +31,6 @@ class Survey extends Generic
         foreach ($inputs as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'dirtyFields':
                     break;
                 case 'user_id':
                 case 'id_match':

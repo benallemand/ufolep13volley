@@ -55,7 +55,6 @@ class CourtTest extends UfolepTestCase
             'Marseille',
             '43.2965,5.3698',
             1,
-            'remarques',
             null,
             $testRemarques
         );
@@ -90,7 +89,6 @@ class CourtTest extends UfolepTestCase
             '43.5297,5.4474',
             2,
             null,
-            null,
             $initialRemarques
         );
         
@@ -115,7 +113,6 @@ class CourtTest extends UfolepTestCase
             'Aix-en-Provence',
             '43.5297,5.4474',
             2,
-            'remarques',
             $gymId,
             $updatedRemarques
         );

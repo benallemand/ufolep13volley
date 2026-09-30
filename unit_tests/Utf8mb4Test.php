@@ -171,7 +171,7 @@ class Utf8mb4Test extends UfolepTestCase
 
         $nom = 'Coupe 6x6 Feminin' . self::ETROITE . '? ' . self::EMOJI;
         $this->connect_as_admin();
-        (new Team())->saveTeam(null, null, $id_equipe, null, null, null, $nom);
+        (new Team())->saveTeam(null, null, $id_equipe, null, null, $nom);
 
         $rows = $this->sql->execute("SELECT nom_equipe FROM equipes WHERE id_equipe = ?",
             [['type' => 'i', 'value' => $id_equipe]]);

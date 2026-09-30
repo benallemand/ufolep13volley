@@ -1,4 +1,4 @@
-﻿import { createApp } from 'vue';
+import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
@@ -160,7 +160,6 @@ createApp({
                     case 'set_4_ext':
                     case 'set_5_ext':
                     case 'referee':
-                    case 'dirtyFields':
                         formData.append(key, this.matchData[key]);
                         break;
                     case 'note':

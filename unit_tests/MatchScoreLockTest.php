@@ -82,7 +82,7 @@ class MatchScoreLockTest extends UfolepTestCase
         $s = $with_score ? array(25, 25, 25, 0, 0, 10, 10, 10, 0, 0) : array_fill(0, 10, 0);
         $this->match_manager->save_match($this->id_match, 'ISS344',
             $s[0], $s[1], $s[2], $s[3], $s[4], $s[5], $s[6], $s[7], $s[8], $s[9],
-            'HOME', 'note ISS344', null, $forfeit);
+            'HOME', 'note ISS344', $forfeit);
     }
 
     private function stored_sets(): array
