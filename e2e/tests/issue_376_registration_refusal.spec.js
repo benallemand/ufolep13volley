@@ -22,10 +22,13 @@ async function loginAsClubLeader(page) {
     await page.goto('/pages/home.html#/login');
     await page.fill('input[name="login"]', setupData.login);
     await page.fill('input[name="password"]', setupData.password);
+    // Attendre la page de retour de /login.php (redirection vers le referer),
+    // sinon elle interrompt le page.goto suivant.
     await Promise.all([
-        page.waitForLoadState('networkidle'),
+        page.waitForURL(/\/pages\/home\.html(?!#\/login)/),
         page.click('form button[type="submit"]'),
     ]);
+    await page.waitForLoadState('networkidle');
 }
 
 test.describe.configure({ mode: 'serial' });
