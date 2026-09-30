@@ -198,4 +198,98 @@ INSERT INTO matches (id_match, code_match, code_competition, division, id_equipe
   (2, 'CI002', 'm', '1', 2, 3, CURRENT_DATE + INTERVAL 7 DAY,  CURRENT_DATE + INTERVAL 7 DAY,  2, 'NOT_CONFIRMED'),
   (3, 'CI003', 'm', '1', 3, 1, CURRENT_DATE + INTERVAL 14 DAY, CURRENT_DATE + INTERVAL 14 DAY, 3, 'NOT_CONFIRMED');
 
+-- ---------------------------------------------------------------------------
+-- Coupes et phases finales (issue #319) : de quoi rallumer les tests E2E qui
+-- se sautaient faute de coupe (finals.spec.js, issue_218, issue_266, #347).
+--
+-- Deux coupes a poules, 8 poules de 2 equipes chacune : 8 premiers + 8
+-- meilleurs seconds, soit un tableau de 1/8 entierement resolu. Aucun match de
+-- poule : ranks_view et get_rank_for_cup partent de `classements` en LEFT
+-- JOIN, l'ordre dans la poule vient donc de `rank_start` — deterministe.
+--
+-- Comme en production, les equipes de la coupe Isoardi (c) sont des equipes
+-- du championnat masculin (code_competition = 'm', inscrites a la coupe), et
+-- celles de la Khoury Hanna ont leur propre code (kh). Les equipes d'Isoardi
+-- ne sont PAS classees en championnat : elles ne changent ni la division 1
+-- masculine ni les tests qui s'appuient dessus.
+--
+-- Noms uniques par mot (poule A-H, rang 1-2) : la recherche multi-termes de
+-- rank_for_cup (issue_266) doit pouvoir isoler une equipe.
+-- ---------------------------------------------------------------------------
+INSERT INTO equipes (id_equipe, code_competition, nom_equipe, id_club, is_cup_registered) VALUES
+  (101, 'm',  'CI Iso A1', 1, b'1'), (102, 'm',  'CI Iso A2', 2, b'1'),
+  (103, 'm',  'CI Iso B1', 3, b'1'), (104, 'm',  'CI Iso B2', 1, b'1'),
+  (105, 'm',  'CI Iso C1', 2, b'1'), (106, 'm',  'CI Iso C2', 3, b'1'),
+  (107, 'm',  'CI Iso D1', 1, b'1'), (108, 'm',  'CI Iso D2', 2, b'1'),
+  (109, 'm',  'CI Iso E1', 3, b'1'), (110, 'm',  'CI Iso E2', 1, b'1'),
+  (111, 'm',  'CI Iso F1', 2, b'1'), (112, 'm',  'CI Iso F2', 3, b'1'),
+  (113, 'm',  'CI Iso G1', 1, b'1'), (114, 'm',  'CI Iso G2', 2, b'1'),
+  (115, 'm',  'CI Iso H1', 3, b'1'), (116, 'm',  'CI Iso H2', 1, b'1'),
+  (201, 'kh', 'CI KH A1',  1, b'1'), (202, 'kh', 'CI KH A2',  2, b'1'),
+  (203, 'kh', 'CI KH B1',  3, b'1'), (204, 'kh', 'CI KH B2',  1, b'1'),
+  (205, 'kh', 'CI KH C1',  2, b'1'), (206, 'kh', 'CI KH C2',  3, b'1'),
+  (207, 'kh', 'CI KH D1',  1, b'1'), (208, 'kh', 'CI KH D2',  2, b'1'),
+  (209, 'kh', 'CI KH E1',  3, b'1'), (210, 'kh', 'CI KH E2',  1, b'1'),
+  (211, 'kh', 'CI KH F1',  2, b'1'), (212, 'kh', 'CI KH F2',  3, b'1'),
+  (213, 'kh', 'CI KH G1',  1, b'1'), (214, 'kh', 'CI KH G2',  2, b'1'),
+  (215, 'kh', 'CI KH H1',  3, b'1'), (216, 'kh', 'CI KH H2',  1, b'1');
+
+INSERT INTO classements (id, code_competition, division, id_equipe, rank_start, penalite) VALUES
+  (101, 'c',  '1', 101, 1, 0), (102, 'c',  '1', 102, 2, 0),
+  (103, 'c',  '2', 103, 1, 0), (104, 'c',  '2', 104, 2, 0),
+  (105, 'c',  '3', 105, 1, 0), (106, 'c',  '3', 106, 2, 0),
+  (107, 'c',  '4', 107, 1, 0), (108, 'c',  '4', 108, 2, 0),
+  (109, 'c',  '5', 109, 1, 0), (110, 'c',  '5', 110, 2, 0),
+  (111, 'c',  '6', 111, 1, 0), (112, 'c',  '6', 112, 2, 0),
+  (113, 'c',  '7', 113, 1, 0), (114, 'c',  '7', 114, 2, 0),
+  (115, 'c',  '8', 115, 1, 0), (116, 'c',  '8', 116, 2, 0),
+  (201, 'kh', '1', 201, 1, 0), (202, 'kh', '1', 202, 2, 0),
+  (203, 'kh', '2', 203, 1, 0), (204, 'kh', '2', 204, 2, 0),
+  (205, 'kh', '3', 205, 1, 0), (206, 'kh', '3', 206, 2, 0),
+  (207, 'kh', '4', 207, 1, 0), (208, 'kh', '4', 208, 2, 0),
+  (209, 'kh', '5', 209, 1, 0), (210, 'kh', '5', 210, 2, 0),
+  (211, 'kh', '6', 211, 1, 0), (212, 'kh', '6', 212, 2, 0),
+  (213, 'kh', '7', 213, 1, 0), (214, 'kh', '7', 214, 2, 0),
+  (215, 'kh', '8', 215, 1, 0), (216, 'kh', '8', 216, 2, 0);
+
+-- Tirage des 1/8 (Rank::getFinalsDrawRaw) : chaque premier de poule contre un
+-- meilleur second, meme gabarit pour les deux phases finales.
+INSERT INTO registry (registry_key, registry_value) VALUES
+  ('finals_draw.cf.1_8.1.team1', '1er poule 1'), ('finals_draw.cf.1_8.1.team2', 'meilleur 2e 8/8'),
+  ('finals_draw.cf.1_8.2.team1', '1er poule 2'), ('finals_draw.cf.1_8.2.team2', 'meilleur 2e 7/8'),
+  ('finals_draw.cf.1_8.3.team1', '1er poule 3'), ('finals_draw.cf.1_8.3.team2', 'meilleur 2e 6/8'),
+  ('finals_draw.cf.1_8.4.team1', '1er poule 4'), ('finals_draw.cf.1_8.4.team2', 'meilleur 2e 5/8'),
+  ('finals_draw.cf.1_8.5.team1', '1er poule 5'), ('finals_draw.cf.1_8.5.team2', 'meilleur 2e 4/8'),
+  ('finals_draw.cf.1_8.6.team1', '1er poule 6'), ('finals_draw.cf.1_8.6.team2', 'meilleur 2e 3/8'),
+  ('finals_draw.cf.1_8.7.team1', '1er poule 7'), ('finals_draw.cf.1_8.7.team2', 'meilleur 2e 2/8'),
+  ('finals_draw.cf.1_8.8.team1', '1er poule 8'), ('finals_draw.cf.1_8.8.team2', 'meilleur 2e 1/8'),
+  ('finals_draw.kf.1_8.1.team1', '1er poule 1'), ('finals_draw.kf.1_8.1.team2', 'meilleur 2e 8/8'),
+  ('finals_draw.kf.1_8.2.team1', '1er poule 2'), ('finals_draw.kf.1_8.2.team2', 'meilleur 2e 7/8'),
+  ('finals_draw.kf.1_8.3.team1', '1er poule 3'), ('finals_draw.kf.1_8.3.team2', 'meilleur 2e 6/8'),
+  ('finals_draw.kf.1_8.4.team1', '1er poule 4'), ('finals_draw.kf.1_8.4.team2', 'meilleur 2e 5/8'),
+  ('finals_draw.kf.1_8.5.team1', '1er poule 5'), ('finals_draw.kf.1_8.5.team2', 'meilleur 2e 4/8'),
+  ('finals_draw.kf.1_8.6.team1', '1er poule 6'), ('finals_draw.kf.1_8.6.team2', 'meilleur 2e 3/8'),
+  ('finals_draw.kf.1_8.7.team1', '1er poule 7'), ('finals_draw.kf.1_8.7.team2', 'meilleur 2e 2/8'),
+  ('finals_draw.kf.1_8.8.team1', '1er poule 8'), ('finals_draw.kf.1_8.8.team2', 'meilleur 2e 1/8');
+
+-- ---------------------------------------------------------------------------
+-- Un sondage fair-play (issue #319, pour issue_351) : rempli par le compte de
+-- CI Alpha 1 sur le match passe CI001, dans l'echelle courante (v2, -2..2).
+-- ---------------------------------------------------------------------------
+INSERT INTO survey (id, user_id, id_match, on_time, spirit, referee, catering, global, scale_version, comment) VALUES
+  (1, 2, 1, 1, 0, 0, 1, 1, 2, 'Sondage fictif du seed de CI');
+
+-- ---------------------------------------------------------------------------
+-- Un renfort possible (issue #319, pour issue_348) : joueur homologue, AVEC
+-- photo (obligatoire depuis #343), sans equipe — donc eligible (#349). Son nom
+-- contient un « a » : le test cherche ses renforts sur cette lettre. Le fichier
+-- n'existe pas sur le serveur de CI, c'est sans importance : c'est le chemin en
+-- base qui autorise a jouer, l'image manquante n'est qu'un affichage.
+-- ---------------------------------------------------------------------------
+INSERT INTO photos (id, path_photo) VALUES
+  (1, 'players_pics/ci_renfort.jpg');
+
+INSERT INTO joueurs (id, prenom, nom, sexe, email, telephone, num_licence, departement_affiliation, id_club, date_homologation, id_photo) VALUES
+  (62, 'Renfort', 'CiAvecPhoto', 'M', 'renfort01@example.test', '0700000062', 'LIC0062', 13, 1, CURRENT_DATE - INTERVAL 200 DAY, 1);
+
 SET FOREIGN_KEY_CHECKS = 1;
