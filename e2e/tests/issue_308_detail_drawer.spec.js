@@ -103,9 +103,11 @@ test.describe('Issue #308 — tiroir de détail', () => {
         // le jeu de la CI une soixantaine, et les deux font l'affaire.
         const perPage = page.locator('label:has-text("par page") select');
         await perPage.selectOption({ label: 'tout' });
+        // Depuis #386, c'est la zone de la grille qui défile, pas la page.
+        const scroller = page.getByTestId('grid-scroller');
         await expect.poll(
-            async () => page.evaluate(() => document.body.scrollHeight > window.innerHeight * 2),
-            { message: 'Le tableau doit être nettement plus haut que la fenêtre' }
+            async () => scroller.evaluate(el => el.scrollHeight > el.clientHeight * 2),
+            { message: 'Le tableau doit être nettement plus haut que sa zone' }
         ).toBe(true);
 
         await rows.nth(0).click();

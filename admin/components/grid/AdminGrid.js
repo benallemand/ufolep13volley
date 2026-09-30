@@ -98,9 +98,26 @@ export default {
      */
     emits: ['row-click', 'reset-view'],
     template: `
-      <div class="p-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <h1 class="text-2xl font-bold">{{ title }}</h1>
+      <!-- En-tête figé (#386). La grille occupe la hauteur de la fenêtre et
+           défile dans sa propre zone, sinon le thead ne peut pas coller : le
+           défilement horizontal des tables larges impose un conteneur en
+           overflow, et un sticky ne colle qu'à son conteneur défilant.
+             - lg et plus : titre, compteur et actions restent en haut ; la zone
+               du dessous défile (filtres de l'écran, recherche, puis table dont
+               le thead colle).
+             - plus petit : la racine défile en entier, seul le thead colle ;
+               la barre d'outils, sur plusieurs lignes, mangerait l'écran.
+           4rem = la barre de navigation mobile d'AdminLayout. -->
+      <div class="flex flex-col p-4 h-[calc(100dvh-4rem)] overflow-auto lg:h-dvh lg:overflow-hidden"
+           ref="root" data-testid="grid-root">
+        <div class="sticky left-0 z-20 flex flex-wrap items-center justify-between gap-2 mb-4 lg:mb-3"
+             data-testid="grid-toolbar">
+          <div class="flex flex-wrap items-baseline gap-x-3">
+            <h1 class="text-2xl font-bold">{{ title }}</h1>
+            <span class="text-sm text-base-content/60" data-testid="grid-count">
+              {{ filteredRows.length }} / {{ rows.length }} {{ entityLabel }}(s)
+            </span>
+          </div>
           <div class="flex flex-wrap gap-2">
             <button v-if="saveUrl" @click="openCreate" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Créer
@@ -136,9 +153,17 @@ export default {
           </div>
         </div>
 
+        <!-- Référence du tiroir de détail (#308) : il recouvre la droite de la
+             zone défilante sans défiler avec elle, ni horizontalement ni
+             verticalement, et ne peut pas monter sur la barre d'outils. -->
+        <div class="relative lg:flex-1 lg:min-h-0">
+        <div ref="scroller" class="lg:h-full lg:overflow-auto" data-testid="grid-scroller">
+
         <!-- Ouverture depuis une tuile du tableau de bord (#312) : on annonce
-             d'où vient le filtre, sinon la grille paraît amputée sans raison. -->
-        <div v-if="focusIds.length" class="alert alert-info mb-3 py-2">
+             d'où vient le filtre, sinon la grille paraît amputée sans raison.
+             sticky left-0 ici et plus bas : ces blocs ne suivent pas le
+             défilement horizontal d'une table large. -->
+        <div v-if="focusIds.length" class="alert alert-info mb-3 py-2 sticky left-0">
           <i class="fas fa-filter"></i>
           <span>
             Affichage restreint à {{ focusIds.length }} {{ entityLabel }}(s)
@@ -150,18 +175,16 @@ export default {
         </div>
 
         <!-- Filtres propres à l'écran, au-dessus de la recherche -->
-        <div v-if="$slots.filters" class="flex flex-wrap items-center gap-4 mb-3">
+        <div v-if="$slots.filters" class="flex flex-wrap items-center gap-4 mb-3 sticky left-0">
           <slot name="filters" :rows="rows"></slot>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 mb-3">
+        <!-- Le compteur est remonté à côté du titre, pour rester visible (#386). -->
+        <div class="flex flex-wrap items-center gap-3 mb-3 sticky left-0">
           <input v-model.trim="search"
                  type="text"
                  class="input input-bordered input-sm w-full sm:w-96"
                  placeholder="Rechercher… (plusieurs termes séparés par des virgules)"/>
-          <span class="text-sm text-base-content/60">
-            {{ filteredRows.length }} / {{ rows.length }} {{ entityLabel }}(s)
-          </span>
           <label class="flex items-center gap-2 text-sm ml-auto">
             <span>par page</span>
             <select v-model.number="pageSize" class="select select-bordered select-sm">
@@ -174,23 +197,27 @@ export default {
           </label>
         </div>
 
-        <div v-if="loading" class="flex justify-center py-10">
+        <div v-if="loading" class="flex justify-center py-10 sticky left-0">
           <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
 
-        <div v-else-if="!rows.length" class="alert alert-info">
+        <div v-else-if="!rows.length" class="alert alert-info sticky left-0">
           <i class="fas fa-circle-info"></i>
           <span>Aucune donnée.</span>
         </div>
 
-        <!-- Conteneur de reference du tiroir : il est ancre sur la ZONE DE
-             TABLEAU, pas sur l'ecran entier, pour ne pas recouvrir la barre
-             d'outils dont les derniers boutons sont alignes a droite. La
-             hauteur minimale evite un tiroir riquiqui sur une grille courte. -->
-        <div v-else class="relative lg:min-h-[32rem]">
-        <div class="overflow-x-auto">
-          <table class="table table-xs md:table-sm table-pin-rows">
-            <thead>
+        <!-- Le thead colle en haut de la zone défilante, ligne des filtres de
+             colonnes comprise. Pas de table-pin-rows : il rend chaque ligne
+             collante à top 0, et la ligne des filtres recouvrirait les titres.
+             Fond opaque : les lignes passent dessous. Pas de bordure entre ses
+             lignes non plus : en border-collapse, la bordure appartient à la
+             table et ne suit pas le thead collé, les lignes transparaissaient
+             par cette fente. Le trait sous l'en-tête est une ombre, qui colle
+             avec lui. -->
+        <template v-else>
+          <table class="table table-xs md:table-sm">
+            <thead class="sticky top-0 z-10 bg-base-100 [&_tr]:border-b-0 shadow-[0_1px_0_0_oklch(var(--bc)/0.2)]"
+                   data-testid="grid-thead">
             <tr>
               <th v-if="canSelect" class="w-8">
                 <input type="checkbox"
@@ -286,6 +313,13 @@ export default {
             </tr>
             </tbody>
           </table>
+        </template>
+
+        <div v-if="pageCount > 1" class="flex justify-center items-center gap-2 mt-4 sticky left-0">
+          <button class="btn btn-sm" :disabled="page === 1" @click="page--">«</button>
+          <span class="text-sm">page {{ page }} / {{ pageCount }}</span>
+          <button class="btn btn-sm" :disabled="page === pageCount" @click="page++">»</button>
+        </div>
         </div>
 
           <admin-detail-drawer v-if="detailRow"
@@ -302,12 +336,6 @@ export default {
               <slot name="detail-actions" :row="row" :reload="fetchRows"></slot>
             </template>
           </admin-detail-drawer>
-        </div>
-
-        <div v-if="pageCount > 1" class="flex justify-center items-center gap-2 mt-4">
-          <button class="btn btn-sm" :disabled="page === 1" @click="page--">«</button>
-          <span class="text-sm">page {{ page }} / {{ pageCount }}</span>
-          <button class="btn btn-sm" :disabled="page === pageCount" @click="page++">»</button>
         </div>
 
         <!-- id-field doit descendre jusqu'au formulaire : c'est LUI qui poste
@@ -555,6 +583,12 @@ export default {
             handler() { this.page = 1; this.selection = []; this.detailId = null; },
         },
         pageSize() { this.page = 1; },
+        // La grille défile dans sa propre zone (#386) : sans cela, « » » en bas
+        // de page ouvrirait la page suivante… par sa dernière ligne.
+        page() {
+            this.$refs.scroller?.scrollTo({ top: 0 });
+            this.$refs.root?.scrollTo({ top: 0 });
+        },
         viewState: {
             deep: true,
             handler(state) { saveState(this.storageKey, state); },

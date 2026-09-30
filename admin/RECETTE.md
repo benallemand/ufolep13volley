@@ -87,13 +87,20 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G29 | Réduire la fenêtre en dessous de 1024 px, cliquer une ligne | Le tiroir devient une **feuille ancrée en bas**, la grille reste lisible derrière |
 | G30 | Tiroir ouvert, naviguer au **clavier** (Tab jusqu'à une ligne, Entrée) | La ligne s'ouvre : les lignes cliquables sont atteignables au clavier |
 | G31 | Mettre « par page » sur **tout**, puis ouvrir le tiroir | Ses **boutons d'action restent à l'écran**, sans avoir à descendre au bas des 3 650 lignes. Le panneau colle au défilement et sa hauteur est plafonnée à celle de la fenêtre ; il s'étirait auparavant sur toute la hauteur du tableau |
-| G32 | Même situation, faire défiler la page | Le tiroir **suit**, et ne peut jamais remonter au-dessus de la barre d'outils |
+| G32 | Même situation, faire défiler la grille | Le tiroir **reste en place** sur la droite de la grille, et ne recouvre jamais la barre d'outils (#386) |
 | G33 | Depuis les **Indicateurs**, ouvrir « Joueurs en attente de validation » puis « Corriger ces N ligne(s) » | L'écran Joueurs s'ouvre **filtré sur ces seules lignes**, un bandeau bleu l'annonce, et le compteur affiche `N / total` |
 | G34 | Cliquer « Voir tout » dans ce bandeau | Le bandeau disparaît, la grille retrouve toutes ses lignes, et `?ids=` sort de l'URL |
 | G35 | Recharger la page pendant que le filtre est actif | Le filtre **tient** : il vit dans l'URL, elle est donc partageable et survit à un F5 |
 | G36 | Filtre actif, cocher une ligne puis cliquer « Voir tout » | La sélection est **vidée** : les lignes visibles ont changé |
 | G37 | Ouvrir `/admin/index.html` **sans rien après** | On atterrit sur les **Indicateurs**, pas sur la grille des utilisateurs (#313). Les premières tuiles s'affichent en quelques secondes, le compteur « n / m calculés » avance |
 | G38 | Ouvrir une route inconnue, `#/nimportequoi` | Même repli sur les Indicateurs, sans page blanche |
+| G39 | Joueurs, « tout » par page, descendre **en bas** de la grille | Titre, compteur « n / m », boutons d'action et **titres des colonnes** restent visibles ; les cases de filtre de l'écran et la recherche sont parties avec les lignes (#386) |
+| G40 | Même situation, cocher la dernière ligne | « Éditer » s'active **sans remonter** |
+| G41 | Ouvrir « Filtres », puis descendre | La ligne des filtres de colonnes reste collée sous les titres ; aucune ligne ne transparaît dans l'en-tête |
+| G42 | Écran à table large (Matchs), défiler horizontalement | Titres de colonnes alignés sur leurs colonnes ; titre, recherche et pagination **ne partent pas** sur le côté |
+| G43 | Fenêtre de 375 px de large, descendre en bas d'une grille | Seuls les titres de colonnes restent figés ; la barre d'outils part avec les lignes ; pas de défilement horizontal de la page |
+| G44 | Grille courte (recherche sans résultat) | Aucune barre de défilement parasite |
+| G45 | Page 1 sur 4, cliquer « » » en bas | La page suivante s'ouvre **par sa première ligne** |
 
 ## Cas par écran
 
