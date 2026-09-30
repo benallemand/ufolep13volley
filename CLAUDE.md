@@ -1204,6 +1204,25 @@ n'est pas repris dans le formulaire (`get_survey` renvoie un formulaire neuf).
 Un sondage ne se relit que par l'équipe sondeuse : `Survey::getSql()` passe par
 `users_teams`. Celui d'un admin hors équipe s'enregistre mais ne se relit pas.
 
+### Décisions sur une inscription : valider, refuser, dévalider (issue #376)
+
+`register.status` vaut `PENDING`, `VALIDATED` ou `REFUSED`. Chaque décision de
+l'admin n'est permise que depuis certains statuts, contrôlés côté serveur (409)
+et reflétés par l'écran (`DECISIONS` dans `Registrations.js`, bouton inactif
+sinon) :
+
+| Décision | Depuis | Effet |
+|---|---|---|
+| `validateRegistration` | PENDING, REFUSED | VALIDATED, email au club, motif effacé |
+| `refuseRegistration($id, $reason)` | PENDING | REFUSED, motif **obligatoire** (≤ 1000 car.), email au club |
+| `unvalidateRegistration` | VALIDATED | PENDING |
+
+Le club voit le motif dans son espace et peut corriger une demande refusée :
+l'enregistrer (`register()` par un non-admin) la **remet en PENDING**, motif
+effacé. Une édition par l'admin garde le statut. Seules les VALIDATED sont
+engagées (`set_up_season`, `get_pending_registrations`…). Les emails de décision
+échappent le nom d'équipe et le motif (`notifyClub`).
+
 ### Règlements lus dans le dossier Google Drive (issue #342)
 
 Les règlements ne sont plus dans le code : `UfolepRules.js` (liste) et
