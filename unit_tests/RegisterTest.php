@@ -46,6 +46,7 @@ class RegisterTest extends UfolepTestCase
     private function delete_test_data(): void
     {
         $this->sql->execute("DELETE FROM emails WHERE to_email LIKE 'rt_%@ufolep.test' OR body LIKE '%RT Team%'");
+        $this->sql->execute("DELETE FROM users_clubs WHERE user_id IN (SELECT id FROM comptes_acces WHERE email LIKE 'rt_%@ufolep.test')");
         $this->sql->execute("DELETE FROM classements WHERE code_competition = 'rt'");
         $this->sql->execute("DELETE FROM users_teams WHERE team_id IN (SELECT id_equipe FROM equipes WHERE code_competition = 'rt')");
         $this->sql->execute("DELETE FROM comptes_acces WHERE email LIKE 'rt_%@ufolep.test'");
@@ -211,6 +212,163 @@ class RegisterTest extends UfolepTestCase
         $this->connect_as_club_leader($this->id_club_1);
         $this->expectException(Exception::class);
         (new Register())->validateRegistration($id);
+    }
+
+    // ---- Issue #376 : décisions contrôlées selon le statut, refus motivé -----
+
+    /** Compte de club (users_clubs) destinataire des notifications. */
+    private function add_club_account(int $id_club): void
+    {
+        $id_user = (int)$this->sql->execute(
+            "INSERT INTO comptes_acces SET login = 'rt_club_account', email = 'rt_club@ufolep.test', password_hash = 'x'");
+        $this->sql->execute("INSERT INTO users_clubs SET user_id = $id_user, club_id = $id_club");
+    }
+
+    private function status_of(int $id): array
+    {
+        return $this->sql->execute("SELECT status, validation_date, refusal_reason, refusal_date FROM register WHERE id = $id")[0];
+    }
+
+    private function emails_to_club(): array
+    {
+        return $this->sql->execute("SELECT subject, body FROM emails WHERE to_email = 'rt_club@ufolep.test' ORDER BY id");
+    }
+
+    private function assert_decision_refused(callable $decision, int $expected_code): void
+    {
+        try {
+            $decision();
+            $this->fail("La décision aurait dû être refusée ($expected_code)");
+        } catch (Exception $e) {
+            $this->assertSame($expected_code, $e->getCode(), $e->getMessage());
+        }
+    }
+
+    public function test_unvalidate_pending_is_refused()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team U1');
+        $this->connect_as_admin();
+        $this->assert_decision_refused(fn() => (new Register())->unvalidateRegistration($id), 409);
+        $this->assertSame('PENDING', $this->status_of($id)['status']);
+        $this->assertCount(0, $this->sql->execute(
+            "SELECT id FROM activity WHERE comment LIKE 'Inscription dévalidée : RT Team U1%'"),
+            'pas de ligne d\'activité trompeuse');
+    }
+
+    public function test_validate_twice_is_refused_and_sends_a_single_email()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team U2');
+        $this->add_club_account($this->id_club_1);
+        $this->connect_as_admin();
+        (new Register())->validateRegistration($id);
+        $this->assert_decision_refused(fn() => (new Register())->validateRegistration($id), 409);
+        $this->assertCount(1, $this->emails_to_club());
+    }
+
+    public function test_refuse_requires_a_reason()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team U3');
+        $this->connect_as_admin();
+        foreach (array(null, '', '   ') as $reason) {
+            $this->assert_decision_refused(fn() => (new Register())->refuseRegistration($id, $reason), 400);
+        }
+        $this->assert_decision_refused(
+            fn() => (new Register())->refuseRegistration($id, str_repeat('x', 1001)), 400);
+        $this->assertSame('PENDING', $this->status_of($id)['status']);
+    }
+
+    public function test_refuse_is_reserved_to_admins()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team U4');
+        $this->connect_as_club_leader($this->id_club_1);
+        $this->assert_decision_refused(fn() => (new Register())->refuseRegistration($id, 'motif'), 403);
+    }
+
+    public function test_admin_refuses_a_pending_registration_and_the_club_is_notified()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team U5');
+        $this->add_club_account($this->id_club_1);
+        $this->connect_as_admin();
+        (new Register())->refuseRegistration($id, "  Équipe volante <b>interdite</b> : aucun gymnase  ");
+
+        $row = $this->status_of($id);
+        $this->assertSame('REFUSED', $row['status']);
+        $this->assertSame('Équipe volante <b>interdite</b> : aucun gymnase', $row['refusal_reason'],
+            'motif conservé tel quel en base, espaces retirés');
+        $this->assertNotNull($row['refusal_date']);
+
+        $emails = $this->emails_to_club();
+        $this->assertCount(1, $emails);
+        $this->assertStringContainsString('Inscription refusée : RT Team U5', $emails[0]['subject']);
+        $this->assertStringContainsString('Équipe volante &lt;b&gt;interdite&lt;/b&gt;', $emails[0]['body'],
+            'le motif est échappé dans l\'email');
+        $this->assertStringNotContainsString('<b>interdite</b>', $emails[0]['body']);
+
+        $rows = (new Register())->get_register();
+        $mine = array_values(array_filter($rows, fn($r) => (int)$r['id'] === $id))[0];
+        $this->assertSame('REFUSED', $mine['status']);
+        $this->assertArrayHasKey('refusal_reason', $mine);
+    }
+
+    public function test_refuse_twice_or_a_validated_registration_is_refused()
+    {
+        $refused = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team U6');
+        $validated = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team U7');
+        $this->connect_as_admin();
+        $this->assert_decision_refused(fn() => (new Register())->refuseRegistration($refused, 'motif'), 409);
+        $this->assert_decision_refused(fn() => (new Register())->refuseRegistration($validated, 'motif'), 409);
+        $this->assertSame('VALIDATED', $this->status_of($validated)['status']);
+    }
+
+    public function test_club_correction_puts_a_refused_registration_back_to_pending()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team U8');
+        $this->sql->execute("UPDATE register SET refusal_reason = 'volante', refusal_date = NOW() WHERE id = $id");
+        $this->connect_as_club_leader($this->id_club_1);
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team U8', 'remarks' => 'gymnase ajouté']);
+
+        $row = $this->status_of($id);
+        $this->assertSame('PENDING', $row['status']);
+        $this->assertNull($row['refusal_reason']);
+        $this->assertNull($row['refusal_date']);
+    }
+
+    public function test_club_can_still_delete_a_refused_registration()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team U9');
+        $this->connect_as_club_leader($this->id_club_1);
+        (new Register())->deleteMyClubRegistration($id);
+        $this->assertCount(0, $this->sql->execute("SELECT id FROM register WHERE id = $id"));
+    }
+
+    public function test_admin_edit_keeps_the_refusal()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team V1');
+        $this->sql->execute("UPDATE register SET refusal_reason = 'volante' WHERE id = $id");
+        $this->connect_as_admin();
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team V1', 'remarks' => 'corrigé par la commission']);
+        $row = $this->status_of($id);
+        $this->assertSame('REFUSED', $row['status']);
+        $this->assertSame('volante', $row['refusal_reason']);
+    }
+
+    public function test_a_refused_registration_can_be_validated_directly()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team V2');
+        $this->sql->execute("UPDATE register SET refusal_reason = 'volante', refusal_date = NOW() WHERE id = $id");
+        $this->connect_as_admin();
+        (new Register())->validateRegistration($id);
+        $row = $this->status_of($id);
+        $this->assertSame('VALIDATED', $row['status']);
+        $this->assertNull($row['refusal_reason']);
+    }
+
+    public function test_refused_registrations_are_never_engaged()
+    {
+        $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team V3');
+        $this->connect_as_admin();
+        $names = array_column((new Register())->get_pending_registrations($this->id_competition), 'new_team_name');
+        $this->assertNotContains('RT Team V3', $names);
     }
 
     // ---- Consultation et suppression par le club ----------------------------

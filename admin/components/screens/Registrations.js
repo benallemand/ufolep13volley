@@ -11,14 +11,24 @@ import { onError, onSuccess } from '../../../toaster.js';
  * rang, puis créer les équipes et les comptes.
  *
  * Deux subtilités de l'API :
- * - `validateRegistration` / `unvalidateRegistration` sont **unitaires**
- *   (`id`), alors que `fill_ranks`, `create_teams_and_accounts` et `delete`
+ * - `validateRegistration` / `refuseRegistration` / `unvalidateRegistration`
+ *   sont **unitaires** (`id`), alors que `fill_ranks`, `create_teams_and_accounts` et `delete`
  *   prennent une liste (`ids`) — d'où deux façons d'enchaîner les appels ;
  * - l'édition passe par `register/register`, qui déclare **quinze paramètres
  *   obligatoires**. Le formulaire ne montre que ce qui se corrige à la main et
  *   transporte le reste en champs cachés, exactement comme le faisait le
  *   formulaire ExtJS.
  */
+/**
+ * Décisions de la commission sur une demande (issue #376) : statuts de départ
+ * admis, endpoint, et libellés. Le serveur refait le contrôle (409).
+ */
+const DECISIONS = {
+    validate: {from: ['PENDING', 'REFUSED'], action: 'validateRegistration', verb: 'Valider', done: 'validée(s)'},
+    refuse: {from: ['PENDING'], action: 'refuseRegistration', verb: 'Refuser', done: 'refusée(s)'},
+    unvalidate: {from: ['VALIDATED'], action: 'unvalidateRegistration', verb: 'Dévalider', done: 'remise(s) en attente'},
+};
+
 export default {
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
@@ -41,20 +51,31 @@ export default {
               <option value="">tous</option>
               <option value="PENDING">en attente</option>
               <option value="VALIDATED">validées</option>
+              <option value="REFUSED">refusées</option>
             </select>
           </label>
         </template>
 
-        <template #actions="{ selection, reload }">
-          <button class="btn btn-sm btn-success"
-                  :disabled="!selection.length || isBusy"
-                  @click="eachOne(selection, 'validateRegistration', 'Valider', reload)">
+        <!-- Chaque décision ne porte que sur les lignes sélectionnées dont le
+             statut s'y prête (issue #376) : le bouton reste inactif sinon. -->
+        <template #actions="{ selection, rows, reload }">
+          <button class="btn btn-sm btn-success" data-testid="registration-validate"
+                  :disabled="!eligible(selection, rows, 'validate').length || isBusy"
+                  title="Demandes en attente ou refusées"
+                  @click="decide(selection, rows, 'validate', reload)">
             <i class="fas fa-check"></i> Valider
           </button>
-          <button class="btn btn-sm btn-warning"
-                  :disabled="!selection.length || isBusy"
-                  @click="eachOne(selection, 'unvalidateRegistration', 'Dévalider', reload)">
-            <i class="fas fa-xmark"></i> Dévalider
+          <button class="btn btn-sm btn-error" data-testid="registration-refuse"
+                  :disabled="!eligible(selection, rows, 'refuse').length || isBusy"
+                  title="Demandes en attente"
+                  @click="decide(selection, rows, 'refuse', reload)">
+            <i class="fas fa-ban"></i> Refuser
+          </button>
+          <button class="btn btn-sm btn-warning" data-testid="registration-unvalidate"
+                  :disabled="!eligible(selection, rows, 'unvalidate').length || isBusy"
+                  title="Demandes validées"
+                  @click="decide(selection, rows, 'unvalidate', reload)">
+            <i class="fas fa-rotate-left"></i> Dévalider
           </button>
           <button class="btn btn-sm btn-outline"
                   :disabled="!selection.length || isBusy"
@@ -81,9 +102,14 @@ export default {
                 { key: 'creation_date', label: 'Demandée le' },
                 {
                     key: 'status', label: 'Statut',
-                    format: (v, r) => (v === 'VALIDATED' ? `validée le ${r.validation_date || ''}` : 'en attente'),
-                    badge: (r) => 'badge badge-sm ' + (r.status === 'VALIDATED' ? 'badge-success' : 'badge-warning'),
+                    format: (v, r) => ({
+                        VALIDATED: `validée le ${r.validation_date || ''}`,
+                        REFUSED: `refusée le ${r.refusal_date || ''}`,
+                    })[v] || 'en attente',
+                    badge: (r) => 'badge badge-sm ' + ({VALIDATED: 'badge-success', REFUSED: 'badge-error'}[r.status]
+                        || 'badge-warning'),
                 },
+                { key: 'refusal_reason', label: 'Motif du refus' },
                 { key: 'competition', label: 'Compétition' },
                 { key: 'club', label: 'Club' },
                 { key: 'new_team_name', label: "Nom d'équipe" },
@@ -134,26 +160,50 @@ export default {
             if (!status) {
                 return null;
             }
-            return status === 'VALIDATED'
-                ? (r) => r.status === 'VALIDATED'
-                : (r) => r.status !== 'VALIDATED';
+            return (r) => r.status === status;
         },
     },
     methods: {
-        /** Endpoints unitaires : un appel par ligne, enchaînés. */
-        eachOne(selection, action, label, reload) {
-            if (!window.confirm(`${label} ${selection.length} inscription(s) ?`)) {
+        /** Lignes sélectionnées auxquelles la décision s'applique. */
+        eligible(selection, rows, decision) {
+            const statuses = DECISIONS[decision].from;
+            return (rows || []).filter((r) => selection.includes(r.id) && statuses.includes(r.status));
+        },
+        /**
+         * Endpoints unitaires : un appel par ligne, enchaînés. Les lignes dont
+         * le statut ne s'y prête pas sont écartées, et l'écran le dit.
+         */
+        decide(selection, rows, decision, reload) {
+            const {action, verb, done} = DECISIONS[decision];
+            const targets = this.eligible(selection, rows, decision);
+            const skipped = selection.length - targets.length;
+            const question = `${verb} ${targets.length} inscription(s) ?`
+                + (skipped ? `\n(${skipped} autre(s) sélectionnée(s) ignorée(s) : statut inadapté)` : '');
+            let reason = null;
+            if (decision === 'refuse') {
+                reason = window.prompt(`${question}\n\nMotif du refus, envoyé au club par email :`);
+                if (reason === null) {
+                    return;
+                }
+                if (!reason.trim()) {
+                    window.alert('Le motif du refus est obligatoire.');
+                    return;
+                }
+            } else if (!window.confirm(question)) {
                 return;
             }
             this.isBusy = true;
-            selection
-                .reduce((chain, id) => chain.then(() => {
+            targets
+                .reduce((chain, row) => chain.then(() => {
                     const formData = new FormData();
-                    formData.append('id', id);
+                    formData.append('id', row.id);
+                    if (reason !== null) {
+                        formData.append('reason', reason.trim());
+                    }
                     return axios.post(`/rest/action.php/register/${action}`, formData);
                 }), Promise.resolve())
-                .then((response) => {
-                    onSuccess(this, response);
+                .then(() => {
+                    onSuccess(this, {data: {message: `${targets.length} inscription(s) ${done}.`}});
                     reload();
                 })
                 .catch((error) => {

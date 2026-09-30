@@ -6,8 +6,8 @@ import {onError, onSuccess} from "../../../toaster.js";
  * Liste les demandes d'inscription du club avec leur statut, et propose un
  * formulaire de création/édition. Une demande reste modifiable/supprimable
  * par le club tant qu'elle n'est pas validée par la commission (statut
- * PENDING). Le backend force le club de session et verrouille les demandes
- * validées.
+ * PENDING, ou REFUSED — la corriger la remet en PENDING, issue #376). Le
+ * backend force le club de session et verrouille les demandes validées.
  */
 const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
 const HOURS = ['19:00', '19:15', '19:30', '19:45', '20:00', '20:15', '20:30', '20:45', '21:00', '21:15', '21:30', '21:45'];
@@ -48,7 +48,8 @@ export default {
         <p class="text-xl">Inscriptions aux compétitions</p>
         <p class="text-sm opacity-70 mb-4">
           Déposez ici les demandes d'inscription des équipes de votre club. Une demande reste
-          modifiable tant qu'elle n'a pas été validée par la commission.
+          modifiable tant qu'elle n'a pas été validée par la commission ; une demande refusée
+          peut être corrigée, elle repasse alors en attente.
         </p>
 
         <!-- Fenêtres d'inscription -->
@@ -85,9 +86,21 @@ export default {
                 <span v-if="r.status === 'VALIDATED'" class="badge badge-success gap-1">
                   <i class="fas fa-check"></i>validée le {{ r.validation_date }}
                 </span>
+                <span v-else-if="r.status === 'REFUSED'" class="badge badge-error gap-1">
+                  <i class="fas fa-ban"></i>refusée le {{ r.refusal_date }}
+                </span>
                 <span v-else class="badge badge-warning gap-1">
                   <i class="fas fa-hourglass-half"></i>en attente de validation
                 </span>
+              </div>
+              <!-- Issue #376 : le motif est du texte saisi par la commission -->
+              <div v-if="r.status === 'REFUSED'" class="alert alert-error text-sm py-2" data-testid="refusal-reason">
+                <div>
+                  <p class="font-bold">Motif du refus :</p>
+                  <p class="whitespace-pre-line">{{ r.refusal_reason }}</p>
+                  <p class="opacity-80 mt-1">Corrigez la demande : une fois enregistrée, elle repasse en attente
+                    de validation.</p>
+                </div>
               </div>
               <div v-if="r.status !== 'VALIDATED'" class="card-actions justify-end">
                 <button class="btn btn-sm btn-primary" @click="onEditClick(r)">

@@ -163,6 +163,11 @@ class Register extends Generic
                     break;
             }
         }
+        if (!UserManager::isAdmin() && !empty($parameters['id'])) {
+            // Le club corrige sa demande : une demande refusée repasse en
+            // attente d'une nouvelle décision, motif effacé (issue #376).
+            $sql .= "status = 'PENDING', refusal_reason = NULL, refusal_date = NULL,";
+        }
         $sql = trim($sql, ',');
         if (!empty($parameters['id'])) {
             $sql .= " WHERE id = ?";
@@ -231,32 +236,40 @@ class Register extends Generic
 
     /**
      * Validation d'une demande par l'admin : elle devient non modifiable par
-     * le club et éligible à l'engagement (set_up_season).
-     * @throws Exception
+     * le club et éligible à l'engagement (set_up_season). Une demande refusée
+     * peut être validée directement, si la commission revient sur sa décision.
+     * @throws Exception 409 si elle est déjà validée (pas d'email en double)
      */
     public function validateRegistration($id): void
     {
         if (!UserManager::isAdmin()) {
             throw new Exception("Seuls les administrateurs peuvent valider une inscription !", 403);
         }
-        $registration = $this->get_register($id);
+        $registration = $this->find_registration($id);
+        if ($registration['status'] === 'VALIDATED') {
+            throw new Exception("L'inscription « " . $registration['new_team_name'] . " » est déjà validée !", 409);
+        }
         $this->sql_manager->execute(
-            "UPDATE register SET status = 'VALIDATED', validation_date = NOW() WHERE id = ?",
+            "UPDATE register SET status = 'VALIDATED', validation_date = NOW(), refusal_reason = NULL, refusal_date = NULL
+             WHERE id = ?",
             array(array('type' => 'i', 'value' => $id)));
-        $this->notifyClubValidation($registration);
+        $this->notifyClub($registration, 'notify_registration_validated.fr.html', "Inscription validée");
         $this->addActivity("Inscription validée : " . $registration['new_team_name'] . " (" . $registration['competition'] . ")");
     }
 
     /**
-     * Retour d'une demande au statut PENDING (admin).
-     * @throws Exception
+     * Retour d'une demande validée au statut PENDING (admin).
+     * @throws Exception 409 si elle n'est pas validée : il n'y a rien à dévalider
      */
     public function unvalidateRegistration($id): void
     {
         if (!UserManager::isAdmin()) {
             throw new Exception("Seuls les administrateurs peuvent dévalider une inscription !", 403);
         }
-        $registration = $this->get_register($id);
+        $registration = $this->find_registration($id);
+        if ($registration['status'] !== 'VALIDATED') {
+            throw new Exception("L'inscription « " . $registration['new_team_name'] . " » n'est pas validée : rien à dévalider !", 409);
+        }
         $this->sql_manager->execute(
             "UPDATE register SET status = 'PENDING', validation_date = NULL WHERE id = ?",
             array(array('type' => 'i', 'value' => $id)));
@@ -264,10 +277,62 @@ class Register extends Generic
     }
 
     /**
-     * Notifie par email les responsables du club que leur demande est validée.
+     * Refus d'une demande en attente par l'admin, avec un motif envoyé au club
+     * (issue #376 : une équipe « volante », sans gymnase, est désormais
+     * interdite). Le club peut corriger sa demande : elle repasse en attente.
+     * Une demande validée se dévalide d'abord : on ne refuse pas une équipe
+     * peut-être déjà engagée.
      * @throws Exception
      */
-    private function notifyClubValidation(array $registration): void
+    public function refuseRegistration($id, $reason = null): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent refuser une inscription !", 403);
+        }
+        $reason = trim((string)$reason);
+        if ($reason === '') {
+            throw new Exception("Le motif du refus est obligatoire : il est envoyé au club.", 400);
+        }
+        if (mb_strlen($reason) > 1000) {
+            throw new Exception("Le motif du refus ne doit pas dépasser 1000 caractères.", 400);
+        }
+        $registration = $this->find_registration($id);
+        if ($registration['status'] === 'VALIDATED') {
+            throw new Exception("L'inscription « " . $registration['new_team_name'] . " » est validée : la dévalider avant de la refuser.", 409);
+        }
+        if ($registration['status'] === 'REFUSED') {
+            throw new Exception("L'inscription « " . $registration['new_team_name'] . " » est déjà refusée !", 409);
+        }
+        $this->sql_manager->execute(
+            "UPDATE register SET status = 'REFUSED', refusal_reason = ?, refusal_date = NOW() WHERE id = ?",
+            array(
+                array('type' => 's', 'value' => $reason),
+                array('type' => 'i', 'value' => $id),
+            ));
+        $this->notifyClub($registration, 'notify_registration_refused.fr.html', "Inscription refusée",
+            array('%reason%' => $reason));
+        $this->addActivity("Inscription refusée : " . $registration['new_team_name'] . " (" . $registration['competition'] . "), motif : $reason");
+    }
+
+    /**
+     * @throws Exception 404 si l'inscription n'existe pas
+     */
+    private function find_registration($id): array
+    {
+        $registration = $this->get_one("r.id = ?", array(array('type' => 'i', 'value' => $id)));
+        if (empty($registration)) {
+            throw new Exception("Inscription introuvable !", 404);
+        }
+        return $registration;
+    }
+
+    /**
+     * Notifie par email les responsables du club d'une décision sur leur
+     * demande. Les valeurs sont échappées : le nom d'équipe et le motif sont
+     * saisis librement (issue #292).
+     * @throws Exception
+     */
+    private function notifyClub(array $registration, string $template, string $subject, array $extra = array()): void
     {
         $sql = "SELECT ca.email
                 FROM users_clubs uc
@@ -278,13 +343,18 @@ class Register extends Generic
         if (count($leaders) === 0) {
             return;
         }
-        $message = file_get_contents(__DIR__ . '/../templates/emails/notify_registration_validated.fr.html');
-        $message = str_replace('%new_team_name%', $registration['new_team_name'], $message);
-        $message = str_replace('%competition%', $registration['competition'], $message);
+        $values = array_merge(array(
+            '%new_team_name%' => $registration['new_team_name'],
+            '%competition%' => $registration['competition'],
+        ), $extra);
+        $message = file_get_contents(__DIR__ . '/../templates/emails/' . $template);
+        foreach ($values as $placeholder => $value) {
+            $message = str_replace($placeholder, nl2br(htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8')), $message);
+        }
         $email_manager = new Emails();
         foreach ($leaders as $leader) {
             $email_manager->insert_email(
-                "[UFOLEP13VOLLEY]Inscription validée : " . $registration['new_team_name'],
+                "[UFOLEP13VOLLEY]$subject : " . $registration['new_team_name'],
                 $message,
                 $leader['email']);
         }
@@ -318,6 +388,8 @@ class Register extends Generic
                 DATE_FORMAT(r.creation_date, '%d/%m/%Y %H:%i:%s') AS creation_date,
                 r.status,
                 DATE_FORMAT(r.validation_date, '%d/%m/%Y %H:%i:%s') AS validation_date,
+                r.refusal_reason,
+                DATE_FORMAT(r.refusal_date, '%d/%m/%Y %H:%i:%s') AS refusal_date,
                 r.rank_start,
                 r.division,
                 r.is_paid,

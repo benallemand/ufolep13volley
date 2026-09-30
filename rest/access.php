@@ -236,6 +236,7 @@ return array(
         'delete' => 'admin',
         'fill_ranks' => 'admin',
         'get_register' => 'admin',
+        'refuseRegistration' => 'admin',
         'set_up_season' => 'admin',
         'unvalidateRegistration' => 'admin',
         'validateRegistration' => 'admin',
