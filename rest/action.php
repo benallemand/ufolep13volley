@@ -217,6 +217,10 @@ try {
             require_once __DIR__ . "/../classes/Registry.php";
             $manager = new Registry();
             break;
+        case 'rules':
+            require_once __DIR__ . "/../classes/RulesDocument.php";
+            $manager = new RulesDocument();
+            break;
         case 'sqlmanager':
             require_once __DIR__ . "/../classes/SqlManager.php";
             $manager = new SqlManager();

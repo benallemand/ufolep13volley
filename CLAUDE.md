@@ -1204,6 +1204,48 @@ n'est pas repris dans le formulaire (`get_survey` renvoie un formulaire neuf).
 Un sondage ne se relit que par l'équipe sondeuse : `Survey::getSql()` passe par
 `users_teams`. Celui d'un admin hors équipe s'enregistre mais ne se relit pas.
 
+### Règlements lus dans le dossier Google Drive (issue #342)
+
+Les règlements ne sont plus dans le code : `UfolepRules.js` (liste) et
+`RulesDocument.js` (un règlement) affichent les documents du dossier Google
+Drive de la commission, désigné par le registre `rules.folder` (URL ou
+identifiant seul, écran « Base de registres »). La page Infos en propose les
+PDF. `classes/RulesDocument.php` (`rules/getRulesList`, `rules/getRules?slug=`,
+`rules/getRulesPdf?slug=`, publics) lit les listes de dossiers et les exports
+HTML et PDF, et les garde dans `document_cache` 15 minutes. Si Google ne répond
+pas, la dernière version est servie (statut `stale`), et on ne le relance pas
+plus d'une fois toutes les 5 minutes.
+
+- **Un sous-dossier par saison, nommé exactement `AAAA-AAAA`** (un nom comme
+  « 2027-2028 brouillon » est ignoré : c'est ainsi qu'on prépare une saison sans
+  la publier). Chaque règlement vient de la saison **la plus récente qui le
+  contient** : une nouvelle saison ne porte que les règlements qui changent.
+- **Un règlement est reconnu à son nom de fichier** (`RulesDocument::KINDS` :
+  « GENERAL », « CHAMPIONNAT FEMININ »…, suffixe de saison ignoré), qui lui donne
+  son libellé, son icône et sa place. Un document inconnu s'affiche quand même,
+  sous son nom. La liste de dossier passe par la vue publique
+  `drive.google.com/embeddedfolderview` (pas de clé d'API) : si Google en change
+  le format, `parse_folder` est le seul endroit à reprendre.
+- **Le partage reste en lecture seule** (« Tous les utilisateurs disposant du
+  lien : Lecteur », sur le dossier) : le serveur n'a besoin que de lire. Aucune
+  adresse Google ne sort du serveur — le lien « document original » est le PDF
+  servi par `getRulesPdf` — donc aucun lien d'édition ne peut fuiter par le
+  site. Si le téléchargement est interdit aux lecteurs, l'export échoue.
+- **Jamais d'adresse Drive réelle dans le code** (dépôts publics) : ni dans une
+  migration, ni dans un test, ni dans un seed. `rules.folder` se renseigne dans
+  l'admin ; les tests utilisent des identifiants fictifs.
+- **Le HTML est reconstruit, jamais recopié** (`RulesDocument::sanitize`) : liste
+  blanche de balises, texte échappé, seuls `href` (http, https, mailto — la
+  redirection `google.com/url?q=` retirée) et `colspan`/`rowspan` survivent. Le
+  gras, l'italique et le souligné, que Google exprime en classes CSS,
+  redeviennent des balises. D'où le `v-html` sans risque dans `RulesDocument.js`.
+- Le premier paragraphe d'un document est son titre (retiré, la page a le sien).
+  Un paragraphe « Article N : Titre » ouvre un article (`#article-N`) ; le
+  récapitulatif en est tiré, par ordre alphabétique. Une mise en page qui casse
+  ce motif fait disparaître les articles de la page.
+- Tests : `RulesDocumentTest` (sans réseau, réponses simulées par URL) ; en E2E,
+  `rules_setup.php` remplace le dossier par un dossier fictif en cache.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

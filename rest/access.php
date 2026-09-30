@@ -248,6 +248,14 @@ return array(
         'get' => 'admin',
         'save_with_args' => 'admin',
     ),
+    // Règlements lus dans le dossier Google Drive (issue #342) : publics comme
+    // les pages qu'ils remplacent ; les adresses Google, elles, ne sortent pas
+    // du serveur.
+    'rules' => array(
+        'getRules' => 'public',
+        'getRulesList' => 'public',
+        'getRulesPdf' => 'public',
+    ),
     'team' => array(
         'delete' => 'admin',
         'getRankTeams' => 'admin',
