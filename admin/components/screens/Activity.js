@@ -1,4 +1,5 @@
 import { defineAsyncComponent } from 'vue';
+import { persistedFilters } from '../grid/gridState.js';
 
 /**
  * Journal d'activité (issue #265, lot 5).
@@ -15,11 +16,14 @@ import { defineAsyncComponent } from 'vue';
  * déjà en `ORDER BY activity_date DESC`.
  */
 export default {
+    // Filtres de l'écran mémorisés entre deux visites (issue #311)
+    mixins: [persistedFilters(['windowSize'])],
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
     },
     template: `
       <admin-grid
+        @reset-view="resetPersistedFilters"
         title="Journal d'activité"
         entity-label="entrée"
         :columns="columns"

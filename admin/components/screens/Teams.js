@@ -19,6 +19,7 @@ export default {
     },
     template: `
       <admin-grid
+        :bulk-fields="['is_cup_registered']"
         ref="grid"
         title="Gestion des équipes"
         entity-label="équipe"

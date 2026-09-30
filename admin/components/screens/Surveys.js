@@ -1,4 +1,5 @@
 import { defineAsyncComponent } from 'vue';
+import { persistedFilters } from '../grid/gridState.js';
 
 /**
  * Sondages d'après-match (issue #265, lot 4).
@@ -22,11 +23,14 @@ import { defineAsyncComponent } from 'vue';
  * `get_survey` ne la renvoie pas, elle était vide.
  */
 export default {
+    // Filtres de l'écran mémorisés entre deux visites (issue #311)
+    mixins: [persistedFilters(['showEmpty'])],
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
     },
     template: `
       <admin-grid
+        @reset-view="resetPersistedFilters"
         title="Sondages d'après-match"
         entity-label="sondage"
         :columns="columns"

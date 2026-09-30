@@ -1,6 +1,11 @@
 import { defineAsyncComponent } from 'vue';
 import { onError, onSuccess } from '../../../toaster.js';
 import { compareCells } from './compareCells.js';
+import { clearState, hasExplicitQuery, loadState, saveState, stateKey } from './gridState.js';
+import { filterKind, isEmptyFilter, matchesFilter, selectOptions } from './columnFilters.js';
+
+/** Vue par défaut, celle d'une première visite (issue #311). */
+const DEFAULT_PAGE_SIZE = 25;
 
 /**
  * Grille d'administration générique (issue #265, lot 0).
@@ -31,6 +36,7 @@ export default {
     components: {
         'admin-edit-modal': defineAsyncComponent(() => import('./AdminEditModal.js')),
         'admin-detail-drawer': defineAsyncComponent(() => import('./AdminDetailDrawer.js')),
+        'admin-bulk-edit-modal': defineAsyncComponent(() => import('./AdminBulkEditModal.js')),
     },
     props: {
         title: { type: String, required: true },
@@ -79,8 +85,18 @@ export default {
          * historique, clic = selection.
          */
         detail: { type: [Boolean, Object], default: false },
+        /**
+         * Champs modifiables en lot (issue #309), parmi `fields` : noms.
+         * Déclarés, ils permettent « Éditer » sur plusieurs lignes cochées.
+         */
+        bulkFields: { type: Array, default: () => [] },
     },
-    emits: ['row-click'],
+    /**
+     * `reset-view` : « Réinitialiser la vue » a été cliqué (issue #311) ; un
+     * écran qui mémorise ses propres filtres (`persistedFilters`) les remet
+     * alors à zéro.
+     */
+    emits: ['row-click', 'reset-view'],
     template: `
       <div class="p-4">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -89,14 +105,27 @@ export default {
             <button v-if="saveUrl" @click="openCreate" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Créer
             </button>
-            <button v-if="saveUrl" @click="openEdit" class="btn btn-sm" :disabled="selection.length !== 1">
-              <i class="fas fa-pen"></i> Éditer
+            <!-- Plusieurs lignes cochées : édition en masse, si l'écran déclare
+                 des champs modifiables en lot (#309). -->
+            <button v-if="saveUrl" @click="onEditClick" class="btn btn-sm" :disabled="!canEdit"
+                    data-testid="grid-edit"
+                    :title="selection.length > 1 && !bulkFields.length ? 'Une seule ligne à la fois sur cet écran' : ''">
+              <i class="fas fa-pen"></i> Éditer<span v-if="selection.length > 1"> ({{ selection.length }})</span>
             </button>
             <button v-if="deleteUrl" @click="confirmDelete" class="btn btn-error btn-sm" :disabled="!selection.length">
               <i class="fas fa-trash"></i> Supprimer<span v-if="selection.length"> ({{ selection.length }})</span>
             </button>
             <button @click="exportCsv" class="btn btn-outline btn-sm" :disabled="!filteredRows.length">
               <i class="fas fa-file-csv"></i> Export
+            </button>
+            <button @click="showColumnFilters = !showColumnFilters" data-testid="grid-column-filters"
+                    :class="['btn btn-sm', showColumnFilters || activeColumnFilters ? 'btn-active' : 'btn-ghost']"
+                    title="Filtrer colonne par colonne">
+              <i class="fas fa-filter"></i> Filtres<span v-if="activeColumnFilters"> ({{ activeColumnFilters }})</span>
+            </button>
+            <button v-if="isCustomView" @click="resetView" class="btn btn-ghost btn-sm" data-testid="grid-reset-view"
+                    title="Recherche, filtres, tri et pagination retrouvent leur état par défaut">
+              <i class="fas fa-filter-circle-xmark"></i> Réinitialiser la vue
             </button>
             <button @click="fetchRows" class="btn btn-ghost btn-sm" title="Rafraîchir">
               <i class="fas fa-rotate"></i>
@@ -139,7 +168,8 @@ export default {
               <option :value="25">25</option>
               <option :value="50">50</option>
               <option :value="100">100</option>
-              <option :value="filteredRows.length || 1">tout</option>
+              <!-- 0 = tout : une valeur stable, mémorisable (#311) -->
+              <option :value="0">tout</option>
             </select>
           </label>
         </div>
@@ -175,6 +205,36 @@ export default {
                 {{ col.label }}
                 <i v-if="sort.key === col.key"
                    :class="sort.asc ? 'fas fa-caret-up' : 'fas fa-caret-down'"></i>
+              </th>
+            </tr>
+            <!-- Filtres par colonne (#310) : liste, plage de dates ou texte,
+                 selon les valeurs de la colonne. -->
+            <tr v-if="showColumnFilters" data-testid="grid-filter-row">
+              <th v-if="canSelect"></th>
+              <th v-for="col in columns" :key="'f-' + col.key" class="font-normal align-top">
+                <select v-if="columnKinds[col.key] === 'select'"
+                        :value="columnFilters[col.key] ?? ''"
+                        @change="columnFilters[col.key] = $event.target.value"
+                        :data-testid="'grid-filter-' + col.key"
+                        class="select select-bordered select-xs w-full min-w-20">
+                  <option value="">tous</option>
+                  <option v-for="opt in columnOptions[col.key]" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+                <div v-else-if="columnKinds[col.key] === 'date'" class="flex flex-col gap-1 min-w-28">
+                  <input type="date" class="input input-bordered input-xs" title="à partir du"
+                         :data-testid="'grid-filter-' + col.key + '-from'"
+                         :value="(columnFilters[col.key] || {}).from || ''"
+                         @input="setDateFilter(col.key, 'from', $event.target.value)"/>
+                  <input type="date" class="input input-bordered input-xs" title="jusqu'au"
+                         :data-testid="'grid-filter-' + col.key + '-to'"
+                         :value="(columnFilters[col.key] || {}).to || ''"
+                         @input="setDateFilter(col.key, 'to', $event.target.value)"/>
+                </div>
+                <input v-else-if="columnKinds[col.key] === 'text'"
+                       v-model.trim="columnFilters[col.key]"
+                       :data-testid="'grid-filter-' + col.key"
+                       type="text" placeholder="contient…"
+                       class="input input-bordered input-xs w-full min-w-20"/>
               </th>
             </tr>
             </thead>
@@ -263,6 +323,18 @@ export default {
                           :id-field="idField"
                           @close="editing = null"
                           @saved="onSaved"/>
+
+        <admin-bulk-edit-modal v-if="bulkEditing"
+                               :title="title"
+                               :fields="fields"
+                               :bulk-fields="bulkFields"
+                               :rows="selectedRows"
+                               :save-url="saveUrl"
+                               :id-field="idField"
+                               :entity-label="entityLabel"
+                               :row-label="rowLabel"
+                               @close="bulkEditing = false"
+                               @saved="onBulkSaved"/>
       </div>
     `,
     data() {
@@ -273,9 +345,18 @@ export default {
             search: '',
             sort: { key: null, asc: true },
             page: 1,
-            pageSize: 25,
+            pageSize: DEFAULT_PAGE_SIZE,
             selection: [],
             editing: null,
+            bulkEditing: false,
+            /** Filtres par colonne (#310) : clé de colonne => critère */
+            columnFilters: {},
+            showColumnFilters: false,
+            /**
+             * Page mémorisée (#311), appliquée une fois les lignes chargées :
+             * elle peut ne plus exister si le jeu de données a rétréci.
+             */
+            restoredPage: null,
             /**
              * Identifiant de la ligne ouverte dans le tiroir, et non la ligne
              * elle-meme : apres un rechargement la ligne est un autre objet,
@@ -306,9 +387,16 @@ export default {
             const focused = this.focusIds.length
                 ? this.sortedRows.filter((r) => this.focusIds.includes(String(r[this.idField])))
                 : this.sortedRows;
-            const base = this.rowFilter
+            const screened = this.rowFilter
                 ? focused.filter((r) => this.rowFilter(r))
                 : focused;
+            // Filtres par colonne (#310), sur la valeur affichée
+            const active = this.columns.filter((c) => this.columnKinds[c.key]
+                && !isEmptyFilter(this.columnFilters[c.key]));
+            const base = active.length
+                ? screened.filter((row) => active.every((c) => matchesFilter(
+                    this.columnKinds[c.key], this.displayed(c, row), this.columnFilters[c.key])))
+                : screened;
             if (!this.search) {
                 return base;
             }
@@ -334,11 +422,66 @@ export default {
             return [...this.rows].sort((a, b) => compareCells(a[key], b[key]) * dir);
         },
         pageCount() {
+            if (!this.pageSize) {
+                return 1; // « tout »
+            }
             return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
         },
         pageRows() {
+            if (!this.pageSize) {
+                return this.filteredRows;
+            }
             const start = (this.page - 1) * this.pageSize;
             return this.filteredRows.slice(start, start + this.pageSize);
+        },
+        /**
+         * Type de filtre de chaque colonne (#310), déduit des valeurs
+         * affichées de TOUTES les lignes : une colonne ne change pas de type
+         * au gré des autres filtres.
+         */
+        columnKinds() {
+            const kinds = {};
+            for (const col of this.columns) {
+                kinds[col.key] = filterKind(col, this.rows.map((r) => this.displayed(col, r)));
+            }
+            return kinds;
+        },
+        columnOptions() {
+            const options = {};
+            for (const col of this.columns) {
+                if (this.columnKinds[col.key] === 'select') {
+                    options[col.key] = selectOptions(this.rows.map((r) => this.displayed(col, r)));
+                }
+            }
+            return options;
+        },
+        activeColumnFilters() {
+            return Object.keys(this.columnFilters)
+                .filter((k) => this.columnKinds[k] && !isEmptyFilter(this.columnFilters[k])).length;
+        },
+        /** Ce que la grille mémorise d'une visite à l'autre (#311). */
+        viewState() {
+            return {
+                search: this.search,
+                sort: this.sort,
+                pageSize: this.pageSize,
+                page: this.page,
+                columnFilters: this.columnFilters,
+                showColumnFilters: this.showColumnFilters,
+            };
+        },
+        storageKey() {
+            return stateKey(this.$route, this.title);
+        },
+        isCustomView() {
+            return Boolean(this.search || this.sort.key || this.pageSize !== DEFAULT_PAGE_SIZE
+                || this.page !== 1 || this.activeColumnFilters || this.showColumnFilters);
+        },
+        selectedRows() {
+            return this.rows.filter((r) => this.selection.includes(r[this.idField]));
+        },
+        canEdit() {
+            return this.selection.length === 1 || (this.selection.length > 1 && this.bulkFields.length > 0);
         },
         canSelect() {
             return this.selectable !== null
@@ -406,19 +549,93 @@ export default {
         // Même raison : les lignes visibles changent sous les pieds de la
         // sélection et du tiroir (#312).
         focusIds() { this.page = 1; this.selection = []; this.detailId = null; },
+        // Filtres par colonne (#310) : même règle que la recherche.
+        columnFilters: {
+            deep: true,
+            handler() { this.page = 1; this.selection = []; this.detailId = null; },
+        },
         pageSize() { this.page = 1; },
+        viewState: {
+            deep: true,
+            handler(state) { saveState(this.storageKey, state); },
+        },
         // Un écran peut faire varier son URL (fenêtre de chargement des
         // emails, filtre serveur…) : on recharge alors au lieu d'afficher
         // silencieusement les anciennes lignes.
         fetchUrl() { this.page = 1; this.fetchRows(); },
     },
     created() {
+        this.restoreView();
         this.fetchRows();
     },
     methods: {
         render(col, row) {
             const value = row[col.key];
             return col.format ? col.format(value, row) : (value ?? '');
+        },
+        /** Valeur affichée, en texte : ce que filtrent les filtres par colonne. */
+        displayed(col, row) {
+            return String(this.render(col, row) ?? '').trim();
+        },
+        rowLabel(row) {
+            const first = this.columns.find((c) => c.label && !c.image && !c.links);
+            return row && first ? this.displayed(first, row) : '';
+        },
+        /**
+         * Vue de la visite précédente (#311). Rien n'est restauré quand
+         * l'écran est ouvert avec des paramètres explicites (`?ids=` d'une
+         * tuile d'indicateur, #312) : l'URL fait foi.
+         */
+        restoreView() {
+            if (hasExplicitQuery(this.$route)) {
+                return;
+            }
+            const saved = loadState(this.storageKey);
+            if (!saved) {
+                return;
+            }
+            if (typeof saved.search === 'string') {
+                this.search = saved.search;
+            }
+            if (saved.sort && typeof saved.sort === 'object' && 'key' in saved.sort) {
+                this.sort = { key: saved.sort.key, asc: saved.sort.asc !== false };
+            }
+            if ([0, 25, 50, 100].includes(saved.pageSize)) {
+                this.pageSize = saved.pageSize;
+            }
+            if (saved.columnFilters && typeof saved.columnFilters === 'object') {
+                this.columnFilters = saved.columnFilters;
+            }
+            this.showColumnFilters = Boolean(saved.showColumnFilters);
+            this.restoredPage = Number(saved.page) > 1 ? Number(saved.page) : null;
+        },
+        /** « Réinitialiser la vue » : l'état d'une première visite. */
+        resetView() {
+            this.search = '';
+            this.sort = { key: null, asc: true };
+            this.pageSize = DEFAULT_PAGE_SIZE;
+            this.page = 1;
+            this.columnFilters = {};
+            this.showColumnFilters = false;
+            clearState(this.storageKey);
+            this.$emit('reset-view');
+        },
+        setDateFilter(key, bound, value) {
+            this.columnFilters = {
+                ...this.columnFilters,
+                [key]: { ...(this.columnFilters[key] || {}), [bound]: value },
+            };
+        },
+        onEditClick() {
+            if (this.selection.length > 1) {
+                this.bulkEditing = true;
+            } else {
+                this.openEdit();
+            }
+        },
+        onBulkSaved() {
+            this.bulkEditing = false;
+            this.fetchRows();
         },
         isSelected(row) {
             return this.selection.includes(row[this.idField]);
@@ -463,7 +680,7 @@ export default {
                 return;
             }
             this.detailId = target[this.idField];
-            this.page = Math.floor(index / this.pageSize) + 1;
+            this.page = this.pageSize ? Math.floor(index / this.pageSize) + 1 : 1;
         },
         openEditFromDetail() {
             if (this.detailRow) {
@@ -493,9 +710,14 @@ export default {
         fetchRows() {
             this.loading = true;
             this.selection = [];
-            axios.get(this.fetchUrl)
+            return axios.get(this.fetchUrl)
                 .then(({ data }) => {
                     this.rows = Array.isArray(data) ? data : [];
+                    // Page mémorisée (#311), ou page courante après un
+                    // rechargement : si elle n'existe plus, la dernière page.
+                    const wanted = this.restoredPage ?? this.page;
+                    this.restoredPage = null;
+                    this.$nextTick(() => { this.page = Math.min(Math.max(1, wanted), this.pageCount); });
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.loading = false; });

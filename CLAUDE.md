@@ -1223,6 +1223,31 @@ effacé. Une édition par l'admin garde le statut. Seules les VALIDATED sont
 engagées (`set_up_season`, `get_pending_registrations`…). Les emails de décision
 échappent le nom d'équipe et le motif (`notifyClub`).
 
+### Grilles d'administration : filtres, mémoire, édition en masse (#309 à #311)
+
+Trois capacités d'`AdminGrid`, offertes à tous les écrans :
+
+- **Filtres par colonne (#310, `columnFilters.js`)** : bouton « Filtres ». Le
+  type se **déduit des valeurs affichées** (après `format`) : liste si ≤ 20
+  valeurs distinctes, plage du … au … si ce sont des dates jj/mm/aaaa, « contient »
+  sinon — égalité stricte pour un nombre dans une cellule numérique. Une colonne
+  force son type par `filter: 'text' | 'select' | 'date'`, ou s'exclut par
+  `filter: false`. Filtrer vide la sélection, comme la recherche.
+- **Mémoire de la vue (#311, `gridState.js`)** : recherche, tri, taille et page,
+  filtres de colonnes, dans `localStorage`, clé `admin-grid:<chemin de route>`.
+  Rien n'est restauré quand l'URL porte des paramètres (`?ids=`, #312). Une page
+  qui n'existe plus se ramène à la dernière. « tout » vaut `pageSize = 0`.
+  Les filtres **propres à un écran** passent par le mixin
+  `persistedFilters(['status'])` et `@reset-view="resetPersistedFilters"`. Ne
+  pas y mettre une saison (calendrier, palmarès) : elle serait périmée l'année
+  suivante.
+- **Édition en masse (#309, `AdminBulkEditModal.js`)** : un écran déclare
+  `:bulk-fields="['division', 'is_paid']"`, et « Éditer » s'ouvre alors sur
+  plusieurs lignes. Chaque ligne est postée **complète**, comme par l'édition
+  simple (`editPayload.js`, partagé avec `AdminEditModal`), champs cochés
+  remplacés : n'envoyer que le champ modifié viderait les autres colonnes.
+  Un appel par ligne, arrêt à la première erreur en nommant la ligne.
+
 ### Inscriptions en cours, publiques en page d'accueil (issue #379)
 
 `register/getPublicRegistrations` (**public**) alimente `PublicRegistrations.js`
