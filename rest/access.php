@@ -115,6 +115,9 @@ return array(
         'get' => 'admin',
         'insert_email_team_recap' => 'admin',
         'retry_error_emails' => 'admin',
+        // un message précis (issue #314)
+        'resend_email' => 'admin',
+        'get_email_status' => 'admin',
         'get_team_emails' => 'user',
         'mark_all_read' => 'user',
         'set_read_status' => 'user',

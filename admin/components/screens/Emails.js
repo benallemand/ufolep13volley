@@ -17,6 +17,9 @@ import { onError, onSuccess } from '../../../toaster.js';
  * (`_start`/`_end`, qui découpe côté serveur), les emails sortant déjà en
  * `ORDER BY id DESC`. Le sélecteur permet de l'élargir à la demande.
  *
+ * La fenêtre du message propose de **renvoyer ce message-là** (issue #314),
+ * plutôt que de relancer toutes les erreurs d'un coup.
+ *
  * Un clic sur une ligne ouvre le **rendu HTML** du message (issue #288) : la
  * grille n'en montre que le texte aplati, ce qui suffit pour survoler mais pas
  * pour vérifier un email. Le rendu se fait dans une `iframe` **sandboxée** —
@@ -92,6 +95,13 @@ export default {
           </div>
 
           <div class="modal-action">
+            <!-- Renvoi de CE message (issue #314) : même corps, mêmes
+                 destinataires, envoi immédiat. -->
+            <button class="btn btn-sm btn-primary" data-testid="email-resend"
+                    :disabled="isBusy" @click="resend(opened)">
+              <span v-if="isBusy" class="loading loading-spinner loading-xs"></span>
+              <i v-else class="fas fa-paper-plane"></i> Renvoyer ce message
+            </button>
             <button class="btn btn-sm" @click="opened = null">Fermer</button>
           </div>
         </div>
@@ -143,6 +153,38 @@ export default {
                 TO_DO: 'badge-warning',
                 ERROR: 'badge-error',
             }[row.sending_status] || 'badge-ghost');
+        },
+        /**
+         * Renvoie le message ouvert, puis relit son statut : l'envoi ne lève
+         * jamais d'erreur côté serveur (`send_email_now`), c'est le statut qui
+         * dit s'il est parti.
+         */
+        resend(email) {
+            const suite = email.sending_status === 'DONE'
+                ? `\n\nIl a déjà été envoyé le ${email.sent_date || '?'} : le destinataire le recevra une seconde fois.`
+                : '';
+            if (!window.confirm(`Renvoyer « ${email.subject || '(sans sujet)'} » à ${email.to_email} ?${suite}`)) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('id', email.id);
+            this.isBusy = true;
+            axios.post('/rest/action.php/emails/resend_email', formData)
+                .then(() => axios.get('/rest/action.php/emails/get_email_status', { params: { id: email.id } }))
+                .then(({ data }) => {
+                    email.sending_status = data.sending_status;
+                    email.sent_date = data.sent_date;
+                    if (data.sending_status === 'DONE') {
+                        onSuccess(this, { data: { message: `Email renvoyé à ${email.to_email}.` } });
+                    } else {
+                        onError(this, { response: { data: {
+                            message: "L'envoi a échoué : l'email est en erreur (voir les journaux du serveur).",
+                        } } });
+                    }
+                    this.$refs.grid.fetchRows();
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isBusy = false; });
         },
         run(url, question, reload) {
             if (!window.confirm(question)) {
