@@ -242,6 +242,9 @@ return array(
         'validateRegistration' => 'admin',
         'deleteMyClubRegistration' => 'user',
         'getMyClubRegistrations' => 'user',
+        // Liste publique de l'accueil (issue #379) : colonnes en liste blanche
+        // (Register::PUBLIC_REGISTRATION_FIELDS), rien sur les personnes.
+        'getPublicRegistrations' => 'public',
         'register' => 'user',
     ),
     'registry' => array(

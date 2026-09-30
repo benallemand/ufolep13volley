@@ -1223,6 +1223,25 @@ effacé. Une édition par l'admin garde le statut. Seules les VALIDATED sont
 engagées (`set_up_season`, `get_pending_registrations`…). Les emails de décision
 échappent le nom d'équipe et le motif (`notifyClub`).
 
+### Inscriptions en cours, publiques en page d'accueil (issue #379)
+
+`register/getPublicRegistrations` (**public**) alimente `PublicRegistrations.js`
+sur l'accueil. Par compétition : les demandes (tous statuts, **refus compris**,
+sans le motif), et en championnat (`Competition::CHAMPIONSHIPS`) les équipes du
+classement actuel sans demande (`NOT_REGISTERED`, « pas réinscrite »).
+
+- **Liste blanche** : chaque ligne ne porte que
+  `Register::PUBLIC_REGISTRATION_FIELDS` (club, équipe, statut, type, ancien
+  nom), vérifié clé par clé en test. Ne jamais y ajouter responsable, gymnase,
+  remarque, paiement ou motif.
+- **Fenêtre** : visible dès `start_register_date`, jusqu'au démarrage. Mais
+  `start_date` reste celle de la saison passée tant que la commission n'a pas
+  saisi la nouvelle : une `start_date` antérieure à l'ouverture ne masque rien.
+- **Seules comptent les demandes de la fenêtre** (`creation_date >=
+  start_register_date`) : `register` garde ses lignes d'une saison à l'autre.
+  Une réinscription se reconnaît à `old_team_id`, quelle que soit la
+  compétition demandée (une équipe passée du féminin au mixte est réinscrite).
+
 ### Règlements lus dans le dossier Google Drive (issue #342)
 
 Les règlements ne sont plus dans le code : `UfolepRules.js` (liste) et

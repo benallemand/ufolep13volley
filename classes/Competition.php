@@ -6,6 +6,9 @@ require_once __DIR__ . '/../classes/MatchMgr.php';
 
 class Competition extends Generic
 {
+    /** Codes des championnats ; les autres compétitions sont des coupes. */
+    public const CHAMPIONSHIPS = array('f', 'm', 'mo');
+
     private Rank $rank;
     private MatchMgr $match;
 
@@ -589,7 +592,7 @@ class Competition extends Generic
     public function is_championship($id_competition): bool
     {
         $competition = $this->get_by_id($id_competition);
-        return in_array($competition['code_competition'], array('f', 'm', 'mo'));
+        return in_array($competition['code_competition'], self::CHAMPIONSHIPS);
     }
 
     /**
