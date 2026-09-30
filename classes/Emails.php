@@ -669,6 +669,48 @@ class Emails extends Generic
     }
 
     /**
+     * Renvoie un email précis (issue #314), là où `retry_error_emails()`
+     * relance tous les ERROR d'un coup. Typiquement un email d'action
+     * utilisateur (identifiants, accusé d'inscription…) parti en erreur, ou
+     * qu'un destinataire dit ne pas avoir reçu. La ligne repasse en TO_DO puis
+     * part aussitôt par `send_email_now()` : un échec ne lève rien, il se lit
+     * dans le statut (`get_email_status`).
+     * @throws Exception
+     */
+    public function resend_email($id): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent renvoyer un email !", 403);
+        }
+        $id = Generic::parse_id($id, "identifiant d'email");
+        $emails = $this->get_emails("id = $id");
+        if (empty($emails)) {
+            throw new Exception("Email introuvable !", 404);
+        }
+        $this->set_email_status($id, 'TO_DO');
+        $this->send_email_now($id);
+        $this->addActivity("Email renvoyé à " . $emails[0]['to_email'] . " : " . $emails[0]['subject']);
+    }
+
+    /**
+     * Statut d'envoi d'un email, sans son corps : l'écran relit une ligne
+     * après un renvoi sans recharger les messages (issue #314).
+     * @throws Exception
+     */
+    public function get_email_status($id): array
+    {
+        $id = Generic::parse_id($id, "identifiant d'email");
+        $rows = $this->sql_manager->execute(
+            "SELECT id, sending_status, DATE_FORMAT(sent_date, '%d/%m/%Y %H:%i:%s') AS sent_date
+             FROM emails WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        if (empty($rows)) {
+            throw new Exception("Email introuvable !", 404);
+        }
+        return $rows[0];
+    }
+
+    /**
      * @throws Exception|Exception
      */
     public function retry_error_emails(): void
