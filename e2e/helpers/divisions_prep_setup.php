@@ -3,8 +3,9 @@
  * Issue #388 — helper E2E : une compétition de test « dx » en préparation de
  * saison, pour l'écran Réorganiser les divisions.
  *
- *   - « E2E Prep Classee »  : en division 1 ;
- *   - « E2E Prep A placer » : en division X (à placer) ;
+ *   - « E2E Prep Classee »  : en division 1, réinscrite ;
+ *   - « E2E Prep Partante » : en division 1, sans inscription (non réinscrite) ;
+ *   - « E2E Prep A placer » : en division X (à placer), inscrite ;
  *   - « E2E Prep Inscrite » : hors classement, avec une inscription en attente ;
  *   - « E2E Prep Ancienne » : hors classement, sans inscription (ancienne saison).
  *
@@ -48,15 +49,23 @@ try {
         "INSERT INTO classements SET code_competition = 'dx', division = ?, id_equipe = ?, rank_start = 1, penalite = 0",
         [['type' => 's', 'value' => $division], ['type' => 'i', 'value' => $id_team]]);
 
-    $rank($team('E2E Prep Classee'), '1');
-    $rank($team('E2E Prep A placer'), 'X');
-    $team('E2E Prep Inscrite');
-    $team('E2E Prep Ancienne');
-    $sql->execute(
-        "INSERT INTO register SET new_team_name = 'E2E Prep Inscrite', id_club = ?, id_competition = ?,
+    $register = static fn(string $name, string $status, ?int $old_team_id = null) => $sql->execute(
+        "INSERT INTO register SET new_team_name = ?, id_club = ?, id_competition = ?, old_team_id = ?,
              leader_name = 'E2EPREP', leader_first_name = 'Test', leader_email = 'e2e_prep@ufolep.test',
-             leader_phone = '0600000000', status = 'PENDING'",
-        [['type' => 'i', 'value' => $id_club], ['type' => 'i', 'value' => $id_competition]]);
+             leader_phone = '0600000000', status = ?",
+        [['type' => 's', 'value' => $name], ['type' => 'i', 'value' => $id_club],
+         ['type' => 'i', 'value' => $id_competition], ['type' => 'i', 'value' => $old_team_id],
+         ['type' => 's', 'value' => $status]]);
+
+    $classee = $team('E2E Prep Classee');
+    $rank($classee, '1');
+    $register('E2E Prep Classee', 'VALIDATED', $classee);
+    $rank($team('E2E Prep Partante'), '1');
+    $rank($team('E2E Prep A placer'), 'X');
+    $register('E2E Prep A placer', 'PENDING');
+    $team('E2E Prep Inscrite');
+    $register('E2E Prep Inscrite', 'PENDING');
+    $team('E2E Prep Ancienne');
     echo json_encode(['id_competition' => $id_competition]);
 } catch (Throwable $e) {
     http_response_code(500);

@@ -23,7 +23,12 @@ import { onError, onSuccess } from '../../../toaster.js';
  *   inscriptions propres (coupes) montre tout ;
  * - la division `X` (`Rank::DIVISION_TO_PLACE`), où « Remplir les divisions
  *   et les rangs » met les équipes non classées la saison passée, vient en
- *   tête et se signale « à placer ».
+ *   tête et se signale « à placer » ;
+ * - une équipe d'une division **sans inscription** porte le badge « à
+ *   retirer », et sa colonne compte « N à retirer ». Rien n'est supprimé
+ *   d'office : avant l'initialisation, `classements` porte encore la saison
+ *   passée, affichée sur le site, et l'initialisation ne reprend de toute
+ *   façon que les inscriptions validées.
  *
  * Le glisser-déposer natif ne fonctionne pas au doigt. Comme cet écran doit
  * rester utilisable sur mobile — ce que l'admin ExtJS n'était pas du tout — on
@@ -113,6 +118,11 @@ export default {
                         title="Équipes sans classement la saison passée : à déposer dans une vraie division avant de générer le calendrier">
                     à placer
                   </span>
+                  <span v-if="col.key !== 'unassigned' && leaving(col).length"
+                        class="badge badge-error badge-sm ml-1" :data-testid="'divisions-leaving-' + col.key"
+                        title="Équipes classées sans inscription pour la nouvelle saison : elles ne seront pas reprises à l'initialisation">
+                    {{ leaving(col).length }} à retirer
+                  </span>
                 </span>
                 <button v-if="col.key !== 'unassigned'"
                         class="btn btn-ghost btn-xs"
@@ -128,13 +138,16 @@ export default {
                     draggable="true"
                     class="flex items-center gap-2 rounded bg-base-100 border border-base-300 px-2 py-1 text-sm cursor-move"
                     :class="picked && picked.team.id_equipe === team.id_equipe ? 'ring-2 ring-primary' : ''"
-                    :title="team.club"
+                    :title="team.nom_equipe + ' — ' + team.club + (isLeaving(col, team) ? ' — non réinscrite pour la nouvelle saison' : '')"
                     @dragstart="dragStart(col, team)"
                     @dragover.prevent.stop="dragOver = col.key"
                     @drop.prevent.stop="drop(col, index)"
                     @click.stop="pick(col, team)">
                   <span class="badge badge-ghost badge-sm shrink-0">{{ index + 1 }}</span>
-                  <span class="truncate">{{ team.nom_equipe }}</span>
+                  <span class="truncate"
+                        :class="isLeaving(col, team) ? 'line-through text-base-content/50' : ''">{{ team.nom_equipe }}</span>
+                  <span v-if="isLeaving(col, team)" class="badge badge-error badge-xs shrink-0 ml-auto"
+                        data-testid="divisions-not-registered">à retirer</span>
                 </li>
               </ul>
 
@@ -192,7 +205,9 @@ export default {
                 .then(([grouped, unassigned]) => {
                     const divisions = grouped.data || {};
                     const rows = unassigned.data || [];
-                    this.hasRegistrations = rows.some((t) => Number(t.competition_has_registrations) === 1);
+                    const ranked = Object.values(divisions).flat();
+                    this.hasRegistrations = [...rows, ...ranked]
+                        .some((t) => Number(t.competition_has_registrations) === 1);
                     const all = rows.map((t) => ({
                         id: null,
                         id_equipe: t.id_equipe,
@@ -219,12 +234,25 @@ export default {
                                     id_equipe: t.id_equipe,
                                     nom_equipe: t.nom_equipe,
                                     club: t.club,
+                                    registered: Number(t.registered) === 1,
                                 })),
                             })),
                     ];
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isLoading = false; });
+        },
+        /**
+         * Équipe d'une division sans inscription pour la nouvelle saison
+         * (#388) : l'initialisation ne la reprendra pas. Signalée seulement ;
+         * la retirer tout de suite supprimerait sa ligne du classement de la
+         * saison passée, encore affiché sur le site.
+         */
+        isLeaving(col, team) {
+            return this.hasRegistrations && col.key !== 'unassigned' && !team.registered;
+        },
+        leaving(col) {
+            return col.teams.filter((team) => this.isLeaving(col, team));
         },
         divisionOrder(key) {
             if (key === this.toPlace) {

@@ -52,6 +52,15 @@ test.describe('Issue #388 — préparation de saison, réorganisation des divisi
         await expect(toPlace).toContainText('à placer');
         await expect(toPlace).toContainText('E2E Prep A placer');
 
+        // Une équipe classée sans inscription est signalée à retirer.
+        const division1 = page.getByTestId('divisions-col-1');
+        await expect(page.getByTestId('divisions-leaving-1')).toHaveText(/1 à retirer/);
+        await expect(division1.locator('li', { hasText: 'E2E Prep Partante' })
+            .getByTestId('divisions-not-registered')).toBeVisible();
+        await expect(division1.locator('li', { hasText: 'E2E Prep Classee' })
+            .getByTestId('divisions-not-registered')).toHaveCount(0);
+        await expect(page.getByTestId('divisions-leaving-X')).toHaveCount(0);
+
         await page.screenshot({ path: 'test-results/issue-388/01_inscrites_seules.png', fullPage: true });
 
         // La case remet les équipes des anciennes saisons, et les retire.

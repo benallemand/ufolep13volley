@@ -1273,6 +1273,12 @@ l'initialisation est perdu), puis « Réorganiser les divisions ».
   `old_team_id` ou par nom) et `competition_has_registrations` ; l'écran masque
   par défaut les non inscrites, sauf dans une compétition sans inscriptions
   propres (coupes). La colonne X vient en tête, badge « à placer ».
+- Les équipes **des divisions** portent les mêmes champs
+  (`Rank::REGISTERED_COLUMNS`, partagé avec la liste « pas réinscrite » de
+  #379) : sans inscription, badge « à retirer » et compteur par colonne. Pas de
+  retrait automatique : avant l'initialisation, `classements` est encore la
+  saison passée affichée sur le site. Les trous de `rank_start` qui en
+  résultent sont sans effet (tri seulement, PHP comme Python).
 - Pas de filtre de fenêtre d'inscription dans ces requêtes : au 30/09/2026,
   `register` ne contenait que la saison en cours. Des lignes d'une saison
   passée y seraient comptées (rangs X, `registered`, `insert_from_register`).

@@ -27,6 +27,25 @@ class Rank extends Generic
      * l'écran de réorganisation la présente comme « à placer ».
      */
     const DIVISION_TO_PLACE = 'X';
+    /**
+     * Colonnes « inscrite cette saison » d'une équipe `e` (issue #388), pour
+     * la réorganisation des divisions :
+     *   - `registered` : une demande non refusée la reconnaît, par son
+     *     ancienne équipe ou par son nom ;
+     *   - `competition_has_registrations` : la compétition a des inscriptions.
+     *     Sans elles (coupes), `registered` ne veut rien dire.
+     * Même règle que la liste publique « pas réinscrite » (#379).
+     */
+    const REGISTERED_COLUMNS = "EXISTS (SELECT 1
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition
+                          AND r.status <> 'REFUSED'
+                          AND (r.old_team_id = e.id_equipe OR r.new_team_name = e.nom_equipe)) AS registered,
+                    EXISTS (SELECT 1
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition) AS competition_has_registrations";
 
     /**
      * La compétition — et, si une date de fin de période est donnée, cette
@@ -1228,16 +1247,7 @@ class Rank extends Generic
                     e.id_equipe,
                     e.nom_equipe,
                     c.nom AS club,
-                    EXISTS (SELECT 1
-                            FROM register r
-                            JOIN competitions comp ON comp.id = r.id_competition
-                            WHERE comp.code_competition = e.code_competition
-                              AND r.status <> 'REFUSED'
-                              AND (r.old_team_id = e.id_equipe OR r.new_team_name = e.nom_equipe)) AS registered,
-                    EXISTS (SELECT 1
-                            FROM register r
-                            JOIN competitions comp ON comp.id = r.id_competition
-                            WHERE comp.code_competition = e.code_competition) AS competition_has_registrations
+                    " . self::REGISTERED_COLUMNS . "
                 FROM equipes e
                 JOIN clubs c ON c.id = e.id_club
                 WHERE e.code_competition = ?
@@ -1268,7 +1278,8 @@ class Rank extends Generic
                     c.id_equipe,
                     e.nom_equipe,
                     cl.nom AS club,
-                    c.rank_start
+                    c.rank_start,
+                    " . self::REGISTERED_COLUMNS . "
                 FROM classements c
                 JOIN equipes e ON e.id_equipe = c.id_equipe
                 JOIN clubs cl ON cl.id = e.id_club

@@ -558,6 +558,23 @@ class RegisterTest extends UfolepTestCase
         $this->assertSame($registered, (int)$rows['RT Team Inscrite']['id_equipe']);
     }
 
+    public function test_ranked_teams_say_which_are_not_registered_again()
+    {
+        $staying = $this->insert_team('RT Team Reste', $this->id_club_1);
+        $leaving = $this->insert_team('RT Team Part', $this->id_club_2);
+        foreach (array($staying, $leaving) as $i => $id_team) {
+            $this->sql->execute("INSERT INTO classements SET code_competition = 'rt', division = '4', id_equipe = $id_team, rank_start = " . ($i + 1) . ", penalite = 0");
+        }
+        $renewal = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Reste');
+        $this->sql->execute("UPDATE register SET old_team_id = $staying WHERE id = $renewal");
+
+        $division = array_column((new Rank())->getRanksByCompetitionGroupedByDivision('rt')['4'], null, 'nom_equipe');
+
+        $this->assertEquals(1, $division['RT Team Reste']['registered']);
+        $this->assertEquals(0, $division['RT Team Part']['registered'], "Sans inscription, l'équipe est à retirer");
+        $this->assertEquals(1, $division['RT Team Part']['competition_has_registrations']);
+    }
+
     public function test_get_2nd_half_registrations_only_returns_validated()
     {
         $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Q');

@@ -560,6 +560,7 @@ appliquent pas.
 | D15 | Inscriptions → « Divisions / rangs » sur toutes les inscriptions, puis « Initialiser la saison » | Les équipes classées la saison passée gardent division et rang ; les autres (nouvelles, ou existantes non classées comme Meyrargues F) sont dans la **division X, en tête, badge « à placer »**, rangs 1, 2, 3… |
 | D16 | Relancer « Divisions / rangs » | Rien ne se renumérote ; une nouvelle inscription prend le rang X suivant |
 | D17 | Une demande **refusée** d'une équipe existante, puis « Initialiser la saison » | L'équipe n'est **pas** remise en classement |
+| D18 | Avant l'initialisation, championnat féminin | MARIGNANE VB 3 (division 4, pas de demande) est **barrée**, badge « à retirer », et l'en-tête de la division 4 affiche « 1 à retirer ». Rien n'est supprimé tant qu'on n'enregistre pas |
 
 > **D9/D10 suppriment des lignes de classement.** L'écran ExtJS le faisait sans
 > rien demander — c'est comme ça qu'on perd un rang de départ sans s'en
