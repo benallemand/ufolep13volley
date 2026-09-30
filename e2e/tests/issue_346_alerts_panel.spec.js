@@ -27,11 +27,14 @@ test.describe('Issue #346 — encart d\'alertes', () => {
         const encart = page.getByTestId('alerts-panel');
         await expect(encart).toBeVisible({ timeout: 15000 });
 
-        const carte = encart.getByTestId('alert-card').filter({ hasText: setup.equipe_adverse })
-            .filter({ hasText: setup.expected_label });
-        await expect(carte.first()).toBeVisible();
-        await expect(carte.first().getByRole('link', { name: 'Corriger' }))
-            .toHaveAttribute('href', setup.expected_url);
+        // Ciblée par son lien : d'autres matchs contre la même équipe peuvent
+        // porter la même action en attente (le seed de CI en a un, id 1).
+        const carte = encart.getByTestId('alert-card')
+            .filter({ has: page.locator(`a[href="${setup.expected_url}"]`) });
+        await expect(carte).toBeVisible();
+        await expect(carte.getByRole('link', { name: 'Corriger' })).toHaveAttribute('href', setup.expected_url);
+        await expect(carte).toContainText(setup.equipe_adverse);
+        await expect(carte).toContainText(setup.expected_label);
         await page.screenshot({ path: 'test-results/issue-346/encart-alertes.png', fullPage: true });
     });
 
