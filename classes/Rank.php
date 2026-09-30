@@ -21,6 +21,31 @@ class Rank extends Generic
     const FFVB_COMPETITIONS = array('m', 'f', 'mo');
     /** Début de la première saison au barème FFVB (palmarès des saisons passées). */
     const FFVB_SINCE = '2026-09-01';
+    /**
+     * Division d'attente des équipes à placer (issue #388) : « Remplir les
+     * divisions et les rangs » y met les inscriptions sans équipe classée, et
+     * l'écran de réorganisation la présente comme « à placer ».
+     */
+    const DIVISION_TO_PLACE = 'X';
+    /**
+     * Colonnes « inscrite cette saison » d'une équipe `e` (issue #388), pour
+     * la réorganisation des divisions :
+     *   - `registered` : une demande non refusée la reconnaît, par son
+     *     ancienne équipe ou par son nom ;
+     *   - `competition_has_registrations` : la compétition a des inscriptions.
+     *     Sans elles (coupes), `registered` ne veut rien dire.
+     * Même règle que la liste publique « pas réinscrite » (#379).
+     */
+    const REGISTERED_COLUMNS = "EXISTS (SELECT 1
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition
+                          AND r.status <> 'REFUSED'
+                          AND (r.old_team_id = e.id_equipe OR r.new_team_name = e.nom_equipe)) AS registered,
+                    EXISTS (SELECT 1
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition) AS competition_has_registrations";
 
     /**
      * La compétition — et, si une date de fin de période est donnée, cette
@@ -668,24 +693,33 @@ class Rank extends Generic
     /**
      * @throws Exception
      */
+    /**
+     * Classements de la saison, reconstruits depuis les inscriptions.
+     *
+     * Seules les inscriptions VALIDÉES comptent (issue #388), comme pour les
+     * équipes, comptes et créneaux de `Register::set_up_season` : une demande
+     * refusée ou en attente d'une équipe existante était remise en classement.
+     */
     public function insert_from_register($id_competition)
     {
         $sql = "INSERT INTO classements(
                         code_competition,
                         division,
                         id_equipe,
-                        rank_start) 
-                SELECT c.code_competition, 
-                       CASE WHEN r.division IS NULL THEN 'X' ELSE r.division END AS division, 
-                       e.id_equipe, 
-                       CASE WHEN r.rank_start IS NULL THEN 1 ELSE r.rank_start END AS rank_start  
-                FROM register r 
+                        rank_start)
+                SELECT c.code_competition,
+                       CASE WHEN r.division IS NULL THEN ? ELSE r.division END AS division,
+                       e.id_equipe,
+                       CASE WHEN r.rank_start IS NULL THEN 1 ELSE r.rank_start END AS rank_start
+                FROM register r
                 JOIN competitions c on r.id_competition = c.id
                 JOIN equipes e on e.code_competition = c.code_competition
                                   AND e.nom_equipe = r.new_team_name
                 WHERE r.id_competition = ?
+                  AND r.status = 'VALIDATED'
                 ORDER BY code_competition, division, rank_start";
         $bindings = array();
+        $bindings[] = array('type' => 's', 'value' => self::DIVISION_TO_PLACE);
         $bindings[] = array('type' => 'i', 'value' => $id_competition);
         $this->sql_manager->execute($sql, $bindings);
     }
@@ -1195,23 +1229,31 @@ class Rank extends Generic
     }
 
     /**
-     * Get teams registered for a competition but not assigned to any division
-     * @param string $code_competition
-     * @return array
+     * Équipes de la compétition absentes de ses classements (colonne « Non
+     * affectées » de l'écran de réorganisation).
+     *
+     * Ce sont surtout des équipes d'anciennes saisons (issue #388) : chaque
+     * ligne dit donc si l'équipe est `registered`, c'est-à-dire inscrite
+     * (demande non refusée, reconnue par son ancienne équipe ou par son nom),
+     * et `competition_has_registrations` si la compétition a des inscriptions.
+     * L'écran n'affiche par défaut que les inscrites ; les coupes, montées
+     * depuis les championnats et sans inscriptions propres, gardent tout.
+     *
      * @throws Exception
      */
     public function getUnassignedTeams(string $code_competition): array
     {
-        $sql = "SELECT 
+        $sql = "SELECT
                     e.id_equipe,
                     e.nom_equipe,
-                    c.nom AS club
+                    c.nom AS club,
+                    " . self::REGISTERED_COLUMNS . "
                 FROM equipes e
                 JOIN clubs c ON c.id = e.id_club
                 WHERE e.code_competition = ?
                 AND e.id_equipe NOT IN (
-                    SELECT id_equipe 
-                    FROM classements 
+                    SELECT id_equipe
+                    FROM classements
                     WHERE code_competition = ?
                 )
                 ORDER BY e.nom_equipe";
@@ -1236,7 +1278,8 @@ class Rank extends Generic
                     c.id_equipe,
                     e.nom_equipe,
                     cl.nom AS club,
-                    c.rank_start
+                    c.rank_start,
+                    " . self::REGISTERED_COLUMNS . "
                 FROM classements c
                 JOIN equipes e ON e.id_equipe = c.id_equipe
                 JOIN clubs cl ON cl.id = e.id_club

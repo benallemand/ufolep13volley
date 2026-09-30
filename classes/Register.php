@@ -893,34 +893,83 @@ class Register extends Generic
     }
 
     /**
+     * Division et rang de départ d'une inscription (issue #388).
+     *
+     * - équipe classée dans cette compétition : sa division et son rang
+     *   actuels ;
+     * - toute autre (nouvelle équipe, ou équipe existante non classée la
+     *   saison passée, ou venue d'une autre compétition) : division `X`, rang
+     *   suivant. L'initialisation de saison la range alors dans une colonne
+     *   « à placer » de l'écran de réorganisation, au lieu de laisser toutes
+     *   ces équipes en X / 1 ex æquo.
+     *
+     * Rejouable : une inscription non classée qui a déjà une division (X ou
+     * saisie à la main) la garde, et les rangs X continuent après le plus
+     * grand déjà attribué. Une inscription refusée n'est pas touchée.
+     *
      * @throws Exception
      */
     private function fill_rank(string $id): void
     {
         $register = $this->get_register($id);
-        if (empty($register['old_team_id'])) {
+        if ($register['status'] === 'REFUSED') {
             return;
         }
-        try {
-            $competition = $this->competition->get_by_id($register['id_competition']);
-            $division = $this->rank->getTeamDivision(
-                $competition['code_competition'],
-                $register['old_team_id']
-            );
-            $rank = $this->rank->getTeamRank(
-                $competition['code_competition'],
-                $division,
-                $register['old_team_id']
-            );
-        } catch (Exception) {
-            return;
+        $placement = $this->current_placement($register);
+        if ($placement === null) {
+            if (!empty($register['division'])) {
+                return;
+            }
+            $placement = array(Rank::DIVISION_TO_PLACE, $this->next_rank_to_place((int)$register['id_competition']));
         }
+        [$division, $rank] = $placement;
         $update_register = array(
             'id' => $register['id'],
             'division' => $division,
             'rank_start' => $rank,
         );
         $this->save($update_register);
+    }
+
+    /**
+     * [division, rang] de l'équipe réinscrite dans le classement actuel de la
+     * compétition demandée, null si elle n'y figure pas.
+     */
+    private function current_placement(array $register): ?array
+    {
+        if (empty($register['old_team_id'])) {
+            return null;
+        }
+        try {
+            $division = $this->rank->getTeamDivision(
+                $register['code_competition'],
+                $register['old_team_id']
+            );
+            $rank = $this->rank->getTeamRank(
+                $register['code_competition'],
+                $division,
+                $register['old_team_id']
+            );
+        } catch (Exception) {
+            return null;
+        }
+        return array($division, $rank);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function next_rank_to_place(int $id_competition): int
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT COALESCE(MAX(rank_start), 0) + 1 AS next_rank
+             FROM register
+             WHERE id_competition = ? AND division = ?",
+            array(
+                array('type' => 'i', 'value' => $id_competition),
+                array('type' => 's', 'value' => Rank::DIVISION_TO_PLACE),
+            ));
+        return (int)$rows[0]['next_rank'];
     }
 
     private function create_team_and_account(string $id)

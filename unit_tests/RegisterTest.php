@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../classes/Register.php';
+require_once __DIR__ . '/../classes/Rank.php';
 require_once __DIR__ . '/../classes/Team.php';
 require_once __DIR__ . '/../classes/UserManager.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
@@ -457,6 +458,121 @@ class RegisterTest extends UfolepTestCase
         $names = array_column($rows, 'new_team_name');
         $this->assertContains('RT Team O', $names);
         $this->assertNotContains('RT Team P', $names);
+    }
+
+    // ---- #388 : préparation de saison, division X et « Non affectées » -------
+
+    private function insert_team(string $name, int $id_club): int
+    {
+        return (int)$this->sql->execute(
+            "INSERT INTO equipes SET nom_equipe = '$name', code_competition = 'rt', id_club = $id_club");
+    }
+
+    private function placement_of(int $id_register): array
+    {
+        return $this->sql->execute("SELECT division, rank_start FROM register WHERE id = $id_register")[0];
+    }
+
+    public function test_fill_ranks_places_unranked_teams_in_division_x()
+    {
+        $ranked_team = $this->insert_team('RT Team Classee', $this->id_club_1);
+        $this->sql->execute("INSERT INTO classements SET code_competition = 'rt', division = '2', id_equipe = $ranked_team, rank_start = 1, penalite = 0");
+        $unranked_team = $this->insert_team('RT Team Revient', $this->id_club_2);
+
+        $ranked = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Classee');
+        $this->sql->execute("UPDATE register SET old_team_id = $ranked_team WHERE id = $ranked");
+        $back = $this->insert_registration($this->id_club_2, 'VALIDATED', 'RT Team Revient');
+        $this->sql->execute("UPDATE register SET old_team_id = $unranked_team WHERE id = $back");
+        $new = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team Nouvelle');
+
+        $this->connect_as_admin();
+        (new Register())->fill_ranks("$ranked,$back,$new");
+
+        $this->assertSame('2', $this->placement_of($ranked)['division'], "Une équipe classée garde sa division");
+        $this->assertEquals(array('division' => 'X', 'rank_start' => 1), $this->placement_of($back),
+            "Une équipe existante non classée la saison passée est à placer");
+        $this->assertEquals(array('division' => 'X', 'rank_start' => 2), $this->placement_of($new),
+            "Une nouvelle équipe est à placer, au rang suivant");
+    }
+
+    public function test_fill_ranks_can_be_replayed_without_renumbering()
+    {
+        $first = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team X1');
+        $second = $this->insert_registration($this->id_club_2, 'VALIDATED', 'RT Team X2');
+        $this->connect_as_admin();
+        (new Register())->fill_ranks("$first,$second");
+        $third = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team X3');
+        (new Register())->fill_ranks("$second,$first,$third");
+
+        $this->assertEquals(1, $this->placement_of($first)['rank_start']);
+        $this->assertEquals(2, $this->placement_of($second)['rank_start']);
+        $this->assertEquals(3, $this->placement_of($third)['rank_start'], "Les rangs X continuent après le plus grand");
+    }
+
+    public function test_fill_ranks_keeps_a_manual_division_and_skips_refused()
+    {
+        $manual = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Manuelle');
+        $this->sql->execute("UPDATE register SET division = '3', rank_start = 5 WHERE id = $manual");
+        $refused = $this->insert_registration($this->id_club_2, 'REFUSED', 'RT Team Refusee');
+        $this->connect_as_admin();
+        (new Register())->fill_ranks("$manual,$refused");
+
+        $this->assertEquals(array('division' => '3', 'rank_start' => 5), $this->placement_of($manual),
+            "Une division saisie à la main n'est pas écrasée");
+        $this->assertEquals(array('division' => null, 'rank_start' => null), $this->placement_of($refused),
+            "Une inscription refusée n'est pas touchée");
+    }
+
+    public function test_insert_from_register_only_ranks_validated_registrations()
+    {
+        foreach (array('VALIDATED' => 'RT Team Valide', 'REFUSED' => 'RT Team Refus', 'PENDING' => 'RT Team Attente') as $status => $name) {
+            $this->insert_team($name, $this->id_club_1);
+            $this->insert_registration($this->id_club_1, $status, $name);
+        }
+        (new Rank())->insert_from_register($this->id_competition);
+        $ranked = array_column($this->sql->execute(
+            "SELECT e.nom_equipe FROM classements c JOIN equipes e ON e.id_equipe = c.id_equipe WHERE c.code_competition = 'rt'"),
+            'nom_equipe');
+        $this->assertSame(array('RT Team Valide'), $ranked);
+    }
+
+    public function test_unassigned_teams_say_which_are_registered()
+    {
+        $registered = $this->insert_team('RT Team Inscrite', $this->id_club_1);
+        $this->insert_team('RT Team Refus Seul', $this->id_club_1);
+        $this->insert_team('RT Team Ancienne', $this->id_club_2);
+        $renamed = $this->insert_team('RT Team Ancien Nom', $this->id_club_2);
+        $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team Inscrite');
+        $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team Refus Seul');
+        $by_old_team = $this->insert_registration($this->id_club_2, 'VALIDATED', 'RT Team Nouveau Nom');
+        $this->sql->execute("UPDATE register SET old_team_id = $renamed WHERE id = $by_old_team");
+
+        $rows = array_column((new Rank())->getUnassignedTeams('rt'), null, 'nom_equipe');
+
+        $this->assertEquals(1, $rows['RT Team Inscrite']['registered']);
+        $this->assertEquals(1, $rows['RT Team Ancien Nom']['registered'], "Reconnue par son ancienne équipe");
+        $this->assertEquals(0, $rows['RT Team Refus Seul']['registered'], "Une demande refusée n'inscrit pas");
+        $this->assertEquals(0, $rows['RT Team Ancienne']['registered']);
+        $this->assertEquals(1, $rows['RT Team Ancienne']['competition_has_registrations']);
+        $this->assertArrayHasKey('RT Team Inscrite', $rows);
+        $this->assertSame($registered, (int)$rows['RT Team Inscrite']['id_equipe']);
+    }
+
+    public function test_ranked_teams_say_which_are_not_registered_again()
+    {
+        $staying = $this->insert_team('RT Team Reste', $this->id_club_1);
+        $leaving = $this->insert_team('RT Team Part', $this->id_club_2);
+        foreach (array($staying, $leaving) as $i => $id_team) {
+            $this->sql->execute("INSERT INTO classements SET code_competition = 'rt', division = '4', id_equipe = $id_team, rank_start = " . ($i + 1) . ", penalite = 0");
+        }
+        $renewal = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Reste');
+        $this->sql->execute("UPDATE register SET old_team_id = $staying WHERE id = $renewal");
+
+        $division = array_column((new Rank())->getRanksByCompetitionGroupedByDivision('rt')['4'], null, 'nom_equipe');
+
+        $this->assertEquals(1, $division['RT Team Reste']['registered']);
+        $this->assertEquals(0, $division['RT Team Part']['registered'], "Sans inscription, l'équipe est à retirer");
+        $this->assertEquals(1, $division['RT Team Part']['competition_has_registrations']);
     }
 
     public function test_get_2nd_half_registrations_only_returns_validated()
