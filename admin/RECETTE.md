@@ -554,6 +554,12 @@ appliquent pas.
 | D9 | Prendre une équipe **d'une division**, la remettre dans « Non affectées », enregistrer | **Une confirmation nomme les équipes qui vont perdre leur classement.** En refusant, rien n'est écrit |
 | D10 | Confirmer en D9 | La ligne de classement est supprimée, rang de départ compris |
 | D11 | Recharger sans enregistrer après des déplacements | Tout revient à l'état en base |
+| D12 | En préparation de saison, choisir un championnat | « Non affectées » ne montre que les équipes **inscrites** (demande non refusée) ; « N équipe(s) non inscrite(s) masquée(s) » en pied de colonne (#388) |
+| D13 | Cocher « Afficher aussi les équipes non inscrites », puis décocher | Les équipes des anciennes saisons apparaissent, puis disparaissent |
+| D14 | Choisir une coupe (c, cf, kf) | Pas de case : sans inscriptions propres, tout est affiché |
+| D15 | Inscriptions → « Divisions / rangs » sur toutes les inscriptions, puis « Initialiser la saison » | Les équipes classées la saison passée gardent division et rang ; les autres (nouvelles, ou existantes non classées comme Meyrargues F) sont dans la **division X, en tête, badge « à placer »**, rangs 1, 2, 3… |
+| D16 | Relancer « Divisions / rangs » | Rien ne se renumérote ; une nouvelle inscription prend le rang X suivant |
+| D17 | Une demande **refusée** d'une équipe existante, puis « Initialiser la saison » | L'équipe n'est **pas** remise en classement |
 
 > **D9/D10 suppriment des lignes de classement.** L'écran ExtJS le faisait sans
 > rien demander — c'est comme ça qu'on perd un rang de départ sans s'en

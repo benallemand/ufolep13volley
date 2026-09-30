@@ -82,8 +82,11 @@ export default {
                   @click="decide(selection, rows, 'unvalidate', reload)">
             <i class="fas fa-rotate-left"></i> Dévalider
           </button>
+          <!-- #388 : équipe classée → sa division et son rang ; toute autre →
+               division X (« à placer » dans la réorganisation), rang suivant. -->
           <button class="btn btn-sm btn-outline"
                   :disabled="!selection.length || isBusy"
+                  title="Équipe classée la saison passée : sa division et son rang. Autres : division X, à placer dans « Réorganiser les divisions »"
                   @click="allAtOnce(selection, 'fill_ranks', 'Remplir les divisions et les rangs', reload)">
             <i class="fas fa-list-ol"></i> Divisions / rangs
           </button>

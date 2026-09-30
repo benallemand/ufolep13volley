@@ -17,6 +17,14 @@ import { onError, onSuccess } from '../../../toaster.js';
  *   **supprimée** (`rank/removeFromDivision`), un appel par équipe ;
  * - une colonne de division ne se ferme que si elle est vide.
  *
+ * Préparation de saison (issue #388) :
+ * - « Non affectées » n'affiche que les équipes **inscrites**, une case remet
+ *   les autres (équipes des anciennes saisons). Une compétition sans
+ *   inscriptions propres (coupes) montre tout ;
+ * - la division `X` (`Rank::DIVISION_TO_PLACE`), où « Remplir les divisions
+ *   et les rangs » met les équipes non classées la saison passée, vient en
+ *   tête et se signale « à placer ».
+ *
  * Le glisser-déposer natif ne fonctionne pas au doigt. Comme cet écran doit
  * rester utilisable sur mobile — ce que l'admin ExtJS n'était pas du tout — on
  * double le geste : toucher une équipe la sélectionne, toucher une colonne l'y
@@ -52,6 +60,13 @@ export default {
           <button class="btn btn-outline btn-sm" :disabled="!code_competition" @click="addDivision">
             <i class="fas fa-plus"></i> Nouvelle division
           </button>
+          <!-- « Non affectées » limité aux équipes inscrites (#388) : sinon les
+               équipes des anciennes saisons noient celles de la nouvelle. -->
+          <label v-if="code_competition && hasRegistrations" class="label cursor-pointer gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" data-testid="divisions-show-all"
+                   :checked="showAllUnassigned" @change="toggleAllUnassigned($event.target.checked)"/>
+            <span class="label-text">Afficher aussi les équipes non inscrites</span>
+          </label>
           <span v-if="dirty" class="badge badge-warning">modifications non enregistrées</span>
         </div>
 
@@ -78,8 +93,10 @@ export default {
           <div v-for="col in columns"
                :key="col.key"
                class="card border shrink-0 w-64"
+               :data-testid="'divisions-col-' + col.key"
                :class="[
-                 col.key === 'unassigned' ? 'bg-warning/10 border-warning/40' : 'bg-base-200 border-base-300',
+                 col.key === 'unassigned' ? 'bg-warning/10 border-warning/40'
+                   : col.key === toPlace ? 'bg-info/10 border-info/40' : 'bg-base-200 border-base-300',
                  dragOver === col.key ? 'ring-2 ring-primary' : '',
                ]"
                @dragover.prevent="dragOver = col.key"
@@ -92,6 +109,10 @@ export default {
                 <span class="font-bold text-sm">
                   {{ col.key === 'unassigned' ? 'Non affectées' : 'Division ' + col.key }}
                   <span class="font-normal text-base-content/60">({{ col.teams.length }})</span>
+                  <span v-if="col.key === toPlace" class="badge badge-info badge-sm ml-1"
+                        title="Équipes sans classement la saison passée : à déposer dans une vraie division avant de générer le calendrier">
+                    à placer
+                  </span>
                 </span>
                 <button v-if="col.key !== 'unassigned'"
                         class="btn btn-ghost btn-xs"
@@ -120,6 +141,10 @@ export default {
               <p v-if="col.teams.length === 0" class="text-xs text-base-content/50 italic">
                 Déposez des équipes ici
               </p>
+              <p v-if="col.key === 'unassigned' && hiddenUnassigned.length"
+                 class="text-xs text-base-content/60" data-testid="divisions-hidden-count">
+                {{ hiddenUnassigned.length }} équipe(s) non inscrite(s) masquée(s)
+              </p>
             </div>
           </div>
         </div>
@@ -136,6 +161,13 @@ export default {
             dragged: null,
             dragOver: null,
             picked: null,
+            // #388 : équipes non inscrites retirées de « Non affectées », et
+            // la case qui les y remet. Sans inscriptions propres (coupes), rien
+            // n'est masqué.
+            hiddenUnassigned: [],
+            hasRegistrations: false,
+            showAllUnassigned: false,
+            toPlace: 'X',
         };
     },
     created() {
@@ -159,19 +191,27 @@ export default {
             ])
                 .then(([grouped, unassigned]) => {
                     const divisions = grouped.data || {};
+                    const rows = unassigned.data || [];
+                    this.hasRegistrations = rows.some((t) => Number(t.competition_has_registrations) === 1);
+                    const all = rows.map((t) => ({
+                        id: null,
+                        id_equipe: t.id_equipe,
+                        nom_equipe: t.nom_equipe,
+                        club: t.club,
+                        registered: Number(t.registered) === 1,
+                    }));
+                    const hides = this.hasRegistrations && !this.showAllUnassigned;
+                    this.hiddenUnassigned = hides ? all.filter((t) => !t.registered) : [];
                     this.columns = [
                         {
                             key: 'unassigned',
-                            teams: (unassigned.data || []).map((t) => ({
-                                id: null,
-                                id_equipe: t.id_equipe,
-                                nom_equipe: t.nom_equipe,
-                                club: t.club,
-                            })),
+                            teams: hides ? all.filter((t) => t.registered) : all,
                         },
                         // Tri numérique : sans lui « 10 » passerait avant « 2 ».
+                        // La division à placer (X, #388) vient en tête, contre
+                        // « Non affectées » : c'est d'elle qu'on tire les équipes.
                         ...Object.keys(divisions)
-                            .sort((a, b) => (parseInt(a, 10) || 999) - (parseInt(b, 10) || 999))
+                            .sort((a, b) => this.divisionOrder(a) - this.divisionOrder(b))
                             .map((key) => ({
                                 key,
                                 teams: (divisions[key] || []).map((t) => ({
@@ -185,6 +225,33 @@ export default {
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isLoading = false; });
+        },
+        divisionOrder(key) {
+            if (key === this.toPlace) {
+                return -1;
+            }
+            return parseInt(key, 10) || 999;
+        },
+        /**
+         * Remet ou retire les équipes non inscrites de « Non affectées ».
+         * Une équipe qu'on vient d'y ramener depuis une division a une ligne
+         * de classement : elle reste affichée, sa suppression est en attente.
+         */
+        toggleAllUnassigned(checked) {
+            this.showAllUnassigned = checked;
+            const col = this.columns.find((c) => c.key === 'unassigned');
+            if (!col) {
+                return;
+            }
+            if (checked) {
+                col.teams.push(...this.hiddenUnassigned);
+                col.teams.sort((a, b) => a.nom_equipe.localeCompare(b.nom_equipe));
+                this.hiddenUnassigned = [];
+                return;
+            }
+            const hide = (t) => !t.registered && !t.id;
+            this.hiddenUnassigned = col.teams.filter(hide);
+            col.teams = col.teams.filter((t) => !hide(t));
         },
         dragStart(col, team) {
             this.dragged = { col, team };

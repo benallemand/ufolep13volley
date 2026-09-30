@@ -1256,6 +1256,27 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   remplacés : n'envoyer que le champ modifié viderait les autres colonnes.
   Un appel par ligne, arrêt à la première erreur en nommant la ligne.
 
+### Préparation de saison : division X, « Non affectées » (#388)
+
+Déroulé : Inscriptions → « Divisions / rangs » (`Register::fill_ranks`), puis
+« Initialiser la saison » (`set_up_season`, qui reconstruit `classements`
+depuis `register` : ce qu'on range dans la réorganisation **avant**
+l'initialisation est perdu), puis « Réorganiser les divisions ».
+
+- `fill_rank` : équipe classée dans la compétition → sa division et son rang ;
+  toute autre (nouvelle, ou existante non classée la saison passée) → division
+  `Rank::DIVISION_TO_PLACE` (`X`), rang suivant le plus grand X de la
+  compétition. Rejouable : une inscription non classée qui a déjà une division
+  la garde ; une refusée n'est pas touchée.
+- `Rank::insert_from_register` ne prend que les inscriptions **VALIDATED**.
+- `getUnassignedTeams` marque `registered` (demande non refusée, par
+  `old_team_id` ou par nom) et `competition_has_registrations` ; l'écran masque
+  par défaut les non inscrites, sauf dans une compétition sans inscriptions
+  propres (coupes). La colonne X vient en tête, badge « à placer ».
+- Pas de filtre de fenêtre d'inscription dans ces requêtes : au 30/09/2026,
+  `register` ne contenait que la saison en cours. Des lignes d'une saison
+  passée y seraient comptées (rangs X, `registered`, `insert_from_register`).
+
 ### Grilles d'administration : en-tête figé (#386)
 
 La grille occupe la hauteur de la fenêtre et **défile dans sa propre zone**
