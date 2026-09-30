@@ -47,6 +47,11 @@ export default {
                   @click="openLinks('clubs', selection[0], rows)">
             <i class="fas fa-sitemap"></i> Clubs liés…
           </button>
+          <button class="btn btn-outline btn-sm" data-testid="link-person"
+                  :disabled="selection.length !== 1 || isLoading"
+                  @click="openPerson(selection[0], rows)">
+            <i class="fas fa-id-card"></i> Personne rattachée…
+          </button>
           <button class="btn btn-outline btn-sm"
                   :disabled="selection.length !== 1 || isLoading"
                   @click="toggleAdmin(selection[0], rows, reload)">
@@ -65,10 +70,11 @@ export default {
                           :help="picker.help"
                           :items="picker.items"
                           :selected="picker.selected"
-                          multiple
-                          confirm-label="Enregistrer les liens"
+                          :multiple="picker.kind !== 'person'"
+                          :confirm-label="picker.kind === 'person' ? 'Rattacher' : 'Enregistrer les liens'"
+                          :max-visible="picker.kind === 'person' ? 200 : 0"
                           :is-busy="isLoading"
-                          @confirm="saveLinks"
+                          @confirm="picker.kind === 'person' ? savePerson($event) : saveLinks($event)"
                           @close="picker = null"></admin-picker-modal>
     `,
     data() {
@@ -83,6 +89,8 @@ export default {
                 { key: 'club_name', label: 'Club' },
                 { key: 'team_name', label: 'Équipe' },
                 { key: 'managed_club_names', label: 'Clubs gérés' },
+                // Le manque se voit là où on le corrige (issue #331)
+                { key: 'person_name', label: 'Personne', format: (v) => v || '—' },
                 { key: 'is_admin', label: 'Admin', format: (v) => (Number(v) ? 'oui' : 'non') },
             ],
             fields: [
@@ -162,6 +170,55 @@ export default {
                     : '/rest/action.php/usermanager/updateUserClubs',
                 formData
             )
+                .then((response) => {
+                    onSuccess(this, response);
+                    this.picker = null;
+                    this.$refs.grid.fetchRows();
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isLoading = false; });
+        },
+        /**
+         * La personne derrière le compte (issue #331) : à poser à la main
+         * quand l'automatisme refuse de trancher (plusieurs personnes portent
+         * l'email du compte, ou aucune). Toutes les personnes sont proposées,
+         * celles des clubs, des équipes et de l'email du compte en tête ; la
+         * première ligne permet de détacher.
+         */
+        openPerson(id, rows) {
+            const compte = rows.find((r) => String(r.id) === String(id));
+            const libelle = compte ? (compte.login || compte.email) : 'ce compte';
+            this.isLoading = true;
+            axios.get('/rest/action.php/usermanager/getPersonCandidates', { params: { user_id: id } })
+                .then(({ data }) => {
+                    const items = (data || []).map((p) => ({
+                        value: String(p.id),
+                        label: (Number(p.suggested) ? '★ ' : '') + p.name,
+                        hint: [p.club, p.email, p.linked_login ? `déjà liée au compte ${p.linked_login}` : '']
+                            .filter(Boolean).join(' · '),
+                    }));
+                    if (compte && compte.id_person) {
+                        items.unshift({ value: '', label: '— aucune personne (détacher) —' });
+                    }
+                    this.picker = {
+                        kind: 'person',
+                        userId: id,
+                        title: `Personne rattachée à ${libelle}`,
+                        help: '★ : personne de ses clubs, de ses équipes, ou qui porte son email. '
+                            + 'Une personne déjà liée à un autre compte en sera détachée.',
+                        selected: compte && compte.id_person ? [String(compte.id_person)] : [],
+                        items,
+                    };
+                })
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isLoading = false; });
+        },
+        savePerson(values) {
+            const formData = new FormData();
+            formData.append('user_id', this.picker.userId);
+            formData.append('id_player', values[0] ?? '');
+            this.isLoading = true;
+            axios.post('/rest/action.php/usermanager/linkAccountToPerson', formData)
                 .then((response) => {
                     onSuccess(this, response);
                     this.picker = null;

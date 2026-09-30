@@ -30,6 +30,11 @@ export default {
         optionLabel: { type: String, default: '' },
         optionChecked: { type: Boolean, default: false },
         isBusy: { type: Boolean, default: false },
+        /**
+         * Nombre maximal de lignes rendues : au-delà, on invite à affiner la
+         * recherche (issue #331 : ~3 600 personnes). 0 = pas de limite.
+         */
+        maxVisible: { type: Number, default: 0 },
     },
     emits: ['confirm', 'close'],
     template: `
@@ -47,7 +52,7 @@ export default {
             <p v-if="visible.length === 0" class="p-3 text-sm text-base-content/60">
               Aucun résultat.
             </p>
-            <label v-for="item in visible"
+            <label v-for="item in rendered"
                    :key="item.value"
                    class="flex items-start gap-2 px-3 py-2 border-b border-base-200 last:border-0 cursor-pointer hover:bg-base-200">
               <input v-if="multiple"
@@ -65,6 +70,9 @@ export default {
                 <span v-if="item.hint" class="block text-xs text-base-content/50">{{ item.hint }}</span>
               </span>
             </label>
+            <p v-if="rendered.length < visible.length" class="p-3 text-xs text-base-content/60">
+              {{ visible.length - rendered.length }} autre(s) : affinez la recherche.
+            </p>
           </div>
 
           <label v-if="optionLabel" class="flex items-center gap-2 mt-3 cursor-pointer">
@@ -93,7 +101,8 @@ export default {
         return {
             search: '',
             chosen: [...this.selected],
-            single: null,
+            // En choix simple, `selected` pré-coche la valeur actuelle.
+            single: this.multiple ? null : (this.selected[0] ?? null),
             option: this.optionChecked,
         };
     },
@@ -107,6 +116,9 @@ export default {
                 const haystack = (String(item.label) + ' ' + String(item.hint ?? '')).toLowerCase();
                 return terms.some((t) => haystack.includes(t));
             });
+        },
+        rendered() {
+            return this.maxVisible > 0 ? this.visible.slice(0, this.maxVisible) : this.visible;
         },
         canConfirm() {
             // En multiple, une sélection vide est légitime : elle veut dire
