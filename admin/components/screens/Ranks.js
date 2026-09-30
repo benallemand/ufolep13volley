@@ -14,6 +14,7 @@ export default {
     },
     template: `
       <admin-grid
+        :bulk-fields="['division', 'will_register_again']"
         title="Gestion des divisions et poules"
         entity-label="engagement"
         :columns="columns"

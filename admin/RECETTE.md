@@ -71,6 +71,17 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G24 | Tiroir ouvert, cliquer les chevrons ‹ et › | On passe à la ligne précédente / suivante **sans refermer** ; en bout de liste le chevron est désactivé |
 | G25 | Tiroir ouvert sur la dernière ligne d'une page, cliquer › | La grille **change de page** pour suivre, la ligne mise en avant reste visible derrière le tiroir |
 | G26 | Tiroir ouvert, taper une recherche qui masque la ligne | Le tiroir **se referme** : il ne doit pas rester ouvert sur une ligne devenue invisible |
+| G27 | Cliquer « Filtres » | Une ligne de filtres apparaît sous les en-têtes : **liste** pour une colonne à peu de valeurs (≤ 20), **deux dates** pour une colonne de dates, **« contient… »** sinon ; rien sous une vignette ou une colonne d'icônes (#310) |
+| G28 | Filtrer une colonne numérique à `3` | Seules les lignes à 3 **exactement** : pas 13, pas un 3 dans une autre colonne. Le bouton affiche « Filtres (1) » |
+| G29 | Combiner un filtre de colonne, la recherche et un filtre propre à l'écran | Les trois s'appliquent ensemble ; poser un filtre **vide la sélection**, comme la recherche |
+| G30 | Filtrer, trier, changer de page ; ouvrir un autre écran ; revenir | Recherche, filtres, tri, taille et numéro de page **retrouvés**, ainsi que les filtres propres à l'écran (statut des inscriptions, cases des joueurs…) (#311) |
+| G31 | Revenir quand le jeu a rétréci (page mémorisée qui n'existe plus) | La grille se place sur la **dernière page existante**, jamais sur une page vide |
+| G32 | Ouvrir l'écran depuis une tuile d'indicateur (`?ids=`) | **Rien n'est restauré** : l'URL fait foi |
+| G33 | Cliquer « Réinitialiser la vue » | Tout repart à l'état d'une première visite, filtres de l'écran compris ; le bouton disparaît |
+| G34 | Navigation privée | L'écran s'affiche normalement ; simplement, la vue n'est pas retrouvée |
+| G35 | Sur **Divisions / poules, Inscriptions, Équipes**, cocher plusieurs lignes | « Éditer (N) » s'active et ouvre l'**édition en masse** : seuls les champs déclarés modifiables en lot, chacun avec sa case « modifier » (#309) |
+| G36 | Édition en masse : cocher un seul champ, appliquer | Ce champ change sur toutes les lignes ; **les autres champs gardent la valeur de chaque ligne** (classement de départ, nom…) |
+| G37 | Sur un écran sans champs en lot, cocher plusieurs lignes | « Éditer » reste désactivé (infobulle : une seule ligne à la fois) |
 | G27 | Tiroir ouvert, cliquer « Éditer » dans son pied | La fenêtre d'édition s'ouvre sur **cette** ligne |
 | G28 | Sur l'écran joueurs, cocher une case sans cliquer la ligne | La sélection se fait, le tiroir **ne s'ouvre pas** |
 | G29 | Réduire la fenêtre en dessous de 1024 px, cliquer une ligne | Le tiroir devient une **feuille ancrée en bas**, la grille reste lisible derrière |

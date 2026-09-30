@@ -1,4 +1,5 @@
 import { defineAsyncComponent } from 'vue';
+import { persistedFilters } from '../grid/gridState.js';
 import { onError, onSuccess } from '../../../toaster.js';
 
 /**
@@ -30,11 +31,15 @@ const DECISIONS = {
 };
 
 export default {
+    // Filtres de l'écran mémorisés entre deux visites (issue #311)
+    mixins: [persistedFilters(['status'])],
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
     },
     template: `
       <admin-grid
+        @reset-view="resetPersistedFilters"
+        :bulk-fields="['division', 'is_paid']"
         title="Inscriptions"
         entity-label="inscription"
         :columns="columns"

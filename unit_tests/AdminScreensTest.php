@@ -241,6 +241,26 @@ class AdminScreensTest extends TestCase
         self::assertSame([], $problemes, implode("\n", $problemes));
     }
 
+    /**
+     * Un champ déclaré modifiable en lot (issue #309) doit être un champ du
+     * formulaire : l'édition en masse ne sait rien afficher d'autre.
+     */
+    public function test_les_champs_en_lot_sont_des_champs_du_formulaire(): void
+    {
+        $problemes = [];
+        foreach ($this->screens() as $file => $src) {
+            if (!preg_match('#:bulk-fields="\[([^\]]*)\]"#', $src, $m)) {
+                continue;
+            }
+            preg_match_all("#'([a-zA-Z_0-9]+)'#", $m[1], $noms);
+            preg_match_all("#name: '([a-zA-Z_0-9]+)'#", $src, $declares);
+            foreach (array_diff($noms[1], $declares[1]) as $inconnu) {
+                $problemes[] = "$file : « $inconnu » est en lot mais n'est pas un champ du formulaire";
+            }
+        }
+        self::assertSame([], $problemes, implode("\n", $problemes));
+    }
+
     /** @return array<string, string> nom de fichier => source */
     private function screens(): array
     {
@@ -268,6 +288,10 @@ class AdminScreensTest extends TestCase
      */
     private function postedFields(string $src): array
     {
+        // Tableaux de chaînes qui ne sont PAS des champs postés : les filtres
+        // mémorisés de l'écran et la liste des champs modifiables en lot, qui
+        // en reprend certains (issues #309, #311).
+        $src = preg_replace('#persistedFilters\(\[[^\]]*\]\)|:bulk-fields="\[[^\]]*\]"#', '', $src);
         preg_match_all("#name: '([a-zA-Z_0-9]+)'#", $src, $explicites);
         $fields = $explicites[1];
 

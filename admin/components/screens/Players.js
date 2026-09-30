@@ -1,4 +1,5 @@
 import { defineAsyncComponent } from 'vue';
+import { persistedFilters } from '../grid/gridState.js';
 import { onError, onSuccess } from '../../../toaster.js';
 
 /**
@@ -12,12 +13,15 @@ import { onError, onSuccess } from '../../../toaster.js';
  * ni la photo — relevé en recette par Benjamin (#288).
  */
 export default {
+    // Filtres de l'écran mémorisés entre deux visites (issue #311)
+    mixins: [persistedFilters(['filters'])],
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
         'admin-picker-modal': defineAsyncComponent(() => import('../grid/AdminPickerModal.js')),
     },
     template: `
       <admin-grid
+        @reset-view="resetPersistedFilters"
         ref="grid"
         title="Gestion des joueurs"
         entity-label="joueur"

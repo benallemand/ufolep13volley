@@ -1,4 +1,5 @@
 import { defineAsyncComponent } from 'vue';
+import { persistedFilters } from '../grid/gridState.js';
 import { onError, onSuccess } from '../../../toaster.js';
 
 /**
@@ -11,11 +12,14 @@ import { onError, onSuccess } from '../../../toaster.js';
  * Python du dépôt `ufolep13volley_python` (`calendar-agent/`).
  */
 export default {
+    // Filtres de l'écran mémorisés entre deux visites (issue #311)
+    mixins: [persistedFilters(['preset'])],
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
     },
     template: `
       <admin-grid
+        @reset-view="resetPersistedFilters"
         ref="grid"
         title="Gestion des matchs"
         entity-label="match"
