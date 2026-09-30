@@ -1052,6 +1052,14 @@ club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
   compte.
 - `Club::getAccountCandidates()` propose les adresses déjà connues (coordonnées
   du club, personnes du club) : le rattrapage se fait sans ressaisie.
+- **Reprise manuelle du lien compte ↔ personne (#331)** : quand l'automatisme
+  refuse de trancher (plusieurs personnes portent l'email, ou aucune), l'admin
+  choisit dans l'écran Utilisateurs, « Personne rattachée… » :
+  `UserManager::linkAccountToPerson($user_id, $id_player)` (vide = détacher)
+  détache la personne précédente du compte et retire la personne choisie de son
+  ancien compte — jamais deux liens. `getPersonCandidates()` propose toutes les
+  personnes, celles des clubs, équipes et email du compte en tête. La colonne
+  « Personne » des comptes (`get_users.sql`) montre ce qui manque.
 - L'indicateur **« Clubs engagés sans compte de club »** est actionnable (#312) :
   sa tuile ouvre l'écran Clubs filtré, où l'action corrige. La grille porte les
   colonnes `Compte(s)` et `Référent(s)`, servies par `Club::getSql()` — elles

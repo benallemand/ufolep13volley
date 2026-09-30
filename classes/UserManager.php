@@ -458,6 +458,83 @@ class UserManager extends Generic
     }
 
     /**
+     * Rattache à la main une personne à un compte (issue #331), là où
+     * `link_person_to_account()` refuse de trancher : plusieurs personnes
+     * portent l'email du compte, ou aucune. Réservé à l'admin.
+     *
+     * N'importe quelle personne peut être choisie, pas seulement celles dont
+     * l'email correspond : c'est tout l'intérêt d'un lien explicite.
+     * `uq_joueurs_compte` n'autorise qu'une personne par compte : la personne
+     * précédente du compte est détachée d'abord, et si la personne choisie
+     * était liée à un autre compte, ce lien-là tombe (jamais deux liens).
+     *
+     * @param mixed $id_player vide : détacher la personne du compte
+     * @throws Exception
+     */
+    public function linkAccountToPerson($user_id, $id_player = null): void
+    {
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
+        }
+        $user_id = Generic::parse_id($user_id, 'identifiant de compte');
+        $login = $this->getUserLogin($user_id);
+        if ($login === null || $login === '') {
+            throw new Exception("Compte introuvable !", 404);
+        }
+        $account = array('type' => 'i', 'value' => $user_id);
+        if ($id_player === null || trim((string)$id_player) === '') {
+            $this->sql_manager->execute("UPDATE joueurs SET id_compte = NULL WHERE id_compte = ?", array($account));
+            $this->addActivity("Compte $login : personne détachée");
+            return;
+        }
+        $id_player = Generic::parse_id($id_player, 'identifiant de personne');
+        $person = $this->sql_manager->execute(
+            "SELECT CONCAT(prenom, ' ', nom) AS name FROM joueurs WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id_player)));
+        if (empty($person)) {
+            throw new Exception("Personne introuvable !", 404);
+        }
+        $this->sql_manager->execute("UPDATE joueurs SET id_compte = NULL WHERE id_compte = ? AND id <> ?",
+            array($account, array('type' => 'i', 'value' => $id_player)));
+        $this->sql_manager->execute("UPDATE joueurs SET id_compte = ? WHERE id = ?",
+            array($account, array('type' => 'i', 'value' => $id_player)));
+        $this->addActivity("Compte $login : rattaché à " . $person[0]['name']);
+    }
+
+    /**
+     * Personnes proposées pour un compte (issue #331) : celles de ses clubs et
+     * de ses équipes, et celles qui portent son email, d'abord (`suggested`),
+     * puis toutes les autres, pour la recherche. Chacune dit à quel compte
+     * elle est déjà liée, le cas échéant.
+     * @throws Exception
+     */
+    public function getPersonCandidates($user_id): array
+    {
+        if (!self::isAdmin()) {
+            throw new Exception("Seuls les administrateurs peuvent faire ça !", 403);
+        }
+        $user_id = Generic::parse_id($user_id, 'identifiant de compte');
+        $account = array('type' => 'i', 'value' => $user_id);
+        return $this->sql_manager->execute(
+            "SELECT j.id,
+                    CONCAT(UPPER(j.nom), ' ', j.prenom) AS name,
+                    j.email,
+                    cl.nom AS club,
+                    ca.login AS linked_login,
+                    IF(j.id_club IN (SELECT club_id FROM users_clubs WHERE user_id = ?)
+                           OR j.id IN (SELECT je.id_joueur FROM joueur_equipe je
+                                       JOIN users_teams ut ON ut.team_id = je.id_equipe
+                                       WHERE ut.user_id = ?)
+                           OR (j.email <> '' AND j.email = (SELECT email FROM comptes_acces WHERE id = ?)),
+                       1, 0) AS suggested
+             FROM joueurs j
+                      LEFT JOIN clubs cl ON cl.id = j.id_club
+                      LEFT JOIN comptes_acces ca ON ca.id = j.id_compte
+             ORDER BY suggested DESC, j.nom, j.prenom",
+            array($account, $account, $account));
+    }
+
+    /**
      * @throws Exception
      */
     public function getUserLogin($idUser)

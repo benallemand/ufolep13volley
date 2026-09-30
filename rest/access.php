@@ -293,6 +293,9 @@ return array(
         'reset_password' => 'admin',
         'saveUser' => 'admin',
         'setAdmin' => 'admin',
+        // rattachement manuel compte ↔ personne (issue #331)
+        'getPersonCandidates' => 'admin',
+        'linkAccountToPerson' => 'admin',
         'switch_to_user' => 'admin',
         'updateUserClubs' => 'admin',
         'updateUserTeams' => 'admin',
