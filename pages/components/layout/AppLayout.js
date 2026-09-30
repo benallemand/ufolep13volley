@@ -74,7 +74,7 @@ const routes = [
     },
     {
         path: '/general-rules',
-        component: () => import('../panel/GeneralRules.js'),
+        component: () => import('../panel/RulesDocument.js'),
     },
     {
         path: '/ufolep-rules',

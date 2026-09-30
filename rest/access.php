@@ -248,11 +248,13 @@ return array(
         'get' => 'admin',
         'save_with_args' => 'admin',
     ),
-    // Règlement général lu dans Google Docs (issue #342) : public comme la page
-    // qu'il remplace ; l'URL du document, elle, ne sort pas du serveur.
+    // Règlements lus dans le dossier Google Drive (issue #342) : publics comme
+    // les pages qu'ils remplacent ; les adresses Google, elles, ne sortent pas
+    // du serveur.
     'rules' => array(
-        'getGeneralRules' => 'public',
-        'getGeneralRulesPdf' => 'public',
+        'getRules' => 'public',
+        'getRulesList' => 'public',
+        'getRulesPdf' => 'public',
     ),
     'team' => array(
         'delete' => 'admin',

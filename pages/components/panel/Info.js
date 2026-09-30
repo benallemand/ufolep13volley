@@ -16,38 +16,10 @@ export default {
                                             class="max-h-20 mx-auto"/>
                 </p>
               </div>
-              <div class="p-1"><a class="link link-primary" href="../infos_utiles/Media/ReglementFeminin.pdf"
-                                  target="_blank">Règlement
-                championnat
-                féminin</a>(14 juin
-                2012)
-              </div>
-              <div class="p-1"><a class="link link-primary" href="../infos_utiles/Media/ReglementIsoardi.pdf"
-                                  target="_blank">Règlement
-                coupe
-                Isoardi</a>(15
-                mai 2012)
-              </div>
-              <div class="p-1"><a class="link link-primary" href="../infos_utiles/Media/ReglementKouryHanna.pdf"
-                                  target="_blank">Règlement
-                coupe
-                Khoury
-                Hanna</a>(15
-                mai 2012)
-              </div>
-              <div class="p-1"><a class="link link-primary" href="#generalRules" target="_blank">Règlement général</a>(01
-                novembre 2015)
-              </div>
-              <div class="p-1"><a class="link link-primary" href="../infos_utiles/Media/ReglementMasculin.pdf"
-                                  target="_blank">Règlement
-                championnat
-                masculin</a>(15
-                mai 2012)
-              </div>
-              <div class="p-1"><a class="link link-primary" href="../infos_utiles/Media/ReglementChampionnatMixte.pdf"
-                                  target="_blank">Règlement
-                championnat mixte</a>(01
-                novembre 2015)
+              <!-- Règlements : PDF du dossier Google Drive de la commission (issue #342) -->
+              <div v-for="reg in regulations" :key="reg.slug" class="p-1" data-testid="info-rules-pdf">
+                <a class="link link-primary" :href="reg.pdf_url" target="_blank" rel="noopener">{{ reg.label }}</a>
+                (saison {{ reg.season }})
               </div>
               <div class="p-1"><a class="link link-primary" href="https://get.vscore.ch/" target="_blank">bonus:
                 application de saisie des
@@ -272,6 +244,16 @@ export default {
       </div>
     `,
     data() {
-        return {};
+        return {
+            regulations: [],
+        };
+    },
+    async created() {
+        try {
+            const {data} = await axios.get('/rest/action.php/rules/getRulesList');
+            this.regulations = Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('Erreur lors du chargement des règlements :', error);
+        }
     },
 };

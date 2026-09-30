@@ -1,7 +1,7 @@
 <?php
 /**
- * E2E test helper (#342) — défait `rules_setup.php` : vide le cache du
- * règlement et retire l'identifiant fictif du registre s'il l'y a posé.
+ * E2E test helper (#342) — défait `rules_setup.php` : vide le cache fictif et
+ * rétablit la valeur du registre mise de côté.
  *
  * SECURITY: ne doit jamais être déployé en production.
  */
@@ -23,13 +23,19 @@ header('Content-Type: application/json');
 
 try {
     $sql = new SqlManager();
-    $sql->execute("DELETE FROM document_cache WHERE cache_key LIKE ?",
-        [['type' => 's', 'value' => RulesDocument::REGISTRY_KEY . '.%']]);
-    $sql->execute("DELETE FROM registry WHERE registry_key = ? AND registry_value = ?",
-        [
-            ['type' => 's', 'value' => RulesDocument::REGISTRY_KEY],
-            ['type' => 's', 'value' => 'E2eFixtureDocument00000000000000'],
-        ]);
+    $key = ['type' => 's', 'value' => RulesDocument::REGISTRY_KEY];
+    $backup = ['type' => 's', 'value' => 'e2e.rules.folder.backup'];
+
+    $sql->execute("DELETE FROM document_cache WHERE source_id LIKE 'E2eFixture%'");
+    $saved = $sql->execute("SELECT registry_value FROM registry WHERE registry_key = ? ORDER BY id DESC LIMIT 1", [$backup]);
+    if (!empty($saved)) {
+        $sql->execute("DELETE FROM registry WHERE registry_key = ?", [$key]);
+        if ($saved[0]['registry_value'] !== '') {
+            $sql->execute("INSERT INTO registry (registry_key, registry_value) VALUES (?, ?)",
+                [$key, ['type' => 's', 'value' => $saved[0]['registry_value']]]);
+        }
+        $sql->execute("DELETE FROM registry WHERE registry_key = ?", [$backup]);
+    }
     echo json_encode(['success' => true]);
 } catch (Throwable $e) {
     http_response_code(500);

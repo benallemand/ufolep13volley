@@ -2,13 +2,14 @@
 const { test, expect } = require('@playwright/test');
 
 /**
- * E2E — Règlement général lu dans Google Docs (issue #342)
+ * E2E — Règlements lus dans le dossier Google Drive (issue #342)
  *
- * Setup : un document fictif placé dans le cache (`rules_setup.php`), avec une
- * tentative de XSS. Aucun appel à Google : le test ne dépend ni du réseau ni
- * du contenu réel du document.
+ * Setup : un dossier fictif placé dans le cache (`rules_setup.php`) — une
+ * saison 2026-2027 avec le règlement général (qui porte une tentative de XSS)
+ * et le championnat féminin. Aucun appel à Google : le test ne dépend ni du
+ * réseau ni du contenu réel des documents.
  */
-test.describe('Issue #342 — règlement général', () => {
+test.describe('Issue #342 — règlements', () => {
     test.beforeEach(async ({ request }) => {
         const res = await request.get('/e2e/helpers/rules_setup.php');
         const body = await res.json();
@@ -19,22 +20,33 @@ test.describe('Issue #342 — règlement général', () => {
         await request.get('/e2e/helpers/rules_teardown.php');
     });
 
-    test('la page affiche le document, son récapitulatif et ses articles', async ({ page }) => {
+    test('la liste vient du dossier et le règlement général s\'affiche', async ({ page }) => {
         await page.goto('/pages/home.html#/ufolep-rules');
-        const rules = page.getByTestId('general-rules');
-        await expect(rules.getByTestId('rules-article')).toHaveCount(3, { timeout: 15000 });
+        await expect(page.getByTestId('rules-list').locator('button'))
+            .toHaveText([/Règlement général/, /Championnat féminin 4×4/], { timeout: 15000 });
+
+        const rules = page.getByTestId('rules-document');
+        await expect(rules.getByTestId('rules-article')).toHaveCount(3);
+        await expect(rules.getByTestId('rules-season')).toHaveText('Saison 2026-2027');
         await expect(rules.getByRole('heading', { name: 'Article 2 : Arbitrage E2E' })).toBeVisible();
-        await expect(rules.getByTestId('rules-fetched-at')).toContainText('relu le');
         await expect(rules.locator('#article-2 strong')).toHaveText('en gras');
         await expect(rules.locator('#article-3 td').first()).toHaveText('Victoire 3-0');
-
         // Récapitulatif alphabétique : « Arbitrage » avant « Attribution ».
         await expect(rules.getByTestId('rules-toc').locator('tbody td:first-child'))
             .toHaveText(['Arbitrage E2E', 'Attribution des points E2E', 'Saison sportive E2E']);
-        await page.screenshot({ path: 'test-results/issue-342/reglement.png', fullPage: true });
+        await page.screenshot({ path: 'test-results/issue-342/reglement-general.png', fullPage: true });
     });
 
-    test('le contenu du document ne peut pas exécuter de script', async ({ page }) => {
+    test('un autre règlement du dossier s\'ouvre depuis la liste', async ({ page }) => {
+        await page.goto('/pages/home.html#/ufolep-rules');
+        await page.getByTestId('rules-list').locator('button[data-slug="feminine"]').click({ timeout: 15000 });
+        const rules = page.locator('[data-testid="rules-document"][data-slug="feminine"]');
+        await expect(rules.getByRole('heading', { name: 'Article 1 : Définition de la compétition E2E' }))
+            .toBeVisible();
+        await expect(rules.getByTestId('rules-article')).toHaveCount(1);
+    });
+
+    test('le contenu d\'un document ne peut pas exécuter de script', async ({ page }) => {
         await page.goto('/pages/home.html#/ufolep-rules');
         await expect(page.locator('#article-2')).toBeVisible({ timeout: 15000 });
         expect(await page.evaluate(() => window.__rulesXss)).toBeUndefined();
@@ -55,15 +67,22 @@ test.describe('Issue #342 — règlement général', () => {
         const lien = page.getByTestId('rules-original');
         await expect(lien).toBeVisible({ timeout: 15000 });
         const href = await lien.getAttribute('href');
-        expect(href).toBe('/rest/action.php/rules/getGeneralRulesPdf');
-        // Aucune adresse Google dans le règlement : le lien d'édition ne peut pas
-        // fuiter (la barre de navigation a ses propres liens, hors sujet ici).
-        expect(await page.getByTestId('general-rules').innerHTML()).not.toContain('docs.google.com');
+        expect(href).toBe('/rest/action.php/rules/getRulesPdf?slug=general');
+        // Aucune adresse Google dans les règlements : un lien d'édition ne peut
+        // pas fuiter (la barre de navigation a ses propres liens, hors sujet).
+        expect(await page.locator('#reglement-content').innerHTML()).not.toMatch(/google\.com/);
 
         const pdf = await request.get(href);
         expect(pdf.status()).toBe(200);
         expect(pdf.headers()['content-type']).toContain('application/pdf');
         expect((await pdf.body()).subarray(0, 4).toString()).toBe('%PDF');
+    });
+
+    test('la page Infos propose les PDF à jour', async ({ page }) => {
+        await page.goto('/pages/home.html#/information');
+        const liens = page.getByTestId('info-rules-pdf').locator('a');
+        await expect(liens).toHaveText(['Règlement général', 'Championnat féminin 4×4'], { timeout: 15000 });
+        await expect(liens.first()).toHaveAttribute('href', '/rest/action.php/rules/getRulesPdf?slug=general');
     });
 
     test('sur mobile, la page reste lisible', async ({ page }) => {
@@ -72,7 +91,7 @@ test.describe('Issue #342 — règlement général', () => {
         await expect(page.locator('#article-1')).toBeVisible({ timeout: 15000 });
         // Rien du règlement ne dépasse sa colonne (les menus de la barre de
         // navigation, hors sujet ici, ont leur propre débordement).
-        const debordants = await page.getByTestId('general-rules').evaluate((root) => {
+        const debordants = await page.getByTestId('rules-document').evaluate((root) => {
             const limite = root.getBoundingClientRect().right + 1;
             return [...root.querySelectorAll('*')]
                 .filter((el) => el.getBoundingClientRect().right > limite && !el.closest('.overflow-x-auto'))
