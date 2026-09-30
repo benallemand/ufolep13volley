@@ -1204,6 +1204,33 @@ n'est pas repris dans le formulaire (`get_survey` renvoie un formulaire neuf).
 Un sondage ne se relit que par l'équipe sondeuse : `Survey::getSql()` passe par
 `users_teams`. Celui d'un admin hors équipe s'enregistre mais ne se relit pas.
 
+### Règlement général lu dans Google Docs (issue #342)
+
+Le règlement général n'est plus dans le code : `GeneralRules.js` affiche le
+document Google de la commission, désigné par le registre
+`rules.general.document` (URL ou identifiant seul, écran « Base de registres »).
+`classes/RulesDocument.php` (`rules/getGeneralRules`, `rules/getGeneralRulesPdf`,
+publics) en récupère les exports HTML et PDF et les garde dans `document_cache`
+15 minutes. Si Google ne répond pas, la dernière version est servie (statut
+`stale`), et on ne le relance pas plus d'une fois toutes les 5 minutes.
+
+- **Le partage du document reste en lecture seule** (« Tous les utilisateurs
+  disposant du lien : Lecteur ») : le serveur n'a besoin que de lire. Son URL ne
+  sort jamais du serveur — le lien « document original » est le PDF servi par
+  `getGeneralRulesPdf` — donc aucun lien d'édition ne peut fuiter par le site.
+  Si le téléchargement est interdit aux lecteurs, l'export échoue : le laisser
+  permis.
+- **Le HTML est reconstruit, jamais recopié** (`RulesDocument::sanitize`) : liste
+  blanche de balises, texte échappé, seuls `href` (http, https, mailto — la
+  redirection `google.com/url?q=` retirée) et `colspan`/`rowspan` survivent. Le
+  gras, l'italique et le souligné, que Google exprime en classes CSS,
+  redeviennent des balises. D'où le `v-html` sans risque dans `GeneralRules.js`.
+- Un paragraphe « Article N : Titre » ouvre un article (`#article-N`) ; le
+  récapitulatif en est tiré, par ordre alphabétique. Une mise en page du
+  document qui casse ce motif fait disparaître les articles de la page.
+- Tests : `RulesDocumentTest` (sans réseau, téléchargement simulé) ; en E2E,
+  `rules_setup.php` place un document fictif dans le cache.
+
 ### Rôles utilisateurs (issue #245)
 - Les rôles sont **dérivés et cumulables** — pas de table de profils :
   admin → `comptes_acces.is_admin` ; responsable d'équipe → ligne `users_teams` ;

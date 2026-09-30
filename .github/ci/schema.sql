@@ -292,6 +292,24 @@ CREATE TABLE `dates_limite` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `document_cache`
+--
+
+DROP TABLE IF EXISTS `document_cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `document_cache` (
+  `cache_key` varchar(64) NOT NULL,
+  `source_id` varchar(100) NOT NULL,
+  `content` mediumblob,
+  `content_type` varchar(100) NOT NULL,
+  `fetched_at` datetime DEFAULT NULL,
+  `checked_at` datetime NOT NULL,
+  PRIMARY KEY (`cache_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `emails`
 --
 
