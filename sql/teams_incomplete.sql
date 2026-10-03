@@ -5,8 +5,8 @@ WITH first_responsable AS (SELECT ca.id,
                                     JOIN users_teams ut ON ca.id = ut.user_id)
 SELECT e.nom_equipe AS equipe,
        c.libelle    AS competition,
-       -- Dernier recours : le ou les comptes du club (`users_clubs`), depuis
-       -- que les colonnes `clubs.*_responsable` ont été retirées (issue #327).
+       -- Dernier recours : le contact du club (`club_contacts_view`, #395),
+       -- depuis que les colonnes `clubs.*_responsable` ont été retirées (#327).
        COALESCE(ca.email,
                 j_resp.email,
                 j_resp.email2,
@@ -14,21 +14,23 @@ SELECT e.nom_equipe AS equipe,
                 j_resp2.email2,
                 j_cap.email,
                 j_cap.email2,
-                (SELECT GROUP_CONCAT(DISTINCT ca_club.email ORDER BY ca_club.email SEPARATOR ';')
-                 FROM users_clubs uc
-                          JOIN comptes_acces ca_club ON ca_club.id = uc.user_id
-                 WHERE uc.club_id = club.id)) AS contact_email,
+                cc.contact)             AS contact_email,
        COUNT(j_masc.id)                 AS garcons,
        COUNT(j_fem.id)                  AS filles,
        COUNT(j_resp.id)                 AS reponsable_ok,
        COUNT(j_resp2.id)                AS reponsable2_ok,
        COUNT(j_cap.id)                  AS capitaine_ok
 FROM equipes e
-         JOIN first_responsable fr ON fr.id_equipe = e.id_equipe AND fr.rn = 1
-         JOIN comptes_acces ca ON fr.id = ca.id
+         -- Jointures externes (issue #395) : une équipe sans compte, ou sans
+         -- aucun joueur, est la plus incomplète de toutes. En jointure
+         -- interne, elle disparaissait de l'indicateur — les nouvelles équipes
+         -- de la saison en premier.
+         LEFT JOIN first_responsable fr ON fr.id_equipe = e.id_equipe AND fr.rn = 1
+         LEFT JOIN comptes_acces ca ON fr.id = ca.id
          JOIN clubs club ON e.id_club = club.id
+         LEFT JOIN club_contacts_view cc ON cc.id_club = club.id
          JOIN competitions c ON c.code_competition = e.code_competition
-         JOIN joueur_equipe je ON e.id_equipe = je.id_equipe
+         LEFT JOIN joueur_equipe je ON e.id_equipe = je.id_equipe
          LEFT JOIN joueurs j_resp ON je.id_joueur = j_resp.id AND je.is_leader = 1
          LEFT JOIN joueurs j_resp2 ON je.id_joueur = j_resp2.id AND je.is_vice_leader = 1
          LEFT JOIN joueurs j_cap ON je.id_joueur = j_cap.id AND je.is_captain = 1

@@ -1256,6 +1256,24 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   remplacés : n'envoyer que le champ modifié viderait les autres colonnes.
   Un appel par ligne, arrêt à la première erreur en nommant la ligne.
 
+### Indicateurs de préparation de saison (#395, audit #398)
+
+- **`club_contacts_view`** (`id_club`, `contact`) : le ou les comptes du club,
+  sinon les emails des responsables d'équipe du club. C'est la règle unique
+  « à qui écrire pour un club » des indicateurs. Ne pas la recopier en
+  sous-requête. Migration `023` (dépôt Python).
+- Les indicateurs fondés sur `register` **écartent les refusées**
+  (`status <> 'REFUSED'`). Ils ne retiennent que la campagne en cours
+  (`creation_date >= start_register_date`), et rapprochent inscription et
+  équipe par la règle de #390 (`old_team_id`, sinon le nom dans la compétition).
+- **Décalage des créneaux** : un créneau se compare en « gymnase (ville) jour
+  heure ». Un créneau saisi deux fois ne compte qu'une fois, des deux côtés.
+  L'écart est qualifié : `aucun créneau en place`, `ordre de préférence
+  inversé`, `créneau modifié`. « Initialiser la saison » recrée les créneaux
+  depuis les inscriptions : la tuile se vide alors d'elle-même.
+- Les tests (`SeasonPrepIndicatorsTest`) **ouvrent eux-mêmes la fenêtre
+  d'inscription** : la base de CI n'a pas de `start_register_date`.
+
 ### Préparation de saison : division X, « Non affectées » (#388)
 
 Déroulé : Inscriptions → « Divisions / rangs » (`Register::fill_ranks`), puis

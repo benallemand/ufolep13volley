@@ -256,9 +256,11 @@ $indicators[] = new Indicator(
     "Inscriptions - Terrains vs Equipes",
     file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'),
     'alert');
+// Alerte : une inscription sans créneau complet bloque le calendrier (#395).
 $indicators[] = new Indicator(
     "Inscriptions - Infos incomplètes",
-    file_get_contents(__DIR__ . '/../sql/indicator-register-incomplete-teams.sql'));
+    file_get_contents(__DIR__ . '/../sql/indicator-register-incomplete-teams.sql'),
+    'alert');
 $indicators[] = new Indicator(
     "Joueurs sans photo",
     file_get_contents(__DIR__ . '/../sql/no_photo.sql'),

@@ -33,21 +33,10 @@ SELECT cl.id                                                                    
        GROUP_CONCAT(DISTINCT comp.libelle ORDER BY comp.libelle SEPARATOR ', ') AS competitions_saison_passee,
        DATE_FORMAT(MIN(comp.limit_register_date), '%d/%m/%Y')                   AS date_limite,
        DATEDIFF(MIN(comp.limit_register_date), CURRENT_DATE)                    AS jours_restants,
-       COALESCE(
-               NULLIF((SELECT GROUP_CONCAT(DISTINCT ca.email ORDER BY ca.email SEPARATOR ', ')
-                       FROM users_clubs uc
-                                JOIN comptes_acces ca ON ca.id = uc.user_id
-                       WHERE uc.club_id = cl.id), ''),
-               (SELECT GROUP_CONCAT(DISTINCT j.email ORDER BY j.email SEPARATOR ', ')
-                FROM joueurs j
-                WHERE j.id_club = cl.id
-                  AND NULLIF(TRIM(j.email), '') IS NOT NULL
-                  AND EXISTS (SELECT 1
-                              FROM joueur_equipe je
-                              WHERE je.id_joueur = j.id
-                                AND je.is_leader + 0 > 0))
-           )                                                                    AS contact
+       cc.contact                                                               AS contact
 FROM clubs cl
+         -- La règle du contact vit désormais dans la vue (#395).
+         LEFT JOIN club_contacts_view cc ON cc.id_club = cl.id
          JOIN equipes e ON e.id_club = cl.id
          JOIN classements c ON c.id_equipe = e.id_equipe
          JOIN competitions comp ON comp.code_competition = c.code_competition
@@ -56,5 +45,5 @@ WHERE c.code_competition IN ('m', 'f', 'mo')
   -- Bornes incluses, comme `Competition::is_registration_available()`.
   AND CURRENT_DATE BETWEEN comp.start_register_date AND comp.limit_register_date
   AND NOT EXISTS (SELECT 1 FROM register r WHERE r.id_club = cl.id)
-GROUP BY cl.id, cl.nom
+GROUP BY cl.id, cl.nom, cc.contact
 ORDER BY equipes_saison_passee DESC, club
