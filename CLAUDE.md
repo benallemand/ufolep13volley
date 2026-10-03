@@ -1327,6 +1327,21 @@ l'initialisation est perdu), puis « Réorganiser les divisions ».
 - Pas de filtre de fenêtre d'inscription dans ces requêtes : au 30/09/2026,
   `register` ne contenait que la saison en cours. Des lignes d'une saison
   passée y seraient comptées (rangs X, `registered`, `insert_from_register`).
+- **Ancien nom d'une équipe réinscrite (#402)** : `Register::create_or_update_team`
+  renomme l'équipe sans changer son identifiant. Il est appelé par
+  « Équipes / comptes » **et** par « Initialiser la saison ». L'ancien nom est
+  donc figé à la demande, dans `register.old_team_name`
+  (`Register::old_team_name_for`), et ne bouge plus ensuite. Une demande
+  modifiée qui désigne la même ancienne équipe le garde ; une autre ancienne
+  équipe reprend son nom à elle.
+  - `Rank::RENAMING_COLUMNS` (`registered_name`, `former_name`) : l'écran
+    affiche toujours le nom demandé, et « ex-… » quand l'ancien diffère. Ce
+    sens ne dépend pas des boutons déjà passés.
+  - La colonne « Ancien nom » des Inscriptions et le « anciennement … »
+    public lisent la colonne, sinon l'équipe (demandes antérieures).
+  - Pour la campagne 2026, la migration `024` n'a pu reprendre que les équipes
+    pas encore renommées : « Équipes / comptes » avait déjà effacé les autres
+    anciens noms.
 
 ### Grilles d'administration : en-tête figé (#386)
 

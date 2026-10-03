@@ -82,7 +82,7 @@ export default {
         <div v-if="picked" class="alert alert-info mb-3 py-2">
           <i class="fas fa-hand-pointer"></i>
           <span>
-            <strong>{{ picked.team.nom_equipe }}</strong> sélectionnée —
+            <strong>{{ picked.team.displayName }}</strong> sélectionnée —
             touchez une colonne pour l'y déplacer.
           </span>
           <button class="btn btn-ghost btn-xs" @click="picked = null">Annuler</button>
@@ -147,7 +147,9 @@ export default {
                       team.toCreate ? 'cursor-not-allowed opacity-70' : 'cursor-move',
                       picked && picked.team.id_equipe === team.id_equipe ? 'ring-2 ring-primary' : '',
                     ]"
-                    :title="team.nom_equipe + ' — ' + team.club
+                    :title="team.displayName
+                      + (team.formerName ? ' (anciennement ' + team.formerName + ')' : '')
+                      + ' — ' + team.club
                       + (isLeaving(col, team) ? ' — non réinscrite pour la nouvelle saison' : '')
                       + (team.toCreate ? ' — inscription sans équipe : Inscriptions → « Équipes / comptes » pour la créer' : '')"
                     @dragstart="dragStart(col, team)"
@@ -155,8 +157,15 @@ export default {
                     @drop.prevent.stop="drop(col, index)"
                     @click.stop="pick(col, team)">
                   <span class="badge badge-ghost badge-sm shrink-0">{{ index + 1 }}</span>
-                  <span class="truncate"
-                        :class="isLeaving(col, team) ? 'line-through text-base-content/50' : ''">{{ team.nom_equipe }}</span>
+                  <!-- Nom demandé pour la nouvelle saison, et l'ancien en
+                       dessous quand il diffère (#402). -->
+                  <span class="flex flex-col min-w-0 leading-tight">
+                    <span class="truncate"
+                          :class="isLeaving(col, team) ? 'line-through text-base-content/50' : ''">{{ team.displayName }}</span>
+                    <span v-if="team.formerName"
+                          class="truncate text-xs text-base-content/60"
+                          data-testid="divisions-former-name">ex-{{ team.formerName }}</span>
+                  </span>
                   <span v-if="isLeaving(col, team)" class="badge badge-error badge-xs shrink-0 ml-auto"
                         data-testid="divisions-not-registered">à retirer</span>
                   <span v-if="team.toCreate" class="badge badge-warning badge-xs shrink-0 ml-auto"
@@ -225,6 +234,7 @@ export default {
                         id: null,
                         id_equipe: t.id_equipe,
                         nom_equipe: t.nom_equipe,
+                        ...this.names(t),
                         club: t.club,
                         registered: Number(t.registered) === 1,
                         // Demande sans équipe créée : visible, pas déplaçable.
@@ -249,6 +259,7 @@ export default {
                                     id: t.id,
                                     id_equipe: t.id_equipe,
                                     nom_equipe: t.nom_equipe,
+                                    ...this.names(t),
                                     club: t.club,
                                     registered: Number(t.registered) === 1,
                                 })),
@@ -257,6 +268,18 @@ export default {
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isLoading = false; });
+        },
+        /**
+         * Noms affichés d'une équipe (#402) : celui demandé à la réinscription,
+         * et l'ancien quand il diffère. « Équipes / comptes » et
+         * l'initialisation renomment l'équipe : selon les boutons déjà passés,
+         * `nom_equipe` est l'un ou l'autre, d'où un affichage qui n'en dépend
+         * pas.
+         */
+        names(t) {
+            const displayName = t.registered_name || t.nom_equipe;
+            const formerName = t.former_name && t.former_name !== displayName ? t.former_name : null;
+            return { displayName, formerName };
         },
         /**
          * Équipe d'une division sans inscription pour la nouvelle saison
@@ -289,7 +312,7 @@ export default {
             }
             if (checked) {
                 col.teams.push(...this.hiddenUnassigned);
-                col.teams.sort((a, b) => a.nom_equipe.localeCompare(b.nom_equipe));
+                col.teams.sort((a, b) => a.displayName.localeCompare(b.displayName));
                 this.hiddenUnassigned = [];
                 return;
             }
@@ -369,7 +392,7 @@ export default {
                     for (const team of col.teams) {
                         if (team.id && !Number.isNaN(Number(team.id))) {
                             removals.push(team.id);
-                            removedNames.push(team.nom_equipe);
+                            removedNames.push(team.displayName);
                         }
                     }
                     continue;
