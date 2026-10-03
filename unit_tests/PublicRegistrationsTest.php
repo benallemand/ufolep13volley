@@ -124,6 +124,30 @@ class PublicRegistrationsTest extends UfolepTestCase
         ), $listed, 'C, classée sans demande, est « pas réinscrite » ; A et B, réengagées, ne le sont pas');
     }
 
+    public function test_une_nouvelle_equipe_placee_en_division_n_est_pas_listee_deux_fois(): void
+    {
+        // Préparation des divisions : la nouvelle équipe est créée et mise au
+        // classement, sans `old_team_id` dans sa demande.
+        $this->register('issue379 placee', 'PENDING');
+        $placed = (int)$this->sql->execute(
+            "INSERT INTO equipes SET code_competition = 'm', nom_equipe = 'issue379 placee', id_club = ?",
+            array(array('type' => 'i', 'value' => $this->id_club)));
+        $this->sql->execute("INSERT INTO classements SET code_competition = 'm', division = '76', id_equipe = ?",
+            array(array('type' => 'i', 'value' => $placed)));
+
+        $rows = array();
+        foreach ((new Register())->getPublicRegistrations() as $competition) {
+            foreach ($competition['teams'] as $team) {
+                if ($competition['code_competition'] === 'm' && $team['equipe'] === 'issue379 placee') {
+                    $rows[] = $team;
+                }
+            }
+        }
+        $this->assertCount(1, $rows, 'Listée une seule fois, pas aussi en « pas réinscrite »');
+        $this->assertSame('new', $rows[0]['type']);
+        $this->assertSame('PENDING', $rows[0]['status']);
+    }
+
     public function test_rien_sur_les_personnes_ne_sort(): void
     {
         $this->register('issue379 new', 'PENDING');

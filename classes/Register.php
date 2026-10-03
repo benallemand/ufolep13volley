@@ -253,7 +253,10 @@ class Register extends Generic
             $bindings);
         // Réinscription reconnue à `old_team_id`, quelle que soit la
         // compétition demandée : une équipe passée du féminin au mixte n'est
-        // pas « non réinscrite ».
+        // pas « non réinscrite ». Une NOUVELLE équipe (sans `old_team_id`),
+        // dès qu'on la place dans une division, est au classement : elle se
+        // reconnaît alors par son nom dans sa compétition, sinon elle sortait
+        // deux fois, nouvelle ET pas réinscrite.
         $not_registered = $this->sql_manager->execute(
             "SELECT comp.id AS id_competition, cl.nom AS club, e.nom_equipe AS equipe,
                     'NOT_REGISTERED' AS status, NULL AS type, NULL AS ancien_nom
@@ -265,7 +268,10 @@ class Register extends Generic
                AND comp.code_competition IN ($championships)
                AND NOT EXISTS (SELECT 1
                                FROM register r
-                               WHERE r.old_team_id = c.id_equipe
+                               WHERE (r.old_team_id = c.id_equipe
+                                      OR (r.old_team_id IS NULL
+                                          AND r.id_competition = comp.id
+                                          AND r.new_team_name = e.nom_equipe))
                                  AND r.creation_date >= comp.start_register_date)",
             $bindings);
 

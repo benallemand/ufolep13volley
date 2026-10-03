@@ -26,6 +26,7 @@ test.describe('Issue #379 — inscriptions en cours, en page d\'accueil', () => 
 
         const competition = bloc.locator('.collapse', { hasText: 'E2E Inscriptions' });
         await expect(competition).toContainText('1 en attente');
+        await expect(competition.getByTestId('public-registrations-new')).toHaveText('1 nouvelle équipe');
         // daisyUI : c'est la case superposée au titre qui ouvre le bloc
         await competition.locator('input[type=checkbox]').check();
 
