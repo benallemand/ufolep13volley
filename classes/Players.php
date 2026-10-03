@@ -375,7 +375,13 @@ class Players extends Generic
         }
         $before = $this->row_before($inputs['id'] ?? null, 'joueurs', 'id');
         $newId = $this->sql_manager->execute($sql, $bindings);
-        if (UserManager::isTeamLeader()) {
+        // Un administrateur n'est jamais ajouté d'office à une équipe :
+        // `addPlayerToMyTeam` le refuse, sinon chaque fiche qu'il modifie depuis
+        // l'administration rejoindrait l'équipe dont il est aussi responsable.
+        // Ce refus n'est pas une erreur : un compte à la fois admin et
+        // responsable voyait toutes ses modifications de joueur échouer après
+        // coup, imports de licences compris.
+        if (UserManager::isTeamLeader() && !UserManager::isAdmin()) {
             if (!$this->addPlayerToMyTeam(!empty($newId) ? $newId : $inputs['id'])) {
                 throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
             }

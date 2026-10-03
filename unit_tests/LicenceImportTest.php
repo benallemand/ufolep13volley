@@ -223,6 +223,26 @@ class LicenceImportTest extends UfolepTestCase
         $this->assertCount(1, $this->sql->execute("SELECT id FROM joueurs WHERE prenom = 'Importee' AND nom = 'LITEST'"));
     }
 
+    public function test_un_admin_aussi_responsable_d_equipe_met_a_jour_sans_erreur(): void
+    {
+        // Le 03/10/2026, l'import d'une licence par un compte admin ET
+        // responsable d'équipe finissait en « Erreur durant l'ajout du joueur à
+        // l'équipe », après avoir pourtant mis la fiche à jour.
+        $id = $this->player('Valero', $this->club_a, 'LT0000010');
+        $this->connect_as_admin();
+        $_SESSION['is_team_leader'] = true;
+        $_SESSION['id_equipe'] = 1;
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->licence('LITEST Valero', 'LT0000010', self::AFFILIATION_A));
+
+        $this->assertSame('updated', $result['status']);
+        $this->assertSame('2026-09-20', $this->row($id)['date_homologation']);
+        $this->assertSame(array(), $this->sql->execute(
+            "SELECT 1 FROM joueur_equipe WHERE id_joueur = ?", array(array('type' => 'i', 'value' => $id))),
+            "l'administrateur n'ajoute pas le joueur à son équipe");
+    }
+
     public function test_un_fichier_sans_licence_reconnue_est_refuse(): void
     {
         $this->connect_as_club_leader($this->club_a);
