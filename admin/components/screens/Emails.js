@@ -121,7 +121,12 @@ export default {
     },
     computed: {
         fetchUrl() {
-            return `/rest/action.php/emails/get?_start=0&_end=${this.windowSize - 1}`;
+            // Ouvert depuis la tuile « Emails en erreur » (`?ids=`, #397) : un
+            // email en erreur peut être plus ancien que les 500 derniers, on
+            // charge donc tout. Le choix de la fenêtre n'est pas modifié, il
+            // reprend la main dès que le filtre est retiré.
+            const size = this.$route.query.ids ? 100000 : this.windowSize;
+            return `/rest/action.php/emails/get?_start=0&_end=${size - 1}`;
         },
         columns() {
             return [

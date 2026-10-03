@@ -1284,6 +1284,17 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   depuis les inscriptions : la tuile se vide alors d'elle-même.
 - Les tests (`SeasonPrepIndicatorsTest`) **ouvrent eux-mêmes la fenêtre
   d'inscription** : la base de CI n'a pas de `start_register_date`.
+- **Indicateurs de saison (#397)** :
+  - une date de match se compare sur `matches.date_reception` (DATE), jamais
+    sur `matchs_view`, qui la rend en texte jj/mm/aaaa : un `MAX` sur ce texte
+    classait le 16/01 après le 13/03 ;
+  - un indicateur qui compte des matchs archivés se borne à la saison en cours
+    (1er juillet, comme `CalendarEvents::getCurrentSeason()`). Sinon, à
+    l'intersaison, il mélange les matchs de l'an dernier et les équipes de
+    cette année ;
+  - un joueur se regroupe par `j.id`, jamais par « prénom nom » ;
+  - un type de compétition se lit sur `code_competition`, jamais par un
+    `LIKE` sur un nom d'équipe ou un code de match.
 
 ### Préparation de saison : division X, « Non affectées » (#388)
 

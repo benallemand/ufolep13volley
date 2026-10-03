@@ -492,6 +492,11 @@ appliquent pas.
 | X20 | Ouvrir « **Equipes incomplètes** » après la date limite | Les équipes sans compte ni joueur (nouvelles équipes) y figurent, avec un contact |
 | X21 | Ouvrir « **Inscriptions - Infos incomplètes** » (alerte) | Compétition, club, équipe, statut, problème en clair, contacts. Aucune demande refusée |
 | X22 | Ouvrir « **Facture par club** » | Les demandes refusées ne sont pas facturées |
+| X23 | Ouvrir « **Même réception que la fois précédente** » | Répond en moins d'une seconde (7 s avant #397). Les dates de l'avant-dernier et du dernier match se suivent **dans l'ordre chronologique** |
+| X24 | À l'intersaison, chercher « Equilibre Réceptions/Déplacements » et « Matchs avec des renforts » | Aucune tuile tant qu'aucun match de la saison n'est joué : les matchs de l'an dernier ne comptent plus (#397) |
+| X25 | Ouvrir « **Joueurs dans plusieurs équipes** » | Une colonne `joueurs` nomme les joueurs partagés de chaque groupe |
+| X26 | Ouvrir « **Joueurs potentiellement en doublon** » (s'il y en a) | Une ligne par joueur, les homonymes à la suite ; « Corriger ces N ligne(s) » ouvre l'écran Joueurs filtré sur eux |
+| X27 | Ouvrir « **Emails en erreur** » (s'il y en a), puis « Corriger » | Pas de corps HTML dans le détail ; l'écran Emails s'ouvre filtré sur ces emails, **même anciens** (il charge alors tous les emails) |
 
 > `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
 > depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux

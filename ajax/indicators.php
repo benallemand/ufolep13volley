@@ -139,7 +139,7 @@ $indicators = array(
         indicator_sql('no_photo.sql'), 'alert',
         category: Indicator::PLAYERS),
     new Indicator("Joueurs potentiellement en doublon",
-        indicator_sql('player_duplicates.sql'), 'alert',
+        indicator_sql('player_duplicates.sql'), 'alert', 'players', 'indicator_id',
         category: Indicator::PLAYERS),
     new Indicator("Licences dupliquées",
         indicator_sql('licence_duplicates.sql'), 'alert',
@@ -200,7 +200,7 @@ $indicators = array(
         indicator_sql('overall_equity_home_away.sql'), 'alert',
         category: Indicator::SEASON),
     new Indicator("Emails en erreur",
-        indicator_sql('email_errors.sql'), 'alert',
+        indicator_sql('email_errors.sql'), 'alert', 'emails', 'indicator_id',
         category: Indicator::SEASON),
 
     // --- Statistiques -------------------------------------------------------
