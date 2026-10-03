@@ -93,6 +93,21 @@ class RankTest extends UfolepTestCase
         }
     }
 
+    public function test_getDivisions_sorted_numerically_whatever_the_row_order()
+    {
+        $this->createTestData();
+        // Lignes insérées dans le désordre, comme après une réorganisation.
+        foreach (array('10', '4', '3') as $division) {
+            $this->classementIds[] = $this->sql->execute(
+                "INSERT INTO classements SET code_competition = 'ut', division = ?, id_equipe = ?, rank_start = 1, penalite = 0",
+                [['type' => 's', 'value' => $division], ['type' => 'i', 'value' => $this->equipeIds[0]]]);
+        }
+        $divisions = array_column(array_values(array_filter(
+            $this->rank->getDivisions(),
+            static fn($d) => $d['code_competition'] === 'ut')), 'division');
+        $this->assertSame(array('1', '3', '4', '10'), $divisions);
+    }
+
     /**
      * @throws Exception
      */
