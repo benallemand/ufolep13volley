@@ -201,6 +201,12 @@ class Register extends Generic
     }
 
     /** Seules colonnes de la liste publique : rien sur les personnes (issue #379). */
+    /**
+     * Durée de la dernière phase (aller ou retour) d'une compétition, comptée
+     * à rebours depuis son dernier match : une équipe qui n'y a pas joué
+     * n'était pas dans les divisions, sa demande est une « nouvelle équipe ».
+     */
+    private const LAST_PHASE_MONTHS = 4;
     public const PUBLIC_REGISTRATION_FIELDS = array('club', 'equipe', 'status', 'type', 'ancien_nom');
 
     /**
@@ -240,9 +246,26 @@ class Register extends Generic
         $bindings = array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids);
         $championships = implode(',', array_map(static fn($code) => "'$code'", Competition::CHAMPIONSHIPS));
 
+        // « Nouvelle » = absente des divisions de cette compétition à la
+        // dernière demi-saison, ancienne équipe ou pas : Meyrargues Filles a
+        // joué l'aller 2025-2026 mais pas le retour, elle compte en 2026 pour
+        // une nouvelle. Le repère est un match joué pendant la dernière phase,
+        // soit les 4 mois qui précèdent le dernier match de la compétition
+        // avant l'ouverture des inscriptions. Pas `classements` : on le remanie
+        // justement pendant la préparation des divisions.
         $registered = $this->sql_manager->execute(
             "SELECT r.id_competition, cl.nom AS club, r.new_team_name AS equipe, r.status,
-                    IF(r.old_team_id IS NULL, 'new', 'renewal') AS type,
+                    IF(EXISTS (SELECT 1
+                               FROM matches m
+                               WHERE r.old_team_id IN (m.id_equipe_dom, m.id_equipe_ext)
+                                 AND m.code_competition = c.code_competition
+                                 AND m.date_reception < c.start_register_date
+                                 AND m.date_reception >= (SELECT MAX(last.date_reception)
+                                                          FROM matches last
+                                                          WHERE last.code_competition = c.code_competition
+                                                            AND last.date_reception < c.start_register_date)
+                                                         - INTERVAL " . self::LAST_PHASE_MONTHS . " MONTH),
+                       'renewal', 'new') AS type,
                     IF(e.nom_equipe <> r.new_team_name, e.nom_equipe, NULL) AS ancien_nom
              FROM register r
                       JOIN competitions c ON c.id = r.id_competition

@@ -53,6 +53,8 @@ class PublicRegistrationsTest extends UfolepTestCase
 
     private function delete_test_data(): void
     {
+        $this->sql->execute("DELETE FROM matches WHERE code_match LIKE 'ISS379%'");
+        $this->sql->execute("DELETE FROM gymnase WHERE nom = 'issue379 court'");
         $this->sql->execute("DELETE FROM register WHERE new_team_name LIKE 'issue379%'");
         $this->sql->execute("DELETE FROM classements WHERE division = '76' AND code_competition = 'm'");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'issue379%'");
@@ -82,6 +84,20 @@ class PublicRegistrationsTest extends UfolepTestCase
             ));
     }
 
+    /** Un match de championnat entre deux équipes de test, à la date donnée. */
+    private function played(string $home, string $away, string $date): void
+    {
+        static $n = 0;
+        $n++;
+        $id_court = (int)$this->sql->execute("INSERT INTO gymnase SET nom = 'issue379 court'");
+        $this->sql->execute(
+            "INSERT INTO matches SET code_match = ?, code_competition = 'm', division = '76',
+                id_equipe_dom = ?, id_equipe_ext = ?, id_gymnasium = ?,
+                date_reception = $date, date_original = $date, match_status = 'ARCHIVED'",
+            array(array('type' => 's', 'value' => "ISS379$n"), array('type' => 'i', 'value' => $this->team[$home]),
+                  array('type' => 'i', 'value' => $this->team[$away]), array('type' => 'i', 'value' => $id_court)));
+    }
+
     /** @return array<string, array> équipes de test de la liste publique, par nom */
     private function listed(): array
     {
@@ -106,6 +122,8 @@ class PublicRegistrationsTest extends UfolepTestCase
 
     public function test_statuts_types_et_equipes_non_reinscrites(): void
     {
+        // A et B ont joué la dernière phase : leurs demandes sont des réengagements.
+        $this->played('A', 'B', 'CURDATE() - INTERVAL 1 MONTH');
         $this->register('issue379 new', 'PENDING');
         $this->register('issue379 team A', 'VALIDATED', $this->team['A']);
         $this->register('issue379 renamed', 'REFUSED', $this->team['B']);
@@ -122,6 +140,21 @@ class PublicRegistrationsTest extends UfolepTestCase
             'issue379 team C' => array('club' => 'issue379 club', 'equipe' => 'issue379 team C', 'status' => 'NOT_REGISTERED',
                 'type' => null, 'ancien_nom' => null),
         ), $listed, 'C, classée sans demande, est « pas réinscrite » ; A et B, réengagées, ne le sont pas');
+    }
+
+    public function test_une_equipe_existante_absente_la_saison_passee_est_nouvelle(): void
+    {
+        // Meyrargues Filles en 2026 : équipe existante, qui a joué l'aller mais
+        // pas le retour. A ne joue plus depuis 7 mois ; B et C jouent la
+        // dernière phase.
+        $this->played('A', 'B', 'CURDATE() - INTERVAL 7 MONTH');
+        $this->played('B', 'C', 'CURDATE() - INTERVAL 1 MONTH');
+        $this->register('issue379 team A', 'PENDING', $this->team['A']);
+        $this->register('issue379 team B', 'PENDING', $this->team['B']);
+
+        $listed = $this->listed();
+        $this->assertSame('new', $listed['issue379 team A']['type'], 'Absente de la dernière phase : nouvelle');
+        $this->assertSame('renewal', $listed['issue379 team B']['type']);
     }
 
     public function test_une_nouvelle_equipe_placee_en_division_n_est_pas_listee_deux_fois(): void
