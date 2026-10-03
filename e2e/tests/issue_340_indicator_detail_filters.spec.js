@@ -27,7 +27,7 @@ async function loginAsAdmin(page, request, baseURL) {
  * Les indicateurs les moins coûteux d'abord : chaque `mode=detail` exécute une
  * requête d'exploitation, inutile de les passer toutes en revue.
  */
-const CANDIDATS = ['Comptes', 'Equipes', 'Evènements', 'Emails des responsables par compétition'];
+const CANDIDATS = ['Equipes', 'Emails des responsables par compétition', 'Créneaux avec une contrainte horaire forte'];
 
 async function choisirUnIndicateur(request) {
     const liste = await request.get('/ajax/indicators.php?mode=list');

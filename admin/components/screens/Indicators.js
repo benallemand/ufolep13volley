@@ -8,7 +8,7 @@ import { compareCells } from '../grid/compareCells.js';
  * indicateur, cliquable pour voir le détail.
  *
  * `ajax/indicators.php` fonctionne en deux temps, et on garde ce découpage :
- * `mode=list` rend les 49 libellés tout de suite, puis un `mode=detail&id=N`
+ * `mode=list` rend les 44 libellés et leurs sections tout de suite, puis un `mode=detail&id=N`
  * par indicateur exécute sa requête. Tout charger d'un coup prendrait des
  * dizaines de secondes avant le premier pixel.
  *
@@ -55,24 +55,37 @@ export default {
           <span>Rien à signaler.</span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <button v-for="ind in visible"
-                  :key="ind.id"
-                  class="card border text-left transition hover:shadow-md"
-                  :class="ind.type === 'alert'
-                    ? 'bg-error/10 border-error/30 hover:border-error'
-                    : 'bg-info/10 border-info/30 hover:border-info'"
-                  :disabled="!ind.details || !ind.details.length"
-                  @click="opened = ind">
-            <div class="card-body p-4 items-center text-center gap-1">
-              <div class="text-3xl font-bold"
-                   :class="ind.type === 'alert' ? 'text-error' : 'text-info'">
-                {{ ind.value }}
+        <!-- Une section par phase de la saison (issue #396) ; une section
+             sans tuile à afficher n'apparaît pas. -->
+        <section v-for="section in sections"
+                 :key="section.key"
+                 class="mb-6"
+                 :data-testid="'indicators-section-' + section.key">
+          <h2 class="text-lg font-semibold mb-2">
+            {{ section.label }}
+            <span class="text-sm font-normal text-base-content/60">({{ section.items.length }})</span>
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <button v-for="ind in section.items"
+                    :key="ind.id"
+                    class="card border text-left transition hover:shadow-md"
+                    :class="ind.type === 'alert'
+                      ? 'bg-error/10 border-error/30 hover:border-error'
+                      : 'bg-info/10 border-info/30 hover:border-info'"
+                    :disabled="!ind.details || !ind.details.length"
+                    @click="opened = ind">
+              <div class="card-body p-4 items-center text-center gap-1">
+                <div class="text-3xl font-bold"
+                     :class="ind.type === 'alert' ? 'text-error' : 'text-info'">
+                  {{ ind.value }}
+                </div>
+                <div class="text-xs leading-snug">{{ ind.fieldLabel }}</div>
               </div>
-              <div class="text-xs leading-snug">{{ ind.fieldLabel }}</div>
-            </div>
-          </button>
+            </button>
+          </div>
+        </section>
 
+        <div v-if="loadingCount" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <div v-for="n in loadingCount" :key="'skel-' + n"
                class="card border bg-base-200 border-base-300 animate-pulse h-28"></div>
         </div>
@@ -155,6 +168,8 @@ export default {
     data() {
         return {
             indicators: [],
+            // Sections du tableau de bord, dans l'ordre d'affichage (#396).
+            categories: [],
             total: 0,
             done: 0,
             search: '',
@@ -194,6 +209,26 @@ export default {
                 const label = String(ind.fieldLabel ?? '').toLowerCase();
                 return terms.some((t) => label.includes(t));
             });
+        },
+        /**
+         * Tuiles visibles rangées par section, dans l'ordre que donne le
+         * serveur. Dans une section, l'ordre de `indicators` est conservé :
+         * alertes d'abord, puis valeur décroissante. Une section inconnue de
+         * la liste tombe dans « Autres » plutôt que de disparaître.
+         */
+        sections() {
+            const known = new Set(this.categories.map((c) => c.key));
+            const sections = this.categories.map((c) => ({
+                key: c.key,
+                label: c.label,
+                items: this.visible.filter((ind) => ind.category === c.key),
+            }));
+            sections.push({
+                key: 'autres',
+                label: 'Autres',
+                items: this.visible.filter((ind) => !known.has(ind.category)),
+            });
+            return sections.filter((s) => s.items.length);
         },
         detailColumns() {
             const first = this.opened && this.opened.details && this.opened.details[0];
@@ -271,6 +306,7 @@ export default {
             axios.get('/ajax/indicators.php', { params: { mode: 'list' } })
                 .then(({ data }) => {
                     const liste = (data && data.results) || [];
+                    this.categories = (data && data.categories) || [];
                     this.total = liste.length;
                     return this.loadDetails(liste);
                 })
@@ -282,7 +318,7 @@ export default {
                 });
         },
         /**
-         * Les 49 requêtes ne partent pas d'un bloc : chacune exécute du SQL
+         * Les 44 requêtes ne partent pas d'un bloc : chacune exécute du SQL
          * d'exploitation, et le navigateur n'ouvre de toute façon que quelques
          * connexions par hôte. On en garde six en vol, ce qui laisse les
          * premières tuiles s'afficher vite.
@@ -303,6 +339,7 @@ export default {
                                 id: ind.id,
                                 fieldLabel: ind.fieldLabel,
                                 type: ind.type,
+                                category: ind.category,
                                 value,
                                 details: (data && data.details) || [],
                                 // Écran de correction et lignes concernées, quand

@@ -781,10 +781,21 @@ la prop `rowFilter`.
 > récent au plus ancien — le découpage est fait **après** l'`ORDER BY`.
 
 > **Tout n'est pas une grille.** `screens/Indicators.js` est un tableau de bord
-> en tuiles : `ajax/indicators.php?mode=list` rend les 46 libellés, puis un
-> `mode=detail&id=N` par indicateur exécute sa requête, six en vol. Une tuile à
-> zéro n'est pas affichée. C'est le modèle à suivre pour un écran qui n'est pas
-> du CRUD : un composant à part, pas une contorsion de `AdminGrid`.
+> en tuiles : `ajax/indicators.php?mode=list` rend les 44 libellés et les
+> sections, puis un `mode=detail&id=N` par indicateur exécute sa requête, six en
+> vol. Une tuile à zéro n'est pas affichée. C'est le modèle à suivre pour un
+> écran qui n'est pas du CRUD : un composant à part, pas une contorsion de
+> `AdminGrid`.
+>
+> **Chaque indicateur déclare sa section** (issue #396), en argument nommé :
+> `new Indicator(..., category: Indicator::CALENDAR)`. `Indicator::CATEGORIES`
+> en donne l'ordre et les libellés, du calendrier de la saison : Inscriptions,
+> Préparation du calendrier, Équipes et clubs, Joueurs, Saison en cours,
+> Statistiques. Une section inconnue lève une exception, et
+> `IndicatorCategoriesTest` exige une section explicite pour chaque indicateur :
+> la valeur par défaut rangerait en silence une alerte dans les statistiques.
+> Seuls `mode=list` et `mode=detail` existent ; l'ancien export CSV de
+> « Evènements » et le calcul de tout d'un coup n'avaient plus d'appelant.
 >
 > Le détail d'une tuile se trie, se filtre par colonne et se cherche (issue #340),
 > avec les conventions des grilles : recherche multi-termes séparés par des

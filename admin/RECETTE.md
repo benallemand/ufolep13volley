@@ -469,8 +469,9 @@ appliquent pas.
 
 | # | Cas | Attendu |
 |---|-----|---------|
-| X1 | Ouvrir l'écran | Les tuiles apparaissent **progressivement** (six requêtes en vol), le compteur « n / 49 calculés » avance, des tuiles grises marquent ce qui reste. Compter ~30 s pour les 49 |
-| X2 | Regarder le résultat | Une vingtaine de tuiles : **les alertes en rouge d'abord**, puis les informations en bleu, par valeur décroissante |
+| X1 | Ouvrir l'écran | Les tuiles apparaissent **progressivement** (six requêtes en vol), le compteur « n / 44 calculés » avance, des tuiles grises marquent ce qui reste. Compter ~30 s pour les 44 |
+| X2 | Regarder le résultat | Les tuiles sont rangées en **sections**, dans l'ordre de la saison : Inscriptions, Préparation du calendrier, Équipes et clubs, Joueurs, Saison en cours, Statistiques (#396). Une section sans tuile n'apparaît pas. Dans une section, **les alertes en rouge d'abord**, puis les informations en bleu, par valeur décroissante |
+| X2b | Chercher « Comptes », « Evènements », « Proposition d'organisation », « Nouvelles équipes », « Nombre de matches par date » | Aucune tuile : ces cinq indicateurs ont été retirés (#396) |
 | X3 | Vérifier qu'aucune tuile n'affiche 0 | Un indicateur à zéro **n'est pas affiché** — le tableau de bord ne montre que ce sur quoi il y a à faire |
 | X4 | Cocher « Alertes seulement » | Seules les tuiles rouges restent |
 | X5 | Rechercher `joueurs` | Seuls les indicateurs dont le libellé contient le terme restent |
