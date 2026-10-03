@@ -18,6 +18,7 @@ export default {
     components: {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
         'admin-picker-modal': defineAsyncComponent(() => import('../grid/AdminPickerModal.js')),
+        'licence-import-modal': defineAsyncComponent(() => import('../../../pages/components/form/LicenceImportModal.js')),
     },
     template: `
       <admin-grid
@@ -52,7 +53,7 @@ export default {
             <i class="fas fa-people-group"></i> Associer à une équipe
           </button>
           <button class="btn btn-sm btn-outline" :disabled="isBusy" @click="importing = true">
-            <i class="fas fa-file-import"></i> Importer un fichier de licences
+            <i class="fas fa-file-import"></i> Importer des licences
           </button>
         </template>
       </admin-grid>
@@ -66,34 +67,10 @@ export default {
                           @confirm="associate"
                           @close="picker = null"></admin-picker-modal>
 
-      <dialog v-if="importing" class="modal modal-open">
-        <div class="modal-box">
-          <h3 class="font-bold text-lg mb-1">Import d'un fichier de licences</h3>
-          <p class="text-sm text-base-content/60 mb-4">
-            Le PDF de licences édité par l'UFOLEP. Les joueurs existants sont mis
-            à jour (licence, homologation, photo), les autres sont créés.
-          </p>
-          <form @submit.prevent="importLicences">
-            <input ref="licenceFile"
-                   type="file"
-                   accept="application/pdf"
-                   class="file-input file-input-bordered w-full"
-                   required/>
-            <div class="modal-action">
-              <button type="button" class="btn btn-ghost" @click="importing = false">Annuler</button>
-              <button type="submit" class="btn btn-primary" :disabled="isBusy">
-                <span v-if="isBusy" class="loading loading-spinner loading-xs"></span>
-                <i v-else class="fas fa-file-import"></i>
-                Importer
-              </button>
-            </div>
-          </form>
-          <p class="text-xs text-base-content/50 mt-2">
-            L'import lit tout le PDF : compter jusqu'à une minute.
-          </p>
-        </div>
-        <div class="modal-backdrop" @click="importing = false"></div>
-      </dialog>
+      <!-- Import groupé des licences (issue #394), partagé avec l'effectif. -->
+      <licence-import-modal v-if="importing"
+                            @close="importing = false"
+                            @imported="$refs.grid.fetchRows()"></licence-import-modal>
     `,
     data() {
         return {
@@ -326,23 +303,6 @@ export default {
                 .then((response) => {
                     onSuccess(this, response);
                     this.picker = null;
-                    this.$refs.grid.fetchRows();
-                })
-                .catch((error) => onError(this, error))
-                .finally(() => { this.isBusy = false; });
-        },
-        importLicences() {
-            const file = this.$refs.licenceFile.files[0];
-            if (!file) {
-                return;
-            }
-            const formData = new FormData();
-            formData.append('licences', file);
-            this.isBusy = true;
-            axios.post('/rest/action.php/player/update_from_licence_file', formData)
-                .then((response) => {
-                    onSuccess(this, response);
-                    this.importing = false;
                     this.$refs.grid.fetchRows();
                 })
                 .catch((error) => onError(this, error))

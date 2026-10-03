@@ -421,33 +421,53 @@ class Players extends Generic
     /**
      * @throws Exception
      */
-    public function update_from_licence_file(): void
+    /**
+     * Import d'UN fichier de licences (issue #394) : liguasso n'en met qu'une
+     * par PDF, l'écran envoie donc les fichiers un par un, quelques-uns en
+     * parallèle. Un seul envoi de 100 PDF buterait sur `max_file_uploads`,
+     * `post_max_size` et `max_execution_time`, réglages du mutualisé OVH.
+     *
+     * Rend un compte rendu par licence (le routeur le transmet tel quel, voir
+     * `rest/action.php`) : `created`, `updated` ou `rejected` avec son motif,
+     * et `photo` (une licence sans photo n'est pas bloquante, #343). Une
+     * licence écartée n'arrête pas la suite du fichier (#404).
+     *
+     * @return array{message: string, report: array<int, array>}
+     * @throws Exception (422) fichier absent ou sans licence reconnue
+     */
+    public function update_from_licence_file(): array
     {
         if (empty($_FILES['licences']['name'])) {
-            return;
+            throw new Exception("Aucun fichier reçu", 422);
         }
         set_time_limit(60);
-        $licences = $this->files->get_licences_data($_FILES['licences']['tmp_name']);
-        // Une licence écartée n'arrête plus la suite du fichier (issue #404) :
-        // les autres sont importées, et le message dit lesquelles ne l'ont pas
-        // été, et pourquoi. Le compte rendu détaillé viendra avec #394.
-        $imported = 0;
-        $rejected = array();
+        try {
+            $licences = $this->files->get_licences_data($_FILES['licences']['tmp_name']);
+        } catch (Throwable $e) {
+            error_log($e->getMessage());
+            $licences = array();
+        }
+        if (empty($licences)) {
+            throw new Exception("Aucune licence reconnue dans ce fichier : est-ce bien une licence liguasso ?", 422);
+        }
+        $report = array();
         foreach ($licences as $licence) {
+            $line = array('joueur' => $licence['last_first_name'] ?? '?');
             try {
-                $this->search_player_and_save_from_licence($licence);
-                $imported++;
+                $line += $this->search_player_and_save_from_licence($licence);
             } catch (mysqli_sql_exception $e) {
                 // Jamais de message MySQL brut au client (#355).
                 error_log($e->getMessage());
-                $rejected[] = ($licence['last_first_name'] ?? '?') . " : erreur d'enregistrement";
+                $line += array('status' => 'rejected', 'message' => "erreur d'enregistrement");
             } catch (Exception $e) {
-                $rejected[] = ($licence['last_first_name'] ?? '?') . ' : ' . $e->getMessage();
+                $line += array('status' => 'rejected', 'message' => $e->getMessage());
             }
+            $report[] = $line;
         }
-        if (!empty($rejected)) {
-            throw new Exception("$imported licence(s) importée(s). Écartée(s) : " . implode(' ; ', $rejected), 409);
-        }
+        $rejected = count(array_filter($report, static fn($line) => $line['status'] === 'rejected'));
+        $message = (count($report) - $rejected) . " licence(s) importée(s)"
+            . ($rejected ? ", $rejected écartée(s)" : '');
+        return array('message' => $message, 'report' => $report);
     }
 
     public function uploadPhoto($id, $nom, $prenom)
@@ -1235,10 +1255,11 @@ class Players extends Generic
 
     /**
      * @param mixed $licence
-     * @return void
+     * @return array{status: string, photo: bool} `created` ou `updated`, et
+     *         si la licence portait une photo (issue #394)
      * @throws Exception
      */
-    public function search_player_and_save_from_licence(mixed $licence): void
+    public function search_player_and_save_from_licence(mixed $licence): array
     {
         // Club de la licence, reconnu à son numéro d'affiliation : le nom
         // imprimé peut différer de celui en base (issue #404).
@@ -1287,6 +1308,7 @@ class Players extends Generic
                 $this->linkPlayerToPhoto($current_player['id'], $idPhoto);
             }
         }
+        return array('status' => empty($current_player) ? 'created' : 'updated', 'photo' => $idPhoto !== null);
     }
 
     /**
