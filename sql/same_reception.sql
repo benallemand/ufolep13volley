@@ -1,36 +1,49 @@
-SELECT DISTINCT last_match.id_equipe_dom,
-                last_match.id_equipe_ext,
-                last_match.equipe_dom,
-                last_match.equipe_ext,
-                previous_match.code_match     AS prev_code_match,
-                previous_match.date_reception AS prev_date,
-                last_match.code_match         AS last_code_match,
-                last_match.date_reception     AS last_date
-FROM matchs_view last_match,
-     matchs_view previous_match
-WHERE last_match.id_match <> previous_match.id_match
-  -- Les 2 matchs concernent les m�mes �quipes (dans n'importe quel sens)
-  AND LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext) =
-      LEAST(previous_match.id_equipe_dom, previous_match.id_equipe_ext)
-  AND GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext) =
-      GREATEST(previous_match.id_equipe_dom, previous_match.id_equipe_ext)
-  -- Mais la m�me �quipe recevait les 2 fois (probl�me!)
-  AND last_match.id_equipe_dom = previous_match.id_equipe_dom
-  -- last_match est le plus r�cent entre ces 2 �quipes (pass� OU futur)
-  AND last_match.date_reception = (SELECT MAX(date_reception)
-                                   FROM matchs_view
-                                   WHERE LEAST(id_equipe_dom, id_equipe_ext) =
-                                         LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext)
-                                     AND GREATEST(id_equipe_dom, id_equipe_ext) =
-                                         GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext))
-  -- previous_match est le 2�me plus r�cent entre ces 2 �quipes
-  AND previous_match.date_reception = (SELECT MAX(date_reception)
-                                       FROM matchs_view
-                                       WHERE LEAST(id_equipe_dom, id_equipe_ext) =
-                                             LEAST(last_match.id_equipe_dom, last_match.id_equipe_ext)
-                                         AND GREATEST(id_equipe_dom, id_equipe_ext) =
-                                             GREATEST(last_match.id_equipe_dom, last_match.id_equipe_ext)
-                                         AND date_reception < last_match.date_reception)
-  AND STR_TO_DATE(previous_match.date_reception, '%d/%m/%Y') > DATE_SUB(NOW(), INTERVAL 9 MONTH)
-  AND last_match.id_equipe_ext IN (SELECT id_equipe FROM creneau)
-ORDER BY last_match.equipe_dom, prev_date
+-- Deux équipes dont les deux dernières rencontres, dans la même compétition,
+-- se sont jouées chez la même équipe (issue #397).
+--
+-- Lu sur `matches`, où `date_reception` est une vraie date : la version
+-- précédente passait par `matchs_view`, qui la rend en texte jj/mm/aaaa, et
+-- prenait « la plus récente » par un MAX sur ce texte — un match du 16/01
+-- passait pour plus récent qu'un match du 13/03. Elle comparait aussi des
+-- compétitions différentes (un match de poule face à un match de championnat),
+-- et mettait 7 s à répondre.
+--
+-- On ne signale que si l'équipe qui s'est déplacée deux fois peut recevoir
+-- (elle a un créneau), et si l'avant-dernière rencontre date de moins de neuf
+-- mois.
+WITH rencontres AS (SELECT m.id_match,
+                           m.code_match,
+                           m.code_competition,
+                           m.id_equipe_dom,
+                           m.id_equipe_ext,
+                           m.date_reception,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY m.code_competition,
+                                   LEAST(m.id_equipe_dom, m.id_equipe_ext),
+                                   GREATEST(m.id_equipe_dom, m.id_equipe_ext)
+                               ORDER BY m.date_reception DESC, m.id_match DESC) AS rang
+                    FROM matches m
+                    WHERE m.date_reception IS NOT NULL)
+SELECT comp.libelle                                AS competition,
+       edom.nom_equipe                             AS recoit_deux_fois,
+       eext.nom_equipe                             AS se_deplace_deux_fois,
+       avant.code_match                            AS avant_dernier_match,
+       DATE_FORMAT(avant.date_reception, '%d/%m/%Y') AS avant_derniere_date,
+       dernier.code_match                          AS dernier_match,
+       DATE_FORMAT(dernier.date_reception, '%d/%m/%Y') AS derniere_date
+FROM rencontres dernier
+         JOIN rencontres avant
+              ON avant.code_competition = dernier.code_competition
+                  AND LEAST(avant.id_equipe_dom, avant.id_equipe_ext) =
+                      LEAST(dernier.id_equipe_dom, dernier.id_equipe_ext)
+                  AND GREATEST(avant.id_equipe_dom, avant.id_equipe_ext) =
+                      GREATEST(dernier.id_equipe_dom, dernier.id_equipe_ext)
+                  AND avant.rang = 2
+         JOIN equipes edom ON edom.id_equipe = dernier.id_equipe_dom
+         JOIN equipes eext ON eext.id_equipe = dernier.id_equipe_ext
+         JOIN competitions comp ON comp.code_competition = dernier.code_competition
+WHERE dernier.rang = 1
+  AND avant.id_equipe_dom = dernier.id_equipe_dom
+  AND avant.date_reception > CURRENT_DATE - INTERVAL 9 MONTH
+  AND EXISTS (SELECT 1 FROM creneau c WHERE c.id_equipe = dernier.id_equipe_ext)
+ORDER BY competition, recoit_deux_fois, dernier.date_reception
