@@ -1000,6 +1000,31 @@ inset-0`, computed `scorerFullScreen`) et remplace la page ordinaire :
 > connecté pourrait alors lister les photos de n'importe quelle équipe — il
 > reste sans PII (issue #228). Les membres **non jouants** (#325) en sont exclus.
 
+### Import des licences liguasso (issue #404)
+
+`Players::update_from_licence_file` → `search_player_and_save_from_licence`,
+une licence à la fois. Une licence écartée n'arrête plus la suite du fichier :
+le 409 final compte les importées et nomme les écartées, avec leur motif.
+
+- **Club de la licence = numéro d'affiliation** imprimé (`licence_club` →
+  `clubs.affiliation_number`), jamais le nom, qui diffère souvent de la base.
+  Un responsable n'importe que les licences de ses clubs (ceux du compte, et
+  celui de l'équipe courante). Si l'un d'eux n'a pas de numéro en base, une
+  licence d'un club inconnu lui est attribuée. Seul l'admin crée un club
+  inconnu.
+- **Un joueur existant prend le club de sa licence** : c'est un changement de
+  club, tracé dans l'Activité.
+- **Recherche** : d'abord par département + licence, puis par nom. Le nom
+  seul ne met à jour qu'un joueur unique, sans licence ou du club de la
+  licence. On n'écrase pas la licence d'un homonyme.
+- **Nom composé** : `Players::split_licence_name` prend les mots en
+  majuscules en tête pour le nom.
+- **`num_licence` normalisé dans `Players::save()`** : sans espace, sans
+  préfixe `0?\d{2,3}_` (`013_DY10000187` imprimé sur la licence). Le
+  département a sa colonne. Reprise de l'existant : migration `025`.
+- La photo n'est pas exigée à l'import : seulement sur la feuille de match
+  (#343).
+
 ### Pas de photo, pas de match (issue #343)
 
 `MatchMgr::manage_match_players` refuse (409, joueurs nommés) tout présent ou
