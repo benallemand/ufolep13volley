@@ -250,9 +250,12 @@ $indicators[] = new Indicator(
 $indicators[] = new Indicator(
     "Matchs avec des renforts",
     file_get_contents(__DIR__ . '/../sql/matchs_with_reinforcement.sql'));
+// Alerte : seuls les clubs qui inscrivent plus d'équipes que leurs terrains
+// n'en reçoivent (demandes refusées exclues).
 $indicators[] = new Indicator(
     "Inscriptions - Terrains vs Equipes",
-    file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'));
+    file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'),
+    'alert');
 $indicators[] = new Indicator(
     "Inscriptions - Infos incomplètes",
     file_get_contents(__DIR__ . '/../sql/indicator-register-incomplete-teams.sql'));
