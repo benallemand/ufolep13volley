@@ -485,6 +485,12 @@ appliquent pas.
 | X14 | Saisir deux termes séparés par une virgule dans la recherche rapide | Restent les lignes qui contiennent **l'un ou l'autre** terme, dans n'importe quelle colonne. Sans résultat : « Aucune ligne ne correspond aux filtres. » et Export grisé |
 | X15 | Filtrer, trier, puis « Export » | Le CSV contient **les seules lignes affichées, dans l'ordre affiché** |
 | X16 | « Effacer les filtres », puis fermer et rouvrir une autre tuile | Le premier remet toutes les lignes (le tri reste) ; la tuile suivante s'ouvre sans filtre ni tri |
+| X17 | Avant « Initialiser la saison », ouvrir « **Décalage des créneaux d'inscription** » | Une ligne par équipe : club, écart (`aucun créneau en place`, `créneau modifié`, `ordre de préférence inversé`), créneaux **demandés** et **en place** sous la forme « gymnase (ville) jour heure », contact du club, responsable déclaré. Les nouvelles équipes y sont, avec « aucun » en place (#395) |
+| X18 | Corriger à la main le créneau d'une équipe signalée (écran Créneaux) pour qu'il corresponde à la demande, puis rafraîchir | L'équipe disparaît de la tuile. Un même créneau saisi deux fois à l'inscription ne fait pas d'écart |
+| X19 | Ouvrir « **Equipes non réengagées** » une fois les nouvelles équipes créées et placées | Aucune équipe inscrite n'y figure, nouvelles équipes comprises (Aix5 en 2026). Chaque ligne donne la division et le contact du club |
+| X20 | Ouvrir « **Equipes incomplètes** » après la date limite | Les équipes sans compte ni joueur (nouvelles équipes) y figurent, avec un contact |
+| X21 | Ouvrir « **Inscriptions - Infos incomplètes** » (alerte) | Compétition, club, équipe, statut, problème en clair, contacts. Aucune demande refusée |
+| X22 | Ouvrir « **Facture par club** » | Les demandes refusées ne sont pas facturées |
 
 > `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
 > depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux

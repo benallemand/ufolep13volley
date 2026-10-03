@@ -12,6 +12,8 @@ FROM register r
          JOIN competitions c on r.id_competition = c.id
          JOIN clubs c2 on r.id_club = c2.id
 WHERE UPPER(c.libelle) LIKE ('%CHAMPIONNAT%')
+  -- Une demande refusée n'est pas engagée, donc pas facturée (#395).
+  AND r.status <> 'REFUSED'
   AND MONTH(r.creation_date) IN (7, 8, 9, 10, 11)
 GROUP BY club
 ORDER BY club

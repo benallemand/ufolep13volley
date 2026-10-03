@@ -12,6 +12,8 @@ FROM register r
          JOIN competitions c on r.id_competition = c.id
          JOIN clubs c2 on r.id_club = c2.id
 WHERE r.is_paid = 0
+  -- Une demande refusée n'est pas engagée : ni facturée, ni relancée (#395).
+  AND r.status <> 'REFUSED'
   AND UPPER(c.libelle) LIKE ('%CHAMPIONNAT%')
   AND MONTH(r.creation_date) IN (7, 8, 9, 10, 11)
   AND r.id_competition IN
