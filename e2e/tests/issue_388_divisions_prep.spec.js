@@ -79,6 +79,27 @@ test.describe('Issue #388 — préparation de saison, réorganisation des divisi
         await expect(unassigned).toContainText('E2E Prep Inscrite');
     });
 
+    test("une équipe réinscrite sous un autre nom montre les deux (#402)", async ({ page, request, baseURL }) => {
+        await loginAsAdmin(page, request, baseURL);
+        await page.goto('/admin/index.html#/divisions');
+        await page.getByRole('combobox').selectOption({ label: 'E2E Préparation' });
+        const division1 = page.getByTestId('divisions-col-1');
+        await expect(division1).toContainText('E2E Prep Renommee', { timeout: 15000 });
+
+        // Déjà renommée : l'ancien nom vient de la demande.
+        await expect(division1.locator('li', { hasText: 'E2E Prep Renommee' })
+            .getByTestId('divisions-former-name')).toHaveText('ex-E2E Prep Avant');
+        // Pas encore renommée : le nom demandé s'affiche déjà, l'actuel passe en « ex- ».
+        const pasEncore = division1.locator('li', { hasText: 'E2E Prep Nouveau nom' });
+        await expect(pasEncore.getByTestId('divisions-former-name')).toHaveText('ex-E2E Prep Pas encore');
+        await expect(pasEncore).toHaveAttribute('title', /E2E Prep Nouveau nom \(anciennement E2E Prep Pas encore\)/);
+        // Même nom d'une saison à l'autre : pas d'« ex- ».
+        await expect(division1.locator('li', { hasText: 'E2E Prep Classee' })
+            .getByTestId('divisions-former-name')).toHaveCount(0);
+
+        await page.screenshot({ path: 'test-results/issue-402/ancien_nom.png', fullPage: true });
+    });
+
     test('les colonnes passent à la ligne, sans barre de défilement horizontale', async ({ page, request, baseURL }) => {
         // Trois colonnes de 16 rem ne tiennent pas sur 700 px.
         await page.setViewportSize({ width: 700, height: 900 });

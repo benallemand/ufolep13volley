@@ -460,6 +460,84 @@ class RegisterTest extends UfolepTestCase
         $this->assertNotContains('RT Team P', $names);
     }
 
+    // ---- #402 : ancien nom d'une équipe réinscrite sous un autre nom ---------
+
+    private function old_team_name_of(string $new_team_name): ?string
+    {
+        return $this->sql->execute("SELECT old_team_name FROM register WHERE new_team_name = '$new_team_name'")[0]['old_team_name'];
+    }
+
+    public function test_une_reinscription_fige_l_ancien_nom()
+    {
+        $team = $this->insert_team('RT Team Avant', $this->id_club_1);
+        $this->connect_as_club_leader($this->id_club_1);
+        try {
+            $this->call_register(['new_team_name' => 'RT Team Apres', 'old_team_id' => $team]);
+            $this->fail("Une création réussie doit lever l'exception 201");
+        } catch (Exception $e) {
+            $this->assertEquals(201, $e->getCode(), $e->getMessage());
+        }
+        $this->assertSame('RT Team Avant', $this->old_team_name_of('RT Team Apres'));
+
+        // « Équipes / comptes » renomme l'équipe ; le club corrige ensuite sa
+        // demande : l'ancien nom retenu ne bouge pas.
+        $this->sql->execute("UPDATE equipes SET nom_equipe = 'RT Team Apres' WHERE id_equipe = $team");
+        $id = (int)$this->sql->execute("SELECT id FROM register WHERE new_team_name = 'RT Team Apres'")[0]['id'];
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team Apres', 'old_team_id' => $team,
+            'remarks' => 'corrigée après renommage']);
+        $this->assertSame('RT Team Avant', $this->old_team_name_of('RT Team Apres'));
+
+        // L'écran Inscriptions lit le nom figé, plus celui de l'équipe renommée.
+        $this->connect_as_admin();
+        $row = (new Register())->get("r.id = $id")[0];
+        $this->assertSame('RT Team Avant', $row['old_team']);
+    }
+
+    public function test_designer_une_autre_ancienne_equipe_reprend_son_nom()
+    {
+        $first = $this->insert_team('RT Team Premiere', $this->id_club_1);
+        $second = $this->insert_team('RT Team Seconde', $this->id_club_1);
+        $id = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team Choix');
+        $this->sql->execute("UPDATE register SET old_team_id = $first, old_team_name = 'RT Team Premiere' WHERE id = $id");
+
+        $this->connect_as_club_leader($this->id_club_1);
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team Choix', 'old_team_id' => $second]);
+        $this->assertSame('RT Team Seconde', $this->old_team_name_of('RT Team Choix'));
+
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team Choix', 'old_team_id' => null]);
+        $this->assertNull($this->old_team_name_of('RT Team Choix'), "Une nouvelle équipe n'a pas d'ancien nom");
+    }
+
+    public function test_divisions_donnent_le_nom_demande_et_l_ancien()
+    {
+        // Déjà renommée par « Équipes / comptes » : l'ancien nom vient de la demande.
+        $renamed = $this->insert_team('RT Team Renommee', $this->id_club_1);
+        $id = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Renommee');
+        $this->sql->execute("UPDATE register SET old_team_id = $renamed, old_team_name = 'RT Team Ex' WHERE id = $id");
+        // Pas encore renommée, demande antérieure à la colonne : l'ancien nom
+        // est celui qu'elle porte encore.
+        $pending = $this->insert_team('RT Team Encore', $this->id_club_1);
+        $id = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Bientot');
+        $this->sql->execute("UPDATE register SET old_team_id = $pending WHERE id = $id");
+        // Demande refusée : rien à afficher.
+        $refused = $this->insert_team('RT Team Refusee', $this->id_club_1);
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team Refus');
+        $this->sql->execute("UPDATE register SET old_team_id = $refused WHERE id = $id");
+        foreach (array($renamed, $pending, $refused) as $rank => $team) {
+            $this->sql->execute("INSERT INTO classements SET code_competition = 'rt', division = '1', id_equipe = $team, rank_start = " . ($rank + 1) . ", penalite = 0");
+        }
+
+        $this->connect_as_admin();
+        $teams = array();
+        foreach ((new Rank())->getRanksByCompetitionGroupedByDivision('rt')['1'] as $row) {
+            $teams[$row['nom_equipe']] = array($row['registered_name'], $row['former_name']);
+        }
+
+        $this->assertSame(array('RT Team Renommee', 'RT Team Ex'), $teams['RT Team Renommee']);
+        $this->assertSame(array('RT Team Bientot', 'RT Team Encore'), $teams['RT Team Encore']);
+        $this->assertSame(array(null, null), $teams['RT Team Refusee']);
+    }
+
     // ---- #388 : préparation de saison, division X et « Non affectées » -------
 
     private function insert_team(string $name, int $id_club): int

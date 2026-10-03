@@ -56,6 +56,38 @@ class Rank extends Generic
                         FROM register r
                         JOIN competitions comp ON comp.id = r.id_competition
                         WHERE comp.code_competition = e.code_competition) AS competition_has_registrations";
+    /**
+     * Noms d'une équipe `e` réinscrite (issue #402), pour la réorganisation
+     * des divisions :
+     *   - `registered_name` : le nom demandé pour la nouvelle saison ;
+     *   - `former_name` : son nom au moment de la demande
+     *     (`register.old_team_name`), à défaut son nom actuel.
+     *
+     * « Équipes / comptes » et l'initialisation renomment l'équipe : selon les
+     * boutons déjà passés, elle porte l'un ou l'autre nom. L'écran affiche
+     * toujours le nom demandé, et « ex-… » quand l'ancien diffère.
+     *
+     * Seulement les réinscriptions (`old_team_id`) non refusées de la
+     * campagne en cours, dans la compétition de l'équipe.
+     */
+    const RENAMING_COLUMNS = "(SELECT r.new_team_name
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition
+                          AND r.status <> 'REFUSED'
+                          AND r.old_team_id = e.id_equipe
+                          AND r.creation_date >= comp.start_register_date
+                        ORDER BY r.id DESC
+                        LIMIT 1) AS registered_name,
+                    (SELECT COALESCE(r.old_team_name, e.nom_equipe)
+                        FROM register r
+                        JOIN competitions comp ON comp.id = r.id_competition
+                        WHERE comp.code_competition = e.code_competition
+                          AND r.status <> 'REFUSED'
+                          AND r.old_team_id = e.id_equipe
+                          AND r.creation_date >= comp.start_register_date
+                        ORDER BY r.id DESC
+                        LIMIT 1) AS former_name";
 
     /**
      * La compétition — et, si une date de fin de période est donnée, cette
@@ -1275,7 +1307,8 @@ class Rank extends Generic
                     e.nom_equipe,
                     c.nom AS club,
                     " . self::REGISTERED_COLUMNS . ",
-                    NULL AS id_register
+                    NULL AS id_register,
+                    " . self::RENAMING_COLUMNS . "
                 FROM equipes e
                 JOIN clubs c ON c.id = e.id_club
                 WHERE e.code_competition = ?
@@ -1291,7 +1324,9 @@ class Rank extends Generic
                     c.nom AS club,
                     1 AS registered,
                     1 AS competition_has_registrations,
-                    r.id AS id_register
+                    r.id AS id_register,
+                    NULL AS registered_name,
+                    NULL AS former_name
                 FROM register r
                 JOIN competitions comp ON comp.id = r.id_competition
                 JOIN clubs c ON c.id = r.id_club
@@ -1326,7 +1361,8 @@ class Rank extends Generic
                     e.nom_equipe,
                     cl.nom AS club,
                     c.rank_start,
-                    " . self::REGISTERED_COLUMNS . "
+                    " . self::REGISTERED_COLUMNS . ",
+                    " . self::RENAMING_COLUMNS . "
                 FROM classements c
                 JOIN equipes e ON e.id_equipe = c.id_equipe
                 JOIN clubs cl ON cl.id = e.id_club
