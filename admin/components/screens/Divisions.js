@@ -24,6 +24,10 @@ import { onError, onSuccess } from '../../../toaster.js';
  * - la division `X` (`Rank::DIVISION_TO_PLACE`), où « Remplir les divisions
  *   et les rangs » met les équipes non classées la saison passée, vient en
  *   tête et se signale « à placer » ;
+ * - une demande de nouvelle équipe pas encore créée (« Équipes / comptes »
+ *   pas passé) figure dans « Non affectées » avec le badge « équipe à
+ *   créer », sans pouvoir être déplacée : sans équipe, pas de classement ;
+ * - les colonnes passent à la ligne quand la place manque ;
  * - une équipe d'une division **sans inscription** porte le badge « à
  *   retirer », et sa colonne compte « N à retirer ». Rien n'est supprimé
  *   d'office : avant l'initialisation, `classements` porte encore la saison
@@ -94,7 +98,9 @@ export default {
           <span>Chargement des divisions…</span>
         </div>
 
-        <div v-else class="flex gap-3 overflow-x-auto pb-2">
+        <!-- Les colonnes passent à la ligne quand la place manque, plutôt
+             qu'une barre de défilement horizontale avec beaucoup de divisions. -->
+        <div v-else class="flex flex-wrap gap-3" data-testid="divisions-board">
           <div v-for="col in columns"
                :key="col.key"
                class="card border shrink-0 w-64"
@@ -134,11 +140,16 @@ export default {
 
               <ul class="space-y-1 min-h-16">
                 <li v-for="(team, index) in col.teams"
-                    :key="team.id_equipe"
-                    draggable="true"
-                    class="flex items-center gap-2 rounded bg-base-100 border border-base-300 px-2 py-1 text-sm cursor-move"
-                    :class="picked && picked.team.id_equipe === team.id_equipe ? 'ring-2 ring-primary' : ''"
-                    :title="team.nom_equipe + ' — ' + team.club + (isLeaving(col, team) ? ' — non réinscrite pour la nouvelle saison' : '')"
+                    :key="team.id_equipe ?? 'r' + team.id_register"
+                    :draggable="!team.toCreate"
+                    class="flex items-center gap-2 rounded bg-base-100 border border-base-300 px-2 py-1 text-sm"
+                    :class="[
+                      team.toCreate ? 'cursor-not-allowed opacity-70' : 'cursor-move',
+                      picked && picked.team.id_equipe === team.id_equipe ? 'ring-2 ring-primary' : '',
+                    ]"
+                    :title="team.nom_equipe + ' — ' + team.club
+                      + (isLeaving(col, team) ? ' — non réinscrite pour la nouvelle saison' : '')
+                      + (team.toCreate ? ' — inscription sans équipe : Inscriptions → « Équipes / comptes » pour la créer' : '')"
                     @dragstart="dragStart(col, team)"
                     @dragover.prevent.stop="dragOver = col.key"
                     @drop.prevent.stop="drop(col, index)"
@@ -148,6 +159,8 @@ export default {
                         :class="isLeaving(col, team) ? 'line-through text-base-content/50' : ''">{{ team.nom_equipe }}</span>
                   <span v-if="isLeaving(col, team)" class="badge badge-error badge-xs shrink-0 ml-auto"
                         data-testid="divisions-not-registered">à retirer</span>
+                  <span v-if="team.toCreate" class="badge badge-warning badge-xs shrink-0 ml-auto"
+                        data-testid="divisions-to-create">équipe à créer</span>
                 </li>
               </ul>
 
@@ -214,6 +227,9 @@ export default {
                         nom_equipe: t.nom_equipe,
                         club: t.club,
                         registered: Number(t.registered) === 1,
+                        // Demande sans équipe créée : visible, pas déplaçable.
+                        id_register: t.id_register,
+                        toCreate: t.id_equipe === null && Boolean(t.id_register),
                     }));
                     const hides = this.hasRegistrations && !this.showAllUnassigned;
                     this.hiddenUnassigned = hides ? all.filter((t) => !t.registered) : [];
@@ -282,7 +298,8 @@ export default {
             col.teams = col.teams.filter((t) => !hide(t));
         },
         dragStart(col, team) {
-            this.dragged = { col, team };
+            // Pas d'équipe, pas de ligne de classement possible (#388).
+            this.dragged = team.toCreate ? null : { col, team };
         },
         drop(targetCol, index) {
             this.dragOver = null;
@@ -294,6 +311,9 @@ export default {
         },
         /** Sélection au doigt : premier appui sur l'équipe, second sur la colonne. */
         pick(col, team) {
+            if (team.toCreate) {
+                return;
+            }
             this.picked = (this.picked && this.picked.team.id_equipe === team.id_equipe)
                 ? null
                 : { col, team };

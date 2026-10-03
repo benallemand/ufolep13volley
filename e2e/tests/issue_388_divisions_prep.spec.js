@@ -61,6 +61,12 @@ test.describe('Issue #388 — préparation de saison, réorganisation des divisi
             .getByTestId('divisions-not-registered')).toHaveCount(0);
         await expect(page.getByTestId('divisions-leaving-X')).toHaveCount(0);
 
+        // Une inscription dont l'équipe n'est pas encore créée est montrée,
+        // badge « équipe à créer », et ne se déplace pas.
+        const aCreer = unassigned.locator('li', { hasText: 'E2E Prep A creer' });
+        await expect(aCreer.getByTestId('divisions-to-create')).toHaveText('équipe à créer');
+        await expect(aCreer).toHaveAttribute('draggable', 'false');
+
         await page.screenshot({ path: 'test-results/issue-388/01_inscrites_seules.png', fullPage: true });
 
         // La case remet les équipes des anciennes saisons, et les retire.
@@ -71,5 +77,22 @@ test.describe('Issue #388 — préparation de saison, réorganisation des divisi
         await showAll.uncheck();
         await expect(unassigned).not.toContainText('E2E Prep Ancienne');
         await expect(unassigned).toContainText('E2E Prep Inscrite');
+    });
+
+    test('les colonnes passent à la ligne, sans barre de défilement horizontale', async ({ page, request, baseURL }) => {
+        // Trois colonnes de 16 rem ne tiennent pas sur 700 px.
+        await page.setViewportSize({ width: 700, height: 900 });
+        await loginAsAdmin(page, request, baseURL);
+        await page.goto('/admin/index.html#/divisions');
+        await page.getByRole('combobox').selectOption({ label: 'E2E Préparation' });
+        await expect(page.getByTestId('divisions-col-1')).toBeVisible({ timeout: 15000 });
+
+        const board = page.getByTestId('divisions-board');
+        expect(await board.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+        // La dernière colonne est passée sous la première.
+        const first = await page.getByTestId('divisions-col-unassigned').boundingBox();
+        const last = await page.getByTestId('divisions-col-1').boundingBox();
+        expect(last.y).toBeGreaterThan(first.y);
     });
 });

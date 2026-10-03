@@ -561,6 +561,8 @@ appliquent pas.
 | D16 | Relancer « Divisions / rangs » | Rien ne se renumérote ; une nouvelle inscription prend le rang X suivant |
 | D17 | Une demande **refusée** d'une équipe existante, puis « Initialiser la saison » | L'équipe n'est **pas** remise en classement |
 | D18 | Avant l'initialisation, championnat féminin | MARIGNANE VB 3 (division 4, pas de demande) est **barrée**, badge « à retirer », et l'en-tête de la division 4 affiche « 1 à retirer ». Rien n'est supprimé tant qu'on n'enregistre pas |
+| D19 | Une nouvelle équipe inscrite **sans** passage de « Équipes / comptes » | Elle figure dans « Non affectées », grisée, badge « équipe à créer », et ne se déplace pas. Après « Équipes / comptes » dans Inscriptions puis « Recharger », elle devient déplaçable |
+| D20 | Fenêtre étroite, ou beaucoup de divisions | Les colonnes passent **à la ligne**, sans barre de défilement horizontale |
 
 > **D9/D10 suppriment des lignes de classement.** L'écran ExtJS le faisait sans
 > rien demander — c'est comme ça qu'on perd un rang de départ sans s'en

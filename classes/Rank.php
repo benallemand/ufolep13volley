@@ -1251,6 +1251,12 @@ class Rank extends Generic
      * L'écran n'affiche par défaut que les inscrites ; les coupes, montées
      * depuis les championnats et sans inscriptions propres, gardent tout.
      *
+     * S'y ajoutent les demandes de NOUVELLES équipes pas encore créées
+     * (« Équipes / comptes » pas encore passé sur elles) : sans ligne dans
+     * `equipes`, elles ne peuvent pas être placées, mais l'écran les montre
+     * avec un badge « équipe à créer » plutôt que de les taire. Elles ont
+     * `id_equipe` vide et `id_register` renseigné.
+     *
      * @throws Exception
      */
     public function getUnassignedTeams(string $code_competition): array
@@ -1259,7 +1265,8 @@ class Rank extends Generic
                     e.id_equipe,
                     e.nom_equipe,
                     c.nom AS club,
-                    " . self::REGISTERED_COLUMNS . "
+                    " . self::REGISTERED_COLUMNS . ",
+                    NULL AS id_register
                 FROM equipes e
                 JOIN clubs c ON c.id = e.id_club
                 WHERE e.code_competition = ?
@@ -1268,8 +1275,27 @@ class Rank extends Generic
                     FROM classements
                     WHERE code_competition = ?
                 )
-                ORDER BY e.nom_equipe";
+                UNION ALL
+                SELECT
+                    NULL AS id_equipe,
+                    r.new_team_name AS nom_equipe,
+                    c.nom AS club,
+                    1 AS registered,
+                    1 AS competition_has_registrations,
+                    r.id AS id_register
+                FROM register r
+                JOIN competitions comp ON comp.id = r.id_competition
+                JOIN clubs c ON c.id = r.id_club
+                WHERE comp.code_competition = ?
+                  AND r.status <> 'REFUSED'
+                  AND r.old_team_id IS NULL
+                  AND NOT EXISTS (SELECT 1
+                                  FROM equipes e
+                                  WHERE e.code_competition = comp.code_competition
+                                    AND e.nom_equipe = r.new_team_name)
+                ORDER BY nom_equipe";
         $bindings = [
+            ['type' => 's', 'value' => $code_competition],
             ['type' => 's', 'value' => $code_competition],
             ['type' => 's', 'value' => $code_competition]
         ];
