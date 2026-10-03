@@ -8,7 +8,11 @@
  *   - « E2E Prep A placer » : en division X (à placer), inscrite ;
  *   - « E2E Prep Inscrite » : hors classement, avec une inscription en attente ;
  *   - « E2E Prep Ancienne » : hors classement, sans inscription (ancienne saison) ;
- *   - « E2E Prep A creer »  : une inscription sans équipe créée.
+ *   - « E2E Prep A creer »  : une inscription sans équipe créée ;
+ *   - « E2E Prep Renommee » : en division 1, réinscrite et déjà renommée,
+ *                             ancienne « E2E Prep Avant » (issue #402) ;
+ *   - « E2E Prep Pas encore » : en division 1, réinscrite sous le nom
+ *                             « E2E Prep Nouveau nom », pas encore renommée.
  *
  * `?teardown=1` retire le tout.
  *
@@ -41,7 +45,8 @@ try {
         exit(0);
     }
     $id_competition = (int)$sql->execute(
-        "INSERT INTO competitions SET code_competition = 'dx', libelle = 'E2E Préparation', id_compet_maitre = 'dx'");
+        "INSERT INTO competitions SET code_competition = 'dx', libelle = 'E2E Préparation', id_compet_maitre = 'dx',
+                                      start_register_date = CURRENT_DATE - INTERVAL 10 DAY");
     $id_club = (int)$sql->execute("INSERT INTO clubs SET nom = 'E2E Prep Club'");
     $team = static fn(string $name): int => (int)$sql->execute(
         "INSERT INTO equipes SET code_competition = 'dx', nom_equipe = ?, id_club = ?",
@@ -68,6 +73,15 @@ try {
     $register('E2E Prep Inscrite', 'PENDING');
     $team('E2E Prep Ancienne');
     $register('E2E Prep A creer', 'PENDING');
+    // #402 : l'ancien nom vient de la demande une fois l'équipe renommée, de
+    // l'équipe elle-même tant qu'elle ne l'est pas.
+    $renommee = $team('E2E Prep Renommee');
+    $rank($renommee, '1');
+    $id = (int)$register('E2E Prep Renommee', 'VALIDATED', $renommee);
+    $sql->execute("UPDATE register SET old_team_name = 'E2E Prep Avant' WHERE id = ?", [['type' => 'i', 'value' => $id]]);
+    $pasEncore = $team('E2E Prep Pas encore');
+    $rank($pasEncore, '1');
+    $register('E2E Prep Nouveau nom', 'VALIDATED', $pasEncore);
     echo json_encode(['id_competition' => $id_competition]);
 } catch (Throwable $e) {
     http_response_code(500);

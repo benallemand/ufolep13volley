@@ -104,6 +104,7 @@ class Register extends Generic
             'day_court_2' => $day_court_2,
             'hour_court_2' => $hour_court_2,
             'remarks' => trim($remarks),
+            'old_team_name' => $this->old_team_name_for($old_team_id, $id),
             'division' => $division,
             'rank_start' => $rank_start,
             'is_paid' => $is_paid,
@@ -257,7 +258,8 @@ class Register extends Generic
         $registered = $this->sql_manager->execute(
             "SELECT r.id_competition, cl.nom AS club, r.new_team_name AS equipe, r.status,
                     IF(" . self::played_last_phase('r.old_team_id', 'c') . ", 'renewal', 'new') AS type,
-                    IF(e.nom_equipe <> r.new_team_name, e.nom_equipe, NULL) AS ancien_nom
+                    IF(COALESCE(r.old_team_name, e.nom_equipe) <> r.new_team_name,
+                       COALESCE(r.old_team_name, e.nom_equipe), NULL) AS ancien_nom
              FROM register r
                       JOIN competitions c ON c.id = r.id_competition
                       JOIN clubs cl ON cl.id = r.id_club
@@ -485,6 +487,38 @@ class Register extends Generic
         }
     }
 
+    /**
+     * Nom de l'ancienne équipe d'une réinscription (issue #402), figé au
+     * moment de la demande : « Équipes / comptes » et « Initialiser la
+     * saison » renomment ensuite l'équipe, et l'ancien nom serait perdu.
+     *
+     * Une demande modifiée qui désigne toujours la même ancienne équipe garde
+     * le nom déjà retenu : l'équipe a pu être renommée entre-temps. Désigner
+     * une autre ancienne équipe reprend le nom de celle-ci.
+     *
+     * @throws Exception
+     */
+    private function old_team_name_for($old_team_id, $id): ?string
+    {
+        if (empty($old_team_id) || $old_team_id == 'null') {
+            return null;
+        }
+        if (!empty($id)) {
+            $current = $this->sql_manager->execute(
+                "SELECT old_team_id, old_team_name FROM register WHERE id = ?",
+                array(array('type' => 'i', 'value' => $id)));
+            if (!empty($current)
+                && (int)$current[0]['old_team_id'] === (int)$old_team_id
+                && !empty($current[0]['old_team_name'])) {
+                return $current[0]['old_team_name'];
+            }
+        }
+        $team = $this->sql_manager->execute(
+            "SELECT nom_equipe FROM equipes WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $old_team_id)));
+        return $team[0]['nom_equipe'] ?? null;
+    }
+
     public function getSql($query = "1=1"): string
     {
         return "SELECT 
@@ -496,7 +530,10 @@ class Register extends Generic
                 c2.code_competition AS code_competition,
                 c2.libelle AS competition,
                 r.old_team_id,
-                e.nom_equipe AS old_team,
+                -- Nom figé à la demande (#402) ; l'équipe a pu être renommée
+                -- depuis par « Équipes / comptes ». Repli pour les demandes
+                -- antérieures à la colonne.
+                COALESCE(r.old_team_name, e.nom_equipe) AS old_team,
                 r.leader_name,
                 r.leader_first_name,
                 r.leader_email,

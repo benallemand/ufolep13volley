@@ -575,6 +575,8 @@ appliquent pas.
 | D18 | Avant l'initialisation, championnat féminin | MARIGNANE VB 3 (division 4, pas de demande) est **barrée**, badge « à retirer », et l'en-tête de la division 4 affiche « 1 à retirer ». Rien n'est supprimé tant qu'on n'enregistre pas |
 | D19 | Une nouvelle équipe inscrite **sans** passage de « Équipes / comptes » | Elle figure dans « Non affectées », grisée, badge « équipe à créer », et ne se déplace pas. Après « Équipes / comptes » dans Inscriptions puis « Recharger », elle devient déplaçable |
 | D20 | Fenêtre étroite, ou beaucoup de divisions | Les colonnes passent **à la ligne**, sans barre de défilement horizontale |
+| D21 | Un club réinscrit son équipe sous un autre nom, puis ouvrir la compétition | L'équipe s'affiche sous le **nom demandé**, avec « ex-Ancien nom » en dessous ; l'infobulle dit « (anciennement …) » (#402) |
+| D22 | Passer « Équipes / comptes » sur cette inscription, puis recharger | Même affichage : l'équipe est renommée, l'ancien nom reste visible. La colonne « Ancien nom » de l'écran Inscriptions le garde aussi |
 
 > **D9/D10 suppriment des lignes de classement.** L'écran ExtJS le faisait sans
 > rien demander — c'est comme ça qu'on perd un rang de départ sans s'en
