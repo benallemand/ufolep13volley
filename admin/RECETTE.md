@@ -195,7 +195,7 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | J9 | Rouvrir le joueur sans toucher au champ photo, enregistrer | La photo précédente est **conservée** |
 | J10 | Sélectionner des joueurs → « Associer à un club » | Fenêtre de sélection avec recherche ; après validation, la colonne Club est à jour |
 | J11 | Idem → « Associer à une équipe » | Le joueur est rattaché à l'équipe, et au club de l'équipe si besoin |
-| J12 | Cliquer « Importer un fichier de licences », choisir le PDF UFOLEP | Les joueurs existants sont mis à jour, les nouveaux créés. **Compter jusqu'à une minute** |
+| J12 | Cliquer « Importer des licences », déposer plusieurs PDF liguasso | Même fenêtre que l'effectif du responsable (L7 à L11 de `pages/RECETTE.md`) : progression, compte rendu par licence. L'administrateur importe aussi les licences d'autres clubs |
 | J13 | Regarder les colonnes | Six colonnes depuis #308 : photo, Nom, Prénom, Sexe, Homologation, Club, Équipes actives. N° de licence, Équipes inactives et Valide sont passés dans le tiroir |
 | J14 | Cliquer une ligne | Le tiroir montre la licence (numéro, homologation, département), le contact (email, téléphone, email 2, téléphone 2) et les équipes actives **et** inactives |
 | J15 | Ouvrir le tiroir sur un joueur **sans licence** | Le badge est rouge, « Licence non validée » ; les champs vides affichent « — » et non une case blanche |

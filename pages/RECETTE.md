@@ -112,9 +112,9 @@ Depuis l'administration, associer un joueur à une équipe KH figée : l'ajout
 
 ---
 
-## Import des licences liguasso (issue #404)
+## Import des licences liguasso (issues #394, #404)
 
-Écran **effectif** d'un responsable, bouton « importer depuis le pdf… ».
+Écran **effectif** d'un responsable, bouton « importer les licences… ».
 
 | # | Cas | Attendu |
 |---|-----|---------|
@@ -124,3 +124,8 @@ Depuis l'administration, associer un joueur à une équipe KH figée : l'ajout
 | L4 | Licence d'un joueur encore rattaché à un autre club en base | C'est un changement de club : le joueur passe dans le club de la licence, l'Activité le trace |
 | L5 | Licence d'un joueur au nom composé, absent de la base (« VIEIRA DOS SANTOS Lidia ») | Créé avec nom « VIEIRA DOS SANTOS », prénom « Lidia » |
 | L6 | Créer un joueur à la main avec le numéro tel qu'imprimé, `013_XX00000000` | Enregistré **sans** le préfixe `013_` |
+| L7 | « importer les licences… », glisser **plusieurs** PDF dans la zone (ou « Choisir des fichiers », puis Ctrl+A dans le dossier des téléchargements) | Les fichiers s'ajoutent à la liste, « en attente » ; un fichier qui n'est pas un PDF est ignoré et compté (#394) |
+| L8 | « Importer N fichier(s) » | La barre avance (« n / N »), trois fichiers à la fois. À la fin, un résumé : mises à jour, créations, licences écartées, fichiers en erreur, licences sans photo |
+| L9 | Lire le détail d'un fichier | Une ligne par licence : « créé », « mis à jour », « sans photo », ou « écartée, motif » (licence d'un autre club, homonyme…) |
+| L10 | Déposer un PDF qui n'est pas une licence | Ce fichier passe « erreur » : « Aucune licence reconnue dans ce fichier… » ; les autres s'importent |
+| L11 | Sur **téléphone**, ouvrir la fenêtre | Pas d'invite au glisser-déposer ; « Choisir des fichiers » ouvre le sélecteur du téléphone, qui accepte une sélection multiple (Fichiers sur iOS, Android) |

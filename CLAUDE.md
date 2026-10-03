@@ -1000,11 +1000,29 @@ inset-0`, computed `scorerFullScreen`) et remplace la page ordinaire :
 > connecté pourrait alors lister les photos de n'importe quelle équipe — il
 > reste sans PII (issue #228). Les membres **non jouants** (#325) en sont exclus.
 
-### Import des licences liguasso (issue #404)
+### Import des licences liguasso (issues #394, #404)
 
-`Players::update_from_licence_file` → `search_player_and_save_from_licence`,
-une licence à la fois. Une licence écartée n'arrête plus la suite du fichier :
-le 409 final compte les importées et nomme les écartées, avec leur motif.
+Liguasso ne produit qu'**une licence par PDF**. `form/LicenceImportModal.js`,
+partagé par l'effectif du responsable et l'écran Joueurs de l'admin, prend les
+fichiers en lot (glisser-déposer, ou sélection multiple, qui marche aussi sur
+téléphone). Il les envoie **un par requête, trois en parallèle**. Un envoi
+unique buterait sur `max_file_uploads` (20 par défaut), `post_max_size` et
+`max_execution_time`, réglages du mutualisé OVH, et une erreur emporterait
+tout le lot. Les fichiers en erreur se relancent seuls.
+
+`Players::update_from_licence_file` traite un fichier et rend
+`{message, report}`, une ligne par licence : `created`, `updated`, ou
+`rejected` avec son motif, plus `photo`. Une licence écartée n'arrête pas la
+suite du fichier. Un fichier sans licence reconnue répond 422, sans le
+message technique du lecteur PDF.
+
+> **Le routeur ne renvoie le résultat d'une écriture que sur demande** : une
+> méthode POST qui rend un tableau avec une clé `report` voit
+> `message` + `report` transmis au client (`rest/action.php`). Les autres
+> valeurs de retour (identifiant créé…) restent internes. Ne pas élargir à
+> tout tableau : on exposerait des données par mégarde.
+
+`search_player_and_save_from_licence` traite une licence à la fois.
 
 - **Club de la licence = numéro d'affiliation** imprimé (`licence_club` →
   `clubs.affiliation_number`), jamais le nom, qui diffère souvent de la base.

@@ -207,15 +207,46 @@ class LicenceImportTest extends UfolepTestCase
         $_FILES['licences'] = array('name' => 'licences.pdf', 'tmp_name' => '/tmp/licences.pdf');
 
         try {
-            $players->update_from_licence_file();
-            $this->fail("Une licence écartée doit être signalée");
-        } catch (Exception $e) {
-            $this->assertSame(409, $e->getCode());
-            $this->assertStringContainsString('1 licence(s) importée(s)', $e->getMessage());
-            $this->assertStringContainsString('LITEST Ecartee', $e->getMessage());
+            $result = $players->update_from_licence_file();
         } finally {
             unset($_FILES['licences']);
         }
+
+        // Compte rendu licence par licence (#394).
+        $this->assertSame('1 licence(s) importée(s), 1 écartée(s)', $result['message']);
+        $this->assertCount(2, $result['report']);
+        $this->assertSame('LITEST Ecartee', $result['report'][0]['joueur']);
+        $this->assertSame('rejected', $result['report'][0]['status']);
+        $this->assertStringContainsString("n'est pas le vôtre", $result['report'][0]['message']);
+        $this->assertSame(array('joueur' => 'LITEST Importee', 'status' => 'created', 'photo' => false),
+            $result['report'][1]);
         $this->assertCount(1, $this->sql->execute("SELECT id FROM joueurs WHERE prenom = 'Importee' AND nom = 'LITEST'"));
+    }
+
+    public function test_un_fichier_sans_licence_reconnue_est_refuse(): void
+    {
+        $this->connect_as_club_leader($this->club_a);
+        $players = new Players();
+        $files = new class extends Files {
+            public function get_licences_data(string $input_pdf_path): array
+            {
+                throw new Exception('Unable to parse PDF');
+            }
+        };
+        $property = new ReflectionProperty(Players::class, 'files');
+        $property->setAccessible(true);
+        $property->setValue($players, $files);
+        $_FILES['licences'] = array('name' => 'photo.jpg', 'tmp_name' => '/tmp/photo.jpg');
+
+        try {
+            $players->update_from_licence_file();
+            $this->fail("Un fichier illisible doit être refusé");
+        } catch (Exception $e) {
+            $this->assertSame(422, $e->getCode());
+            $this->assertStringContainsString('Aucune licence reconnue', $e->getMessage());
+            $this->assertStringNotContainsString('Unable to parse', $e->getMessage(), "pas de message technique au club");
+        } finally {
+            unset($_FILES['licences']);
+        }
     }
 }

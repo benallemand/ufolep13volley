@@ -253,9 +253,21 @@ try {
             }
             $parameters = exclude_ignored_parameters($parameters);
             assert_no_raw_sql_parameter($manager, $action_name, $parameters);
-            call_user_func_array(
+            $result = call_user_func_array(
                 array($manager, $action_name),
                 $parameters);
+            // Une écriture ne renvoie rien au client, sauf si elle rend un
+            // compte rendu explicite (`message` + `report`, issue #394). Les
+            // valeurs de retour ordinaires (identifiant créé…) restent
+            // internes : on ne les expose pas par mégarde.
+            if (is_array($result) && array_key_exists('report', $result)) {
+                echo json_encode(array(
+                    'success' => true,
+                    'message' => $result['message'] ?? 'Modification OK',
+                    'report' => $result['report'],
+                ));
+                exit(0);
+            }
             break;
         case 'GET':
             $parameters = filter_input_array(INPUT_GET);
