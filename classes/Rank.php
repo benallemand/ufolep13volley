@@ -28,10 +28,20 @@ class Rank extends Generic
      */
     const DIVISION_TO_PLACE = 'X';
     /**
+     * L'inscription `r` désigne-t-elle l'équipe `e` ? (issue #390)
+     *
+     * Une réinscription (`old_team_id`) ne désigne QUE son ancienne équipe ;
+     * le nom ne sert qu'à une nouvelle équipe. Rapprocher aussi par le nom
+     * faisait passer un doublon homonyme pour inscrit, et l'initialisation
+     * de saison engageait les deux (deux « Trets & Furious » en 2026).
+     */
+    const REGISTRATION_MATCHES_TEAM = "(r.old_team_id = e.id_equipe
+                              OR (r.old_team_id IS NULL AND r.new_team_name = e.nom_equipe))";
+    /**
      * Colonnes « inscrite cette saison » d'une équipe `e` (issue #388), pour
      * la réorganisation des divisions :
-     *   - `registered` : une demande non refusée la reconnaît, par son
-     *     ancienne équipe ou par son nom ;
+     *   - `registered` : une demande non refusée la reconnaît (voir
+     *     `REGISTRATION_MATCHES_TEAM`) ;
      *   - `competition_has_registrations` : la compétition a des inscriptions.
      *     Sans elles (coupes), `registered` ne veut rien dire.
      * Même règle que la liste publique « pas réinscrite » (#379).
@@ -41,7 +51,7 @@ class Rank extends Generic
                         JOIN competitions comp ON comp.id = r.id_competition
                         WHERE comp.code_competition = e.code_competition
                           AND r.status <> 'REFUSED'
-                          AND (r.old_team_id = e.id_equipe OR r.new_team_name = e.nom_equipe)) AS registered,
+                          AND " . self::REGISTRATION_MATCHES_TEAM . ") AS registered,
                     EXISTS (SELECT 1
                         FROM register r
                         JOIN competitions comp ON comp.id = r.id_competition
@@ -699,6 +709,8 @@ class Rank extends Generic
      * Seules les inscriptions VALIDÉES comptent (issue #388), comme pour les
      * équipes, comptes et créneaux de `Register::set_up_season` : une demande
      * refusée ou en attente d'une équipe existante était remise en classement.
+     * Une réinscription n'engage que son ancienne équipe, pas un homonyme
+     * (issue #390).
      */
     public function insert_from_register($id_competition)
     {
@@ -714,7 +726,7 @@ class Rank extends Generic
                 FROM register r
                 JOIN competitions c on r.id_competition = c.id
                 JOIN equipes e on e.code_competition = c.code_competition
-                                  AND e.nom_equipe = r.new_team_name
+                                  AND " . self::REGISTRATION_MATCHES_TEAM . "
                 WHERE r.id_competition = ?
                   AND r.status = 'VALIDATED'
                 ORDER BY code_competition, division, rank_start";
