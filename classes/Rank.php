@@ -508,6 +508,14 @@ class Rank extends Generic
         return 0; // parfaitement à égalité sur la confrontation directe
     }
 
+    /**
+     * Divisions de chaque compétition, pour les menus du site public.
+     *
+     * Triées numériquement : sans ORDER BY, elles sortaient dans l'ordre des
+     * lignes de `classements`, mélangé dès qu'on réorganise les divisions
+     * (« division 1, 2, 4, 3, 5 » en octobre 2026). `CAST` met aussi
+     * « 10 » après « 2 ».
+     */
     public function getDivisions()
     {
         $sql = "SELECT
@@ -515,7 +523,8 @@ class Rank extends Generic
         c.code_competition,
         comp.libelle AS libelle_competition
       FROM classements c
-      JOIN competitions comp ON comp.code_competition = c.code_competition";
+      JOIN competitions comp ON comp.code_competition = c.code_competition
+      ORDER BY c.code_competition, CAST(c.division AS UNSIGNED), c.division";
         return $this->sql_manager->execute($sql);
     }
 
