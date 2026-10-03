@@ -575,6 +575,28 @@ class RegisterTest extends UfolepTestCase
         $this->assertEquals(1, $division['RT Team Part']['competition_has_registrations']);
     }
 
+    public function test_unassigned_teams_include_registrations_whose_team_is_not_created_yet()
+    {
+        $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team A Creer');
+        $this->insert_registration($this->id_club_2, 'REFUSED', 'RT Team Refusee Sans Equipe');
+        $this->insert_team('RT Team Deja Creee', $this->id_club_1);
+        $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team Deja Creee');
+
+        $rows = (new Rank())->getUnassignedTeams('rt');
+        $by_name = array();
+        foreach ($rows as $row) {
+            $by_name[$row['nom_equipe']][] = $row;
+        }
+
+        $this->assertCount(1, $by_name['RT Team A Creer']);
+        $this->assertNull($by_name['RT Team A Creer'][0]['id_equipe'], "Pas encore d'équipe");
+        $this->assertNotEmpty($by_name['RT Team A Creer'][0]['id_register']);
+        $this->assertEquals(1, $by_name['RT Team A Creer'][0]['registered']);
+        $this->assertArrayNotHasKey('RT Team Refusee Sans Equipe', $by_name, "Une demande refusée n'est pas à créer");
+        $this->assertCount(1, $by_name['RT Team Deja Creee'], "Équipe déjà créée : une seule ligne, l'équipe");
+        $this->assertNotNull($by_name['RT Team Deja Creee'][0]['id_equipe']);
+    }
+
     // ---- #390 : homonymes ------------------------------------------------------
 
     public function test_a_renewal_only_designates_its_old_team_not_a_namesake()

@@ -7,7 +7,8 @@
  *   - « E2E Prep Partante » : en division 1, sans inscription (non réinscrite) ;
  *   - « E2E Prep A placer » : en division X (à placer), inscrite ;
  *   - « E2E Prep Inscrite » : hors classement, avec une inscription en attente ;
- *   - « E2E Prep Ancienne » : hors classement, sans inscription (ancienne saison).
+ *   - « E2E Prep Ancienne » : hors classement, sans inscription (ancienne saison) ;
+ *   - « E2E Prep A creer »  : une inscription sans équipe créée.
  *
  * `?teardown=1` retire le tout.
  *
@@ -66,6 +67,7 @@ try {
     $team('E2E Prep Inscrite');
     $register('E2E Prep Inscrite', 'PENDING');
     $team('E2E Prep Ancienne');
+    $register('E2E Prep A creer', 'PENDING');
     echo json_encode(['id_competition' => $id_competition]);
 } catch (Throwable $e) {
     http_response_code(500);

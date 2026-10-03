@@ -36,6 +36,9 @@ export default {
                 <span v-for="s in summary(c)" :key="s.key" class="badge badge-sm gap-1" :class="s.badge">
                   {{ s.count }} {{ s.count > 1 ? s.plural : s.label }}
                 </span>
+                <span v-if="newTeams(c)" class="badge badge-sm badge-info badge-outline" data-testid="public-registrations-new">
+                  {{ newTeams(c) }} {{ newTeams(c) > 1 ? 'nouvelles équipes' : 'nouvelle équipe' }}
+                </span>
                 <span v-if="!c.teams.length" class="badge badge-sm badge-ghost">aucune inscription pour l'instant</span>
               </span>
             </div>
@@ -76,6 +79,10 @@ export default {
             return Object.entries(STATUSES)
                 .map(([key, s]) => ({...s, key, count: competition.teams.filter((t) => t.status === key).length}))
                 .filter((s) => s.count > 0);
+        },
+        // Nouvelles équipes à venir : une demande refusée n'en amène pas.
+        newTeams(competition) {
+            return competition.teams.filter((t) => t.type === 'new' && t.status !== 'REFUSED').length;
         },
     },
     created() {
