@@ -7,11 +7,15 @@ require_once __DIR__ . '/../bootstrap.php';
 /**
  * Indicateurs d'administration (tableau de bord).
  *
- * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 49 requetes d'exploitation et
+ * RESERVE AUX ADMINISTRATEURS. Ce fichier execute 44 requetes d'exploitation et
  * renvoie leurs lignes de detail : adresses des responsables, comptes, identite
  * de joueurs, cotisations. Il etait ouvert a tout le monde (issue #284) --
  * `ajax/` ne passe pas par `rest/action.php`, donc le refus par defaut de #270
  * ne le protegeait pas.
+ *
+ * Deux modes, appeles par `admin/components/screens/Indicators.js` :
+ * `mode=list` rend les libelles et les sections, `mode=detail&id=N` execute la
+ * requete d'un seul indicateur.
  */
 require_once __DIR__ . '/../classes/UserManager.php';
 
@@ -26,259 +30,197 @@ if (!UserManager::isAdmin()) {
     exit();
 }
 
-header('Content-Type: text/html; charset=utf-8');
-
-/**
- * @param $data
- * @param string $delimiter
- * @param string $enclosure
- * @return string
- * @throws Exception
- */
-function generateCsv($data, $delimiter = ';', $enclosure = '"')
-{
-    $contents = '';
-    $handle = fopen('php://temp', 'r+');
-    $isHeaderWritten = false;
-    foreach ($data as $line) {
-        $dateYesterday = new DateTime();
-        $dateYesterday->sub(new DateInterval('P1D'));
-        $dateActivity = DateTime::createFromFormat("d/m/Y", $line['date']);
-        if ($dateActivity < $dateYesterday) {
-            continue;
-        }
-        if (!$isHeaderWritten) {
-            fputcsv($handle, array_keys($line), $delimiter, $enclosure);
-            $isHeaderWritten = true;
-        }
-        fputcsv($handle, $line, $delimiter, $enclosure);
-    }
-    rewind($handle);
-    while (!feof($handle)) {
-        $contents .= fread($handle, 8192);
-    }
-    fclose($handle);
-    return $contents;
-}
+header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../classes/Indicator.php';
 
-$indicators = array();
-
-
-$indicators[] = new Indicator(
-    "Joueurs potentiellement en doublon",
-    file_get_contents(__DIR__ . '/../sql/player_duplicates.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Transferts suspect de joueurs",
-    file_get_contents(__DIR__ . '/../sql/suspect_transfers.sql'),
-    'alert');
-// L'indicateur « Joueurs inscrits hors délai en Coupe Khoury Hanna » (#233) a
-// été retiré avec l'issue #32 : il détectait a posteriori, par recoupement de
-// chaînes du journal d'activité, ce que le verrouillage de l'effectif empêche
-// désormais à la source. Le seul ajout tardif encore possible est la dérogation
-// d'un administrateur, journalisée explicitement (« Ajout DEROGATOIRE de … »)
-// et donc consultable depuis l'écran Activité.
-// Les indicateurs qui déclarent un écran cible et une colonne d'identifiant
-// rendent leur tuile ACTIONNABLE (issue #312) : le tableau de bord y ajoute un
-// bouton qui ouvre l'écran filtré sur ces seules lignes. Les autres restent de
-// simples constats — la plupart croisent plusieurs entités, il n'y a pas
-// d'écran évident où les corriger.
-$indicators[] = new Indicator(
-    "Joueurs sans numéro de licence",
-    file_get_contents(__DIR__ . '/../sql/no_licence.sql'),
-    'alert',
-    'players', 'indicator_id');
-$indicators[] = new Indicator(
-    "Equipes",
-    file_get_contents(__DIR__ . '/../sql/teams_in_championship.sql'));
-$indicators[] = new Indicator(
-    "Joueurs avec équipe mais sans club",
-    file_get_contents(__DIR__ . '/../sql/no_club.sql'),
-    'alert',
-    'players', 'indicator_id');
-$indicators[] = new Indicator(
-    "Joueurs en attente de validation",
-    file_get_contents(__DIR__ . '/../sql/not_valid_players.sql'),
-    'alert',
-    'players', 'indicator_id');
-$indicators[] = new Indicator(
-    "Evènements",
-    file_get_contents(__DIR__ . '/../sql/activity.sql'));
-$indicators[] = new Indicator(
-    "Comptes",
-    file_get_contents(__DIR__ . '/../sql/accounts.sql'));
-$indicators[] = new Indicator(
-    "Matches dupliqués",
-    file_get_contents(__DIR__ . '/../sql/match_duplicates.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Club non renseigné",
-    file_get_contents(__DIR__ . '/../sql/teams_without_club.sql'),
-    'alert',
-    'teams', 'indicator_id');
-$indicators[] = new Indicator(
-    "Licences dupliquées",
-    file_get_contents(__DIR__ . '/../sql/licence_duplicates.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Retards",
-    file_get_contents(__DIR__ . '/../sql/delay_match_report.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equipes actives sans compte responsable équipe",
-    file_get_contents(__DIR__ . '/../sql/missing_team_leader_account.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Clubs engagés sans compte de club",
-    file_get_contents(__DIR__ . '/../sql/clubs_without_account.sql'),
-    'alert',
-    'clubs', 'indicator_id');
-$indicators[] = new Indicator(
-    "Equipes actives sans responsable",
-    file_get_contents(__DIR__ . '/../sql/no_leader_team.sql'),
-    'alert',
-    'teams', 'indicator_id');
-$indicators[] = new Indicator(
-    "Equipes actives sans créneau de réception",
-    file_get_contents(__DIR__ . '/../sql/no_timeslot_teams.sql'));
-$indicators[] = new Indicator(
-    "Matches non certifiés dont la date ne correspond pas à un créneau",
-    file_get_contents(__DIR__ . '/../sql/matches_without_timeslot.sql'));
-$indicators[] = new Indicator(
-    "Créneaux avec une contrainte horaire forte",
-    file_get_contents(__DIR__ . '/../sql/timeslot_constraints.sql'));
-$indicators[] = new Indicator(
-    "Emails des responsables par compétition",
-    file_get_contents(__DIR__ . '/../sql/emails_by_competition.sql'));
-$indicators[] = new Indicator(
-    'Nombre de matches par date et par gymnase',
-    file_get_contents(__DIR__ . '/../sql/matches_by_gymnasium.sql'));
-$indicators[] = new Indicator(
-    'Nombre de matches trop élevés par date et par gymnase',
-    file_get_contents(__DIR__ . '/../sql/too_many_match_in_gymnasium.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equipes avec trop d'écart entre réception et déplacement",
-    file_get_contents(__DIR__ . '/../sql/equity_home_away.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Criticité de génération des matchs",
-    file_get_contents(__DIR__ . '/../sql/match_generation_criticity.sql'));
-$indicators[] = new Indicator(
-    "Emails en erreur",
-    file_get_contents(__DIR__ . '/../sql/email_errors.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Matchs avec joueurs non homologués",
-    file_get_contents(__DIR__ . '/../sql/match_invalid_players.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Problèmes dans les dates des matchs",
-    file_get_contents(__DIR__ . '/../sql/issues_in_match.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equipes qui jouent plusieurs matchs la même semaine",
-    file_get_contents(__DIR__ . '/../sql/many_match_same_day.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Même réception que la fois précédente",
-    file_get_contents(__DIR__ . '/../sql/same_reception.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equipes non réengagées",
-    file_get_contents(__DIR__ . '/../sql/not_registered_teams.sql'));
-// Maille club, alors que « Equipes non réengagées » est à la maille équipe :
-// un club qui n'a rien inscrit du tout n'a pas commencé sa saisie. La tuile
-// s'éteint d'elle-même passée la date limite d'inscription (issue #338).
-$indicators[] = new Indicator(
-    "Clubs sans aucune inscription",
-    file_get_contents(__DIR__ . '/../sql/clubs_without_registration.sql'),
-    'alert',
-    'clubs', 'indicator_id');
-// Pénalités automatiques de la feuille de match non signée à 48 h (#345)
-$indicators[] = new Indicator(
-    "Pénalités automatiques",
-    file_get_contents(__DIR__ . '/../sql/auto_penalties.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equipes qui ne s'engageront pas",
-    file_get_contents(__DIR__ . '/../sql/will_not_register_teams.sql'));
-$indicators[] = new Indicator(
-    "Nouvelles équipes",
-    file_get_contents(__DIR__ . '/../sql/newly_registered_teams.sql'));
-$indicators[] = new Indicator(
-    "Proposition d'organisation",
-    file_get_contents(__DIR__ . '/../sql/register_setup_ranks.sql'));
-$indicators[] = new Indicator(
-    "Cotisations non réglées",
-    file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Facture par club",
-    file_get_contents(__DIR__ . '/../sql/register_invoices.sql'));
-$indicators[] = new Indicator(
-    "Equipes incomplètes",
-    file_get_contents(__DIR__ . '/../sql/teams_incomplete.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Décalage des créneaux d'inscription",
-    file_get_contents(__DIR__ . '/../sql/mismatch_register_timeslots.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Equilibre Réceptions/Déplacements sur l'année",
-    file_get_contents(__DIR__ . '/../sql/overall_equity_home_away.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Joueurs requis le même soir",
-    file_get_contents(__DIR__ . '/../sql/players_many_match_same_date.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Joueurs dans plusieurs équipes",
-    file_get_contents(__DIR__ . '/../sql/players_in_many_teams.sql'));
-$indicators[] = new Indicator(
-    "Nombre de matchs par joueur",
-    file_get_contents(__DIR__ . '/../sql/nb_matchs_per_player.sql'));
-$indicators[] = new Indicator(
-    "Classement du fair play",
-    file_get_contents(__DIR__ . '/../sql/fairplay_ranks.sql'));
-$indicators[] = new Indicator(
-    "Délais non respectés pour transmettre une date de report",
-    file_get_contents(__DIR__ . '/../sql/report_match_with_too_long_date_delay.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Matchs avec des renforts",
-    file_get_contents(__DIR__ . '/../sql/matchs_with_reinforcement.sql'));
-// Alerte : seuls les clubs qui inscrivent plus d'équipes que leurs terrains
-// n'en reçoivent (demandes refusées exclues).
-$indicators[] = new Indicator(
-    "Inscriptions - Terrains vs Equipes",
-    file_get_contents(__DIR__ . '/../sql/indicator-teams-vs-courts.sql'),
-    'alert');
-// Alerte : une inscription sans créneau complet bloque le calendrier (#395).
-$indicators[] = new Indicator(
-    "Inscriptions - Infos incomplètes",
-    file_get_contents(__DIR__ . '/../sql/indicator-register-incomplete-teams.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Joueurs sans photo",
-    file_get_contents(__DIR__ . '/../sql/no_photo.sql'),
-    'alert');
-$indicators[] = new Indicator(
-    "Distance parcourue",
-    file_get_contents(__DIR__ . '/../sql/equity_distance.sql'));
-
-function info_first($a, $b): int
+/** Requête d'un indicateur, rangée dans `sql/`. */
+function indicator_sql(string $file): string
 {
-    return ($a->getType() == 'info') ? -1 : 1;
+    return file_get_contents(__DIR__ . '/../sql/' . $file);
 }
 
-usort($indicators, 'info_first');
+// Chaque indicateur déclare sa section du tableau de bord (issue #396). Ceux
+// qui déclarent un écran cible et une colonne d'identifiant rendent leur tuile
+// ACTIONNABLE (issue #312) : le tableau de bord y ajoute un bouton qui ouvre
+// l'écran filtré sur ces seules lignes. Les autres restent de simples constats
+// — la plupart croisent plusieurs entités, il n'y a pas d'écran évident où les
+// corriger.
+//
+// Retirés par #396 : « Proposition d'organisation » (remplacé par la division X
+// et l'écran Divisions, #388), « Comptes » et « Evènements » (les écrans
+// Utilisateurs et Activité le font mieux), « Nouvelles équipes » (compté sur la
+// page d'accueil avec la bonne définition, #379), « Nombre de matches par date
+// et par gymnase » (comptait en double ; la version alerte lit le gymnase du
+// match).
+$indicators = array(
+
+    // --- Inscriptions -------------------------------------------------------
+
+    // Maille club, alors que « Equipes non réengagées » est à la maille équipe :
+    // un club qui n'a rien inscrit du tout n'a pas commencé sa saisie. La tuile
+    // s'éteint d'elle-même passée la date limite d'inscription (issue #338).
+    new Indicator("Clubs sans aucune inscription",
+        indicator_sql('clubs_without_registration.sql'), 'alert', 'clubs', 'indicator_id',
+        category: Indicator::INSCRIPTIONS),
+    new Indicator("Equipes non réengagées",
+        indicator_sql('not_registered_teams.sql'),
+        category: Indicator::INSCRIPTIONS),
+    new Indicator("Equipes qui ne s'engageront pas",
+        indicator_sql('will_not_register_teams.sql'),
+        category: Indicator::INSCRIPTIONS),
+    // Alerte : une inscription sans créneau complet bloque le calendrier (#395).
+    new Indicator("Inscriptions - Infos incomplètes",
+        indicator_sql('indicator-register-incomplete-teams.sql'), 'alert',
+        category: Indicator::INSCRIPTIONS),
+    // Alerte : seuls les clubs qui inscrivent plus d'équipes que leurs terrains
+    // n'en reçoivent (demandes refusées exclues).
+    new Indicator("Inscriptions - Terrains vs Equipes",
+        indicator_sql('indicator-teams-vs-courts.sql'), 'alert',
+        category: Indicator::INSCRIPTIONS),
+    new Indicator("Cotisations non réglées",
+        indicator_sql('register_not_paid.sql'), 'alert',
+        category: Indicator::INSCRIPTIONS),
+    new Indicator("Facture par club",
+        indicator_sql('register_invoices.sql'),
+        category: Indicator::INSCRIPTIONS),
+
+    // --- Préparation du calendrier ------------------------------------------
+
+    new Indicator("Décalage des créneaux d'inscription",
+        indicator_sql('mismatch_register_timeslots.sql'), 'alert',
+        category: Indicator::CALENDAR),
+    new Indicator("Equipes actives sans créneau de réception",
+        indicator_sql('no_timeslot_teams.sql'),
+        category: Indicator::CALENDAR),
+    new Indicator("Créneaux avec une contrainte horaire forte",
+        indicator_sql('timeslot_constraints.sql'),
+        category: Indicator::CALENDAR),
+    new Indicator("Criticité de génération des matchs",
+        indicator_sql('match_generation_criticity.sql'),
+        category: Indicator::CALENDAR),
+
+    // --- Équipes et clubs ---------------------------------------------------
+
+    new Indicator("Equipes",
+        indicator_sql('teams_in_championship.sql'),
+        category: Indicator::TEAMS),
+    new Indicator("Equipes incomplètes",
+        indicator_sql('teams_incomplete.sql'), 'alert',
+        category: Indicator::TEAMS),
+    new Indicator("Equipes actives sans responsable",
+        indicator_sql('no_leader_team.sql'), 'alert', 'teams', 'indicator_id',
+        category: Indicator::TEAMS),
+    new Indicator("Equipes actives sans compte responsable équipe",
+        indicator_sql('missing_team_leader_account.sql'), 'alert',
+        category: Indicator::TEAMS),
+    new Indicator("Clubs engagés sans compte de club",
+        indicator_sql('clubs_without_account.sql'), 'alert', 'clubs', 'indicator_id',
+        category: Indicator::TEAMS),
+    new Indicator("Club non renseigné",
+        indicator_sql('teams_without_club.sql'), 'alert', 'teams', 'indicator_id',
+        category: Indicator::TEAMS),
+    new Indicator("Emails des responsables par compétition",
+        indicator_sql('emails_by_competition.sql'),
+        category: Indicator::TEAMS),
+
+    // --- Joueurs ------------------------------------------------------------
+
+    new Indicator("Joueurs sans numéro de licence",
+        indicator_sql('no_licence.sql'), 'alert', 'players', 'indicator_id',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs en attente de validation",
+        indicator_sql('not_valid_players.sql'), 'alert', 'players', 'indicator_id',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs avec équipe mais sans club",
+        indicator_sql('no_club.sql'), 'alert', 'players', 'indicator_id',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs sans photo",
+        indicator_sql('no_photo.sql'), 'alert',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs potentiellement en doublon",
+        indicator_sql('player_duplicates.sql'), 'alert',
+        category: Indicator::PLAYERS),
+    new Indicator("Licences dupliquées",
+        indicator_sql('licence_duplicates.sql'), 'alert',
+        category: Indicator::PLAYERS),
+    // L'indicateur « Joueurs inscrits hors délai en Coupe Khoury Hanna » (#233) a
+    // été retiré avec l'issue #32 : il détectait a posteriori, par recoupement de
+    // chaînes du journal d'activité, ce que le verrouillage de l'effectif empêche
+    // désormais à la source. Le seul ajout tardif encore possible est la
+    // dérogation d'un administrateur, journalisée explicitement (« Ajout
+    // DEROGATOIRE de … ») et donc consultable depuis l'écran Activité.
+    new Indicator("Transferts suspect de joueurs",
+        indicator_sql('suspect_transfers.sql'), 'alert',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs requis le même soir",
+        indicator_sql('players_many_match_same_date.sql'), 'alert',
+        category: Indicator::PLAYERS),
+    new Indicator("Joueurs dans plusieurs équipes",
+        indicator_sql('players_in_many_teams.sql'),
+        category: Indicator::PLAYERS),
+
+    // --- Saison en cours ----------------------------------------------------
+
+    new Indicator("Retards",
+        indicator_sql('delay_match_report.sql'), 'alert',
+        category: Indicator::SEASON),
+    // Pénalités automatiques de la feuille de match non signée à 48 h (#345)
+    new Indicator("Pénalités automatiques",
+        indicator_sql('auto_penalties.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Délais non respectés pour transmettre une date de report",
+        indicator_sql('report_match_with_too_long_date_delay.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Matchs avec joueurs non homologués",
+        indicator_sql('match_invalid_players.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Matches dupliqués",
+        indicator_sql('match_duplicates.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Problèmes dans les dates des matchs",
+        indicator_sql('issues_in_match.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Equipes qui jouent plusieurs matchs la même semaine",
+        indicator_sql('many_match_same_day.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator('Nombre de matches trop élevés par date et par gymnase',
+        indicator_sql('too_many_match_in_gymnasium.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Matches non certifiés dont la date ne correspond pas à un créneau",
+        indicator_sql('matches_without_timeslot.sql'),
+        category: Indicator::SEASON),
+    new Indicator("Même réception que la fois précédente",
+        indicator_sql('same_reception.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Equipes avec trop d'écart entre réception et déplacement",
+        indicator_sql('equity_home_away.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Equilibre Réceptions/Déplacements sur l'année",
+        indicator_sql('overall_equity_home_away.sql'), 'alert',
+        category: Indicator::SEASON),
+    new Indicator("Emails en erreur",
+        indicator_sql('email_errors.sql'), 'alert',
+        category: Indicator::SEASON),
+
+    // --- Statistiques -------------------------------------------------------
+
+    new Indicator("Nombre de matchs par joueur",
+        indicator_sql('nb_matchs_per_player.sql'),
+        category: Indicator::STATISTICS),
+    new Indicator("Matchs avec des renforts",
+        indicator_sql('matchs_with_reinforcement.sql'),
+        category: Indicator::STATISTICS),
+    new Indicator("Classement du fair play",
+        indicator_sql('fairplay_ranks.sql'),
+        category: Indicator::STATISTICS),
+    new Indicator("Distance parcourue",
+        indicator_sql('equity_distance.sql'),
+        category: Indicator::STATISTICS),
+);
 
 $mode = filter_input(INPUT_GET, 'mode');
 $indicatorId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-$indicatorName = filter_input(INPUT_GET, 'indicator');
 
 if ($mode === 'list') {
     $list = array();
@@ -286,38 +228,28 @@ if ($mode === 'list') {
         $list[] = array(
             'id' => $index,
             'fieldLabel' => $indicator->getFieldLabel(),
-            'type' => $indicator->getType()
+            'type' => $indicator->getType(),
+            'category' => $indicator->getCategory(),
         );
     }
-    echo json_encode(array('results' => $list));
+    $categories = array();
+    foreach (Indicator::CATEGORIES as $key => $label) {
+        $categories[] = array('key' => $key, 'label' => $label);
+    }
+    echo json_encode(array('results' => $list, 'categories' => $categories));
     exit();
 }
 
 if ($mode === 'detail' && $indicatorId !== null && $indicatorId !== false) {
     if (isset($indicators[$indicatorId])) {
-        $result = $indicators[$indicatorId]->getResult();
-        echo json_encode($result);
+        echo json_encode($indicators[$indicatorId]->getResult());
     } else {
         echo json_encode(array('error' => 'Indicator not found'));
     }
     exit();
 }
 
-$results = array();
-foreach ($indicators as $indicator) {
-    $results[] = $indicator->getResult();
-}
-
-if (!$indicatorName) {
-    echo json_encode(array('results' => array_filter($results)));
-    exit();
-}
-foreach ($results as $result) {
-    if ($result['fieldLabel'] === $indicatorName) {
-        try {
-            echo generateCsv($result['details']);
-        } catch (Exception $e) {
-        }
-        exit();
-    }
-}
+// L'ancien mode « tout calculer d'un coup », et l'export CSV de l'indicateur
+// « Evènements » qui s'y greffait, n'avaient plus aucun appelant (#396).
+http_response_code(400);
+echo json_encode(array('success' => false, 'message' => "Mode attendu : list ou detail"));
