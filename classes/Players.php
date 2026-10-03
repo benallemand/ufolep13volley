@@ -310,6 +310,12 @@ class Players extends Generic
     public function save($inputs): int|array|string|null
     {
         $bindings = array();
+        // Saisi à la main, le numéro arrive souvent tel qu'imprimé sur la
+        // licence, préfixe de département compris (`013_DY10000187`) : un
+        // import ne le retrouverait plus (issue #404).
+        if (array_key_exists('num_licence', $inputs) && is_string($inputs['num_licence'])) {
+            $inputs['num_licence'] = self::normalize_licence_number($inputs['num_licence']);
+        }
         if (empty($inputs['id'])) {
             if (!empty($inputs['num_licence'])) {
                 if ($this->isPlayerExists($inputs['num_licence'])) {
@@ -380,7 +386,12 @@ class Players extends Generic
             $comment = "Creation d'un nouveau joueur : $firstName $name";
             $this->addActivity($comment);
         } else {
-            $activity = $this->build_activity($inputs['prenom'] . ' ' . $inputs['nom'], $before, $inputs);
+            // L'import d'une licence ne poste ni nom ni prénom : on les prend
+            // dans la fiche, sinon le journal ne dit pas de quel joueur il
+            // s'agit (issue #404).
+            $subject = trim(($inputs['prenom'] ?? $before['prenom'] ?? '') . ' '
+                . ($inputs['nom'] ?? $before['nom'] ?? ''));
+            $activity = $this->build_activity($subject, $before, $inputs);
             if ($activity !== null) {
                 $this->addActivity($activity);
             }
@@ -417,8 +428,25 @@ class Players extends Generic
         }
         set_time_limit(60);
         $licences = $this->files->get_licences_data($_FILES['licences']['tmp_name']);
+        // Une licence écartée n'arrête plus la suite du fichier (issue #404) :
+        // les autres sont importées, et le message dit lesquelles ne l'ont pas
+        // été, et pourquoi. Le compte rendu détaillé viendra avec #394.
+        $imported = 0;
+        $rejected = array();
         foreach ($licences as $licence) {
-            $this->search_player_and_save_from_licence($licence);
+            try {
+                $this->search_player_and_save_from_licence($licence);
+                $imported++;
+            } catch (mysqli_sql_exception $e) {
+                // Jamais de message MySQL brut au client (#355).
+                error_log($e->getMessage());
+                $rejected[] = ($licence['last_first_name'] ?? '?') . " : erreur d'enregistrement";
+            } catch (Exception $e) {
+                $rejected[] = ($licence['last_first_name'] ?? '?') . ' : ' . $e->getMessage();
+            }
+        }
+        if (!empty($rejected)) {
+            throw new Exception("$imported licence(s) importée(s). Écartée(s) : " . implode(' ; ', $rejected), 409);
         }
     }
 
@@ -1212,74 +1240,202 @@ class Players extends Generic
      */
     public function search_player_and_save_from_licence(mixed $licence): void
     {
-        // chercher si la licence ou le joueur existe déjà en base
-        $query = "(
-                        j.departement_affiliation = ? AND j.num_licence = ?) 
-                        OR (CONCAT(UPPER(j.nom), ' ', UPPER(j.prenom)) = ?
-                      )";
-        $bindings = array();
-        $bindings[] = array(
-            'type' => 'i',
-            'value' => intval($licence['departement'])
-        );
-        $bindings[] = array(
-            'type' => 's',
-            'value' => $licence['licence_number']
-        );
-        $bindings[] = array(
-            'type' => 's',
-            'value' => $licence['last_first_name']
-        );
-        $current_player = $this->get_one($query, $bindings);
-        
-        // Gérer la photo si présente
+        // Club de la licence, reconnu à son numéro d'affiliation : le nom
+        // imprimé peut différer de celui en base (issue #404).
+        $licence_club = $this->licence_club_for_importer($licence);
+        $current_player = $this->find_player_for_licence($licence, (int)$licence_club['id']);
+
+        // Gérer la photo si présente. Absente, rien ne bloque : elle n'est
+        // exigée qu'à l'ajout sur une feuille de match (#343).
         $idPhoto = null;
         if (isset($licence['photo']) && $licence['photo'] !== null) {
             $idPhoto = $this->savePlayerPhotoFromLicence($licence);
         }
-        
-        // Vérifier si le club existe, sinon le créer
-        $cur_club = $this->club->get_one("affiliation_number = ?", array(array('type' => 's', 'value' => $licence['licence_club'])));
-        if (empty($cur_club)) {
-            // Créer le club avec les infos de la licence
-            $newClubId = $this->club->save(array(
-                'nom' => $licence['club'],
-                'affiliation_number' => $licence['licence_club'],
-            ));
-            $cur_club = array('id' => $newClubId);
-        }
-        
+
         // s'il n'existe pas, le créer
         if (empty($current_player)) {
+            [$nom, $prenom] = self::split_licence_name($licence['last_first_name']);
             $newPlayerId = $this->save(array(
-                'prenom' => explode(' ', $licence['last_first_name'])[1],
-                'nom' => explode(' ', $licence['last_first_name'])[0],
+                'prenom' => $prenom,
+                'nom' => $nom,
                 'num_licence' => $licence['licence_number'],
                 'sexe' => $licence['sexe'],
                 'departement_affiliation' => $licence['departement'],
-                'id_club' => $cur_club['id'],
+                'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
             ));
-            
+
             // Lier la photo au joueur nouvellement créé
             if ($idPhoto !== null && $newPlayerId) {
                 $this->linkPlayerToPhoto($newPlayerId, $idPhoto);
             }
         } else {
-            // s'il existe, le mettre à jour
+            // s'il existe, le mettre à jour. Un club différent de celui de sa
+            // licence est un changement de club : la licence fait foi, et le
+            // journal d'activité le trace (#404).
             $this->save(array(
                 'id' => $current_player['id'],
                 'num_licence' => $licence['licence_number'],
                 'sexe' => $licence['sexe'],
                 'departement_affiliation' => $licence['departement'],
+                'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
             ));
-            
+
             // Lier la photo au joueur existant (mettre à jour si nouvelle photo)
             if ($idPhoto !== null) {
                 $this->linkPlayerToPhoto($current_player['id'], $idPhoto);
             }
         }
+    }
+
+    /**
+     * Club d'une licence importée (issue #404), reconnu à son numéro
+     * d'affiliation (`N°…` imprimé sur la licence), jamais à son nom.
+     *
+     * L'administrateur importe tout : un club inconnu est créé, comme avant.
+     * Un responsable n'importe que les licences de ses clubs (ceux de son
+     * compte, et celui de son équipe courante). Si l'un d'eux n'a pas de
+     * numéro d'affiliation en base, la comparaison est impossible : une
+     * licence d'un club inconnu lui est attribuée, s'il est le seul dans ce
+     * cas. Une licence d'un autre club connu est refusée.
+     *
+     * @throws Exception (409) licence d'un autre club
+     */
+    private function licence_club_for_importer(array $licence): array
+    {
+        $licence_club = $this->club->get_one("affiliation_number = ?",
+            array(array('type' => 's', 'value' => $licence['licence_club'])));
+        if (UserManager::isAdmin()) {
+            if (empty($licence_club)) {
+                $newClubId = $this->club->save(array(
+                    'nom' => $licence['club'],
+                    'affiliation_number' => $licence['licence_club'],
+                ));
+                $licence_club = array('id' => $newClubId);
+            }
+            return $licence_club;
+        }
+        $my_clubs = $this->importer_clubs();
+        foreach ($my_clubs as $club) {
+            if (!empty($licence_club) && (int)$club['id'] === (int)$licence_club['id']) {
+                return $licence_club;
+            }
+        }
+        $without_number = array_values(array_filter($my_clubs,
+            static fn($club) => trim((string)$club['affiliation_number']) === ''));
+        if (empty($licence_club) && count($without_number) === 1) {
+            return $without_number[0];
+        }
+        throw new Exception("licence du club n° " . $licence['licence_club']
+            . (empty($licence_club['nom']) ? '' : ' (' . $licence_club['nom'] . ')')
+            . ", qui n'est pas le vôtre", 409);
+    }
+
+    /**
+     * Clubs au nom desquels le compte connecté importe des licences : ses
+     * clubs de responsable, et le club de son équipe courante.
+     *
+     * @return array<int, array{id: int|string, affiliation_number: ?string}>
+     * @throws Exception
+     */
+    private function importer_clubs(): array
+    {
+        $ids = array();
+        if (UserManager::isClubLeader()) {
+            $ids = $this->club->getMyClubIds();
+        }
+        if (UserManager::isTeamLeader() && !empty($_SESSION['id_equipe'])) {
+            $id_club = $this->team->getIdClubFromIdTeam($_SESSION['id_equipe']);
+            if (!empty($id_club)) {
+                $ids[] = (int)$id_club;
+            }
+        }
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        if (empty($ids)) {
+            throw new Exception("aucun club n'est rattaché à votre compte", 409);
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        return $this->sql_manager->execute(
+            "SELECT id, nom, affiliation_number FROM clubs WHERE id IN ($placeholders)",
+            array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids));
+    }
+
+    /**
+     * Joueur que désigne une licence importée (issue #404).
+     *
+     * D'abord par son numéro de licence. Sinon par son nom, seulement s'il
+     * n'y a qu'un seul joueur de ce nom, et seulement s'il n'a pas encore de
+     * numéro de licence ou qu'il est du club de la licence : on n'écrase pas
+     * la licence d'un homonyme. Chercher les deux à la fois renvoyait deux
+     * joueurs quand licence et nom en désignaient deux différents, et l'import
+     * s'arrêtait en erreur au milieu du fichier.
+     *
+     * @return array|null le joueur, ou null s'il est à créer
+     * @throws Exception (409) cas à trancher par la commission
+     */
+    private function find_player_for_licence(array $licence, int $id_licence_club): ?array
+    {
+        $by_licence = $this->get("j.departement_affiliation = ? AND j.num_licence = ?", array(
+            array('type' => 'i', 'value' => intval($licence['departement'])),
+            array('type' => 's', 'value' => self::normalize_licence_number($licence['licence_number'])),
+        ));
+        if (count($by_licence) === 1) {
+            return $by_licence[0];
+        }
+        if (count($by_licence) > 1) {
+            throw new Exception("plusieurs joueurs portent la licence " . $licence['licence_number'], 409);
+        }
+        $by_name = $this->get("CONCAT(UPPER(j.nom), ' ', UPPER(j.prenom)) = UPPER(?)", array(
+            array('type' => 's', 'value' => $licence['last_first_name']),
+        ));
+        if (count($by_name) === 0) {
+            return null;
+        }
+        if (count($by_name) > 1) {
+            throw new Exception("plusieurs joueurs portent ce nom, à rapprocher par la commission", 409);
+        }
+        $player = $by_name[0];
+        if (trim((string)$player['num_licence']) !== '' && (int)$player['id_club'] !== $id_licence_club) {
+            throw new Exception("un homonyme d'un autre club a déjà la licence " . $player['num_licence']
+                . ", à rapprocher par la commission", 409);
+        }
+        return $player;
+    }
+
+    /**
+     * « NOM COMPOSÉ Prénom » d'une licence en [nom, prénom] (issue #404) :
+     * le nom, ce sont les mots en majuscules en tête, le prénom le reste. Au
+     * moins un mot de chaque côté : un prénom écrit en majuscules garde le
+     * dernier mot.
+     *
+     * @return array{0: string, 1: string}
+     */
+    public static function split_licence_name(string $last_first_name): array
+    {
+        $words = preg_split('/\s+/u', trim($last_first_name));
+        $last = 0;
+        while ($last < count($words) - 1
+            && preg_match('/\p{L}/u', $words[$last])
+            && mb_strtoupper($words[$last], 'UTF-8') === $words[$last]) {
+            $last++;
+        }
+        $last = max(1, $last);
+        return array(implode(' ', array_slice($words, 0, $last)), implode(' ', array_slice($words, $last)));
+    }
+
+    /**
+     * Numéro de licence tel qu'on le stocke (issue #404) : sans espace ni
+     * tabulation, et sans le préfixe de département que la licence imprime
+     * (`013_DY10000187`), puisque le département a sa propre colonne.
+     */
+    public static function normalize_licence_number(?string $licence_number): ?string
+    {
+        if ($licence_number === null) {
+            return null;
+        }
+        $licence_number = preg_replace('/\s+/u', '', $licence_number);
+        return preg_replace('/^0?\d{2,3}_/', '', $licence_number);
     }
 
     /**

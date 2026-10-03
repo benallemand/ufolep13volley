@@ -109,3 +109,18 @@ figée : les matchs de phase finale réutilisent les identifiants d'équipe `kh`
 Depuis l'administration, associer un joueur à une équipe KH figée : l'ajout
 **passe**. Vérifier ensuite dans l'écran **Activité** la trace
 « Ajout DEROGATOIRE de … (effectif fige depuis le match …) ».
+
+---
+
+## Import des licences liguasso (issue #404)
+
+Écran **effectif** d'un responsable, bouton « importer depuis le pdf… ».
+
+| # | Cas | Attendu |
+|---|-----|---------|
+| L1 | Importer la licence d'un joueur du club | Fiche mise à jour. Dans l'écran **Activité**, la ligne commence par le **nom du joueur** (plus « : · - date_homologation… ») |
+| L2 | Importer la licence d'un joueur d'un **autre club** (numéro d'affiliation différent) | Message 409 : « 0 licence(s) importée(s). Écartée(s) : NOM Prénom : licence du club n° …, qui n'est pas le vôtre ». Rien n'est modifié |
+| L3 | Importer un fichier qui mêle une licence du club et une d'un autre club | La première est importée, la seconde écartée ; le message les compte |
+| L4 | Licence d'un joueur encore rattaché à un autre club en base | C'est un changement de club : le joueur passe dans le club de la licence, l'Activité le trace |
+| L5 | Licence d'un joueur au nom composé, absent de la base (« VIEIRA DOS SANTOS Lidia ») | Créé avec nom « VIEIRA DOS SANTOS », prénom « Lidia » |
+| L6 | Créer un joueur à la main avec le numéro tel qu'imprimé, `013_XX00000000` | Enregistré **sans** le préfixe `013_` |
