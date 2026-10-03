@@ -575,6 +575,28 @@ class RegisterTest extends UfolepTestCase
         $this->assertEquals(1, $division['RT Team Part']['competition_has_registrations']);
     }
 
+    // ---- #390 : homonymes ------------------------------------------------------
+
+    public function test_a_renewal_only_designates_its_old_team_not_a_namesake()
+    {
+        $real = $this->insert_team('RT Team Homonyme', $this->id_club_1);
+        $namesake = $this->insert_team('RT Team Homonyme', $this->id_club_1);
+        $this->sql->execute("INSERT INTO classements SET code_competition = 'rt', division = '4', id_equipe = $namesake, rank_start = 7, penalite = 0");
+        $renewal = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Homonyme');
+        $this->sql->execute("UPDATE register SET old_team_id = $real WHERE id = $renewal");
+
+        $unassigned = array_column((new Rank())->getUnassignedTeams('rt'), null, 'id_equipe');
+        $this->assertEquals(1, $unassigned[$real]['registered'], "La vraie équipe est inscrite");
+        $division = array_column((new Rank())->getRanksByCompetitionGroupedByDivision('rt')['4'], null, 'id_equipe');
+        $this->assertEquals(0, $division[$namesake]['registered'], "L'homonyme n'est pas inscrit : à retirer");
+
+        $this->sql->execute("DELETE FROM classements WHERE code_competition = 'rt'");
+        (new Rank())->insert_from_register($this->id_competition);
+        $ranked = array_map('intval', array_column(
+            $this->sql->execute("SELECT id_equipe FROM classements WHERE code_competition = 'rt'"), 'id_equipe'));
+        $this->assertSame(array($real), $ranked, "Seule l'ancienne équipe est engagée, pas son homonyme");
+    }
+
     public function test_get_2nd_half_registrations_only_returns_validated()
     {
         $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Q');

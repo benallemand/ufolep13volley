@@ -1269,8 +1269,13 @@ l'initialisation est perdu), puis « Réorganiser les divisions ».
   compétition. Rejouable : une inscription non classée qui a déjà une division
   la garde ; une refusée n'est pas touchée.
 - `Rank::insert_from_register` ne prend que les inscriptions **VALIDATED**.
-- `getUnassignedTeams` marque `registered` (demande non refusée, par
-  `old_team_id` ou par nom) et `competition_has_registrations` ; l'écran masque
+- **Rapprochement inscription ↔ équipe** (`Rank::REGISTRATION_MATCHES_TEAM`,
+  #390) : une réinscription (`old_team_id`) ne désigne **que** son ancienne
+  équipe ; le nom ne sert qu'à une nouvelle équipe. Sinon un doublon homonyme
+  passait pour inscrit et l'initialisation engageait les deux (deux « Trets &
+  Furious » en 2026, nettoyées à la main en prod).
+- `getUnassignedTeams` marque `registered` (demande non refusée qui désigne
+  l'équipe) et `competition_has_registrations` ; l'écran masque
   par défaut les non inscrites, sauf dans une compétition sans inscriptions
   propres (coupes). La colonne X vient en tête, badge « à placer ».
 - Les équipes **des divisions** portent les mêmes champs
