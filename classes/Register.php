@@ -246,26 +246,17 @@ class Register extends Generic
         $bindings = array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids);
         $championships = implode(',', array_map(static fn($code) => "'$code'", Competition::CHAMPIONSHIPS));
 
-        // « Nouvelle » = absente des divisions de cette compétition à la
-        // dernière demi-saison, ancienne équipe ou pas : Meyrargues Filles a
-        // joué l'aller 2025-2026 mais pas le retour, elle compte en 2026 pour
-        // une nouvelle. Le repère est un match joué pendant la dernière phase,
-        // soit les 4 mois qui précèdent le dernier match de la compétition
-        // avant l'ouverture des inscriptions. Pas `classements` : on le remanie
-        // justement pendant la préparation des divisions.
+        // Les deux listes partent de la dernière demi-saison, et non de
+        // `classements` : on le remanie justement pendant la préparation des
+        // divisions (équipes placées, équipes retirées). Voir
+        // `played_last_phase`.
+        //
+        // « Nouvelle » = absente des divisions à la dernière demi-saison,
+        // ancienne équipe ou pas : Meyrargues Filles a joué l'aller 2025-2026
+        // mais pas le retour, elle compte en 2026 pour une nouvelle.
         $registered = $this->sql_manager->execute(
             "SELECT r.id_competition, cl.nom AS club, r.new_team_name AS equipe, r.status,
-                    IF(EXISTS (SELECT 1
-                               FROM matches m
-                               WHERE r.old_team_id IN (m.id_equipe_dom, m.id_equipe_ext)
-                                 AND m.code_competition = c.code_competition
-                                 AND m.date_reception < c.start_register_date
-                                 AND m.date_reception >= (SELECT MAX(last.date_reception)
-                                                          FROM matches last
-                                                          WHERE last.code_competition = c.code_competition
-                                                            AND last.date_reception < c.start_register_date)
-                                                         - INTERVAL " . self::LAST_PHASE_MONTHS . " MONTH),
-                       'renewal', 'new') AS type,
+                    IF(" . self::played_last_phase('r.old_team_id', 'c') . ", 'renewal', 'new') AS type,
                     IF(e.nom_equipe <> r.new_team_name, e.nom_equipe, NULL) AS ancien_nom
              FROM register r
                       JOIN competitions c ON c.id = r.id_competition
@@ -274,24 +265,23 @@ class Register extends Generic
              WHERE r.id_competition IN ($placeholders)
                AND r.creation_date >= c.start_register_date",
             $bindings);
-        // Réinscription reconnue à `old_team_id`, quelle que soit la
-        // compétition demandée : une équipe passée du féminin au mixte n'est
-        // pas « non réinscrite ». Une NOUVELLE équipe (sans `old_team_id`),
-        // dès qu'on la place dans une division, est au classement : elle se
-        // reconnaît alors par son nom dans sa compétition, sinon elle sortait
-        // deux fois, nouvelle ET pas réinscrite.
+        // « Pas réinscrite » = a joué la dernière demi-saison, sans demande
+        // depuis l'ouverture. Réinscription reconnue à `old_team_id`, quelle
+        // que soit la compétition demandée : une équipe passée du féminin au
+        // mixte n'est pas « non réinscrite ». Une demande sans `old_team_id`
+        // reconnaît l'équipe de même nom dans sa compétition.
         $not_registered = $this->sql_manager->execute(
             "SELECT comp.id AS id_competition, cl.nom AS club, e.nom_equipe AS equipe,
                     'NOT_REGISTERED' AS status, NULL AS type, NULL AS ancien_nom
-             FROM classements c
-                      JOIN competitions comp ON comp.code_competition = c.code_competition
-                      JOIN equipes e ON e.id_equipe = c.id_equipe
+             FROM equipes e
+                      JOIN competitions comp ON comp.code_competition = e.code_competition
                       LEFT JOIN clubs cl ON cl.id = e.id_club
              WHERE comp.id IN ($placeholders)
                AND comp.code_competition IN ($championships)
+               AND " . self::played_last_phase('e.id_equipe', 'comp') . "
                AND NOT EXISTS (SELECT 1
                                FROM register r
-                               WHERE (r.old_team_id = c.id_equipe
+                               WHERE (r.old_team_id = e.id_equipe
                                       OR (r.old_team_id IS NULL
                                           AND r.id_competition = comp.id
                                           AND r.new_team_name = e.nom_equipe))
@@ -315,6 +305,27 @@ class Register extends Generic
             );
         }
         return $result;
+    }
+
+    /**
+     * L'équipe `$team` a-t-elle joué la dernière phase (aller ou retour) de
+     * la compétition `$competition`, avant l'ouverture des inscriptions ?
+     * Repère des divisions de la saison passée : les 4 mois
+     * (`LAST_PHASE_MONTHS`) qui précèdent le dernier match de la compétition.
+     * Les deux paramètres sont des expressions SQL fixées par l'appelant.
+     */
+    private static function played_last_phase(string $team, string $competition): string
+    {
+        return "EXISTS (SELECT 1
+                        FROM matches m
+                        WHERE $team IN (m.id_equipe_dom, m.id_equipe_ext)
+                          AND m.code_competition = $competition.code_competition
+                          AND m.date_reception < $competition.start_register_date
+                          AND m.date_reception >= (SELECT MAX(last.date_reception)
+                                                   FROM matches last
+                                                   WHERE last.code_competition = $competition.code_competition
+                                                     AND last.date_reception < $competition.start_register_date)
+                                                  - INTERVAL " . self::LAST_PHASE_MONTHS . " MONTH)";
     }
 
     /**

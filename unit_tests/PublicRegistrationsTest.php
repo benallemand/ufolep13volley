@@ -122,8 +122,10 @@ class PublicRegistrationsTest extends UfolepTestCase
 
     public function test_statuts_types_et_equipes_non_reinscrites(): void
     {
-        // A et B ont joué la dernière phase : leurs demandes sont des réengagements.
+        // A, B et C ont joué la dernière phase : les demandes de A et B sont
+        // des réengagements, C sans demande n'est pas réinscrite.
         $this->played('A', 'B', 'CURDATE() - INTERVAL 1 MONTH');
+        $this->played('C', 'A', 'CURDATE() - INTERVAL 2 MONTH');
         $this->register('issue379 new', 'PENDING');
         $this->register('issue379 team A', 'VALIDATED', $this->team['A']);
         $this->register('issue379 renamed', 'REFUSED', $this->team['B']);
@@ -155,6 +157,17 @@ class PublicRegistrationsTest extends UfolepTestCase
         $listed = $this->listed();
         $this->assertSame('new', $listed['issue379 team A']['type'], 'Absente de la dernière phase : nouvelle');
         $this->assertSame('renewal', $listed['issue379 team B']['type']);
+    }
+
+    public function test_une_equipe_retiree_des_divisions_reste_pas_reinscrite(): void
+    {
+        // Préparation des divisions : C, qui a joué la dernière phase et ne
+        // se réinscrit pas, est sortie du classement. Elle compte toujours.
+        $this->played('C', 'A', 'CURDATE() - INTERVAL 1 MONTH');
+        $this->sql->execute("DELETE FROM classements WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $this->team['C'])));
+
+        $this->assertSame('NOT_REGISTERED', $this->listed()['issue379 team C']['status']);
     }
 
     public function test_une_nouvelle_equipe_placee_en_division_n_est_pas_listee_deux_fois(): void
@@ -209,6 +222,7 @@ class PublicRegistrationsTest extends UfolepTestCase
     {
         // Ligne d'une saison précédente, restée en base : l'équipe n'est pas
         // réinscrite pour autant.
+        $this->played('A', 'B', 'CURDATE() - INTERVAL 1 MONTH');
         $this->register('issue379 old season', 'VALIDATED', $this->team['A'], 'CURDATE() - INTERVAL 200 DAY');
         $listed = $this->listed();
         $this->assertArrayNotHasKey('issue379 old season', $listed);
