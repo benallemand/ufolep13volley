@@ -244,6 +244,107 @@ class Players extends Generic
     /**
      * @throws Exception
      */
+    /**
+     * Fusionne deux fiches d'un même joueur (issue #409) : on garde
+     * `$id_keep`, on y reporte ce que porte `$id_remove`, puis on supprime
+     * celle-ci. C'est la correction des « Licences dupliquées » et des
+     * « Joueurs potentiellement en doublon » : le plus souvent, une fiche
+     * créée à la main en double de la vraie.
+     *
+     * Reporté sur la fiche gardée :
+     *   - les équipes : une équipe des deux côtés n'est pas dupliquée, les
+     *     rôles (responsable, suppléant, capitaine) et « joue » s'ajoutent ;
+     *   - les feuilles de match : un match des deux côtés n'est pas dupliqué ;
+     *   - les champs vides (licence, homologation, contacts, club, photo) ;
+     *   - le compte, s'il n'en a pas.
+     *
+     * Réservé à l'administrateur, en une transaction, et journalisé.
+     *
+     * @throws Exception
+     */
+    public function mergePlayers($id_keep = null, $id_remove = null): void
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut fusionner deux fiches !", 403);
+        }
+        $keep = Generic::parse_id($id_keep, 'fiche à garder');
+        $remove = Generic::parse_id($id_remove, 'fiche à supprimer');
+        if ($keep === $remove) {
+            throw new Exception("Choisissez deux fiches différentes.", 400);
+        }
+        $rows = $this->sql_manager->execute("SELECT id, id_compte FROM joueurs WHERE id IN (?, ?)", array(
+            array('type' => 'i', 'value' => $keep),
+            array('type' => 'i', 'value' => $remove),
+        ));
+        if (count($rows) !== 2) {
+            throw new Exception("Fiche introuvable.", 404);
+        }
+        $keepName = $this->getPlayerFullName($keep);
+        $removeName = $this->getPlayerFullName($remove);
+        $removeAccount = null;
+        foreach ($rows as $row) {
+            if ((int)$row['id'] === $remove) {
+                $removeAccount = $row['id_compte'];
+            }
+        }
+        $ids = array(array('type' => 'i', 'value' => $keep), array('type' => 'i', 'value' => $remove));
+        $db = Database::openDbConnection();
+        mysqli_begin_transaction($db);
+        try {
+            // Équipes : rôles cumulés là où les deux fiches figurent, puis
+            // appartenances de l'autre fiche reportées sur la fiche gardée.
+            $this->sql_manager->execute(
+                "UPDATE joueur_equipe k
+                     JOIN joueur_equipe r ON r.id_equipe = k.id_equipe AND r.id_joueur = ?
+                 SET k.est_jouant     = (k.est_jouant + 0) | (r.est_jouant + 0),
+                     k.is_leader      = (COALESCE(k.is_leader, 0) + 0) | (COALESCE(r.is_leader, 0) + 0),
+                     k.is_vice_leader = (COALESCE(k.is_vice_leader, 0) + 0) | (COALESCE(r.is_vice_leader, 0) + 0),
+                     k.is_captain     = (COALESCE(k.is_captain, 0) + 0) | (COALESCE(r.is_captain, 0) + 0)
+                 WHERE k.id_joueur = ?",
+                array(array('type' => 'i', 'value' => $remove), array('type' => 'i', 'value' => $keep)));
+            $this->sql_manager->execute(
+                "DELETE r FROM joueur_equipe r
+                     JOIN joueur_equipe k ON k.id_equipe = r.id_equipe AND k.id_joueur = ?
+                 WHERE r.id_joueur = ?", $ids);
+            $this->sql_manager->execute("UPDATE joueur_equipe SET id_joueur = ? WHERE id_joueur = ?", $ids);
+            // Feuilles de match : même règle, sans doublon.
+            $this->sql_manager->execute(
+                "DELETE r FROM match_player r
+                     JOIN match_player k ON k.id_match = r.id_match AND k.id_player = ?
+                 WHERE r.id_player = ?", $ids);
+            $this->sql_manager->execute("UPDATE match_player SET id_player = ? WHERE id_player = ?", $ids);
+            // Le compte est unique : on le libère avant de le reporter.
+            $this->sql_manager->execute("UPDATE joueurs SET id_compte = NULL WHERE id = ?",
+                array(array('type' => 'i', 'value' => $remove)));
+            $this->sql_manager->execute(
+                "UPDATE joueurs k
+                     JOIN joueurs r ON r.id = ?
+                 SET k.num_licence             = COALESCE(NULLIF(TRIM(k.num_licence), ''), r.num_licence),
+                     k.departement_affiliation = COALESCE(k.departement_affiliation, r.departement_affiliation),
+                     k.date_homologation       = COALESCE(k.date_homologation, r.date_homologation),
+                     k.sexe                    = COALESCE(NULLIF(k.sexe, ''), r.sexe),
+                     k.id_club                 = COALESCE(NULLIF(k.id_club, 0), r.id_club),
+                     k.email                   = COALESCE(NULLIF(TRIM(k.email), ''), r.email),
+                     k.telephone               = COALESCE(NULLIF(TRIM(k.telephone), ''), r.telephone),
+                     k.email2                  = COALESCE(NULLIF(TRIM(k.email2), ''), r.email2),
+                     k.telephone2              = COALESCE(NULLIF(TRIM(k.telephone2), ''), r.telephone2),
+                     k.id_photo                = COALESCE(k.id_photo, r.id_photo)
+                 WHERE k.id = ?",
+                array(array('type' => 'i', 'value' => $remove), array('type' => 'i', 'value' => $keep)));
+            if (!empty($removeAccount)) {
+                $this->sql_manager->execute("UPDATE joueurs SET id_compte = ? WHERE id = ? AND id_compte IS NULL",
+                    array(array('type' => 'i', 'value' => $removeAccount), array('type' => 'i', 'value' => $keep)));
+            }
+            $this->sql_manager->execute("DELETE FROM joueurs WHERE id = ?",
+                array(array('type' => 'i', 'value' => $remove)));
+            mysqli_commit($db);
+        } catch (Throwable $e) {
+            mysqli_rollback($db);
+            throw $e;
+        }
+        $this->addActivity("Fusion de la fiche $removeName dans $keepName");
+    }
+
     public function delete_players($ids)
     {
         $explodedIds = explode(',', $ids);

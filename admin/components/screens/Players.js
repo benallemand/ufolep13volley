@@ -19,6 +19,7 @@ export default {
         'admin-grid': defineAsyncComponent(() => import('../grid/AdminGrid.js')),
         'admin-picker-modal': defineAsyncComponent(() => import('../grid/AdminPickerModal.js')),
         'licence-import-modal': defineAsyncComponent(() => import('../../../pages/components/form/LicenceImportModal.js')),
+        'player-merge-modal': defineAsyncComponent(() => import('./PlayerMergeModal.js')),
     },
     template: `
       <admin-grid
@@ -41,7 +42,7 @@ export default {
           </label>
         </template>
 
-        <template #actions="{ selection }">
+        <template #actions="{ selection, rows }">
           <button class="btn btn-sm btn-outline"
                   :disabled="!selection.length || isBusy"
                   @click="openPicker('club', selection)">
@@ -51,6 +52,14 @@ export default {
                   :disabled="!selection.length || isBusy"
                   @click="openPicker('team', selection)">
             <i class="fas fa-people-group"></i> Associer à une équipe
+          </button>
+          <!-- Doublons de saisie (#409) : deux fiches, une seule gardée. -->
+          <button class="btn btn-sm btn-outline"
+                  data-testid="player-merge-open"
+                  :disabled="selection.length !== 2 || isBusy"
+                  title="Sélectionnez exactement deux fiches du même joueur"
+                  @click="merging = rows.filter((r) => selection.includes(r.id))">
+            <i class="fas fa-code-merge"></i> Fusionner…
           </button>
           <button class="btn btn-sm btn-outline" :disabled="isBusy" @click="importing = true">
             <i class="fas fa-file-import"></i> Importer des licences
@@ -67,6 +76,11 @@ export default {
                           @confirm="associate"
                           @close="picker = null"></admin-picker-modal>
 
+      <player-merge-modal v-if="merging"
+                          :players="merging"
+                          @close="merging = null"
+                          @merged="merging = null; $refs.grid.fetchRows()"></player-merge-modal>
+
       <!-- Import groupé des licences (issue #394), partagé avec l'effectif. -->
       <licence-import-modal v-if="importing"
                             @close="importing = false"
@@ -78,6 +92,8 @@ export default {
             teams: [],
             isBusy: false,
             importing: false,
+            // Les deux fiches à fusionner (#409), ou null.
+            merging: null,
             picker: null,
             /** Identifiants des joueurs en attente d'association */
             pending: [],
