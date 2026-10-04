@@ -18,6 +18,11 @@
 -- archivées ne sont que de l'historique, il n'y a plus rien à déplacer.
 -- L'avant-dernière peut l'être : c'est justement le cas visé (aller archivé,
 -- retour programmé chez la même équipe).
+--
+-- Deux équipes d'un même club ne sont pas signalées : peu importe laquelle
+-- reçoit (Les Tigresses / Les Jeannettes, Saint Zacharie). Le générateur de
+-- calendrier ne leur impose pas d'alternance non plus. Une équipe sans club
+-- reste comparée.
 WITH rencontres AS (SELECT m.id_match,
                            m.code_match,
                            m.code_competition,
@@ -54,6 +59,7 @@ FROM rencontres dernier
 WHERE dernier.rang = 1
   AND dernier.match_status <> 'ARCHIVED'
   AND avant.id_equipe_dom = dernier.id_equipe_dom
+  AND NOT (edom.id_club <=> eext.id_club AND edom.id_club IS NOT NULL)
   AND avant.date_reception > CURRENT_DATE - INTERVAL 9 MONTH
   AND EXISTS (SELECT 1 FROM creneau c WHERE c.id_equipe = dernier.id_equipe_ext)
 ORDER BY competition, recoit_deux_fois, dernier.date_reception
