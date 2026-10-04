@@ -1366,6 +1366,13 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   (`status <> 'REFUSED'`). Ils ne retiennent que la campagne en cours
   (`creation_date >= start_register_date`), et rapprochent inscription et
   équipe par la règle de #390 (`old_team_id`, sinon le nom dans la compétition).
+- **Appliquer les créneaux demandés (#409)** : `Register::apply_registered_timeslots`,
+  bouton de l'écran Inscriptions. Il corrige le décalage équipe par équipe, sans
+  attendre l'initialisation : les créneaux de l'équipe sont remplacés par ceux
+  de sa demande, en une transaction, et la contrainte horaire d'un créneau
+  identique est gardée. Il écarte les demandes refusées, sans créneau, ou dont
+  l'équipe n'existe pas encore. Le message, qui suit la convention
+  `message` + `report` du routeur, les nomme.
 - **Décalage des créneaux** : un créneau se compare en « gymnase (ville) jour
   heure ». Un créneau saisi deux fois ne compte qu'une fois, des deux côtés.
   L'écart est qualifié : `aucun créneau en place`, `ordre de préférence

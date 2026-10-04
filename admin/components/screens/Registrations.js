@@ -95,6 +95,15 @@ export default {
                   @click="allAtOnce(selection, 'create_teams_and_accounts', 'Créer les équipes et les comptes responsables', reload)">
             <i class="fas fa-user-plus"></i> Équipes / comptes
           </button>
+          <!-- #409 : correction de l'alerte « Décalage des créneaux
+               d'inscription », équipe par équipe, sans attendre
+               l'initialisation de la saison. -->
+          <button class="btn btn-sm btn-outline" data-testid="registration-apply-timeslots"
+                  :disabled="!selection.length || isBusy"
+                  title="Remplace les créneaux de l'équipe par ceux demandés à l'inscription"
+                  @click="allAtOnce(selection, 'apply_registered_timeslots', 'Remplacer les créneaux des équipes par ceux de leur inscription', reload)">
+            <i class="fas fa-clock-rotate-left"></i> Appliquer les créneaux demandés
+          </button>
         </template>
       </admin-grid>
     `,
