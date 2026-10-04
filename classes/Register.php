@@ -652,6 +652,124 @@ class Register extends Generic
     }
 
     /**
+     * « Appliquer les créneaux demandés » (issue #409, lot 3) : remplace les
+     * créneaux de l'équipe de chaque inscription par ceux qu'elle demande.
+     * C'est la correction de l'alerte « Décalage des créneaux d'inscription »,
+     * sans attendre « Initialiser la saison », qui le fait pour toutes.
+     *
+     * Rapprochement inscription ↔ équipe de #390 : `old_team_id`, sinon le nom
+     * dans la compétition et le club. Écartées, avec leur motif : demande
+     * refusée, sans créneau complet, ou équipe pas encore créée.
+     *
+     * Une contrainte horaire forte (`has_time_constraint`) posée sur un
+     * créneau identique est conservée. Un même créneau demandé deux fois n'est
+     * créé qu'une fois. Chaque équipe en une transaction : jamais d'équipe
+     * laissée sans créneau à mi-chemin.
+     *
+     * @return array{message: string, report: array<int, array>}
+     * @throws Exception
+     */
+    public function apply_registered_timeslots($ids = null): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Action réservée aux administrateurs !", 403);
+        }
+        $report = array();
+        foreach (Generic::parse_id_list($ids) as $id) {
+            $register = $this->get_register($id);
+            $line = array('equipe' => $register['new_team_name'] ?? "demande $id");
+            $complete = static fn($n) => !empty($register["id_court_$n"])
+                && trim((string)$register["day_court_$n"]) !== '' && trim((string)$register["hour_court_$n"]) !== '';
+            $id_team = $this->team_of_registration($register);
+            if (($register['status'] ?? '') === 'REFUSED') {
+                $line += array('status' => 'skipped', 'message' => 'demande refusée');
+            } elseif (!$complete(1)) {
+                $line += array('status' => 'skipped', 'message' => 'aucun créneau complet demandé');
+            } elseif ($id_team === null) {
+                $line += array('status' => 'skipped',
+                    'message' => "équipe pas encore créée : Inscriptions → « Équipes / comptes »");
+            } else {
+                $this->replace_timeslots($register, $id_team, $complete(2));
+                $this->addActivity("Créneaux de l'équipe " . $register['new_team_name']
+                    . " remplacés par ceux de son inscription");
+                $line += array('status' => 'applied');
+            }
+            $report[] = $line;
+        }
+        $applied = count(array_filter($report, static fn($l) => $l['status'] === 'applied'));
+        $skipped = array_filter($report, static fn($l) => $l['status'] !== 'applied');
+        $message = "$applied équipe(s) mise(s) à jour";
+        if ($skipped) {
+            $message .= '. Écartée(s) : ' . implode(' ; ', array_map(
+                    static fn($l) => $l['equipe'] . ' (' . $l['message'] . ')', $skipped));
+        }
+        return array('message' => $message, 'report' => $report);
+    }
+
+    /**
+     * Équipe que désigne une inscription (#390) : son ancienne équipe, sinon
+     * l'équipe du même nom dans la compétition et le club.
+     *
+     * @throws Exception
+     */
+    private function team_of_registration(array $register): ?int
+    {
+        if (!empty($register['old_team_id'])) {
+            return (int)$register['old_team_id'];
+        }
+        // Pas `Team::get_by_name` : sans équipe, il lit `$results[0]` sur un
+        // tableau vide.
+        $team = $this->sql_manager->execute(
+            "SELECT id_equipe FROM equipes WHERE code_competition = ? AND nom_equipe = ? AND id_club = ?",
+            array(
+                array('type' => 's', 'value' => $register['code_competition']),
+                array('type' => 's', 'value' => $register['new_team_name']),
+                array('type' => 'i', 'value' => (int)$register['id_club']),
+            ));
+        return empty($team) ? null : (int)$team[0]['id_equipe'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function replace_timeslots(array $register, int $id_team, bool $with_second): void
+    {
+        $key = static fn($gym, $day, $hour) => "$gym|$day|$hour";
+        $constraints = array();
+        foreach ($this->sql_manager->execute(
+            "SELECT id_gymnase, jour, heure, has_time_constraint + 0 AS contrainte FROM creneau WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_team))) as $slot) {
+            $constraints[$key($slot['id_gymnase'], $slot['jour'], $slot['heure'])] = (int)$slot['contrainte'];
+        }
+        $wanted = array(1 => $key($register['id_court_1'], $register['day_court_1'], $register['hour_court_1']));
+        if ($with_second) {
+            $second = $key($register['id_court_2'], $register['day_court_2'], $register['hour_court_2']);
+            if ($second !== $wanted[1]) {
+                $wanted[2] = $second;
+            }
+        }
+        $db = Database::openDbConnection();
+        mysqli_begin_transaction($db);
+        try {
+            $this->sql_manager->execute("DELETE FROM creneau WHERE id_equipe = ?",
+                array(array('type' => 'i', 'value' => $id_team)));
+            foreach ($wanted as $priority => $slot_key) {
+                $this->time_slot->create(
+                    $register["id_court_$priority"],
+                    $register["day_court_$priority"],
+                    $register["hour_court_$priority"],
+                    $id_team,
+                    $constraints[$slot_key] ?? 0,
+                    $priority);
+            }
+            mysqli_commit($db);
+        } catch (Throwable $e) {
+            mysqli_rollback($db);
+            throw $e;
+        }
+    }
+
+    /**
      * @param mixed $registered_team
      * @param mixed $id_team
      * @throws Exception

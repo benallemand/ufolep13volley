@@ -239,6 +239,7 @@ return array(
         'create_teams_and_accounts' => 'admin',
         'delete' => 'admin',
         'fill_ranks' => 'admin',
+        'apply_registered_timeslots' => 'admin', // issue #409
         'get_register' => 'admin',
         'refuseRegistration' => 'admin',
         'set_up_season' => 'admin',

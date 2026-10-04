@@ -57,6 +57,7 @@ class RegisterTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM equipes WHERE code_competition = 'rt'");
         $this->sql->execute("DELETE FROM register WHERE new_team_name LIKE 'RT Team%'");
         $this->sql->execute("DELETE FROM competitions WHERE code_competition = 'rt'");
+        $this->sql->execute("DELETE FROM gymnase WHERE nom = 'RT gymnase'");
         $this->sql->execute("DELETE FROM clubs WHERE nom LIKE 'rt club %'");
     }
 
@@ -536,6 +537,81 @@ class RegisterTest extends UfolepTestCase
         $this->assertSame(array('RT Team Renommee', 'RT Team Ex'), $teams['RT Team Renommee']);
         $this->assertSame(array('RT Team Bientot', 'RT Team Encore'), $teams['RT Team Encore']);
         $this->assertSame(array(null, null), $teams['RT Team Refusee']);
+    }
+
+    // ---- #409 : appliquer les créneaux demandés à l'inscription ------------
+
+    private function rt_gym(): int
+    {
+        return (int)$this->sql->execute("INSERT INTO gymnase SET nom = 'RT gymnase', ville = 'Rtville', nb_terrain = 1");
+    }
+
+    private function courts_of(int $id_team): array
+    {
+        return $this->sql->execute(
+            "SELECT jour, heure, usage_priority, has_time_constraint + 0 AS contrainte FROM creneau WHERE id_equipe = $id_team ORDER BY usage_priority");
+    }
+
+    private function request_courts(int $id_register, int $gym, string $day1, ?string $day2): void
+    {
+        $this->sql->execute("UPDATE register SET id_court_1 = $gym, day_court_1 = '$day1', hour_court_1 = '20:00',
+                                 id_court_2 = " . ($day2 ? $gym : 'NULL') . ", day_court_2 = " . ($day2 ? "'$day2'" : 'NULL') . ",
+                                 hour_court_2 = " . ($day2 ? "'20:00'" : 'NULL') . " WHERE id = $id_register");
+    }
+
+    public function test_appliquer_les_creneaux_demandes()
+    {
+        $gym = $this->rt_gym();
+        $team = $this->insert_team('RT Team Creneaux', $this->id_club_1);
+        $this->sql->execute("INSERT INTO creneau SET id_gymnase = $gym, jour = 'Lundi', heure = '20:00', id_equipe = $team, usage_priority = 1, has_time_constraint = 1");
+        $this->sql->execute("INSERT INTO creneau SET id_gymnase = $gym, jour = 'Vendredi', heure = '20:00', id_equipe = $team, usage_priority = 2, has_time_constraint = 0");
+        $id = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Creneaux');
+        $this->sql->execute("UPDATE register SET old_team_id = $team WHERE id = $id");
+        $this->request_courts($id, $gym, 'Lundi', 'Mardi');
+
+        $this->connect_as_admin();
+        $result = (new Register())->apply_registered_timeslots((string)$id);
+
+        $this->assertSame('1 équipe(s) mise(s) à jour', $result['message']);
+        $this->assertEquals(array(
+            array('jour' => 'Lundi', 'heure' => '20:00', 'usage_priority' => 1, 'contrainte' => 1),
+            array('jour' => 'Mardi', 'heure' => '20:00', 'usage_priority' => 2, 'contrainte' => 0),
+        ), $this->courts_of($team), "Vendredi retiré, Mardi ajouté, la contrainte du Lundi conservée");
+    }
+
+    public function test_appliquer_les_creneaux_ecarte_ce_qui_ne_peut_pas_l_etre()
+    {
+        $gym = $this->rt_gym();
+        // Nouvelle équipe pas encore créée.
+        $new = $this->insert_registration($this->id_club_1, 'PENDING', 'RT Team Pas Creee');
+        $this->request_courts($new, $gym, 'Lundi', null);
+        // Demande refusée.
+        $refusedTeam = $this->insert_team('RT Team Refusee', $this->id_club_1);
+        $refused = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team Refusee');
+        $this->sql->execute("UPDATE register SET old_team_id = $refusedTeam WHERE id = $refused");
+        $this->request_courts($refused, $gym, 'Lundi', null);
+        // Même créneau demandé deux fois : créé une fois. Nouvelle équipe
+        // déjà créée : retrouvée par son nom.
+        $twice = $this->insert_team('RT Team Deux Fois', $this->id_club_1);
+        $double = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Deux Fois');
+        $this->request_courts($double, $gym, 'Jeudi', 'Jeudi');
+
+        $this->connect_as_admin();
+        $result = (new Register())->apply_registered_timeslots("$new,$refused,$double");
+
+        $statuses = array_column($result['report'], 'status', 'equipe');
+        $this->assertSame(array('RT Team Pas Creee' => 'skipped', 'RT Team Refusee' => 'skipped', 'RT Team Deux Fois' => 'applied'), $statuses);
+        $this->assertStringContainsString('Équipes / comptes', $result['report'][0]['message']);
+        $this->assertSame(array(), $this->courts_of($refusedTeam));
+        $this->assertCount(1, $this->courts_of($twice));
+    }
+
+    public function test_appliquer_les_creneaux_reserve_a_l_admin()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'VALIDATED', 'RT Team Interdite');
+        $this->connect_as_club_leader($this->id_club_1);
+        $this->expectExceptionCode(403);
+        (new Register())->apply_registered_timeslots((string)$id);
     }
 
     // ---- #388 : préparation de saison, division X et « Non affectées » -------

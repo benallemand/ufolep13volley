@@ -458,6 +458,7 @@ L'écran le plus fourni. Les 10 cas génériques s'appliquent, plus :
 | R5r | Cliquer « Dévalider » | Retour à *en attente*, date de validation vidée |
 | R6r | Cliquer « Divisions / rangs » | Les divisions et rangs sont calculés pour les demandes sélectionnées |
 | R7r | Cliquer « Équipes / comptes » | Les équipes et les comptes responsables sont créés |
+| R7 | Depuis l'alerte « Décalage des créneaux d'inscription », « Corriger », sélectionner des demandes, puis « Appliquer les créneaux demandés » | Les créneaux de chaque équipe sont remplacés par ceux de sa demande (une contrainte horaire posée sur un créneau identique est gardée). Le message nomme les demandes écartées : refusée, sans créneau, **équipe pas encore créée** (« Équipes / comptes » d'abord). L'alerte se vide pour ces équipes (#409) |
 
 > **R4r/R5r ne fonctionnaient plus depuis le refus par défaut (#272)** :
 > `validateRegistration` n'était pas déclaré dans `rest/access.php` et
