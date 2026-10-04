@@ -1,3 +1,4 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Équipes dont les réceptions et les déplacements de la saison s'écartent de
 -- plus de deux matchs, matchs archivés compris.
 --
@@ -6,7 +7,8 @@
 -- ouverte l'été précédent. Sans borne, la tuile comptait les matchs archivés
 -- de la saison passée, et signalait à l'intersaison des équipes de l'an
 -- dernier.
-SELECT SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
+SELECT GROUP_CONCAT(DISTINCT m.id_match)            AS indicator_id,
+       SUM(IF(m.id_equipe_dom = e.id_equipe, 1, 0)) AS domicile,
        SUM(IF(m.id_equipe_ext = e.id_equipe, 1, 0)) AS exterieur,
        c.code_competition                           AS competition,
        c.division                                   AS division,

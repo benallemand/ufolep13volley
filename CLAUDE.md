@@ -702,10 +702,21 @@ la prop `rowFilter`.
 > Le filtre vit dans l'URL, donc il survit à un rechargement et se partage. Un
 > bandeau l'annonce, avec un bouton pour tout revoir.
 >
-> Sept indicateurs sont câblés à ce jour — trois vers `players`, deux vers
-> `teams`, deux vers `clubs`. Les autres restent de simples constats : la plupart
-> croisent plusieurs entités et n'ont pas d'écran de correction évident. Mieux
-> vaut les laisser non cliquables que d'inventer une correspondance douteuse.
+> **Toute alerte a son « Corriger » (#409)**, et `IndicatorCategoriesTest`
+> le vérifie : écran cible routé dans l'administration, et requête qui
+> sélectionne `indicator_id`. Matchs (`matches`) pour les alertes de saison,
+> Inscriptions (`registrations`) pour celles d'inscription, Équipes, Joueurs,
+> Clubs, Emails pour les autres. Les indicateurs d'information restent de
+> simples constats.
+>
+> Une ligne peut désigner **plusieurs** lignes à corriger : `indicator_id` en
+> liste séparée par des virgules (`GROUP_CONCAT`), découpée par
+> `Indicator::getResult()`. C'est le cas des deux matchs d'une même réception,
+> ou des demandes d'un club.
+>
+> **Ouverte avec `?ids=`, une grille ignore le filtre propre à l'écran**
+> (`row-filter` : préréglage des matchs, statut des inscriptions). Sinon une
+> alerte sur des matchs archivés ouvrirait un écran vide.
 
 > **Fenêtre de sélection** : `grid/AdminPickerModal.js` couvre les actions
 > « choisir dans une liste puis confirmer » — associer des joueurs à un club ou

@@ -1,3 +1,4 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Deux équipes dont les deux dernières rencontres, dans la même compétition,
 -- se sont jouées chez la même équipe (issue #397).
 --
@@ -31,7 +32,8 @@ WITH rencontres AS (SELECT m.id_match,
                                ORDER BY m.date_reception DESC, m.id_match DESC) AS rang
                     FROM matches m
                     WHERE m.date_reception IS NOT NULL)
-SELECT comp.libelle                                AS competition,
+SELECT CONCAT(avant.id_match, ',', dernier.id_match) AS indicator_id,
+       comp.libelle                                AS competition,
        edom.nom_equipe                             AS recoit_deux_fois,
        eext.nom_equipe                             AS se_deplace_deux_fois,
        avant.code_match                            AS avant_dernier_match,

@@ -104,12 +104,18 @@ class Indicator extends Generic
         $results = $this->execSqlGetDetails();
         $ids = array();
         if ($this->idColumn !== null) {
-            $ids = array_values(array_unique(array_filter(
-                array_column($results, $this->idColumn),
-                static function ($id) {
-                    return $id !== null && $id !== '';
+            // Une ligne peut désigner plusieurs lignes à corriger, en liste
+            // séparée par des virgules (`GROUP_CONCAT`) : les deux matchs d'une
+            // même réception, les demandes d'un club (#409).
+            $ids = array();
+            foreach (array_column($results, $this->idColumn) as $value) {
+                foreach (explode(',', (string)$value) as $id) {
+                    $ids[] = trim($id);
                 }
-            )));
+            }
+            $ids = array_values(array_unique(array_filter($ids, static function ($id) {
+                return $id !== '';
+            })));
             foreach ($results as $index => $row) {
                 unset($results[$index][$this->idColumn]);
             }

@@ -441,7 +441,11 @@ export default {
             const focused = this.focusIds.length
                 ? this.sortedRows.filter((r) => this.focusIds.includes(String(r[this.idField])))
                 : this.sortedRows;
-            const screened = this.rowFilter
+            // Les lignes désignées par l'URL (#312) passent outre les filtres
+            // propres à l'écran (préréglage des matchs, statut des
+            // inscriptions…) : une alerte qui signale des matchs archivés ou
+            // des demandes refusées doit les montrer (#409).
+            const screened = this.rowFilter && !this.focusIds.length
                 ? focused.filter((r) => this.rowFilter(r))
                 : focused;
             // Filtres par colonne (#310), sur la valeur affichée

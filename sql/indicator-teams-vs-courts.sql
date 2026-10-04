@@ -1,3 +1,4 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Inscriptions - Terrains vs Equipes (alerte) : les clubs qui inscrivent plus
 -- d'équipes que leurs terrains ne peuvent en recevoir.
 --
@@ -30,11 +31,12 @@ WITH creneaux AS (SELECT r.id_club, r.id_court_1 AS id_gymnase, r.day_court_1 AS
                                        ORDER BY nom_gymnase SEPARATOR ' | ') AS detail_gymnases
                    FROM gymnases
                    GROUP BY id_club),
-     inscrites AS (SELECT id_club, COUNT(*) AS nombre_equipes_inscrites
+     inscrites AS (SELECT id_club, COUNT(*) AS nombre_equipes_inscrites, GROUP_CONCAT(id) AS demandes
                    FROM register
                    WHERE status <> 'REFUSED'
                    GROUP BY id_club)
-SELECT c.nom                                                                         AS club_nom,
+SELECT i.demandes                                                                    AS indicator_id,
+       c.nom                                                                         AS club_nom,
        i.nombre_equipes_inscrites,
        COALESCE(k.terrains_par_semaine, 0) * 2                                       AS nombre_max_equipes_autorisees,
        i.nombre_equipes_inscrites - COALESCE(k.terrains_par_semaine, 0) * 2          AS equipes_en_trop,

@@ -1,9 +1,11 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 WITH first_responsable AS (SELECT ca.id,
                                   ut.team_id                                                 AS id_equipe,
                                   ROW_NUMBER() OVER (PARTITION BY ut.team_id ORDER BY ca.id) AS rn
                            FROM comptes_acces ca
                                     JOIN users_teams ut ON ca.id = ut.user_id)
-SELECT e.nom_equipe AS equipe,
+SELECT e.id_equipe  AS indicator_id,
+       e.nom_equipe AS equipe,
        c.libelle    AS competition,
        -- Dernier recours : le contact du club (`club_contacts_view`, #395),
        -- depuis que les colonnes `clubs.*_responsable` ont été retirées (#327).

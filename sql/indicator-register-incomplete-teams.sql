@@ -1,10 +1,12 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Issue #395 : inscriptions de la campagne en cours dont les créneaux sont
 -- incomplets. Sans créneau complet, l'équipe ne peut pas recevoir, et le
 -- calendrier ne peut pas être généré.
 --
 -- Une demande refusée est écartée : elle n'est plus à compléter, et la
 -- refuser est justement ce qu'on fait d'une équipe « volante » (#376).
-SELECT comp.libelle                                AS competition,
+SELECT r.id                                       AS indicator_id,
+       comp.libelle                                AS competition,
        cl.nom                                      AS club,
        r.new_team_name                             AS equipe,
        IF(r.status = 'VALIDATED', 'validée', 'en attente') AS statut,

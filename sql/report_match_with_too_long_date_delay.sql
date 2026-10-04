@@ -1,4 +1,6 @@
-SELECT REVERSE(SUBSTRING_INDEX(REVERSE(accept.comment), ' ', 1))                                   AS code_match,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT m.id_match                                                                                  AS indicator_id,
+       REVERSE(SUBSTRING_INDEX(REVERSE(accept.comment), ' ', 1))                                   AS code_match,
        SUBSTRING_INDEX(
                SUBSTRING_INDEX(accept.comment, ' pour le match', 1),
                'Report accepté par ',

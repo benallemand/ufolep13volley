@@ -1,4 +1,6 @@
-SELECT GROUP_CONCAT(m.code_match)             AS codes_match,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT GROUP_CONCAT(m.id_match)               AS indicator_id,
+       GROUP_CONCAT(m.code_match)             AS codes_match,
        e.nom_equipe,
        DATE_FORMAT(m.date_reception, '%Y_%u') AS annee_semaine
 FROM equipes e
