@@ -112,7 +112,8 @@ class SeasonIndicatorsTest extends UfolepTestCase
     public function test_meme_reception_compare_les_deux_dernieres_rencontres_par_date(): void
     {
         $a = $this->team('IR Recoit');
-        $b = $this->team('IR Voyage');
+        // Sans club : deux équipes d'un même club ne sont pas comparées.
+        $b = $this->team('IR Voyage', id_club: null);
         $this->match('IRT1', $b, $a, date('Y-m-d', strtotime('-100 days')));
         $this->match('IRT2', $a, $b, date('Y-m-d', strtotime('-60 days')));
         // La dernière rencontre est à venir : c'est elle qu'on peut encore déplacer.
@@ -134,7 +135,7 @@ class SeasonIndicatorsTest extends UfolepTestCase
         // Les deux rencontres sont jouées et archivées : de l'historique, plus
         // rien à corriger (Périer Origines - VELAUXIRAPTOR 2 au 04/10/2026).
         $a = $this->team('IR Recoit');
-        $b = $this->team('IR Voyage');
+        $b = $this->team('IR Voyage', id_club: null);
         $this->match('IRT1', $a, $b, date('Y-m-d', strtotime('-60 days')));
         $this->match('IRT2', $a, $b, date('Y-m-d', strtotime('-20 days')));
 
@@ -145,9 +146,21 @@ class SeasonIndicatorsTest extends UfolepTestCase
     public function test_meme_reception_alternee_n_est_pas_signalee(): void
     {
         $a = $this->team('IR Recoit');
-        $b = $this->team('IR Voyage');
+        $b = $this->team('IR Voyage', id_club: null);
         $this->match('IRT1', $a, $b, date('Y-m-d', strtotime('-60 days')));
         $this->match('IRT2', $b, $a, date('Y-m-d', strtotime('-20 days')));
+
+        $this->assertSame(array(), array_filter($this->rows('same_reception.sql'),
+            static fn($r) => str_starts_with($r['recoit_deux_fois'], 'IR ')));
+    }
+
+    public function test_meme_reception_entre_equipes_du_meme_club_n_est_pas_signalee(): void
+    {
+        // Les Tigresses / Les Jeannettes (Saint Zacharie) : peu importe qui reçoit.
+        $a = $this->team('IR Recoit');
+        $b = $this->team('IR Voyage');
+        $this->match('IRT1', $a, $b, date('Y-m-d', strtotime('-60 days')));
+        $this->match('IRT2', $a, $b, date('Y-m-d', strtotime('+20 days')), 'CONFIRMED');
 
         $this->assertSame(array(), array_filter($this->rows('same_reception.sql'),
             static fn($r) => str_starts_with($r['recoit_deux_fois'], 'IR ')));
