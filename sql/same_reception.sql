@@ -11,12 +11,19 @@
 -- On ne signale que si l'équipe qui s'est déplacée deux fois peut recevoir
 -- (elle a un créneau), et si l'avant-dernière rencontre date de moins de neuf
 -- mois.
+--
+-- Et seulement si la dernière rencontre n'est PAS archivée : l'indicateur
+-- sert à corriger le calendrier à venir. Deux rencontres déjà jouées et
+-- archivées ne sont que de l'historique, il n'y a plus rien à déplacer.
+-- L'avant-dernière peut l'être : c'est justement le cas visé (aller archivé,
+-- retour programmé chez la même équipe).
 WITH rencontres AS (SELECT m.id_match,
                            m.code_match,
                            m.code_competition,
                            m.id_equipe_dom,
                            m.id_equipe_ext,
                            m.date_reception,
+                           m.match_status,
                            ROW_NUMBER() OVER (
                                PARTITION BY m.code_competition,
                                    LEAST(m.id_equipe_dom, m.id_equipe_ext),
@@ -43,6 +50,7 @@ FROM rencontres dernier
          JOIN equipes eext ON eext.id_equipe = dernier.id_equipe_ext
          JOIN competitions comp ON comp.code_competition = dernier.code_competition
 WHERE dernier.rang = 1
+  AND dernier.match_status <> 'ARCHIVED'
   AND avant.id_equipe_dom = dernier.id_equipe_dom
   AND avant.date_reception > CURRENT_DATE - INTERVAL 9 MONTH
   AND EXISTS (SELECT 1 FROM creneau c WHERE c.id_equipe = dernier.id_equipe_ext)
