@@ -1303,6 +1303,21 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   `persistedFilters(['status'])` et `@reset-view="resetPersistedFilters"`. Ne
   pas y mettre une saison (calendrier, palmarès) : elle serait périmée l'année
   suivante.
+- **Recherche sur toute la ligne (#408)** : la recherche rapide parcourt TOUTES
+  les données rendues par le serveur, affichées ou non (licence d'un joueur,
+  email d'un compte…), plus les valeurs formatées des colonnes. Exclus :
+  identifiants techniques et chemins (`NOT_SEARCHED` : `id`, `id_…`, `…_id`,
+  `path_…`) et ce qu'un écran déclare dans `search-exclude`. Le HTML est
+  réduit à son texte. Le texte cherchable est calculé **une fois par
+  chargement** (`searchIndex`), pas à chaque frappe. Un terme `013_…` cherche
+  aussi la licence sans préfixe (#404). Les filtres par colonne restent sur la
+  valeur affichée.
+- **Taille de page automatique (#408)** : tout reste côté navigateur ;
+  paginer ne sert qu'à limiter ce qui est dessiné. Par défaut (`pageSize =
+  null`) : « tout » jusqu'à 500 lignes, pages de 100 au-delà. Joueurs en
+  « tout » (3 663 lignes) mettait 4 s à s'afficher, et 2 à 6 s par frappe.
+  Un 25 mémorisé avant #408 (l'ancien défaut) est ignoré, sauf s'il a été
+  choisi (`pageSizeChosen`).
 - **Édition en masse (#309, `AdminBulkEditModal.js`)** : un écran déclare
   `:bulk-fields="['division', 'is_paid']"`, et « Éditer » s'ouvre alors sur
   plusieurs lignes. Chaque ligne est postée **complète**, comme par l'édition

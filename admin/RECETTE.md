@@ -51,6 +51,8 @@ La grille est un composant unique : un défaut vu sur un écran vaut pour tous.
 | G4 | Vider la recherche | Le compteur revient au total |
 | G5 | Cliquer un en-tête de colonne, puis à nouveau | Tri croissant, puis décroissant |
 | G6 | Changer « par page » | La pagination suit, le pied de page indique la bonne page |
+| G6b | Première visite d'un écran de **moins de 500 lignes** (Équipes, Créneaux…) | « par page » vaut **tout** : aucune pagination. Sur Joueurs (plus de 500 lignes), il vaut **100** (#408) |
+| G6c | Chercher une donnée **non affichée** : un numéro de licence dans Joueurs, un email dans Utilisateurs | La ligne est trouvée. Une licence tapée telle qu'imprimée, `013_…`, trouve aussi la forme stockée. Un identifiant technique (`id`) n'est pas cherché (#408) |
 | G7 | Cocher une ligne | « Éditer » et « Supprimer » s'activent |
 | G8 | Cocher la case d'en-tête | Toutes les lignes de la page en cours sont cochées |
 | G9 | Cliquer « Export » | Un CSV se télécharge, s'ouvre dans Excel **avec les accents corrects**, contient les lignes filtrées |

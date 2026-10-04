@@ -4,8 +4,28 @@ import { compareCells } from './compareCells.js';
 import { clearState, hasExplicitQuery, loadState, saveState, stateKey } from './gridState.js';
 import { filterKind, isEmptyFilter, matchesFilter, selectOptions } from './columnFilters.js';
 
-/** Vue par défaut, celle d'une première visite (issue #311). */
-const DEFAULT_PAGE_SIZE = 25;
+/**
+ * Taille de page d'une première visite (issues #311, #408) : `null` =
+ * automatique. Les grilles chargent toutes leurs lignes d'un coup ; la
+ * pagination ne sert qu'à limiter ce qui est DESSINÉ. Jusqu'à
+ * `AUTO_ALL_ROWS` lignes, tout afficher reste fluide (~130-200 ms pour 300
+ * lignes) ; au-delà, des pages de `AUTO_PAGE_SIZE` (Joueurs : 4 s pour 3 663
+ * lignes en « tout », 160 ms par page de 100). Mesures dans #408.
+ */
+const DEFAULT_PAGE_SIZE = null;
+const AUTO_ALL_ROWS = 500;
+const AUTO_PAGE_SIZE = 100;
+/** Ancien défaut (25) : mémorisé avant #408, il est ignoré à la restauration. */
+const LEGACY_DEFAULT_PAGE_SIZE = 25;
+
+/**
+ * Champs jamais cherchés par la recherche rapide (#408) : identifiants
+ * techniques (chercher « 12 » ramènerait toute ligne dont un identifiant
+ * contient 12) et chemins de fichiers (« players_pics/… » sur chaque joueur).
+ */
+const NOT_SEARCHED = /^(id|id_.*|.*_id|path_.*)$/;
+/** Préfixe de département d'un numéro de licence imprimé (`013_…`, #404). */
+const LICENCE_PREFIX = /^0?\d{2,3}_/;
 
 /**
  * Grille d'administration générique (issue #265, lot 0).
@@ -56,6 +76,11 @@ export default {
          */
         deleteMode: { type: String, default: 'ids' },
         idField: { type: String, default: 'id' },
+        /**
+         * Champs supplémentaires à exclure de la recherche rapide (#408), qui
+         * porte sinon sur toutes les données de la ligne, affichées ou non.
+         */
+        searchExclude: { type: Array, default: () => [] },
         /** Libellé au singulier, pour les boutons et messages */
         entityLabel: { type: String, default: 'élément' },
         /** Filtre supplémentaire piloté par l'écran : (row) => bool */
@@ -187,7 +212,8 @@ export default {
                  placeholder="Rechercher… (plusieurs termes séparés par des virgules)"/>
           <label class="flex items-center gap-2 text-sm ml-auto">
             <span>par page</span>
-            <select v-model.number="pageSize" class="select select-bordered select-sm">
+            <select v-model.number="pageSizeChoice" class="select select-bordered select-sm"
+                    data-testid="grid-page-size">
               <option :value="25">25</option>
               <option :value="50">50</option>
               <option :value="100">100</option>
@@ -429,16 +455,52 @@ export default {
                 return base;
             }
             // Recherche multi-termes séparés par des virgules, comme la grille ExtJS
+            // (#408) : sur tout le texte de la ligne, calculé une fois par
+            // chargement. Un numéro de licence tel qu'imprimé (`013_…`) trouve
+            // aussi la forme stockée, sans préfixe.
             const terms = this.search.split(',')
                 .map((t) => t.trim().toLowerCase())
-                .filter((t) => t.length);
+                .filter((t) => t.length)
+                .flatMap((t) => (LICENCE_PREFIX.test(t) ? [t, t.replace(LICENCE_PREFIX, '')] : [t]));
+            const index = this.searchIndex;
             return base.filter((row) => {
-                const haystack = this.columns
-                    .map((c) => String(row[c.key] ?? ''))
-                    .join(' ')
-                    .toLowerCase();
+                const haystack = index.get(row) ?? '';
                 return terms.some((t) => haystack.includes(t));
             });
+        },
+        /**
+         * Texte cherchable de chaque ligne (#408) : TOUTES les données rendues
+         * par le serveur, affichées ou non, plus les valeurs formatées des
+         * colonnes. Sauf les identifiants et les chemins (`NOT_SEARCHED`), et
+         * le HTML réduit à son texte (corps des emails). Recalculé quand les
+         * lignes changent, pas à chaque frappe : sur 3 663 joueurs, une frappe
+         * recalculait tout.
+         */
+        searchIndex() {
+            const index = new WeakMap();
+            const excluded = new Set(this.searchExclude);
+            const text = (value) => {
+                if (value === null || value === undefined || typeof value === 'object') {
+                    return '';
+                }
+                const s = String(value);
+                return s.includes('<') && s.includes('>') ? s.replace(/<[^>]*>/g, ' ') : s;
+            };
+            for (const row of this.rows) {
+                const parts = [];
+                for (const [key, value] of Object.entries(row)) {
+                    if (!NOT_SEARCHED.test(key) && !excluded.has(key)) {
+                        parts.push(text(value));
+                    }
+                }
+                for (const col of this.columns) {
+                    if (col.format && !col.image) {
+                        parts.push(text(this.render(col, row)));
+                    }
+                }
+                index.set(row, parts.join(' ').toLowerCase());
+            }
+            return index;
         },
         sortedRows() {
             if (!this.sort.key) {
@@ -449,18 +511,34 @@ export default {
             // Nombres, dates françaises puis texte : voir `compareCells.js`.
             return [...this.rows].sort((a, b) => compareCells(a[key], b[key]) * dir);
         },
+        /**
+         * Taille de page appliquée (#408) : le choix de l'utilisateur, sinon
+         * « tout » jusqu'à `AUTO_ALL_ROWS` lignes et `AUTO_PAGE_SIZE` au-delà.
+         * 0 = tout.
+         */
+        effectivePageSize() {
+            if (this.pageSize !== null) {
+                return this.pageSize;
+            }
+            return this.rows.length > AUTO_ALL_ROWS ? AUTO_PAGE_SIZE : 0;
+        },
+        /** Le sélecteur montre la taille appliquée ; le changer la fixe. */
+        pageSizeChoice: {
+            get() { return this.effectivePageSize; },
+            set(value) { this.pageSize = value; },
+        },
         pageCount() {
-            if (!this.pageSize) {
+            if (!this.effectivePageSize) {
                 return 1; // « tout »
             }
-            return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
+            return Math.max(1, Math.ceil(this.filteredRows.length / this.effectivePageSize));
         },
         pageRows() {
-            if (!this.pageSize) {
+            if (!this.effectivePageSize) {
                 return this.filteredRows;
             }
-            const start = (this.page - 1) * this.pageSize;
-            return this.filteredRows.slice(start, start + this.pageSize);
+            const start = (this.page - 1) * this.effectivePageSize;
+            return this.filteredRows.slice(start, start + this.effectivePageSize);
         },
         /**
          * Type de filtre de chaque colonne (#310), déduit des valeurs
@@ -493,6 +571,8 @@ export default {
                 search: this.search,
                 sort: this.sort,
                 pageSize: this.pageSize,
+                // Distingue un 25 choisi de l'ancien défaut (voir restoreView).
+                pageSizeChosen: this.pageSize !== null,
                 page: this.page,
                 columnFilters: this.columnFilters,
                 showColumnFilters: this.showColumnFilters,
@@ -634,7 +714,10 @@ export default {
             if (saved.sort && typeof saved.sort === 'object' && 'key' in saved.sort) {
                 this.sort = { key: saved.sort.key, asc: saved.sort.asc !== false };
             }
-            if ([0, 25, 50, 100].includes(saved.pageSize)) {
+            // 25, l'ancien défaut, n'était le plus souvent pas un choix :
+            // l'appliquer encore masquerait la taille automatique (#408).
+            if ([0, 50, 100].includes(saved.pageSize)
+                || (saved.pageSize === LEGACY_DEFAULT_PAGE_SIZE && saved.pageSizeChosen)) {
                 this.pageSize = saved.pageSize;
             }
             if (saved.columnFilters && typeof saved.columnFilters === 'object') {
@@ -714,7 +797,7 @@ export default {
                 return;
             }
             this.detailId = target[this.idField];
-            this.page = this.pageSize ? Math.floor(index / this.pageSize) + 1 : 1;
+            this.page = this.effectivePageSize ? Math.floor(index / this.effectivePageSize) + 1 : 1;
         },
         openEditFromDetail() {
             if (this.detailRow) {
