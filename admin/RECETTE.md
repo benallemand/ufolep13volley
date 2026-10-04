@@ -499,6 +499,9 @@ appliquent pas.
 | X25 | Ouvrir « **Joueurs dans plusieurs équipes** » | Une colonne `joueurs` nomme les joueurs partagés de chaque groupe |
 | X26 | Ouvrir « **Joueurs potentiellement en doublon** » (s'il y en a) | Une ligne par joueur, les homonymes à la suite ; « Corriger ces N ligne(s) » ouvre l'écran Joueurs filtré sur eux |
 | X27 | Ouvrir « **Emails en erreur** » (s'il y en a), puis « Corriger » | Pas de corps HTML dans le détail ; l'écran Emails s'ouvre filtré sur ces emails, **même anciens** (il charge alors tous les emails) |
+| X28 | Ouvrir chaque tuile **rouge** | Toutes ont « Corriger ces N ligne(s) » (#409). Le bouton ouvre l'écran adapté (Matchs, Inscriptions, Équipes, Joueurs…) filtré sur les lignes signalées |
+| X29 | « Licences dupliquées » | Une ligne par **fiche** : licence, nom, club, équipes, homologation, feuilles de match. « Corriger » ouvre Joueurs sur ces fiches |
+| X30 | Une alerte sur des matchs **archivés** (ex. équilibre réceptions/déplacements), puis « Corriger » | Les matchs apparaissent dans l'écran Matchs, même si son préréglage masque les archivés |
 
 > `ajax/indicators.php` n'est pas sous `rest/` : il porte sa propre garde admin
 > depuis #284, où il répondait à n'importe qui. Si l'écran affiche « réservés aux

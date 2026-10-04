@@ -1,5 +1,7 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 SELECT a.*
-FROM (SELECT m.code_match AS codes_match,
+FROM (SELECT m.id_match AS indicator_id,
+             m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe          AS domicile,
              eext.nom_equipe          AS exterieur,
@@ -15,7 +17,8 @@ FROM (SELECT m.code_match AS codes_match,
                                     AND id_match != m.id_match))
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match AS codes_match,
+      SELECT m.id_match AS indicator_id,
+             m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe  AS domicile,
              eext.nom_equipe  AS exterieur,
@@ -27,7 +30,8 @@ FROM (SELECT m.code_match AS codes_match,
       WHERE (m.date_reception IN (SELECT closed_date FROM blacklist_date))
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT DISTINCT m.code_match AS codes_match,
+      SELECT DISTINCT m.id_match AS indicator_id,
+             m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe   AS domicile,
              eext.nom_equipe   AS exterieur,
@@ -41,7 +45,8 @@ FROM (SELECT m.code_match AS codes_match,
       WHERE bg.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match AS codes_match,
+      SELECT m.id_match AS indicator_id,
+             m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe           AS domicile,
              eext.nom_equipe           AS exterieur,
@@ -54,7 +59,8 @@ FROM (SELECT m.code_match AS codes_match,
       WHERE bt.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT m.code_match AS codes_match,
+      SELECT m.id_match AS indicator_id,
+             m.code_match AS codes_match,
              m.date_reception,
              edom.nom_equipe            AS domicile,
              eext.nom_equipe            AS exterieur,
@@ -67,7 +73,8 @@ FROM (SELECT m.code_match AS codes_match,
       WHERE bt.closed_date = m.date_reception
         AND m.match_status != 'ARCHIVED'
       UNION ALL
-      SELECT CONCAT(m_t1.code_match, ',', m_t2.code_match) AS codes_match,
+      SELECT CONCAT(m_t1.id_match, ',', m_t2.id_match)     AS indicator_id,
+             CONCAT(m_t1.code_match, ',', m_t2.code_match) AS codes_match,
              m_t1.date_reception,
              edom.nom_equipe                                  AS domicile,
              eext.nom_equipe                                  AS exterieur,

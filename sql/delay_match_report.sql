@@ -1,4 +1,6 @@
-SELECT m.code_match                              AS code,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT m.id_match                                AS indicator_id,
+       m.code_match                              AS code,
        c.libelle                                 AS competition,
        m.division                                AS division_poule,
        m.equipe_dom                              AS domicile,

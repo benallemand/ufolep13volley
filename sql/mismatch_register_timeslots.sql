@@ -1,3 +1,4 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Issue #395 : inscriptions dont les créneaux demandés diffèrent des créneaux
 -- en place. Tant que l'écart n'est pas réglé, on ne peut pas générer le
 -- calendrier.
@@ -75,7 +76,8 @@ WITH creneaux_distincts AS (SELECT c.id_equipe,
                             ep.en_place_trie
                      FROM demandes_distinctes d
                               LEFT JOIN en_place ep ON ep.id_equipe = d.id_equipe)
-SELECT cmp.competition,
+SELECT cmp.id                    AS indicator_id,
+       cmp.competition,
        cmp.club,
        cmp.equipe,
        CASE

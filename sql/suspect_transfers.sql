@@ -1,4 +1,9 @@
-SELECT SUBSTRING(comment, 10, LOCATE('(', comment) - 11)                         AS joueur,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT (SELECT GROUP_CONCAT(j.id)
+        FROM joueurs j
+        WHERE j.num_licence = SUBSTRING_INDEX(SUBSTRING_INDEX(comment, ')', 1), '(', -1)
+          AND j.num_licence <> '')                                               AS indicator_id,
+       SUBSTRING(comment, 10, LOCATE('(', comment) - 11)                         AS joueur,
        GROUP_CONCAT(DISTINCT SUBSTRING(comment, LOCATE('equipe ', comment) + 7)) AS equipes,
        GROUP_CONCAT(DISTINCT DATE_FORMAT(activity_date, '%d/%m/%Y'))             AS dates
 FROM activity,

@@ -1,4 +1,5 @@
-SELECT
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT GROUP_CONCAT(DISTINCT m.id_match) AS indicator_id,
     gymnase.ville AS "Ville",
   gymnase.nom AS "Gymnase",
   m.date_reception AS "Date",

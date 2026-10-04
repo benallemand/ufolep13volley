@@ -1,4 +1,6 @@
-SELECT DISTINCT m.code_match,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT DISTINCT m.id_match AS indicator_id,
+                m.code_match,
                 m.date_reception,
                 j.prenom,
                 j.nom,

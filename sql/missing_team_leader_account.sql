@@ -1,4 +1,6 @@
-SELECT e.nom_equipe AS equipe,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT e.id_equipe  AS indicator_id,
+       e.nom_equipe AS equipe,
        c.libelle    AS competition
 FROM equipes e
          JOIN competitions c ON c.code_competition = e.code_competition

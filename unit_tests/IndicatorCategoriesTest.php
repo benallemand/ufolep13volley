@@ -54,6 +54,38 @@ class IndicatorCategoriesTest extends UfolepTestCase
         }
     }
 
+    /**
+     * Toute alerte a son bouton « Corriger » (#409) : un écran cible, routé
+     * dans l'administration, et une requête qui sélectionne `indicator_id`.
+     * Une alerte sans cible dit ce qui ne va pas sans dire où le corriger.
+     */
+    public function test_chaque_alerte_a_un_bouton_corriger(): void
+    {
+        $layout = file_get_contents(__DIR__ . '/../admin/components/layout/AdminLayout.js');
+        foreach ($this->declarations() as $declaration) {
+            if (!preg_match("/indicator_sql\('([^']+)'\),\s*'alert'/", $declaration, $sql)) {
+                continue;
+            }
+            $label = strtok($declaration, "\n");
+            $this->assertRegExp("/'alert',\s*'([a-z-]+)',\s*'indicator_id'/", $declaration,
+                "Alerte sans « Corriger » : $label");
+            preg_match("/'alert',\s*'([a-z-]+)',\s*'indicator_id'/", $declaration, $target);
+            $this->assertStringContainsString("path: '/" . $target[1] . "'", $layout,
+                "Écran cible inconnu de l'administration : " . $target[1]);
+            $this->assertRegExp('/\bAS\s+indicator_id\b/i', file_get_contents(__DIR__ . '/../sql/' . $sql[1]),
+                "La requête ne sélectionne pas indicator_id : " . $sql[1]);
+        }
+    }
+
+    public function test_une_ligne_peut_designer_plusieurs_lignes_a_corriger(): void
+    {
+        $result = (new Indicator('test',
+            "SELECT '3,4' AS indicator_id, 'a' AS libelle UNION ALL SELECT '4', 'b' UNION ALL SELECT NULL, 'c'",
+            'alert', 'matches', 'indicator_id', category: Indicator::SEASON))->getResult();
+        $this->assertSame(array('3', '4'), $result['ids']);
+        $this->assertArrayNotHasKey('indicator_id', $result['details'][0]);
+    }
+
     public function test_une_section_inconnue_est_refusee(): void
     {
         $this->expectException(InvalidArgumentException::class);

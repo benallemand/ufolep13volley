@@ -1,4 +1,6 @@
-SELECT c2.nom                                                                       AS club,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT GROUP_CONCAT(r.id)                                                           AS indicator_id,
+       c2.nom                                                                       AS club,
        -- Le ou les comptes du club (`users_clubs`), depuis que les colonnes
        -- `clubs.*_responsable` ont été retirées (issue #327).
        (SELECT GROUP_CONCAT(DISTINCT ca.email ORDER BY ca.email SEPARATOR ';')

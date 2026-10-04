@@ -1,4 +1,6 @@
-SELECT CONCAT(j.nom, ' ', j.prenom)                                         AS joueur,
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
+SELECT j.id AS indicator_id,
+       CONCAT(j.nom, ' ', j.prenom)                                         AS joueur,
        c.nom                                                                AS club,
        GROUP_CONCAT(DISTINCT CONCAT(e.nom_equipe, ' (', comp.libelle, ')')) AS equipe,
        (SELECT COUNT(*) FROM match_player mp WHERE mp.id_player = j.id)     AS nb_matchs

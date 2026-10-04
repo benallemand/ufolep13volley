@@ -1,7 +1,9 @@
+-- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
 -- Pénalités automatiques appliquées (issue #345), les plus récentes d'abord.
 -- Une ligne par équipe pénalisée ; l'admin annule par le bouton « -1 » du
 -- classement de la division (la ligne reste ici comme historique).
-SELECT DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS appliquee_le,
+SELECT p.id_match                                  AS indicator_id,
+       DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS appliquee_le,
        m.code_match                                 AS match_,
        DATE_FORMAT(m.date_reception, '%d/%m/%Y')    AS date_match,
        e.nom_equipe                                 AS equipe,
