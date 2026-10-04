@@ -188,6 +188,7 @@ return array(
         'addPlayersToClub' => 'admin',
         'addPlayersToTeam' => 'admin',
         'delete_players' => 'admin',
+        'mergePlayers' => 'admin', // issue #409
         'getPlayers' => 'admin',
         'get_players_by_team' => 'admin',
         'savePlayer' => 'admin',

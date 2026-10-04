@@ -1054,6 +1054,26 @@ message technique du lecteur PDF.
 - La photo n'est pas exigée à l'import : seulement sur la feuille de match
   (#343).
 
+### Fusion de deux fiches joueur (issue #409)
+
+`Players::mergePlayers($id_keep, $id_remove)` (admin), depuis l'écran Joueurs :
+sélectionner deux fiches, puis « Fusionner… » (`PlayerMergeModal.js`). C'est la
+correction des « Licences dupliquées » et des doublons de saisie. Le plus
+souvent, une fiche créée à la main face à la vraie.
+
+En une transaction (`mysqli_begin_transaction` sur la connexion unique de
+`Database`) :
+- les appartenances aux équipes sont reportées, sans doublon, en cumulant les
+  rôles ;
+- les feuilles de match sont reportées, sans doublon ;
+- les champs vides de la fiche gardée sont complétés ;
+- le compte est reporté, après avoir été libéré (`id_compte` est UNIQUE) ;
+- l'autre fiche est supprimée, et la fusion journalisée.
+
+Le report des équipes passe par un `UPDATE`, pas par `addPlayerToTeam` : c'est
+une correction d'administrateur, qui n'ajoute personne (le verrou de #32 ne la
+concerne pas, et `SquadLockTest` ne surveille que les INSERT).
+
 ### Pas de photo, pas de match (issue #343)
 
 `MatchMgr::manage_match_players` refuse (409, joueurs nommés) tout présent ou
