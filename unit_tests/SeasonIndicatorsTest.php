@@ -115,7 +115,8 @@ class SeasonIndicatorsTest extends UfolepTestCase
         $b = $this->team('IR Voyage');
         $this->match('IRT1', $b, $a, date('Y-m-d', strtotime('-100 days')));
         $this->match('IRT2', $a, $b, date('Y-m-d', strtotime('-60 days')));
-        $this->match('IRT3', $a, $b, date('Y-m-d', strtotime('-20 days')));
+        // La dernière rencontre est à venir : c'est elle qu'on peut encore déplacer.
+        $this->match('IRT3', $a, $b, date('Y-m-d', strtotime('+20 days')), 'CONFIRMED');
         // Même paire, autre compétition : ne compte pas dans la série.
         $this->match('IRT4', $b, $a, date('Y-m-d', strtotime('-10 days')), 'ARCHIVED', 'm');
 
@@ -126,6 +127,19 @@ class SeasonIndicatorsTest extends UfolepTestCase
         $this->assertSame('IRT2', $rows[0]['avant_dernier_match']);
         $this->assertSame('IRT3', $rows[0]['dernier_match']);
         $this->assertSame('IR Voyage', $rows[0]['se_deplace_deux_fois']);
+    }
+
+    public function test_meme_reception_deja_jouee_et_archivee_n_est_pas_signalee(): void
+    {
+        // Les deux rencontres sont jouées et archivées : de l'historique, plus
+        // rien à corriger (Périer Origines - VELAUXIRAPTOR 2 au 04/10/2026).
+        $a = $this->team('IR Recoit');
+        $b = $this->team('IR Voyage');
+        $this->match('IRT1', $a, $b, date('Y-m-d', strtotime('-60 days')));
+        $this->match('IRT2', $a, $b, date('Y-m-d', strtotime('-20 days')));
+
+        $this->assertSame(array(), array_filter($this->rows('same_reception.sql'),
+            static fn($r) => str_starts_with($r['recoit_deux_fois'], 'IR ')));
     }
 
     public function test_meme_reception_alternee_n_est_pas_signalee(): void
