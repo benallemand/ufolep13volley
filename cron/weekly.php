@@ -8,7 +8,6 @@ try {
     $email->insert_email_team_leaders_without_email();
     $email->insert_email_alert_report();
     $email->insert_email_missing_licences();
-    $email->insert_email_register_not_paid();
     $email->insert_mail_match_not_fully_signed();
 } catch (Exception $exception) {
     echo json_encode(array(

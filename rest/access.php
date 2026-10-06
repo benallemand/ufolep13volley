@@ -240,6 +240,7 @@ return array(
         'delete' => 'admin',
         'fill_ranks' => 'admin',
         'apply_registered_timeslots' => 'admin', // issue #409
+        'send_membership_fees_to_accounting' => 'admin', // issue #417
         'get_register' => 'admin',
         'refuseRegistration' => 'admin',
         'set_up_season' => 'admin',

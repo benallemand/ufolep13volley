@@ -8,9 +8,13 @@ require_once __DIR__ . '/UserManager.php';
 require_once __DIR__ . '/TimeSlot.php';
 require_once __DIR__ . '/Constants.php';
 require_once __DIR__ . '/Competition.php';
+require_once __DIR__ . '/CalendarEvents.php';
 
 class Register extends Generic
 {
+    /** Destinataire du récapitulatif des cotisations (#417). */
+    public const ACCOUNTING_EMAIL = 'comptabilite@ufolep13.org';
+
     private Team $team;
     private Competition $competition;
     private Players $player;
@@ -704,6 +708,70 @@ class Register extends Generic
                     static fn($l) => $l['equipe'] . ' (' . $l['message'] . ')', $skipped));
         }
         return array('message' => $message, 'report' => $report);
+    }
+
+    /**
+     * Récapitulatif des cotisations envoyé à la comptabilité (#417), au lieu
+     * de la relance hebdomadaire des clubs : montant attendu de chaque club
+     * pour la première demi-saison, d'après `sql/register_invoices.sql`
+     * (indicateur « Facture par club », qui en est l'aperçu exact).
+     *
+     * Une seule fois par saison : si l'email est déjà parti, refus (409) en
+     * donnant la date, sauf renvoi demandé explicitement (`resend`).
+     *
+     * @throws Exception
+     */
+    public function send_membership_fees_to_accounting($resend = 0): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Action réservée aux administrateurs !", 403);
+        }
+        $season = CalendarEvents::getCurrentSeason();
+        $subject = "[UFOLEP13VOLLEY] Cotisations des clubs - championnats $season";
+        $sent = $this->sql_manager->execute(
+            "SELECT DATE_FORMAT(MAX(creation_date), '%d/%m/%Y') AS sent_on FROM emails WHERE subject = ?",
+            array(array('type' => 's', 'value' => $subject)));
+        if (!empty($sent[0]['sent_on']) && !Generic::to_flag($resend)) {
+            throw new Exception("Le récapitulatif $season a déjà été envoyé à la comptabilité le "
+                . $sent[0]['sent_on'] . ".", 409);
+        }
+        $clubs = $this->sql_manager->execute(file_get_contents(__DIR__ . '/../sql/register_invoices.sql'));
+        if (count($clubs) === 0) {
+            throw new Exception("Aucune inscription validée en championnat pour la campagne en cours.", 422);
+        }
+        $escape = static fn($value) => htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+        $rows = '';
+        foreach ($clubs as $club) {
+            // Noms d'équipe saisis par les clubs : échappés un par un, le
+            // `<br>` du GROUP_CONCAT étant, lui, voulu.
+            $teams = implode('<br>', array_map($escape, explode('<br>', (string)$club['competitions'])));
+            $rows .= '<tr><td>' . $escape($club['club']) . '</td><td>' . $escape($club['contact_club'])
+                . "</td><td>$teams</td><td>" . (int)$club['nb_equipes'] . '</td><td>'
+                . (int)$club['cout'] . ' €</td></tr>';
+        }
+        $total_teams = array_sum(array_column($clubs, 'nb_equipes'));
+        $total_amount = array_sum(array_column($clubs, 'cout'));
+        $body = strtr(file_get_contents(__DIR__ . '/../templates/emails/membership_fees_accounting.fr.html'),
+            array(
+                '%season%' => $season,
+                '%rows%' => $rows,
+                '%total_teams%' => $total_teams,
+                '%total_amount%' => $total_amount,
+            ));
+        $email_manager = new Emails();
+        $id_email = $email_manager->insert_email($subject, $body, self::ACCOUNTING_EMAIL);
+        $email_manager->send_email_now($id_email);
+        $this->addActivity("Récapitulatif des cotisations $season envoyé à la comptabilité : "
+            . count($clubs) . " club(s), $total_amount €");
+        return array(
+            'message' => "Récapitulatif envoyé à " . self::ACCOUNTING_EMAIL . " : " . count($clubs)
+                . " club(s), $total_teams équipe(s), $total_amount €.",
+            'report' => array_map(static fn($club) => array(
+                'club' => $club['club'],
+                'nb_equipes' => (int)$club['nb_equipes'],
+                'cout' => (int)$club['cout'],
+            ), $clubs),
+        );
     }
 
     /**

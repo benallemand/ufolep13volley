@@ -1086,44 +1086,6 @@ class Emails extends Generic
     }
 
     /**
-     * @throws Exception
-     */
-    public function insert_email_register_not_paid(): void
-    {
-        $result = $this->sql_manager->execute(file_get_contents(__DIR__ . '/../sql/register_not_paid.sql'));
-        if (count($result) == 0) {
-            return;
-        }
-        $destination = array();
-        $trs_club_compet_cout = "";
-        foreach ($result as $data) {
-            if (empty($data['email_club']) && empty($data['emails_equipes'])) {
-                continue;
-            }
-            $destination = array_merge($destination, explode(',', $data['emails_equipes']));
-            $destination[] = $data['email_club'];
-            $club = $data['club'];
-            $compet = $data['competitions'];
-            $cout = $data['cout'];
-            $trs_club_compet_cout .= "<tr><td>$club</td><td>$compet</td><td>$cout</td></tr>";
-        }
-        $destination = array_unique($destination);
-        $coordonnees_ufolep13 = "UFOLEP13 81 RUE DE LA MAURELLE 13013 MARSEILLE";
-        $url_rib = "https://www.ufolep13volley.org/infos_utiles/Media/rib.pdf";
-        $this->insert_generic_email(
-            __DIR__ . '/../templates/emails/register_not_paid.fr.html',
-            array(
-                'trs_club_compet_cout' => $trs_club_compet_cout,
-                'coordonnees_ufolep13' => $coordonnees_ufolep13,
-                'url_rib' => $url_rib,
-            ),
-            "contact@ufolep13volley.org",
-            "",
-            implode(';', $destination)
-        );
-    }
-
-    /**
      * @return mixed
      * @throws Exception
      */

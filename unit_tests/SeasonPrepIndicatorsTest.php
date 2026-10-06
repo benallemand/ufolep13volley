@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/UfolepTestCase.php';
 require_once __DIR__ . '/../classes/SqlManager.php';
+require_once __DIR__ . '/../classes/Register.php';
 
 /**
  * Indicateurs de préparation de saison (issue #395) : décalage des créneaux,
@@ -264,19 +265,97 @@ class SeasonPrepIndicatorsTest extends UfolepTestCase
         $this->assertSame('ip_club@ufolep.test', $rows['IP Sans creneau']['contact_club']);
     }
 
-    public function test_une_demande_refusee_n_est_pas_facturee(): void
+    public function test_une_demande_refusee_n_est_pas_relancee(): void
     {
         $this->registration('IP Facturee', array('Lundi'));
         $this->registration('IP Refusee', array(), null, 'REFUSED');
-        // La facture ne retient que les demandes créées de juillet à novembre.
+        // La relance ne retient que les demandes créées de juillet à novembre.
         $this->sql->execute("UPDATE register SET creation_date = CONCAT(YEAR(CURRENT_DATE), '-09-15') WHERE new_team_name LIKE 'IP %'");
 
-        foreach (array('register_invoices.sql', 'register_not_paid.sql') as $file) {
-            $rows = $this->rows($file, 'club');
-            $this->assertArrayHasKey('IP club', $rows, $file);
-            $this->assertStringContainsString('IP Facturee', $rows['IP club']['competitions'], $file);
-            $this->assertStringNotContainsString('IP Refusee', $rows['IP club']['competitions'], $file);
-            $this->assertEquals(5, $rows['IP club']['cout'], $file);
+        $rows = $this->rows('register_not_paid.sql', 'club');
+        $this->assertArrayHasKey('IP club', $rows);
+        $this->assertStringContainsString('IP Facturee', $rows['IP club']['competitions']);
+        $this->assertStringNotContainsString('IP Refusee', $rows['IP club']['competitions']);
+        $this->assertEquals(5, $rows['IP club']['cout']);
+    }
+
+    /**
+     * Facture par club (#417) : inscriptions VALIDÉES de la campagne en cours,
+     * en championnat, 5 € en féminin. En attente, refusée ou d'une campagne
+     * passée : rien.
+     */
+    public function test_facture_seulement_les_inscriptions_validees_de_la_campagne(): void
+    {
+        $this->registration('IP Validee F', array('Lundi'), null, 'VALIDATED', $this->id_competition_f);
+        $this->registration('IP Attente F', array('Lundi'), null, 'PENDING', $this->id_competition_f);
+        $this->registration('IP Refusee F', array('Lundi'), null, 'REFUSED', $this->id_competition_f);
+        $this->registration('IP Ancienne F', array('Lundi'), null, 'VALIDATED', $this->id_competition_f);
+        $this->sql->execute("UPDATE register SET creation_date = CURRENT_DATE - INTERVAL 1 YEAR WHERE new_team_name = 'IP Ancienne F'");
+        // Hors championnat : pas de cotisation.
+        $this->registration('IP Coupe', array('Lundi'));
+
+        $rows = $this->rows('register_invoices.sql', 'club');
+
+        $this->assertSame(array('IP club'), array_keys($rows));
+        $this->assertSame('IP Validee F (' . $this->competition_label('f') . ')', $rows['IP club']['competitions']);
+        $this->assertEquals(1, $rows['IP club']['nb_equipes']);
+        $this->assertEquals(5, $rows['IP club']['cout']);
+        $this->assertSame('ip_club@ufolep.test', $rows['IP club']['contact_club']);
+    }
+
+    public function test_recapitulatif_des_cotisations_envoye_une_seule_fois_a_la_comptabilite(): void
+    {
+        $subject = $this->accounting_subject();
+        $this->sql->execute("DELETE FROM emails WHERE subject = ?", array(array('type' => 's', 'value' => $subject)));
+        $this->registration('IP <b>Validee</b> F', array('Lundi'), null, 'VALIDATED', $this->id_competition_f);
+        $this->connect_as_admin();
+        $register = new Register();
+
+        try {
+            $result = $register->send_membership_fees_to_accounting();
+
+            $this->assertStringContainsString(Register::ACCOUNTING_EMAIL, $result['message']);
+            $this->assertContains(array('club' => 'IP club', 'nb_equipes' => 1, 'cout' => 5), $result['report']);
+            $emails = $this->sql->execute("SELECT to_email, body FROM emails WHERE subject = ?",
+                array(array('type' => 's', 'value' => $subject)));
+            $this->assertCount(1, $emails);
+            $this->assertSame(Register::ACCOUNTING_EMAIL, $emails[0]['to_email']);
+            // Nom d'équipe saisi par un club : échappé.
+            $this->assertStringContainsString('IP &lt;b&gt;Validee&lt;/b&gt; F', $emails[0]['body']);
+
+            // Second envoi : refusé, sauf renvoi explicite.
+            try {
+                $register->send_membership_fees_to_accounting();
+                $this->fail('Un second envoi doit être refusé');
+            } catch (Exception $exception) {
+                $this->assertSame(409, $exception->getCode());
+                $this->assertStringContainsString('déjà été envoyé', $exception->getMessage());
+            }
+            $register->send_membership_fees_to_accounting(1);
+            $this->assertCount(2, $this->sql->execute("SELECT id FROM emails WHERE subject = ?",
+                array(array('type' => 's', 'value' => $subject))));
+        } finally {
+            $this->sql->execute("DELETE FROM emails WHERE subject = ?", array(array('type' => 's', 'value' => $subject)));
         }
+    }
+
+    public function test_recapitulatif_des_cotisations_reserve_a_l_admin(): void
+    {
+        $this->connect_as_team_leader(0);
+
+        $this->expectExceptionCode(403);
+        (new Register())->send_membership_fees_to_accounting();
+    }
+
+    private function competition_label(string $code): string
+    {
+        return $this->sql->execute("SELECT libelle FROM competitions WHERE code_competition = ?",
+            array(array('type' => 's', 'value' => $code)))[0]['libelle'];
+    }
+
+    private function accounting_subject(): string
+    {
+        require_once __DIR__ . '/../classes/CalendarEvents.php';
+        return "[UFOLEP13VOLLEY] Cotisations des clubs - championnats " . CalendarEvents::getCurrentSeason();
     }
 }
