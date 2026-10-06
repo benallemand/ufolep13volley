@@ -1,0 +1,35 @@
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 4px;
+    }
+</style>
+<h1>Cotisations des clubs - championnats %season%</h1>
+<p>
+    Bonjour,
+</p>
+<p>
+    Voici les cotisations attendues de chaque club pour la première demi-saison des championnats
+    %season%, d'après les inscriptions validées par la commission volley : 10 € par équipe en
+    championnat masculin, 5 € en championnat féminin et en championnat mixte.
+</p>
+<table>
+    <tr>
+        <th>Club</th>
+        <th>Contact</th>
+        <th>Équipes</th>
+        <th>Nombre</th>
+        <th>Montant</th>
+    </tr>
+    %rows%
+    <tr>
+        <th colspan="3" style="text-align: right">Total</th>
+        <th>%total_teams%</th>
+        <th>%total_amount% €</th>
+    </tr>
+</table>
+<p>
+    Sportivement,<br/>
+    La commission volley UFOLEP 13
+</p>

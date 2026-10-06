@@ -1366,6 +1366,14 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   (`status <> 'REFUSED'`). Ils ne retiennent que la campagne en cours
   (`creation_date >= start_register_date`), et rapprochent inscription et
   équipe par la règle de #390 (`old_team_id`, sinon le nom dans la compétition).
+- **Cotisations (#417)** : plus de relance hebdomadaire des clubs. Le bouton
+  « Cotisations → comptabilité » de l'écran Inscriptions
+  (`Register::send_membership_fees_to_accounting`) envoie **une fois par
+  saison** à `Register::ACCOUNTING_EMAIL` le montant attendu de chaque club. Un
+  second envoi répond 409, et l'écran propose de le renvoyer. Les montants
+  viennent de `sql/register_invoices.sql`, que l'indicateur « Facture par club »
+  affiche à l'identique : inscriptions VALIDÉES de la campagne, 10 € en
+  masculin, 5 € en féminin et mixte.
 - **Appliquer les créneaux demandés (#409)** : `Register::apply_registered_timeslots`,
   bouton de l'écran Inscriptions. Il corrige le décalage équipe par équipe, sans
   attendre l'initialisation : les créneaux de l'équipe sont remplacés par ceux

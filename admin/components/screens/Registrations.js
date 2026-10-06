@@ -104,6 +104,15 @@ export default {
                   @click="allAtOnce(selection, 'apply_registered_timeslots', 'Remplacer les créneaux des équipes par ceux de leur inscription', reload)">
             <i class="fas fa-clock-rotate-left"></i> Appliquer les créneaux demandés
           </button>
+          <!-- #417 : récapitulatif unique à la comptabilité, à la place de la
+               relance hebdomadaire des clubs. Aperçu : indicateur « Facture
+               par club ». Indépendant de la sélection. -->
+          <button class="btn btn-sm btn-outline" data-testid="registration-fees-accounting"
+                  :disabled="isBusy"
+                  title="Envoie à la comptabilité le montant attendu de chaque club (inscriptions validées en championnat)"
+                  @click="sendFeesToAccounting()">
+            <i class="fas fa-file-invoice-dollar"></i> Cotisations → comptabilité
+          </button>
         </template>
       </admin-grid>
     `,
@@ -228,6 +237,40 @@ export default {
                     reload();
                 })
                 .finally(() => { this.isBusy = false; });
+        },
+        /**
+         * Récapitulatif des cotisations à la comptabilité (#417). Une seule
+         * fois par saison : le serveur refuse un second envoi (409, avec la
+         * date du premier), qu'on ne renvoie que sur confirmation explicite.
+         */
+        sendFeesToAccounting(resend = false) {
+            if (!resend && !window.confirm(
+                'Envoyer à la comptabilité le récapitulatif des cotisations des clubs ?\n'
+                + '(Aperçu : indicateur « Facture par club »)')) {
+                return;
+            }
+            const formData = new FormData();
+            if (resend) {
+                formData.append('resend', '1');
+            }
+            let retry = false;
+            this.isBusy = true;
+            axios.post('/rest/action.php/register/send_membership_fees_to_accounting', formData)
+                .then((response) => onSuccess(this, response))
+                .catch((error) => {
+                    const message = error.response?.data?.message;
+                    if (!resend && error.response?.status === 409) {
+                        retry = window.confirm(`${message}\n\nLe renvoyer quand même ?`);
+                        return;
+                    }
+                    onError(this, error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                    if (retry) {
+                        this.sendFeesToAccounting(true);
+                    }
+                });
         },
         /** Endpoints qui prennent la liste complète. */
         allAtOnce(selection, action, label, reload) {
