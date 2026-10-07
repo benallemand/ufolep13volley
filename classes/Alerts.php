@@ -45,7 +45,9 @@ class Alerts extends Generic
     public function getAlerts(): array
     {
         @session_start();
-        if (UserManager::isAdmin()) {
+        // Rien pour un administrateur sans équipe ni club ; un administrateur
+        // qui est aussi responsable a les alertes de ses équipes (issue #419).
+        if (!UserManager::isTeamLeader() && !UserManager::isClubLeader()) {
             return array();
         }
         $results = array();

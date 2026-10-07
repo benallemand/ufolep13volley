@@ -16,10 +16,17 @@
  * Partagé par l'effectif du responsable et l'écran Joueurs de
  * l'administration. Émet `imported` à la fermeture si au moins un joueur a été
  * créé ou mis à jour, pour que l'écran se rafraîchisse.
+ *
+ * `add-to-my-team` (espace responsable) : les joueurs importés rejoignent
+ * l'équipe courante, y compris pour un administrateur qui en est responsable
+ * (#419). L'administration ne le passe pas.
  */
 const CONCURRENCY = 3;
 
 export default {
+    props: {
+        addToMyTeam: {type: Boolean, default: false},
+    },
     emits: ['close', 'imported'],
     template: `
       <dialog class="modal modal-open" data-testid="licence-import">
@@ -206,6 +213,9 @@ export default {
             item.state = 'running';
             const formData = new FormData();
             formData.append('licences', item.file);
+            if (this.addToMyTeam) {
+                formData.append('add_to_my_team', '1');
+            }
             return axios.post('/rest/action.php/player/update_from_licence_file', formData)
                 .then(({ data }) => {
                     item.report = (data && data.report) || [];

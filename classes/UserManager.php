@@ -1368,7 +1368,22 @@ class UserManager extends Generic
         $data = $results[0];
         // on cible une équipe du club (la première partagée), pour que toute l'UI
         // responsable opère sur une équipe du club même si le compte en gère d'autres
-        $this->setSessionRoles((int)$data['id_user'], $data['login'], !empty($data['is_admin']), $sharedTeamIds[0]);
+        // Jamais plus de droits que le responsable de club n'en a lui-même
+        // (issue #419) : le rôle admin du compte cible n'est pas repris, et ses
+        // clubs se limitent à ceux du responsable. Sinon agir en tant que le
+        // compte d'une équipe du club, s'il était admin ou référent d'un autre
+        // club, donnait ces droits-là.
+        $this->setSessionRoles((int)$data['id_user'], $data['login'],
+            !empty($data['is_admin']) && !empty($_SESSION['original_admin_is_admin']), $sharedTeamIds[0]);
+        $club_ids = array_values(array_intersect($_SESSION['club_ids'],
+            array_map('intval', $_SESSION['original_admin_club_ids'])));
+        $_SESSION['club_ids'] = $club_ids;
+        $_SESSION['is_club_leader'] = count($club_ids) > 0;
+        if (count($club_ids) > 0) {
+            $_SESSION['id_club'] = $club_ids[0];
+        } else {
+            unset($_SESSION['id_club']);
+        }
         $_SESSION['acting_as'] = true;
 
         $this->activity->add("Responsable de club a basculé vers le compte: " . $data['login'], $_SESSION['original_admin_id']);

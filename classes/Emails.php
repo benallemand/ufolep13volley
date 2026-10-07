@@ -747,8 +747,14 @@ class Emails extends Generic
      * @return int|string identifiant de la ligne inseree, pour `send_email_now()`
      * @throws Exception
      */
-    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, string $cc = "", string $bcc = ""): int|string
+    public function insert_generic_email($template_file_path, $array_data_to_replace, $destination_email, ?string $cc = "", ?string $bcc = ""): int|string
     {
+        // Une équipe sans adresse de responsable donne NULL : sans cela, la
+        // signature d'une fiche plantait au lieu de mettre l'email en file
+        // (issue #419).
+        $destination_email = (string)$destination_email;
+        $cc = (string)$cc;
+        $bcc = (string)$bcc;
         $message = file_get_contents($template_file_path);
         foreach ($array_data_to_replace as $data_to_replace_key => $data_to_replace_value) {
             $message = str_replace(

@@ -578,9 +578,7 @@ class Team extends Generic
 
     public function getMyTeamIdClub()
     {
-        if (UserManager::isAdmin()) {
-            return false;
-        }
+        // Seul compte le rôle de responsable, admin ou non (issue #419).
         if (!UserManager::isTeamLeader()) {
             return false;
         }

@@ -175,9 +175,11 @@ class Players extends Generic
         $email = null,
         $telephone2 = null,
         $email2 = null,
-        $id = null): array|int|string|null
+        $id = null,
+        $add_to_my_team = null): array|int|string|null
     {
         $parameters = array(
+            'add_to_my_team' => $this->adds_to_my_team($add_to_my_team),
             'id_team' => $id_team,
             'prenom' => $prenom,
             'nom' => $nom,
@@ -434,7 +436,8 @@ class Players extends Generic
         foreach ($inputs as $key => $value) {
             if (in_array($key, array(
                 'id',
-                'id_team'))) {
+                'id_team',
+                'add_to_my_team'))) {
                 continue;
             }
             if (empty($value) || $value == 'null') {
@@ -476,13 +479,12 @@ class Players extends Generic
         }
         $before = $this->row_before($inputs['id'] ?? null, 'joueurs', 'id');
         $newId = $this->sql_manager->execute($sql, $bindings);
-        // Un administrateur n'est jamais ajouté d'office à une équipe :
-        // `addPlayerToMyTeam` le refuse, sinon chaque fiche qu'il modifie depuis
-        // l'administration rejoindrait l'équipe dont il est aussi responsable.
-        // Ce refus n'est pas une erreur : un compte à la fois admin et
-        // responsable voyait toutes ses modifications de joueur échouer après
-        // coup, imports de licences compris.
-        if (UserManager::isTeamLeader() && !UserManager::isAdmin()) {
+        // L'ajout à l'équipe courante est demandé par l'appelant
+        // (`adds_to_my_team`), jamais déduit du rôle : un compte admin ET
+        // responsable doit pouvoir compléter son équipe depuis son espace,
+        // sans que chaque fiche modifiée depuis l'administration la rejoigne
+        // (issues #407, #419).
+        if (!empty($inputs['add_to_my_team'])) {
             if (!$this->addPlayerToMyTeam(!empty($newId) ? $newId : $inputs['id'])) {
                 throw new Exception("Erreur durant l'ajout du joueur à l'équipe");
             }
@@ -542,8 +544,11 @@ class Players extends Generic
      * @return array{message: string, report: array<int, array>}
      * @throws Exception (422) fichier absent ou sans licence reconnue
      */
-    public function update_from_licence_file(): array
+    public function update_from_licence_file($add_to_my_team = null): array
     {
+        // Depuis l'espace responsable, les joueurs importés rejoignent l'équipe
+        // courante, administrateur compris (#419) ; depuis l'administration, non.
+        $add_to_my_team = $this->adds_to_my_team($add_to_my_team);
         if (empty($_FILES['licences']['name'])) {
             throw new Exception("Aucun fichier reçu", 422);
         }
@@ -561,7 +566,7 @@ class Players extends Generic
         foreach ($licences as $licence) {
             $line = array('joueur' => $licence['last_first_name'] ?? '?');
             try {
-                $line += $this->search_player_and_save_from_licence($licence);
+                $line += $this->search_player_and_save_from_licence($licence, $add_to_my_team);
             } catch (mysqli_sql_exception $e) {
                 // Jamais de message MySQL brut au client (#355).
                 error_log($e->getMessage());
@@ -830,11 +835,32 @@ class Players extends Generic
     /**
      * @throws Exception
      */
-    public function addPlayerToMyTeam($idPlayer)
+    /**
+     * Le joueur enregistré doit-il rejoindre l'équipe courante de la session ?
+     *
+     * Demandé explicitement par l'espace responsable (`add_to_my_team` = 1) :
+     * oui pour tout responsable d'équipe, administrateur compris. Sans
+     * demande, on garde le comportement historique : oui pour un responsable
+     * qui n'est pas administrateur, non pour un administrateur, dont les
+     * modifications depuis l'administration (écran Joueurs, « Équipes /
+     * comptes ») ne doivent pas remplir sa propre équipe (#407, #419).
+     */
+    private function adds_to_my_team(mixed $add_to_my_team): bool
     {
-        if (UserManager::isAdmin()) {
+        if (!UserManager::isTeamLeader()) {
             return false;
         }
+        if ($add_to_my_team === null || $add_to_my_team === '') {
+            return !UserManager::isAdmin();
+        }
+        return Generic::to_flag($add_to_my_team) === 1;
+    }
+
+    public function addPlayerToMyTeam($idPlayer)
+    {
+        // Pas de refus pour l'administrateur : responsable d'une équipe, il
+        // la complète comme tout responsable (issue #419). C'est l'appelant
+        // qui décide d'ajouter (`adds_to_my_team`), pas le rôle.
         if (!UserManager::isTeamLeader()) {
             return false;
         }
@@ -843,7 +869,9 @@ class Players extends Generic
             return false;
         }
         $idClubPlayer = $this->getPlayersIdClub($idPlayer);
-        if ($idClubPlayer === '0') {
+        // Sans club, le joueur prend celui de l'équipe. Un club absent vaut
+        // NULL en base : comparé à '0', le rattachement ne se faisait jamais.
+        if (empty($idClubPlayer)) {
             $idClubMyTeam = $this->team->getMyTeamIdClub();
             if ($this->addPlayersToClub($idPlayer, $idClubMyTeam) === false) {
                 return false;
@@ -1294,80 +1322,15 @@ class Players extends Generic
         return count($results) > 0;
     }
 
-    public function updateMyTeamLeader($idPlayer)
-    {
-        if (UserManager::isAdmin()) {
-            return false;
-        }
-        if (!UserManager::isTeamLeader()) {
-            return false;
-        }
-        $idTeam = $_SESSION['id_equipe'];
-        if (!$this->isPlayerInTeam($idPlayer, $idTeam)) {
-            return false;
-        }
-        $sql = "UPDATE joueur_equipe SET is_leader = 0 WHERE id_equipe = $idTeam";
-        $this->sql_manager->execute($sql);
-        $sql = "UPDATE joueur_equipe SET is_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-        $this->sql_manager->execute($sql);
-        $this->addActivity("L'equipe " . $this->team->getTeamName($idTeam) . " a un nouveau responsable : " . $this->getPlayerFullName($idPlayer));
-        return true;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function updateMyTeamCaptain($idPlayer)
-    {
-        if (UserManager::isAdmin()) {
-            return false;
-        }
-        if (!UserManager::isTeamLeader()) {
-            return false;
-        }
-        $idTeam = $_SESSION['id_equipe'];
-        if (!$this->isPlayerInTeam($idPlayer, $idTeam)) {
-            return false;
-        }
-        $sql = "UPDATE joueur_equipe SET is_captain = 0 WHERE id_equipe = $idTeam";
-        $this->sql_manager->execute($sql);
-        $sql = "UPDATE joueur_equipe SET is_captain = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-        $this->sql_manager->execute($sql);
-        $this->addActivity("L'equipe " . $this->team->getTeamName($idTeam) . " a un nouveau capitaine : " . $this->getPlayerFullName($idPlayer));
-        return true;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function updateMyTeamViceLeader($idPlayer)
-    {
-        if (UserManager::isAdmin()) {
-            return false;
-        }
-        if (!UserManager::isTeamLeader()) {
-            return false;
-        }
-        $idTeam = $_SESSION['id_equipe'];
-        if (!$this->isPlayerInTeam($idPlayer, $idTeam)) {
-            return false;
-        }
-        $sql = "UPDATE joueur_equipe SET is_vice_leader = 0 WHERE id_equipe = $idTeam";
-        $this->sql_manager->execute($sql);
-        $sql = "UPDATE joueur_equipe SET is_vice_leader = 1 WHERE id_equipe = $idTeam AND id_joueur = $idPlayer";
-        $this->sql_manager->execute($sql);
-        $this->addActivity("L'equipe " . $this->team->getTeamName($idTeam) . " a un nouveau suppleant : " . $this->getPlayerFullName($idPlayer));
-        return true;
-    }
-
     /**
      * @param mixed $licence
      * @return array{status: string, photo: bool} `created` ou `updated`, et
      *         si la licence portait une photo (issue #394)
      * @throws Exception
      */
-    public function search_player_and_save_from_licence(mixed $licence): array
+    public function search_player_and_save_from_licence(mixed $licence, ?bool $add_to_my_team = null): array
     {
+        $add_to_my_team ??= $this->adds_to_my_team(null);
         // Club de la licence, reconnu à son numéro d'affiliation : le nom
         // imprimé peut différer de celui en base (issue #404).
         $licence_club = $this->licence_club_for_importer($licence);
@@ -1391,6 +1354,7 @@ class Players extends Generic
                 'departement_affiliation' => $licence['departement'],
                 'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
+                'add_to_my_team' => $add_to_my_team,
             ));
 
             // Lier la photo au joueur nouvellement créé
@@ -1408,6 +1372,7 @@ class Players extends Generic
                 'departement_affiliation' => $licence['departement'],
                 'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
+                'add_to_my_team' => $add_to_my_team,
             ));
 
             // Lier la photo au joueur existant (mettre à jour si nouvelle photo)

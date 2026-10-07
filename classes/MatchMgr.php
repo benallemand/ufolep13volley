@@ -1740,11 +1740,13 @@ class MatchMgr extends Generic
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
-        // if admin, sign for both teams
-        if (UserManager::isAdmin()) {
+        $userTeamId = $this->getUserTeamIdForMatch($match);
+        // L'admin signe pour les deux équipes, sauf s'il joue ce match comme
+        // responsable de l'une d'elles : il ne signe alors que pour la sienne
+        // (issue #419), sinon il signait à la place de l'adversaire.
+        if (UserManager::isAdmin() && $userTeamId === null) {
             $sql = "UPDATE matches set is_sign_team_dom = 1, is_sign_team_ext = 1 WHERE id_match = ?";
         } else {
-            $userTeamId = $this->getUserTeamIdForMatch($match);
             switch ($userTeamId) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_team_dom = 1 WHERE id_match = ?";
@@ -1775,11 +1777,11 @@ class MatchMgr extends Generic
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         $match = $this->get_match($id_match);
-        // if admin, sign for both teams
-        if (UserManager::isAdmin()) {
+        $userTeamId = $this->getUserTeamIdForMatch($match);
+        // Même règle que sign_team_sheet (issue #419).
+        if (UserManager::isAdmin() && $userTeamId === null) {
             $sql = "UPDATE matches set is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?";
         } else {
-            $userTeamId = $this->getUserTeamIdForMatch($match);
             switch ($userTeamId) {
                 case $match['id_equipe_dom']:
                     $sql = "UPDATE matches set is_sign_match_dom = 1 WHERE id_match = ?";
