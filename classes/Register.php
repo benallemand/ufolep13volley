@@ -71,6 +71,11 @@ class Register extends Generic
             throw new Exception("Seuls les responsables de club peuvent gérer les inscriptions !", 403);
         }
         require_once __DIR__ . '/Club.php';
+        // Demande enregistrée depuis l'espace club : par un responsable de
+        // club, ou par un admin qui l'est aussi et poste sans id_club (les
+        // rôles se cumulent, #419). L'écran Inscriptions de l'admin poste
+        // toujours le club.
+        $from_club_space = !UserManager::isAdmin() || (empty($id_club) && UserManager::isClubLeader());
         if (!UserManager::isAdmin()) {
             // le club de session fait foi, quel que soit le club posté
             $id_club = (new Club())->getMyClubId();
@@ -165,7 +170,7 @@ class Register extends Generic
                     break;
             }
         }
-        if (!UserManager::isAdmin() && !empty($parameters['id'])) {
+        if ($from_club_space && !empty($parameters['id'])) {
             // Le club corrige sa demande : une demande refusée repasse en
             // attente d'une nouvelle décision, motif effacé (issue #376).
             $sql .= "status = 'PENDING', refusal_reason = NULL, refusal_date = NULL,";

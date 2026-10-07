@@ -124,6 +124,9 @@ export default {
         submitForm() {
             const formData = new FormData();
             formData.append('id_team', null);
+            // Espace responsable : le joueur rejoint l'équipe courante, même
+            // pour un administrateur qui en est responsable (#419).
+            formData.append('add_to_my_team', '1');
             for (const key in this.form) {
                 switch (key) {
                     case 'id_team':

@@ -957,7 +957,7 @@ d'une feuille de match : déjà protégés.
 
 `alerts/getAlerts` (`classes/Alerts.php`) couvre l'équipe courante de la session
 **et**, pour un responsable de club, les équipes engagées (avec classement) de
-ses clubs ; rien pour l'admin. Chaque alerte porte `team`, `issue`, `criticity`
+ses clubs ; rien pour un admin sans équipe ni club (#419). Chaque alerte porte `team`, `issue`, `criticity`
 (error / warning / info), `expected_action` (code d'aide, décliné en texte par
 `TeamLeaderAlerts.js`) et `link` (l'écran où corriger). Trois familles retenues :
 actions de match en attente (`MatchMgr::getMyPendingMatchActions`, #240) et
@@ -1541,6 +1541,19 @@ plus d'une fois toutes les 5 minutes.
 - Côté frontend : `session_user.php` / `getCurrentUserDetails` exposent ces flags ;
   garde des pages match via `requireRoles(['admin', 'team_leader'])` (`pages/components/auth/guard.js`)
 - « Agir en tant que » : sauvegarde/restauration des flags via `original_admin_*` en session
+- **Un admin responsable d'équipe ou de club fait tout ce que fait un
+  responsable depuis son espace (#251, #419).** Ne jamais écrire
+  `if (isAdmin()) return false` dans une action de responsable : tester le rôle
+  de responsable (`isTeamLeader()`, `isClubLeader()`), et laisser l'admin en
+  plus. Quand un même point d'entrée sert l'administration ET l'espace
+  responsable, c'est **l'écran** qui dit d'où il vient, pas le rôle :
+  `add_to_my_team` (formulaire joueur, import de licences), `my_team`
+  (historique), `id_club` vide (inscription depuis l'espace club). Sinon un
+  admin-responsable remplit son équipe à chaque fiche modifiée dans
+  l'administration (#407). Un admin qui joue un match comme responsable ne
+  signe que pour son équipe. « Agir en tant que » depuis un compte de club ne
+  donne jamais plus de droits que le club : ni l'admin, ni les autres clubs du
+  compte cible.
 
 > **Les trois rôles s'éditent depuis l'écran Utilisateurs**, et tous les trois
 > par un **bouton d'action**, pas par un champ du formulaire : « Équipes

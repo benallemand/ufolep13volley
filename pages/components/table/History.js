@@ -24,7 +24,9 @@ export default {
     data() {
         return {
             response: [],
-            fetchUrl: "/rest/action.php/activity/getActivity"
+            // `my_team` : l'historique de l'équipe courante, même pour un admin
+            // qui en est responsable (#419).
+            fetchUrl: "/rest/action.php/activity/getActivity?my_team=1"
         };
     },
     computed: {

@@ -107,9 +107,14 @@ class Generic
      * @return array
      * @throws Exception
      */
-    public function getActivity($id_team=null): array
+    public function getActivity($id_team=null, $my_team=null): array
     {
-        if(UserManager::is_connected() && !UserManager::isAdmin()) {
+        // Historique de l'espace responsable (`my_team`) : l'équipe courante,
+        // y compris pour un admin qui en est responsable (#419) ; sans quoi il
+        // recevait le journal de tout le site. L'écran Activité de l'admin ne
+        // le passe pas.
+        if (UserManager::is_connected()
+            && (!UserManager::isAdmin() || (Generic::to_flag($my_team) === 1 && UserManager::isTeamLeader()))) {
             $id_team = $_SESSION['id_equipe'];
         }
         $sql = "SELECT 

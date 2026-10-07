@@ -354,6 +354,24 @@ class RegisterTest extends UfolepTestCase
         $this->assertSame('volante', $row['refusal_reason']);
     }
 
+    /**
+     * Issue #419 : un admin aussi responsable de club qui corrige SA demande
+     * refusée depuis l'espace club (sans id_club posté) la remet en attente,
+     * comme tout responsable de club. L'écran admin, qui poste le club, garde
+     * le refus (test précédent).
+     */
+    public function test_admin_club_leader_correction_from_club_space_resets_the_refusal()
+    {
+        $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team V4');
+        $this->sql->execute("UPDATE register SET refusal_reason = 'volante' WHERE id = $id");
+        $this->connect_as_club_leader($this->id_club_1);
+        $_SESSION['is_admin'] = true;
+        $this->call_register(['id' => $id, 'new_team_name' => 'RT Team V4', 'id_club' => '']);
+        $row = $this->status_of($id);
+        $this->assertSame('PENDING', $row['status']);
+        $this->assertNull($row['refusal_reason']);
+    }
+
     public function test_a_refused_registration_can_be_validated_directly()
     {
         $id = $this->insert_registration($this->id_club_1, 'REFUSED', 'RT Team V2');

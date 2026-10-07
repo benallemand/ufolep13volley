@@ -56,6 +56,7 @@ export default {
         
         <!-- Import groupé des licences (issue #394) -->
         <licence-import-modal v-if="importing"
+                              add-to-my-team
                               @close="importing = false"
                               @imported="fetchTeamPlayers(); fetchAllPlayers()"></licence-import-modal>
         
