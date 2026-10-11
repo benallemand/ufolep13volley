@@ -1189,12 +1189,40 @@ class MatchMgr extends Generic
     }
 
     /**
+     * L'équipe au nom de laquelle le compte connecté agit sur ce match :
+     * l'équipe courante si elle joue le match, sinon celle de ses équipes
+     * (users_teams) qui le joue. Un responsable de plusieurs équipes arrivant
+     * sur un match par un lien n'a pas à changer d'équipe courante (#421).
+     * Même règle que `actingTeamId` dans `utils/reportUtils.js`.
+     *
+     * @return int 0 si le compte ne joue pas ce match
+     * @throws Exception 409 s'il est responsable des deux équipes (derby d'un
+     *                   même club) sans que l'une soit l'équipe courante
+     */
+    private function get_report_acting_team_id(array $match): int
+    {
+        $match_teams = array((int)$match['id_equipe_dom'], (int)$match['id_equipe_ext']);
+        $current = (int)($_SESSION['id_equipe'] ?? 0);
+        if (UserManager::isTeamLeader() && in_array($current, $match_teams, true)) {
+            return $current;
+        }
+        $own = empty($_SESSION['id_user'])
+            ? array()
+            : array_map('intval', (new UserManager())->getUserTeamIds((int)$_SESSION['id_user']));
+        $mine = array_values(array_intersect($match_teams, $own));
+        if (count($mine) > 1) {
+            throw new Exception("Vous êtes responsable des deux équipes de ce match : sélectionnez l'équipe au nom de laquelle vous agissez.", 409);
+        }
+        return $mine[0] ?? 0;
+    }
+
+    /**
      * Qui peut agir dans le workflow de report, et dans quel état du match.
      * Mêmes règles que `utils/reportUtils.js` (`canAskReport`…), qui ne font
      * qu'afficher les boutons : c'est ici qu'elles s'appliquent.
      *
-     * L'équipe qui agit est celle de la session (`id_equipe`) — c'est elle qui
-     * signe les emails et le journal —, et elle doit jouer le match.
+     * L'équipe qui agit — celle qui signe les emails et le journal — est celle
+     * du compte qui joue le match (get_report_acting_team_id).
      *
      * @return int|null l'équipe qui agit ; null pour la commission, à qui seul
      *                  `refuseReport` est ouvert, sans condition d'état
@@ -1209,10 +1237,10 @@ class MatchMgr extends Generic
         if ($match['match_status'] !== 'CONFIRMED') {
             throw new Exception("Seuls les matchs confirmés peuvent faire l'objet d'un report !", 409);
         }
-        $id_team = (int)($_SESSION['id_equipe'] ?? 0);
+        $id_team = $this->get_report_acting_team_id($match);
         $id_dom = (int)$match['id_equipe_dom'];
         $id_ext = (int)$match['id_equipe_ext'];
-        if (!UserManager::isTeamLeader() || !in_array($id_team, array($id_dom, $id_ext), true)) {
+        if ($id_team === 0) {
             if ($action === 'refuseReport' && UserManager::isAdmin()) {
                 return null;
             }
