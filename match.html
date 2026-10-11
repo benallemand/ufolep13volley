@@ -113,7 +113,7 @@
             </button>
         </div>
     </div>
-    <div class="mb-4 p-4 border" v-if="canModifyDate">
+    <div class="mb-4 p-4 border" v-if="canModifyDate" data-testid="date-modification">
         <h3 class="text-xl font-bold mb-4">Modification de date</h3>
         <p class="text-sm mb-4">Ce match n'est pas encore confirmé. Vous pouvez proposer une nouvelle date.</p>
         <button class="btn btn-primary" @click="openDateModificationModal()">

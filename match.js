@@ -4,7 +4,7 @@ import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
 import {onSuccess, onError} from "./toaster.js";
 import {genericSignMatch, genericSignSheet} from "./signer.js";
-import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, postReportAction} from "./utils/reportUtils.js";
+import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, isMyTeamInMatch, postReportAction} from "./utils/reportUtils.js";
 import {requireMatchAccess} from "./pages/components/auth/guard.js";
 import MatchMenu from "./pages/components/match/MatchMenu.js";
 import MatchSummary from "./pages/components/match/MatchSummary.js";
@@ -107,16 +107,16 @@ createApp({
             if (!this.user) return false;
             if (this.isAdmin) return true;
             if (!this.isLeader) return false;
-            const userTeamId = this.user.id_equipe;
-            return userTeamId == this.matchData.id_equipe_dom || userTeamId == this.matchData.id_equipe_ext;
+            return isMyTeamInMatch(this.matchData, this.user);
         },
         canModifyDate() {
             if (!this.matchData.match_status) return false;
             if (this.matchData.match_status !== 'NOT_CONFIRMED') return false;
             if (this.isAdmin) return true;
             if (!this.isLeader) return false;
-            const userTeamId = this.user?.id_equipe;
-            return userTeamId == this.matchData.id_equipe_dom || userTeamId == this.matchData.id_equipe_ext;
+            // n'importe laquelle des équipes du compte, pas seulement l'équipe
+            // courante, comme côté serveur (#421)
+            return isMyTeamInMatch(this.matchData, this.user);
         },
     },
     methods: {
@@ -245,16 +245,16 @@ createApp({
                 });
         },
         canAskReport() {
-            return canAskReport(this.matchData, this.user, this.isLeader);
+            return canAskReport(this.matchData, this.user);
         },
         canAcceptReport() {
-            return canAcceptReport(this.matchData, this.user, this.isLeader);
+            return canAcceptReport(this.matchData, this.user);
         },
         canRefuseReport() {
-            return canRefuseReport(this.matchData, this.user, this.isLeader);
+            return canRefuseReport(this.matchData, this.user);
         },
         canGiveReportDate() {
-            return canGiveReportDate(this.matchData, this.user, this.isLeader);
+            return canGiveReportDate(this.matchData, this.user);
         },
         postReportAction(actionName) {
             postReportAction(axios, this.matchData.code_match, actionName, () => this.reloadData());

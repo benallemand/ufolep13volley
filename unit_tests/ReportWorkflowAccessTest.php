@@ -81,6 +81,8 @@ class ReportWorkflowAccessTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM emails WHERE subject LIKE '%RPTACC\\_%'");
         $this->sql->execute("DELETE FROM activity WHERE comment LIKE '%RPTACC\\_%' OR comment LIKE '%rptacc team %'");
         $this->sql->execute("DELETE FROM matches WHERE code_match LIKE 'RPTACC\\_%'");
+        $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'rptacc_multi')");
+        $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'rptacc_multi'");
         $this->sql->execute("DELETE FROM classements WHERE code_competition = 'ur'");
         $this->sql->execute("DELETE FROM joueur_equipe WHERE id_joueur IN (SELECT id FROM joueurs WHERE nom = 'Rptacc')");
         $this->sql->execute("DELETE FROM joueurs WHERE nom = 'Rptacc'");
@@ -227,6 +229,54 @@ class ReportWorkflowAccessTest extends UfolepTestCase
         $this->connect_as_team_leader($this->teams[1]);
         $_SESSION['is_admin'] = true;
         self::assertSame($this->teams[1], $this->guard('refuseReport'));
+    }
+
+    // --- Responsable de plusieurs équipes (#421)
+
+    /**
+     * Un compte responsable des équipes données (users_teams), en session sur
+     * l'équipe courante donnée.
+     */
+    private function connect_as_multi_team_leader(array $team_numbers, int $current_team_number): void
+    {
+        $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'rptacc_multi')");
+        $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'rptacc_multi'");
+        $id_user = $this->sql->execute(
+            "INSERT INTO comptes_acces SET login = 'rptacc_multi', email = 'rptacc_multi@ufolep.test'");
+        foreach ($team_numbers as $number) {
+            $this->sql->execute("INSERT INTO users_teams SET user_id = ?, team_id = ?", array(
+                array('type' => 'i', 'value' => $id_user),
+                array('type' => 'i', 'value' => $this->teams[$number]),
+            ));
+        }
+        $this->connect_as_team_leader($this->teams[$current_team_number]);
+        $_SESSION['id_user'] = $id_user;
+    }
+
+    public function test_un_responsable_agit_pour_son_equipe_du_match_meme_si_ce_n_est_pas_l_equipe_courante(): void
+    {
+        // équipe courante : la 3, hors du match ; son autre équipe, la 2, le joue
+        $this->set_match_state('ASKED_BY_DOM');
+        $this->connect_as_multi_team_leader(array(2, 3), 3);
+        self::assertSame($this->teams[2], $this->guard('acceptReport'));
+    }
+
+    public function test_responsable_des_deux_equipes_du_match_il_doit_choisir_l_equipe(): void
+    {
+        $this->set_match_state('NOT_ASKED');
+        $this->connect_as_multi_team_leader(array(1, 2, 3), 3);
+        $this->assert_refused('askForReport', "responsable des deux équipes de ce match",
+            "derby, équipe courante hors du match");
+        // l'équipe courante tranche
+        $this->connect_as_multi_team_leader(array(1, 2), 2);
+        self::assertSame($this->teams[2], $this->guard('askForReport'));
+    }
+
+    public function test_les_equipes_du_compte_ne_jouant_pas_le_match_ne_donnent_aucun_droit(): void
+    {
+        $this->set_match_state('NOT_ASKED');
+        $this->connect_as_multi_team_leader(array(3, 4), 3);
+        $this->assert_refused('askForReport', "Seul le responsable d'une des deux équipes", "équipes 3 et 4");
     }
 
     // --- États

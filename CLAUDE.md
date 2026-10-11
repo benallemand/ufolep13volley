@@ -1554,6 +1554,16 @@ plus d'une fois toutes les 5 minutes.
   signe que pour son équipe. « Agir en tant que » depuis un compte de club ne
   donne jamais plus de droits que le club : ni l'admin, ni les autres clubs du
   compte cible.
+- **Un responsable de plusieurs équipes agit sur les matchs de chacune, pas
+  seulement de l'équipe courante (#421).** `session_user.php` expose
+  `team_ids` (users_teams) ; les boutons d'un match (date, score en direct,
+  reports) testent `isMyTeamInMatch` / `actingTeamId` de
+  `utils/reportUtils.js`, jamais `user.id_equipe` seul. Pour un report,
+  l'équipe qui agit est l'équipe courante si elle joue le match, sinon celle
+  du compte qui le joue (`MatchMgr::get_report_acting_team_id`) ; responsable
+  des deux équipes d'un derby, il doit sélectionner l'équipe (409).
+  Symptôme (10/2026) : responsable d'une équipe masculine et d'une féminine,
+  elle ne voyait pas « Modifier la date » sur les matchs de la féminine.
 
 > **Les trois rôles s'éditent depuis l'écran Utilisateurs**, et tous les trois
 > par un **bouton d'action**, pas par un champ du formulaire : « Équipes

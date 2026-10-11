@@ -155,16 +155,16 @@ export default {
             this.filter.showForbiddenPlayer = false;
         },
         canAskReportFor(match) {
-            return canAskReport(match, this.user, this.isLeader);
+            return canAskReport(match, this.user);
         },
         canAcceptReportFor(match) {
-            return canAcceptReport(match, this.user, this.isLeader);
+            return canAcceptReport(match, this.user);
         },
         canRefuseReportFor(match) {
-            return canRefuseReport(match, this.user, this.isLeader);
+            return canRefuseReport(match, this.user);
         },
         canGiveReportDateFor(match) {
-            return canGiveReportDate(match, this.user, this.isLeader);
+            return canGiveReportDate(match, this.user);
         },
         doPostReportAction(code_match, actionName) {
             postReportAction(axios, code_match, actionName, () => this.fetch());
