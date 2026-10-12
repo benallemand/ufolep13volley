@@ -700,7 +700,7 @@ class Register extends Generic
             } else {
                 $this->replace_timeslots($register, $id_team, $complete(2));
                 $this->addActivity("Créneaux de l'équipe " . $register['new_team_name']
-                    . " remplacés par ceux de son inscription");
+                    . " remplacés par ceux de son inscription", $id_team);
                 $line += array('status' => 'applied');
             }
             $report[] = $line;

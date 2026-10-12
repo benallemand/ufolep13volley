@@ -27,8 +27,11 @@ CREATE TABLE `activity` (
   `comment` varchar(400) DEFAULT NULL,
   `activity_date` datetime DEFAULT NULL,
   `user_id` smallint DEFAULT NULL,
+  `id_team` smallint DEFAULT NULL,
+  `original_user_id` smallint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id` (`id`)
+  KEY `id` (`id`),
+  KEY `idx_activity_team` (`id_team`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27432 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

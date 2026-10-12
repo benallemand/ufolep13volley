@@ -1632,6 +1632,16 @@ plus d'une fois toutes les 5 minutes.
   compare lui-même : `$before = $this->row_before($id)` avant l'écriture, puis
   `build_activity($sujet, $before, $inputs)` (création, ou « - champ : ancien →
   nouveau », null si rien n'a changé)
+- **Journal d'activité : passer l'équipe concernée** (#425) :
+  `addActivity($comment, $id_team)` dès que l'action porte sur une équipe
+  (effectif, créneaux, pénalités, reports, fiche équipe…). C'est
+  `activity.id_team` qui range la ligne dans l'historique de l'équipe et
+  remplit la colonne Équipe de l'écran Activité. Avant, l'équipe était
+  déduite des équipes de l'AUTEUR : l'historique d'une équipe contenait toutes
+  les actions d'administration de l'admin qui en était responsable. Une action
+  sans équipe n'apparaît dans aucun historique d'équipe. Pendant « Agir en
+  tant que », `addActivity` enregistre aussi l'admin d'origine
+  (`activity.original_user_id`, #426), affiché « (par …) ».
 - Retirer un paramètre d'une signature décale les **appels positionnels**, et
   PHP ignore sans erreur un argument en trop : chercher les appelants (tests
   compris) avant de toucher à l'ordre des paramètres

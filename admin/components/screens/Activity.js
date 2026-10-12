@@ -64,6 +64,8 @@ export default {
                         .trim(),
                 },
                 { key: 'utilisateur', label: 'Utilisateur' },
+                // « Agir en tant que » : l'admin qui a agi au nom du compte (#426)
+                { key: 'utilisateur_origine', label: 'Par (agir en tant que)' },
                 { key: 'email_utilisateur', label: 'Email' },
             ],
         };

@@ -597,7 +597,7 @@ class Rank extends Generic
             array('type' => 's', 'value' => $compet),
         );
         $this->sql_manager->execute($sqlmaj, $bindings);
-        $this->addActivity("Une penalite a ete infligee a l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Une penalite a ete infligee a l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
         return true;
     }
 
@@ -626,7 +626,7 @@ class Rank extends Generic
             array('type' => 's', 'value' => $compet),
         );
         $this->sql_manager->execute($sqlmaj, $bindings);
-        $this->addActivity("Une penalite a ete annulee pour l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Une penalite a ete annulee pour l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
         return true;
     }
 
@@ -639,7 +639,7 @@ class Rank extends Generic
             array('type' => 's', 'value' => $compet),
         );
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Un report a ete comptabilise pour l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Un report a ete comptabilise pour l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
         return true;
     }
 
@@ -652,7 +652,7 @@ class Rank extends Generic
             array('type' => 's', 'value' => $compet),
         );
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Un report a ete retire pour l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Un report a ete retire pour l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
         return true;
     }
 

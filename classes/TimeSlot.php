@@ -205,7 +205,7 @@ class TimeSlot extends Generic
         } else {
             $comment = "Modification d'un creneau existant pour l'équipe $teamName";
         }
-        $this->addActivity($comment);
+        $this->addActivity($comment, $id_equipe);
         return true;
     }
 
@@ -232,12 +232,13 @@ class TimeSlot extends Generic
             throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !");
         }
         // supprimait n'importe quel créneau (issue #356)
-        (new UserManager())->assertCanManageTeam($this->getTimeSlotTeamId($id));
+        $id_team = $this->getTimeSlotTeamId($id);
+        (new UserManager())->assertCanManageTeam($id_team);
         // $id vient du client — issue #270
         $sql = "DELETE FROM creneau WHERE id = ?";
         $bindings = array(array('type' => 'i', 'value' => $id));
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Un créneau a été supprimé");
+        $this->addActivity("Un créneau a été supprimé", $id_team);
     }
 
 }

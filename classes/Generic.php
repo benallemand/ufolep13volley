@@ -56,21 +56,37 @@ class Generic
      * @param $comment
      * @throws Exception
      */
-    protected function addActivity($comment): void
+    /**
+     * @param $comment
+     * @param int|string|null $id_team l'équipe concernée par l'action : c'est
+     *        elle, et non les équipes de l'auteur, qui range la ligne dans
+     *        l'historique d'une équipe (#425)
+     * @throws Exception
+     */
+    protected function addActivity($comment, $id_team = null): void
     {
         try{
             $userDetails = $this->getCurrentUserDetails();
         }
         catch (Exception $exception) {
         }
+        $sql = "INSERT activity SET comment = ?, activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
         $bindings = array(
             array('type' => 's', 'value' => $comment),
         );
         if (!empty($userDetails['id_user'])) {
+            $sql .= ", user_id = ?";
             $bindings[] = array('type' => 'i', 'value' => $userDetails['id_user']);
-            $sql = "INSERT activity SET comment = ?, activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s'), user_id = ?";
-        } else {
-            $sql = "INSERT activity SET comment = ?, activity_date=STR_TO_DATE(NOW(), '%Y-%m-%d %H:%i:%s')";
+        }
+        if (!empty($id_team)) {
+            $sql .= ", id_team = ?";
+            $bindings[] = array('type' => 'i', 'value' => (int)$id_team);
+        }
+        // « Agir en tant que » : l'action est faite au nom du compte cible,
+        // mais c'est l'admin (ou le responsable de club) qui la fait (#426)
+        if (!empty($userDetails['acting_as']) && !empty($userDetails['original_admin_id'])) {
+            $sql .= ", original_user_id = ?";
+            $bindings[] = array('type' => 'i', 'value' => (int)$userDetails['original_admin_id']);
         }
         $this->sql_manager->execute($sql, $bindings);
     }
@@ -117,27 +133,33 @@ class Generic
             && (!UserManager::isAdmin() || (Generic::to_flag($my_team) === 1 && UserManager::isTeamLeader()))) {
             $id_team = $_SESSION['id_equipe'];
         }
-        $sql = "SELECT 
-                DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date, 
-                GROUP_CONCAT(DISTINCT e.nom_equipe) AS nom_equipe, 
-                GROUP_CONCAT(DISTINCT c.libelle) AS competition, 
-                a.comment AS description, 
-                ca.login AS utilisateur, 
-                ca.email AS email_utilisateur 
+        // L'équipe d'une ligne est celle de l'action (`activity.id_team`), et
+        // non plus les équipes de son auteur (#425) : sinon l'historique d'une
+        // équipe contenait toutes les actions de ses responsables — celles
+        // d'administration comprises, pour un admin qui en est responsable.
+        // `original_user_id` : l'admin derrière un « Agir en tant que » (#426).
+        $sql = "SELECT
+                a.id,
+                DATE_FORMAT(a.activity_date, '%d/%m/%Y %H:%i:%s') AS date,
+                e.nom_equipe,
+                c.libelle AS competition,
+                a.comment AS description,
+                ca.login AS utilisateur,
+                ca.email AS email_utilisateur,
+                oa.login AS utilisateur_origine
             FROM activity a
             LEFT JOIN comptes_acces ca ON ca.id=a.user_id
-            LEFT JOIN users_teams ut ON ca.id = ut.user_id
-            LEFT JOIN equipes e ON e.id_equipe=ut.team_id
+            LEFT JOIN comptes_acces oa ON oa.id=a.original_user_id
+            LEFT JOIN equipes e ON e.id_equipe=a.id_team
             LEFT JOIN competitions c ON c.code_competition=e.code_competition";
         // `$id_team` vient de la session pour un non-admin, mais un admin peut
         // le poster : on lie la valeur au lieu de la concatener (issue #270).
         $bindings = array();
         if (!empty($id_team)) {
-            $sql .= " WHERE e.id_equipe = ?";
+            $sql .= " WHERE a.id_team = ?";
             $bindings[] = array('type' => 'i', 'value' => $id_team);
         }
-        $sql .= " GROUP BY a.activity_date, a.comment, ca.login, ca.email";
-        $sql .= " ORDER BY a.activity_date DESC";
+        $sql .= " ORDER BY a.activity_date DESC, a.id DESC";
         return $this->sql_manager->execute($sql, $bindings);
     }
 

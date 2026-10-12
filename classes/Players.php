@@ -658,7 +658,7 @@ class Players extends Generic
         }
         $sql = "DELETE FROM joueur_equipe WHERE id_joueur = $idPlayer AND id_equipe = $idTeam";
         $this->sql_manager->execute($sql);
-        $this->addActivity($this->getPlayerFullName($idPlayer) . " a ete supprime de l'equipe " . $this->team->getTeamName($idTeam));
+        $this->addActivity($this->getPlayerFullName($idPlayer) . " a ete supprime de l'equipe " . $this->team->getTeamName($idTeam), $idTeam);
     }
 
     /**
@@ -812,7 +812,8 @@ class Players extends Generic
             . $this->getPlayerFullName($idPlayer)
             . " a l'equipe " . $this->team->getTeamName($idTeam)
             . ($est_jouant ? "" : " (membre non jouant)")
-            . ($lock === null ? "" : " (effectif fige depuis le match " . $lock['code_match'] . ")")
+            . ($lock === null ? "" : " (effectif fige depuis le match " . $lock['code_match'] . ")"),
+            $idTeam
         );
         return true;
     }
@@ -1053,7 +1054,7 @@ class Players extends Generic
                 array('type' => 'i', 'value' => $id_player),
             );
             $this->sql_manager->execute($sql, $bindings);
-            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau responsable : " . $this->getPlayerFullName($id_player));
+            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau responsable : " . $this->getPlayerFullName($id_player), $id_team);
         }
     }
 
@@ -1094,7 +1095,7 @@ class Players extends Generic
                 array('type' => 'i', 'value' => $id_player),
             );
             $this->sql_manager->execute($sql, $bindings);
-            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau capitaine : " . $this->getPlayerFullName($id_player));
+            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau capitaine : " . $this->getPlayerFullName($id_player), $id_team);
         }
     }
 
@@ -1174,7 +1175,8 @@ class Players extends Generic
         $this->addActivity(
             $this->getPlayerFullName($id_player)
             . ($plays ? " joue desormais dans l'equipe " : " ne joue pas dans l'equipe ")
-            . $this->team->getTeamName($id_team)
+            . $this->team->getTeamName($id_team),
+            $id_team
         );
     }
 
@@ -1251,7 +1253,7 @@ class Players extends Generic
                 array('type' => 'i', 'value' => $id_player),
             );
             $this->sql_manager->execute($sql, $bindings);
-            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau suppleant : " . $this->getPlayerFullName($id_player));
+            $this->addActivity("L'equipe " . $this->team->getTeamName($id_team) . " a un nouveau suppleant : " . $this->getPlayerFullName($id_player), $id_team);
         }
     }
 
@@ -1279,7 +1281,7 @@ class Players extends Generic
                 array('type' => 'i', 'value' => $id_team),
             );
             $this->sql_manager->execute($sql, $bindings);
-            $this->addActivity($this->getPlayerFullName($id_player) . " a ete supprime de l'equipe " . $this->team->getTeamName($id_team));
+            $this->addActivity($this->getPlayerFullName($id_player) . " a ete supprime de l'equipe " . $this->team->getTeamName($id_team), $id_team);
         }
     }
 
@@ -1755,6 +1757,6 @@ class Players extends Generic
             throw new Exception("Ce joueur n'est ni responsable d'équipe ni suppléant !");
         }
         $this->userManager->create_or_update_leader_account($player['email'], $id_team);
-        $this->addActivity("Création du compte responsable pour " . $player['prenom'] . " " . $player['nom']);
+        $this->addActivity("Création du compte responsable pour " . $player['prenom'] . " " . $player['nom'], $id_team);
     }
 }
