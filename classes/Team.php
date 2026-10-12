@@ -351,7 +351,8 @@ class Team extends Generic
         $id_equipe = null,
         $is_cup_registered = null,
         $code_competition = null,
-        $nom_equipe = null)
+        $nom_equipe = null,
+        $my_team = null)
     {
         $bindings = array();
         $inputs = array();
@@ -373,7 +374,20 @@ class Team extends Generic
         if (!is_null($nom_equipe)) {
             $inputs['nom_equipe'] = $nom_equipe;
         }
-        if (UserManager::isTeamLeader()) {
+        // L'équipe visée est dite par l'écran, pas déduite du rôle (#424) :
+        // le formulaire de l'espace responsable envoie `my_team`, l'écran
+        // Équipes de l'admin envoie `id_equipe` (ou rien, pour une création).
+        // Avant, l'équipe courante remplaçait toujours celle envoyée dès que
+        // le compte était responsable d'équipe : un admin qui l'était aussi
+        // renommait et changeait de club SA propre équipe en éditant une autre.
+        @session_start();
+        $from_my_team_space = Generic::to_flag($my_team) === 1
+            // repli d'un client antérieur, qui n'envoyait rien
+            || (!UserManager::isAdmin() && empty($inputs['id_equipe']));
+        if ($from_my_team_space) {
+            if (!UserManager::isTeamLeader() || empty($_SESSION['id_equipe'])) {
+                throw new Exception("Aucune équipe n'est sélectionnée !", 403);
+            }
             $inputs['id_equipe'] = $_SESSION['id_equipe'];
         }
         // Hors admin : pas de création d'équipe, et seulement une équipe gérée —
@@ -384,6 +398,7 @@ class Team extends Generic
             }
             (new UserManager())->assertCanManageTeam($inputs['id_equipe']);
         }
+        $before = $this->row_before($inputs['id_equipe'] ?? null, 'equipes', 'id_equipe');
         if (empty($inputs['id_equipe'])) {
             $sql = "INSERT INTO";
         } else {
@@ -423,7 +438,18 @@ class Team extends Generic
             );
             $sql .= " WHERE id_equipe = ?";
         }
-        $this->sql_manager->execute($sql, $bindings);
+        $result = $this->sql_manager->execute($sql, $bindings);
+        $id_saved = empty($inputs['id_equipe']) ? (int)$result : (int)$inputs['id_equipe'];
+        // le renommage de #424 n'avait laissé aucune trace
+        $written = $inputs;
+        if (array_key_exists('is_cup_registered', $written)) {
+            $written['is_cup_registered'] = Generic::to_flag($written['is_cup_registered']);
+        }
+        $activity = $this->build_activity(
+            "Équipe " . ($before['nom_equipe'] ?? $inputs['nom_equipe'] ?? $id_saved), $before, $written);
+        if ($activity !== null) {
+            $this->addActivity($activity);
+        }
         if (!empty($inputs['id_equipe'])) {
             $this->saveTeamPhoto($inputs['id_equipe']);
         }

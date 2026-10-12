@@ -87,6 +87,10 @@ export default {
             if (this.file) {
                 formData.append('photo', this.file);
             }
+            // l'équipe courante, y compris pour un admin qui en est
+            // responsable (#424) : sans ce drapeau, le serveur prend l'équipe
+            // envoyée, comme pour l'écran Équipes de l'admin
+            formData.append('my_team', 1);
             axios.post('/rest/action.php/team/saveTeam', formData)
                 .then(
                     response => {
