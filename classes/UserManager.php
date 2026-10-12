@@ -318,7 +318,7 @@ class UserManager extends Generic
         $password = Generic::randomPassword();
         $user_id = $this->insert_user($login, $email, $password);
         $this->insert_user_team($user_id, $id_equipe);
-        $this->addActivity("Creation du compte $login pour l'equipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Creation du compte $login pour l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
         $this->email->sendMailNewUser($email, $login, $password);
     }
 
@@ -904,7 +904,7 @@ class UserManager extends Generic
         require_once __DIR__ . '/Club.php';
         (new Club())->assertManagesTeam($id_equipe);
         $this->delete_user_team($user_id, $id_equipe);
-        $this->addActivity("Compte " . $this->getUserLogin($user_id) . " détaché de l'équipe " . $this->team->getTeamName($id_equipe));
+        $this->addActivity("Compte " . $this->getUserLogin($user_id) . " détaché de l'équipe " . $this->team->getTeamName($id_equipe), $id_equipe);
     }
 
     /**

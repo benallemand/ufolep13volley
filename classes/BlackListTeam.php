@@ -56,15 +56,15 @@ class BlackListTeam extends Generic
      */
     public function removeBlacklistTeam($id): void
     {
+        if (!UserManager::isAdmin() && !UserManager::isClubLeader()) {
+            throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !", 403);
+        }
+        $row = $this->get_by_id($id);
         if (!UserManager::isAdmin()) {
-            if (!UserManager::isClubLeader()) {
-                throw new Exception("Vous n'êtes pas autorisé à effectuer cette action !", 403);
-            }
-            $row = $this->get_by_id($id);
             (new Club())->assertManagesTeam($row['id_team']);
         }
         $this->delete($id);
-        $this->addActivity("Une indisponibilité d'équipe a été supprimée");
+        $this->addActivity("Une indisponibilité d'équipe a été supprimée", $row['id_team'] ?? null);
     }
 
     public function save($inputs)

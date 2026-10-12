@@ -448,7 +448,7 @@ class Team extends Generic
         $activity = $this->build_activity(
             "Équipe " . ($before['nom_equipe'] ?? $inputs['nom_equipe'] ?? $id_saved), $before, $written);
         if ($activity !== null) {
-            $this->addActivity($activity);
+            $this->addActivity($activity, $id_saved);
         }
         if (!empty($inputs['id_equipe'])) {
             $this->saveTeamPhoto($inputs['id_equipe']);
@@ -470,7 +470,7 @@ class Team extends Generic
         $idPhoto = $this->photo->insertPhoto($uploadfile);
         $this->linkTeamToPhoto($idTeam, $idPhoto);
         if (move_uploaded_file($_FILES['photo']['tmp_name'], __DIR__ . '/../' . $uploadfile)) {
-            $this->addActivity("Une nouvelle photo a ete transmise pour l'équipe " . $team['team_full_name']);
+            $this->addActivity("Une nouvelle photo a ete transmise pour l'équipe " . $team['team_full_name'], $idTeam);
         }
     }
 

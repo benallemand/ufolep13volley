@@ -698,7 +698,9 @@ class MatchMgr extends Generic
             return;
         }
         $code_match = $inputs['code_match'];
-        $this->addActivity("Le match $code_match a ete modifie");
+        // l'équipe du compte qui joue le match ; aucune pour la commission
+        $this->addActivity("Le match $code_match a ete modifie",
+            $this->getUserTeamIdForMatch($this->get_match($inputs['id_match'])));
     }
 
 
@@ -1292,7 +1294,7 @@ class MatchMgr extends Generic
             ? 'ASKED_BY_DOM'
             : 'ASKED_BY_EXT';
         $this->set_report_status($code_match, $report_status);
-        $this->addActivity("Report demandé par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
+        $this->addActivity("Report demandé par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match", $sessionIdEquipe);
         (new Emails())->sendMailAskForReport($code_match, $reason, $sessionIdEquipe);
         return true;
     }
@@ -1331,7 +1333,7 @@ class MatchMgr extends Generic
             'value' => $code_match
         );
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Date de report transmise par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
+        $this->addActivity("Date de report transmise par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match", $sessionIdEquipe);
         (new Emails())->sendMailGiveReportDate($code_match, $report_date, $sessionIdEquipe);
     }
 
@@ -1357,7 +1359,7 @@ class MatchMgr extends Generic
             $this->set_report_status($code_match, $report_status);
             $this->addActivity(
                 "Report refusé par " . $this->team->getTeamName($sessionIdEquipe) .
-                " pour le match $code_match, raison: " . $reason);
+                " pour le match $code_match, raison: " . $reason, $sessionIdEquipe);
             (new Emails())->sendMailRefuseReport($code_match, $reason, $sessionIdEquipe);
         } else {
             $this->set_report_status($code_match, 'REFUSED_BY_ADMIN');
@@ -1391,7 +1393,7 @@ class MatchMgr extends Generic
         } else {
             $this->rank->incrementReportCount($this_match['code_competition'], $this_match['id_equipe_dom']);
         }
-        $this->addActivity("Report accepté par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match");
+        $this->addActivity("Report accepté par " . $this->team->getTeamName($sessionIdEquipe) . " pour le match $code_match", $sessionIdEquipe);
         (new Emails())->sendMailAcceptReport($code_match, $sessionIdEquipe);
         return true;
     }
@@ -1434,7 +1436,7 @@ class MatchMgr extends Generic
         if (count($player_ids) > 0) {
             $match = $this->get_match($id_match);
             $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
-            $this->addActivity($comment);
+            $this->addActivity($comment, $this->getUserTeamIdForMatch($match));
         }
     }
 
@@ -2337,7 +2339,7 @@ class MatchMgr extends Generic
         $bindings[] = array('type' => 'i', 'value' => $id_match);
 
         $this->sql_manager->execute($sql, $bindings);
-        $this->addActivity("Le match {$match['code_match']} a vu sa date modifiée pour le $new_date");
+        $this->addActivity("Le match {$match['code_match']} a vu sa date modifiée pour le $new_date", $this->getUserTeamIdForMatch($match));
 
         // Re-fetch updated match for email (teams may have been inverted)
         $updated_match = $this->get_match($id_match);

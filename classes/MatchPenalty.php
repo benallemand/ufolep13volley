@@ -42,16 +42,17 @@ class MatchPenalty extends Generic
             ));
         $applied = 0;
         foreach ($matches as $match) {
-            $penalized = array();
+            $penalized = false;
             foreach (array('dom', 'ext') as $side) {
                 if ($this->penalize((int)$match['id_match'], (int)$match["id_equipe_$side"], $match['code_competition'])) {
-                    $penalized[] = $match["equipe_$side"];
+                    // une ligne par équipe, rangée dans son historique (#425)
+                    $this->addActivity("Pénalité automatique (-1 pt, feuille de match non signée à 48 h) : "
+                        . $match["equipe_$side"] . " — match " . $match['code_match'], $match["id_equipe_$side"]);
+                    $penalized = true;
                     $applied++;
                 }
             }
-            if (!empty($penalized)) {
-                $this->addActivity("Pénalité automatique (-1 pt, feuille de match non signée à 48 h) : "
-                    . implode(', ', $penalized) . " — match " . $match['code_match']);
+            if ($penalized) {
                 $this->notify($match);
             }
         }

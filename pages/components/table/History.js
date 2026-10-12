@@ -12,7 +12,11 @@ export default {
           </thead>
           <tbody>
           <tr v-for="activity in sorted" :key="activity.id">
-            <td>{{ activity.utilisateur }}</td>
+            <td>
+              {{ activity.utilisateur }}
+              <!-- « Agir en tant que » : l'admin qui a agi au nom du compte (#426) -->
+              <span v-if="activity.utilisateur_origine" class="opacity-70">(par {{ activity.utilisateur_origine }})</span>
+            </td>
             <td>{{ activity.nom_equipe }}</td>
             <td>{{ activity.date }}</td>
             <td>{{ activity.description }}</td>
