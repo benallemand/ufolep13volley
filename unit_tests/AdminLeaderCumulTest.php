@@ -6,6 +6,7 @@ require_once __DIR__ . '/../classes/Players.php';
 require_once __DIR__ . '/../classes/Alerts.php';
 require_once __DIR__ . '/../classes/MatchMgr.php';
 require_once __DIR__ . '/../classes/UserManager.php';
+require_once __DIR__ . '/../classes/Team.php';
 
 /**
  * Issue #419 — un administrateur qui est aussi responsable d'équipe fait, depuis
@@ -46,6 +47,7 @@ class AdminLeaderCumulTest extends UfolepTestCase
         $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'cumul_test'");
         $this->sql->execute("DELETE FROM joueur_equipe WHERE id_joueur IN (SELECT id FROM joueurs WHERE nom = 'CUMULTEST')");
         $this->sql->execute("DELETE FROM joueurs WHERE nom = 'CUMULTEST'");
+        $this->sql->execute("DELETE FROM activity WHERE comment LIKE '%CUMUL autre%' OR comment LIKE '%CUMUL equipe%'");
         $this->sql->execute("DELETE FROM equipes WHERE nom_equipe LIKE 'CUMUL %'");
         $this->sql->execute("DELETE FROM clubs WHERE nom LIKE 'CUMUL club%'");
     }
@@ -230,5 +232,61 @@ class AdminLeaderCumulTest extends UfolepTestCase
             array(array('type' => 'i', 'value' => $this->id_team)));
         $players->search_player_and_save_from_licence($licence, false);
         $this->assertSame(array(), $this->team_player_names());
+    }
+
+    // --- Fiche équipe (#424)
+
+    private function team_row(int $id_team): array
+    {
+        return $this->sql->execute(
+            "SELECT nom_equipe, id_club, code_competition FROM equipes WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_team)))[0];
+    }
+
+    public function test_admin_responsable_modifie_l_equipe_choisie_dans_l_ecran_equipes(): void
+    {
+        // Le cas signalé : un admin, responsable de « CUMUL equipe », édite une
+        // autre équipe depuis l'écran Équipes. C'est son équipe qui était
+        // renommée et changée de club.
+        $other_club = (int)$this->sql->execute("INSERT INTO clubs SET nom = 'CUMUL club autre'");
+        $other_team = (int)$this->sql->execute(
+            "INSERT INTO equipes SET nom_equipe = 'CUMUL autre', code_competition = 'f', id_club = ?",
+            array(array('type' => 'i', 'value' => $other_club)));
+        $this->connect_as_admin_and_team_leader();
+
+        (new Team())->saveTeam(null, $other_club, $other_team, 0, 'f', 'CUMUL autre renommee');
+
+        $this->assertSame('CUMUL autre renommee', $this->team_row($other_team)['nom_equipe']);
+        $this->assertSame(
+            array('nom_equipe' => 'CUMUL equipe', 'id_club' => $this->id_club, 'code_competition' => 'm'),
+            $this->team_row($this->id_team), "l'équipe du responsable est intacte");
+        $journal = $this->sql->execute("SELECT comment FROM activity WHERE comment LIKE 'Équipe CUMUL autre :%'");
+        $this->assertCount(1, $journal, 'la modification est inscrite au journal');
+        $this->assertStringContainsString('CUMUL autre → CUMUL autre renommee', $journal[0]['comment']);
+    }
+
+    public function test_admin_responsable_cree_une_equipe_depuis_l_ecran_equipes(): void
+    {
+        $this->connect_as_admin_and_team_leader();
+
+        (new Team())->saveTeam(null, $this->id_club, null, 0, 'mo', 'CUMUL nouvelle');
+
+        $this->assertCount(1, $this->sql->execute("SELECT id_equipe FROM equipes WHERE nom_equipe = 'CUMUL nouvelle'"));
+        $this->assertSame('CUMUL equipe', $this->team_row($this->id_team)['nom_equipe']);
+    }
+
+    public function test_espace_responsable_modifie_l_equipe_courante(): void
+    {
+        // Formulaire de l'espace responsable : `my_team`, sans id d'équipe,
+        // pour un admin comme pour un responsable seul.
+        foreach (array(true, false) as $is_admin) {
+            $this->connect_as_team_leader($this->id_team);
+            $_SESSION['is_admin'] = $is_admin;
+            $site = $is_admin ? 'https://admin.example.org' : 'https://leader.example.org';
+            (new Team())->saveTeam($site, null, null, null, null, null, '1');
+            $row = $this->sql->execute("SELECT web_site FROM equipes WHERE id_equipe = ?",
+                array(array('type' => 'i', 'value' => $this->id_team)));
+            $this->assertSame($site, $row[0]['web_site'], $is_admin ? 'admin responsable' : 'responsable');
+        }
     }
 }

@@ -1548,7 +1548,10 @@ plus d'une fois toutes les 5 minutes.
   plus. Quand un même point d'entrée sert l'administration ET l'espace
   responsable, c'est **l'écran** qui dit d'où il vient, pas le rôle :
   `add_to_my_team` (formulaire joueur, import de licences), `my_team`
-  (historique), `id_club` vide (inscription depuis l'espace club). Sinon un
+  (historique ; fiche équipe, #424), `id_club` vide (inscription depuis
+  l'espace club). Avant #424, `Team::saveTeam` remplaçait l'équipe envoyée
+  par l'équipe courante dès que le compte était responsable : un admin qui
+  éditait une autre équipe dans l'écran Équipes renommait la sienne. Sinon un
   admin-responsable remplit son équipe à chaque fiche modifiée dans
   l'administration (#407). Un admin qui joue un match comme responsable ne
   signe que pour son équipe. « Agir en tant que » depuis un compte de club ne

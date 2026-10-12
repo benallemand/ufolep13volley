@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `activity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `activity` (
-  `id` smallint NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `comment` varchar(400) DEFAULT NULL,
   `activity_date` datetime DEFAULT NULL,
   `user_id` smallint DEFAULT NULL,
