@@ -385,6 +385,36 @@ class Files extends Generic
     }
 
     /**
+     * Numéro d'une licence liguasso, lu sur sa ligne « N° … » : [département,
+     * numéro], ou null si la ligne n'est pas un numéro de licence.
+     *
+     * - `N° SB10000025` : initiales + 8 chiffres, département du document
+     *   (13 par défaut) ;
+     * - `N° 013_40232028` : département + numéro (ancien format) ;
+     * - `N° 013_MH10000137` : département + numéro alphanumérique ;
+     * - `N° 013_030_60109096` : comité qui délivre, département d'origine du
+     *   licencié, numéro (#429). Le licencié est identifié par son département
+     *   d'origine, comme son identifiant liguasso (`030_60109096`). Sans cette
+     *   forme, la licence n'était pas reconnue du tout.
+     *
+     * @return array{0: string, 1: string}|null
+     */
+    public static function parse_liguasso_licence_number(string $item, ?string $document_departement = null): ?array
+    {
+        $item = trim($item);
+        if (preg_match('/^N°\s+([A-Z]{2})(\d{8})$/u', $item, $matches)) {
+            return array($document_departement ? ltrim($document_departement, '0') : '13', $matches[1] . $matches[2]);
+        }
+        if (preg_match('/^N°\s+0?\d{2,3}_0?(\d{2,3})_([A-Z]{0,2}\d+)$/u', $item, $matches)) {
+            return array(ltrim($matches[1], '0'), $matches[2]);
+        }
+        if (preg_match('/^N°\s+0?(\d{2,3})_([A-Z]{0,2}\d+)$/u', $item, $matches)) {
+            return array(ltrim($matches[1], '0'), $matches[2]);
+        }
+        return null;
+    }
+
+    /**
      * Parse le nouveau format de licence liguasso
      * Format du numéro: 2 lettres (initiales) + 8 chiffres (ex: SB10000025)
      */
@@ -515,30 +545,10 @@ class Files extends Generic
                     $departement = $matches[1];
                 }
                 
-                // Nouveau format liguasso: "N° XX00000000" (2 lettres + 8 chiffres) ou "N° 0XX_XXXXXXXX" (ancien format dans liguasso)
-                $isNewLicence = false;
-                $licenceNumber = null;
-                $extractedDepartement = null;
-                
-                // Format 1: initiales + 8 chiffres (ex: SB10000025)
-                if (preg_match('/^N°\s+([A-Z]{2})(\d{8})$/', $item, $matches)) {
-                    $isNewLicence = true;
-                    $licenceNumber = $matches[1] . $matches[2];
-                    $extractedDepartement = $departement ? ltrim($departement, '0') : '13';
-                }
-                // Format 2: ancien format dans liguasso (ex: 013_40232028)
-                elseif (preg_match('/^N°\s+0?(\d{2,3})_(\d+)$/', $item, $matches)) {
-                    $isNewLicence = true;
-                    $extractedDepartement = ltrim($matches[1], '0');
-                    $licenceNumber = $matches[2];
-                }
-                // Format 3: département numérique + numéro alphanumérique (ex: 013_MH10000137)
-                elseif (preg_match('/^N°\s+0?(\d{2,3})_([A-Z]{1,2}\d+)$/', $item, $matches)) {
-                    $isNewLicence = true;
-                    $extractedDepartement = ltrim($matches[1], '0');
-                    $licenceNumber = $matches[2];
-                }
-                
+                $parsedNumber = self::parse_liguasso_licence_number($item, $departement);
+                $isNewLicence = $parsedNumber !== null;
+                [$extractedDepartement, $licenceNumber] = $parsedNumber ?? array(null, null);
+
                 if ($isNewLicence) {
                     // Nouvelle licence détectée - sauvegarder la précédente si elle existe
                     if (count($result) >= 9) {
@@ -585,7 +595,7 @@ class Files extends Generic
                             !self::starts_with($next_item, "votre identifiant") &&
                             !self::starts_with($next_item, "Licence à") &&
                             !self::starts_with($next_item, "Plus d'informations") &&
-                            !preg_match('/^N°\s+[A-Z]{2}\d{8}$/', $next_item) &&
+                            self::parse_liguasso_licence_number($next_item) === null &&
                             !self::starts_with($next_item, "Né(e) le") &&
                             !self::starts_with($next_item, "Asso") &&
                             !self::starts_with($next_item, "MULTISPORTS") &&

@@ -238,5 +238,49 @@ class FilesTest extends UfolepTestCase
         echo str_repeat("=", 60) . "\n\n";
     }
 
+    /**
+     * Numéro de licence liguasso, sous ses quatre formes (#429). Testé sur la
+     * ligne de texte : les PDF de licence portent les données d'une personne.
+     */
+    public function test_numero_de_licence_liguasso()
+    {
+        $cas = array(
+            array('N° SB10000025', null, array('13', 'SB10000025')),
+            array('N° SB10000025', '007', array('7', 'SB10000025')),
+            array('N° 013_40232028', null, array('13', '40232028')),
+            array('N° 013_MH10000137', null, array('13', 'MH10000137')),
+            array('N° 007_99996743', null, array('7', '99996743')),
+            // comité qui délivre, département d'origine, numéro : la licence
+            // n'était pas reconnue du tout
+            array('N° 013_030_60109096', null, array('30', '60109096')),
+            array('N° 013_030_AB10000001', null, array('30', 'AB10000001')),
+        );
+        foreach ($cas as [$ligne, $departement, $attendu]) {
+            $this->assertSame($attendu, Files::parse_liguasso_licence_number($ligne, $departement), $ligne);
+        }
+        foreach (array('N°', 'N° 013', 'Né(e) le 16/07/1981', 'Asso 013097327 - CLUB') as $ligne) {
+            $this->assertNull(Files::parse_liguasso_licence_number($ligne), $ligne);
+        }
+    }
 
+    /**
+     * La licence réelle du cas #429, si elle est déposée en local (jamais
+     * versionnée : `files/do_not_version/`).
+     */
+    public function test_licence_numero_trois_parties_en_local()
+    {
+        $file = __DIR__ . '/files/do_not_version/licence-numero-trois-parties.pdf';
+        if (!file_exists($file)) {
+            $this->markTestSkipped("licence de #429 absente (fichier personnel, non versionné)");
+        }
+        $results = (new Files())->get_licences_data($file);
+        $this->assertCount(1, $results);
+        $this->assertSame('30', $results[0]['departement']);
+        $this->assertSame('60109096', $results[0]['licence_number']);
+        $this->assertSame('030_60109096', $results[0]['licence_number_2']);
+        $this->assertSame('07/10/2026', $results[0]['homologation_date']);
+        // pas de photo sur cette licence (cadre vide) : rien, et surtout pas
+        // le logo du club, qui est la seule autre image du document
+        $this->assertNull($results[0]['photo']);
+    }
 }

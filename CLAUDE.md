@@ -1053,6 +1053,16 @@ message technique du lecteur PDF.
   département a sa colonne. Reprise de l'existant : migration `025`.
 - La photo n'est pas exigée à l'import : seulement sur la feuille de match
   (#343).
+- **Numéro de licence** : `Files::parse_liguasso_licence_number`, testé sur
+  des lignes de texte (`FilesTest`), sous quatre formes : `SB10000025`,
+  `013_40232028`, `013_MH10000137`, et `013_030_60109096` (#429). La dernière,
+  c'est le comité qui délivre, le département d'origine du licencié et son
+  numéro. On retient le département d'origine, comme l'identifiant liguasso
+  imprimé (`030_60109096`). Un numéro non reconnu fait ignorer la licence
+  entière (« Aucune licence reconnue »), sans autre message. **Ne pas
+  versionner de licence réelle** pour un nouveau cas : la déposer dans
+  `unit_tests/files/do_not_version/` (ignoré par git), avec un test sauté en
+  son absence.
 
 ### Fusion de deux fiches joueur (issue #409)
 
