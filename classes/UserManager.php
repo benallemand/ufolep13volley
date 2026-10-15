@@ -1126,7 +1126,7 @@ class UserManager extends Generic
      * @return int[]
      * @throws Exception
      */
-    private function getMyLedTeamIds(): array
+    public function getMyLedTeamIds(): array
     {
         @session_start();
         $team_ids = empty($_SESSION['id_user'])
