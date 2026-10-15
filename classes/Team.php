@@ -693,13 +693,14 @@ class Team extends Generic
     /**
      * Fiche équipe (#431) : un administrateur les consulte toutes ; un compte
      * lié à des équipes (users_teams, équipe courante) ou à des clubs, celles
-     * de ses équipes et des équipes de ses clubs, et celles des autres équipes
-     * de leurs divisions (`classements` : même compétition, même division).
+     * de ses équipes et des équipes de ses clubs, et celles de leurs
+     * adversaires : un match confirmé ou non (pas archivé), championnat comme
+     * coupe et phases finales.
      *
-     * Avant, il fallait que l'équipe COURANTE ait joué un match CONFIRMÉ
-     * contre l'équipe demandée : en début de saison, aucun match n'est
-     * confirmé, et plus personne ne voyait la fiche d'un adversaire. Les
-     * autres équipes du compte et les responsables de club étaient ignorés.
+     * Avant, seuls comptaient l'équipe COURANTE et ses matchs CONFIRMÉS : en
+     * début de saison, aucun match n'est confirmé, et plus personne ne voyait
+     * la fiche d'un adversaire. Les autres équipes du compte et les
+     * responsables de club étaient ignorés.
      * @throws Exception
      */
     public function isTeamSheetAllowedForUser($idTeam): bool
@@ -721,7 +722,10 @@ class Team extends Generic
         if (empty($team_ids) && empty($club_ids)) {
             return false;
         }
-        $bindings = array(array('type' => 'i', 'value' => $idTeam));
+        $bindings = array(
+            array('type' => 'i', 'value' => $idTeam),
+            array('type' => 'i', 'value' => $idTeam),
+        );
         $mine = array();
         if (!empty($team_ids)) {
             $mine[] = "mine.id_equipe IN (" . implode(',', array_fill(0, count($team_ids), '?')) . ")";
@@ -730,17 +734,18 @@ class Team extends Generic
             }
         }
         if (!empty($club_ids)) {
-            $mine[] = "e.id_club IN (" . implode(',', array_fill(0, count($club_ids), '?')) . ")";
+            $mine[] = "mine.id_club IN (" . implode(',', array_fill(0, count($club_ids), '?')) . ")";
             foreach ($club_ids as $id) {
                 $bindings[] = array('type' => 'i', 'value' => (int)$id);
             }
         }
+        // un match de l'équipe demandée, dont l'autre équipe est l'une des siennes
         $sql = "SELECT 1
-                FROM classements other
-                JOIN classements mine ON mine.code_competition = other.code_competition
-                                     AND mine.division = other.division
-                JOIN equipes e ON e.id_equipe = mine.id_equipe
-                WHERE other.id_equipe = ?
+                FROM matches m
+                JOIN equipes mine ON mine.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
+                WHERE ? IN (m.id_equipe_dom, m.id_equipe_ext)
+                  AND mine.id_equipe <> ?
+                  AND m.match_status IN ('CONFIRMED', 'NOT_CONFIRMED')
                   AND (" . implode(' OR ', $mine) . ")
                 LIMIT 1";
         return !empty($this->sql_manager->execute($sql, $bindings));
