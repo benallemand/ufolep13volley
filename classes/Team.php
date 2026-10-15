@@ -9,6 +9,7 @@
 require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/Photo.php';
 require_once __DIR__ . '/UserManager.php';
+require_once __DIR__ . '/Club.php';
 
 class Team extends Generic
 {
@@ -689,38 +690,60 @@ class Team extends Generic
         return $data['email'];
     }
 
-    public function isSameRankingTable($id_equipe)
-    {
-        $sessionIdEquipe = $_SESSION['id_equipe'];
-        if ($sessionIdEquipe == $id_equipe) {
-            return true;
-        }
-        $sql = "SELECT * FROM matches 
-        WHERE 
-              match_status = 'CONFIRMED'
-              AND(id_equipe_dom=$sessionIdEquipe 
-                  OR id_equipe_ext=$sessionIdEquipe)";
-        $results = $this->sql_manager->execute($sql);
-        foreach ($results as $result) {
-            if ($result['id_equipe_dom'] == $id_equipe) {
-                return true;
-            }
-            if ($result['id_equipe_ext'] == $id_equipe) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function isTeamSheetAllowedForUser($idTeam)
+    /**
+     * Fiche équipe (#431) : un administrateur les consulte toutes ; un compte
+     * lié à des équipes (users_teams, équipe courante) ou à des clubs, celles
+     * de ses équipes et des équipes de ses clubs, et celles des autres équipes
+     * de leurs divisions (`classements` : même compétition, même division).
+     *
+     * Avant, il fallait que l'équipe COURANTE ait joué un match CONFIRMÉ
+     * contre l'équipe demandée : en début de saison, aucun match n'est
+     * confirmé, et plus personne ne voyait la fiche d'un adversaire. Les
+     * autres équipes du compte et les responsables de club étaient ignorés.
+     * @throws Exception
+     */
+    public function isTeamSheetAllowedForUser($idTeam): bool
     {
         if (UserManager::isAdmin()) {
             return true;
         }
-        if (!UserManager::isTeamLeader()) {
+        if (!UserManager::is_connected()) {
             return false;
         }
-        return $this->isSameRankingTable($idTeam);
+        $idTeam = Generic::parse_id($idTeam, "identifiant d'équipe");
+        $user_manager = new UserManager();
+        // ses équipes et celles de ses clubs
+        if ($user_manager->canManageTeam($idTeam)) {
+            return true;
+        }
+        $team_ids = $user_manager->getMyLedTeamIds();
+        $club_ids = UserManager::isClubLeader() ? (new Club())->getMyClubIds() : array();
+        if (empty($team_ids) && empty($club_ids)) {
+            return false;
+        }
+        $bindings = array(array('type' => 'i', 'value' => $idTeam));
+        $mine = array();
+        if (!empty($team_ids)) {
+            $mine[] = "mine.id_equipe IN (" . implode(',', array_fill(0, count($team_ids), '?')) . ")";
+            foreach ($team_ids as $id) {
+                $bindings[] = array('type' => 'i', 'value' => (int)$id);
+            }
+        }
+        if (!empty($club_ids)) {
+            $mine[] = "e.id_club IN (" . implode(',', array_fill(0, count($club_ids), '?')) . ")";
+            foreach ($club_ids as $id) {
+                $bindings[] = array('type' => 'i', 'value' => (int)$id);
+            }
+        }
+        $sql = "SELECT 1
+                FROM classements other
+                JOIN classements mine ON mine.code_competition = other.code_competition
+                                     AND mine.division = other.division
+                JOIN equipes e ON e.id_equipe = mine.id_equipe
+                WHERE other.id_equipe = ?
+                  AND (" . implode(' OR ', $mine) . ")
+                LIMIT 1";
+        return !empty($this->sql_manager->execute($sql, $bindings));
     }
 
     /**
