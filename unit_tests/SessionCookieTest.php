@@ -52,6 +52,7 @@ class SessionCookieTest extends TestCase
         'rest/access.php' => 'tableau de configuration, pas un point d\'entrée',
         'rest/raw_sql_guard.php' => 'fonctions incluses par rest/action.php (#354)',
         'rest/error_response.php' => 'fonctions incluses par rest/action.php (#355)',
+        'rest/json_response.php' => 'fonctions incluses par rest/action.php (#433)',
     ];
 
     /** Fichiers PHP joignables par le web, hors classes et helpers. */
