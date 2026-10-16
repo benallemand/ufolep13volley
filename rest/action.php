@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/raw_sql_guard.php';
 require_once __DIR__ . '/error_response.php';
+require_once __DIR__ . '/json_response.php';
 header('Access-Control-Allow-Origin: *');
 
 
@@ -261,7 +262,7 @@ try {
             // valeurs de retour ordinaires (identifiant créé…) restent
             // internes : on ne les expose pas par mégarde.
             if (is_array($result) && array_key_exists('report', $result)) {
-                echo json_encode(array(
+                send_json(array(
                     'success' => true,
                     'message' => $result['message'] ?? 'Modification OK',
                     'report' => $result['report'],
@@ -289,14 +290,14 @@ try {
             if (!empty($pagination)) {
                 $results = filter_results_by_pagination($results, $pagination);
             }
-            echo json_encode($results);
+            send_json($results);
             exit(0);
         case 'PUT':
         case 'DELETE':
         default:
             throw new Exception("Méthode HTTP non définie !");
     }
-    echo json_encode(array(
+    send_json(array(
         'success' => true,
         'message' => 'Modification OK'
     ));
@@ -311,14 +312,14 @@ try {
         case 201:
         case 200:
             http_response_code($resp_code);
-            echo json_encode(array(
+            send_json(array(
                 'success' => true,
                 'message' => $client_message
             ));
             break;
         default:
             http_response_code($resp_code);
-            echo json_encode(array(
+            send_json(array(
                 'success' => false,
                 'message' => $client_message
             ));
@@ -329,7 +330,7 @@ try {
 }
 catch (ArgumentCountError $argumentCountError) {
     http_response_code(500);
-    echo json_encode(array(
+    send_json(array(
         'success' => false,
         // la signature de la méthode n'a rien à faire chez le client
         'message' => "Paramètres manquants pour cette action !"
@@ -341,7 +342,7 @@ catch (Error $error) {
     // inconnu… : fatale sinon, avec la trace en réponse si display_errors.
     error_log(get_class($error) . ': ' . $error->getMessage());
     http_response_code(400);
-    echo json_encode(array(
+    send_json(array(
         'success' => false,
         'message' => "Paramètres invalides pour cette action !"
     ));
