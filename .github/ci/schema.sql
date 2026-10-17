@@ -160,6 +160,46 @@ CREATE TABLE `classements` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `classements_archives`
+--
+
+DROP TABLE IF EXISTS `classements_archives`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `classements_archives` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `saison` varchar(9) NOT NULL,
+  `demi_saison` tinyint NOT NULL DEFAULT '0',
+  `code_competition` varchar(2) NOT NULL,
+  `libelle_competition` varchar(100) NOT NULL,
+  `division` varchar(2) NOT NULL,
+  `rang` smallint NOT NULL,
+  `id_equipe` smallint NOT NULL,
+  `nom_equipe` varchar(50) NOT NULL,
+  `club` varchar(200) DEFAULT NULL,
+  `points` smallint NOT NULL,
+  `joues` smallint NOT NULL,
+  `gagnes` smallint NOT NULL,
+  `perdus` smallint NOT NULL,
+  `sets_pour` smallint NOT NULL,
+  `sets_contre` smallint NOT NULL,
+  `quotient_sets` decimal(10,3) DEFAULT NULL,
+  `quotient_points` decimal(10,3) DEFAULT NULL,
+  `penalites` smallint NOT NULL DEFAULT '0',
+  `reports` smallint NOT NULL DEFAULT '0',
+  `forfaits` smallint NOT NULL DEFAULT '0',
+  `premier_match` date DEFAULT NULL,
+  `dernier_match` date DEFAULT NULL,
+  `source` varchar(10) NOT NULL DEFAULT 'FROZEN',
+  `frozen_at` datetime NOT NULL,
+  `frozen_by` smallint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_classement_archive` (`saison`,`demi_saison`,`code_competition`,`division`,`id_equipe`),
+  KEY `idx_classement_archive_periode` (`saison`,`demi_saison`,`code_competition`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Temporary view structure for view `club_contacts_view`
 --
 

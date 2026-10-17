@@ -29,6 +29,11 @@ export default {
         delete-url="/rest/action.php/competition/delete">
 
         <template #actions="{ selection, rows, reload }">
+          <button class="btn btn-sm btn-outline" data-testid="freeze-ranks"
+                  :disabled="!selection.length || isSettingUp"
+                  @click="freezeRanks(selection, rows)">
+            <i class="fas fa-camera"></i> Figer le classement
+          </button>
           <button class="btn btn-sm btn-outline"
                   :disabled="!selection.length || isSettingUp"
                   @click="resetCompetition(selection, rows, reload)">
@@ -73,6 +78,31 @@ export default {
             return selection
                 .map((id) => rows.find((r) => String(r.id) === String(id)))
                 .map((row) => (row ? row.libelle || row.code_competition : '?'));
+        },
+        /**
+         * Fige le classement de la demi-saison en cours (issue #435) : une
+         * copie de chaque division, pénalités et reports compris, dans
+         * `classements_archives`. À faire en fin de demi-saison, avant
+         * « Équipes / comptes » (qui renomme les équipes) et avant la remise à
+         * zéro des points, que le serveur refuse sans copie. Refiger remplace
+         * la copie précédente.
+         */
+        freezeRanks(selection, rows) {
+            const message = 'Figer le classement de la demi-saison en cours pour : '
+                + this.labelsOf(selection, rows).join(', ') + ' ?\n\n'
+                + "Une copie de chaque division est enregistrée (pénalités et reports compris), "
+                + "telle que le site l'affiche aujourd'hui. Une copie déjà faite pour cette "
+                + "demi-saison est remplacée.";
+            if (!window.confirm(message)) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('ids', selection.join(','));
+            this.isSettingUp = true;
+            axios.post('/rest/action.php/rank/freezeRanks', formData)
+                .then((response) => onSuccess(this, response))
+                .catch((error) => onError(this, error))
+                .finally(() => { this.isSettingUp = false; });
         },
         /**
          * « Reset compétition » du menu *Générer* de l'admin ExtJS

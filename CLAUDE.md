@@ -1410,6 +1410,47 @@ Trois capacités d'`AdminGrid`, offertes à tous les écrans :
   - un type de compétition se lit sur `code_competition`, jamais par un
     `LIKE` sur un nom d'équipe ou un code de match.
 
+### Classement figé de chaque demi-saison (#435)
+
+Les pénalités et les reports (`classements.penalite`, `report_count`) ne sont
+attachés à aucun match. Ils sont remis à zéro à chaque demi-saison, et
+`classements` est reconstruit à l'initialisation de la suivante. Une fois les
+matchs archivés, le classement **n'est même plus calculable** : les deux
+calculs ignorent les matchs ARCHIVED. D'où une copie dans
+`classements_archives` (migration `028`), une ligne par équipe et par
+division. Ce sont des valeurs recopiées depuis `Rank::getRank`, nom et club de
+l'équipe compris, et non un calcul refait à la lecture.
+
+- **Période** (`Rank::period_of`) : déduite du premier match joué et non
+  archivé. Saison de juillet à juin ; championnat (m, f, mo) en demi-saisons 1
+  (juillet-décembre, rattrapages de janvier compris) et 2 ; coupe = 0.
+- **Bouton « Figer le classement »** (écran Compétitions, `rank/freezeRanks`) :
+  à utiliser en fin de demi-saison, **avant « Équipes / comptes »**, qui
+  renomme les équipes. Refiger remplace la copie (une pénalité tardive se
+  reporte ainsi).
+- **Copie automatique** au début de `Register::cleanup_before_start`, avant
+  l'archivage. C'est un filet de sécurité : elle ne remplace pas une copie
+  manuelle (`freeze_competition($code, false)`), et les noms ont pu changer
+  entre-temps.
+- **Garde-fou** : `Competition::resetCompetition` refuse (409) de remettre les
+  points à zéro tant que la période en cours n'est pas figée.
+- La division `X` et les divisions où personne n'a joué ne sont pas figées.
+- **Saisons déjà archivées** : `Rank::rebuild_season($saison, $noms, $pénalités)`
+  reconstitue depuis les matchs archivés (source `REBUILT`), au barème UFOLEP
+  (`standings_from_matches`, vérifié identique à `getRank` par
+  `RankArchivesTest`). Championnats coupés au 1er février, coupes sur la
+  saison, phases finales (`Rank::CUP_FINALS`) sans classement. Elle ne touche
+  jamais une période `FROZEN`, et refuse le barème FFVB (ces périodes-là se
+  figent). Appel ponctuel en ligne de commande, sans action REST. Les
+  pénalités viennent des comptes rendus de réunion. 2025-2026 : une seule,
+  ToR Carnoux, 4x4 mixte, 2e demi-saison, -2. Les noms de l'époque viennent
+  de `register.old_team_name` (`previous_season_names`), à défaut du nom
+  actuel.
+- **Écran public** `/archives` (menu Informations, `panel/Archives.js`) :
+  `rank/getArchivePeriods`, `getArchivedRank`, `getArchivedResults`.
+  Résultats = matchs archivés de la division entre le premier et le dernier
+  match de la période ; division `finales` = phases finales d'une coupe.
+
 ### Préparation de saison : division X, « Non affectées » (#388)
 
 Déroulé : Inscriptions → « Divisions / rangs » (`Register::fill_ranks`), puis

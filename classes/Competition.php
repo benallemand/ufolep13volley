@@ -374,6 +374,14 @@ class Competition extends Generic
             }
             $competition = $competitions[0];
             $code_competition = $competition['code_competition'];
+            // Les pénalités et les reports ne sont attachés à aucun match :
+            // remis à zéro sans copie, ils sont perdus (#435).
+            $period = $this->rank->current_period($code_competition);
+            if ($period !== null && !$this->rank->is_period_frozen($code_competition, $period)) {
+                throw new Exception("Le classement de « " . $competition['libelle'] . " » ("
+                    . Rank::period_label($period) . ") n'est pas figé : utilisez « Figer le classement » "
+                    . "avant de remettre les points à zéro, sinon les pénalités et les reports seront perdus.", 409);
+            }
             $this->rank->resetRankPoints($code_competition);
         }
     }
