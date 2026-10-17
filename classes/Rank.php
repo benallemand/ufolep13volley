@@ -239,6 +239,202 @@ class Rank extends Generic
         $this->sql_manager->execute($sql);
     }
 
+    // --- Classement figé de chaque demi-saison (issue #435)
+
+    /**
+     * Saison et demi-saison d'une période qui commence par un match du
+     * `$first_match_date` : la saison va de juillet à juin ; un championnat
+     * (m, f, mo) se joue en deux demi-saisons (1re : juillet-décembre et ses
+     * rattrapages de janvier, 2e : à partir de février) ; une coupe dure toute
+     * la saison (demi-saison 0).
+     *
+     * @return array{saison: string, demi_saison: int}
+     */
+    public static function period_of(string $code_competition, string $first_match_date): array
+    {
+        $date = new DateTime($first_match_date);
+        $month = (int)$date->format('n');
+        $start_year = $month >= 7 ? (int)$date->format('Y') : (int)$date->format('Y') - 1;
+        $half = in_array($code_competition, self::FFVB_COMPETITIONS, true) ? ($month >= 7 ? 1 : 2) : 0;
+        return array('saison' => $start_year . '-' . ($start_year + 1), 'demi_saison' => $half);
+    }
+
+    public static function period_label(array $period): string
+    {
+        return $period['saison'] . match ((int)$period['demi_saison']) {
+            1 => ' · 1re demi-saison',
+            2 => ' · 2e demi-saison',
+            default => '',
+        };
+    }
+
+    /**
+     * La période en cours d'une compétition : celle de ses matchs joués et
+     * pas encore archivés. Null s'il n'y en a aucun (rien à figer).
+     *
+     * @return array{saison: string, demi_saison: int, premier_match: string, dernier_match: string}|null
+     * @throws Exception
+     */
+    public function current_period(string $code_competition): ?array
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT MIN(date_reception) AS premier_match, MAX(date_reception) AS dernier_match
+             FROM matches
+             WHERE code_competition = ? AND match_status <> 'ARCHIVED'
+               AND (set_1_dom > 0 OR set_1_ext > 0)",
+            array(array('type' => 's', 'value' => $code_competition)));
+        if (empty($rows[0]['premier_match'])) {
+            return null;
+        }
+        return self::period_of($code_competition, $rows[0]['premier_match'])
+            + array('premier_match' => $rows[0]['premier_match'], 'dernier_match' => $rows[0]['dernier_match']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function is_period_frozen(string $code_competition, array $period): bool
+    {
+        return !empty($this->sql_manager->execute(
+            "SELECT 1 FROM classements_archives
+             WHERE saison = ? AND demi_saison = ? AND code_competition = ? LIMIT 1",
+            array(
+                array('type' => 's', 'value' => $period['saison']),
+                array('type' => 'i', 'value' => (int)$period['demi_saison']),
+                array('type' => 's', 'value' => $code_competition),
+            )));
+    }
+
+    /**
+     * Bouton « Figer le classement » de l'écran Compétitions (admin) : fige la
+     * période en cours des compétitions choisies, en remplaçant une copie
+     * déjà faite (une pénalité tardive se reporte en refigeant).
+     *
+     * @return array{message: string, report: array}
+     * @throws Exception
+     */
+    public function freezeRanks($ids): array
+    {
+        if (!UserManager::isAdmin()) {
+            throw new Exception("Seul un administrateur peut figer un classement !", 403);
+        }
+        require_once __DIR__ . '/Competition.php';
+        $report = array();
+        foreach (Generic::parse_id_list($ids) as $id) {
+            $competition = (new Competition())->get_by_id($id);
+            $report[] = $this->freeze_competition($competition['code_competition']);
+        }
+        $frozen = array_filter($report, static fn($line) => $line['status'] === 'frozen');
+        return array(
+            'message' => count($frozen) . " classement(s) figé(s)"
+                . (count($frozen) < count($report) ? ", " . (count($report) - count($frozen)) . " sans match joué" : ''),
+            'report' => $report,
+        );
+    }
+
+    /**
+     * Recopie dans `classements_archives` le classement de chaque division de
+     * la compétition, tel que le site l'affiche (`getRank`) : pénalités,
+     * reports, nom et club de l'équipe compris. Il faut le faire AVANT
+     * l'archivage des matchs (ensuite, le classement n'est plus calculable :
+     * les deux calculs ignorent les matchs archivés) et avant la remise à zéro
+     * des pénalités.
+     *
+     * @param bool $replace false : ne refait pas une période déjà figée
+     *                      (appel automatique de `Register::cleanup_before_start`,
+     *                      qui ne doit pas écraser la copie faite à la main)
+     * @return array{competition: string, periode: ?string, status: string, divisions: int, equipes: int}
+     * @throws Exception
+     */
+    public function freeze_competition(string $code_competition, bool $replace = true): array
+    {
+        $libelle = $this->sql_manager->execute(
+            "SELECT libelle FROM competitions WHERE code_competition = ?",
+            array(array('type' => 's', 'value' => $code_competition)))[0]['libelle'] ?? $code_competition;
+        $line = array('competition' => $libelle, 'periode' => null, 'status' => 'skipped', 'divisions' => 0, 'equipes' => 0);
+        $period = $this->current_period($code_competition);
+        if ($period === null) {
+            return $line + array('message' => 'aucun match joué à figer');
+        }
+        $line['periode'] = self::period_label($period);
+        if (!$replace && $this->is_period_frozen($code_competition, $period)) {
+            return array_merge($line, array('message' => 'déjà figé'));
+        }
+        $divisions = array_column($this->sql_manager->execute(
+            "SELECT DISTINCT division FROM classements WHERE code_competition = ? ORDER BY division",
+            array(array('type' => 's', 'value' => $code_competition))), 'division');
+        $clubs = array_column($this->sql_manager->execute(
+            "SELECT e.id_equipe, cl.nom FROM classements c
+             JOIN equipes e ON e.id_equipe = c.id_equipe
+             LEFT JOIN clubs cl ON cl.id = e.id_club
+             WHERE c.code_competition = ?",
+            array(array('type' => 's', 'value' => $code_competition))), 'nom', 'id_equipe');
+        $ranks = array();
+        foreach ($divisions as $division) {
+            $rows = $this->getRank($code_competition, $division);
+            // division d'attente (X) ou vide : personne n'y a joué
+            if (array_sum(array_map(static fn($row) => (int)$row['joues'], $rows)) > 0) {
+                $ranks[$division] = $rows;
+            }
+        }
+        $period_bindings = array(
+            array('type' => 's', 'value' => $period['saison']),
+            array('type' => 'i', 'value' => (int)$period['demi_saison']),
+            array('type' => 's', 'value' => $code_competition),
+        );
+        @session_start();
+        $frozen_by = empty($_SESSION['id_user']) ? null : (int)$_SESSION['id_user'];
+        $db = Database::openDbConnection();
+        mysqli_begin_transaction($db);
+        try {
+            $this->sql_manager->execute(
+                "DELETE FROM classements_archives WHERE saison = ? AND demi_saison = ? AND code_competition = ?",
+                $period_bindings);
+            foreach ($ranks as $division => $rows) {
+                foreach ($rows as $row) {
+                    $this->sql_manager->execute(
+                        "INSERT INTO classements_archives SET
+                            saison = ?, demi_saison = ?, code_competition = ?, libelle_competition = ?,
+                            division = ?, rang = ?, id_equipe = ?, nom_equipe = ?, club = ?,
+                            points = ?, joues = ?, gagnes = ?, perdus = ?, sets_pour = ?, sets_contre = ?,
+                            quotient_sets = ?, quotient_points = ?, penalites = ?, reports = ?, forfaits = ?,
+                            premier_match = ?, dernier_match = ?, source = 'FROZEN', frozen_at = NOW(), frozen_by = ?",
+                        array_merge($period_bindings, array(
+                            array('type' => 's', 'value' => $libelle),
+                            array('type' => 's', 'value' => (string)$division),
+                            array('type' => 'i', 'value' => (int)$row['rang']),
+                            array('type' => 'i', 'value' => (int)$row['id_equipe']),
+                            array('type' => 's', 'value' => $row['equipe']),
+                            array('type' => 's', 'value' => $clubs[$row['id_equipe']] ?? null),
+                            array('type' => 'i', 'value' => (int)$row['points']),
+                            array('type' => 'i', 'value' => (int)$row['joues']),
+                            array('type' => 'i', 'value' => (int)$row['gagnes']),
+                            array('type' => 'i', 'value' => (int)$row['perdus']),
+                            array('type' => 'i', 'value' => (int)$row['sets_pour']),
+                            array('type' => 'i', 'value' => (int)$row['sets_contre']),
+                            array('type' => 's', 'value' => $row['quotient_sets'] ?? null),
+                            array('type' => 's', 'value' => $row['quotient_points'] ?? null),
+                            array('type' => 'i', 'value' => (int)($row['penalites'] ?? 0)),
+                            array('type' => 'i', 'value' => (int)($row['report_count'] ?? 0)),
+                            array('type' => 'i', 'value' => (int)($row['matches_lost_by_forfeit_count'] ?? 0)),
+                            array('type' => 's', 'value' => $period['premier_match']),
+                            array('type' => 's', 'value' => $period['dernier_match']),
+                            array('type' => 'i', 'value' => $frozen_by),
+                        )));
+                    $line['equipes']++;
+                }
+                $line['divisions']++;
+            }
+            mysqli_commit($db);
+        } catch (Throwable $e) {
+            mysqli_rollback($db);
+            throw $e;
+        }
+        $this->addActivity("Classement figé : $libelle, " . $line['periode']
+            . " ({$line['divisions']} division(s), {$line['equipes']} équipe(s))");
+        return array_merge($line, array('status' => 'frozen', 'message' => 'figé'));
+    }
+
     public function get_report_count($team_id, mixed $code_competition)
     {
         $sql = "SELECT report_count 

@@ -646,6 +646,12 @@ class Register extends Generic
      */
     public function cleanup_before_start($id_competition): void
     {
+        // Fige le classement de la demi-saison qui se termine, s'il ne l'a pas
+        // été à la main (#435) : après l'archivage, il n'est plus calculable.
+        // Filet de sécurité : « Équipes / comptes » a pu renommer des équipes
+        // avant d'arriver ici ; le bouton « Figer le classement », en fin de
+        // demi-saison, garde le nom de l'époque.
+        $this->rank->freeze_competition($this->competition->get_by_id($id_competition)['code_competition'], false);
         // archive any active match
         $this->archive_confirmed_matches($id_competition);
         // remove matches_players when archived

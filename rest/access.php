@@ -210,6 +210,8 @@ return array(
         'getRank' => 'public',
         'addPenalty' => 'admin',
         'decrementReportCount' => 'admin',
+        // classement de la demi-saison figé avant d'être effacé (issue #435)
+        'freezeRanks' => 'admin',
         'incrementReportCount' => 'admin',
         'removePenalty' => 'admin',
         'delete' => 'admin',
