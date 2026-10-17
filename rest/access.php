@@ -208,6 +208,11 @@ return array(
     ),
     'rank' => array(
         'getRank' => 'public',
+        // écran public « Archives » (issue #435) : classements figés, ou
+        // reconstitués, et résultats des demi-saisons passées
+        'getArchivePeriods' => 'public',
+        'getArchivedRank' => 'public',
+        'getArchivedResults' => 'public',
         'addPenalty' => 'admin',
         'decrementReportCount' => 'admin',
         // classement de la demi-saison figé avant d'être effacé (issue #435)

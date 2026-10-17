@@ -115,6 +115,11 @@ export default {
                 </router-link>
               </li>
               <li>
+                <router-link :to="'/archives'">
+                  <i class="fas fa-box-archive mr-2"/>archives des classements
+                </router-link>
+              </li>
+              <li>
                 <router-link :to="'/teams'">
                   <i class="fas fa-book mr-2"/>annuaire
                 </router-link>

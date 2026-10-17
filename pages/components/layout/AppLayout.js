@@ -45,6 +45,10 @@ const routes = [
         component: () => import('../panel/HallOfFame.js'),
     },
     {
+        path: '/archives',
+        component: () => import('../panel/Archives.js'),
+    },
+    {
         path: '/web-sites',
         component: () => import('../table/WebSites.js'),
     },

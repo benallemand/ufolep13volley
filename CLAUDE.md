@@ -1435,6 +1435,21 @@ l'équipe compris, et non un calcul refait à la lecture.
 - **Garde-fou** : `Competition::resetCompetition` refuse (409) de remettre les
   points à zéro tant que la période en cours n'est pas figée.
 - La division `X` et les divisions où personne n'a joué ne sont pas figées.
+- **Saisons déjà archivées** : `Rank::rebuild_season($saison, $noms, $pénalités)`
+  reconstitue depuis les matchs archivés (source `REBUILT`), au barème UFOLEP
+  (`standings_from_matches`, vérifié identique à `getRank` par
+  `RankArchivesTest`). Championnats coupés au 1er février, coupes sur la
+  saison, phases finales (`Rank::CUP_FINALS`) sans classement. Elle ne touche
+  jamais une période `FROZEN`, et refuse le barème FFVB (ces périodes-là se
+  figent). Appel ponctuel en ligne de commande, sans action REST. Les
+  pénalités viennent des comptes rendus de réunion. 2025-2026 : une seule,
+  ToR Carnoux, 4x4 mixte, 2e demi-saison, -2. Les noms de l'époque viennent
+  de `register.old_team_name` (`previous_season_names`), à défaut du nom
+  actuel.
+- **Écran public** `/archives` (menu Informations, `panel/Archives.js`) :
+  `rank/getArchivePeriods`, `getArchivedRank`, `getArchivedResults`.
+  Résultats = matchs archivés de la division entre le premier et le dernier
+  match de la période ; division `finales` = phases finales d'une coupe.
 
 ### Préparation de saison : division X, « Non affectées » (#388)
 
