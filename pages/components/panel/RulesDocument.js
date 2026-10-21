@@ -23,7 +23,7 @@ export default {
             Document officiel de la commission, relu le {{ fetchedAt }}
           </p>
           <div v-if="pdfUrl" class="flex justify-center mt-3">
-            <a :href="pdfUrl" target="_blank" rel="noopener" class="btn btn-sm btn-outline gap-2"
+            <a :href="$url(pdfUrl)" target="_blank" rel="noopener" class="btn btn-sm btn-outline gap-2"
                data-testid="rules-original">
               <i class="fas fa-file-pdf"></i> Voir / télécharger le document original
             </a>

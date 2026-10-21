@@ -15,4 +15,15 @@ RewriteRule ^team_sheets\.html$ /dist/team_sheets.html [L]
 RewriteRule ^pages/(home|my_page)\.html$ /dist/pages/$1.html [L]
 RewriteRule ^admin/matches\.html$ /dist/admin/matches.html [L]
 RewriteRule ^admin/index\.html$ /dist/admin/index.html [L]
-RewriteRule ^admin/?$ /dist/admin/index.html [L]
+
+# Le bundle est référencé en relatif (base './' dans vite.config.js) : depuis
+# /live.html comme depuis /pages/home.html, il se cherche sous /assets/.
+RewriteRule ^assets/(.*)$ /dist/assets/$1 [L]
+
+# /admin sans barre finale : la page chercherait son bundle un cran trop haut
+# (../assets depuis la racine). On ajoute la barre, en gardant le préfixe sous
+# lequel le site est servi (en-tête X-Forwarded-Prefix du reverse proxy,
+# absent à la racine). Seul un préfixe fait de segments simples est repris.
+RewriteCond %{HTTP:X-Forwarded-Prefix} ^((?:/[A-Za-z0-9_-]+)*)/?$
+RewriteRule ^admin$ %1/admin/ [R=302,L]
+RewriteRule ^admin/$ /dist/admin/index.html [L]

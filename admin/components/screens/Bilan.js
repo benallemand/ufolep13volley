@@ -97,7 +97,7 @@ export default {
           </div>
         </div>
 
-        <form ref="pdfForm" method="post" action="/bilanPdf.php" target="_blank" class="card border border-base-300">
+        <form ref="pdfForm" method="post" :action="$url('/bilanPdf.php')" target="_blank" class="card border border-base-300">
           <div class="card-body p-4">
             <h2 class="card-title text-base">Commentaires à compléter</h2>
             <input type="hidden" name="saison" :value="saison"/>

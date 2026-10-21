@@ -86,6 +86,36 @@ docker compose up -d --build
 > le bind mount** (nouvel inode) : le conteneur continue de lire l'ancienne version.
 > Après modification, `docker compose ... up -d --force-recreate php`.
 
+### Servi à la racine ou sous un préfixe
+
+Le même code sert la racine d'un domaine (prod OVH, dev, e2e) et un sous-chemin
+(`https://biggyben.freeboxos.fr/ufolep13volley/`), derrière un proxy qui **retire**
+le préfixe (`handle_path`) et l'annonce dans l'en-tête `X-Forwarded-Prefix`.
+PHP se croit donc toujours à la racine ; seul ce qui part vers le navigateur
+doit porter le préfixe.
+
+| Où | Comment |
+|---|---|
+| Bundles Vite | `base: './'` : chemins relatifs à la page. Les pages étant servies hors de `dist/`, ils visent `/assets/…`, que le `.htaccess` renvoie vers `dist/assets/` |
+| Appels API | `utils/basePath.js` déduit le préfixe de l'URL de son propre module et le pose dans `axios.defaults.baseURL` : les `'/rest/…'` et `'/ajax/…'` n'ont rien à faire |
+| Liens et images des templates | `:href="$url('/match.html?id_match=' + id)"` — plugin `basePath`, installé par chaque entrée |
+| Navigations JS | `window.location.href = url('/pages/home.html')`, import depuis `utils/basePath.js` |
+| Redirections PHP | `header('Location: ' . ufolep_url('/pages/home.html'))` (`bootstrap.php`, qui lit l'en-tête) |
+| Cookie de session | chemin `ufolep_base_path() . '/'` : il ne déborde pas sur les autres applis du domaine |
+
+> **Un nouveau lien en dur `href="/…"` marche à la racine et casse sous le
+> préfixe** — rien ne le signale en e2e, qui tourne à la racine. Passer par
+> `$url()` / `url()` / `ufolep_url()`. Les routes Vue (`router-link to="/…"`)
+> ne sont pas concernées : tous les routeurs sont en hash. Les URL renvoyées
+> par le PHP en JSON (`MatchMgr` actions, `Alerts` liens, `pdf_url`) restent
+> relatives à la racine du site ; c'est le front qui les préfixe.
+>
+> `X-Forwarded-Prefix` est filtré (segments `[A-Za-z0-9_-]` uniquement) : sans
+> proxy il vient du client, qui ne doit pas pouvoir fabriquer une redirection
+> vers un autre site. `/admin` sans barre finale est redirigé vers `/admin/`
+> par le `.htaccess` : sans elle, les chemins relatifs de la page
+> remonteraient d'un cran et perdraient le préfixe.
+
 ### Emails : tout part dans Mailpit
 
 Le service `mailpit` est déclaré dans `docker-compose.yml`, donc présent dans les

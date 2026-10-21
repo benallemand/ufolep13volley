@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import {url} from '../../../utils/basePath.js';
 
 // Fonction utilitaire pour vérifier l'authentification côté client
 async function checkAuthentication() {
@@ -16,7 +17,7 @@ function redirectToLogin(reason = "Vous devez être connecté pour accéder à c
     const currentUrl = window.location.href;
     const redirect = encodeURIComponent(currentUrl);
     const reasonEncoded = encodeURIComponent(reason);
-    window.location.href = `/#/login?redirect=${redirect}&reason=${reasonEncoded}`;
+    window.location.href = url(`/#/login?redirect=${redirect}&reason=${reasonEncoded}`);
 }
 
 // Définition des routes pour les pages "my_..."

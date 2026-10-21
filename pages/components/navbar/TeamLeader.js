@@ -1,8 +1,10 @@
+import {url} from '../../../utils/basePath.js';
+
 export default {
     template: `
       <div>
         <div class="flex justify-center">
-          <a href="/" class="center">
+          <a :href="$url('/')" class="center">
             <img alt="Ufolep" src="../images/logo-2026.png" style="max-height:150px;">
           </a>
         </div>
@@ -13,7 +15,7 @@ export default {
           </button>
         </div>
         <div class="navbar bg-base-100 shadow-sm flex flex-wrap justify-center gap-2">
-            <a href="/" class="btn btn-ghost">
+            <a :href="$url('/')" class="btn btn-ghost">
               <span><i class="mr-2 fas fa-arrow-left"></i>retour</span>
             </a>
 
@@ -95,7 +97,7 @@ export default {
                 <ul
                     tabindex="0"
                     class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-                  <li><a href="/rest/action.php/team/download_calendar"><span><i class="mr-2 fas fa-download"></i>calendrier</span></a>
+                  <li><a :href="$url('/rest/action.php/team/download_calendar')"><span><i class="mr-2 fas fa-download"></i>calendrier</span></a>
                   </li>
                   <li>
                     <router-link to="/team"><span><i class="mr-2 fas fa-edit"></i>coordonnées</span></router-link>
@@ -158,7 +160,7 @@ export default {
             <router-link to="/preferences" class="btn btn-ghost">
               <span><i class="mr-2 fas fa-gear"></i>préférences</span>
             </router-link>
-            <a href="/rest/action.php/usermanager/logout" class="btn btn-error">
+            <a :href="$url('/rest/action.php/usermanager/logout')" class="btn btn-error">
               <span><i class="mr-2 fas fa-right-from-bracket"/>déconnexion</span>
             </a>
         </div>
@@ -282,7 +284,7 @@ export default {
                 .post(`/rest/action.php/usermanager/switch_back_to_admin`)
                 .then((response) => {
                     if (response.data.success) {
-                        window.location.href = '/pages/my_page.html';
+                        window.location.href = url('/pages/my_page.html');
                     } else {
                         alert('Erreur: ' + response.data.message);
                     }

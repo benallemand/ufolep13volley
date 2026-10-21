@@ -590,7 +590,9 @@ class UserManager extends Generic
     {
         @session_start();
         @session_destroy();
-        die('<META HTTP-equiv="refresh" content=0;URL=/>');
+        // Accueil du site, préfixe compris derrière un reverse proxy (bootstrap.php).
+        $home = function_exists('ufolep_url') ? ufolep_url('/') : '/';
+        die('<META HTTP-equiv="refresh" content=0;URL=' . $home . '>');
     }
 
     /**
@@ -723,13 +725,19 @@ class UserManager extends Generic
 
     private function get_page_url(): string
     {
-        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        // bootstrap.php sait lire le schéma et le préfixe du visiteur derrière
+        // un reverse proxy (biggyben) ; sans lui, on retombe sur l'ancien calcul.
+        $bootstrapped = function_exists('ufolep_is_https') && function_exists('ufolep_base_path');
+        if ($bootstrapped ? ufolep_is_https() : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) {
             $url = "https://";
         } else {
             $url = "http://";
         }
         // Append the host(domain name, ip) to the URL.
         $url .= $_SERVER['HTTP_HOST'];
+        if ($bootstrapped) {
+            $url .= ufolep_base_path();
+        }
         // Append the requested resource location to the URL
 //        $url.= $_SERVER['REQUEST_URI'];
         return $url;

@@ -1,4 +1,5 @@
 // Import du layout pour les pages team leader
+import basePath from '../utils/basePath.js';
 import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';
@@ -13,6 +14,7 @@ window.Notyf = Notyf;
 // Montage de l'application Vue
 const app = createApp(TeamLeaderLayout);
 app.use(TeamLeaderLayout.router);
+app.use(basePath);
 app.mount('#app');
 
 // Notifications (toasts) des actions en attente pour le responsable connecté (#240)

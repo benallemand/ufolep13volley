@@ -22,7 +22,7 @@ export default {
           <tbody>
           <tr v-for="item in items" :key="item.id_commission">
             <td>{{ item.prenom }} {{ item.nom }}
-              <p class="flex justify-center mt-1 mb-1"><img alt="photo manquante" :src="'/'+item.photo" class="max-h-[100px]" /></p>
+              <p class="flex justify-center mt-1 mb-1"><img alt="photo manquante" :src="$url('/'+item.photo)" class="max-h-[100px]" /></p>
             </td>
             <td>{{ item.type }} / {{ item.fonction }}</td>
             <td>

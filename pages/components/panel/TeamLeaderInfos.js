@@ -8,7 +8,7 @@ export default {
               <a href="https://chat.whatsapp.com/Hk08bFipoTMDL0dUYtQLo9" target="_blank">
                 <figure>
                   <img
-                      :src="info.img_src"
+                      :src="$url(info.img_src)"
                       alt=""/>
                 </figure>
               </a>

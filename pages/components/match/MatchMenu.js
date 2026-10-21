@@ -15,22 +15,22 @@ export default {
           </a>
         </li>
         <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a href="/">
+          <a :href="$url('/')">
             <span>accueil</span><i class="fa-solid fa-house"></i>
           </a>
         </li>
         <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="'/match.html?id_match=' + idMatch">
+          <a :href="$url('/match.html?id_match=' + idMatch)">
             <span>match</span><i class="fa-solid fa-volleyball"></i>
           </a>
         </li>
         <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="'/team_sheets.html?id_match=' + idMatch">
+          <a :href="$url('/team_sheets.html?id_match=' + idMatch)">
             <span>equipes</span><i class="fa-solid fa-user"></i>
           </a>
         </li>
         <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="'/survey.html?id_match=' + idMatch">
+          <a :href="$url('/survey.html?id_match=' + idMatch)">
             <span>fair-play</span><i class="fa-solid fa-square-poll-vertical"></i>
           </a>
         </li>

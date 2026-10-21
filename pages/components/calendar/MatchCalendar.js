@@ -13,6 +13,7 @@ import {
     toIso,
     eventDetail,
 } from './calendarData.js';
+import {url} from '../../../utils/basePath.js';
 
 /**
  * Calendrier des matchs du responsable (issue #290).
@@ -177,7 +178,7 @@ export default {
                     info.jsEvent.preventDefault();
                     const target = info.event.extendedProps.url;
                     if (target) {
-                        window.location.href = target;
+                        window.location.href = url(target);
                     }
                 },
             };

@@ -14,7 +14,7 @@ export default {
         </h2>
         <div class="flex flex-col gap-3">
           <a v-for="match in matches" :key="match.id_match"
-             :href="'/live.html?id_match=' + match.code_match"
+             :href="$url('/live.html?id_match=' + match.code_match)"
              class="card bg-base-100 shadow-md border border-base-300 active:scale-[0.99] transition-transform">
             <div class="card-body p-4">
               <div class="flex items-center justify-between gap-2">

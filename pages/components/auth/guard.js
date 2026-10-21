@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {url} from '../../../utils/basePath.js';
 
 /**
  * Garde d'authentification/autorisation côté client.
@@ -32,7 +33,7 @@ export async function getCurrentUser() {
  */
 export function redirectToLogin(reason = 'Vous devez être connecté pour accéder à cette page') {
     const redirect = encodeURIComponent(window.location.href);
-    window.location.href = `/pages/home.html#/login?redirect=${redirect}&reason=${encodeURIComponent(reason)}`;
+    window.location.href = url(`/pages/home.html#/login?redirect=${redirect}&reason=${encodeURIComponent(reason)}`);
 }
 
 /**

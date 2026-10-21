@@ -307,7 +307,8 @@ try {
     switch ($resp_code) {
         case 401:
             // redirect to login page
-            header('Location: /pages/home.html#/login?redirect=' . urlencode($_SERVER['REQUEST_URI']) . '&reason=' . urlencode($client_message));
+            // Derriere un reverse proxy, REQUEST_URI a perdu le prefixe du site.
+            header('Location: ' . ufolep_url('/pages/home.html#/login?redirect=' . urlencode(ufolep_url($_SERVER['REQUEST_URI'])) . '&reason=' . urlencode($client_message)));
             exit(0);
         case 201:
         case 200:

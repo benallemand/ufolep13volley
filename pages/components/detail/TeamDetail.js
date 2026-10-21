@@ -102,7 +102,7 @@ export default {
                   Photo d'équipe
                 </h2>
                 <figure class="px-4 pt-4">
-                  <img :src="'/' + team.path_photo" :alt="'Photo de ' + team.nom_equipe"
+                  <img :src="$url('/' + team.path_photo)" :alt="'Photo de ' + team.nom_equipe"
                        class="rounded-xl max-h-64 mx-auto shadow-lg"/>
                 </figure>
               </div>
@@ -116,7 +116,7 @@ export default {
                   Documents
                 </h2>
                 <div class="card-actions">
-                  <a :href="'/teamSheetPdf.php?id=' + team.id_equipe" target="_blank"
+                  <a :href="$url('/teamSheetPdf.php?id=' + team.id_equipe)" target="_blank"
                      class="btn btn-primary">
                     <span class="badge badge-ghost badge-sm">📥</span>
                     Télécharger la fiche équipe

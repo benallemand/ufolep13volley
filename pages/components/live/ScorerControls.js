@@ -32,7 +32,7 @@ export default {
             <span class="text-sm">Au service</span>
             <span v-if="servingPlayer" class="avatar">
               <span class="w-5 rounded-full block">
-                <img :src="'/' + servingPlayer.path_photo_low" :alt="servingPlayer.nom_court">
+                <img :src="$url('/' + servingPlayer.path_photo_low)" :alt="servingPlayer.nom_court">
               </span>
             </span>
             <span class="text-sm font-bold truncate">{{ servingLabel }}</span>

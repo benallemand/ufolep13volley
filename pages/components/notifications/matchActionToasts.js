@@ -1,3 +1,5 @@
+import {url} from '../../../utils/basePath.js';
+
 // Issue #240 — Affiche un toast par match déjà joué ayant une action en attente
 // pour le responsable d'équipe connecté (présents, signatures, score, sondage).
 // Appelé après le montage de l'app sur la home publique ET l'espace responsable.
@@ -26,7 +28,7 @@ export async function showMatchActionToasts() {
                 stopOnFocus: true,
                 style: { background: '#2563eb', cursor: 'pointer' },
                 onClick: () => {
-                    window.location.href = item.url;
+                    window.location.href = url(item.url);
                 },
             }).showToast();
         });

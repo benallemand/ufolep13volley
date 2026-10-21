@@ -1,13 +1,15 @@
+import {url} from '../../../utils/basePath.js';
+
 export default {
     template: `
       <div>
         <div class="flex justify-center">
-          <a href="/" class="center">
+          <a :href="$url('/')" class="center">
             <img alt="Ufolep" src="../images/logo-2026.png" style="max-height:200px;">
           </a>
         </div>
         <div class="navbar bg-base-100 shadow-sm flex flex-wrap justify-center gap-2">
-          <a href="/" class="btn btn-ghost">
+          <a :href="$url('/')" class="btn btn-ghost">
             <span><i class="mr-2 fas fa-home"/>Accueil</span>
           </a>
           <div class="dropdown">
@@ -188,15 +190,15 @@ export default {
           <div v-if="isConnected" class="flex gap-1">
             <a class="btn btn-primary"
                v-if="user.is_admin && !isActingAs"
-               href="/admin/">
+               :href="$url('/admin/')">
               <span><i class="fas fa-gear mr-2"/>administration</span>
             </a>
             <a class="btn btn-primary"
                v-if="user.is_team_leader || user.is_club_leader || isActingAs"
-               href="/pages/my_page.html">
+               :href="$url('/pages/my_page.html')">
               <span><i class="fas fa-user mr-2"/>{{ this.user.login }}</span>
             </a>
-            <a class="btn btn-error" href="/rest/action.php/usermanager/logout">
+            <a class="btn btn-error" :href="$url('/rest/action.php/usermanager/logout')">
               <span><i class="fas fa-right-from-bracket mr-2"/>déconnexion</span>
             </a>
           </div>
@@ -207,7 +209,7 @@ export default {
               </a>
             </router-link>
           </div>
-          <a class="btn btn-secondary" href="/register.php">
+          <a class="btn btn-secondary" :href="$url('/register.php')">
             <span><i class="fas fa-user-plus mr-2"/>inscrire une équipe</span>
           </a>
         </div>
@@ -285,7 +287,7 @@ export default {
                 .post("/rest/action.php/usermanager/switch_back_to_admin")
                 .then((response) => {
                     if (response.data.success) {
-                        window.location.href = '/admin/';
+                        window.location.href = url('/admin/');
                     } else {
                         alert('Erreur: ' + response.data.message);
                     }

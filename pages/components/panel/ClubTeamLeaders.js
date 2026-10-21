@@ -1,4 +1,5 @@
 import {onError, onSuccess} from "../../../toaster.js";
+import {url} from '../../../utils/basePath.js';
 
 /**
  * Issue #101 — Attribution des comptes responsables d'équipe (responsable de club).
@@ -140,7 +141,7 @@ export default {
                 .post(`/rest/action.php/usermanager/switch_to_club_team_leader`, formData)
                 .then((response) => {
                     if (response.data.success) {
-                        window.location.href = '/pages/my_page.html';
+                        window.location.href = url('/pages/my_page.html');
                     } else {
                         onError(this, response);
                     }

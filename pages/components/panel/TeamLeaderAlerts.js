@@ -40,7 +40,7 @@ export default {
                 </div>
                 <p class="text-sm">{{ help(alert) }}</p>
                 <div v-if="alert.link" class="card-actions justify-end">
-                  <a :href="alert.link" class="btn btn-sm btn-primary">Corriger</a>
+                  <a :href="$url(alert.link)" class="btn btn-sm btn-primary">Corriger</a>
                 </div>
               </div>
             </div>

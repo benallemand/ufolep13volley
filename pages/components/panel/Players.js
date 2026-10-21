@@ -80,7 +80,7 @@ export default {
                     title="Glissez une photo ici pour mettre à jour"
                 >
                   <div class="w-24 rounded-full relative">
-                    <img :src="'/'+player.path_photo" alt=""/>
+                    <img :src="$url('/'+player.path_photo)" alt=""/>
                     <div
                         class="absolute inset-0 rounded-full bg-black bg-opacity-50 text-white transition-opacity flex items-center justify-center text-center"
                         :class="{'opacity-100': player.isDragging, 'opacity-0 hover:opacity-100': !player.isDragging}"

@@ -27,7 +27,7 @@ export default {
               <div class="prose max-w-none text-sm" v-html="item.text"></div>
               <a v-if="item.file_path && item.file_path.length > 0"
                  class="link link-primary inline-block mt-2 text-sm"
-                 :href="item.file_path" target="_blank" rel="noopener">
+                 :href="$url(item.file_path)" target="_blank" rel="noopener">
                 <i class="fas fa-up-right-from-square mr-1"></i>lire le document
               </a>
             </div>

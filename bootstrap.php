@@ -46,6 +46,37 @@ if (!function_exists('ufolep_is_https')) {
     }
 }
 
+if (!function_exists('ufolep_base_path')) {
+    /**
+     * Prefixe sous lequel le VISITEUR voit le site : '' a la racine (prod OVH,
+     * dev, e2e), '/ufolep13volley' derriere le reverse proxy de biggyben.
+     *
+     * Le proxy retire ce prefixe avant de passer la requete (`handle_path`) :
+     * PHP se croit donc toujours a la racine, et un `Location: /pages/...`
+     * renverrait le visiteur hors du site. Le proxy annonce le prefixe retire
+     * dans l'en-tete X-Forwarded-Prefix. Le front, lui, le deduit de l'URL de
+     * son bundle (utils/basePath.js) et n'a pas besoin de cet en-tete.
+     *
+     * L'en-tete vient du client quand il n'y a pas de proxy : on n'accepte que
+     * des segments simples, pour qu'il ne puisse ni injecter un en-tete ni
+     * fabriquer une redirection vers un autre site (`//exemple.org`). Le pire
+     * qu'il obtienne est de se rediriger lui-meme vers une page inexistante.
+     */
+    function ufolep_base_path(): string
+    {
+        $prefix = rtrim((string)($_SERVER['HTTP_X_FORWARDED_PREFIX'] ?? ''), '/');
+        return preg_match('#^(/[A-Za-z0-9_-]+)+$#', $prefix) === 1 ? $prefix : '';
+    }
+
+    /**
+     * Chemin du site ('/pages/home.html') tel que le visiteur doit l'appeler.
+     */
+    function ufolep_url(string $path): string
+    {
+        return ufolep_base_path() . $path;
+    }
+}
+
 if (!defined('UFOLEP_BOOTSTRAPPED')) {
     define('UFOLEP_BOOTSTRAPPED', true);
 
@@ -56,7 +87,9 @@ if (!defined('UFOLEP_BOOTSTRAPPED')) {
     if (session_status() === PHP_SESSION_NONE) {
         session_set_cookie_params([
             'lifetime' => 0,
-            'path' => '/',
+            // Sous un prefixe, le cookie reste dans le site : d'autres applis
+            // partagent le domaine sur biggyben (/crm, /board-games).
+            'path' => ufolep_base_path() . '/',
             'secure' => ufolep_is_https(),
             // Le coeur du correctif : sans lui, un script parvenu a s'executer
             // sur une page du site lit `document.cookie` et emporte la session.

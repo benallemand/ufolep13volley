@@ -1,3 +1,4 @@
+import basePath, {url} from './utils/basePath.js';
 import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';
@@ -276,7 +277,7 @@ createApp({
         // - non connecté : redirection login, avec retour au mode scoreur après connexion
         // - connecté mais non autorisé : message explicatif, on reste en consultation
         goToScorerMode() {
-            const scorerUrl = '/live.html?id_match=' + encodeURIComponent(this.idMatch) + '&mode=scorer';
+            const scorerUrl = url('/live.html?id_match=' + encodeURIComponent(this.idMatch) + '&mode=scorer');
             if (this.canScore) {
                 window.location.href = scorerUrl;
                 return;
@@ -286,7 +287,7 @@ createApp({
                 const reason = encodeURIComponent(
                     "Connectez-vous avec un compte responsable d'équipe ou administrateur pour saisir le score en direct."
                 );
-                window.location.href = `/pages/home.html#/login?redirect=${redirect}&reason=${reason}`;
+                window.location.href = url(`/pages/home.html#/login?redirect=${redirect}&reason=${reason}`);
                 return;
             }
             this.showToast(
@@ -790,4 +791,4 @@ createApp({
             }).showToast();
         }
     }
-}).mount('#app');
+}).use(basePath).mount('#app');

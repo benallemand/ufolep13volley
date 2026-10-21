@@ -22,14 +22,14 @@ export default {
           <tbody>
           <tr v-for="match in week.matches" :key="match.id_match">
             <td>
-              <a class="link link-primary" :href="'/match.html?id_match=' + match.id_match"
+              <a class="link link-primary" :href="$url('/match.html?id_match=' + match.id_match)"
                  target="_blank">{{ match.code_match }}
               </a>
               <a @click="addToGoogleCalendar(match)" class="btn btn-xs btn-primary ml-2"
                  title="Ajouter à Google Calendar">
                 <i class="fas fa-calendar-plus"/>
               </a>
-              <a v-if="isMatchToday(match) && !isMatchFinished(match)" :href="'/live.html?id_match=' + match.code_match"
+              <a v-if="isMatchToday(match) && !isMatchFinished(match)" :href="$url('/live.html?id_match=' + match.code_match)"
                  class="btn btn-xs btn-error ml-2 animate-pulse" title="Suivre en direct" target="_blank">
                 <i class="fas fa-circle text-white text-xs mr-1"/>LIVE
               </a>
@@ -39,7 +39,7 @@ export default {
                                                                             class="ml-1 badge badge-warning">date non confirmée</span>
             </td>
             <td :class="match.score_equipe_dom === 3 ? 'bg-success/5':''"><a
-                :href="'/pages/home.html#/teams/' + match.id_equipe_dom"
+                :href="$url('/pages/home.html#/teams/' + match.id_equipe_dom)"
                 class="link"
                 target="_blank">
               {{ match.equipe_dom }}
@@ -50,7 +50,7 @@ export default {
               <span :class="match.score_equipe_ext === 3 ? 'text-success':''">{{ match.score_equipe_ext }}</span>
             </td>
             <td :class="match.score_equipe_ext === 3 ? 'bg-success/5':''"><a
-                :href="'/pages/home.html#/teams/' + match.id_equipe_ext"
+                :href="$url('/pages/home.html#/teams/' + match.id_equipe_ext)"
                 class="link"
                 target="_blank">
               {{ match.equipe_ext }}
