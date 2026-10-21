@@ -6,10 +6,9 @@ services:
       # phpdotenv lit un fichier .env sur le disque — on monte .env.docker comme .env
       - ./.env.docker:/var/www/html/.env:ro
 
+  # Ports : ceux du docker-compose.yml (127.0.0.1:8000). http://localhost passe par
+  # le reverse proxy biggyben-proxy quand il tourne ; sinon http://localhost:8000.
   caddy:
-    ports:
-      - "80:80"
-      # Pas de 443 en local
     volumes:
       - ./Caddyfile.local:/etc/caddy/Caddyfile
       - caddy_data:/data
