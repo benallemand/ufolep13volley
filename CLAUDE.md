@@ -53,17 +53,26 @@ images/           # Assets images
 **Mode développement local** (HTTP seulement, MySQL local, Mailpit) :
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-# App      : http://localhost
+# App      : http://localhost       (via le reverse proxy biggyben-proxy, voir plus bas)
+#            http://localhost:8000  (direct, sans le proxy)
 # Emails   : http://localhost/mailpit  (via Caddy, auth basique)
 #            http://localhost:8025/mailpit/  (accès direct, sans mot de passe)
 ```
 
-**Mode home server / biggyben.freeboxos.fr** (HTTPS via Let's Encrypt, Caddyfile.docker) :
+**Mode home server / biggyben.freeboxos.fr** (Caddyfile.docker) :
 ```bash
 docker compose up -d --build
 # App    : https://biggyben.freeboxos.fr
 # Emails : https://biggyben.freeboxos.fr/mailpit  (auth basique)
 ```
+> **Les ports 80/443 ne sont pas tenus par ce dépôt.** Sur biggyben, un reverse
+> proxy Caddy indépendant (`C:\Users\benal\biggyben-proxy`, hors dépôt) prend les
+> ports 80/443, fait le HTTPS (Let's Encrypt) et sert sous le même domaine d'autres
+> applis (`/crm/`, `/board-games/`). Il renvoie le reste, ainsi que `http://localhost`,
+> au Caddy de ce dépôt, publié sur `127.0.0.1:8000` dans les deux modes. Il bloque
+> aussi `/e2e/*` depuis Internet. Le Caddy du dépôt fait confiance à son
+> `X-Forwarded-Proto` (`trusted_proxies`) : sans ça, `ufolep_is_https()` répondrait
+> `false` et les cookies de session perdraient `secure`.
 > Le `docker-compose.dev.yml` n'est PAS chargé automatiquement — c'est voulu.
 > `docker-compose.override.yml` serait chargé auto : ne pas utiliser ce nom.
 >

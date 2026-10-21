@@ -1,8 +1,20 @@
-biggyben.freeboxos.fr {
+# Mode home server. Le HTTPS (Let's Encrypt) et les ports 80/443 de biggyben.freeboxos.fr
+# sont tenus par le reverse proxy biggyben-proxy, hors de ce dépôt
+# (C:\Users\benal\biggyben-proxy) : il sert aussi d'autres applis sous /crm et /board-games.
+# Ce Caddy ne reçoit donc que du HTTP, publié sur 127.0.0.1:8000.
+{
+	servers {
+		# Faire confiance au X-Forwarded-Proto du proxy : sinon PHP croit la
+		# requête en HTTP et pose des cookies de session sans « secure »
+		# (voir ufolep_is_https() dans bootstrap.php).
+		trusted_proxies static private_ranges
+	}
+}
+
+:80 {
 	# Boîte de réception de test (Mailpit). Elle contient des liens de
 	# réinitialisation valides et des mots de passe en clair : accès protégé
-	# par mot de passe, et servi en HTTPS sur le 443 déjà ouvert — pas de port
-	# supplémentaire à rediriger sur la Freebox.
+	# par mot de passe, servi en HTTPS par le proxy sur le 443 déjà ouvert.
 	# Mailpit tourne avec MP_WEBROOT=mailpit : on ne retire donc PAS le préfixe.
 	handle /mailpit* {
 		basic_auth {

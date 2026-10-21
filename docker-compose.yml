@@ -1,11 +1,13 @@
 services:
-  # Reverse proxy avec HTTPS automatique (Let's Encrypt)
+  # Routage interne (/mailpit, php). Publié sur la loopback seulement : les ports
+  # 80/443 et le HTTPS sont tenus par le reverse proxy biggyben-proxy (hors dépôt),
+  # qui renvoie ici biggyben.freeboxos.fr et http://localhost.
+  # Sans ce proxy : http://localhost:8000
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:8000:80"
     volumes:
       - ./Caddyfile.docker:/etc/caddy/Caddyfile
       - caddy_data:/data
