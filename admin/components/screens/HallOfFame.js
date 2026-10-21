@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue';
 import { onError, onSuccess } from '../../../toaster.js';
+import {url as siteUrl} from '../../../utils/basePath.js';
 
 /**
  * Palmarès (issue #265, lot 5).
@@ -147,7 +148,7 @@ export default {
          */
         downloadDiplomas(selection) {
             const url = `/rest/action.php/halloffame/download_diploma?ids=${selection.join(',')}`;
-            window.open(url, '_blank');
+            window.open(siteUrl(url), '_blank');
         },
         openGenerate() {
             this.generateForm.period = '';

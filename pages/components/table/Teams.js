@@ -145,7 +145,7 @@ export default {
                         <span class="badge badge-success badge-sm">📷</span>
                         Photo
                       </h4>
-                      <img :src="'/'+item.path_photo" alt="photo équipe"
+                      <img :src="$url('/'+item.path_photo)" alt="photo équipe"
                            class="max-h-32 rounded-lg border border-base-300"/>
                     </div>
 
@@ -155,7 +155,7 @@ export default {
                         <span class="badge badge-warning badge-sm">📄</span>
                         Fiche équipe
                       </h4>
-                      <a :href="'/teamSheetPdf.php?id='+item.id_equipe" target="_blank" class="btn btn-primary btn-sm">
+                      <a :href="$url('/teamSheetPdf.php?id='+item.id_equipe)" target="_blank" class="btn btn-primary btn-sm">
                         📥 Télécharger la fiche
                       </a>
                     </div>

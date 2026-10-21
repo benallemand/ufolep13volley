@@ -93,7 +93,13 @@ const entries = {
 
 export default defineConfig({
     root: __dirname,
-    base: '/dist/',
+    // Base relative : les pages et le JS référencent leurs bundles par un
+    // chemin relatif (`./assets/…`, `../assets/…`), donc le site marche aussi
+    // bien à la racine que sous un préfixe (/ufolep13volley derrière le proxy
+    // de biggyben). Les pages étant servies hors de dist/ (/live.html →
+    // dist/live.html, voir .htaccess), ces chemins visent /assets/, que le
+    // .htaccess renvoie à son tour vers dist/assets/.
+    base: './',
     plugins: [vue(), matomoTracking()],
     resolve: {
         alias: {

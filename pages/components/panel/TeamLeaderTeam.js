@@ -5,7 +5,7 @@ export default {
           <thead>
           <tr>
             <th>{{ team.nom_equipe }}</th>
-            <td><img :src="'/rest/action.php/photo/get_photo?path_photo='+team.path_photo" class="max-h-64" alt=""/></td>
+            <td><img :src="$url('/rest/action.php/photo/get_photo?path_photo='+team.path_photo)" class="max-h-64" alt=""/></td>
           </tr>
           </thead>
           <tbody>
@@ -39,7 +39,7 @@ export default {
           </tr>
           <tr>
             <td colspan="2" class="text-center">
-              <a :href="'/teamSheetPdf.php?id='+team.id_equipe" target="_blank" role="button"
+              <a :href="$url('/teamSheetPdf.php?id='+team.id_equipe)" target="_blank" role="button"
                                class="btn btn-info mr-2">Télécharger la fiche équipe</a>
               <router-link :to="'/team/edit'"
                            class="btn btn-primary">

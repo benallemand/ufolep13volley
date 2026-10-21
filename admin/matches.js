@@ -1,4 +1,5 @@
 // Import du composant admin-match-card
+import basePath from '../utils/basePath.js';
 import { createApp } from 'vue';
 import axios from 'axios';
 import AdminMatchCard from './components/admin-match-card.js';
@@ -194,4 +195,4 @@ createApp({
         this.fetchAllMatches();
         this.fetchMatches();
     },
-}).mount('#match-app');
+}).use(basePath).mount('#match-app');

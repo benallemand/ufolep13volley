@@ -9,7 +9,7 @@ export default {
           <span>{{ reason }}</span>
         </div>
 
-        <form action="/login.php" method="post" class="space-y-4">
+        <form :action="$url('/login.php')" method="post" class="space-y-4">
           <!-- Champs cachés pour la redirection -->
           <input v-if="redirect" type="hidden" name="redirect" :value="redirect"/>
           <input v-if="reason" type="hidden" name="reason" :value="reason"/>

@@ -54,12 +54,14 @@ check "API REST + base de données" "200" \
 #    segment commençant par un point (protection du .env), c'est voulu.
 #    On vérifie donc le vrai contrat : la page référence un asset hashé, et cet
 #    asset se charge.
-asset=$(curl -s "$BASE/pages/home.html" | grep -oE '/dist/assets/[A-Za-z0-9._/-]+\.js' | head -1)
+#    Les chemins sont relatifs à la page (base './' dans vite.config.js) :
+#    `../assets/…` depuis /pages/home.html, que curl résout en /assets/….
+asset=$(curl -s "$BASE/pages/home.html" | grep -oE '\.\./assets/[A-Za-z0-9._/-]+\.js' | head -1)
 if [ -z "$asset" ]; then
     check "bundle Vite servi (asset hashé)" "un asset" "aucun (dist/ non construit ?)"
 else
     check "bundle Vite servi ($(basename "$asset"))" "200" \
-        "$(curl -s -o /dev/null -w '%{http_code}' "$BASE$asset")"
+        "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/pages/$asset")"
 fi
 
 echo

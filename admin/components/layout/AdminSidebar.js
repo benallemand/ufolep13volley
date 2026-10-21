@@ -25,7 +25,7 @@ export default {
                 <i :class="item.icon"></i> {{ item.label }}
               </router-link>
               <!-- Entrée Vite à part (admin/matches.html) : lien classique. -->
-              <a v-else :href="item.href">
+              <a v-else :href="$url(item.href)">
                 <i :class="item.icon"></i> {{ item.label }}
               </a>
             </li>
@@ -33,7 +33,7 @@ export default {
         </ul>
 
         <div class="p-2 border-t border-base-300 space-y-1">
-          <a href="/pages/home.html" class="btn btn-ghost btn-sm w-full justify-start">
+          <a :href="$url('/pages/home.html')" class="btn btn-ghost btn-sm w-full justify-start">
             <i class="fas fa-home"></i> Retour au site
           </a>
         </div>

@@ -61,7 +61,7 @@ export default {
 
         <div class="p-4 border-b border-base-300 flex items-start gap-3">
           <img v-if="image"
-               :src="'/' + image"
+               :src="$url('/' + image)"
                :alt="title"
                class="w-14 h-14 flex-none rounded-full object-cover bg-base-200"/>
           <div class="flex-1 min-w-0">

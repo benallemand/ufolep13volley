@@ -1,3 +1,4 @@
+import basePath from './utils/basePath.js';
 import { createApp } from 'vue';
 import axios from 'axios';
 import Toastify from 'toastify-js';
@@ -246,4 +247,4 @@ createApp({
                 });
         },
     }
-}).mount('#app');
+}).use(basePath).mount('#app');

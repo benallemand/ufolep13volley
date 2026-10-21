@@ -84,7 +84,7 @@ export default {
                       @click="place(player)">
                 <div class="avatar">
                   <div class="w-9 rounded-full">
-                    <img :src="'/' + player.path_photo_low" :alt="player.nom_court">
+                    <img :src="$url('/' + player.path_photo_low)" :alt="player.nom_court">
                   </div>
                 </div>
                 <span class="truncate font-semibold">{{ player.nom_court }}</span>

@@ -317,7 +317,7 @@ export default {
                 <span v-if="col.links" class="flex gap-2" @click.stop>
                   <a v-for="(lnk, li) in col.links"
                      :key="li"
-                     :href="lnk.href(row)"
+                     :href="$url(lnk.href(row))"
                      :target="lnk.href(row).startsWith('mailto:') ? '_self' : '_blank'"
                      :title="lnk.title"
                      :class="['text-base hover:opacity-70', lnk.variant ? lnk.variant(row) : '']">
@@ -329,7 +329,7 @@ export default {
                      coute donc rien en donnees ; seules les images elles-memes
                      sont recuperees, et uniquement celles a l'ecran. -->
                 <img v-else-if="col.image"
-                     :src="'/' + render(col, row)"
+                     :src="$url('/' + render(col, row))"
                      :alt="col.alt ? col.alt(row) : ''"
                      loading="lazy"
                      class="w-10 h-10 rounded-full object-cover bg-base-200"/>

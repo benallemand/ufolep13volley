@@ -12,5 +12,6 @@
 // Redirection temporaire (302) et non permanente, comme les autres URLs
 // historiques conservées : un 301 se grave dans le cache du navigateur et
 // deviendrait pénible à corriger.
-header('Location: /admin/');
+require_once __DIR__ . '/bootstrap.php';
+header('Location: ' . ufolep_url('/admin/'));
 exit(0);

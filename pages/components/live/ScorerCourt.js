@@ -31,8 +31,8 @@ export default {
             <span class="text-[0.6rem] font-bold opacity-50 leading-none">P{{ cell.position }}</span>
             <div class="avatar">
               <div class="rounded-full" :class="photoSize">
-                <img v-if="cell.player" :src="'/' + cell.player.path_photo_low" :alt="cell.player.nom_court">
-                <img v-else src="/images/MaleMissingPhoto.png" alt="" class="opacity-25">
+                <img v-if="cell.player" :src="$url('/' + cell.player.path_photo_low)" :alt="cell.player.nom_court">
+                <img v-else :src="$url('/images/MaleMissingPhoto.png')" alt="" class="opacity-25">
               </div>
             </div>
             <span class="text-[0.65rem] font-semibold leading-tight text-center"

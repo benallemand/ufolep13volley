@@ -18,7 +18,7 @@ export default {
               </div>
               <!-- Règlements : PDF du dossier Google Drive de la commission (issue #342) -->
               <div v-for="reg in regulations" :key="reg.slug" class="p-1" data-testid="info-rules-pdf">
-                <a class="link link-primary" :href="reg.pdf_url" target="_blank" rel="noopener">{{ reg.label }}</a>
+                <a class="link link-primary" :href="$url(reg.pdf_url)" target="_blank" rel="noopener">{{ reg.label }}</a>
                 (saison {{ reg.season }})
               </div>
               <div class="p-1"><a class="link link-primary" href="https://get.vscore.ch/" target="_blank">bonus:
@@ -42,7 +42,7 @@ export default {
                 <p class="bg-success text-center p-2 rounded-lg font-bold">Pendant les phases d'inscription</p>
                 <ul class="list-disc pl-5 mt-2">
                   <li>Inscrire votre équipe auprès du responsable UFOLEP Volley: <a class="link link-primary"
-                                                                                    href="/register.php"
+                                                                                    :href="$url('/register.php')"
                                                                                     target="_blank">Inscription</a></li>
                   <li>Une fois le compte créé (email avec identifiants reçus), se connecter au site et saisir l'ensemble
                     des
@@ -57,7 +57,7 @@ export default {
               <div class="p-2">
                 <p class="bg-success text-center p-2 rounded-lg font-bold">Le jour du match</p>
                 <ul class="list-disc pl-5 mt-2">
-                  <li>Se connecter et se rendre sur sa page <a class="link link-primary" href="/pages/my_page.html"
+                  <li>Se connecter et se rendre sur sa page <a class="link link-primary" :href="$url('/pages/my_page.html')"
                                                                target="_blank">ufolep13volley</a></li>
                   <li>Un lien sur le match du jour permet de saisir les joueurs présents au match</li>
                   <li><b>S'il n'y a pas de photo, prévoir une pièce d'identité permettant d'identifier la personne</b>
@@ -170,7 +170,7 @@ export default {
                   <li>matchs entre équipes spécialement constituées pour cette épreuve sur la base de deux filles
                     minimum sur le terrain pour quatre joueurs au total
                   </li>
-                  <li>inscription sur le site via le <a class="link link-primary" href="/register.php" target="_blank">formulaire</a>
+                  <li>inscription sur le site via le <a class="link link-primary" :href="$url('/register.php')" target="_blank">formulaire</a>
                   </li>
                 </ul>
               </div>

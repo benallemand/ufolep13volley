@@ -24,14 +24,14 @@ const PodiumCell = {
              class="flex items-center gap-1 rounded bg-amber-100 border-l-4 border-amber-400 px-2 py-1">
           <span>🥇</span>
           <span class="text-xs font-semibold truncate flex-1" :title="champion">{{ champion }}</span>
-          <a v-if="championId" :href="diplomaUrl(championId)" target="_blank"
+          <a v-if="championId" :href="$url(diplomaUrl(championId))" target="_blank"
              title="Télécharger le diplôme" class="shrink-0 text-primary/70 hover:text-primary">📄</a>
         </div>
         <div v-if="vice"
              class="flex items-center gap-1 rounded bg-slate-100 border-l-4 border-slate-300 px-2 py-1 mt-1">
           <span>🥈</span>
           <span class="text-xs truncate flex-1" :title="vice">{{ vice }}</span>
-          <a v-if="viceId" :href="diplomaUrl(viceId)" target="_blank"
+          <a v-if="viceId" :href="$url(diplomaUrl(viceId))" target="_blank"
              title="Télécharger le diplôme" class="shrink-0 text-primary/70 hover:text-primary">📄</a>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default {
             <span class="badge badge-primary badge-sm">dernière saison</span>
           </div>
           <div v-if="latestGroup.allIds" class="flex justify-center mb-4">
-            <a :href="'/rest/action.php/halloffame/download_diploma?ids=' + latestGroup.allIds"
+            <a :href="$url('/rest/action.php/halloffame/download_diploma?ids=' + latestGroup.allIds)"
                target="_blank" class="btn btn-sm btn-primary gap-1">
               📄 Télécharger tous les diplômes de la saison
             </a>
@@ -112,7 +112,7 @@ export default {
             <div class="collapse-title font-semibold">{{ grp.label }}</div>
             <div class="collapse-content">
               <div v-if="grp.allIds" class="flex justify-end pt-2">
-                <a :href="'/rest/action.php/halloffame/download_diploma?ids=' + grp.allIds"
+                <a :href="$url('/rest/action.php/halloffame/download_diploma?ids=' + grp.allIds)"
                    target="_blank" class="btn btn-xs btn-outline btn-primary gap-1">
                   📄 Tous les diplômes
                 </a>

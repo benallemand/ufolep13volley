@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue';
 import { onError, onSuccess } from '../../../toaster.js';
+import {url} from '../../../utils/basePath.js';
 
 /**
  * Gestion des utilisateurs (issue #265, lot 1).
@@ -322,7 +323,7 @@ export default {
             axios.post('/rest/action.php/usermanager/switch_to_user', formData)
                 .then((response) => {
                     onSuccess(this, response);
-                    window.location.href = '/pages/home.html';
+                    window.location.href = url('/pages/home.html');
                 })
                 .catch((error) => onError(this, error))
                 .finally(() => { this.isLoading = false; });
