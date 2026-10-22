@@ -45,10 +45,10 @@ export default {
 
           <input v-model.trim="search"
                  type="text"
-                 class="input input-bordered input-sm w-full my-3"
+                 class="input input-sm w-full my-3"
                  placeholder="Rechercher…"/>
 
-          <div class="max-h-80 overflow-y-auto border border-base-300 rounded">
+          <div class="max-h-80 overflow-y-auto border border-base-300 rounded-sm">
             <p v-if="visible.length === 0" class="p-3 text-sm text-base-content/60">
               Aucun résultat.
             </p>

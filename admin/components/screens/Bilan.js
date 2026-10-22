@@ -21,14 +21,14 @@ export default {
         <div class="card bg-base-200 mb-4">
           <div class="card-body p-4">
             <div class="flex flex-wrap items-end gap-3">
-              <div class="form-control">
-                <label class="label py-1" for="bilan-saison">
-                  <span class="label-text">Saison <span class="text-error">*</span></span>
+              <div class="flex flex-col *:w-full">
+                <label class="flex select-none items-center justify-between px-1 py-1" for="bilan-saison">
+                  <span class="text-sm">Saison <span class="text-error">*</span></span>
                 </label>
                 <input id="bilan-saison"
                        v-model.trim="saison"
                        type="text"
-                       class="input input-bordered"
+                       class="input"
                        placeholder="2025-2026"
                        pattern="\\d{4}-\\d{4}"/>
               </div>
@@ -70,7 +70,7 @@ export default {
               </table>
             </div>
 
-            <div class="stats stats-vertical sm:stats-horizontal shadow mt-3">
+            <div class="stats stats-vertical sm:stats-horizontal shadow-sm mt-3">
               <div class="stat py-3">
                 <div class="stat-title text-xs">Clubs participants</div>
                 <div class="stat-value text-2xl">{{ data.nb_clubs }}</div>
@@ -102,16 +102,16 @@ export default {
             <h2 class="card-title text-base">Commentaires à compléter</h2>
             <input type="hidden" name="saison" :value="saison"/>
 
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Responsable de la commission</span></label>
-              <input v-model="form.responsable" name="responsable" type="text" class="input input-bordered"/>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Responsable de la commission</span></label>
+              <input v-model="form.responsable" name="responsable" type="text" class="input"/>
             </div>
 
-            <div v-for="champ in champsTexte" :key="champ.name" class="form-control">
-              <label class="label py-1"><span class="label-text">{{ champ.label }}</span></label>
+            <div v-for="champ in champsTexte" :key="champ.name" class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">{{ champ.label }}</span></label>
               <textarea v-model="form[champ.name]"
                         :name="champ.name"
-                        class="textarea textarea-bordered"
+                        class="textarea"
                         :rows="champ.rows"></textarea>
             </div>
 

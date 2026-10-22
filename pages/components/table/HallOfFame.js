@@ -21,14 +21,14 @@ const PodiumCell = {
           {{ label }}
         </div>
         <div v-if="champion"
-             class="flex items-center gap-1 rounded bg-amber-100 border-l-4 border-amber-400 px-2 py-1">
+             class="flex items-center gap-1 rounded-sm bg-amber-100 border-l-4 border-amber-400 px-2 py-1">
           <span>🥇</span>
           <span class="text-xs font-semibold truncate flex-1" :title="champion">{{ champion }}</span>
           <a v-if="championId" :href="$url(diplomaUrl(championId))" target="_blank"
              title="Télécharger le diplôme" class="shrink-0 text-primary/70 hover:text-primary">📄</a>
         </div>
         <div v-if="vice"
-             class="flex items-center gap-1 rounded bg-slate-100 border-l-4 border-slate-300 px-2 py-1 mt-1">
+             class="flex items-center gap-1 rounded-sm bg-slate-100 border-l-4 border-slate-300 px-2 py-1 mt-1">
           <span>🥈</span>
           <span class="text-xs truncate flex-1" :title="vice">{{ vice }}</span>
           <a v-if="viceId" :href="$url(diplomaUrl(viceId))" target="_blank"
@@ -51,7 +51,7 @@ const SeasonBody = {
 
           <!-- Coupe : un seul podium, pas de division -->
           <div v-if="lg.type === 'cup'" class="max-w-xs">
-            <div class="card bg-base-100 border border-base-300 shadow-sm">
+            <div class="card bg-base-100 border border-base-300 shadow-xs">
               <div class="card-body p-3">
                 <podium-cell :champion="lg.champion" :vice="lg.vice" :ids="lg.ids"></podium-cell>
               </div>
@@ -61,7 +61,7 @@ const SeasonBody = {
           <!-- Championnat : grille de cartes-division, phase 1 / phase 2 -->
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             <div v-for="d in lg.divisions" :key="d.division"
-                 class="card bg-base-100 border border-base-300 shadow-sm">
+                 class="card bg-base-100 border border-base-300 shadow-xs">
               <div class="card-body p-3 gap-2">
                 <div class="text-center font-bold text-primary text-sm">Division {{ d.division }}</div>
                 <div class="flex gap-2">

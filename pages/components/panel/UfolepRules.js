@@ -49,7 +49,7 @@ export default {
     },
     template: `
       <div class="container mx-auto p-4 space-y-4">
-        <div id="reglement-list" class="bg-base-100 shadow rounded-lg p-4 text-center scroll-mt-4">
+        <div id="reglement-list" class="bg-base-100 shadow-sm rounded-lg p-4 text-center scroll-mt-4">
           <h1 class="text-2xl sm:text-3xl font-bold">Règlements UFOLEP 13</h1>
           <p class="mt-1 text-sm text-base-content/70">Touchez un règlement pour l'afficher.</p>
         </div>
@@ -72,7 +72,7 @@ export default {
                 :key="reg.slug"
                 type="button"
                 :data-slug="reg.slug"
-                class="flex items-center gap-3 text-left w-full rounded-xl border p-3 transition hover:bg-base-200 focus:outline-none"
+                class="flex items-center gap-3 text-left w-full rounded-xl border p-3 transition hover:bg-base-200 focus:outline-hidden"
                 :class="reg.slug === selectedRegulation.slug ? 'border-primary border-2 bg-primary/5' : 'border-base-300'"
                 @click="selectRegulation(reg.slug)">
               <i :class="['fas', reg.icon, 'text-xl text-primary w-6 text-center shrink-0']"></i>

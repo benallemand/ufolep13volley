@@ -17,7 +17,7 @@ export default {
           <div class="text-xs text-base-content/60 truncate" :title="user.login">{{ user.login }}</div>
         </div>
 
-        <ul class="menu p-2 flex-1 overflow-y-auto flex-nowrap">
+        <ul class="menu w-full p-2 flex-1 overflow-y-auto flex-nowrap">
           <template v-for="group in menu" :key="group.label">
             <li class="menu-title">{{ group.label }}</li>
             <li v-for="item in group.items" :key="item.path || item.href">

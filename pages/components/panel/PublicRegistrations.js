@@ -47,8 +47,8 @@ export default {
                 <li v-for="(t, i) in c.teams" :key="i" class="py-2 flex flex-wrap items-center gap-x-3 gap-y-1"
                     data-testid="public-registration">
                   <div class="min-w-0 flex-1">
-                    <div class="font-medium break-words">{{ t.equipe }}</div>
-                    <div class="text-xs text-base-content/60 break-words">
+                    <div class="font-medium wrap-break-word">{{ t.equipe }}</div>
+                    <div class="text-xs text-base-content/60 wrap-break-word">
                       {{ t.club || 'club non renseigné' }}
                       <span v-if="t.ancien_nom">· anciennement {{ t.ancien_nom }}</span>
                     </div>

@@ -14,17 +14,17 @@ export default {
           <input v-if="redirect" type="hidden" name="redirect" :value="redirect"/>
           <input v-if="reason" type="hidden" name="reason" :value="reason"/>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Login ou email</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Login ou email</span>
             </label>
-            <input name="login" type="text" class="input input-bordered" required/>
+            <input name="login" type="text" class="input" required/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Mot de passe</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Mot de passe</span>
             </label>
-            <input name="password" type="password" class="input input-bordered" required/>
+            <input name="password" type="password" class="input" required/>
           </div>
           <div class="flex justify-between gap-2">
             <router-link to="/reset_password" class="btn btn-sm btn-ghost">

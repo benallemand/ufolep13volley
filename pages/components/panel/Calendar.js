@@ -27,11 +27,11 @@ export default {
     },
     template: `
       <div class="flex flex-col gap-8">
-        <div class="bg-base-200 border border-2 border-base-300 p-4 rounded">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 rounded-sm">
           <match-calendar/>
         </div>
 
-        <div class="bg-base-200 border border-2 border-base-300 p-4 rounded">
+        <div class="bg-base-200 border border-2 border-base-300 p-4 rounded-sm">
           <season-timeline :events="agendaEvents" :season="season"/>
         </div>
       </div>

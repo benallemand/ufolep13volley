@@ -19,7 +19,7 @@ export default {
         <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
           <input v-model.trim="searchQuery"
                  type="text"
-                 class="input input-bordered input-sm w-full sm:w-64"
+                 class="input input-sm w-full sm:w-64"
                  placeholder="Rechercher une équipe, une poule…"/>
           <span class="text-sm text-base-content/60">
             {{ filteredRanks.length }} équipe(s)

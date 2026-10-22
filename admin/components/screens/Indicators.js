@@ -41,7 +41,7 @@ export default {
         <div class="flex flex-wrap items-center gap-4 mb-3">
           <input v-model.trim="search"
                  type="text"
-                 class="input input-bordered input-sm w-full sm:w-96"
+                 class="input input-sm w-full sm:w-96"
                  placeholder="Rechercher un indicateur…"/>
           <label class="flex items-center gap-2 text-sm">
             <input v-model="alertsOnly" type="checkbox" class="checkbox checkbox-sm"/>
@@ -98,7 +98,7 @@ export default {
             <div class="flex flex-wrap items-center gap-3 mb-3">
               <input v-model.trim="detailSearch"
                      type="text"
-                     class="input input-bordered input-sm w-full sm:w-96"
+                     class="input input-sm w-full sm:w-96"
                      aria-label="Recherche rapide dans le détail"
                      placeholder="Rechercher… (plusieurs termes séparés par des virgules)"/>
               <span class="text-sm text-base-content/60" data-testid="detail-count">
@@ -126,7 +126,7 @@ export default {
                     <th v-for="c in detailColumns" :key="'filtre-' + c" class="py-1">
                       <input v-model.trim="columnFilters[c]"
                              type="text"
-                             class="input input-bordered input-xs w-full min-w-24 font-normal"
+                             class="input input-xs w-full min-w-24 font-normal"
                              :aria-label="'Filtrer la colonne ' + c"
                              placeholder="Filtrer…"/>
                     </th>

@@ -134,7 +134,7 @@ export default {
                   v-for="email in emails"
                   :key="email.id"
                   :class="!parseInt(email.is_read) ? 'font-bold bg-base-200' : ''"
-                  class="cursor-pointer hover"
+                  class="cursor-pointer hover:bg-base-200"
                   @click="openEmail(email)">
                   <td>
                     <span v-if="!parseInt(email.is_read)" class="badge badge-error badge-sm">?</span>
@@ -202,7 +202,7 @@ export default {
               <iframe :srcdoc="selectedEmail.body || '<p>(corps vide)</p>'"
                       sandbox=""
                       referrerpolicy="no-referrer"
-                      class="w-full h-[55vh] bg-white rounded border border-base-300"
+                      class="w-full h-[55vh] bg-white rounded-sm border border-base-300"
                       title="Contenu du message"></iframe>
             </div>
           </div>

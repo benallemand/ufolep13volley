@@ -9,9 +9,9 @@ export default {
             <form class="flex flex-col gap-4 p-4 max-w-md mx-auto border rounded-lg shadow-lg"
                   @submit.prevent="handleSubmitPassword">
               <label class="font-bold" for="new_password">Nouveau mot de passe</label>
-              <input class="input input-bordered" type="password" id="new_password" name="new_password" v-model="password.new_password" required>
+              <input class="input w-full" type="password" id="new_password" name="new_password" v-model="password.new_password" required>
               <label class="font-bold" for="new_password_again">Confirmer le mot de passe</label>
-              <input class="input input-bordered" type="password" id="new_password_again" name="new_password_again" v-model="password.new_password_again" required>
+              <input class="input w-full" type="password" id="new_password_again" name="new_password_again" v-model="password.new_password_again" required>
               <button type="submit" class="btn btn-primary">changer</button>
             </form>
           </div>

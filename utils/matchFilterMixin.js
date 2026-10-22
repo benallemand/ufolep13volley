@@ -43,7 +43,7 @@ export const filterBarTemplate = `
         type="text"
         v-model="searchQuery"
         placeholder="Rechercher (équipe, code)..."
-        class="input input-bordered input-sm flex-grow"
+        class="input input-sm grow"
     />
     <label class="flex items-center gap-2">
         <input

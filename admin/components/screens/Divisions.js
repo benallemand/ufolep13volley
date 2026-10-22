@@ -57,9 +57,9 @@ export default {
         </div>
 
         <div class="flex flex-wrap items-end gap-3 mb-4">
-          <label class="form-control">
-            <span class="label-text mb-1">Compétition</span>
-            <select v-model="code_competition" class="select select-bordered select-sm" @change="load">
+          <label class="flex flex-col *:w-full">
+            <span class="text-sm mb-1">Compétition</span>
+            <select v-model="code_competition" class="select select-sm" @change="load">
               <option value="">—</option>
               <option v-for="c in competitions" :key="c.code_competition" :value="c.code_competition">
                 {{ c.libelle }}
@@ -71,10 +71,10 @@ export default {
           </button>
           <!-- « Non affectées » limité aux équipes inscrites (#388) : sinon les
                équipes des anciennes saisons noient celles de la nouvelle. -->
-          <label v-if="code_competition && hasRegistrations" class="label cursor-pointer gap-2">
+          <label v-if="code_competition && hasRegistrations" class="flex select-none items-center justify-between px-1 py-2 cursor-pointer gap-2">
             <input type="checkbox" class="checkbox checkbox-sm" data-testid="divisions-show-all"
                    :checked="showAllUnassigned" @change="toggleAllUnassigned($event.target.checked)"/>
-            <span class="label-text">Afficher aussi les équipes non inscrites</span>
+            <span class="text-sm">Afficher aussi les équipes non inscrites</span>
           </label>
           <span v-if="dirty" class="badge badge-warning">modifications non enregistrées</span>
         </div>
@@ -142,7 +142,7 @@ export default {
                 <li v-for="(team, index) in col.teams"
                     :key="team.id_equipe ?? 'r' + team.id_register"
                     :draggable="!team.toCreate"
-                    class="flex items-center gap-2 rounded bg-base-100 border border-base-300 px-2 py-1 text-sm"
+                    class="flex items-center gap-2 rounded-sm bg-base-100 border border-base-300 px-2 py-1 text-sm"
                     :class="[
                       team.toCreate ? 'cursor-not-allowed opacity-70' : 'cursor-move',
                       picked && picked.team.id_equipe === team.id_equipe ? 'ring-2 ring-primary' : '',

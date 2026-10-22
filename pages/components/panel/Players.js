@@ -25,13 +25,13 @@ export default {
         </div>
 
         <div v-if="!squadLock.locked" class="bg-base-200 border border-2 border-base-300 p-4 flex flex-wrap gap-1">
-          <span class="label-text">Ajouter un joueur existant</span>
+          <span class="text-sm">Ajouter un joueur existant</span>
           <input
               type="text"
               v-model="searchTerm"
               placeholder="Rechercher un joueur..."
               @input="fetchPlayers"
-              class="input input-bordered w-full"
+              class="input w-full"
           />
           <ul v-if="filteredPlayers.length" class="bg-white border w-full mt-1 z-10 shadow-md">
             <li
@@ -82,7 +82,7 @@ export default {
                   <div class="w-24 rounded-full relative">
                     <img :src="$url('/'+player.path_photo)" alt=""/>
                     <div
-                        class="absolute inset-0 rounded-full bg-black bg-opacity-50 text-white transition-opacity flex items-center justify-center text-center"
+                        class="absolute inset-0 rounded-full bg-black/50 text-white transition-opacity flex items-center justify-center text-center"
                         :class="{'opacity-100': player.isDragging, 'opacity-0 hover:opacity-100': !player.isDragging}"
                     >
                       <span>Déposez ici</span>

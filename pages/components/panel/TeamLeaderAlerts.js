@@ -31,7 +31,7 @@ export default {
         <div v-for="group in groups" :key="group.team" class="bg-base-200 border border-base-300 rounded-box p-4 mb-3">
           <h3 v-if="groups.length > 1 || group.team" class="font-bold mb-2">{{ group.team }}</h3>
           <div class="flex flex-wrap gap-2">
-            <div v-for="alert in group.alerts" :key="alert.issue" class="card bg-base-100 w-full md:w-96 shadow"
+            <div v-for="alert in group.alerts" :key="alert.issue" class="card bg-base-100 w-full md:w-96 shadow-sm"
                  data-testid="alert-card">
               <div class="card-body p-4">
                 <div class="flex items-start gap-2">

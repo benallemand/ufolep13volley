@@ -26,7 +26,7 @@ export default {
               <div class="card-body p-4">
                 <h3 class="card-title text-sm">Match {{ matchNum }}</h3>
                 <div class="flex flex-col gap-2">
-                  <select class="select select-bordered w-full" 
+                  <select class="select w-full" 
                           v-model="draw[matchNum].team1"
                           @change="markDirty">
                     <option value="">-- Équipe 1 --</option>
@@ -35,7 +35,7 @@ export default {
                     </option>
                   </select>
                   <div class="text-center font-bold text-sm">VS</div>
-                  <select class="select select-bordered w-full" 
+                  <select class="select w-full" 
                           v-model="draw[matchNum].team2"
                           @change="markDirty">
                     <option value="">-- Équipe 2 --</option>
@@ -87,7 +87,7 @@ export default {
                 <p class="text-xs text-gray-500 mb-2">
                   Vainqueur 1/8 #{{ quarterNum * 2 - 1 }} vs Vainqueur 1/8 #{{ quarterNum * 2 }}
                 </p>
-                <select class="select select-bordered w-full" 
+                <select class="select w-full" 
                         v-model="hostDraw['1_4'][quarterNum]"
                         @change="markHostDirty">
                   <option :value="null">-- Qui reçoit ? --</option>
@@ -108,7 +108,7 @@ export default {
                 <p class="text-xs text-gray-500 mb-2">
                   Vainqueur 1/4 #{{ semiNum * 2 - 1 }} vs Vainqueur 1/4 #{{ semiNum * 2 }}
                 </p>
-                <select class="select select-bordered w-full" 
+                <select class="select w-full" 
                         v-model="hostDraw['1_2'][semiNum]"
                         @change="markHostDirty">
                   <option :value="null">-- Qui reçoit ? --</option>

@@ -65,7 +65,7 @@ export default {
                :alt="title"
                class="w-14 h-14 flex-none rounded-full object-cover bg-base-200"/>
           <div class="flex-1 min-w-0">
-            <div class="text-lg font-bold leading-6 break-words">{{ title }}</div>
+            <div class="text-lg font-bold leading-6 wrap-break-word">{{ title }}</div>
             <div class="mt-1.5 flex items-center gap-2 flex-wrap">
               <span v-if="badge" :class="['badge badge-sm', badge.class]">{{ badge.label }}</span>
               <span v-if="subtitle" class="text-xs text-base-content/60">{{ subtitle }}</span>
@@ -99,7 +99,7 @@ export default {
             <dl class="grid grid-cols-[minmax(7rem,9.5rem)_minmax(0,1fr)] gap-x-3 gap-y-2 text-sm">
               <template v-for="field in section.fields" :key="field.key">
                 <dt class="text-base-content/60">{{ field.label }}</dt>
-                <dd class="m-0 break-words">{{ value(field) }}</dd>
+                <dd class="m-0 wrap-break-word">{{ value(field) }}</dd>
               </template>
             </dl>
           </section>

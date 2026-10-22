@@ -31,7 +31,7 @@ export default {
             <span class="text-sm font-bold">{{ placedCount }} / 6</span>
           </div>
 
-          <div role="tablist" class="tabs tabs-boxed">
+          <div role="tablist" class="tabs tabs-box">
             <button v-for="side in sides"
                     :key="'tab-' + side.key"
                     type="button"
@@ -39,7 +39,7 @@ export default {
                     class="tab"
                     :class="side.key === currentSide ? 'tab-active' : ''"
                     @click="switchSide(side.key)">
-              <span class="truncate max-w-[8rem]">{{ side.name }}</span>
+              <span class="truncate max-w-32">{{ side.name }}</span>
             </button>
           </div>
 

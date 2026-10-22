@@ -126,18 +126,18 @@ export default {
           </p>
 
           <label class="font-bold" for="id_competition">Compétition</label>
-          <select id="id_competition" v-model="form.id_competition" class="select select-bordered" required
+          <select id="id_competition" v-model="form.id_competition" class="select w-full" required
                   @change="onCompetitionChange">
             <option value="">Sélectionner une compétition</option>
             <option v-for="c in openCompetitions" :key="c.id" :value="c.id">{{ c.libelle }}</option>
           </select>
 
           <div class="flex flex-wrap gap-4">
-            <label class="label cursor-pointer justify-start gap-2">
+            <label class="flex select-none items-center px-1 py-2 cursor-pointer justify-start gap-2">
               <input type="radio" value="renew" v-model="mode" class="radio" @change="onModeChange"/>
               <span class="font-bold">Réengager une équipe du club</span>
             </label>
-            <label class="label cursor-pointer justify-start gap-2">
+            <label class="flex select-none items-center px-1 py-2 cursor-pointer justify-start gap-2">
               <input type="radio" value="new" v-model="mode" class="radio" @change="onModeChange"/>
               <span class="font-bold">Inscrire une nouvelle équipe</span>
             </label>
@@ -145,7 +145,7 @@ export default {
 
           <template v-if="mode === 'renew'">
             <label class="font-bold" for="old_team_id">Équipe à réengager</label>
-            <select id="old_team_id" v-model="form.old_team_id" class="select select-bordered" required
+            <select id="old_team_id" v-model="form.old_team_id" class="select w-full" required
                     @change="onOldTeamChange">
               <option value="">Sélectionner l'équipe</option>
               <option v-for="t in oldTeamChoices" :key="t.id_equipe" :value="t.id_equipe">{{ t.nom_equipe }}</option>
@@ -157,25 +157,25 @@ export default {
           </template>
 
           <label class="font-bold" for="new_team_name">Nom de l'équipe à engager</label>
-          <input id="new_team_name" type="text" v-model="form.new_team_name" class="input input-bordered" required/>
+          <input id="new_team_name" type="text" v-model="form.new_team_name" class="input w-full" required/>
           <p class="text-xs opacity-60 italic">
             Saisissez un nom pour votre équipe, que ce soit le même que l'an dernier ou pas.
             Le nombre d'équipes est limité par les terrains fournis par votre club
             (1 terrain par semaine = 2 équipes maximum).
           </p>
 
-          <label v-if="isCupChoiceVisible" class="label cursor-pointer justify-start gap-2">
+          <label v-if="isCupChoiceVisible" class="flex select-none items-center px-1 py-2 cursor-pointer justify-start gap-2">
             <input type="checkbox" v-model="form.is_cup_registered" class="checkbox"/>
             <span>Mon équipe souhaite participer à la coupe 6x6 Isoardi</span>
           </label>
 
           <template v-if="seedingTournamentWeek">
-            <label class="label cursor-pointer justify-start gap-2">
+            <label class="flex select-none items-center px-1 py-2 cursor-pointer justify-start gap-2">
               <input type="checkbox" v-model="form.is_seeding_tournament_requested" class="checkbox"/>
               <span>Je souhaiterais que cette équipe participe au tournoi de brassage durant la
                 {{ seedingTournamentWeek }} (sous réserve d'éligibilité)</span>
             </label>
-            <label class="label cursor-pointer justify-start gap-2">
+            <label class="flex select-none items-center px-1 py-2 cursor-pointer justify-start gap-2">
               <input type="checkbox" v-model="form.can_seeding_tournament_setup" class="checkbox"/>
               <span>Mon club peut organiser le tournoi de brassage durant la {{ seedingTournamentWeek }}</span>
             </label>
@@ -183,23 +183,23 @@ export default {
 
           <p class="font-bold mt-2">Responsable pressenti de l'équipe</p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <input type="text" v-model="form.leader_name" class="input input-bordered" placeholder="Nom" required/>
-            <input type="text" v-model="form.leader_first_name" class="input input-bordered" placeholder="Prénom" required/>
-            <input type="email" v-model="form.leader_email" class="input input-bordered" placeholder="Email" required/>
-            <input type="tel" v-model="form.leader_phone" class="input input-bordered" placeholder="Téléphone" required/>
+            <input type="text" v-model="form.leader_name" class="input w-full" placeholder="Nom" required/>
+            <input type="text" v-model="form.leader_first_name" class="input w-full" placeholder="Prénom" required/>
+            <input type="email" v-model="form.leader_email" class="input w-full" placeholder="Email" required/>
+            <input type="tel" v-model="form.leader_phone" class="input w-full" placeholder="Téléphone" required/>
           </div>
 
           <p class="font-bold mt-2">Réception principale</p>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <select v-model="form.id_court_1" class="select select-bordered">
+            <select v-model="form.id_court_1" class="select w-full">
               <option value="">Gymnase principal</option>
               <option v-for="g in gymnasiums" :key="g.id" :value="g.id">{{ g.full_name }}</option>
             </select>
-            <select v-model="form.day_court_1" class="select select-bordered">
+            <select v-model="form.day_court_1" class="select w-full">
               <option value="">Jour</option>
               <option v-for="d in days" :key="d" :value="d">{{ d }}</option>
             </select>
-            <select v-model="form.hour_court_1" class="select select-bordered">
+            <select v-model="form.hour_court_1" class="select w-full">
               <option value="">Heure</option>
               <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
             </select>
@@ -207,15 +207,15 @@ export default {
 
           <p class="font-bold mt-2">Réception secondaire</p>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <select v-model="form.id_court_2" class="select select-bordered">
+            <select v-model="form.id_court_2" class="select w-full">
               <option value="">Gymnase secondaire</option>
               <option v-for="g in gymnasiums" :key="g.id" :value="g.id">{{ g.full_name }}</option>
             </select>
-            <select v-model="form.day_court_2" class="select select-bordered">
+            <select v-model="form.day_court_2" class="select w-full">
               <option value="">Jour</option>
               <option v-for="d in days" :key="d" :value="d">{{ d }}</option>
             </select>
-            <select v-model="form.hour_court_2" class="select select-bordered">
+            <select v-model="form.hour_court_2" class="select w-full">
               <option value="">Heure</option>
               <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
             </select>
@@ -226,7 +226,7 @@ export default {
           </p>
 
           <label class="font-bold" for="remarks">Autres infos</label>
-          <textarea id="remarks" v-model="form.remarks" class="textarea textarea-bordered"
+          <textarea id="remarks" v-model="form.remarks" class="textarea w-full"
                     placeholder="Dates d'indisponibilité du gymnase, ou toute info utile pour générer les matchs"></textarea>
 
           <div class="flex gap-2 justify-end">

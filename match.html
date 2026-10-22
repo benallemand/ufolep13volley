@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="app" class="max-w-3xl mx-auto p-6">
-    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
     <match-menu :id-match="id_match"></match-menu>
@@ -35,11 +35,11 @@
             <div class="mb-4 p-4 border">
                 <div class="form-group mb-4" v-for="set in [1, 2, 3, 4, 5]" :key="set">
                     <div class="grid grid-cols-3 gap-4 flex items-center">
-                        <label class="input flex items-center gap-3 text-lg">Set {{ set }}</label>
-                        <input class="input input-bordered" type="number" min="0" max="50"
+                        <label class="input input-ghost flex items-center gap-3 text-lg">Set {{ set }}</label>
+                        <input class="input" type="number" min="0" max="50"
                                :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_dom"
                                v-model.number="matchData['set_' + set + '_dom']"/>
-                        <input class="input input-bordered" type="number" min="0" max="50"
+                        <input class="input" type="number" min="0" max="50"
                                :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_ext"
                                v-model.number="matchData['set_' + set + '_ext']"/>
                     </div>
@@ -48,7 +48,7 @@
         </div>
         <div class="mb-4 p-4 border">
             <h3 class="text-xl font-bold mb-4">Arbitrage</h3>
-            <select v-model="matchData.referee" class="select w-full max-w-xs">
+            <select v-model="matchData.referee" class="select select-ghost w-full max-w-xs">
                 <option value="HOME" :selected="matchData.referee === 'HOME'">équipe à domicile</option>
                 <option value="AWAY" :selected="matchData.referee === 'AWAY'">équipe à l'extérieur</option>
                 <option value="BOTH" :selected="matchData.referee === 'BOTH'">les deux / auto-arbitrage</option>
@@ -56,7 +56,7 @@
         </div>
         <div class="form-group mb-4">
             <label class="block text-lg mb-2">Commentaire</label>
-            <textarea v-model="matchData.note" class="textarea textarea-bordered w-full"
+            <textarea v-model="matchData.note" class="textarea w-full"
                       placeholder="Ajouter un commentaire"></textarea>
         </div>
         <div class="mb-4 p-4 border">
@@ -128,19 +128,19 @@
                 <h3 class="font-bold text-lg mb-4">Choisir une nouvelle date</h3>
 
                 <div class="flex flex-wrap gap-2 mb-4">
-                    <label class="label cursor-pointer gap-2">
+                    <label class="flex select-none items-center justify-between px-1 py-2 cursor-pointer gap-2">
                         <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.invertReception"/>
-                        <span class="label-text">Inverser la réception</span>
+                        <span class="text-sm">Inverser la réception</span>
                     </label>
-                    <label class="label cursor-pointer gap-2">
+                    <label class="flex select-none items-center justify-between px-1 py-2 cursor-pointer gap-2">
                         <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.forceDate"/>
-                        <span class="label-text">Forcer la date</span>
+                        <span class="text-sm">Forcer la date</span>
                     </label>
                 </div>
 
                 <div v-if="dateModification.forceDate" class="mb-4">
                     <label class="block text-sm font-medium mb-1">Commentaire obligatoire</label>
-                    <textarea v-model="dateModification.comment" class="textarea textarea-bordered w-full"
+                    <textarea v-model="dateModification.comment" class="textarea w-full"
                               placeholder="Raison du forçage de date..." rows="2"></textarea>
                 </div>
 

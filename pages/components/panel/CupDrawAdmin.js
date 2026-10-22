@@ -10,11 +10,11 @@ export default {
               <i class="fas fa-trophy mr-2"></i>
               Sélection de la compétition
             </h2>
-            <div class="form-control w-full max-w-xs">
-              <label class="label">
-                <span class="label-text">Compétition de coupe</span>
+            <div class="flex flex-col *:w-full w-full max-w-xs">
+              <label class="flex select-none items-center justify-between px-1 py-2">
+                <span class="text-sm">Compétition de coupe</span>
               </label>
-              <select class="select select-bordered" v-model="selectedCompetition" @change="onCompetitionChange">
+              <select class="select" v-model="selectedCompetition" @change="onCompetitionChange">
                 <option value="">-- Sélectionner une compétition --</option>
                 <option v-for="comp in competitions" :key="comp.code_competition" :value="comp.code_competition">
                   {{ comp.libelle }} ({{ comp.code_competition }})
@@ -23,17 +23,17 @@ export default {
             </div>
             
             <div v-if="selectedCompetition" class="mt-4 flex gap-2 flex-wrap">
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text">Nombre de poules</span>
+              <div class="flex flex-col *:w-full">
+                <label class="flex select-none items-center justify-between px-1 py-2">
+                  <span class="text-sm">Nombre de poules</span>
                 </label>
-                <input type="number" class="input input-bordered w-24" v-model.number="nbPools" min="1" max="20" @change="initializePools">
+                <input type="number" class="input w-24" v-model.number="nbPools" min="1" max="20" @change="initializePools">
               </div>
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text">Équipes par poule (max)</span>
+              <div class="flex flex-col *:w-full">
+                <label class="flex select-none items-center justify-between px-1 py-2">
+                  <span class="text-sm">Équipes par poule (max)</span>
                 </label>
-                <input type="number" class="input input-bordered w-24" v-model.number="teamsPerPool" min="2" max="6">
+                <input type="number" class="input w-24" v-model.number="teamsPerPool" min="2" max="6">
               </div>
             </div>
           </div>
@@ -133,7 +133,7 @@ export default {
                       
                       <div v-for="(team, idx) in getPoolTeams(poolIndex)" 
                            :key="'pool-'+poolIndex+'-team-'+team.id_equipe"
-                           class="bg-base-300 rounded p-2 mb-1 text-xs cursor-grab flex items-center gap-1"
+                           class="bg-base-300 rounded-sm p-2 mb-1 text-xs cursor-grab flex items-center gap-1"
                            draggable="true"
                            @dragstart="onDragStart($event, team, poolIndex)"
                            @dragend="onDragEnd">
@@ -158,7 +158,7 @@ export default {
           </div>
           
           <!-- Statistiques -->
-          <div class="stats shadow mt-6 w-full">
+          <div class="stats shadow-sm mt-6 w-full">
             <div class="stat">
               <div class="stat-title">Équipes placées</div>
               <div class="stat-value text-success">{{ assignedTeamsCount }}</div>

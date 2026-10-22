@@ -58,7 +58,7 @@ export default {
           <label v-for="key in ['team', 'club']" :key="key"
                  class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" class="checkbox checkbox-sm" v-model="shown[key]"/>
-            <span class="inline-block w-3 h-3 rounded"
+            <span class="inline-block w-3 h-3 rounded-sm"
                   :style="{ background: sources[key].color }"></span>
             <span class="text-sm">{{ sources[key].label }}</span>
           </label>
@@ -69,7 +69,7 @@ export default {
           </span>
         </div>
 
-        <div class="bg-base-100 border border-base-300 rounded p-2">
+        <div class="bg-base-100 border border-base-300 rounded-sm p-2">
           <full-calendar ref="calendar" :options="options"/>
         </div>
       </div>

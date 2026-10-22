@@ -33,7 +33,7 @@ export default {
         <template #filters>
           <label class="flex items-center gap-2 text-sm">
             <span>Dernières</span>
-            <select v-model.number="windowSize" class="select select-bordered select-sm">
+            <select v-model.number="windowSize" class="select select-sm">
               <option :value="500">500</option>
               <option :value="2000">2000</option>
               <option :value="100000">toutes</option>

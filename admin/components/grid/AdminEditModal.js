@@ -47,9 +47,9 @@ export default {
           </h3>
 
           <form @submit.prevent="submit" class="space-y-3">
-            <div v-for="field in visibleFields" :key="field.name" class="form-control">
-              <label class="label py-1" :for="'f-' + field.name">
-                <span class="label-text">
+            <div v-for="field in visibleFields" :key="field.name" class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1" :for="'f-' + field.name">
+                <span class="text-sm">
                   {{ field.label }}
                   <span v-if="field.required" class="text-error">*</span>
                 </span>
@@ -58,14 +58,14 @@ export default {
               <textarea v-if="field.type === 'textarea'"
                         :id="'f-' + field.name"
                         v-model="form[field.name]"
-                        class="textarea textarea-bordered"
+                        class="textarea"
                         rows="3"
                         :required="field.required"></textarea>
 
               <select v-else-if="field.type === 'select'"
                       :id="'f-' + field.name"
                       v-model="form[field.name]"
-                      class="select select-bordered"
+                      class="select"
                       :required="field.required">
                 <option value="">—</option>
                 <option v-for="opt in field.options" :key="opt.value" :value="opt.value">
@@ -83,14 +83,14 @@ export default {
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
                      type="date"
-                     class="input input-bordered"
+                     class="input"
                      :required="field.required"/>
 
               <input v-else-if="field.type === 'datetime'"
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
                      type="datetime-local"
-                     class="input input-bordered"
+                     class="input"
                      :required="field.required"/>
 
               <!-- Fichier : la valeur ne passe pas par form, elle reste sur
@@ -102,7 +102,7 @@ export default {
                      :id="'f-' + field.name"
                      :ref="'file-' + field.name"
                      type="file"
-                     class="file-input file-input-bordered"
+                     class="file-input"
                      :accept="field.accept"
                      :required="field.required"/>
 
@@ -110,15 +110,15 @@ export default {
                      :id="'f-' + field.name"
                      v-model="form[field.name]"
                      :type="field.type || 'text'"
-                     class="input input-bordered"
+                     class="input"
                      :required="field.required"
                      :min="field.min"
                      :max="field.max"
                      :pattern="field.pattern"
                      :placeholder="field.placeholder"/>
 
-              <label v-if="field.help" class="label py-0">
-                <span class="label-text-alt text-base-content/60">{{ field.help }}</span>
+              <label v-if="field.help" class="flex select-none items-center justify-between px-1 py-0">
+                <span class="text-xs text-base-content/60">{{ field.help }}</span>
               </label>
             </div>
 

@@ -34,7 +34,7 @@ export default {
         <template #filters="{ rows }">
           <label class="flex items-center gap-2 text-sm">
             <span>Saison</span>
-            <select v-model="season" class="select select-bordered select-sm">
+            <select v-model="season" class="select select-sm">
               <option value="">toutes</option>
               <option v-for="s in seasonsOf(rows)" :key="s" :value="s">{{ s }}</option>
             </select>

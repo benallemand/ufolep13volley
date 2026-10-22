@@ -3,21 +3,47 @@
  *
  * Contient :
  *   - Les CSS des libs tierces qu'on chargeait avant par CDN
- *   - Tailwind (base / components / utilities) avec DaisyUI en plugin
+ *   - Tailwind 4 avec daisyUI 5 en plugin
  *
  * Référencée comme entrée Vite à part (`css/app`) et incluse via un
  * <link rel="stylesheet" href="./src/css/app.css"> dans le <head> de chaque
  * page HTML (Vite la remplace par le bundle hashé au build).
  *
- * IMPORTANT : tous les @import DOIVENT précéder les @tailwind (règle CSS :
+ * IMPORTANT : tous les @import DOIVENT précéder les autres règles (règle CSS :
  * "@import must precede all other statements").
  */
 
 /* Libs tierces (auparavant chargées par CDN) */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-@import 'notyf/notyf.min.css';
-@import 'toastify-js/src/toastify.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css' layer(base);
+@import 'notyf/notyf.min.css' layer(base);
+@import 'toastify-js/src/toastify.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Détection automatique désactivée : elle balaierait aussi classes/, e2e/,
+   unit_tests/… On liste les fichiers qui portent des classes. */
+@import 'tailwindcss' source(none);
+@source '../../pages';
+@source '../../admin';
+@source '../../utils';
+@source '../../src';
+@source '../../*.{php,html,js}';
+
+/* Les pages utilisent `data-theme="light"` et `data-theme="cupcake"`. */
+@plugin 'daisyui' {
+  themes: light --default, cupcake;
+  logs: false;
+}
+
+/*
+  Tailwind 4 colore les bordures par défaut en `currentcolor` ; on garde le
+  gris clair de Tailwind 3 pour les éléments qui n'ont pas de couleur de
+  bordure explicite.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}

@@ -34,7 +34,7 @@ export default {
         <template #filters>
           <label class="flex items-center gap-2 text-sm">
             <span>Vue</span>
-            <select v-model="preset" class="select select-bordered select-sm">
+            <select v-model="preset" class="select select-sm">
               <option v-for="p in presets" :key="p.key" :value="p.key">{{ p.label }}</option>
             </select>
           </label>
