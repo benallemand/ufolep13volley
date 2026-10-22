@@ -208,11 +208,11 @@ export default {
         <div class="flex flex-wrap items-center gap-3 mb-3 sticky left-0">
           <input v-model.trim="search"
                  type="text"
-                 class="input input-bordered input-sm w-full sm:w-96"
+                 class="input input-sm w-full sm:w-96"
                  placeholder="Rechercher… (plusieurs termes séparés par des virgules)"/>
           <label class="flex items-center gap-2 text-sm ml-auto">
-            <span>par page</span>
-            <select v-model.number="pageSizeChoice" class="select select-bordered select-sm"
+            <span class="whitespace-nowrap">par page</span>
+            <select v-model.number="pageSizeChoice" class="select select-sm"
                     data-testid="grid-page-size">
               <option :value="25">25</option>
               <option :value="50">50</option>
@@ -242,7 +242,7 @@ export default {
              avec lui. -->
         <template v-else>
           <table class="table table-xs md:table-sm">
-            <thead class="sticky top-0 z-10 bg-base-100 [&_tr]:border-b-0 shadow-[0_1px_0_0_oklch(var(--bc)/0.2)]"
+            <thead class="sticky top-0 z-10 bg-base-100 [&_tr]:border-b-0 shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-base-content)_20%,transparent)]"
                    data-testid="grid-thead">
             <tr>
               <th v-if="canSelect" class="w-8">
@@ -269,16 +269,16 @@ export default {
                         :value="columnFilters[col.key] ?? ''"
                         @change="columnFilters[col.key] = $event.target.value"
                         :data-testid="'grid-filter-' + col.key"
-                        class="select select-bordered select-xs w-full min-w-20">
+                        class="select select-xs w-full min-w-20">
                   <option value="">tous</option>
                   <option v-for="opt in columnOptions[col.key]" :key="opt" :value="opt">{{ opt }}</option>
                 </select>
                 <div v-else-if="columnKinds[col.key] === 'date'" class="flex flex-col gap-1 min-w-28">
-                  <input type="date" class="input input-bordered input-xs" title="à partir du"
+                  <input type="date" class="input input-xs" title="à partir du"
                          :data-testid="'grid-filter-' + col.key + '-from'"
                          :value="(columnFilters[col.key] || {}).from || ''"
                          @input="setDateFilter(col.key, 'from', $event.target.value)"/>
-                  <input type="date" class="input input-bordered input-xs" title="jusqu'au"
+                  <input type="date" class="input input-xs" title="jusqu'au"
                          :data-testid="'grid-filter-' + col.key + '-to'"
                          :value="(columnFilters[col.key] || {}).to || ''"
                          @input="setDateFilter(col.key, 'to', $event.target.value)"/>
@@ -287,7 +287,7 @@ export default {
                        v-model.trim="columnFilters[col.key]"
                        :data-testid="'grid-filter-' + col.key"
                        type="text" placeholder="contient…"
-                       class="input input-bordered input-xs w-full min-w-20"/>
+                       class="input input-xs w-full min-w-20"/>
               </th>
             </tr>
             </thead>
@@ -297,7 +297,7 @@ export default {
                 :class="[
                   canSelect && isSelected(row) ? 'bg-primary/10' : '',
                   detailConfig && isDetailed(row) ? 'bg-primary/10' : '',
-                  rowClickable || detailConfig ? 'cursor-pointer hover' : '',
+                  rowClickable || detailConfig ? 'cursor-pointer hover:bg-base-200' : '',
                 ]"
                 :role="detailConfig ? 'button' : null"
                 :tabindex="detailConfig ? 0 : null"

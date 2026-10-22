@@ -35,7 +35,7 @@ export default {
         <template #filters="{ rows }">
           <label class="flex items-center gap-2 text-sm">
             <span>Période</span>
-            <select v-model="period" class="select select-bordered select-sm">
+            <select v-model="period" class="select select-sm">
               <option value="">toutes</option>
               <option v-for="p in periodsOf(rows)" :key="p" :value="p">{{ p }}</option>
             </select>
@@ -58,31 +58,31 @@ export default {
         <div class="modal-box">
           <h3 class="font-bold text-lg mb-4">Générer le palmarès depuis les matchs</h3>
           <form @submit.prevent="generate" class="space-y-3">
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Compétition <span class="text-error">*</span></span></label>
-              <select v-model="generateForm.code_competition" class="select select-bordered" required>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Compétition <span class="text-error">*</span></span></label>
+              <select v-model="generateForm.code_competition" class="select" required>
                 <option value="">—</option>
                 <option v-for="c in competitions" :key="c.code_competition" :value="c.code_competition">
                   {{ c.libelle }}
                 </option>
               </select>
             </div>
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Date de début <span class="text-error">*</span></span></label>
-              <input v-model="generateForm.date_debut" type="date" class="input input-bordered" required/>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Date de début <span class="text-error">*</span></span></label>
+              <input v-model="generateForm.date_debut" type="date" class="input" required/>
             </div>
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Date de fin <span class="text-error">*</span></span></label>
-              <input v-model="generateForm.date_fin" type="date" class="input input-bordered" required/>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Date de fin <span class="text-error">*</span></span></label>
+              <input v-model="generateForm.date_fin" type="date" class="input" required/>
             </div>
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Période <span class="text-error">*</span></span></label>
-              <input v-model="generateForm.period" type="text" class="input input-bordered"
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Période <span class="text-error">*</span></span></label>
+              <input v-model="generateForm.period" type="text" class="input"
                      placeholder="2026-2027" pattern="\\d{4}-\\d{4}" required/>
             </div>
-            <div class="form-control">
-              <label class="label py-1"><span class="label-text">Type <span class="text-error">*</span></span></label>
-              <select v-model="generateForm.title_season" class="select select-bordered" required>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-1"><span class="text-sm">Type <span class="text-error">*</span></span></label>
+              <select v-model="generateForm.title_season" class="select" required>
                 <option value="mi-saison">Mi-saison</option>
                 <option value="Dept.">Départemental</option>
               </select>

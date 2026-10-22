@@ -12,11 +12,11 @@ export default {
                    class="h-56 w-full object-cover rounded-box hover:opacity-80 transition-opacity"/>
             </div>
           </div>
-          <button class="btn btn-circle btn-sm absolute left-2 top-1/2 -translate-y-1/2 shadow"
+          <button class="btn btn-circle btn-sm absolute left-2 top-1/2 -translate-y-1/2 shadow-sm"
                   aria-label="Photos précédentes"
                   @click="scroll(-1)">❮
           </button>
-          <button class="btn btn-circle btn-sm absolute right-2 top-1/2 -translate-y-1/2 shadow"
+          <button class="btn btn-circle btn-sm absolute right-2 top-1/2 -translate-y-1/2 shadow-sm"
                   aria-label="Photos suivantes"
                   @click="scroll(1)">❯
           </button>

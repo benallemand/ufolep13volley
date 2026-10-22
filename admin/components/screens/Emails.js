@@ -48,7 +48,7 @@ export default {
         <template #filters>
           <label class="flex items-center gap-2 text-sm">
             <span>Derniers</span>
-            <select v-model.number="windowSize" class="select select-bordered select-sm">
+            <select v-model.number="windowSize" class="select select-sm">
               <option :value="500">500</option>
               <option :value="2000">2000</option>
               <option :value="100000">tous</option>
@@ -91,7 +91,7 @@ export default {
             </p>
           </div>
 
-          <div class="mt-4 border border-base-300 rounded overflow-hidden bg-white">
+          <div class="mt-4 border border-base-300 rounded-sm overflow-hidden bg-white">
             <iframe :srcdoc="opened.body || '<p>(corps vide)</p>'"
                     sandbox=""
                     class="w-full h-[55vh]"

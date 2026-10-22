@@ -8,7 +8,7 @@ export default {
             <img alt="Ufolep" src="../images/logo-2026.png" style="max-height:200px;">
           </a>
         </div>
-        <div class="navbar bg-base-100 shadow-sm flex flex-wrap justify-center gap-2">
+        <div class="navbar bg-base-100 shadow-xs flex flex-wrap justify-center gap-2">
           <a :href="$url('/')" class="btn btn-ghost">
             <span><i class="mr-2 fas fa-home"/>Accueil</span>
           </a>
@@ -16,7 +16,7 @@ export default {
             <div tabindex="0" role="button" class="btn btn-ghost">
               <span><i class="fas fa-calendar mr-2"/>Championnats<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-sm">
               <template v-for="group in groupedDivisions">
                 <li class="menu-title">{{ group.libelle }}</li>
                 <li v-for="division in group.divisions" :key="division.code_competition+division.division">
@@ -31,7 +31,7 @@ export default {
             <div tabindex="0" role="button" class="btn btn-ghost">
               <span><i class="fas fa-calendar mr-2"/>Coupes<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow">
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow-sm">
               <li>
                 <details>
                   <summary><i class="fas fa-random mr-2"/>Tirages</summary>
@@ -100,7 +100,7 @@ export default {
             <div tabindex="0" role="button" class="btn btn-ghost">
               <span><i class="fas fa-info-circle mr-2"/>Informations<i class="ml-1 fas fa-chevron-down"/></span>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-64 p-2 shadow">
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-64 p-2 shadow-sm">
               <li>
                 <router-link :to="'/week-matchs'">
                   <i class="fas fa-fire mr-2"/>matchs de la semaine

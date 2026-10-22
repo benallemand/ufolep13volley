@@ -29,7 +29,7 @@ export default {
         
         <div v-else>
           <!-- Résumé -->
-          <div class="stats shadow mb-6">
+          <div class="stats shadow-sm mb-6">
             <div class="stat">
               <div class="stat-title">Équipes inscrites</div>
               <div class="stat-value">{{ data.total_teams }}</div>

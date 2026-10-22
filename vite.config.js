@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'node:path';
 
 /**
@@ -100,7 +101,7 @@ export default defineConfig({
     // dist/live.html, voir .htaccess), ces chemins visent /assets/, que le
     // .htaccess renvoie à son tour vers dist/assets/.
     base: './',
-    plugins: [vue(), matomoTracking()],
+    plugins: [vue(), tailwindcss(), matomoTracking()],
     resolve: {
         alias: {
             // Notre code utilise des templates en string (`template: '...'`) dans

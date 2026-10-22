@@ -5,25 +5,25 @@ export default {
       <div class="p-4">
         <h1 class="text-2xl font-bold mb-4">Modifier l'équipe</h1>
         <form @submit.prevent="submitForm" class="space-y-4">
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Club de rattachement</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Club de rattachement</span>
             </label>
-            <select v-model="form.id_club" class="select select-bordered">
+            <select v-model="form.id_club" class="select">
               <option v-for="club in clubs" :key="club.id" :value="club.id">
                 {{ club.nom }}
               </option>
             </select>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Lien vers le site du club ou de l'équipe</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Lien vers le site du club ou de l'équipe</span>
             </label>
-            <input v-model="form.web_site" type="text" class="input input-bordered"/>
+            <input v-model="form.web_site" type="text" class="input"/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Photo d'équipe</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Photo d'équipe</span>
             </label>
             <input type="file" class="file-input file-input-xs file-input-primary" @change="handleFileChange" />
           </div>

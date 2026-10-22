@@ -5,48 +5,48 @@ export default {
       <div class="p-4">
         <h1 class="text-2xl font-bold mb-4">Modifier les informations du joueur</h1>
         <form @submit.prevent="submitForm" class="space-y-4">
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Prénom</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Prénom</span>
             </label>
-            <input v-model="form.prenom" type="text" class="input input-bordered" required/>
+            <input v-model="form.prenom" type="text" class="input" required/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Nom</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Nom</span>
             </label>
-            <input v-model="form.nom" type="text" class="input input-bordered" required/>
+            <input v-model="form.nom" type="text" class="input" required/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Sexe</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Sexe</span>
             </label>
-            <select v-model="form.sexe" class="select select-bordered">
+            <select v-model="form.sexe" class="select">
               <option value="M">Masculin</option>
               <option value="F">Féminin</option>
             </select>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Club</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Club</span>
             </label>
-            <select v-model="form.id_club" class="select select-bordered">
+            <select v-model="form.id_club" class="select">
               <option v-for="club in clubs" :key="club.id" :value="club.id">
                 {{ club.nom }}
               </option>
             </select>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Numéro de licence</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Numéro de licence</span>
             </label>
-            <input v-model="form.num_licence" type="text" class="input input-bordered"/>
+            <input v-model="form.num_licence" type="text" class="input"/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Département d'affiliation</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Département d'affiliation</span>
             </label>
-            <select v-model="form.departement_affiliation" class="select select-bordered">
+            <select v-model="form.departement_affiliation" class="select">
               <option value="7">07 - Ardèche</option>
               <option value="13">13 - Bouches du Rhône</option>
               <option value="83">83 - Var</option>
@@ -54,29 +54,29 @@ export default {
               <option value="0">Autres</option>
             </select>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Téléphone</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Téléphone</span>
             </label>
-            <input v-model="form.telephone" type="tel" class="input input-bordered"/>
+            <input v-model="form.telephone" type="tel" class="input"/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Email</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Email</span>
             </label>
-            <input v-model="form.email" type="email" class="input input-bordered"/>
+            <input v-model="form.email" type="email" class="input"/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Téléphone secondaire</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Téléphone secondaire</span>
             </label>
-            <input v-model="form.telephone2" type="tel" class="input input-bordered"/>
+            <input v-model="form.telephone2" type="tel" class="input"/>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Email secondaire</span>
+          <div class="flex flex-col *:w-full">
+            <label class="flex select-none items-center justify-between px-1 py-2">
+              <span class="text-sm">Email secondaire</span>
             </label>
-            <input v-model="form.email2" type="email" class="input input-bordered"/>
+            <input v-model="form.email2" type="email" class="input"/>
           </div>
           <div class="flex flex-row-reverse gap-2">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Enregistrer</button>

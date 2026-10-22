@@ -50,7 +50,7 @@ export default {
               </label>
 
               <select v-if="field.type === 'select'" v-model="values[field.name]"
-                      class="select select-bordered select-sm flex-1 min-w-40"
+                      class="select select-sm flex-1 min-w-40"
                       :disabled="!apply[field.name]" :data-testid="'bulk-value-' + field.name">
                 <option value="">—</option>
                 <option v-for="opt in field.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
@@ -62,7 +62,7 @@ export default {
               </label>
               <input v-else v-model="values[field.name]"
                      :type="field.type === 'date' ? 'date' : (field.type || 'text')"
-                     class="input input-bordered input-sm flex-1 min-w-40"
+                     class="input input-sm flex-1 min-w-40"
                      :min="field.min" :max="field.max" :placeholder="field.placeholder"
                      :disabled="!apply[field.name]" :data-testid="'bulk-value-' + field.name"/>
             </div>

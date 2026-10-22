@@ -55,10 +55,10 @@ export default {
             </div>
 
             <div v-for="row in rows" :key="row.id"
-                 class="flex items-center rounded hover:bg-base-200/60">
+                 class="flex items-center rounded-sm hover:bg-base-200/60">
               <div class="w-40 md:w-52 shrink-0 pr-2 py-1 text-xs md:text-sm truncate"
                    :title="row.label">
-                <span class="inline-block w-2 h-2 rounded-sm mr-1 align-middle"
+                <span class="inline-block w-2 h-2 rounded-xs mr-1 align-middle"
                       :style="{ background: row.color }"></span>{{ row.label }}
               </div>
 
@@ -73,7 +73,7 @@ export default {
                      title="aujourd'hui"></div>
 
                 <div v-for="item in row.periods" :key="item.id"
-                     class="absolute top-1.5 h-4 rounded text-[10px] text-white leading-4 px-1 overflow-hidden whitespace-nowrap z-10"
+                     class="absolute top-1.5 h-4 rounded-sm text-[10px] text-white leading-4 px-1 overflow-hidden whitespace-nowrap z-10"
                      :style="{ left: item.left + '%', width: item.width + '%', background: row.color, minWidth: '4px' }"
                      :title="item.tooltip">{{ item.width > 7 ? item.title : '' }}</div>
 

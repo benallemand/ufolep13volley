@@ -24,20 +24,20 @@ export default {
           </div>
 
           <form v-if="!successMessage" @submit.prevent="submitForm" class="space-y-4">
-            <div class="form-control">
-              <label class="label" for="reset-email">
-                <span class="label-text">Email</span>
+            <div class="flex flex-col *:w-full">
+              <label class="flex select-none items-center justify-between px-1 py-2" for="reset-email">
+                <span class="text-sm">Email</span>
               </label>
               <input id="reset-email"
                      v-model.trim="email"
                      type="email"
                      name="user_email"
-                     class="input input-bordered w-full"
+                     class="input w-full"
                      placeholder="mon.adresse@exemple.fr"
                      required
                      autocomplete="email"/>
-              <label class="label">
-                <span class="label-text-alt text-base-content/60">
+              <label class="flex select-none items-center justify-between px-1 py-2">
+                <span class="text-xs text-base-content/60">
                   L'adresse email associée à votre compte.
                 </span>
               </label>

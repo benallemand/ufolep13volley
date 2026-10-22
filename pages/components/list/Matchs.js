@@ -53,7 +53,7 @@ export default {
             type="text"
             v-model="searchQuery"
             placeholder="Rechercher un match..."
-            class="input input-bordered flex-grow"
+            class="input grow"
         />
         <button @click="resetFilters" class="btn btn-outline">Réinitialiser</button>
       </div>

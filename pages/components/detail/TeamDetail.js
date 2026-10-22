@@ -139,7 +139,7 @@ export default {
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   <div v-for="(schedule, index) in formatSchedules(team.gymnasiums_list)"
                        :key="'detail-schedule-' + index"
-                       class="card bg-base-100 border border-base-300 shadow-sm">
+                       class="card bg-base-100 border border-base-300 shadow-xs">
                     <div class="card-body p-4">
                       <div class="flex items-center gap-2 mb-3">
                         <div class="badge badge-primary badge-sm">📍</div>

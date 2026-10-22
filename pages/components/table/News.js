@@ -11,7 +11,7 @@ export default {
         <h2 class="text-2xl font-bold text-primary text-center mb-3">dernières nouvelles</h2>
         <div class="flex flex-col gap-2">
           <div v-for="item in items" :key="item.id"
-               class="card bg-base-100 border border-base-300 shadow-sm">
+               class="card bg-base-100 border border-base-300 shadow-xs">
             <button type="button"
                     class="flex items-center justify-between gap-2 w-full text-left p-4 min-h-[44px]"
                     :aria-expanded="isOpen(item.id)"

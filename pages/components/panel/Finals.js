@@ -27,7 +27,7 @@ export default {
           </div>
 
           <!-- Onglets pour choisir la vue -->
-          <div class="tabs tabs-boxed mb-4">
+          <div class="tabs tabs-box mb-4">
             <a class="tab" :class="{ 'tab-active': viewMode === 'bracket' }" @click="viewMode = 'bracket'">
               <i class="fas fa-project-diagram mr-2"></i>Arbre du tournoi
             </a>

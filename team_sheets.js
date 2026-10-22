@@ -63,7 +63,7 @@ const PlayerList = {
         <h1>{{ teamName }}</h1>
         <div v-for="player in players" :key="player.id" class="flex items-center mb-2">
           <img :src="player.path_photo_low" alt="photo" class="w-12 h-12 rounded-full mr-3"/>
-          <span :class="{'bg-pink-500 text-white': player.est_actif === 0}" class="px-2 py-1 rounded">
+          <span :class="{'bg-pink-500 text-white': player.est_actif === 0}" class="px-2 py-1 rounded-sm">
                         {{ player.prenom }} {{ player.nom }}
                     </span>
           <span v-if="player.est_actif === 0" class="text-sm text-red-500 ml-2">(Licence non envoyée)</span>

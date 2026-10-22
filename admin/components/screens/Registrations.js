@@ -52,7 +52,7 @@ export default {
         <template #filters>
           <label class="flex items-center gap-2 text-sm">
             <span>Statut</span>
-            <select v-model="status" class="select select-bordered select-sm">
+            <select v-model="status" class="select select-sm">
               <option value="">tous</option>
               <option value="PENDING">en attente</option>
               <option value="VALIDATED">validées</option>

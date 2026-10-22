@@ -7,11 +7,11 @@ export default {
 
         <!-- Barre de recherche -->
         <div class="mb-4 px-4">
-          <div class="form-control w-full max-w-md mx-auto">
+          <div class="flex flex-col *:w-full w-full max-w-md mx-auto">
             <input
                 type="text"
                 placeholder="Rechercher par club, équipe, responsable..."
-                class="input input-bordered w-full"
+                class="input w-full"
                 v-model="searchQuery"
             />
           </div>
@@ -30,7 +30,7 @@ export default {
           <tbody>
           <template v-for="(item, index) in filteredItems" :key="item.id_equipe+item.code_competition+item.division">
             <!-- Ligne principale -->
-            <tr class="hover cursor-pointer" @click="toggleRow(index)">
+            <tr class="hover:bg-base-200 cursor-pointer" @click="toggleRow(index)">
               <td>
                 <button class="btn btn-ghost btn-xs">
                   <span v-if="expandedRows.has(index)">▼</span>

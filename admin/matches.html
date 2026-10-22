@@ -31,7 +31,7 @@
         <label class="flex items-center gap-2">
             <span>compétition</span>
             <select v-model="filter.selectedCompetition" @change="updateAvailableDivisions"
-                    class="select select-bordered select-sm ml-2">
+                    class="select select-sm ml-2">
                 <option value="">toutes</option>
                 <option v-for="competition in availableCompetitions" :key="competition.code" :value="competition.code">
                     {{ competition.libelle }}
@@ -40,7 +40,7 @@
         </label>
         <label class="flex items-center gap-2" v-if="filter.selectedCompetition">
             <span>division</span>
-            <select v-model="filter.selectedDivision" class="select select-bordered select-sm ml-2">
+            <select v-model="filter.selectedDivision" class="select select-sm ml-2">
                 <option value="">toutes</option>
                 <option v-for="division in availableDivisions" :key="division" :value="division">
                     {{ division }}
@@ -99,12 +99,12 @@
                 type="text"
                 v-model="searchQuery"
                 placeholder="Rechercher un match..."
-                class="input input-bordered flex-grow"
+                class="input grow"
         />
         <button @click="resetFilters" class="btn btn-outline">Réinitialiser</button>
     </div>
     <!-- Loading overlay -->
-    <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="loading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <span class="loading loading-spinner loading-lg text-primary"></span>
     </div>
     <!-- Liste des matchs -->

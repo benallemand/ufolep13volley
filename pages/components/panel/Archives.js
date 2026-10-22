@@ -22,18 +22,18 @@ export default {
         </div>
         <template v-else>
           <div class="flex flex-wrap gap-2 items-center">
-            <select class="select select-bordered select-sm" data-testid="archives-period"
+            <select class="select select-sm" data-testid="archives-period"
                     :value="periodKey" @change="selectPeriod($event.target.value)">
               <option v-for="p in periods" :key="keyOf(p)" :value="keyOf(p)">{{ p.label }}</option>
             </select>
-            <div role="tablist" class="tabs tabs-boxed tabs-sm" data-testid="archives-competitions">
+            <div role="tablist" class="tabs tabs-box tabs-sm" data-testid="archives-competitions">
               <a v-for="c in period.competitions" :key="c.code_competition" role="tab"
                  :class="['tab', { 'tab-active': competition && c.code_competition === competition.code_competition }]"
                  @click="selectCompetition(c.code_competition)">{{ c.libelle }}</a>
             </div>
           </div>
 
-          <div v-if="competition" role="tablist" class="tabs tabs-bordered tabs-sm flex-wrap"
+          <div v-if="competition" role="tablist" class="tabs tabs-border tabs-sm flex-wrap"
                data-testid="archives-divisions">
             <a v-for="d in divisions" :key="d.value" role="tab"
                :class="['tab', { 'tab-active': d.value === division }]"

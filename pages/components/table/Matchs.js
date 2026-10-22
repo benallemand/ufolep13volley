@@ -6,7 +6,7 @@ export default {
       <div>
         ${filterBarTemplate}
         <div v-for="week in matchesByWeek" :key="week.label" class="mb-6">
-          <h3 class="text-lg font-bold bg-primary/10 p-2 rounded mb-2">{{ week.label }} ({{ week.matches.length }} matchs)</h3>
+          <h3 class="text-lg font-bold bg-primary/10 p-2 rounded-sm mb-2">{{ week.label }} ({{ week.matches.length }} matchs)</h3>
           <table class="table table-pin-rows bg-base-100">
           <thead>
           <tr>

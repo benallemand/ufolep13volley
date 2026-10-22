@@ -25,7 +25,7 @@ export default {
                   :key="'pos-' + cell.position"
                   type="button"
                   :disabled="!selectable"
-                  class="border rounded-lg px-0.5 pt-1 pb-1.5 flex flex-col items-center gap-1 min-h-[4rem] disabled:cursor-default"
+                  class="border rounded-lg px-0.5 pt-1 pb-1.5 flex flex-col items-center gap-1 min-h-16 disabled:cursor-default"
                   :class="cell.classes"
                   @click="$emit('select-position', cell.position)">
             <span class="text-[0.6rem] font-bold opacity-50 leading-none">P{{ cell.position }}</span>

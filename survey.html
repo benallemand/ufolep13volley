@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="app" class="max-w-3xl mx-auto p-6">
-    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
     <match-menu :id-match="id_match"></match-menu>
@@ -42,7 +42,7 @@
         <div class="form-group mb-4">
             <label class="block text-lg mb-2">Commentaire
                 <span v-if="commentRequired" class="text-error text-sm">(obligatoire : une note est à --)</span>
-                <textarea v-model="surveyData.comment" class="textarea textarea-bordered w-full"
+                <textarea v-model="surveyData.comment" class="textarea w-full"
                           :class="{'textarea-error': commentRequired && !hasComment}"
                           :required="commentRequired"
                           placeholder="Ajouter un commentaire"></textarea></label>

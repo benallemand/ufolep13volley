@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="app" class="max-w-3xl mx-auto p-6">
-    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/50 z-50">
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
     <match-menu :id-match="id_match"></match-menu>
@@ -40,7 +40,7 @@
                     <div class="border border-2 border-black">
                         <!-- L'équipe renforcée (issue #348) : un responsable ne renforce que la sienne -->
                         <label class="flex items-center gap-2 mb-2">Renfort pour
-                            <select v-model.number="renfortTeam" class="select select-bordered select-sm"
+                            <select v-model.number="renfortTeam" class="select select-sm"
                                     aria-label="Équipe renforcée" data-testid="renfort-team">
                                 <option v-for="team in renfortTeams" :key="team.id" :value="team.id">{{ team.name }}</option>
                             </select>
@@ -50,7 +50,7 @@
                                    @input="search"
                                    type="text"
                                    placeholder="taper pour chercher un joueur"
-                                   class="input input-bordered w-full max-w-xs"
+                                   class="input w-full max-w-xs"
                             />
                         </label>
                         <div role="alert" class="alert">

@@ -14,7 +14,7 @@ export default {
             <i class="fas fa-arrow-left mr-1"></i>revenir au compte club
           </button>
         </div>
-        <div class="navbar bg-base-100 shadow-sm flex flex-wrap justify-center gap-2">
+        <div class="navbar bg-base-100 shadow-xs flex flex-wrap justify-center gap-2">
             <a :href="$url('/')" class="btn btn-ghost">
               <span><i class="mr-2 fas fa-arrow-left"></i>retour</span>
             </a>
@@ -25,7 +25,7 @@ export default {
                 <span><i class="mr-2 fas fa-people-group"></i>club: {{ currentClub?.nom }}<i class="ml-1 fas fa-chevron-down"/></span>
               </div>
               <ul tabindex="0"
-                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-72 p-2 shadow max-h-96 overflow-y-auto">
+                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-72 p-2 shadow-sm max-h-96 overflow-y-auto">
                 <li v-for="club in clubs" :key="club.id">
                   <a @click="switchClub(club.id)" :class="{ 'font-bold': club.id == user?.id_club }">
                     {{ club.nom }}
@@ -55,15 +55,15 @@ export default {
                       <i class="fas fa-circle text-[0.55rem] mt-1.5 shrink-0"
                          :class="parseInt(team.nb_competitions) > 0 ? 'text-success' : 'opacity-30'"></i>
                       <span class="min-w-0 flex-1">
-                        <span class="block break-words leading-tight"
+                        <span class="block wrap-break-word leading-tight"
                               :class="{ 'font-bold': team.id_equipe == user?.id_equipe }">
                           {{ team.nom_equipe }}
                         </span>
-                        <span class="block text-xs opacity-70 break-words leading-tight mt-0.5">
+                        <span class="block text-xs opacity-70 wrap-break-word leading-tight mt-0.5">
                           {{ parseInt(team.nb_competitions) > 0 ? team.competitions : 'non engagée cette saison' }}
                         </span>
                         <span v-if="!parseInt(team.has_leader_account)"
-                              class="block text-xs text-warning break-words leading-tight mt-0.5">
+                              class="block text-xs text-warning wrap-break-word leading-tight mt-0.5">
                           <i class="fas fa-user-slash mr-1"></i>aucun compte responsable
                         </span>
                       </span>
@@ -81,7 +81,7 @@ export default {
                 </div>
                 <ul
                     tabindex="0"
-                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-sm">
                   <li>
                     <router-link to="/players"><span><i class="mr-2 fas fa-user"></i>effectif</span></router-link>
                   </li>
@@ -96,7 +96,7 @@ export default {
                 </div>
                 <ul
                     tabindex="0"
-                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-sm">
                   <li><a :href="$url('/rest/action.php/team/download_calendar')"><span><i class="mr-2 fas fa-download"></i>calendrier</span></a>
                   </li>
                   <li>
@@ -113,7 +113,7 @@ export default {
                 </div>
                 <ul
                     tabindex="0"
-                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+                    class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-sm">
                   <li>
                     <router-link to="/team_matchs"><span><i class="fas fa-volleyball mr-2"></i>
                       equipe</span></router-link>
@@ -141,7 +141,7 @@ export default {
               </div>
               <ul
                   tabindex="0"
-                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-60 p-2 shadow">
+                  class="dropdown-content menu bg-base-100 rounded-box z-50 mt-3 w-60 p-2 shadow-sm">
                 <li>
                   <router-link to="/club_registrations"><span><i class="mr-2 fas fa-file-signature"></i>inscriptions</span></router-link>
                 </li>
