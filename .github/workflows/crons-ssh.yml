@@ -1,0 +1,90 @@
+###############################################################################
+# Tâches planifiées lancées en SSH : contournement de la panne des crons OVH
+#
+# Depuis le 21/10/2026 vers 20 h (heure de Paris), l'environnement d'exécution
+# des tâches planifiées du mutualisé (cluster120) ne contient plus aucun PHP :
+# `/usr/local/phpX.Y/bin/php` est introuvable pour 8.1, 8.3 et 8.5, et il n'y a
+# pas de `php` dans le PATH. En SSH, sur le même hébergement, tout fonctionne.
+# Un ticket est ouvert chez OVH.
+#
+# En attendant, ce workflow lance les mêmes scripts en SSH, avec le PHP fixé par
+# `www/.ovhconfig` : les crons tournent ainsi dans la même version que le site.
+#
+# Quand OVH aura corrigé, désactiver ce workflow
+# (`gh workflow disable crons-ssh.yml`), sinon chaque tâche tournera deux fois.
+# Elles sont idempotentes, mais les minutes sont décalées par rapport aux crons
+# OVH pour que deux `hourly.php` ne traitent jamais la file d'e-mails en même
+# temps.
+#
+# Les horaires GitHub sont en UTC : à l'heure d'hiver, les tâches quotidienne
+# et hebdomadaire passent une heure plus tard à Paris. GitHub peut aussi
+# retarder un déclenchement planifié de plusieurs minutes.
+###############################################################################
+name: Crons via SSH
+
+on:
+  schedule:
+    - cron: '18 * * * *'   # hourly.php (OVH : :48)
+    - cron: '55 * * * *'   # cron-archive.sh de Matomo (OVH : :25)
+    - cron: '40 9 * * *'   # daily.php (OVH : 11:30 Paris)
+    - cron: '16 4 * * 1'   # weekly.php, le lundi (OVH : 06:06 Paris)
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Tâche à lancer
+        type: choice
+        options: [hourly, daily, weekly, matomo]
+
+jobs:
+  run:
+    name: Lancer la tâche en SSH
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Choisir la tâche
+        id: task
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT: ${{ inputs.task }}
+        run: |
+          case "$SCHEDULE" in
+            '18 * * * *') task=hourly ;;
+            '55 * * * *') task=matomo ;;
+            '40 9 * * *') task=daily ;;
+            '16 4 * * 1') task=weekly ;;
+            *) task="$INPUT" ;;
+          esac
+          if [ -z "$task" ]; then
+            echo "Aucune tâche pour « $SCHEDULE »" >&2
+            exit 1
+          fi
+          echo "task=$task" >> "$GITHUB_OUTPUT"
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ftp.cluster020.hosting.ovh.net >> ~/.ssh/known_hosts
+
+      - name: Lancer ${{ steps.task.outputs.task }}
+        # Les scripts PHP rendent la main avec 0 même quand ils attrapent une
+        # exception : ils l'affichent en JSON `"success":false`, qu'on transforme
+        # ici en échec du job pour qu'il se voie dans l'onglet Actions.
+        env:
+          TASK: ${{ steps.task.outputs.task }}
+        run: |
+          if [ "$TASK" = matomo ]; then
+            remote='stats/cron-archive.sh'
+          else
+            remote='v=$(sed -n "s/^app\.engine\.version=//p" www/.ovhconfig) && echo "PHP $v" && /usr/local/php$v/bin/php www/cron/'"$TASK"'.php'
+          fi
+          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "$remote" 2>&1 | tee output.log
+          status=${PIPESTATUS[0]}
+          if grep -q '"success":false' output.log; then
+            exit 1
+          fi
+          exit "$status"
