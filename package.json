@@ -20,10 +20,11 @@
     "daisyui": "^4.12.22",
     "postcss": "^8.5.25",
     "tailwindcss": "^3.4.17",
-    "vite": "^8.0.16"
+    "vite": "^8.3.5"
   },
   "overrides": {
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "postcss-selector-parser": "^7.1.6"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
@@ -32,11 +33,11 @@
     "@fullcalendar/list": "^6.1.21",
     "@fullcalendar/multimonth": "^6.1.21",
     "@fullcalendar/vue3": "^6.1.21",
-    "axios": "^1.18.0",
+    "axios": "^1.20.0",
     "brackets-viewer": "^1.6.4",
     "notyf": "^3.10.0",
     "toastify-js": "^1.12.0",
-    "vue": "^3.5.13",
+    "vue": "^3.5.42",
     "vue-router": "^4.5.0"
   }
 }
