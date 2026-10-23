@@ -264,6 +264,50 @@ class FilesTest extends UfolepTestCase
     }
 
     /**
+     * Nom d'une licence liguasso (#448) : la ligne juste avant « Né(e) le ».
+     * Sur une licence « activités de loisirs », l'activité s'intercale entre
+     * le numéro et le nom. Testé sur les lignes de texte, sans licence réelle.
+     */
+    public function test_nom_de_licence_liguasso()
+    {
+        $competition = array('MULTISPORTS', 'Pratiquant', 'Vos activités compétitives', 'N° 013_AB10000001',
+            'DUPONT Jean', 'Né(e) le 01/01/1990 - 36 ans - Homme', 'Asso 013000000 - CLUB');
+        $this->assertSame('DUPONT Jean', Files::liguasso_licence_name($competition, 3));
+
+        $loisirs = array('MULTISPORTS', 'Pratiquant', 'Vos activités de loisirs', 'N° 013_CD10000002',
+            'Volley ball', 'MARTIN Paul', 'Né(e) le 02/02/1985 - 41 ans - Homme', 'Asso 013000000 - CLUB');
+        $this->assertSame('MARTIN Paul', Files::liguasso_licence_name($loisirs, 3));
+
+        // plusieurs licences sur la page : chacune garde son nom
+        $page = array_merge($loisirs, $competition);
+        $this->assertSame('MARTIN Paul', Files::liguasso_licence_name($page, 3));
+        $this->assertSame('DUPONT Jean', Files::liguasso_licence_name($page, 11));
+
+        // sans date de naissance avant la licence suivante : la ligne suivante, jamais le numéro d'après
+        $this->assertSame('DURAND Luc', Files::liguasso_licence_name(array('N° 013_EF10000003', 'DURAND Luc'), 0));
+        $this->assertNull(Files::liguasso_licence_name(array('N° 013_EF10000003', 'N° 013_GH10000004'), 0));
+    }
+
+    /**
+     * Une licence « activités de loisirs » réelle (#448), si elle est déposée
+     * en local (jamais versionnée : `files/do_not_version/`).
+     */
+    public function test_licence_activites_loisirs_en_local()
+    {
+        $file = __DIR__ . '/files/do_not_version/licence-activites-loisirs.pdf';
+        if (!file_exists($file)) {
+            $this->markTestSkipped("licence de #448 absente (fichier personnel, non versionné)");
+        }
+        $results = (new Files())->get_licences_data($file);
+        $this->assertCount(1, $results);
+        $this->assertNotSame('Volley ball', $results[0]['last_first_name']);
+        $this->assertSame(1, preg_match('/^[A-Z][A-Z\- ]+ \S+/u', $results[0]['last_first_name']),
+            $results[0]['last_first_name']);
+        $this->assertSame('13/10/2026', $results[0]['homologation_date']);
+        $this->assertNotNull($results[0]['photo']);
+    }
+
+    /**
      * La licence réelle du cas #429, si elle est déposée en local (jamais
      * versionnée : `files/do_not_version/`).
      */
