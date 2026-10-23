@@ -415,6 +415,33 @@ class Files extends Generic
     }
 
     /**
+     * Nom (« NOM Prénom ») de la licence liguasso dont le numéro est la ligne
+     * `$number_index` : la ligne juste avant « Né(e) le ».
+     *
+     * Ce n'est pas toujours la ligne qui suit le numéro : sur une licence
+     * « activités de loisirs », l'activité (« Volley ball ») s'intercale entre
+     * les deux. Elle était lue comme le nom, et les licences loisir tombaient
+     * les unes sur les autres, rapprochées par ce faux nom (#448).
+     *
+     * @param string[] $lines lignes de texte de la page, dans l'ordre
+     */
+    public static function liguasso_licence_name(array $lines, int $number_index): ?string
+    {
+        for ($i = $number_index + 1; $i < count($lines); $i++) {
+            if (self::parse_liguasso_licence_number($lines[$i]) !== null) {
+                break;
+            }
+            if (self::starts_with($lines[$i], 'Né(e) le')) {
+                return $i - 1 > $number_index ? $lines[$i - 1] : null;
+            }
+        }
+        // pas de date de naissance avant la licence suivante : la ligne suivante,
+        // si ce n'est pas déjà le numéro de la licence d'après
+        $next = $lines[$number_index + 1] ?? null;
+        return $next !== null && self::parse_liguasso_licence_number($next) === null ? $next : null;
+    }
+
+    /**
      * Parse le nouveau format de licence liguasso
      * Format du numéro: 2 lettres (initiales) + 8 chiffres (ex: SB10000025)
      */
@@ -567,11 +594,11 @@ class Files extends Generic
                     $result['departement'] = $extractedDepartement;
                     $result['licence_number'] = $licenceNumber;
                     
-                    // Le nom est sur la ligne suivante
-                    if ($tm_index + 1 < count($data_tm)) {
-                        $nextItem = trim($data_tm[$tm_index + 1][1]);
-                        // Format: "NOM Prénom"
-                        $result['last_first_name'] = $nextItem;
+                    // Format: "NOM Prénom"
+                    $name = self::liguasso_licence_name(
+                        array_map(static fn($tm) => trim($tm[1]), $data_tm), $tm_index);
+                    if ($name !== null) {
+                        $result['last_first_name'] = $name;
                     }
                 } elseif (self::starts_with($item, "Né(e) le")) {
                     if (!preg_match('/Né\(e\) le (\d{2}\/\d{2}\/\d{4}) - (\d+) ans - ([A-Za-z]+).*/', $item, $matches)) {
