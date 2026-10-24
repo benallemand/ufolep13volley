@@ -4,6 +4,11 @@ AddDefaultCharset UTF-8
 # sauf .well-known. Évite notamment l'exposition du .env.
 RedirectMatch 404 /\.(?!well-known)
 
+# Les tâches planifiées ne se lancent pas par une URL : n'importe qui pouvait
+# déclencher les envois groupés (cron/weekly.php). Elles passent par
+# rest/cron.php, protégé par un jeton (issue #450).
+RedirectMatch 404 /cron/
+
 # Bundles Vite des pages HTML pures : on conserve les URLs publiques
 # (/pages/home.html, /pages/my_page.html, /admin/matches.html) mais le
 # contenu servi est le HTML transformé par Vite dans dist/.

@@ -1,14 +1,18 @@
 ###############################################################################
-# Tâches planifiées lancées en SSH : contournement de la panne des crons OVH
+# Tâches planifiées lancées depuis GitHub : contournement de la panne des crons OVH
 #
 # Depuis le 21/10/2026 vers 20 h (heure de Paris), l'environnement d'exécution
 # des tâches planifiées du mutualisé (cluster120) ne contient plus aucun PHP :
 # `/usr/local/phpX.Y/bin/php` est introuvable pour 8.1, 8.3 et 8.5, et il n'y a
-# pas de `php` dans le PATH. En SSH, sur le même hébergement, tout fonctionne.
-# Un ticket est ouvert chez OVH.
+# pas de `php` dans le PATH. Un ticket est ouvert chez OVH.
 #
-# En attendant, ce workflow lance les mêmes scripts en SSH, avec le PHP fixé par
-# `www/.ovhconfig` : les crons tournent ainsi dans la même version que le site.
+# En attendant, ce workflow lance les tâches lui-même :
+# - hourly, daily et weekly par un POST sur `rest/cron.php`, authentifié par le
+#   jeton `CRON_TOKEN` (secret du dépôt = valeur du `.env` de la prod). Elles
+#   tournent côté web, où `mail()` fonctionne : en SSH l'hébergement le refuse
+#   (« not allowed to submit mail ») et ferme les ports SMTP en sortie, et aucun
+#   e-mail des crons ne partait (issue #450) ;
+# - l'archivage Matomo en SSH, qui n'envoie pas de mail.
 #
 # Quand OVH aura corrigé, désactiver ce workflow
 # (`gh workflow disable crons-ssh.yml`), sinon chaque tâche tournera deux fois.
@@ -18,9 +22,15 @@
 #
 # Les horaires GitHub sont en UTC : à l'heure d'hiver, les tâches quotidienne
 # et hebdomadaire passent une heure plus tard à Paris. GitHub peut aussi
-# retarder un déclenchement planifié de plusieurs minutes.
+# retarder un déclenchement planifié de plusieurs heures, ou le sauter.
 ###############################################################################
 name: Crons via SSH
+run-name: >-
+  Crons — ${{ inputs.task
+  || (github.event.schedule == '55 * * * *' && 'matomo')
+  || (github.event.schedule == '40 9 * * *' && 'daily')
+  || (github.event.schedule == '16 4 * * 1' && 'weekly')
+  || 'hourly' }}
 
 on:
   schedule:
@@ -37,7 +47,7 @@ on:
 
 jobs:
   run:
-    name: Lancer la tâche en SSH
+    name: Lancer la tâche
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -60,31 +70,36 @@ jobs:
           fi
           echo "task=$task" >> "$GITHUB_OUTPUT"
 
+      - name: Lancer ${{ steps.task.outputs.task }} sur le site
+        if: steps.task.outputs.task != 'matomo'
+        # rest/cron.php répond 500 quand la tâche échoue (exception, envoi
+        # d'e-mail refusé) : `--fail-with-body` fait alors échouer le job, qui se
+        # voit en rouge dans l'onglet Actions, avec la sortie de la tâche.
+        env:
+          TASK: ${{ steps.task.outputs.task }}
+          CRON_TOKEN: ${{ secrets.CRON_TOKEN }}
+        run: |
+          if [ -z "$CRON_TOKEN" ]; then
+            echo "Secret CRON_TOKEN absent du dépôt" >&2
+            exit 1
+          fi
+          curl --silent --show-error --fail-with-body --max-time 300 \
+            -X POST -H "X-Cron-Token: $CRON_TOKEN" \
+            "https://www.ufolep13volley.org/rest/cron.php?task=$TASK"
+          echo
+
       - name: Setup SSH
+        if: steps.task.outputs.task == 'matomo'
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add host key
+        if: steps.task.outputs.task == 'matomo'
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan ftp.cluster020.hosting.ovh.net >> ~/.ssh/known_hosts
 
-      - name: Lancer ${{ steps.task.outputs.task }}
-        # Les scripts PHP rendent la main avec 0 même quand ils attrapent une
-        # exception : ils l'affichent en JSON `"success":false`, qu'on transforme
-        # ici en échec du job pour qu'il se voie dans l'onglet Actions.
-        env:
-          TASK: ${{ steps.task.outputs.task }}
-        run: |
-          if [ "$TASK" = matomo ]; then
-            remote='stats/cron-archive.sh'
-          else
-            remote='v=$(sed -n "s/^app\.engine\.version=//p" www/.ovhconfig) && echo "PHP $v" && /usr/local/php$v/bin/php www/cron/'"$TASK"'.php'
-          fi
-          ssh ufolepvocb@ftp.cluster020.hosting.ovh.net "$remote" 2>&1 | tee output.log
-          status=${PIPESTATUS[0]}
-          if grep -q '"success":false' output.log; then
-            exit 1
-          fi
-          exit "$status"
+      - name: Lancer l'archivage Matomo en SSH
+        if: steps.task.outputs.task == 'matomo'
+        run: ssh ufolepvocb@ftp.cluster020.hosting.ovh.net 'stats/cron-archive.sh'
