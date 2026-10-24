@@ -9,6 +9,7 @@
  * Réponse JSON : { success, task, output } ; 401 sans le bon jeton, 404 pour
  * une tâche inconnue, 500 si la tâche a échoué (le job GitHub échoue alors).
  */
+require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../classes/CronRunner.php';
 require_once __DIR__ . '/json_response.php';
