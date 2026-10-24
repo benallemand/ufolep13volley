@@ -438,6 +438,21 @@ le sens du paramètre `$send_now = false` de `sendMailNewUser()` et de
 `Register::set_up_season()` et `Register::create_teams_and_accounts()`. N envois
 SMTP synchrones dépasseraient `max_execution_time` sur le mutualisé OVH.
 
+### Tâches planifiées lancées depuis GitHub (issue #450)
+
+Pendant la panne des crons OVH, `.github/workflows/crons-ssh.yml` lance les
+tâches. `hourly`, `daily` et `weekly` passent par un **POST sur
+`rest/cron.php?task=…`**, avec l'en-tête `X-Cron-Token` égal à `CRON_TOKEN` (le
+`.env` de la prod et le secret du dépôt portent la même valeur). La tâche tourne
+alors côté web, seul endroit où les e-mails partent : en SSH, l'hébergement
+refuse `mail()` et ferme les ports SMTP en sortie.
+
+- `cron/` est fermé au web (404, `.htaccess`) : un simple lien déclenchait les
+  envois groupés. Ne jamais tester un cron en ouvrant son URL.
+- `rest/cron.php` répond 500 quand la tâche échoue (exception, envoi refusé) :
+  le job GitHub passe au rouge. Sans `CRON_TOKEN` dans le `.env`, rien ne passe.
+- L'archivage Matomo reste en SSH : il n'envoie pas de mail.
+
 ### Cookie de session et corps d'emails (issue #292)
 
 `bootstrap.php` pose `HttpOnly`, `Secure` et `SameSite` sur le cookie de session.
