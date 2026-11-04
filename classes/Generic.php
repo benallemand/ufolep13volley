@@ -11,6 +11,9 @@ require_once __DIR__ . '/UserManager.php';
 
 class Generic
 {
+    /** Colonnes dont le journal d'activité tait la valeur (#454). */
+    private const PRIVATE_ACTIVITY_FIELDS = array('date_naissance');
+
     protected SqlManager $sql_manager;
     protected string $table_name;
     protected string $id_name;
@@ -185,6 +188,10 @@ class Generic
      * modifiés (« - nom : ancien → nouveau »), calculée en comparant la ligne
      * d'avant (`row_before`) aux valeurs écrites. Remplace `dirtyFields`, que
      * seul ExtJS envoyait (issue #377). Null si rien n'a changé.
+     *
+     * Le journal est lisible par tout utilisateur connecté : un champ de
+     * `PRIVATE_ACTIVITY_FIELDS` y est dit renseigné ou modifié, jamais avec sa
+     * valeur (date de naissance, #454).
      */
     protected function build_activity(string $subject, ?array $before, array $inputs): ?string
     {
@@ -198,9 +205,14 @@ class Generic
             }
             $old = self::comparable_value($before[$field]);
             $new = self::comparable_value($value);
-            if ($old !== $new) {
-                $changes[] = "- $field : " . ($old === '' ? '(vide)' : $old) . ' → ' . ($new === '' ? '(vide)' : $new);
+            if ($old === $new) {
+                continue;
             }
+            if (in_array($field, self::PRIVATE_ACTIVITY_FIELDS, true)) {
+                $changes[] = "- $field : " . ($old === '' ? 'renseignée' : ($new === '' ? 'effacée' : 'modifiée'));
+                continue;
+            }
+            $changes[] = "- $field : " . ($old === '' ? '(vide)' : $old) . ' → ' . ($new === '' ? '(vide)' : $new);
         }
         if (empty($changes)) {
             return null;

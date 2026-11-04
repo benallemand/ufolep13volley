@@ -324,7 +324,8 @@ class Players extends Generic
                  SET k.num_licence             = COALESCE(NULLIF(TRIM(k.num_licence), ''), r.num_licence),
                      k.departement_affiliation = COALESCE(k.departement_affiliation, r.departement_affiliation),
                      k.date_homologation       = COALESCE(k.date_homologation, r.date_homologation),
-                     k.sexe                    = COALESCE(NULLIF(k.sexe, ''), r.sexe),
+                     k.date_naissance          = COALESCE(k.date_naissance, r.date_naissance),
+                     k.sexe                   = COALESCE(NULLIF(k.sexe, ''), r.sexe),
                      k.id_club                 = COALESCE(NULLIF(k.id_club, 0), r.id_club),
                      k.email                   = COALESCE(NULLIF(TRIM(k.email), ''), r.email),
                      k.telephone               = COALESCE(NULLIF(TRIM(k.telephone), ''), r.telephone),
@@ -454,6 +455,7 @@ class Players extends Generic
                     $sql .= "$key = ?,";
                     break;
                 case 'date_homologation':
+                case 'date_naissance':
                     $bindings[] = array(
                         'type' => 's',
                         'value' => $value
@@ -1357,7 +1359,7 @@ class Players extends Generic
                 'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
                 'add_to_my_team' => $add_to_my_team,
-            ));
+            ) + self::licence_birth_date($licence));
 
             // Lier la photo au joueur nouvellement créé
             if ($idPhoto !== null && $newPlayerId) {
@@ -1375,7 +1377,7 @@ class Players extends Generic
                 'id_club' => $licence_club['id'],
                 'date_homologation' => $licence['homologation_date'],
                 'add_to_my_team' => $add_to_my_team,
-            ));
+            ) + self::licence_birth_date($licence));
 
             // Lier la photo au joueur existant (mettre à jour si nouvelle photo)
             if ($idPhoto !== null) {
@@ -1383,6 +1385,19 @@ class Players extends Generic
             }
         }
         return array('status' => empty($current_player) ? 'created' : 'updated', 'photo' => $idPhoto !== null);
+    }
+
+    /**
+     * Date de naissance d'une licence (`jj/mm/aaaa`), à enregistrer sur la
+     * fiche (issue #454). Rien si la licence n'en porte pas, pour ne pas
+     * effacer une date déjà connue.
+     *
+     * @return array{date_naissance?: string}
+     */
+    private static function licence_birth_date(array $licence): array
+    {
+        $date = trim((string)($licence['date_of_birth'] ?? ''));
+        return preg_match('#^\d{2}/\d{2}/\d{4}$#', $date) ? array('date_naissance' => $date) : array();
     }
 
     /**
@@ -1458,17 +1473,24 @@ class Players extends Generic
     }
 
     /**
-     * Joueur que désigne une licence importée (issue #404).
+     * Joueur que désigne une licence importée (issues #404, #454).
      *
-     * D'abord par son numéro de licence. Sinon par son nom, seulement s'il
-     * n'y a qu'un seul joueur de ce nom, et seulement s'il n'a pas encore de
-     * numéro de licence ou qu'il est du club de la licence : on n'écrase pas
-     * la licence d'un homonyme. Chercher les deux à la fois renvoyait deux
-     * joueurs quand licence et nom en désignaient deux différents, et l'import
-     * s'arrêtait en erreur au milieu du fichier.
+     * D'abord par son numéro de licence. Sinon par son nom, départagé par la
+     * date de naissance imprimée sur la licence (#454). Un joueur qui change
+     * de club reçoit souvent un nouveau numéro : le nom seul faisait refuser
+     * l'import, « un homonyme d'un autre club a déjà la licence… ».
+     * - même date de naissance : c'est lui, quels que soient son club et son
+     *   ancien numéro ;
+     * - autre date : un homonyme, la licence crée une nouvelle fiche ;
+     * - date encore inconnue (fiche antérieure à #454) : c'est lui, s'il est
+     *   du même sexe et, quand il est d'un autre club, n'a pas déjà une
+     *   licence validée cette saison (deux licences en même temps, ce sont
+     *   deux personnes).
+     * Chercher numéro et nom à la fois renvoyait deux joueurs quand ils en
+     * désignaient deux différents, et l'import s'arrêtait au milieu du fichier.
      *
      * @return array|null le joueur, ou null s'il est à créer
-     * @throws Exception (409) cas à trancher par la commission
+     * @throws Exception (409) plusieurs fiches possibles, à rapprocher par la commission
      */
     private function find_player_for_licence(array $licence, int $id_licence_club): ?array
     {
@@ -1488,6 +1510,44 @@ class Players extends Generic
         if (count($by_name) === 0) {
             return null;
         }
+        $birth_date = self::licence_birth_date($licence)['date_naissance'] ?? null;
+        if ($birth_date === null) {
+            return self::only_namesake_without_birth_date($by_name, $id_licence_club);
+        }
+        $birth_dates = $this->birth_dates(array_column($by_name, 'id'));
+        $same = array_values(array_filter($by_name,
+            static fn($player) => ($birth_dates[$player['id']] ?? null) === $birth_date));
+        if (count($same) > 1) {
+            throw new Exception("plusieurs fiches pour ce joueur (même nom, même date de naissance), "
+                . "à fusionner par la commission", 409);
+        }
+        if (count($same) === 1) {
+            return $same[0];
+        }
+        // Date inconnue : du club de la licence ou sans numéro, comme avant
+        // #454 ; d'un autre club, seulement sans licence validée cette saison.
+        $unknown = array_values(array_filter($by_name, static fn($player) =>
+            ($birth_dates[$player['id']] ?? null) === null
+            && (empty($player['sexe']) || $player['sexe'] === $licence['sexe'])
+            && ((int)$player['id_club'] === $id_licence_club
+                || trim((string)$player['num_licence']) === ''
+                || (int)$player['est_actif'] !== 1)));
+        if (count($unknown) > 1) {
+            throw new Exception("plusieurs joueurs portent ce nom, à rapprocher par la commission", 409);
+        }
+        // Aucun : les fiches à ce nom sont des homonymes, la licence en crée une.
+        return $unknown[0] ?? null;
+    }
+
+    /**
+     * Licence sans date de naissance (#404) : seul joueur de ce nom, et sans
+     * numéro de licence ou du club de la licence. On n'écrase pas la licence
+     * d'un homonyme.
+     *
+     * @throws Exception (409) cas à trancher par la commission
+     */
+    private static function only_namesake_without_birth_date(array $by_name, int $id_licence_club): array
+    {
         if (count($by_name) > 1) {
             throw new Exception("plusieurs joueurs portent ce nom, à rapprocher par la commission", 409);
         }
@@ -1497,6 +1557,23 @@ class Players extends Generic
                 . ", à rapprocher par la commission", 409);
         }
         return $player;
+    }
+
+    /**
+     * Dates de naissance (`jj/mm/aaaa`, null si inconnue) de ces joueurs (#454).
+     * Lues à part : aucune vue ne reprend cette donnée personnelle.
+     *
+     * @param array<int|string> $ids
+     * @return array<int, ?string> id => date
+     */
+    private function birth_dates(array $ids): array
+    {
+        $ids = array_map('intval', $ids);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $rows = $this->sql_manager->execute(
+            "SELECT id, DATE_FORMAT(date_naissance, '%d/%m/%Y') AS date_naissance FROM joueurs WHERE id IN ($placeholders)",
+            array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids));
+        return array_column($rows, 'date_naissance', 'id');
     }
 
     /**

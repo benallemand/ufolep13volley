@@ -1105,9 +1105,25 @@ message technique du lecteur PDF.
   inconnu.
 - **Un joueur existant prend le club de sa licence** : c'est un changement de
   club, tracé dans l'Activité.
-- **Recherche** : d'abord par département + licence, puis par nom. Le nom
-  seul ne met à jour qu'un joueur unique, sans licence ou du club de la
-  licence. On n'écrase pas la licence d'un homonyme.
+- **Recherche** : d'abord par département + licence, puis par nom,
+  départagé par la **date de naissance** de la licence (`date_of_birth` →
+  `joueurs.date_naissance`, #454). Un joueur qui change de club reçoit
+  souvent un nouveau numéro : avant #454, le nom seul faisait refuser
+  l'import (« un homonyme d'un autre club… »).
+  - même date de naissance : c'est lui, quels que soient son club et son
+    ancien numéro ;
+  - autre date : un homonyme, on crée une fiche ;
+  - date inconnue (fiche antérieure à #454) : c'est lui s'il est du même
+    sexe et, quand il est d'un autre club, sans licence validée cette saison
+    (deux licences la même saison, ce sont deux personnes) ;
+  - plusieurs fiches restent possibles : 409, à rapprocher ou fusionner.
+
+  Une licence sans date de naissance garde la règle de #404 : un joueur
+  unique de ce nom, sans licence ou du club de la licence.
+- **`date_naissance` est une donnée personnelle** : remplie seulement par
+  l'import, absente de `players_view` et de tout écran. Le journal d'activité,
+  lisible par tout connecté, dit seulement « renseignée / modifiée »
+  (`Generic::PRIVATE_ACTIVITY_FIELDS`). La fusion de fiches la reporte.
 - **Nom composé** : `Players::split_licence_name` prend les mots en
   majuscules en tête pour le nom.
 - **`num_licence` normalisé dans `Players::save()`** : sans espace, sans
