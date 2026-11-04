@@ -504,6 +504,7 @@ CREATE TABLE `joueurs` (
   `email` varchar(50) DEFAULT NULL,
   `num_licence` varchar(50) DEFAULT NULL,
   `sexe` varchar(1) DEFAULT NULL,
+  `date_naissance` date DEFAULT NULL,
   `departement_affiliation` int DEFAULT '13',
   `id_club` smallint DEFAULT NULL,
   `telephone2` varchar(20) DEFAULT NULL,

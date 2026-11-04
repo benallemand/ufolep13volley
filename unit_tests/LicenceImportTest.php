@@ -5,8 +5,9 @@ require_once __DIR__ . '/../classes/Players.php';
 require_once __DIR__ . '/../classes/Files.php';
 
 /**
- * Import des licences liguasso (issue #404) : journal d'activité, numéro
- * saisi à la main, club de la licence, noms composés, recherche du joueur.
+ * Import des licences liguasso (issues #404, #454) : journal d'activité,
+ * numéro saisi à la main, club de la licence, noms composés, recherche du
+ * joueur, départagée par la date de naissance.
  *
  * Les licences sont simulées : la lecture du PDF (`Files`) n'est pas en jeu.
  * Joueurs « LITEST… », clubs « LI club … ».
@@ -70,6 +71,31 @@ class LicenceImportTest extends UfolepTestCase
     private function row(int $id): array
     {
         return $this->sql->execute("SELECT * FROM joueurs WHERE id = ?", array(array('type' => 'i', 'value' => $id)))[0];
+    }
+
+    /** Licence qui imprime une date de naissance (#454). */
+    private function born(array $licence, string $date_of_birth): array
+    {
+        return $licence + array('date_of_birth' => $date_of_birth);
+    }
+
+    /**
+     * Fiche existante : date de naissance (aaaa-mm-jj ou null), et licence
+     * validée cette saison ou il y a trois ans.
+     */
+    private function set_player(int $id, ?string $date_naissance, bool $licensed_this_season): void
+    {
+        $this->sql->execute(
+            "UPDATE joueurs SET date_naissance = ?, date_homologation = "
+            . ($licensed_this_season ? "CURRENT_DATE - INTERVAL 1 DAY" : "CURRENT_DATE - INTERVAL 3 YEAR")
+            . " WHERE id = ?",
+            array(array('type' => 's', 'value' => $date_naissance), array('type' => 'i', 'value' => $id)));
+    }
+
+    private function count_named(string $prenom): int
+    {
+        return count($this->sql->execute("SELECT id FROM joueurs WHERE nom = 'LITEST' AND prenom = ?",
+            array(array('type' => 's', 'value' => $prenom))));
     }
 
     public function test_le_journal_nomme_le_joueur_importe(): void
@@ -179,6 +205,137 @@ class LicenceImportTest extends UfolepTestCase
             $this->assertStringContainsString('homonyme', $e->getMessage());
         }
         $this->assertSame('OLD999', $this->row($homonyme)['num_licence']);
+    }
+
+    public function test_la_date_de_naissance_est_enregistree_sans_apparaitre_au_journal(): void
+    {
+        $id = $this->player('Naissance', $this->club_a, 'LT0000020');
+        $this->connect_as_club_leader($this->club_a);
+
+        (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Naissance', 'LT0000020', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('1985-05-12', $this->row($id)['date_naissance']);
+        $comment = $this->sql->execute("SELECT comment FROM activity WHERE comment LIKE '%Naissance LITEST%' ORDER BY id DESC LIMIT 1")[0]['comment'];
+        $this->assertStringContainsString('date_naissance : renseignée', $comment);
+        $this->assertStringNotContainsString('1985', $comment, "le journal ne montre pas la date de naissance");
+    }
+
+    public function test_une_licence_sans_date_de_naissance_n_efface_pas_celle_connue(): void
+    {
+        $id = $this->player('Garde', $this->club_a, 'LT0000021');
+        $this->set_player($id, '1985-05-12', false);
+        $this->connect_as_club_leader($this->club_a);
+
+        (new Players())->search_player_and_save_from_licence(
+            $this->licence('LITEST Garde', 'LT0000021', self::AFFILIATION_A));
+
+        $this->assertSame('1985-05-12', $this->row($id)['date_naissance']);
+    }
+
+    public function test_meme_nom_et_meme_date_de_naissance_c_est_lui_meme_avec_un_nouveau_numero(): void
+    {
+        // Changement de club et nouveau numéro : refusé avant #454.
+        $id = $this->player('Transfert', $this->club_b, 'OLD100');
+        $this->set_player($id, '1985-05-12', true);
+        $this->connect_as_club_leader($this->club_a);
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Transfert', 'LT0000022', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('updated', $result['status']);
+        $this->assertSame('LT0000022', $this->row($id)['num_licence']);
+        $this->assertSame($this->club_a, (int)$this->row($id)['id_club']);
+        $this->assertSame(1, $this->count_named('Transfert'));
+    }
+
+    public function test_meme_nom_autre_date_de_naissance_est_un_homonyme(): void
+    {
+        $homonyme = $this->player('Homonyme', $this->club_b, 'OLD101');
+        $this->set_player($homonyme, '1970-01-01', false);
+        $this->connect_as_club_leader($this->club_a);
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Homonyme', 'LT0000023', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('created', $result['status']);
+        $this->assertSame('OLD101', $this->row($homonyme)['num_licence'], "l'homonyme n'est pas touché");
+        $this->assertSame($this->club_b, (int)$this->row($homonyme)['id_club']);
+        $this->assertSame(2, $this->count_named('Homonyme'));
+    }
+
+    public function test_date_inconnue_autre_club_sans_licence_cette_saison_c_est_lui(): void
+    {
+        // Fiche d'avant #454 : sa date de naissance se remplit à l'import.
+        $id = $this->player('Ancien', $this->club_b, 'OLD102');
+        $this->set_player($id, null, false);
+        $this->connect_as_club_leader($this->club_a);
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Ancien', 'LT0000024', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('updated', $result['status']);
+        $this->assertSame('LT0000024', $this->row($id)['num_licence']);
+        $this->assertSame('1985-05-12', $this->row($id)['date_naissance']);
+    }
+
+    public function test_date_inconnue_autre_club_deja_licencie_cette_saison_est_un_homonyme(): void
+    {
+        // Deux licences validées la même saison : deux personnes.
+        $id = $this->player('Double', $this->club_b, 'OLD103');
+        $this->set_player($id, null, true);
+        $this->connect_as_club_leader($this->club_a);
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Double', 'LT0000025', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('created', $result['status']);
+        $this->assertSame('OLD103', $this->row($id)['num_licence']);
+        $this->assertSame(2, $this->count_named('Double'));
+    }
+
+    public function test_date_inconnue_meme_club_deja_licencie_cette_saison_c_est_lui(): void
+    {
+        $id = $this->player('MemeClub', $this->club_a, 'OLD104');
+        $this->set_player($id, null, true);
+        $this->connect_as_club_leader($this->club_a);
+
+        $result = (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST MemeClub', 'LT0000026', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('updated', $result['status']);
+        $this->assertSame('LT0000026', $this->row($id)['num_licence']);
+    }
+
+    public function test_la_date_de_naissance_departage_plusieurs_fiches_du_meme_nom(): void
+    {
+        $autre = $this->player('Plusieurs', $this->club_b, 'OLD105');
+        $this->set_player($autre, '1970-01-01', false);
+        $lui = $this->player('Plusieurs', $this->club_b, 'OLD106');
+        $this->set_player($lui, '1985-05-12', false);
+        $this->connect_as_club_leader($this->club_a);
+
+        (new Players())->search_player_and_save_from_licence(
+            $this->born($this->licence('LITEST Plusieurs', 'LT0000027', self::AFFILIATION_A), '12/05/1985'));
+
+        $this->assertSame('LT0000027', $this->row($lui)['num_licence']);
+        $this->assertSame('OLD105', $this->row($autre)['num_licence']);
+    }
+
+    public function test_deux_fiches_meme_nom_et_meme_date_sont_a_fusionner(): void
+    {
+        foreach (array('OLD107', 'OLD108') as $old) {
+            $this->set_player($this->player('Doublon', $this->club_b, $old), '1985-05-12', false);
+        }
+        $this->connect_as_club_leader($this->club_a);
+        try {
+            (new Players())->search_player_and_save_from_licence(
+                $this->born($this->licence('LITEST Doublon', 'LT0000028', self::AFFILIATION_A), '12/05/1985'));
+            $this->fail("Deux fiches de la même personne : à fusionner, pas à deviner");
+        } catch (Exception $e) {
+            $this->assertSame(409, $e->getCode());
+            $this->assertStringContainsString('fusionner', $e->getMessage());
+        }
     }
 
     public function test_une_licence_ecartee_n_arrete_pas_le_fichier(): void
