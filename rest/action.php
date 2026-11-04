@@ -4,6 +4,7 @@
 // point d'entree (issue #292).
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/raw_sql_guard.php';
+require_once __DIR__ . '/trim_parameters.php';
 require_once __DIR__ . '/error_response.php';
 require_once __DIR__ . '/json_response.php';
 header('Access-Control-Allow-Origin: *');
@@ -253,6 +254,8 @@ try {
                 $parameters = array();
             }
             $parameters = exclude_ignored_parameters($parameters);
+            // Saisies sans blancs de début et de fin (issue #452)
+            $parameters = trim_text_parameters($parameters);
             assert_no_raw_sql_parameter($manager, $action_name, $parameters);
             $result = call_user_func_array(
                 array($manager, $action_name),
