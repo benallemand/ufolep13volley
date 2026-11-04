@@ -544,6 +544,14 @@ positionnel). Une méthode où `query` est un **terme de recherche** lié ou éc
 se déclare dans `SEARCH_TERM_PARAMETERS`. `RawSqlGuardTest` parcourt toutes les
 actions de `rest/access.php`.
 
+**Blancs de début et de fin des saisies** (#452) : avant l'appel d'une écriture
+(POST), `rest/trim_parameters.php` retire de chaque paramètre texte, tableaux
+compris, les blancs de début et de fin : espaces, tabulations, retours à la
+ligne, espace insécable, BOM. Les paramètres dont le nom contient `password`
+sont laissés tels quels. Une tabulation copiée d'un tableur devant un nom faisait
+créer un doublon à l'import de la licence. Reprise de l'existant :
+`sql/updates/2026/029-trim_text_fields.sql` (dépôt Python).
+
 **Helpers internes** (`getTeamName`, `getIdClubFromIdTeam`, `getPlayersIdClub`,
 `getUserLogin`…) : ils lient leurs paramètres **eux-mêmes**, via
 `Generic::parse_id()` — un appelant qui leur passe une valeur du client ne doit
