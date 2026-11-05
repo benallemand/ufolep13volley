@@ -161,7 +161,7 @@ class Alerts extends Generic
         }
         foreach ($this->recent_penalties($id_equipe) as $penalty) {
             $alerts[] = $this->alert("Pénalité automatique (-1 pt) : feuille de match {$penalty['code_match']} "
-                . "non signée à 48 h", 'warning', 'showHelpPenalty', self::LINK_MATCHES);
+                . "non signée à 7 jours", 'warning', 'showHelpPenalty', self::LINK_MATCHES);
         }
         return $alerts;
     }
