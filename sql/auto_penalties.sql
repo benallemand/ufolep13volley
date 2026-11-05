@@ -1,10 +1,10 @@
 -- `indicator_id` ouvre l'écran de correction filtré sur ces lignes (#312, #409).
--- Pénalités automatiques appliquées (issue #345), les plus récentes d'abord.
--- Une ligne par équipe pénalisée ; l'admin annule par le bouton « -1 » du
--- classement de la division (la ligne reste ici comme historique).
+-- Pénalités automatiques actives (issue #345), les plus récentes d'abord.
+-- Une ligne par équipe pénalisée. L'admin l'annule depuis l'écran
+-- « Pénalités automatiques » (issue #458) : elle sort alors de l'indicateur.
 -- Le motif `feuille_non_signee_48h` date du premier délai ; il vaut 7 jours
 -- depuis l'issue #456.
-SELECT p.id_match                                  AS indicator_id,
+SELECT p.id                                        AS indicator_id,
        DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS appliquee_le,
        m.code_match                                 AS match_,
        DATE_FORMAT(m.date_reception, '%d/%m/%Y')    AS date_match,
@@ -18,4 +18,5 @@ FROM match_penalties p
          JOIN matches m ON m.id_match = p.id_match
          JOIN equipes e ON e.id_equipe = p.id_equipe
          JOIN competitions comp ON comp.code_competition = p.code_competition
+WHERE p.cancelled_at IS NULL
 ORDER BY p.created_at DESC, m.code_match, e.nom_equipe

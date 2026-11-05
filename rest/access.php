@@ -175,6 +175,11 @@ return array(
         'sign_match_sheet' => 'user',
         'sign_team_sheet' => 'user',
     ),
+    // Pénalités automatiques : consultation et annulation (issue #458)
+    'matchpenalty' => array(
+        'cancelPenalties' => 'admin',
+        'getPenalties' => 'admin',
+    ),
     'news' => array(
         'deleteNews' => 'admin',
         'getAllNews' => 'admin',

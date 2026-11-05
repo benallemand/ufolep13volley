@@ -568,6 +568,7 @@ CREATE TABLE `match_penalties` (
   `code_competition` varchar(2) NOT NULL,
   `reason` varchar(50) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `cancelled_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_match_team_reason` (`id_match`,`id_equipe`,`reason`),
   KEY `id_equipe` (`id_equipe`),
