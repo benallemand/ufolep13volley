@@ -162,4 +162,69 @@ class MatchPenaltyTest extends UfolepTestCase
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         self::assertSame(1, $this->penalite('A'));
     }
+
+    private function penalty_id(int $id_match, string $k): int
+    {
+        return (int)$this->sql->execute("SELECT id FROM match_penalties WHERE id_match = ? AND id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_match),
+                  array('type' => 'i', 'value' => $this->team[$k])))[0]['id'];
+    }
+
+    /** Issue #458 : l'admin annule la pénalité d'une équipe depuis l'administration. */
+    public function test_annuler_une_penalite_rend_le_point_et_garde_la_ligne(): void
+    {
+        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        $this->penalty->cancelPenalties((string)$this->penalty_id($id_match, 'A'));
+
+        self::assertSame(0, $this->penalite('A'));
+        self::assertSame(1, $this->penalite('B'));
+        $rows = $this->sql->execute("SELECT id_equipe, cancelled_at FROM match_penalties WHERE id_match = ? ORDER BY id_equipe = ? DESC",
+            array(array('type' => 'i', 'value' => $id_match), array('type' => 'i', 'value' => $this->team['A'])));
+        self::assertCount(2, $rows, 'la ligne annulée reste comme historique');
+        self::assertNotNull($rows[0]['cancelled_at']);
+        self::assertNull($rows[1]['cancelled_at']);
+
+        $logged = $this->sql->execute("SELECT id_team FROM activity WHERE comment LIKE 'Pénalité automatique annulée%' AND comment LIKE ?",
+            array(array('type' => 's', 'value' => '%ISS345_%')));
+        self::assertCount(1, $logged);
+        self::assertSame($this->team['A'], (int)$logged[0]['id_team']);
+
+        // le cron ne repénalise pas le match
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        self::assertSame(0, $this->penalite('A'));
+
+        $listed = array_values(array_filter($this->penalty->getPenalties(),
+            fn($row) => (int)$row['id_match'] === $id_match && (int)$row['id_equipe'] === $this->team['A']));
+        self::assertCount(1, $listed);
+        self::assertSame('annulée', $listed[0]['statut']);
+        self::assertNotEmpty($listed[0]['annulee_le']);
+    }
+
+    public function test_annuler_plusieurs_penalites_d_un_coup(): void
+    {
+        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        $this->penalty->cancelPenalties($this->penalty_id($id_match, 'A') . ',' . $this->penalty_id($id_match, 'B'));
+        self::assertSame(0, $this->penalite('A'));
+        self::assertSame(0, $this->penalite('B'));
+    }
+
+    public function test_une_penalite_deja_annulee_ne_rend_pas_un_second_point(): void
+    {
+        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        $id = (string)$this->penalty_id($id_match, 'A');
+        $this->penalty->cancelPenalties($id);
+        // une pénalité manuelle posée ensuite par le « +1 » du classement
+        $this->sql->execute("UPDATE classements SET penalite = 1 WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $this->team['A'])));
+        try {
+            $this->penalty->cancelPenalties($id);
+            self::fail('une seconde annulation doit être refusée');
+        } catch (Exception $e) {
+            self::assertStringContainsString('déjà annulées', $e->getMessage());
+        }
+        self::assertSame(1, $this->penalite('A'));
+    }
 }

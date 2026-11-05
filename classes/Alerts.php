@@ -259,12 +259,12 @@ class Alerts extends Generic
         return implode(', ', $shown) . ($more > 0 ? " et $more autre(s)" : '');
     }
 
-    /** Pénalités automatiques des 60 derniers jours (#345). */
+    /** Pénalités automatiques des 60 derniers jours (#345), hors pénalités annulées (#458). */
     private function recent_penalties(int $id_equipe): array
     {
         return $this->sql_manager->execute(
             "SELECT m.code_match FROM match_penalties p JOIN matches m ON m.id_match = p.id_match
-             WHERE p.id_equipe = ? AND p.created_at >= NOW() - INTERVAL 60 DAY
+             WHERE p.id_equipe = ? AND p.created_at >= NOW() - INTERVAL 60 DAY AND p.cancelled_at IS NULL
              ORDER BY p.created_at DESC",
             array(array('type' => 'i', 'value' => $id_equipe)));
     }

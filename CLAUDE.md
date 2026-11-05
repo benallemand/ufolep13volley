@@ -970,9 +970,20 @@ un match déjà pénalisé.
 Chaque pénalité est tracée dans `match_penalties` (match, équipe, motif, date) ;
 la clé unique rend l'application idempotente (`INSERT IGNORE`, puis
 `classements.penalite + 1` seulement si la ligne est nouvelle). La pénalité reste
-si la feuille est signée ensuite. L'admin l'annule par le « -1 » du classement ;
-la ligne reste comme historique et empêche une nouvelle application. Indicateur
-« Pénalités automatiques » ; email aux deux équipes par la file d'emails.
+si la feuille est signée ensuite. Email aux deux équipes par la file d'emails.
+
+**Annulation (issue #458)** : écran d'administration « Pénalités automatiques »
+(`admin/components/screens/MatchPenalties.js`, route `/match-penalties`,
+`matchpenalty/getPenalties` et `matchpenalty/cancelPenalties`, admin seulement).
+`MatchPenalty::cancelPenalties($ids)` renseigne `match_penalties.cancelled_at`
+(migration 031 du dépôt Python), rend le point (`classements.penalite - 1`,
+plancher 0) et l'écrit dans l'historique de l'équipe ; une pénalité déjà annulée
+est ignorée, et si toutes le sont, l'appel échoue. La ligne reste : le cron ne
+repénalise pas ce match pour cette équipe. Une pénalité annulée sort de
+l'indicateur « Pénalités automatiques » (`sql/auto_penalties.sql`, dont
+« Corriger » ouvre l'écran filtré) et des alertes des responsables
+(`Alerts::recent_penalties`). Le « -1 » du classement rend aussi un point, mais
+sans annuler la pénalité : ne pas l'utiliser pour une pénalité automatique.
 
 ### Membre non jouant d'une équipe (issue #325)
 

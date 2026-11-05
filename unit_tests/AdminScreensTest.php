@@ -41,6 +41,7 @@ class AdminScreensTest extends TestCase
         'halloffame' => 'HallOfFame',
         'limitdate' => 'LimitDate',
         'matchmgr' => 'MatchMgr',
+        'matchpenalty' => 'MatchPenalty',
         'news' => 'News',
         'player' => 'Players',
         'rank' => 'Rank',

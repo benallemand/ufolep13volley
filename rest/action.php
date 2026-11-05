@@ -195,6 +195,10 @@ try {
             require_once __DIR__ . "/../classes/MatchMgr.php";
             $manager = new MatchMgr();
             break;
+        case 'matchpenalty':
+            require_once __DIR__ . "/../classes/MatchPenalty.php";
+            $manager = new MatchPenalty();
+            break;
         case 'news':
             require_once __DIR__ . "/../classes/News.php";
             $manager = new News();

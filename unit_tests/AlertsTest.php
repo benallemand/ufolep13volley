@@ -130,6 +130,11 @@ class AlertsTest extends UfolepTestCase
         $penalty = $this->find($this->alerts->getAlerts(), 'Pénalité automatique');
         self::assertNotNull($penalty);
         self::assertStringContainsString('ISS346', $penalty['issue']);
+
+        // annulée par l'admin (#458) : l'alerte disparaît
+        $this->sql->execute("UPDATE match_penalties SET cancelled_at = NOW() WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $id_match)));
+        self::assertNull($this->find($this->alerts->getAlerts(), 'Pénalité automatique'));
     }
 
     public function test_le_responsable_de_club_voit_toutes_ses_equipes(): void
