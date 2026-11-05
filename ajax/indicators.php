@@ -165,7 +165,7 @@ $indicators = array(
     new Indicator("Retards",
         indicator_sql('delay_match_report.sql'), 'alert', 'matches', 'indicator_id',
         category: Indicator::SEASON),
-    // Pénalités automatiques de la feuille de match non signée à 48 h (#345)
+    // Pénalités automatiques de la feuille de match non signée à 7 jours (#345, #456)
     new Indicator("Pénalités automatiques",
         indicator_sql('auto_penalties.sql'), 'alert', 'matches', 'indicator_id',
         category: Indicator::SEASON),

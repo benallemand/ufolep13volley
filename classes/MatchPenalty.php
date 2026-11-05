@@ -5,7 +5,8 @@ require_once __DIR__ . '/Emails.php';
 /**
  * Pénalités automatiques (issue #345).
  *
- * Feuille de match non signée des deux côtés 48 h après l'horaire du match :
+ * Feuille de match non signée des deux côtés 7 jours après l'horaire du match
+ * (article 8 du règlement général, issue #456 ; 48 h auparavant) :
  * -1 point à **chacune des deux équipes**, même si l'une a signé (décision de
  * la commission), dans la compétition du match. Championnats seulement.
  *
@@ -16,7 +17,13 @@ require_once __DIR__ . '/Emails.php';
  */
 class MatchPenalty extends Generic
 {
+    /**
+     * Motif enregistré dans `match_penalties`. Il date du délai de 48 h et reste
+     * tel quel : c'est lui qui empêche de pénaliser deux fois le même match.
+     */
     const REASON_UNSIGNED_SHEET = 'feuille_non_signee_48h';
+    /** Délai de signature des deux équipes, en jours (article 8 du règlement général). */
+    const UNSIGNED_SHEET_DELAY_DAYS = 7;
     /** Mise en service : pas de pénalité rétroactive pour les matchs d'avant. */
     const UNSIGNED_SHEET_SINCE = '2026-10-01';
 
@@ -35,9 +42,10 @@ class MatchPenalty extends Generic
     public function apply_unsigned_sheet_penalties(?string $since = null): int
     {
         $matches = $this->sql_manager->execute(
-            file_get_contents(__DIR__ . '/../sql/unsigned_match_sheets_48h.sql'),
+            file_get_contents(__DIR__ . '/../sql/unsigned_match_sheets.sql'),
             array(
                 array('type' => 's', 'value' => $since ?? self::UNSIGNED_SHEET_SINCE),
+                array('type' => 'i', 'value' => self::UNSIGNED_SHEET_DELAY_DAYS),
                 array('type' => 's', 'value' => self::REASON_UNSIGNED_SHEET),
             ));
         $applied = 0;
@@ -46,7 +54,8 @@ class MatchPenalty extends Generic
             foreach (array('dom', 'ext') as $side) {
                 if ($this->penalize((int)$match['id_match'], (int)$match["id_equipe_$side"], $match['code_competition'])) {
                     // une ligne par équipe, rangée dans son historique (#425)
-                    $this->addActivity("Pénalité automatique (-1 pt, feuille de match non signée à 48 h) : "
+                    $this->addActivity("Pénalité automatique (-1 pt, feuille de match non signée à "
+                        . self::UNSIGNED_SHEET_DELAY_DAYS . " jours) : "
                         . $match["equipe_$side"] . " — match " . $match['code_match'], $match["id_equipe_$side"]);
                     $penalized = true;
                     $applied++;

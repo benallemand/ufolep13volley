@@ -954,14 +954,18 @@ compétition.
 > été **supprimé** avec ce lot : il reconstituait a posteriori, par recoupement
 > de chaînes du journal d'activité, ce que le verrou empêche à la source.
 
-### Pénalité automatique : feuille de match non signée à 48 h (issue #345)
+### Pénalité automatique : feuille de match non signée à 7 jours (issues #345, #456)
 
 `cron/hourly.php` appelle `MatchPenalty::apply_unsigned_sheet_penalties()` avant
 d'envoyer la file d'emails. Match de championnat confirmé, non certifié, joué à
 partir de `MatchPenalty::UNSIGNED_SHEET_SINCE` (2026-10-01, pas de rétroactivité),
-dont la feuille n'est pas signée **des deux côtés** 48 h après l'horaire (date +
-heure du créneau, sinon 23:59 — `sql/unsigned_match_sheets_48h.sql`) : -1 point à
-**chacune des deux équipes**, même celle qui a signé (décision de la commission).
+dont la feuille n'est pas signée **des deux côtés** `UNSIGNED_SHEET_DELAY_DAYS`
+(7) jours après l'horaire (date + heure du créneau, sinon 23:59 —
+`sql/unsigned_match_sheets.sql`) : -1 point à **chacune des deux équipes**, même
+celle qui a signé (décision de la commission). Le délai est celui de l'article 8
+du règlement général ; il était de 48 h jusqu'à #456. Le motif enregistré
+(`feuille_non_signee_48h`) n'a pas changé : il empêche une seconde pénalité sur
+un match déjà pénalisé.
 
 Chaque pénalité est tracée dans `match_penalties` (match, équipe, motif, date) ;
 la clé unique rend l'application idempotente (`INSERT IGNORE`, puis

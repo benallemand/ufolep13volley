@@ -6,11 +6,11 @@ require_once __DIR__ . '/../classes/MatchPenalty.php';
 
 /**
  * Issue #345 — -1 point aux deux équipes si la feuille de match n'est pas
- * signée 48 h après le match.
+ * signée 7 jours après le match (48 h avant l'issue #456).
  *
  * Division de test « 95 » du championnat masculin, et une coupe de test `us`.
  * La mise en service est passée en paramètre (`$since`) : les matchs de test
- * sont datés d'il y a trois jours.
+ * sont datés d'il y a huit jours.
  */
 class MatchPenaltyTest extends UfolepTestCase
 {
@@ -44,7 +44,7 @@ class MatchPenaltyTest extends UfolepTestCase
                 date_reception = ?, date_original = ?, match_status = 'CONFIRMED'",
             array(array('type' => 'i', 'value' => $this->team['E']), array('type' => 'i', 'value' => $this->team['F']),
                   array('type' => 'i', 'value' => $this->id_court),
-                  array('type' => 's', 'value' => $this->days_ago(3)), array('type' => 's', 'value' => $this->days_ago(3))));
+                  array('type' => 's', 'value' => $this->days_ago(8)), array('type' => 's', 'value' => $this->days_ago(8))));
         $this->connect_as_admin();
     }
 
@@ -108,10 +108,10 @@ class MatchPenaltyTest extends UfolepTestCase
         return date('Y-m-d', strtotime("-$days days"));
     }
 
-    public function test_feuille_non_signee_apres_48h_penalise_les_deux_equipes(): void
+    public function test_feuille_non_signee_apres_7_jours_penalise_les_deux_equipes(): void
     {
         // l'équipe à domicile a signé : les deux sont pénalisées quand même
-        $this->match('m', 'A', 'B', $this->days_ago(3), 1, 0);
+        $this->match('m', 'A', 'B', $this->days_ago(8), 1, 0);
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         self::assertSame(2, $this->fixture_penalties());
         self::assertSame(1, $this->penalite('A'));
@@ -124,17 +124,19 @@ class MatchPenaltyTest extends UfolepTestCase
 
     public function test_une_seule_fois_par_match(): void
     {
-        $this->match('m', 'A', 'B', $this->days_ago(3));
+        $this->match('m', 'A', 'B', $this->days_ago(8));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         self::assertSame(2, $this->fixture_penalties());
         self::assertSame(1, $this->penalite('A'));
     }
 
-    public function test_pas_de_penalite_avant_48h_ni_si_la_feuille_est_signee(): void
+    public function test_pas_de_penalite_avant_7_jours_ni_si_la_feuille_est_signee(): void
     {
         $this->match('m', 'A', 'B', date('Y-m-d'));                // aujourd'hui : délai non écoulé
-        $this->match('m', 'A', 'B', $this->days_ago(3), 1, 1);     // signée des deux côtés
+        $this->match('m', 'A', 'B', $this->days_ago(3));           // 3 jours : pénalisé à 48 h avant #456
+        $this->match('m', 'A', 'B', $this->days_ago(6));           // 6 jours : délai non écoulé
+        $this->match('m', 'A', 'B', $this->days_ago(8), 1, 1);     // signée des deux côtés
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         self::assertSame(0, $this->fixture_penalties());
         self::assertSame(0, $this->penalite('A'));
@@ -142,9 +144,9 @@ class MatchPenaltyTest extends UfolepTestCase
 
     public function test_exclusions(): void
     {
-        $this->match('m', 'A', 'B', $this->days_ago(3), 0, 0, 'NOT_CONFIRMED');
-        $this->match('m', 'A', 'B', $this->days_ago(3), 0, 0, 'CONFIRMED', 1);   // certifié
-        $this->match('us', 'C', 'D', $this->days_ago(3));                        // coupe
+        $this->match('m', 'A', 'B', $this->days_ago(8), 0, 0, 'NOT_CONFIRMED');
+        $this->match('m', 'A', 'B', $this->days_ago(8), 0, 0, 'CONFIRMED', 1);   // certifié
+        $this->match('us', 'C', 'D', $this->days_ago(8));                        // coupe
         $this->match('m', 'A', 'B', $this->days_ago(60));                        // avant la mise en service
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         self::assertSame(0, $this->fixture_penalties());
@@ -153,7 +155,7 @@ class MatchPenaltyTest extends UfolepTestCase
 
     public function test_la_penalite_reste_apres_une_signature_tardive(): void
     {
-        $id_match = $this->match('m', 'A', 'B', $this->days_ago(3));
+        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         $this->sql->execute("UPDATE matches SET is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?",
             array(array('type' => 'i', 'value' => $id_match)));

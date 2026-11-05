@@ -2,6 +2,8 @@
 -- Pénalités automatiques appliquées (issue #345), les plus récentes d'abord.
 -- Une ligne par équipe pénalisée ; l'admin annule par le bouton « -1 » du
 -- classement de la division (la ligne reste ici comme historique).
+-- Le motif `feuille_non_signee_48h` date du premier délai ; il vaut 7 jours
+-- depuis l'issue #456.
 SELECT p.id_match                                  AS indicator_id,
        DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS appliquee_le,
        m.code_match                                 AS match_,
@@ -10,7 +12,7 @@ SELECT p.id_match                                  AS indicator_id,
        comp.libelle                                 AS competition,
        m.division,
        CASE p.reason
-           WHEN 'feuille_non_signee_48h' THEN 'feuille de match non signée à 48 h'
+           WHEN 'feuille_non_signee_48h' THEN 'feuille de match non signée à 7 jours'
            ELSE p.reason END                        AS motif
 FROM match_penalties p
          JOIN matches m ON m.id_match = p.id_match
