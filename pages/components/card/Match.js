@@ -38,11 +38,14 @@ export default {
         <p v-if="match.score_equipe_dom > 0 || match.score_equipe_ext > 0">
           Score :
           <span class="text-xl ml-1 mr-1">{{ match.score_equipe_dom }} - {{ match.score_equipe_ext }}</span>
+          <!-- Vue retire les blancs entre balises : l'écart entre les sets passe par gap-x -->
+          <span class="inline-flex flex-wrap gap-x-2">
           <span v-if="match.set_1_dom > 0 || match.set_1_ext > 0">{{ match.set_1_dom }}/{{ match.set_1_ext }}</span>
           <span v-if="match.set_2_dom > 0 || match.set_2_ext > 0">{{ match.set_2_dom }}/{{ match.set_2_ext }}</span>
           <span v-if="match.set_3_dom > 0 || match.set_3_ext > 0">{{ match.set_3_dom }}/{{ match.set_3_ext }}</span>
           <span v-if="match.set_4_dom > 0 || match.set_4_ext > 0">{{ match.set_4_dom }}/{{ match.set_4_ext }}</span>
           <span v-if="match.set_5_dom > 0 || match.set_5_ext > 0">{{ match.set_5_dom }}/{{ match.set_5_ext }}</span>
+          </span>
         </p>
         <p v-if="isMatchDatePassed">
           <span v-if="match.count_status !== null && match.is_forfait !== 1" class="badge badge-error text-xs">

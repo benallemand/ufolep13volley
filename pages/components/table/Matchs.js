@@ -56,6 +56,8 @@ export default {
               {{ match.equipe_ext }}
             </a></td>
             <td>
+            <!-- Vue retire les blancs entre balises : l'écart entre les sets passe par gap-x -->
+            <div class="flex flex-wrap gap-x-2">
             <span
                 v-if="match.score_equipe_dom+match.score_equipe_ext >=1"><span>{{ match.set_1_dom }}</span>/<span>{{ match.set_1_ext }}</span></span>
               <span
@@ -66,6 +68,7 @@ export default {
                   v-if="match.score_equipe_dom+match.score_equipe_ext >=4"><span>{{ match.set_4_dom }}</span>/<span>{{ match.set_4_ext }}</span></span>
               <span
                   v-if="match.score_equipe_dom+match.score_equipe_ext >=5"><span>{{ match.set_5_dom }}</span>/<span>{{ match.set_5_ext }}</span></span>
+            </div>
             </td>
             <td class="max-w-48 w-48">
               <div v-if="match.note">
