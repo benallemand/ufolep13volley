@@ -4,6 +4,7 @@ import {defineAsyncComponent} from "vue";
 export default {
     components: {
         'licence-import-modal': defineAsyncComponent(() => import('../form/LicenceImportModal.js')),
+        'photo-crop-modal': defineAsyncComponent(() => import('../form/PhotoCropModal.js')),
     },
     template: `
       <div>
@@ -59,6 +60,13 @@ export default {
                               add-to-my-team
                               @close="importing = false"
                               @imported="fetchTeamPlayers(); fetchAllPlayers()"></licence-import-modal>
+
+        <!-- Recadrage 3:4 avant l'envoi d'une photo (issue #461) -->
+        <photo-crop-modal v-if="cropping"
+                          :file="cropping.file"
+                          :title="'Photo de ' + cropping.player.prenom + ' ' + cropping.player.nom"
+                          @cropped="onCropped"
+                          @cancel="cropping = null"></photo-crop-modal>
         
         <div class="bg-base-200 border border-2 border-base-300 p-4">
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -94,6 +102,8 @@ export default {
                 <div class="flex flex-col gap-2">
                   <div>
                     <i class="fas fa-image mr-2" title="photo"/><input type="file"
+                                                                       accept="image/jpeg,image/png,image/gif"
+                                                                       data-testid="player-photo-input"
                                                                        class="file-input file-input-xs file-input-primary"
                                                                        @change="onFileChange($event, player)"/>
                   </div>
@@ -174,6 +184,8 @@ export default {
             searchTerm: '',
             filteredPlayers: [],
             importing: false,
+            // Photo en cours de recadrage : { file, player } (issue #461)
+            cropping: null,
             // Verrouillage de l'effectif (issue #32). On part de « ouvert » :
             // si l'appel echoue, l'ecran reste utilisable et c'est le serveur
             // qui refusera, plutot que de bloquer sur une erreur reseau.
@@ -255,12 +267,25 @@ export default {
         },
         onDrop(event, player) {
             player.isDragging = false;
-            const file = event.dataTransfer.files[0];
-            this.uploadPhoto(file, player);
+            this.startCrop(event.dataTransfer.files[0], player);
         },
         onFileChange(event, player) {
-            const file = event.target.files[0];
-            this.uploadPhoto(file, player);
+            this.startCrop(event.target.files[0], player);
+            // le même fichier peut être choisi à nouveau après une annulation
+            event.target.value = '';
+        },
+        /** La photo passe d'abord par le recadrage 3:4 (issue #461). */
+        startCrop(file, player) {
+            if (!file || !this.isValidFile(file)) {
+                alert("Fichier invalide. Veuillez déposer une image.");
+                return;
+            }
+            this.cropping = { file, player };
+        },
+        onCropped(blob) {
+            const { player } = this.cropping;
+            this.cropping = null;
+            this.uploadPhoto(new File([blob], 'photo.jpg', { type: 'image/jpeg' }), player);
         },
         onMedalClick(player, field_name) {
             let action = '';

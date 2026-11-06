@@ -812,6 +812,23 @@ la prop `rowFilter`.
 > s'est alors emplie de 404. Le surcoût du repli est négligeable — ces photos de
 > licence pèsent 12 Ko en moyenne, 24 Ko au maximum.
 
+> **Traitement des photos de joueurs (issue #461)**. Sur la carte du joueur
+> (`pages/components/panel/Players.js`), la photo passe d'abord par
+> `form/PhotoCropModal.js` (Cropper.js 1.6) : cadre 3:4, zoom, quart de tour,
+> orientation EXIF lue par Cropper ; seule la zone recadrée part, en JPEG de
+> 600 × 800. Côté serveur, **toute** photo enregistrée (carte du joueur, fiche
+> de l'admin, licence importée) passe par `PhotoImage::normalize()` : redressée
+> d'après son orientation EXIF, ramenée à 900 × 1200 au plus, réencodée en
+> JPEG ; la vignette (`PhotoImage::low()`) fait 300 × 400 au plus. Avant, une
+> photo d'iPhone (couchée, orientation 6) restait de travers partout où GD
+> l'avait réencodée, et la vignette n'était pas réduite. L'orientation est lue
+> dans le fichier, sans l'extension `exif`, absente de l'image Docker et de la
+> CI. `savePhoto()` écrit le fichier **avant** de rattacher la photo au joueur,
+> et échoue si l'écriture échoue. Les dossiers `players_pics*` doivent être
+> accessibles en écriture à Apache : l'image les crée pour `www-data`, mais les
+> stacks locales montent ceux du dépôt (en local : `chmod a+rwx players_pics
+> players_pics_low`).
+
 > **Coût des photos de joueurs** : `players_view` renvoie déjà `path_photo` et
 > `path_photo_low` ; les afficher ne coûte **rien** en données transférées.
 > C'est la **vérification d'existence** côté PHP qui coûtait cher —
