@@ -5,6 +5,7 @@ require_once __DIR__ . '/Generic.php';
 require_once __DIR__ . '/Team.php';
 require_once __DIR__ . '/Club.php';
 require_once __DIR__ . '/Photo.php';
+require_once __DIR__ . '/PhotoImage.php';
 require_once __DIR__ . '/Files.php';
 require_once __DIR__ . '/UserManager.php';
 
@@ -617,15 +618,24 @@ class Players extends Generic
             $iteration++;
             $uploadfile = "$uploaddir$lastName$firstName$iteration.jpg";
         }
+        // Le fichier d'abord : la photo n'est rattachée au joueur qu'une fois
+        // écrite. Avant #461, un échec d'écriture laissait au joueur une photo
+        // introuvable, et l'envoi était annoncé réussi.
+        $stored = Generic::accentedToNonAccented($uploadfile);
+        if (!@move_uploaded_file($_FILES['photo']['tmp_name'], $stored)) {
+            throw new Exception("La photo n'a pas pu être enregistrée sur le serveur.");
+        }
+        // redressée d'après son orientation EXIF, réduite, en JPEG ; puis sa
+        // version allégée (issue #461)
+        PhotoImage::normalize($stored);
+        $this->generateLowPhoto(substr($stored, 3));
         $idPhoto = $this->photo->insertPhoto(substr($uploadfile, 3));
         $idPlayer = $inputs['id'];
         if (empty($inputs['id'])) {
             $idPlayer = $newId;
         }
         $this->linkPlayerToPhoto($idPlayer, $idPhoto);
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], Generic::accentedToNonAccented($uploadfile))) {
-            $this->addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
-        }
+        $this->addActivity("Une nouvelle photo a ete transmise pour le joueur $firstName $lastName");
     }
 
     /**
@@ -1643,7 +1653,8 @@ class Players extends Generic
             error_log("Échec de sauvegarde de la photo du joueur: $uploadfile");
             return null;
         }
-        
+        PhotoImage::normalize($uploadfile); // issue #461
+
         // Insérer dans la table photos et récupérer l'ID
         $idPhoto = $this->photo->insertPhoto($relativePath);
         
@@ -1660,32 +1671,8 @@ class Players extends Generic
      */
     private function createLowResPhoto(string $path_photo): void
     {
-        try {
-            $compression_rate = 50;
-            $source_file = __DIR__ . '/../' . $path_photo;
-            $low_photos_folder = __DIR__ . '/../players_pics_low/';
-            
-            if (!is_dir($low_photos_folder)) {
-                mkdir($low_photos_folder, 0755, true);
-            }
-            
-            $filename = basename($path_photo);
-            $destination_file = $low_photos_folder . $filename;
-            
-            // Charger l'image originale
-            $img = imagecreatefromjpeg($source_file);
-            if ($img === false) {
-                return;
-            }
-            
-            // Sauvegarder la version compressée
-            imagejpeg($img, $destination_file, $compression_rate);
-            imagedestroy($img);
-            
-        } catch (Exception $e) {
-            // Échec silencieux - la photo basse résolution est optionnelle
-            error_log("Échec de création de la photo basse résolution pour $path_photo: " . $e->getMessage());
-        }
+        // Échec silencieux : la photo basse résolution est optionnelle
+        $this->generateLowPhoto($path_photo);
     }
 
     /**
@@ -1787,20 +1774,16 @@ class Players extends Generic
         return isset($index[$dossier][$fichier]);
     }
 
+    /**
+     * Version allégée d'une photo dans `players_pics_low` : redressée d'après
+     * son orientation EXIF et réduite à 300 × 400 au plus (issue #461 ; avant,
+     * seule la qualité JPEG baissait, et une photo d'iPhone y restait couchée).
+     */
     public function generateLowPhoto(mixed $path_photo)
     {
-        $compression_rate = 50;
         $source_file = __DIR__ . '/../' . $path_photo;
-        $low_photos_folder = __DIR__ . '/../players_pics_low/';
-        if (!is_dir($low_photos_folder)) {
-            mkdir($low_photos_folder, 0777, true);
-        }
-        if (in_array(pathinfo($source_file, PATHINFO_EXTENSION), array('jpg', 'jpeg', 'png', 'gif'))) {
-            $image = @imagecreatefromstring(file_get_contents($source_file));
-            // apply quality
-            @imagejpeg($image, $low_photos_folder . basename($source_file), $compression_rate);
-            // flush memory
-            @imagedestroy($image);
+        if (in_array(strtolower(pathinfo($source_file, PATHINFO_EXTENSION)), array('jpg', 'jpeg', 'png', 'gif'))) {
+            PhotoImage::low($source_file, __DIR__ . '/../players_pics_low/' . basename($source_file));
         }
     }
 

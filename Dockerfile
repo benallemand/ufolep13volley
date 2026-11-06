@@ -30,3 +30,9 @@ RUN a2enmod rewrite
 COPY . /var/www/html/
 COPY --from=composer_builder /app/vendor /var/www/html/vendor
 COPY --from=frontend_builder /app/dist /var/www/html/dist
+
+# Photos des joueurs, écrites par Apache (issue #461). Exclues de l'image par
+# .dockerignore : sans ces dossiers, l'envoi d'une photo échouait dans la stack
+# E2E de la CI. Les stacks locales montent ici les dossiers du dépôt.
+RUN mkdir -p /var/www/html/players_pics /var/www/html/players_pics_low \
+    && chown www-data:www-data /var/www/html/players_pics /var/www/html/players_pics_low

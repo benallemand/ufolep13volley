@@ -17,6 +17,8 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css' layer(base);
 @import 'notyf/notyf.min.css' layer(base);
 @import 'toastify-js/src/toastify.css' layer(base);
+/* Recadrage des photos de joueurs (issue #461) */
+@import 'cropperjs/dist/cropper.css' layer(base);
 
 /* Détection automatique désactivée : elle balaierait aussi classes/, e2e/,
    unit_tests/… On liste les fichiers qui portent des classes. */
