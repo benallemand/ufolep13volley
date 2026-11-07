@@ -438,20 +438,37 @@ le sens du paramètre `$send_now = false` de `sendMailNewUser()` et de
 `Register::set_up_season()` et `Register::create_teams_and_accounts()`. N envois
 SMTP synchrones dépasseraient `max_execution_time` sur le mutualisé OVH.
 
-### Tâches planifiées lancées depuis GitHub (issue #450)
+### Tâches planifiées : crons OVH (issue #465)
 
-Pendant la panne des crons OVH, `.github/workflows/crons-ssh.yml` lance les
-tâches. `hourly`, `daily` et `weekly` passent par un **POST sur
-`rest/cron.php?task=…`**, avec l'en-tête `X-Cron-Token` égal à `CRON_TOKEN` (le
-`.env` de la prod et le secret du dépôt portent la même valeur). La tâche tourne
-alors côté web, seul endroit où les e-mails partent : en SSH, l'hébergement
-refuse `mail()` et ferme les ports SMTP en sortie.
+Les tâches planifiées tournent dans le **manager OVH** (Hébergements →
+ufolep13volley.org → Tâches planifiées - Cron), en ligne de commande :
+
+| Commande | Crontab | Langage | Rôle |
+|---|---|---|---|
+| `www/cron/hourly.php` | `48 * * * *` | PHP 8.5 | pénalités automatiques, puis envoi de la file d'e-mails |
+| `www/cron/daily.php` | `30 11 * * *` | PHP 8.5 | mise en file du résumé d'activité |
+| `www/cron/weekly.php` | `6 6 * * 1` (lundi) | PHP 8.5 | mise en file des relances hebdomadaires (matchs non saisis, prochains matchs, licences, feuilles non signées…) |
+| `stats/cron-archive.sh` | `25 * * * *` | Autre (shell) | archivage Matomo (`~/stats`) |
+
+Les crons OVH ont **leur propre environnement**, différent du SSH : en SSH,
+l'hébergement refuse `mail()` (« not allowed to submit mail ») et ferme les ports
+SMTP en sortie, alors que depuis un cron OVH `mail()` fonctionne (vérifié le
+07/11/2026 par un mail reçu). On ne peut donc pas valider un cron en le lançant
+en SSH. Journal des crons : `https://logs.cluster120.hosting.ovh.net/ufolep13volley.org/osl/cron/ufolep13volley.org-JJ-MM-AAAA.log`
+(connexion au manager requise).
 
 - `cron/` est fermé au web (404, `.htaccess`) : un simple lien déclenchait les
-  envois groupés. Ne jamais tester un cron en ouvrant son URL.
-- `rest/cron.php` répond 500 quand la tâche échoue (exception, envoi refusé) :
-  le job GitHub passe au rouge. Sans `CRON_TOKEN` dans le `.env`, rien ne passe.
-- L'archivage Matomo reste en SSH : il n'envoie pas de mail.
+  envois groupés. **Ne jamais tester un cron en ouvrant son URL.**
+- Langage des crons PHP = version du site (`.ovhconfig`) : à changer dans le
+  manager à chaque montée de version.
+
+> **Historique.** Du 21/10 au 07/11/2026, l'environnement des crons du cluster
+> 120 n'avait plus aucun PHP (`/usr/local/phpX.Y/bin/php` introuvable). GitHub
+> Actions a pris le relais (`crons-ssh.yml`, #442), d'abord en SSH, où aucun mail
+> ne partait, puis par un POST authentifié sur `rest/cron.php` (#450). GitHub
+> retardait ses déclenchements de plusieurs heures (28 `hourly` en 7 jours au
+> lieu de ~175). Le contournement est retiré depuis #465 : GitHub sert à la
+> CI/CD, pas aux mails de l'application.
 
 ### Cookie de session et corps d'emails (issue #292)
 

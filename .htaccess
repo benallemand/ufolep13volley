@@ -5,8 +5,8 @@ AddDefaultCharset UTF-8
 RedirectMatch 404 /\.(?!well-known)
 
 # Les tâches planifiées ne se lancent pas par une URL : n'importe qui pouvait
-# déclencher les envois groupés (cron/weekly.php). Elles passent par
-# rest/cron.php, protégé par un jeton (issue #450).
+# déclencher les envois groupés (cron/weekly.php). Seuls les crons OVH les
+# exécutent, en ligne de commande (issues #450, #465).
 RedirectMatch 404 /cron/
 
 # Bundles Vite des pages HTML pures : on conserve les URLs publiques
