@@ -103,11 +103,11 @@ class PhotoImage
         // fond blanc sous la transparence d'un PNG ou d'un GIF
         imagefill($output, 0, 0, imagecolorallocate($output, 255, 255, 255));
         imagecopyresampled($output, $image, 0, 0, 0, 0, $target_width, $target_height, $width, $height);
-        imagedestroy($image);
+        // libère l'original (48 Mo pour une photo d'iPhone) avant l'écriture ;
+        // imagedestroy() n'a plus d'effet depuis PHP 8.0 et est déprécié en 8.5
+        unset($image);
 
-        $written = imagejpeg($output, $destination ?? $source, $quality);
-        imagedestroy($output);
-        return $written;
+        return imagejpeg($output, $destination ?? $source, $quality);
     }
 
     /** Version allégée d'une photo, dans `players_pics_low`. */
@@ -139,9 +139,7 @@ class PhotoImage
             default => 0,
         };
         if ($angle !== 0) {
-            $rotated = imagerotate($image, $angle, 0);
-            imagedestroy($image);
-            $image = $rotated;
+            $image = imagerotate($image, $angle, 0);
         }
         return $image;
     }

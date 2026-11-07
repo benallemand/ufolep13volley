@@ -168,7 +168,6 @@ class ReportWorkflowAccessTest extends UfolepTestCase
     {
         $match = $this->match_manager->get_match_by_code_match(self::CODE_A);
         $method = new ReflectionMethod(MatchMgr::class, 'assert_report_action_allowed');
-        $method->setAccessible(true);
         return $method->invoke($this->match_manager, $action, $match);
     }
 

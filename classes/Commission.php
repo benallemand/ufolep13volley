@@ -59,7 +59,7 @@ class Commission extends Generic
      * @return void
      * @throws Exception
      */
-    private function delete_commission_division(string $id, string $division = null): void
+    private function delete_commission_division(string $id, ?string $division = null): void
     {
         if (empty($division)) {
             $sql = "DELETE FROM commission_division WHERE id_commission = ?";
