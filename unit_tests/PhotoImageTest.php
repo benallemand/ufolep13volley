@@ -77,7 +77,6 @@ class PhotoImageTest extends TestCase
         ob_start();
         imagejpeg($image, null, 95);
         $jpeg = ob_get_clean();
-        imagedestroy($image);
 
         // n / N : entiers 16 / 32 bits, gros-boutistes (« MM ») ou petits-boutistes (« II »)
         $pack = fn(string $format, int $value) => pack($little_endian ? ($format === 'n' ? 'v' : 'V') : $format, $value);
@@ -112,7 +111,6 @@ class PhotoImageTest extends TestCase
                     "carré $index : couleur attendue " . implode(',', self::COLORS[$index]) . ', lue ' . implode(',', $actual));
             }
         }
-        imagedestroy($image);
     }
 
     public function test_lit_l_orientation_exif(): void
@@ -150,7 +148,6 @@ class PhotoImageTest extends TestCase
         ob_start();
         imagejpeg($image, null, 50);
         $jpeg = ob_get_clean();
-        imagedestroy($image);
         $app1 = "Exif\0\0MM\0\x2A\0\0\0\x08\0\x01\x01\x12\0\x03\0\0\0\x01\0\x06\0\0\0\0\0\0";
         $path = $this->write('iphone.jpg', "\xFF\xD8\xFF\xE1" . pack('n', strlen($app1) + 2) . $app1 . substr($jpeg, 2));
 
@@ -169,7 +166,6 @@ class PhotoImageTest extends TestCase
         $image = imagecreatetruecolor(120, 160);
         $path = "$this->dir/small.jpg";
         imagepng($image, $path);
-        imagedestroy($image);
         self::assertTrue(PhotoImage::normalize($path));
         $info = getimagesize($path);
         self::assertSame(array(120, 160), array_slice($info, 0, 2));

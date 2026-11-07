@@ -422,7 +422,6 @@ class RulesDocument extends Generic
         $status = (int)curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
         $type = (string)curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
         $host = (string)parse_url((string)curl_getinfo($curl, CURLINFO_EFFECTIVE_URL), PHP_URL_HOST);
-        curl_close($curl);
         if (!is_string($body) || $status !== 200 || $body === '' || strlen($body) > self::MAX_BYTES) {
             error_log("RulesDocument : $format indisponible (HTTP $status)");
             return null;

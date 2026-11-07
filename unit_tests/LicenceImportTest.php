@@ -359,7 +359,6 @@ class LicenceImportTest extends UfolepTestCase
             }
         };
         $property = new ReflectionProperty(Players::class, 'files');
-        $property->setAccessible(true);
         $property->setValue($players, $files);
         $_FILES['licences'] = array('name' => 'licences.pdf', 'tmp_name' => '/tmp/licences.pdf');
 
@@ -411,7 +410,6 @@ class LicenceImportTest extends UfolepTestCase
             }
         };
         $property = new ReflectionProperty(Players::class, 'files');
-        $property->setAccessible(true);
         $property->setValue($players, $files);
         $_FILES['licences'] = array('name' => 'photo.jpg', 'tmp_name' => '/tmp/photo.jpg');
 

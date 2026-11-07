@@ -4,7 +4,7 @@ Application web de gestion des championnats de volleyball UFOLEP 13.
 
 ## Stack Technique
 
-- **Backend** : PHP 8.3, MySQL
+- **Backend** : PHP 8.5 (depuis #463 ; 8.3 avant), MySQL
 - **Frontend client** : Vue.js 3, Tailwind CSS, DaisyUI — bundlé via Vite (Node.js 20)
 - **Frontend admin** : Vue.js 3 (`admin/index.html`, servie sur `/admin/`) — ExtJS supprimé par le lot 6 de l'issue #265
 - **Tests unitaires** : PHPUnit (`unit_tests/`)
@@ -364,12 +364,12 @@ http.firewall=none
 container.image=stable64
 environment=production
 app.engine=php
-app.engine.version=8.3
+app.engine.version=8.5
 ```
 
 Sans ce fichier, OVH applique la « version PHP globale » de l'hébergement, un
 réglage qui vit dans le manager et peut bouger sans qu'on le voie passer.
-C'est lui qui fait tourner `www/` en 8.3 alors que le réglage global du compte
+C'est lui qui fait tourner `www/` en 8.5 (8.3 avant #463) alors que le réglage global du compte
 est resté en 8.1 — le prompt SSH affiche la version effective du répertoire
 courant, ce qui permet de vérifier d'un coup d'œil quelle version s'applique.
 
@@ -463,7 +463,7 @@ cookie est déjà parti. `SessionCookieTest` fait échouer la suite sinon.
 > **Pourquoi en PHP et pas en configuration.** Le `php.ini` de la prod est géré
 > par OVH, et les deux contournements ne couvrent chacun qu'un SAPI :
 > `.user.ini` n'est lu qu'en PHP-FPM/CGI, `.htaccess php_flag` qu'en mod_php (et
-> provoque une 500 en FPM). Notre image est `php:8.3-apache` (mod_php), OVH est
+> provoque une 500 en FPM). Notre image est `php:8.5-apache` (mod_php), OVH est
 > en FPM : on validerait sur biggyben autre chose que la prod.
 
 > **`Secure` ne se déduit pas de `$_SERVER['HTTPS']`.** Caddy fait
