@@ -291,6 +291,10 @@ return array(
         // de l'effectif s'en sert pour masquer les actions d'ajout. Le refus
         // reste appliqué côté serveur, ceci n'est qu'un confort d'affichage.
         'getMySquadLock' => 'user',
+        // Désinscription de la coupe Isoardi par le responsable (issue #467) ;
+        // la période et l'équipe sont vérifiées dans la méthode.
+        'getMyCupRegistration' => 'user',
+        'setMyCupRegistration' => 'user',
         'load_register_for_my_club' => 'user',
         'saveTeam' => 'user',
     ),

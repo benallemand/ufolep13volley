@@ -988,6 +988,28 @@ compétition.
 > été **supprimé** avec ce lot : il reconstituait a posteriori, par recoupement
 > de chaînes du journal d'activité, ce que le verrou empêche à la source.
 
+### Désinscription de la coupe Isoardi (issue #467)
+
+Une équipe du championnat masculin (`m`) est inscrite à la coupe Isoardi (`c`)
+par défaut. Le choix est porté par `equipes.is_cup_registered`, que le tirage des
+poules respecte déjà (`get_full_championship_rank`).
+
+- **Qui peut le changer** :
+  - le responsable d'équipe, ou de club via le sélecteur d'équipe : page
+    « Mon équipe », par `team/getMyCupRegistration` / `setMyCupRegistration` ;
+  - l'admin, à toute date, depuis l'écran Équipes.
+  - `saveTeam` refuse ce champ hors admin (403), sinon la période serait
+    contournable.
+- **Quand** : pendant la période d'inscription à la coupe **Khoury Hanna**
+  (`kh.start_register_date` → `limit_register_date`, bornes incluses). C'est une
+  décision de la commission : changer ces dates déplace aussi la période de
+  désinscription. L'agenda porte l'entrée « Désinscription coupe 6x6 Isoardi »,
+  aux mêmes dates : elle se met à jour à la main avec celle de la KH.
+- **À l'initialisation de saison**, `Register::apply_cup_choice` recopie sur
+  l'équipe la case « Mon équipe souhaite participer à la coupe 6x6 Isoardi » de
+  l'inscription. Sans cela, une nouvelle équipe restait à 0, donc hors du tirage,
+  et une équipe reconduite gardait le choix de la saison précédente.
+
 ### Pénalité automatique : feuille de match non signée à 7 jours (issues #345, #456)
 
 `cron/hourly.php` appelle `MatchPenalty::apply_unsigned_sheet_penalties()` avant
