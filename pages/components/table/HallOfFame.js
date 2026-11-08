@@ -63,7 +63,10 @@ const SeasonBody = {
             <div v-for="d in lg.divisions" :key="d.division"
                  class="card bg-base-100 border border-base-300 shadow-xs">
               <div class="card-body p-3 gap-2">
-                <div class="text-center font-bold text-primary text-sm">Division {{ d.division }}</div>
+                <!-- « Poule N » arrive tel quel (mi-saison féminine 2009-2010) -->
+                <div class="text-center font-bold text-primary text-sm">
+                  {{ /^\\d/.test(d.division) ? 'Division ' + d.division : d.division }}
+                </div>
                 <div class="flex gap-2">
                   <podium-cell label="1ère demi-saison" :champion="d.p1 && d.p1.champion" :vice="d.p1 && d.p1.vice"
                                :ids="d.p1 && d.p1.ids"></podium-cell>
@@ -194,8 +197,13 @@ export default {
     },
     methods: {
         compareDivisions(a, b) {
-            const na = parseInt(a, 10);
-            const nb = parseInt(b, 10);
+            // « Poule N » : on trie sur le numéro, et après les divisions
+            const num = (v) => parseInt(String(v).replace(/^Poule /, ''), 10);
+            const pa = String(a).startsWith('Poule ') ? 1 : 0;
+            const pb = String(b).startsWith('Poule ') ? 1 : 0;
+            if (pa !== pb) return pa - pb;
+            const na = num(a);
+            const nb = num(b);
             if (na !== nb) return na - nb;
             return String(a).localeCompare(String(b)); // ex. 7a avant 7b
         },
