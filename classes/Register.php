@@ -622,6 +622,9 @@ class Register extends Generic
             }
             foreach ($registered_teams as $registered_team) {
                 $id_team = $this->create_or_update_team($registered_team);
+                if (($registered_team['code_competition'] ?? null) === Team::CUP_OPT_OUT_TEAM_COMPETITION) {
+                    $this->apply_cup_choice((int)$registered_team['id'], $id_team);
+                }
                 $team = $this->team->getTeam($id_team);
                 // init de saison : autant de comptes crees que d'inscriptions, on
                 // laisse les identifiants au cron horaire (issue #305)
@@ -935,6 +938,26 @@ class Register extends Generic
      * @return int
      * @throws Exception
      */
+    /**
+     * Recopie sur l'équipe le choix « Mon équipe souhaite participer à la
+     * coupe 6x6 Isoardi » de l'inscription (issue #467). Sans cela, une
+     * nouvelle équipe restait à 0 (hors du tirage) et une équipe reconduite
+     * gardait le choix de la saison précédente.
+     * @throws Exception
+     */
+    public function apply_cup_choice(int $id_register, int $id_team): void
+    {
+        $this->sql_manager->execute(
+            "UPDATE equipes e
+             JOIN register r ON r.id = ?
+             SET e.is_cup_registered = r.is_cup_registered
+             WHERE e.id_equipe = ?",
+            array(
+                array('type' => 'i', 'value' => $id_register),
+                array('type' => 'i', 'value' => $id_team),
+            ));
+    }
+
     public function create_or_update_team(mixed $registered_team): int
     {
         if (empty($registered_team['old_team_id'])) {

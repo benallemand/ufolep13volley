@@ -397,6 +397,11 @@ class Team extends Generic
             if (empty($inputs['id_equipe'])) {
                 throw new Exception("La création d'une équipe est réservée à l'administration !", 403);
             }
+            // Le choix de la coupe Isoardi a sa période (issue #467) : hors
+            // admin, il passe par setMyCupRegistration, qui la vérifie.
+            if (array_key_exists('is_cup_registered', $inputs)) {
+                throw new Exception("La participation à la coupe Isoardi se change depuis la page de l'équipe, pendant la période prévue.", 403);
+            }
             (new UserManager())->assertCanManageTeam($inputs['id_equipe']);
         }
         $before = $this->row_before($inputs['id_equipe'] ?? null, 'equipes', 'id_equipe');
@@ -584,6 +589,114 @@ class Team extends Generic
             'date' => $lock === null ? null : $lock['date_reception'],
             'competition' => $lock === null ? null : $lock['competition'],
         );
+    }
+
+    /**
+     * Coupe Isoardi (issue #467) : toute équipe du championnat masculin y est
+     * inscrite, mais peut choisir de ne pas y participer. Le choix est
+     * `equipes.is_cup_registered`, que le tirage des poules respecte.
+     *
+     * Le responsable (d'équipe, ou de club via le sélecteur d'équipe) peut
+     * changer ce choix pendant la période d'inscription à la coupe Khoury
+     * Hanna : mêmes dates de début et de fin, décision de la commission.
+     */
+    public const CUP_OPT_OUT_TEAM_COMPETITION = 'm';
+    private const CUP_OPT_OUT_WINDOW_COMPETITION = 'kh';
+
+    /**
+     * Période de désinscription : celle des inscriptions en coupe KH, bornes
+     * incluses (comme `Competition::is_registration_available`).
+     * @throws Exception
+     */
+    public function getCupOptOutWindow(): array
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT DATE_FORMAT(start_register_date, '%d/%m/%Y') AS start_date,
+                    DATE_FORMAT(limit_register_date, '%d/%m/%Y') AS limit_date,
+                    IFNULL(CURDATE() BETWEEN start_register_date AND limit_register_date, 0) AS is_open
+             FROM competitions
+             WHERE code_competition = ?",
+            array(array('type' => 's', 'value' => self::CUP_OPT_OUT_WINDOW_COMPETITION)));
+        return array(
+            'start_date' => $rows[0]['start_date'] ?? null,
+            'limit_date' => $rows[0]['limit_date'] ?? null,
+            'is_open' => !empty($rows) && (int)$rows[0]['is_open'] === 1,
+        );
+    }
+
+    /**
+     * Participation de l'équipe COURANTE de la session à la coupe Isoardi.
+     * @throws Exception
+     */
+    public function getMyCupRegistration(): array
+    {
+        $id_equipe = $this->getMySessionTeamId();
+        $rows = $this->sql_manager->execute(
+            "SELECT code_competition, is_cup_registered + 0 AS is_cup_registered
+             FROM equipes
+             WHERE id_equipe = ?",
+            array(array('type' => 'i', 'value' => $id_equipe)));
+        if (empty($rows)) {
+            throw new Exception("Équipe introuvable !", 404);
+        }
+        $window = $this->getCupOptOutWindow();
+        return array(
+            'concerned' => $rows[0]['code_competition'] === self::CUP_OPT_OUT_TEAM_COMPETITION,
+            'is_cup_registered' => (int)$rows[0]['is_cup_registered'] === 1,
+            'is_open' => $window['is_open'],
+            'start_date' => $window['start_date'],
+            'limit_date' => $window['limit_date'],
+        );
+    }
+
+    /**
+     * Désinscrit (0) ou réinscrit (1) l'équipe courante de la coupe Isoardi.
+     * @throws Exception
+     */
+    public function setMyCupRegistration($is_cup_registered = null): void
+    {
+        if (is_null($is_cup_registered) || trim((string)$is_cup_registered) === '') {
+            throw new Exception("Le choix de participation à la coupe Isoardi est manquant !", 400);
+        }
+        $id_equipe = $this->getMySessionTeamId();
+        (new UserManager())->assertCanManageTeam($id_equipe);
+        $state = $this->getMyCupRegistration();
+        if (!$state['concerned']) {
+            throw new Exception("Seules les équipes du championnat masculin participent à la coupe Isoardi !", 400);
+        }
+        if (!$state['is_open']) {
+            $period = empty($state['start_date']) || empty($state['limit_date'])
+                ? "aucune période n'est ouverte"
+                : "c'est possible du " . $state['start_date'] . " au " . $state['limit_date'];
+            throw new Exception("La participation à la coupe Isoardi ne peut plus être changée : $period.", 403);
+        }
+        $flag = Generic::to_flag($is_cup_registered);
+        if ($flag === ($state['is_cup_registered'] ? 1 : 0)) {
+            return;
+        }
+        $this->sql_manager->execute(
+            "UPDATE equipes SET is_cup_registered = ? WHERE id_equipe = ?",
+            array(
+                array('type' => 'i', 'value' => $flag),
+                array('type' => 'i', 'value' => $id_equipe),
+            ));
+        $this->addActivity(
+            "Équipe " . $this->getTeamName($id_equipe) . ($flag === 1
+                ? " : réinscrite à la coupe Isoardi"
+                : " : désinscrite de la coupe Isoardi"),
+            $id_equipe);
+    }
+
+    /**
+     * @throws Exception 403 si aucune équipe n'est sélectionnée
+     */
+    private function getMySessionTeamId(): int
+    {
+        @session_start();
+        if (!UserManager::isTeamLeader() || empty($_SESSION['id_equipe'])) {
+            throw new Exception("Aucune équipe n'est sélectionnée !", 403);
+        }
+        return Generic::parse_id($_SESSION['id_equipe'], "identifiant d'équipe");
     }
 
     public function getTeamName($idTeam)
