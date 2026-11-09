@@ -72,7 +72,10 @@ try {
          UNION ALL
          SELECT MIN(id) FROM comptes_acces WHERE is_admin + 0 > 0
          LIMIT 1");
-    $_SESSION['is_admin'] = true;
+    // `?admin=0` : responsable ordinaire (issue #471, l'envoi forcé d'une photo
+    // sans visage reconnu est réservé à l'admin). Les contrôles d'équipe passent
+    // par l'équipe de session.
+    $_SESSION['is_admin'] = ($_GET['admin'] ?? '1') !== '0';
     $_SESSION['is_team_leader'] = true;
     $_SESSION['login'] = 'e2e_test';
     $_SESSION['id_user'] = (int)($account[0]['id'] ?? 1);

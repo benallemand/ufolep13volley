@@ -1,5 +1,9 @@
 AddDefaultCharset UTF-8
 
+# Moteur WebAssembly de la détection de visage (issue #471) : le navigateur
+# exige ce type pour le compiler en streaming.
+AddType application/wasm .wasm
+
 # Bloque l'accès à tous les fichiers/dossiers cachés (.env, .git, .htaccess…),
 # sauf .well-known. Évite notamment l'exposition du .env.
 RedirectMatch 404 /\.(?!well-known)
