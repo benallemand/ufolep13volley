@@ -1,5 +1,10 @@
 AddDefaultCharset UTF-8
 
+# Pas de liste des fichiers d'un dossier : sur OVH, /players_pics/,
+# /match_files/, /sql/… affichaient leur contenu à n'importe quel visiteur.
+# Chaque fichier reste accessible par son adresse ; un dossier répond 403.
+Options -Indexes
+
 # Moteur WebAssembly de la détection de visage (issue #471) : le navigateur
 # exige ce type pour le compiler en streaming.
 AddType application/wasm .wasm
