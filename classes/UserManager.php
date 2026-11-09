@@ -1032,6 +1032,13 @@ class UserManager extends Generic
      * Les lignes d'equipes sans nom sont écartées : ce sont des créations
      * d'équipe avortées (aucun engagement, match, créneau, joueur ni compte),
      * qui ne donneraient qu'une entrée blanche et inexploitable.
+     *
+     * Seules restent les équipes ENGAGÉES (une ligne de classement) ou qui ont
+     * demandé leur RÉINSCRIPTION (engagement `register` non refusé qui les
+     * reprend, par exemple en coupe Khoury Hanna avant le tirage). Un club
+     * garde en base toutes ses équipes des saisons passées : le menu en
+     * comptait jusqu'à 4 de trop. L'équipe courante de la session reste
+     * listée quoi qu'il arrive, pour que le menu ne la perde pas.
      * @throws Exception
      */
     public function getMyManageableTeams(): array
@@ -1060,6 +1067,7 @@ class UserManager extends Generic
         foreach ($club_ids as $id_club) {
             $bindings[] = array('type' => 'i', 'value' => $id_club);
         }
+        $bindings[] = array('type' => 'i', 'value' => (int)($_SESSION['id_equipe'] ?? 0));
         $sql = "SELECT  e.id_equipe,
                         e.nom_equipe,
                         e.id_club,
@@ -1082,6 +1090,11 @@ class UserManager extends Generic
                 LEFT JOIN competitions comp ON comp.code_competition = e.code_competition
                 WHERE ($where)
                   AND NULLIF(e.nom_equipe, '') IS NOT NULL
+                  AND (EXISTS(SELECT 1 FROM classements cl2 WHERE cl2.id_equipe = e.id_equipe)
+                       OR EXISTS(SELECT 1 FROM register r
+                                  WHERE r.old_team_id = e.id_equipe
+                                    AND r.status <> 'REFUSED')
+                       OR e.id_equipe = ?)
                 ORDER BY c.nom, comp.libelle, e.nom_equipe";
         return $this->sql_manager->execute($sql, $bindings);
     }
