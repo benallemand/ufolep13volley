@@ -411,9 +411,14 @@ class ClubLeaderTest extends UfolepTestCase
         $teams = (new UserManager())->getMyManageableTeams();
         $returnedIds = array_map('intval', array_column($teams, 'id_equipe'));
         $namedTeamIds = array_map('intval', array_column($this->sql->execute(
-            "SELECT id_equipe FROM equipes
-             WHERE id_club = " . $this->id_club . "
-               AND NULLIF(nom_equipe, '') IS NOT NULL"), 'id_equipe'));
+            // engagées ou réinscrites seulement (cf. ManageableTeamsTest)
+            "SELECT e.id_equipe FROM equipes e
+             WHERE e.id_club = " . $this->id_club . "
+               AND NULLIF(e.nom_equipe, '') IS NOT NULL
+               AND (EXISTS(SELECT 1 FROM classements cl WHERE cl.id_equipe = e.id_equipe)
+                    OR EXISTS(SELECT 1 FROM register r
+                               WHERE r.old_team_id = e.id_equipe AND r.status <> 'REFUSED'))"), 'id_equipe'));
+        $this->assertNotEmpty($namedTeamIds);
         foreach ($namedTeamIds as $id_equipe) {
             $this->assertContains($id_equipe, $returnedIds);
         }
