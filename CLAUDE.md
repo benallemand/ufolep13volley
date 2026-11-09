@@ -846,6 +846,27 @@ la prop `rowFilter`.
 > stacks locales montent ceux du dépôt (en local : `chmod a+rwx players_pics
 > players_pics_low`).
 
+> **Visage identifiable (issue #471)**. Au clic sur « Valider la photo »,
+> `form/faceCheck.js` cherche le visage dans la photo recadrée. Il utilise
+> MediaPipe Tasks Vision (`@mediapipe/tasks-vision`, version épinglée) et le
+> modèle BlazeFace short range (`src/assets/models/blaze_face_short_range.tflite`).
+> Le moteur WebAssembly (~13,5 Mo, 4 Mo compressé) n'est chargé qu'à
+> l'ouverture du recadrage, depuis `dist/assets/`. Le `.htaccess` lui donne le
+> type `application/wasm`. La photo ne quitte pas le navigateur.
+>
+> La photo est refusée, avec un message qui dit quoi corriger, dans ces cas :
+> - aucun visage, ou plusieurs ;
+> - les yeux ou la bouche hors du cadre ;
+> - la bouche au-dessus des yeux (photo à l'envers) ;
+> - un visage de moins de 25 % de la largeur.
+>
+> Seul un admin peut forcer l'envoi (« Envoyer quand même »). Ce contrôle
+> n'existe que côté navigateur : le serveur ne sait pas détecter un visage.
+>
+> Les E2E utilisent `e2e/fixtures/visage_genere.jpg`, un visage **généré**, du
+> domaine public (Wikimedia Commons) : jamais la photo d'une vraie personne
+> dans ce dépôt public.
+
 > **Coût des photos de joueurs** : `players_view` renvoie déjà `path_photo` et
 > `path_photo_low` ; les afficher ne coûte **rien** en données transférées.
 > C'est la **vérification d'existence** côté PHP qui coûtait cher —
