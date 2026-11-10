@@ -24,7 +24,8 @@
   },
   "overrides": {
     "uuid": "^11.1.0",
-    "postcss-selector-parser": "^7.1.6"
+    "postcss-selector-parser": "^7.1.6",
+    "follow-redirects": "1.16.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
