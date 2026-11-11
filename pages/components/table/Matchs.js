@@ -71,6 +71,23 @@ export default {
             </div>
             </td>
             <td class="max-w-48 w-48">
+              <!-- sanctions du match (issue #477) : à décider en réunion, ou appliquées -->
+              <div v-for="(s, i) in sanctionsOf(match)" :key="'s' + i" class="mb-1" data-testid="match-sanction">
+                <span v-if="s.status === 'CONSTATEE'" class="badge badge-warning badge-sm whitespace-nowrap"
+                      title="Manquement constaté : la commission décidera en réunion de fin de demi-saison">
+                  <i class="fas fa-gavel mr-1"></i>sanction possible
+                </span>
+                <span v-else class="badge badge-error badge-sm whitespace-nowrap">
+                  <i class="fas fa-gavel mr-1"></i>sanction appliquée
+                </span>
+                <p class="text-xs">
+                  <strong>{{ s.equipe }}</strong> : {{ s.motif_label }}.
+                  <template v-if="s.status === 'CONSTATEE'">
+                    Sanction envisagée : {{ s.sanction_label.toLowerCase() }}, en attente de décision de la commission.
+                  </template>
+                  <template v-else>{{ s.sanction_label }}.</template>
+                </p>
+              </div>
               <div v-if="match.note">
                 <p v-if="!match.showFullNote" class="truncate">{{ match.note }}</p>
                 <p v-else>{{ match.note }}</p>
@@ -94,6 +111,8 @@ export default {
     }, data() {
         return {
             matchs: [],
+            // id_match -> sanctions à décider ou appliquées (issue #477)
+            sanctions: {},
         };
     }, computed: {
         filteredMatchs() {
@@ -127,10 +146,33 @@ export default {
                 .get(this.fetchUrl)
                 .then((response) => {
                     this.matchs = response.data.map(m => ({...m, showFullNote: false}));
+                    this.fetchSanctions();
                 })
                 .catch((error) => {
                     console.error("Erreur lors du chargement des matchs :", error);
                 });
+        },
+        // Sanctions des matchs affichés, par paquets pour garder des URL courtes.
+        fetchSanctions() {
+            const ids = this.matchs.map((m) => m.id_match).filter(Boolean);
+            const chunks = [];
+            for (let i = 0; i < ids.length; i += 200) {
+                chunks.push(ids.slice(i, i + 200));
+            }
+            Promise.all(chunks.map((chunk) => axios
+                .get('/rest/action.php/sanction/getMatchSanctions', {params: {ids: chunk.join(',')}})
+                .then((response) => response.data)
+                .catch(() => [])))
+                .then((results) => {
+                    const byMatch = {};
+                    results.flat().forEach((s) => {
+                        (byMatch[s.id_match] = byMatch[s.id_match] || []).push(s);
+                    });
+                    this.sanctions = byMatch;
+                });
+        },
+        sanctionsOf(match) {
+            return this.sanctions[match.id_match] || [];
         },
         resetFilters() {
             this.resetBaseFilters();

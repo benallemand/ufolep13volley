@@ -1080,6 +1080,17 @@ L'indicateur « Sanctions à décider » (`sql/sanctions_to_decide.sql`) ouvre c
 Une sanction levée n'apparaît pas. Rien n'est affiché sur les classements
 publics avant application.
 
+**Listes publiques de matchs** (issue #477) : `pages/components/table/Matchs.js`
+(page d'une division, derniers résultats, matchs de la semaine) appelle
+`sanction/getMatchSanctions` (public) pour les matchs affichés, par paquets de
+200. Dans la colonne « commentaires », chaque sanction affiche l'équipe et le
+motif, avec un badge :
+- « sanction possible » pour une sanction à décider, avec la sanction envisagée
+  et « en attente de décision de la commission » ;
+- « sanction appliquée » une fois décidée.
+
+Une sanction levée n'est pas montrée, ni le commentaire de la commission.
+
 **Feuille de match non signée à 7 jours** (issues #345, #456) : `cron/hourly.php`
 appelle `MatchPenalty::apply_unsigned_sheet_penalties()` avant d'envoyer la
 file d'emails.

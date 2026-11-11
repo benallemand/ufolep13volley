@@ -273,6 +273,31 @@ class SanctionTest extends UfolepTestCase
         unset($pending);
     }
 
+    /** Issue #477 : sanctions montrées sur les listes publiques de matchs. */
+    public function test_sanctions_des_matchs_pour_les_listes_publiques(): void
+    {
+        $id_match = $this->match('10', 'A', 'B');
+        $pending = $this->create('A', 'points', 1, '10', 'feuille_non_signee');
+        $applied = $this->create('B', 'avertissement', 0, '10', 'feuille_mal_remplie');
+        $lifted = $this->create('B', 'points', 2, '10');
+        $this->sanction->applySanctions((string)$applied);
+        $this->sanction->liftSanctions((string)$lifted);
+
+        $this->connect_as_team_leader($this->team['C']);   // n'importe quel visiteur
+        $rows = $this->sanction->getMatchSanctions($id_match . ',abc,0');
+        self::assertCount(2, $rows, 'une sanction levée n\'est pas montrée');
+        // les sanctions à décider d'abord (ordre de l'énumération `status`)
+        self::assertSame(array('CONSTATEE', 'APPLIQUEE'), array_column($rows, 'status'));
+        self::assertSame('issue475 A', $rows[0]['equipe']);
+        self::assertStringContainsString('non signée', $rows[0]['motif_label']);
+        self::assertSame('1 point en moins', $rows[0]['sanction_label']);
+        foreach ($rows as $row) {
+            self::assertArrayNotHasKey('comment', $row, 'le commentaire de la commission reste privé');
+        }
+        self::assertSame(array(), $this->sanction->getMatchSanctions(''));
+        unset($pending);
+    }
+
     public function test_catalogue_du_formulaire(): void
     {
         $catalog = $this->sanction->getSanctionCatalog();
