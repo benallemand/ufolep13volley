@@ -152,6 +152,7 @@ CREATE TABLE `classements` (
   `report_count` smallint DEFAULT '0',
   `rank_start` smallint DEFAULT '0',
   `will_register_again` bit(1) DEFAULT b'1',
+  `withdrawn_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_classements_equipes` (`id_equipe`),
   KEY `id` (`id`),
@@ -555,29 +556,6 @@ CREATE TABLE `live_scores` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `match_penalties`
---
-
-DROP TABLE IF EXISTS `match_penalties`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `match_penalties` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_match` bigint NOT NULL,
-  `id_equipe` smallint NOT NULL,
-  `code_competition` varchar(2) NOT NULL,
-  `reason` varchar(50) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `cancelled_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_match_team_reason` (`id_match`,`id_equipe`,`reason`),
-  KEY `id_equipe` (`id_equipe`),
-  CONSTRAINT `match_penalties_ibfk_1` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE CASCADE,
-  CONSTRAINT `match_penalties_ibfk_2` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `match_player`
 --
 
@@ -921,6 +899,39 @@ CREATE TABLE `registry` (
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=255 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sanctions`
+--
+
+DROP TABLE IF EXISTS `sanctions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sanctions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code_competition` varchar(2) NOT NULL,
+  `id_equipe` smallint NOT NULL,
+  `id_match` bigint DEFAULT NULL,
+  `motif` varchar(40) NOT NULL,
+  `sanction_type` varchar(20) NOT NULL,
+  `points` tinyint NOT NULL DEFAULT '0',
+  `comment` varchar(1000) DEFAULT NULL,
+  `source` enum('AUTO','MANUELLE') NOT NULL DEFAULT 'MANUELLE',
+  `status` enum('CONSTATEE','APPLIQUEE','LEVEE') NOT NULL DEFAULT 'CONSTATEE',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` smallint DEFAULT NULL,
+  `decided_at` datetime DEFAULT NULL,
+  `decided_by` smallint DEFAULT NULL,
+  `decision_comment` varchar(1000) DEFAULT NULL,
+  `effect_backup` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_sanctions_team` (`id_equipe`,`code_competition`),
+  KEY `idx_sanctions_match` (`id_match`),
+  KEY `idx_sanctions_status` (`status`),
+  CONSTRAINT `fk_sanctions_equipe` FOREIGN KEY (`id_equipe`) REFERENCES `equipes` (`id_equipe`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sanctions_match` FOREIGN KEY (`id_match`) REFERENCES `matches` (`id_match`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

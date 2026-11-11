@@ -195,10 +195,6 @@ try {
             require_once __DIR__ . "/../classes/MatchMgr.php";
             $manager = new MatchMgr();
             break;
-        case 'matchpenalty':
-            require_once __DIR__ . "/../classes/MatchPenalty.php";
-            $manager = new MatchPenalty();
-            break;
         case 'news':
             require_once __DIR__ . "/../classes/News.php";
             $manager = new News();
@@ -226,6 +222,10 @@ try {
         case 'rules':
             require_once __DIR__ . "/../classes/RulesDocument.php";
             $manager = new RulesDocument();
+            break;
+        case 'sanction':
+            require_once __DIR__ . "/../classes/Sanction.php";
+            $manager = new Sanction();
             break;
         case 'sqlmanager':
             require_once __DIR__ . "/../classes/SqlManager.php";

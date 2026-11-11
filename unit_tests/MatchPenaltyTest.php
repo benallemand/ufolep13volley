@@ -5,8 +5,10 @@ require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/MatchPenalty.php';
 
 /**
- * Issue #345 — -1 point aux deux équipes si la feuille de match n'est pas
- * signée 7 jours après le match (48 h avant l'issue #456).
+ * Issue #345 — feuille de match non signée 7 jours après le match (48 h avant
+ * l'issue #456) : un manquement est relevé pour les deux équipes. Depuis #475,
+ * c'est une sanction « constatée » (1 point envisagé) : le classement n'est
+ * pas touché tant que la commission ne l'a pas appliquée.
  *
  * Division de test « 95 » du championnat masculin, et une coupe de test `us`.
  * La mise en service est passée en paramètre (`$since`) : les matchs de test
@@ -69,7 +71,7 @@ class MatchPenaltyTest extends UfolepTestCase
 
     private function delete_test_data(): void
     {
-        $this->sql->execute("DELETE FROM match_penalties WHERE id_match IN (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%' OR code_match = 'N345')");
+        $this->sql->execute("DELETE FROM sanctions WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE nom_equipe LIKE 'issue345 %')");
         $this->sql->execute("DELETE FROM matches WHERE code_match LIKE 'ISS345_%' OR code_match = 'N345'");
         $this->sql->execute("DELETE FROM activity WHERE comment LIKE '%ISS345_%'");
         $this->sql->execute("DELETE FROM classements WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE nom_equipe LIKE 'issue345 %')");
@@ -93,14 +95,14 @@ class MatchPenaltyTest extends UfolepTestCase
     }
 
     /**
-     * Pénalités posées sur les matchs de test. On ne compte jamais le total
+     * Sanctions relevées sur les matchs de test. On ne compte jamais le total
      * renvoyé par apply_unsigned_sheet_penalties() : la base de CI contient
-     * d'autres matchs récents et non signés, pénalisés dans la même passe.
+     * d'autres matchs récents et non signés, relevés dans la même passe.
      */
-    private function fixture_penalties(): int
+    private function fixture_sanctions(): array
     {
-        return (int)$this->sql->execute("SELECT COUNT(*) AS n FROM match_penalties WHERE id_match IN
-                                         (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%')")[0]['n'];
+        return $this->sql->execute("SELECT * FROM sanctions WHERE id_match IN
+                                    (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%')");
     }
 
     private function days_ago(int $days): string
@@ -108,18 +110,23 @@ class MatchPenaltyTest extends UfolepTestCase
         return date('Y-m-d', strtotime("-$days days"));
     }
 
-    public function test_feuille_non_signee_apres_7_jours_penalise_les_deux_equipes(): void
+    public function test_feuille_non_signee_apres_7_jours_constate_un_manquement_pour_les_deux_equipes(): void
     {
-        // l'équipe à domicile a signé : les deux sont pénalisées quand même
+        // l'équipe à domicile a signé : les deux sont concernées quand même
         $this->match('m', 'A', 'B', $this->days_ago(8), 1, 0);
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(2, $this->fixture_penalties());
-        self::assertSame(1, $this->penalite('A'));
-        self::assertSame(1, $this->penalite('B'));
-        $rows = $this->sql->execute("SELECT reason FROM match_penalties WHERE id_match IN
-                                     (SELECT id_match FROM matches WHERE code_match LIKE 'ISS345_%')");
+        $rows = $this->fixture_sanctions();
         self::assertCount(2, $rows);
-        self::assertSame(MatchPenalty::REASON_UNSIGNED_SHEET, $rows[0]['reason']);
+        foreach ($rows as $row) {
+            self::assertSame(MatchPenalty::MOTIF_UNSIGNED_SHEET, $row['motif']);
+            self::assertSame('CONSTATEE', $row['status']);
+            self::assertSame('AUTO', $row['source']);
+            self::assertSame('points', $row['sanction_type']);
+            self::assertSame(1, (int)$row['points']);
+        }
+        // issue #475 : rien n'est retiré avant la décision de la commission
+        self::assertSame(0, $this->penalite('A'));
+        self::assertSame(0, $this->penalite('B'));
     }
 
     public function test_une_seule_fois_par_match(): void
@@ -127,19 +134,17 @@ class MatchPenaltyTest extends UfolepTestCase
         $this->match('m', 'A', 'B', $this->days_ago(8));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(2, $this->fixture_penalties());
-        self::assertSame(1, $this->penalite('A'));
+        self::assertCount(2, $this->fixture_sanctions());
     }
 
-    public function test_pas_de_penalite_avant_7_jours_ni_si_la_feuille_est_signee(): void
+    public function test_rien_avant_7_jours_ni_si_la_feuille_est_signee(): void
     {
         $this->match('m', 'A', 'B', date('Y-m-d'));                // aujourd'hui : délai non écoulé
-        $this->match('m', 'A', 'B', $this->days_ago(3));           // 3 jours : pénalisé à 48 h avant #456
+        $this->match('m', 'A', 'B', $this->days_ago(3));           // 3 jours : relevé à 48 h avant #456
         $this->match('m', 'A', 'B', $this->days_ago(6));           // 6 jours : délai non écoulé
         $this->match('m', 'A', 'B', $this->days_ago(8), 1, 1);     // signée des deux côtés
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(0, $this->fixture_penalties());
-        self::assertSame(0, $this->penalite('A'));
+        self::assertCount(0, $this->fixture_sanctions());
     }
 
     public function test_exclusions(): void
@@ -149,82 +154,37 @@ class MatchPenaltyTest extends UfolepTestCase
         $this->match('us', 'C', 'D', $this->days_ago(8));                        // coupe
         $this->match('m', 'A', 'B', $this->days_ago(60));                        // avant la mise en service
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(0, $this->fixture_penalties());
-        self::assertSame(0, $this->penalite('A') + $this->penalite('C'));
+        self::assertCount(0, $this->fixture_sanctions());
     }
 
-    public function test_la_penalite_reste_apres_une_signature_tardive(): void
+    public function test_le_manquement_reste_apres_une_signature_tardive(): void
     {
         $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
         $this->sql->execute("UPDATE matches SET is_sign_match_dom = 1, is_sign_match_ext = 1 WHERE id_match = ?",
             array(array('type' => 'i', 'value' => $id_match)));
         $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(1, $this->penalite('A'));
+        self::assertCount(2, $this->fixture_sanctions());
     }
 
-    private function penalty_id(int $id_match, string $k): int
+    /** Une sanction levée (clémence) n'est pas relevée une seconde fois. */
+    public function test_une_sanction_levee_n_est_pas_relevee_a_nouveau(): void
     {
-        return (int)$this->sql->execute("SELECT id FROM match_penalties WHERE id_match = ? AND id_equipe = ?",
-            array(array('type' => 'i', 'value' => $id_match),
-                  array('type' => 'i', 'value' => $this->team[$k])))[0]['id'];
+        $this->match('m', 'A', 'B', $this->days_ago(8));
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        $ids = implode(',', array_column($this->fixture_sanctions(), 'id'));
+        (new Sanction())->liftSanctions($ids, 'clémence');
+        $this->penalty->apply_unsigned_sheet_penalties($this->since);
+        $rows = $this->fixture_sanctions();
+        self::assertCount(2, $rows);
+        self::assertSame(array('LEVEE', 'LEVEE'), array_column($rows, 'status'));
     }
 
-    /** Issue #458 : l'admin annule la pénalité d'une équipe depuis l'administration. */
-    public function test_annuler_une_penalite_rend_le_point_et_garde_la_ligne(): void
+    /** L'email prévient que la commission décidera, sans annoncer de point retiré. */
+    public function test_email_annonce_une_decision_de_la_commission(): void
     {
-        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
-        $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        $this->penalty->cancelPenalties((string)$this->penalty_id($id_match, 'A'));
-
-        self::assertSame(0, $this->penalite('A'));
-        self::assertSame(1, $this->penalite('B'));
-        $rows = $this->sql->execute("SELECT id_equipe, cancelled_at FROM match_penalties WHERE id_match = ? ORDER BY id_equipe = ? DESC",
-            array(array('type' => 'i', 'value' => $id_match), array('type' => 'i', 'value' => $this->team['A'])));
-        self::assertCount(2, $rows, 'la ligne annulée reste comme historique');
-        self::assertNotNull($rows[0]['cancelled_at']);
-        self::assertNull($rows[1]['cancelled_at']);
-
-        $logged = $this->sql->execute("SELECT id_team FROM activity WHERE comment LIKE 'Pénalité automatique annulée%' AND comment LIKE ?",
-            array(array('type' => 's', 'value' => '%ISS345_%')));
-        self::assertCount(1, $logged);
-        self::assertSame($this->team['A'], (int)$logged[0]['id_team']);
-
-        // le cron ne repénalise pas le match
-        $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        self::assertSame(0, $this->penalite('A'));
-
-        $listed = array_values(array_filter($this->penalty->getPenalties(),
-            fn($row) => (int)$row['id_match'] === $id_match && (int)$row['id_equipe'] === $this->team['A']));
-        self::assertCount(1, $listed);
-        self::assertSame('annulée', $listed[0]['statut']);
-        self::assertNotEmpty($listed[0]['annulee_le']);
-    }
-
-    public function test_annuler_plusieurs_penalites_d_un_coup(): void
-    {
-        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
-        $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        $this->penalty->cancelPenalties($this->penalty_id($id_match, 'A') . ',' . $this->penalty_id($id_match, 'B'));
-        self::assertSame(0, $this->penalite('A'));
-        self::assertSame(0, $this->penalite('B'));
-    }
-
-    public function test_une_penalite_deja_annulee_ne_rend_pas_un_second_point(): void
-    {
-        $id_match = $this->match('m', 'A', 'B', $this->days_ago(8));
-        $this->penalty->apply_unsigned_sheet_penalties($this->since);
-        $id = (string)$this->penalty_id($id_match, 'A');
-        $this->penalty->cancelPenalties($id);
-        // une pénalité manuelle posée ensuite par le « +1 » du classement
-        $this->sql->execute("UPDATE classements SET penalite = 1 WHERE id_equipe = ?",
-            array(array('type' => 'i', 'value' => $this->team['A'])));
-        try {
-            $this->penalty->cancelPenalties($id);
-            self::fail('une seconde annulation doit être refusée');
-        } catch (Exception $e) {
-            self::assertStringContainsString('déjà annulées', $e->getMessage());
-        }
-        self::assertSame(1, $this->penalite('A'));
+        $template = file_get_contents(__DIR__ . '/../templates/emails/penalty_unsigned_match_sheet.fr.html');
+        self::assertStringContainsString('réunion de fin de demi-saison', $template);
+        self::assertStringNotContainsString('est retiré', $template);
     }
 }

@@ -1214,63 +1214,9 @@ class Rank extends Generic
         return $results[0]['rang'];
     }
 
-    /**
-     * @throws Exception
-     */
-    public function addPenalty($compet, $id_equipe)
-    {
-        // issue #270
-        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = ? AND code_competition = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $id_equipe),
-            array('type' => 's', 'value' => $compet),
-        );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (count($results) != 1) {
-            throw new Exception("Impossible de récupérer les pénalités de l'équipe !");
-        }
-        $data = $results[0];
-        $penalite = $data['penalite'];
-        $penalite++;
-        $sqlmaj = "UPDATE classements SET penalite = ? WHERE id_equipe = ? AND code_competition = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $penalite),
-            array('type' => 'i', 'value' => $id_equipe),
-            array('type' => 's', 'value' => $compet),
-        );
-        $this->sql_manager->execute($sqlmaj, $bindings);
-        $this->addActivity("Une penalite a ete infligee a l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
-        return true;
-    }
-
-    public function removePenalty($compet, $id_equipe)
-    {
-        // issue #270
-        $sql = "SELECT penalite,division FROM classements WHERE id_equipe = ? AND code_competition = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $id_equipe),
-            array('type' => 's', 'value' => $compet),
-        );
-        $results = $this->sql_manager->execute($sql, $bindings);
-        if (count($results) != 1) {
-            throw new Exception("Impossible de récupérer les pénalités de l'équipe !");
-        }
-        $data = $results[0];
-        $penalite = $data['penalite'];
-        $penalite--;
-        if ($penalite < 0) {
-            $penalite = 0;
-        }
-        $sqlmaj = "UPDATE classements SET penalite = ? WHERE id_equipe = ? AND code_competition = ?";
-        $bindings = array(
-            array('type' => 'i', 'value' => $penalite),
-            array('type' => 'i', 'value' => $id_equipe),
-            array('type' => 's', 'value' => $compet),
-        );
-        $this->sql_manager->execute($sqlmaj, $bindings);
-        $this->addActivity("Une penalite a ete annulee pour l'equipe " . $this->team->getTeamName($id_equipe), $id_equipe);
-        return true;
-    }
+    // Les points de pénalité ne se modifient plus directement : ils sont la
+    // somme des sanctions « points en moins » appliquées (classe Sanction,
+    // issue #475). addPenalty / removePenalty ont été retirés.
 
     public function incrementReportCount($compet, $id_equipe)
     {

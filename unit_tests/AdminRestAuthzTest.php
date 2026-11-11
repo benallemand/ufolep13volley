@@ -160,8 +160,10 @@ class AdminRestAuthzTest extends UfolepTestCase
         // une sans la declarer dans access.php.
         $dynamiques = [
             // pages/components/table/Rank.js  ->  /rest/action.php/rank/${action}
-            'rank/getRank', 'rank/addPenalty', 'rank/removePenalty',
+            'rank/getRank',
             'rank/incrementReportCount', 'rank/decrementReportCount',
+            // admin/components/screens/Sanctions.js  ->  /rest/action.php/sanction/${action}
+            'sanction/applySanctions', 'sanction/liftSanctions', 'sanction/reopenSanctions',
             // pages/components/panel/Timeslots.js  ->  /rest/action.php/timeslot/${action}
             'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
             // pages/components/panel/Players.js  ->  /rest/action.php/player/${action}
@@ -260,8 +262,9 @@ class AdminRestAuthzTest extends UfolepTestCase
     private function actionsDynamiquesEnumerees(): array
     {
         return [
-            'rank/getRank', 'rank/addPenalty', 'rank/removePenalty',
+            'rank/getRank',
             'rank/incrementReportCount', 'rank/decrementReportCount',
+            'sanction/applySanctions', 'sanction/liftSanctions', 'sanction/reopenSanctions',
             'timeslot/saveTimeSlot', 'timeslot/removeTimeSlot',
             'player/set_leader', 'player/set_vice_leader', 'player/set_captain',
             'player/remove_from_team',

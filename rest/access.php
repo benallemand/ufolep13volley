@@ -175,11 +175,6 @@ return array(
         'sign_match_sheet' => 'user',
         'sign_team_sheet' => 'user',
     ),
-    // Pénalités automatiques : consultation et annulation (issue #458)
-    'matchpenalty' => array(
-        'cancelPenalties' => 'admin',
-        'getPenalties' => 'admin',
-    ),
     'news' => array(
         'deleteNews' => 'admin',
         'getAllNews' => 'admin',
@@ -218,12 +213,10 @@ return array(
         'getArchivePeriods' => 'public',
         'getArchivedRank' => 'public',
         'getArchivedResults' => 'public',
-        'addPenalty' => 'admin',
         'decrementReportCount' => 'admin',
         // classement de la demi-saison figé avant d'être effacé (issue #435)
         'freezeRanks' => 'admin',
         'incrementReportCount' => 'admin',
-        'removePenalty' => 'admin',
         'delete' => 'admin',
         'getRanks' => 'admin',
         'getRanksByCompetitionGroupedByDivision' => 'admin',
@@ -277,6 +270,17 @@ return array(
         'getRules' => 'public',
         'getRulesList' => 'public',
         'getRulesPdf' => 'public',
+    ),
+    // Sanctions : manquements constatés, puis appliqués ou levés en réunion
+    // de fin de demi-saison (issue #475)
+    'sanction' => array(
+        'applySanctions' => 'admin',
+        'deleteSanctions' => 'admin',
+        'getSanctionCatalog' => 'admin',
+        'getSanctions' => 'admin',
+        'liftSanctions' => 'admin',
+        'reopenSanctions' => 'admin',
+        'saveSanction' => 'admin',
     ),
     'team' => array(
         'delete' => 'admin',

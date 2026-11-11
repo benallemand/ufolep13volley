@@ -39,6 +39,8 @@ FROM (SELECT e.id_equipe,
               AND m.match_status != 'ARCHIVED'
       WHERE c.code_competition = ?
         AND e.is_cup_registered = 1
+        -- forfait général : l'équipe sort du classement (issue #475)
+        AND c.withdrawn_at IS NULL
       GROUP BY e.id_equipe, '%name', e.nom_equipe, cl.nom, c.penalite, c.report_count
       ORDER BY division, points DESC, diff DESC, c.rank_start) z,
      (SELECT @r := 0) y
