@@ -72,10 +72,12 @@ export default {
           <td class="hidden md:table-cell text-center">{{ team.report_count }}</td>
           <td v-if="canManagePoints" class="hidden md:table-cell text-center">
             <div class="flex flex-col gap-1">
+              <!-- les points de pénalité passent par les sanctions (issue #475) -->
               <div>
-                <span class="text-xs mr-1">Pts:</span>
-                <button class="btn btn-xs btn-error mx-1" @click="modifierPoints(team, -1)">-1</button>
-                <button class="btn btn-xs btn-success mx-1" @click="modifierPoints(team, 1)">+1</button>
+                <a :href="$url('/admin/#/sanctions')" class="btn btn-xs btn-outline btn-error"
+                   title="Constater un manquement, appliquer ou lever une sanction">
+                  <i class="fas fa-gavel"></i> Sanctions
+                </a>
               </div>
               <div>
                 <span class="text-xs mr-1">Reports:</span>
@@ -156,20 +158,6 @@ export default {
         },
         isCompetitionFinished() {
             return this.limitDate && new Date() > new Date(this.limitDate.split('/').reverse().join('-'));
-        },
-        modifierPoints(team, delta) {
-            const action = delta > 0 ? 'removePenalty' : 'addPenalty';
-            const formData = new FormData();
-            formData.append('compet', this.code_competition);
-            formData.append('id_equipe', team.id_equipe);
-            axios
-                .post(`/rest/action.php/rank/${action}`, formData)
-                .then(() => {
-                    this.fetch();
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la modification des points :", error);
-                });
         },
         modifierReports(team, delta) {
             const action = delta > 0 ? 'incrementReportCount' : 'decrementReportCount';

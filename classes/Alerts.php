@@ -159,9 +159,8 @@ class Alerts extends Generic
             $alerts[] = $this->alert("Licence non encore validée : " . $this->name_list($inactive), 'info',
                 'showHelpInactivePlayers', self::LINK_PLAYERS);
         }
-        foreach ($this->recent_penalties($id_equipe) as $penalty) {
-            $alerts[] = $this->alert("Pénalité automatique (-1 pt) : feuille de match {$penalty['code_match']} "
-                . "non signée à 7 jours", 'warning', 'showHelpPenalty', self::LINK_MATCHES);
+        foreach ($this->sanction_alerts($id_equipe) as $alert) {
+            $alerts[] = $alert;
         }
         return $alerts;
     }
@@ -259,13 +258,27 @@ class Alerts extends Generic
         return implode(', ', $shown) . ($more > 0 ? " et $more autre(s)" : '');
     }
 
-    /** Pénalités automatiques des 60 derniers jours (#345), hors pénalités annulées (#458). */
-    private function recent_penalties(int $id_equipe): array
+    /**
+     * Sanctions de l'équipe (issue #475) : manquements constatés, en attente
+     * de la décision de la commission, et sanctions appliquées depuis moins de
+     * 60 jours. Une sanction levée n'apparaît pas.
+     * @throws Exception
+     */
+    private function sanction_alerts(int $id_equipe): array
     {
-        return $this->sql_manager->execute(
-            "SELECT m.code_match FROM match_penalties p JOIN matches m ON m.id_match = p.id_match
-             WHERE p.id_equipe = ? AND p.created_at >= NOW() - INTERVAL 60 DAY AND p.cancelled_at IS NULL
-             ORDER BY p.created_at DESC",
-            array(array('type' => 'i', 'value' => $id_equipe)));
+        require_once __DIR__ . '/Sanction.php';
+        $alerts = array();
+        foreach ((new Sanction())->get_team_sanctions($id_equipe) as $s) {
+            $match = empty($s['code_match']) ? '' : " (match {$s['code_match']})";
+            if ($s['status'] === Sanction::STATUS_CONSTATEE) {
+                $alerts[] = $this->alert("Manquement constaté : {$s['motif_label']}$match. Sanction envisagée : "
+                    . mb_strtolower($s['sanction_label']) . ", en attente de décision de la commission",
+                    'warning', 'showHelpPenalty', self::LINK_MATCHES);
+            } else {
+                $alerts[] = $this->alert("Sanction appliquée le {$s['decided_on']} : {$s['sanction_label']} — "
+                    . "{$s['motif_label']}$match", 'error', 'showHelpPenalty', self::LINK_MATCHES);
+            }
+        }
+        return $alerts;
     }
 }

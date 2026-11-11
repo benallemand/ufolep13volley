@@ -76,27 +76,6 @@ class SqlInjectionLot2Test extends UfolepTestCase
     }
 
     /**
-     * Meme raisonnement pour `Rank::addPenalty()` : `$id_equipe` est lie en
-     * entier. Une charge non numerique donne 0, donc aucune ligne, donc l'erreur
-     * metier. Concatenee, `id_equipe = abc` aurait casse la requete.
-     *
-     * Aucune penalite n'est infligee : la methode leve avant l'UPDATE.
-     */
-    public function test_add_penalty_lie_l_identifiant_d_equipe(): void
-    {
-        try {
-            $this->rank->addPenalty('m', 'abc');
-            self::fail('Une équipe inexistante doit lever une exception');
-        } catch (Exception $e) {
-            self::assertStringContainsString(
-                'pénalités',
-                $e->getMessage(),
-                'Erreur SQL au lieu de l\'erreur métier : la valeur n\'est pas liée'
-            );
-        }
-    }
-
-    /**
      * `LimitDate::getLimitDate($compet)` : contexte de chaine quotee, desormais
      * lie. La charge ne correspond a aucune competition.
      */

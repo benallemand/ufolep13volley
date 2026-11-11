@@ -445,7 +445,7 @@ ufolep13volley.org → Tâches planifiées - Cron), en ligne de commande :
 
 | Commande | Crontab | Langage | Rôle |
 |---|---|---|---|
-| `www/cron/hourly.php` | `48 * * * *` | PHP 8.5 | pénalités automatiques, puis envoi de la file d'e-mails |
+| `www/cron/hourly.php` | `48 * * * *` | PHP 8.5 | manquements automatiques (sanctions constatées), puis envoi de la file d'e-mails |
 | `www/cron/daily.php` | `30 11 * * *` | PHP 8.5 | mise en file du résumé d'activité |
 | `www/cron/weekly.php` | `6 6 * * 1` (lundi) | PHP 8.5 | mise en file des relances hebdomadaires (matchs non saisis, prochains matchs, licences, feuilles non signées…) |
 | `stats/cron-archive.sh` | `25 * * * *` | Autre (shell) | archivage Matomo (`~/stats`) |
@@ -1031,36 +1031,78 @@ poules respecte déjà (`get_full_championship_rank`).
   l'inscription. Sans cela, une nouvelle équipe restait à 0, donc hors du tirage,
   et une équipe reconduite gardait le choix de la saison précédente.
 
-### Pénalité automatique : feuille de match non signée à 7 jours (issues #345, #456)
+### Sanctions : constatées, puis appliquées ou levées en réunion (issue #475)
 
-`cron/hourly.php` appelle `MatchPenalty::apply_unsigned_sheet_penalties()` avant
-d'envoyer la file d'emails. Match de championnat confirmé, non certifié, joué à
-partir de `MatchPenalty::UNSIGNED_SHEET_SINCE` (2026-10-01, pas de rétroactivité),
-dont la feuille n'est pas signée **des deux côtés** `UNSIGNED_SHEET_DELAY_DAYS`
-(7) jours après l'horaire (date + heure du créneau, sinon 23:59 —
-`sql/unsigned_match_sheets.sql`) : -1 point à **chacune des deux équipes**, même
-celle qui a signé (décision de la commission). Le délai est celui de l'article 8
-du règlement général ; il était de 48 h jusqu'à #456. Le motif enregistré
-(`feuille_non_signee_48h`) n'a pas changé : il empêche une seconde pénalité sur
-un match déjà pénalisé.
+Une **sanction** (table `sanctions`, migration 032 du dépôt Python) est un
+manquement constaté : équipe, compétition, match éventuel, motif
+(`Sanction::MOTIFS`), commentaire, origine (`AUTO` pour le cron, `MANUELLE` pour
+la commission) et sanction envisagée (`Sanction::TYPES`). Elle passe par trois
+statuts :
+- **`CONSTATEE`** : aucun effet sur le classement ni sur les matchs ;
+- **`APPLIQUEE`** : décidée en réunion de fin de demi-saison, son effet est porté ;
+- **`LEVEE`** : clémence de la commission (règlement, article 27).
 
-Chaque pénalité est tracée dans `match_penalties` (match, équipe, motif, date) ;
-la clé unique rend l'application idempotente (`INSERT IGNORE`, puis
-`classements.penalite + 1` seulement si la ligne est nouvelle). La pénalité reste
-si la feuille est signée ensuite. Email aux deux équipes par la file d'emails.
+« Remettre à décider » (`reopenSanctions`) défait une décision, effet compris.
+Une sanction ne se modifie ou ne se supprime qu'au statut `CONSTATEE`.
 
-**Annulation (issue #458)** : écran d'administration « Pénalités automatiques »
-(`admin/components/screens/MatchPenalties.js`, route `/match-penalties`,
-`matchpenalty/getPenalties` et `matchpenalty/cancelPenalties`, admin seulement).
-`MatchPenalty::cancelPenalties($ids)` renseigne `match_penalties.cancelled_at`
-(migration 031 du dépôt Python), rend le point (`classements.penalite - 1`,
-plancher 0) et l'écrit dans l'historique de l'équipe ; une pénalité déjà annulée
-est ignorée, et si toutes le sont, l'appel échoue. La ligne reste : le cron ne
-repénalise pas ce match pour cette équipe. Une pénalité annulée sort de
-l'indicateur « Pénalités automatiques » (`sql/auto_penalties.sql`, dont
-« Corriger » ouvre l'écran filtré) et des alertes des responsables
-(`Alerts::recent_penalties`). Le « -1 » du classement rend aussi un point, mais
-sans annuler la pénalité : ne pas l'utiliser pour une pénalité automatique.
+Effets d'une sanction appliquée (`Sanction::apply_effect`) :
+- `avertissement` : aucun ;
+- `points` : `classements.penalite` est **la somme des points des sanctions
+  appliquées** (`recompute_penalite`). Ce compteur ne se modifie plus
+  directement : `Rank::addPenalty`/`removePenalty` et les boutons « Pts » du
+  classement ont été retirés au profit d'un lien vers l'écran ;
+- `defaite_penalite` et `forfait` : le match est réécrit 0-25 ×3 contre l'équipe
+  sanctionnée, sets 4-5 à 0, feuille signée des deux côtés. Le classement le
+  compte comme un forfait (article 12 : 3 pts à l'adversaire, -1 pt) ;
+- `annulation_match` : le match passe `ARCHIVED`, que le classement ignore ;
+- `forfait_general` : tous les matchs non archivés de l'équipe dans la
+  compétition passent `ARCHIVED`, et `classements.withdrawn_at` est renseigné.
+  Les requêtes de classement (`get_rank_*.sql`) excluent alors l'équipe.
+
+L'état d'origine (scores, signatures, statuts) est gardé dans `effect_backup`
+(JSON) et restauré quand la décision est défaite. Deux sanctions appliquées ne
+peuvent pas modifier le même match (refus explicite).
+
+**Écran** « Sanctions » (`admin/components/screens/Sanctions.js`, route
+`/sanctions` ; `/match-penalties` y redirige) :
+- par défaut, il montre les sanctions à décider ;
+- on y crée une sanction (équipe engagée, motif, sanction, points, code du match) ;
+- on coche les lignes pour Appliquer, Lever ou Remettre à décider, avec un
+  commentaire de décision.
+
+L'indicateur « Sanctions à décider » (`sql/sanctions_to_decide.sql`) ouvre cet
+écran.
+
+**Côté responsable** (`Alerts::sanction_alerts`) :
+- manquements constatés, « en attente de décision de la commission » ;
+- sanctions appliquées depuis moins de 60 jours.
+
+Une sanction levée n'apparaît pas. Rien n'est affiché sur les classements
+publics avant application.
+
+**Feuille de match non signée à 7 jours** (issues #345, #456) : `cron/hourly.php`
+appelle `MatchPenalty::apply_unsigned_sheet_penalties()` avant d'envoyer la
+file d'emails.
+- **Matchs concernés** : championnat, match confirmé, non certifié, joué à partir
+  de `UNSIGNED_SHEET_SINCE` (2026-10-01). La feuille n'est pas signée **des deux
+  côtés** 7 jours après l'horaire (date + heure du créneau, sinon 23:59 ;
+  `sql/unsigned_match_sheets.sql`).
+- **Effet** : une sanction `CONSTATEE` est créée pour **chacune des deux
+  équipes**, même celle qui a signé (décision de la commission) : motif
+  `feuille_non_signee`, 1 point envisagé.
+- Un seul relevé par match, équipe et motif (`Sanction::record_automatic`), même
+  si la sanction a été levée, et même si la feuille est signée ensuite.
+- L'email prévient que la commission décidera en réunion.
+
+Historique :
+- jusqu'à #475, la pénalité retirait le point tout de suite (`match_penalties`,
+  annulable par #458) ;
+- à la migration, les pénalités actives sont devenues `CONSTATEE`, avec leur
+  point rendu, et les annulées `LEVEE`.
+
+Calendrier : la commission tient la réunion **avant** le figeage du classement
+(#435) et le tirage des coupes. Une sanction appliquée plus tard ne modifie pas
+un classement déjà figé.
 
 ### Membre non jouant d'une équipe (issue #325)
 
@@ -1115,7 +1157,7 @@ ses clubs ; rien pour un admin sans équipe ni club (#419). Chaque alerte porte 
 (error / warning / info), `expected_action` (code d'aide, décliné en texte par
 `TeamLeaderAlerts.js`) et `link` (l'écran où corriger). Trois familles retenues :
 actions de match en attente (`MatchMgr::getMyPendingMatchActions`, #240) et
-pénalités automatiques des 60 derniers jours (#345) ; joueurs sans photo (#343),
+sanctions de l'équipe, constatées ou appliquées depuis moins de 60 jours (#475) ; joueurs sans photo (#343),
 sans licence, licence non validée ; effectif (joueurs **jouants**, #325), mixité,
 rôles, créneau, contacts. Toutes les requêtes sont liées ; les rares fragments
 interpolés (nom de colonne, condition) sont des constantes du code.

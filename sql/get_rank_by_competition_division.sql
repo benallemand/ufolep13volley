@@ -72,4 +72,6 @@ FROM classements c
 JOIN equipes e ON e.id_equipe = c.id_equipe
 LEFT JOIN agg a ON a.id_equipe = c.id_equipe
 WHERE c.code_competition = ? AND c.division = ?
+  -- forfait général : l'équipe sort du classement (issue #475)
+  AND c.withdrawn_at IS NULL
 ORDER BY rang

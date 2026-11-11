@@ -1,9 +1,9 @@
 <?php
 /**
- * Issue #458 — helper E2E : un match fictif `E2E458` entre deux équipes de
- * championnat, et ses deux pénalités automatiques (le point est retiré au
- * classement, comme le ferait le cron). `?teardown=1` rend les points encore
- * retirés et supprime le match (les pénalités partent avec lui).
+ * Issue #475 — helper E2E : un match fictif `E2E475` entre deux équipes de
+ * championnat, et deux sanctions « constatées » (1 point en moins chacune,
+ * comme celles que relève le cron). `?teardown=1` rend les points des
+ * sanctions appliquées, puis supprime sanctions, match et journal.
  *
  * SECURITY: ne doit jamais être déployé en production.
  */
@@ -22,17 +22,19 @@ $dotenv->load();
 
 header('Content-Type: application/json');
 
-const CODE_MATCH = 'E2E458';
+const CODE_MATCH = 'E2E475';
 
 function teardown(SqlManager $sql): void
 {
-    // les pénalités encore actives ont retiré un point : on le rend
+    // une sanction « points » appliquée a retiré ses points : on les rend
     $sql->execute(
-        "UPDATE classements c JOIN match_penalties p
-             ON p.id_equipe = c.id_equipe AND p.code_competition = c.code_competition
-         JOIN matches m ON m.id_match = p.id_match
-         SET c.penalite = GREATEST(c.penalite - 1, 0)
-         WHERE m.code_match = ? AND p.cancelled_at IS NULL",
+        "UPDATE classements c JOIN sanctions s
+             ON s.id_equipe = c.id_equipe AND s.code_competition = c.code_competition
+         JOIN matches m ON m.id_match = s.id_match
+         SET c.penalite = GREATEST(c.penalite - s.points, 0)
+         WHERE m.code_match = ? AND s.status = 'APPLIQUEE' AND s.sanction_type = 'points'",
+        array(array('type' => 's', 'value' => CODE_MATCH)));
+    $sql->execute("DELETE s FROM sanctions s JOIN matches m ON m.id_match = s.id_match WHERE m.code_match = ?",
         array(array('type' => 's', 'value' => CODE_MATCH)));
     $sql->execute("DELETE FROM matches WHERE code_match = ?", array(array('type' => 's', 'value' => CODE_MATCH)));
     $sql->execute("DELETE FROM activity WHERE comment LIKE ?", array(array('type' => 's', 'value' => '%' . CODE_MATCH . '%')));
@@ -46,8 +48,8 @@ try {
         exit(0);
     }
     $teams = $sql->execute(
-        "SELECT c.id_equipe, c.division, e.nom_equipe FROM classements c JOIN equipes e ON e.id_equipe = c.id_equipe
-         WHERE c.code_competition = 'm' ORDER BY c.division, c.id_equipe LIMIT 2");
+        "SELECT c.id_equipe, c.division, e.nom_equipe, c.penalite FROM classements c JOIN equipes e ON e.id_equipe = c.id_equipe
+         WHERE c.code_competition = 'm' AND c.withdrawn_at IS NULL ORDER BY c.division, c.id_equipe LIMIT 2");
     if (count($teams) < 2 || $teams[0]['division'] !== $teams[1]['division']) {
         throw new Exception('deux équipes de la même division du championnat masculin sont nécessaires');
     }
@@ -60,19 +62,19 @@ try {
         array(array('type' => 's', 'value' => CODE_MATCH), array('type' => 's', 'value' => $teams[0]['division']),
               array('type' => 'i', 'value' => $teams[0]['id_equipe']), array('type' => 'i', 'value' => $teams[1]['id_equipe']),
               array('type' => 'i', 'value' => $id_court)));
-    $penalties = array();
+    $sanctions = array();
     foreach ($teams as $team) {
-        $penalties[] = array(
+        $sanctions[] = array(
             'id' => (int)$sql->execute(
-                "INSERT INTO match_penalties SET id_match = ?, id_equipe = ?, code_competition = 'm', reason = 'feuille_non_signee_48h'",
+                "INSERT INTO sanctions SET id_match = ?, id_equipe = ?, code_competition = 'm',
+                     motif = 'feuille_non_signee', sanction_type = 'points', points = 1, source = 'AUTO'",
                 array(array('type' => 'i', 'value' => $id_match), array('type' => 'i', 'value' => $team['id_equipe']))),
             'id_equipe' => (int)$team['id_equipe'],
             'equipe' => $team['nom_equipe'],
+            'penalite' => (int)$team['penalite'],
         );
-        $sql->execute("UPDATE classements SET penalite = penalite + 1 WHERE id_equipe = ? AND code_competition = 'm'",
-            array(array('type' => 'i', 'value' => $team['id_equipe'])));
     }
-    echo json_encode(['code_match' => CODE_MATCH, 'penalties' => $penalties]);
+    echo json_encode(['code_match' => CODE_MATCH, 'division' => $teams[0]['division'], 'sanctions' => $sanctions]);
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);

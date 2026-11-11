@@ -1,6 +1,6 @@
 -- Matchs de championnat dont la feuille de match n'est pas signée des deux
--- côtés N jours après l'horaire du match, et pas encore pénalisés (issues #345,
--- #456 : 7 jours, article 8 du règlement général).
+-- côtés N jours après l'horaire du match, et pas encore relevés (issues #345,
+-- #456 : 7 jours, article 8 du règlement général ; #475 : sanction constatée).
 --
 -- Horaire : date du match + heure du créneau de l'équipe qui reçoit ; sans
 -- créneau connu, fin de journée (23:59). Les matchs non confirmés, certifiés
@@ -27,5 +27,6 @@ WHERE m.code_competition IN ('m', 'f', 'mo')
   AND STR_TO_DATE(m.date_reception, '%d/%m/%Y') >= ?
   AND STR_TO_DATE(CONCAT(m.date_reception, ' ', COALESCE(NULLIF(m.heure_reception, ''), '23:59')), '%d/%m/%Y %H:%i')
       + INTERVAL ? DAY < NOW()
-  AND NOT EXISTS (SELECT 1 FROM match_penalties p WHERE p.id_match = m.id_match AND p.reason = ?)
+  -- déjà relevé (issue #475 : sanction automatique, quel que soit son statut)
+  AND NOT EXISTS (SELECT 1 FROM sanctions s WHERE s.id_match = m.id_match AND s.motif = ? AND s.source = 'AUTO')
 ORDER BY m.date_reception

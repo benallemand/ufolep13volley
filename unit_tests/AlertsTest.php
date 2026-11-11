@@ -49,7 +49,7 @@ class AlertsTest extends UfolepTestCase
 
     private function delete_test_data(): void
     {
-        $this->sql->execute("DELETE FROM match_penalties WHERE id_match IN (SELECT id_match FROM matches WHERE code_match = 'ISS346')");
+        $this->sql->execute("DELETE FROM sanctions WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE nom_equipe LIKE 'issue346 %')");
         $this->sql->execute("DELETE FROM matches WHERE code_match = 'ISS346'");
         $this->sql->execute("DELETE FROM joueur_equipe WHERE id_joueur IN (SELECT id FROM joueurs WHERE nom = 'Issue346')");
         $this->sql->execute("DELETE FROM joueurs WHERE nom = 'Issue346'");
@@ -115,7 +115,8 @@ class AlertsTest extends UfolepTestCase
         self::assertStringContainsString('Sanslicence', $licence['issue']);
     }
 
-    public function test_une_penalite_recue_est_signalee(): void
+    /** Issue #475 : manquement constaté, puis sanction appliquée ; levée, elle disparaît. */
+    public function test_les_sanctions_de_l_equipe_sont_signalees(): void
     {
         $id_court = $this->sql->execute("INSERT INTO gymnase SET nom = 'issue346 court'");
         $id_match = $this->sql->execute(
@@ -124,17 +125,25 @@ class AlertsTest extends UfolepTestCase
                 date_reception = CURRENT_DATE, date_original = CURRENT_DATE, match_status = 'CONFIRMED'",
             array(array('type' => 'i', 'value' => $this->team['A']), array('type' => 'i', 'value' => $this->team['B']),
                   array('type' => 'i', 'value' => $id_court)));
-        $this->sql->execute("INSERT INTO match_penalties SET id_match = ?, id_equipe = ?, code_competition = 'mo', reason = 'feuille_non_signee_48h'",
+        $id = $this->sql->execute("INSERT INTO sanctions SET id_match = ?, id_equipe = ?, code_competition = 'mo',
+                                       motif = 'feuille_non_signee', sanction_type = 'points', points = 1, source = 'AUTO'",
             array(array('type' => 'i', 'value' => $id_match), array('type' => 'i', 'value' => $this->team['A'])));
         $this->connect_as_team_leader($this->team['A']);
-        $penalty = $this->find($this->alerts->getAlerts(), 'Pénalité automatique');
-        self::assertNotNull($penalty);
-        self::assertStringContainsString('ISS346', $penalty['issue']);
+        $pending = $this->find($this->alerts->getAlerts(), 'Manquement constaté');
+        self::assertNotNull($pending);
+        self::assertStringContainsString('ISS346', $pending['issue']);
+        self::assertStringContainsString('en attente de décision', $pending['issue']);
 
-        // annulée par l'admin (#458) : l'alerte disparaît
-        $this->sql->execute("UPDATE match_penalties SET cancelled_at = NOW() WHERE id_match = ?",
-            array(array('type' => 'i', 'value' => $id_match)));
-        self::assertNull($this->find($this->alerts->getAlerts(), 'Pénalité automatique'));
+        $this->sql->execute("UPDATE sanctions SET status = 'APPLIQUEE', decided_at = NOW() WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        $applied = $this->find($this->alerts->getAlerts(), 'Sanction appliquée');
+        self::assertNotNull($applied);
+        self::assertStringContainsString('1 point en moins', $applied['issue']);
+
+        $this->sql->execute("UPDATE sanctions SET status = 'LEVEE' WHERE id = ?",
+            array(array('type' => 'i', 'value' => $id)));
+        self::assertNull($this->find($this->alerts->getAlerts(), 'Sanction appliquée'));
+        self::assertNull($this->find($this->alerts->getAlerts(), 'Manquement constaté'));
     }
 
     public function test_le_responsable_de_club_voit_toutes_ses_equipes(): void

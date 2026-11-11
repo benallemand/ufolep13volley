@@ -18,7 +18,9 @@ const routes = [
     { path: '/players', component: () => import('../screens/Players.js') },
     { path: '/gymnasiums', component: () => import('../screens/Gymnasiums.js') },
     { path: '/matches', component: () => import('../screens/Matches.js') },
-    { path: '/match-penalties', component: () => import('../screens/MatchPenalties.js') },
+    { path: '/sanctions', component: () => import('../screens/Sanctions.js') },
+    // ancien écran « Pénalités automatiques » (#458), remplacé par « Sanctions » (#475)
+    { path: '/match-penalties', redirect: '/sanctions' },
     { path: '/competitions', component: () => import('../screens/Competitions.js') },
     { path: '/ranks', component: () => import('../screens/Ranks.js') },
     { path: '/divisions', component: () => import('../screens/Divisions.js') },
@@ -96,7 +98,7 @@ export const MENU = [
         items: [
             { path: '/matches', label: 'Matchs', icon: 'fas fa-volleyball' },
             { href: '/admin/matches.html', label: 'Validation des matchs', icon: 'fas fa-clipboard-check' },
-            { path: '/match-penalties', label: 'Pénalités automatiques', icon: 'fas fa-circle-minus' },
+            { path: '/sanctions', label: 'Sanctions', icon: 'fas fa-gavel' },
             { path: '/competitions', label: 'Compétitions', icon: 'fas fa-trophy' },
             { path: '/ranks', label: 'Divisions / poules', icon: 'fas fa-list-ol' },
             { path: '/divisions', label: 'Réorganiser les divisions', icon: 'fas fa-arrows-up-down-left-right' },

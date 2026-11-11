@@ -15,7 +15,7 @@ const HELP = {
     showHelpPlayersWithoutLicenceNumber: "Renseignez le numéro de licence dès que vous l'avez : sans lui, la commission ne peut pas valider le joueur.",
     showHelpInactivePlayers: "La commission doit encore valider ces licences. Si le délai vous semble long, relancez le responsable de la compétition.",
     showHelpMatchAction: "Action à faire sur la page du match.",
-    showHelpPenalty: "Pensez à signer la feuille de match en ligne après chaque rencontre. En cas d'erreur, contactez la commission.",
+    showHelpPenalty: "Les manquements au règlement sont examinés par la commission en réunion de fin de demi-saison, qui décide de sanctionner ou non. En cas d'erreur, contactez la commission.",
 };
 
 const BADGE = {error: 'badge-error', warning: 'badge-warning', info: 'badge-info'};
