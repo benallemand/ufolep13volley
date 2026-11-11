@@ -123,6 +123,48 @@ class Sanction extends Generic
     }
 
     /**
+     * Sanctions rattachées à des matchs, pour les listes publiques de matchs
+     * (issue #477) : manquements à décider et sanctions appliquées. Une
+     * sanction levée n'est pas montrée, ni le commentaire de la commission.
+     *
+     * @param mixed $ids identifiants de matchs joints par des virgules
+     * @return array<int, array> une ligne par sanction : id_match, equipe,
+     *                           status, motif_label, sanction_label
+     * @throws Exception
+     */
+    public function getMatchSanctions($ids = null): array
+    {
+        $ids = self::parse_id_list($ids);
+        if (empty($ids)) {
+            return array();
+        }
+        $ids = array_slice($ids, 0, 2000);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $bindings = array();
+        foreach ($ids as $id) {
+            $bindings[] = array('type' => 'i', 'value' => $id);
+        }
+        $rows = $this->sql_manager->execute(
+            "SELECT s.id_match, e.nom_equipe AS equipe, s.status, s.motif, s.sanction_type, s.points
+             FROM sanctions s
+             JOIN equipes e ON e.id_equipe = s.id_equipe
+             WHERE s.id_match IN ($placeholders) AND s.status IN ('CONSTATEE', 'APPLIQUEE')
+             ORDER BY s.id_match, s.status, e.nom_equipe",
+            $bindings);
+        $out = array();
+        foreach ($rows as $row) {
+            $out[] = array(
+                'id_match' => (int)$row['id_match'],
+                'equipe' => $row['equipe'],
+                'status' => $row['status'],
+                'motif_label' => self::MOTIFS[$row['motif']] ?? $row['motif'],
+                'sanction_label' => self::describe($row['sanction_type'], (int)$row['points']),
+            );
+        }
+        return $out;
+    }
+
+    /**
      * Sanctions d'une équipe à montrer à son responsable : manquements
      * constatés (en attente de décision) et sanctions appliquées récentes.
      * @throws Exception

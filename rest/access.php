@@ -281,6 +281,9 @@ return array(
         'liftSanctions' => 'admin',
         'reopenSanctions' => 'admin',
         'saveSanction' => 'admin',
+        // listes publiques de matchs (issue #477) : équipe, motif, sanction,
+        // statut ; jamais le commentaire de la commission
+        'getMatchSanctions' => 'public',
     ),
     'team' => array(
         'delete' => 'admin',
