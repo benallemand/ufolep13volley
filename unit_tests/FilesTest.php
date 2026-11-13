@@ -327,4 +327,18 @@ class FilesTest extends UfolepTestCase
         // le logo du club, qui est la seule autre image du document
         $this->assertNull($results[0]['photo']);
     }
+
+    /**
+     * PDF de club (une licence par page) : le logo en PNG compressé, dessiné
+     * juste sous le numéro de licence, était pris pour la photo puis rejeté.
+     * Seul un JPEG peut être la photo.
+     */
+    public function test_seul_un_jpeg_peut_etre_la_photo(): void
+    {
+        self::assertTrue(Files::is_photo_candidate(['Subtype' => 'Image', 'Filter' => 'DCTDecode', 'Width' => 144, 'Height' => 226]));
+        self::assertTrue(Files::is_photo_candidate(['Subtype' => 'Image', 'Filter' => ['DCTDecode']]));
+        self::assertFalse(Files::is_photo_candidate(['Subtype' => 'Image', 'Filter' => 'FlateDecode', 'Width' => 680, 'Height' => 132]));
+        self::assertFalse(Files::is_photo_candidate(['Subtype' => 'Form']));
+        self::assertFalse(Files::is_photo_candidate([]));
+    }
 }

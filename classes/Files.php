@@ -198,7 +198,7 @@ class Files extends Generic
                         $xobj = $xobjectDict->get($refName);
                         $details = $xobj->getDetails();
                         
-                        if (isset($details['Subtype']) && $details['Subtype'] == 'Image') {
+                        if (self::is_photo_candidate($details)) {
                             $pageXObjects[$refName] = [
                                 'object' => $xobj,
                                 'x_position' => $positions['x'],
@@ -442,6 +442,26 @@ class Files extends Generic
     }
 
     /**
+     * L'image peut-elle être la photo du licencié ? Seulement un JPEG
+     * (`DCTDecode`) : c'est le seul format que l'import enregistre.
+     *
+     * Les licences liguasso portent aussi des logos, en PNG compressé
+     * (`FlateDecode`), dont l'un est dessiné juste sous le numéro de licence.
+     * Associé à la licence comme l'image la plus proche, il prenait la place de
+     * la photo, puis était rejeté faute d'être un JPEG : toutes les licences
+     * d'un PDF de club arrivaient « sans photo ».
+     */
+    public static function is_photo_candidate(array $details): bool
+    {
+        if (($details['Subtype'] ?? null) !== 'Image') {
+            return false;
+        }
+        $filter = $details['Filter'] ?? null;
+        $filters = is_array($filter) ? $filter : array($filter);
+        return in_array('DCTDecode', $filters, true);
+    }
+
+    /**
      * Parse le nouveau format de licence liguasso
      * Format du numéro: 2 lettres (initiales) + 8 chiffres (ex: SB10000025)
      */
@@ -540,7 +560,7 @@ class Files extends Generic
                         $xobj = $xobjectDict->get($refName);
                         $details = $xobj->getDetails();
                         
-                        if (isset($details['Subtype']) && $details['Subtype'] == 'Image') {
+                        if (self::is_photo_candidate($details)) {
                             $pageXObjects[$refName] = [
                                 'object' => $xobj,
                                 'x_position' => $positions['x'],
