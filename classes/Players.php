@@ -1504,7 +1504,7 @@ class Players extends Generic
      */
     private function find_player_for_licence(array $licence, int $id_licence_club): ?array
     {
-        $by_licence = $this->get("j.departement_affiliation = ? AND j.num_licence = ?", array(
+        $by_licence = $this->get_players_where("j.departement_affiliation = ? AND j.num_licence = ?", array(
             array('type' => 'i', 'value' => intval($licence['departement'])),
             array('type' => 's', 'value' => self::normalize_licence_number($licence['licence_number'])),
         ));
@@ -1514,7 +1514,7 @@ class Players extends Generic
         if (count($by_licence) > 1) {
             throw new Exception("plusieurs joueurs portent la licence " . $licence['licence_number'], 409);
         }
-        $by_name = $this->get("CONCAT(UPPER(j.nom), ' ', UPPER(j.prenom)) = UPPER(?)", array(
+        $by_name = $this->get_players_where("CONCAT(UPPER(j.nom), ' ', UPPER(j.prenom)) = UPPER(?)", array(
             array('type' => 's', 'value' => $licence['last_first_name']),
         ));
         if (count($by_name) === 0) {
@@ -1547,6 +1547,29 @@ class Players extends Generic
         }
         // Aucun : les fiches à ce nom sont des homonymes, la licence en crée une.
         return $unknown[0] ?? null;
+    }
+
+    /**
+     * Joueurs de `players_view` qui répondent à une condition sur les colonnes
+     * de la table `joueurs` (alias `j`).
+     *
+     * `players_view` calcule équipes, clubs et photos de **tous** les joueurs
+     * avant de filtrer : 1 s par recherche sur un numéro de licence ou un nom,
+     * donc 45 s pour un PDF de club de 42 licences. Filtrée sur l'identifiant,
+     * elle répond en quelques millisecondes : on cherche d'abord les
+     * identifiants dans `joueurs`, puis on lit ces seuls joueurs dans la vue.
+     *
+     * @throws Exception
+     */
+    private function get_players_where(string $where, array $bindings): array
+    {
+        $ids = array_map('intval', array_column(
+            $this->sql_manager->execute("SELECT j.id FROM joueurs j WHERE $where", $bindings), 'id'));
+        if (empty($ids)) {
+            return array();
+        }
+        return $this->get("j.id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")",
+            array_map(static fn($id) => array('type' => 'i', 'value' => $id), $ids));
     }
 
     /**
