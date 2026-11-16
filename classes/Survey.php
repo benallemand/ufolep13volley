@@ -34,6 +34,7 @@ class Survey extends Generic
                     break;
                 case 'user_id':
                 case 'id_match':
+                case 'id_equipe':
                 case 'on_time':
                 case 'spirit':
                 case 'referee':
@@ -75,18 +76,22 @@ class Survey extends Generic
                 s.global,
                 s.scale_version,
                 s.comment,
+                s.id_equipe,
                 u.login
                 FROM matchs_view m
                 JOIN survey s ON s.id_match = m.id_match
                 JOIN comptes_acces u ON u.id = s.user_id
-                JOIN users_teams ut ON u.id = ut.user_id
-                JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = ut.team_id AND e_sondeuse.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
-                JOIN equipes e_sondee ON e_sondee.id_equipe = IF(ut.team_id = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
+                -- l'équipe qui a rempli le sondage (issue #482), et non plus
+                -- celle de son auteur : un responsable de club n'est rattaché
+                -- à aucune équipe
+                JOIN equipes e_sondeuse ON e_sondeuse.id_equipe = s.id_equipe AND e_sondeuse.id_equipe IN (m.id_equipe_dom, m.id_equipe_ext)
+                JOIN equipes e_sondee ON e_sondee.id_equipe = IF(s.id_equipe = m.id_equipe_dom, m.id_equipe_ext, m.id_equipe_dom)
                 JOIN clubs e_sondee_club ON e_sondee_club.id = e_sondee.id_club
+                -- un sondage par équipe et par match : le dernier envoyé
                 JOIN (
-                    SELECT id_match, user_id, MAX(id) as max_id
+                    SELECT id_match, id_equipe, MAX(id) as max_id
                     FROM survey
-                    GROUP BY id_match, user_id
+                    GROUP BY id_match, id_equipe
                 ) latest ON s.id = latest.max_id
                 WHERE $query
                 ORDER BY id DESC";

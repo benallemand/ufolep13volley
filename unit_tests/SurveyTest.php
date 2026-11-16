@@ -9,6 +9,8 @@ class SurveyTest extends UfolepTestCase
     private MatchMgr $match_manager;
     private int $test_user_id;
     private int $test_match_id;
+    private int $id_team1;
+    private int $id_club1;
 
     private function create_test_data(): void
     {
@@ -19,8 +21,10 @@ class SurveyTest extends UfolepTestCase
             "INSERT INTO comptes_acces SET login = 'survey_test_user', email = 'survey_test@test.fr', password_hash = MD5('test'), is_admin = 1");
         $id_club = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 1'");
         $id_club2 = $this->sql->execute("INSERT INTO clubs SET nom = 'survey test club 2'");
+        $this->id_club1 = (int)$id_club;
         $id_team1 = $this->sql->execute(
             "INSERT INTO equipes SET code_competition = 'us', nom_equipe = 'survey test team 1', id_club = $id_club");
+        $this->id_team1 = (int)$id_team1;
         $id_team2 = $this->sql->execute(
             "INSERT INTO equipes SET code_competition = 'us', nom_equipe = 'survey test team 2', id_club = $id_club2");
         $this->sql->execute(
@@ -45,7 +49,7 @@ class SurveyTest extends UfolepTestCase
 
     private function delete_test_data(): void
     {
-        $this->sql->execute("DELETE FROM survey WHERE id_match IN (SELECT id FROM matches WHERE code_match = 'SURVEY_UT001')");
+        $this->sql->execute("DELETE FROM survey WHERE id_match IN (SELECT id_match FROM matches WHERE code_match = 'SURVEY_UT001')");
         $this->sql->execute("DELETE FROM matches WHERE code_match = 'SURVEY_UT001'");
         $this->sql->execute("DELETE FROM users_teams WHERE user_id IN (SELECT id FROM comptes_acces WHERE login = 'survey_test_user')");
         $this->sql->execute("DELETE FROM comptes_acces WHERE login = 'survey_test_user'");
@@ -146,10 +150,11 @@ class SurveyTest extends UfolepTestCase
     {
         // un sondage 0..10 d'une saison passée : le formulaire repart à `=`
         $this->sql->execute(
-            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
+            "INSERT INTO survey SET user_id = ?, id_match = ?, id_equipe = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
             array(
                 array('type' => 'i', 'value' => $this->test_user_id),
                 array('type' => 'i', 'value' => $this->test_match_id),
+                array('type' => 'i', 'value' => $this->id_team1),
             ));
         $survey = $this->match_manager->get_survey($this->test_match_id);
         self::assertNull($survey['id']);
@@ -173,13 +178,68 @@ class SurveyTest extends UfolepTestCase
         $this->sql->execute("INSERT INTO classements (code_competition, division, id_equipe)
                              SELECT 'us', '1', id_equipe FROM equipes WHERE nom_equipe = 'survey test team 2'");
         $this->sql->execute(
-            "INSERT INTO survey SET user_id = ?, id_match = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
+            "INSERT INTO survey SET user_id = ?, id_match = ?, id_equipe = ?, on_time = 8, spirit = 8, referee = 8, catering = 8, global = 8, scale_version = 1",
             array(
                 array('type' => 'i', 'value' => $this->test_user_id),
                 array('type' => 'i', 'value' => $this->test_match_id),
+                array('type' => 'i', 'value' => $this->id_team1),
             ));
         self::assertCount(0, $this->sql->execute("SELECT id FROM survey_view_raw WHERE id_match = ?",
             array(array('type' => 'i', 'value' => $this->test_match_id))));
+    }
+
+    // --- Sondage d'une équipe, quel que soit le compte (issue #482)
+
+    private function filled_dom(): int
+    {
+        return (int)$this->sql->execute("SELECT is_survey_filled_dom FROM matchs_view WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->test_match_id)))[0]['is_survey_filled_dom'];
+    }
+
+    /**
+     * Le compte du club, rattaché à aucune équipe, répond pour l'équipe
+     * choisie dans le menu : le sondage compte pour elle, se relit, et un
+     * nouvel envoi le met à jour au lieu d'en ajouter un.
+     */
+    public function test_le_responsable_de_club_repond_pour_l_equipe_choisie()
+    {
+        $this->sql->execute("DELETE FROM users_teams WHERE user_id = ?",
+            array(array('type' => 'i', 'value' => $this->test_user_id)));
+        $this->connect_as_club_leader($this->id_club1, $this->id_team1);
+        $_SESSION['is_team_leader'] = true;
+        $_SESSION['id_user'] = $this->test_user_id;
+        self::assertSame(0, $this->filled_dom());
+
+        $this->save(array('on_time' => 2, 'spirit' => 2, 'referee' => 2, 'catering' => 2, 'global' => 2));
+        self::assertSame(1, $this->filled_dom(), "le sondage doit compter pour l'équipe choisie");
+        $survey = $this->match_manager->get_survey($this->test_match_id);
+        self::assertNotNull($survey['id'], 'le sondage enregistré doit se relire');
+        self::assertSame(2, (int)$survey['global']);
+
+        $this->save(array('global' => 1));
+        $rows = $this->sql->execute("SELECT id_equipe, global FROM survey WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->test_match_id)));
+        self::assertCount(1, $rows, 'un seul sondage par équipe et par match');
+        self::assertSame($this->id_team1, (int)$rows[0]['id_equipe']);
+        self::assertSame(1, (int)$rows[0]['global']);
+    }
+
+    /** Deux comptes d'une même équipe partagent le même sondage. */
+    public function test_le_sondage_est_celui_de_l_equipe_pas_du_compte()
+    {
+        $this->save(array('global' => 2));
+        $other = $this->sql->execute(
+            "INSERT INTO comptes_acces SET login = 'survey_test_user_2', email = 'survey_test2@test.fr', password_hash = MD5('test')");
+        try {
+            $this->sql->execute("INSERT INTO users_teams SET user_id = ?, team_id = ?",
+                array(array('type' => 'i', 'value' => $other), array('type' => 'i', 'value' => $this->id_team1)));
+            $this->connect_as_team_leader($this->id_team1);
+            $_SESSION['id_user'] = $other;
+            self::assertSame(2, (int)$this->match_manager->get_survey($this->test_match_id)['global']);
+        } finally {
+            $this->sql->execute("DELETE FROM users_teams WHERE user_id = ?", array(array('type' => 'i', 'value' => $other)));
+            $this->sql->execute("DELETE FROM comptes_acces WHERE id = ?", array(array('type' => 'i', 'value' => $other)));
+        }
     }
 
     protected function tearDown(): void

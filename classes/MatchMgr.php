@@ -1893,6 +1893,43 @@ class MatchMgr extends Generic
     }
 
     /**
+     * Équipe au nom de laquelle le compte répond au sondage d'un match
+     * (issue #482) : l'équipe courante de la session si elle joue le match
+     * (choisie dans le menu, y compris par un responsable de club), sinon
+     * l'équipe du compte qui le joue.
+     * @throws Exception si aucune équipe du compte ne joue ce match
+     */
+    private function survey_team_for_match(int $id_match): int
+    {
+        $match = $this->get_match($id_match);
+        @session_start();
+        $current = (int)($_SESSION['id_equipe'] ?? 0);
+        if ($current !== 0 && in_array($current, array((int)$match['id_equipe_dom'], (int)$match['id_equipe_ext']), true)) {
+            return $current;
+        }
+        $team = $this->getUserTeamIdForMatch($match);
+        if ($team === null) {
+            throw new Exception("Choisissez d'abord, dans le menu, l'équipe au nom de laquelle répondre au sondage !");
+        }
+        return $team;
+    }
+
+    /**
+     * Dernier sondage de l'équipe pour ce match, ou null (issue #482).
+     * @throws Exception
+     */
+    private function team_survey_id(int $id_match, int $id_equipe): ?int
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT MAX(id) AS id FROM survey WHERE id_match = ? AND id_equipe = ?",
+            array(
+                array('type' => 'i', 'value' => $id_match),
+                array('type' => 'i', 'value' => $id_equipe),
+            ));
+        return empty($rows[0]['id']) ? null : (int)$rows[0]['id'];
+    }
+
+    /**
      * @throws Exception
      */
     public function get_survey($id_match = null)
@@ -1909,9 +1946,11 @@ class MatchMgr extends Generic
         }
         $id_match = $this->assert_survey_allowed($id_match);
         $id_user = (int)$userDetails['id_user'];
-        $results = $this->survey->get("s.id_match = ? AND s.user_id = ?", array(
+        // le sondage de l'équipe, quel que soit le compte qui l'a rempli
+        // (responsable d'équipe ou de club, issue #482)
+        $results = $this->survey->get("s.id_match = ? AND s.id_equipe = ?", array(
             array('type' => 'i', 'value' => $id_match),
-            array('type' => 'i', 'value' => $id_user),
+            array('type' => 'i', 'value' => $this->survey_team_for_match($id_match)),
         ));
         $count_results = count($results);
         // Pas encore de sondage, ou un sondage de l'ancienne échelle 0..10 :
@@ -1965,24 +2004,32 @@ class MatchMgr extends Generic
         $userDetails = $this->getCurrentUserDetails();
         $id_user = $userDetails['id_user'];
         $id_match = $this->assert_survey_allowed($id_match);
+        // Le sondage est celui d'une ÉQUIPE (issue #482) : l'équipe courante
+        // si elle joue le match, sinon celle du compte.
+        $id_equipe = $this->survey_team_for_match($id_match);
         // Sans ce contrôle, un `id` quelconque réécrivait le sondage d'un autre
-        // compte, en se l'attribuant au passage (issue #351).
+        // compte, en se l'attribuant au passage (issue #351) : seul celui de
+        // l'équipe, pour ce match, se modifie.
         if (!empty($id)) {
             $own = $this->sql_manager->execute(
-                "SELECT id FROM survey WHERE id = ? AND user_id = ? AND id_match = ?",
+                "SELECT id FROM survey WHERE id = ? AND id_equipe = ? AND id_match = ?",
                 array(
                     array('type' => 'i', 'value' => (int)$id),
-                    array('type' => 'i', 'value' => (int)$id_user),
+                    array('type' => 'i', 'value' => $id_equipe),
                     array('type' => 'i', 'value' => $id_match),
                 ));
             if (count($own) !== 1) {
                 throw new Exception("Ce sondage ne vous appartient pas !");
             }
         }
+        // Un sondage par équipe et par match : un nouvel envoi met à jour le
+        // précédent. Le compte du club en avait laissé 15 sur un même match.
+        $id = $this->team_survey_id($id_match, $id_equipe);
         $inputs = array(
             'id' => $id,
             'user_id' => $id_user,
             'id_match' => $id_match,
+            'id_equipe' => $id_equipe,
             'on_time' => $ratings['on_time'],
             'spirit' => $ratings['spirit'],
             'referee' => $ratings['referee'],
@@ -1991,7 +2038,9 @@ class MatchMgr extends Generic
             'comment' => $comment,
             'scale_version' => Survey::SCALE_VERSION,
         );
-        return $this->survey->save($inputs);
+        $inserted = $this->survey->save($inputs);
+        // l'identifiant du sondage, créé ou mis à jour
+        return $id ?? (int)$inserted;
     }
 
     /**
