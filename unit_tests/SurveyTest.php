@@ -242,6 +242,38 @@ class SurveyTest extends UfolepTestCase
         }
     }
 
+    // --- Moyenne du classement fair-play (issue #484)
+
+    /**
+     * Deux équipes d'un même club se rencontrent et se notent ++ partout. Les
+     * deux sondages n'ont pas les mêmes coefficients (l'équipe qui reçoit et
+     * arbitre ne note ni l'arbitrage ni l'apéro) : la moyenne du club doit
+     * quand même valoir ++ (2), quelle que soit la ligne lue en premier.
+     */
+    public function test_la_moyenne_fair_play_est_celle_des_sondages()
+    {
+        $this->sql->execute("UPDATE equipes SET id_club = ? WHERE nom_equipe = 'survey test team 2'",
+            array(array('type' => 'i', 'value' => $this->id_club1)));
+        $this->sql->execute("INSERT INTO classements (code_competition, division, id_equipe)
+                             SELECT 'us', '1', id_equipe FROM equipes WHERE nom_equipe LIKE 'survey test team %'");
+        $this->sql->execute("UPDATE matches SET referee = 'HOME' WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->test_match_id)));
+        $teams = $this->sql->execute("SELECT id_equipe FROM equipes WHERE nom_equipe LIKE 'survey test team %'");
+        foreach ($teams as $team) {
+            $this->sql->execute(
+                "INSERT INTO survey SET user_id = ?, id_match = ?, id_equipe = ?, on_time = 2, spirit = 2, referee = 2, catering = 2, global = 2, scale_version = 2",
+                array(
+                    array('type' => 'i', 'value' => $this->test_user_id),
+                    array('type' => 'i', 'value' => $this->test_match_id),
+                    array('type' => 'i', 'value' => $team['id_equipe']),
+                ));
+        }
+        $rows = $this->sql->execute("SELECT moyenne, nb_matchs FROM survey_view WHERE club = 'survey test club 1'");
+        self::assertCount(1, $rows);
+        self::assertEqualsWithDelta(2.0, (float)$rows[0]['moyenne'], 0.0001);
+        self::assertSame(1, (int)$rows[0]['nb_matchs']);
+    }
+
     protected function tearDown(): void
     {
         $this->delete_test_data();
