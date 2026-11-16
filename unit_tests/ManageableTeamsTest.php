@@ -25,7 +25,7 @@ class ManageableTeamsTest extends UfolepTestCase
         $this->suffixe = 'MENU_' . uniqid();
         $this->id_club = (int)$this->sql->execute("INSERT INTO clubs (nom) VALUES (?)",
             [['type' => 's', 'value' => $this->suffixe]]);
-        foreach (['engagee', 'reinscrite', 'refusee', 'ancienne', 'courante'] as $cle) {
+        foreach (['engagee', 'reinscrite', 'refusee', 'ancienne', 'courante', 'nouvelle', 'nouvelle_refusee'] as $cle) {
             $this->teams[$cle] = (int)$this->sql->execute(
                 "INSERT INTO equipes (nom_equipe, code_competition, id_club) VALUES (?, 'kh', ?)",
                 [
@@ -38,10 +38,30 @@ class ManageableTeamsTest extends UfolepTestCase
             [['type' => 'i', 'value' => $this->teams['engagee']]]);
         $this->engager($this->teams['reinscrite'], 'PENDING');
         $this->engager($this->teams['refusee'], 'REFUSED');
+        // nouvelles équipes : l'inscription n'a pas d'équipe d'origine, elle
+        // désigne l'équipe créée par son nom (exemple réel : « L'attaque des
+        // Moineaux », coupe KH)
+        $this->inscrire_nouvelle("nouvelle $this->suffixe", 'VALIDATED');
+        $this->inscrire_nouvelle("nouvelle_refusee $this->suffixe", 'REFUSED');
+    }
+
+    private function inscrire_nouvelle(string $name, string $status): void
+    {
+        $this->sql->execute(
+            "INSERT INTO register SET new_team_name = ?, id_club = ?, id_competition = 6, old_team_id = NULL,
+                leader_name = 'TEST', leader_first_name = 'Test', leader_email = 'menu@ufolep.test',
+                leader_phone = '0600000000', status = ?",
+            [
+                ['type' => 's', 'value' => $name],
+                ['type' => 'i', 'value' => $this->id_club],
+                ['type' => 's', 'value' => $status],
+            ]);
     }
 
     protected function tearDown(): void
     {
+        $this->sql->execute("DELETE FROM users_teams WHERE team_id IN (SELECT id_equipe FROM equipes WHERE id_club = ?)",
+            [['type' => 'i', 'value' => $this->id_club]]);
         $this->sql->execute("DELETE FROM register WHERE id_club = ?",
             [['type' => 'i', 'value' => $this->id_club]]);
         $this->sql->execute("DELETE FROM classements WHERE id_equipe IN (SELECT id_equipe FROM equipes WHERE id_club = ?)",
@@ -92,5 +112,24 @@ class ManageableTeamsTest extends UfolepTestCase
         $menu = $this->menu();
         self::assertContains($this->teams['courante'], $menu);
         self::assertNotContains($this->teams['ancienne'], $menu);
+    }
+
+    public function test_une_nouvelle_equipe_inscrite_reste_dans_le_menu(): void
+    {
+        $this->connect_as_club_leader($this->id_club);
+        $_SESSION['id_user'] = 1;
+        $menu = $this->menu();
+        self::assertContains($this->teams['nouvelle'], $menu, "une nouvelle équipe validée, pas encore en division");
+        self::assertNotContains($this->teams['nouvelle_refusee'], $menu, "une inscription refusée ne compte pas");
+    }
+
+    /** Le responsable d'équipe (sans rôle club) voit aussi sa nouvelle équipe. */
+    public function test_le_responsable_d_equipe_voit_sa_nouvelle_equipe(): void
+    {
+        $this->sql->execute("INSERT INTO users_teams SET user_id = 1, team_id = ?",
+            [['type' => 'i', 'value' => $this->teams['nouvelle']]]);
+        $this->connect_as_team_leader($this->teams['engagee']);
+        $_SESSION['id_user'] = 1;
+        self::assertContains($this->teams['nouvelle'], $this->menu());
     }
 }
