@@ -1035,7 +1035,9 @@ class UserManager extends Generic
      *
      * Seules restent les équipes ENGAGÉES (une ligne de classement) ou qui ont
      * demandé leur RÉINSCRIPTION (engagement `register` non refusé qui les
-     * reprend, par exemple en coupe Khoury Hanna avant le tirage). Un club
+     * reprend, par exemple en coupe Khoury Hanna avant le tirage, ou qui la
+     * crée : une nouvelle équipe n'a pas d'équipe d'origine, l'inscription la
+     * désigne par son nom, son club et sa compétition). Un club
      * garde en base toutes ses équipes des saisons passées : le menu en
      * comptait jusqu'à 4 de trop. L'équipe courante de la session reste
      * listée quoi qu'il arrive, pour que le menu ne la perde pas.
@@ -1094,6 +1096,16 @@ class UserManager extends Generic
                        OR EXISTS(SELECT 1 FROM register r
                                   WHERE r.old_team_id = e.id_equipe
                                     AND r.status <> 'REFUSED')
+                       -- nouvelle équipe, créée depuis son inscription : pas
+                       -- d'équipe d'origine, on la retrouve à son nom, son club
+                       -- et sa compétition
+                       OR EXISTS(SELECT 1 FROM register r2
+                                  JOIN competitions co2 ON co2.id = r2.id_competition
+                                  WHERE r2.old_team_id IS NULL
+                                    AND r2.new_team_name = e.nom_equipe
+                                    AND r2.id_club = e.id_club
+                                    AND co2.code_competition = e.code_competition
+                                    AND r2.status <> 'REFUSED')
                        OR e.id_equipe = ?)
                 ORDER BY c.nom, comp.libelle, e.nom_equipe";
         return $this->sql_manager->execute($sql, $bindings);
