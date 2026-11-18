@@ -5,6 +5,12 @@
  * Les boutons "signer" remontent des événements vers le parent
  * (sign-match / sign-team-sheets) car la logique de signature vit dans la page
  * qui possède reloadData() et l'état du match.
+ *
+ * Un bouton par action à faire (issue #488) : le site signe toujours pour
+ * l'équipe du compte, quel que soit le bouton cliqué. Le responsable n'a
+ * donc de boutons que dans la colonne de son équipe ; la colonne adverse
+ * montre l'état (fait / en attente). La commission, qui signe pour les deux
+ * équipes d'un coup, a un seul bouton par ligne.
  */
 import {actingTeamId} from '/utils/reportUtils.js';
 import {nextSignatureStep} from '/utils/signatureSteps.js';
@@ -17,15 +23,51 @@ export default {
         user: {type: Object, default: null},
     },
     emits: ['sign-match', 'sign-team-sheets'],
+    data() {
+        return {sides: ['dom', 'ext']};
+    },
     computed: {
+        myTeamId() {
+            return actingTeamId(this.matchData, this.user);
+        },
+        // 'dom' / 'ext' : la colonne de l'équipe du compte ; null sinon
+        mySide() {
+            if (this.myTeamId === null) return null;
+            if (Number(this.matchData.id_equipe_dom) === this.myTeamId) return 'dom';
+            if (Number(this.matchData.id_equipe_ext) === this.myTeamId) return 'ext';
+            return null;
+        },
+        // admin qui ne joue pas ce match : il signe pour les deux équipes (#419)
+        isCommission() {
+            return !!this.user?.is_admin && this.mySide === null;
+        },
+        rows() {
+            const m = this.matchData;
+            return [
+                {key: 'team', label: 'Fiche équipes', flag: 'is_sign_team', event: 'sign-team-sheets',
+                    ready: !!m.is_match_player_filled, url: '/team_sheets.html', icon: 'fa-user'},
+                {key: 'match', label: 'Feuille de match', flag: 'is_sign_match', event: 'sign-match',
+                    ready: !!m.is_match_score_filled, url: '/match.html', icon: 'fa-volleyball'},
+                {key: 'survey', label: 'Fair-play', flag: 'is_survey_filled', event: null,
+                    ready: false, url: '/survey.html', icon: 'fa-square-poll-vertical'},
+            ];
+        },
         nextStep() {
-            return nextSignatureStep(this.matchData, actingTeamId(this.matchData, this.user));
+            return nextSignatureStep(this.matchData, this.myTeamId);
         },
         // classes écrites en entier, pour que Tailwind les génère
         nextStepClass() {
             return {
                 warning: 'alert-warning', info: 'alert-info', error: 'alert-error', success: 'alert-success',
             }[this.nextStep?.level] || 'alert-info';
+        },
+    },
+    methods: {
+        done(row, side) {
+            return Number(this.matchData[`${row.flag}_${side}`]) === 1;
+        },
+        doneBoth(row) {
+            return this.done(row, 'dom') && this.done(row, 'ext');
         },
     },
     template: `
@@ -69,103 +111,47 @@ export default {
           </div>
         </div>
 
-        <div class="border border-4">
+        <div class="border border-4" data-testid="match-steps">
           <div class="flex flex-row mb-4">
             <span class="basis-1/3"></span>
-            <span class="basis-1/3"><a :href="$url('/pages/home.html#/teams/' + matchData.id_equipe_dom)"
-                                       class="link" target="_blank">
-                {{ matchData.equipe_dom }}
+            <span v-for="side in sides" :key="side" class="basis-1/3">
+              <a :href="$url('/pages/home.html#/teams/' + matchData['id_equipe_' + side])"
+                 class="link" target="_blank" :class="{'font-bold': side === mySide}">
+                {{ matchData['equipe_' + side] }}
               </a>
-            </span>
-            <span class="basis-1/3"><a :href="$url('/pages/home.html#/teams/' + matchData.id_equipe_ext)"
-                                       class="link" target="_blank">
-                {{ matchData.equipe_ext }}
-              </a>
+              <span v-if="side === mySide" class="badge badge-ghost badge-sm ml-1">votre équipe</span>
             </span>
           </div>
-          <div class="flex flex-row mb-4">
-            <span class="basis-1/3">Fiche équipes</span>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_sign_team_dom && !matchData.is_match_player_filled"
-                 :href="$url('/team_sheets.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-user"></i><span>remplir</span>
+          <div v-for="row in rows" :key="row.key" class="flex flex-row mb-4" :data-testid="'step-' + row.key">
+            <div class="basis-1/3 flex flex-col gap-2">
+              <span>{{ row.label }}</span>
+              <!-- la commission signe pour les deux équipes d'un coup : un seul bouton -->
+              <template v-if="isCommission && row.event && !doneBoth(row)">
+                <button v-if="row.ready" class="btn btn-secondary btn-sm" type="button" @click="$emit(row.event)">
+                  <i class="fas fa-signature mr-1"></i><span>signer (2 équipes)</span>
                 </button>
-              </a>
-              <button v-if="!matchData.is_sign_team_dom && matchData.is_match_player_filled"
-                      class="btn btn-secondary" type="button" @click="$emit('sign-team-sheets')">
-                <i class="fas fa-signature mr-1"></i><span>signer</span>
-              </button>
-              <input v-if="matchData.is_sign_team_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_sign_team_dom === 1" disabled/>
+                <a v-else :href="$url(row.url + '?id_match=' + matchData.id_match)">
+                  <button class="btn btn-primary btn-sm" type="button">
+                    <i :class="['fa-solid', row.icon]"></i><span>remplir</span>
+                  </button>
+                </a>
+              </template>
             </div>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_sign_team_ext && !matchData.is_match_player_filled"
-                 :href="$url('/team_sheets.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-user"></i><span>remplir</span>
+            <div v-for="side in sides" :key="side" class="basis-1/3 flex gap-4 items-center">
+              <input v-if="done(row, side)" class="checkbox checkbox-success checkbox-lg" type="checkbox"
+                     checked disabled/>
+              <template v-else-if="side === mySide">
+                <button v-if="row.event && row.ready" class="btn btn-secondary" type="button"
+                        @click="$emit(row.event)">
+                  <i class="fas fa-signature mr-1"></i><span>signer</span>
                 </button>
-              </a>
-              <button v-if="!matchData.is_sign_team_ext && matchData.is_match_player_filled"
-                      class="btn btn-secondary" type="button" @click="$emit('sign-team-sheets')">
-                <i class="fas fa-signature mr-1"></i><span>signer</span>
-              </button>
-              <input v-if="matchData.is_sign_team_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_sign_team_ext === 1" disabled/>
-            </div>
-          </div>
-          <div class="flex flex-row mb-4">
-            <span class="basis-1/3">Feuille de match</span>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_sign_match_dom && !matchData.is_match_score_filled"
-                 :href="$url('/match.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-volleyball"></i><span>remplir</span>
-                </button>
-              </a>
-              <button v-if="!matchData.is_sign_match_dom && matchData.is_match_score_filled"
-                      class="btn btn-secondary" type="button" @click="$emit('sign-match')">
-                <i class="fas fa-signature mr-1"></i><span>signer</span>
-              </button>
-              <input v-if="matchData.is_sign_match_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_sign_match_dom === 1" disabled/>
-            </div>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_sign_match_ext && !matchData.is_match_score_filled"
-                 :href="$url('/match.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-volleyball"></i><span>remplir</span>
-                </button>
-              </a>
-              <button v-if="!matchData.is_sign_match_ext && matchData.is_match_score_filled"
-                      class="btn btn-secondary" type="button" @click="$emit('sign-match')">
-                <i class="fas fa-signature mr-1"></i><span>signer</span>
-              </button>
-              <input v-if="matchData.is_sign_match_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_sign_match_ext === 1" disabled/>
-            </div>
-          </div>
-          <div class="flex flex-row mb-4">
-            <span class="basis-1/3">Fair-play</span>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_survey_filled_dom"
-                 :href="$url('/survey.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-square-poll-vertical"></i><span>remplir</span>
-                </button>
-              </a>
-              <input v-if="matchData.is_survey_filled_dom" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_survey_filled_dom === 1" disabled/>
-            </div>
-            <div class="basis-1/3 flex gap-4 items-center">
-              <a v-if="!matchData.is_survey_filled_ext"
-                 :href="$url('/survey.html?id_match=' + matchData.id_match)">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa-solid fa-square-poll-vertical"></i><span>remplir</span>
-                </button>
-              </a>
-              <input v-if="matchData.is_survey_filled_ext" class="checkbox checkbox-success checkbox-lg" type="checkbox"
-                     :checked="matchData.is_survey_filled_ext === 1" disabled/>
+                <a v-else :href="$url(row.url + '?id_match=' + matchData.id_match)">
+                  <button class="btn btn-primary" type="button">
+                    <i :class="['fa-solid', row.icon]"></i><span>remplir</span>
+                  </button>
+                </a>
+              </template>
+              <span v-else class="badge badge-ghost">en attente</span>
             </div>
           </div>
         </div>
