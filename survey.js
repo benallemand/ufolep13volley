@@ -41,6 +41,7 @@ createApp({
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
         surveyData: {},
+        user: null,
         isLoading: false,
         scale: SURVEY_SCALE,
         criteria: SURVEY_CRITERIA,
@@ -60,6 +61,7 @@ createApp({
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }
+        this.user = user;
         this.reloadData();
     },
     methods: {

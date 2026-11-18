@@ -110,6 +110,7 @@ createApp({
         renforts: [],
         isAdmin: false,
         userTeamId: null,
+        user: null,
         renfortTeam: null,
     }; },
     computed: {
@@ -144,6 +145,7 @@ createApp({
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }
+        this.user = user;
         this.isAdmin = !!user.is_admin;
         this.userTeamId = user.id_equipe ? Number(user.id_equipe) : null;
         this.reloadData();

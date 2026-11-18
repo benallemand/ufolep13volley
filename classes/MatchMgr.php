@@ -1791,6 +1791,7 @@ class MatchMgr extends Generic
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
         $this->sql_manager->execute($sql, $bindings);
+        $this->log_signature($match, 'team', $userTeamId);
         $match = $this->get_match($id_match);
         if ($match['is_sign_team_dom'] + $match['is_sign_team_ext'] == 1) {
             (new Emails())->team_sheet_to_be_signed($match['code_match']);
@@ -1798,6 +1799,32 @@ class MatchMgr extends Generic
             (new Emails())->team_sheet_signed($match['code_match']);
         }
         throw new Exception("Signature prise en compte", 200);
+    }
+
+    /**
+     * Inscrit la signature dans l'historique de chaque équipe signée : date,
+     * compte qui signe et compte d'origine en « agir en tant que » (issue
+     * #486). Sans cela, la date d'une signature ne se déduisait que des emails.
+     * @param array $before le match avant la signature
+     * @param string $kind 'team' (fiche équipes) ou 'match' (feuille de match)
+     * @param int|null $userTeamId équipe du compte ; null : la commission signe pour les deux
+     * @throws Exception
+     */
+    private function log_signature(array $before, string $kind, ?int $userTeamId): void
+    {
+        $label = $kind === 'team' ? 'Fiche équipes' : 'Feuille de match';
+        foreach (array('dom', 'ext') as $side) {
+            $id_team = (int)$before["id_equipe_$side"];
+            if ($userTeamId !== null && $userTeamId !== $id_team) {
+                continue;
+            }
+            if ((int)$before["is_sign_{$kind}_$side"] === 1) {
+                continue;
+            }
+            $this->addActivity("$label signée pour " . $before["equipe_$side"]
+                . ($userTeamId === null ? ' (par la commission)' : '')
+                . " — match " . $before['code_match'], $id_team);
+        }
     }
 
     /**
@@ -1826,6 +1853,7 @@ class MatchMgr extends Generic
         $bindings = array();
         $bindings[] = array('type' => 'i', 'value' => $id_match);
         $this->sql_manager->execute($sql, $bindings);
+        $this->log_signature($match, 'match', $userTeamId);
         $match = $this->get_match($id_match);
         if ($match['is_sign_match_dom'] + $match['is_sign_match_ext'] == 1) {
             (new Emails())->match_sheet_to_be_signed($match['code_match']);

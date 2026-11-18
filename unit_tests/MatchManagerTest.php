@@ -756,5 +756,21 @@ class MatchManagerTest extends UfolepTestCase
         $match = $this->match_manager->get_match($matchId);
         $this->assertEquals(1, $match['is_sign_match_dom']);
         $this->assertEquals(0, $match['is_sign_match_ext']);
+
+        // Issue #486 : chaque signature est inscrite, datée, dans l'historique
+        // de l'équipe signée, avec le compte qui a signé.
+        $logs = $this->sql_manager->execute(
+            "SELECT comment, user_id FROM activity WHERE id_team = ? AND comment LIKE '%signée pour%UT_MULTI' ORDER BY id",
+            array(array('type' => 'i', 'value' => $team2)));
+        $this->assertCount(2, $logs);
+        $this->assertStringStartsWith('Fiche équipes signée pour', $logs[0]['comment']);
+        $this->assertStringStartsWith('Feuille de match signée pour', $logs[1]['comment']);
+        $this->assertEquals($userId, $logs[1]['user_id']);
+        $this->assertCount(1, $this->sql_manager->execute(
+            "SELECT id FROM activity WHERE id_team = ? AND comment LIKE 'Fiche équipes signée pour%UT_MULTI'",
+            array(array('type' => 'i', 'value' => $team3))), "la fiche de l'équipe 3 est tracée pour elle");
+        $this->assertCount(0, $this->sql_manager->execute(
+            "SELECT id FROM activity WHERE id_team = ? AND comment LIKE 'Feuille de match signée pour%UT_MULTI'",
+            array(array('type' => 'i', 'value' => $team3))), "l'équipe 3 n'a pas signé la feuille de match");
     }
 }

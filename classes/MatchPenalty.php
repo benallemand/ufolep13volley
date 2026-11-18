@@ -27,6 +27,31 @@ class MatchPenalty extends Generic
     const UNSIGNED_SHEET_SINCE = '2026-10-01';
     /** Sanction envisagée : 1 point en moins. */
     const UNSIGNED_SHEET_POINTS = 1;
+    /** Compétitions concernées : les championnats (même liste que `sql/unsigned_match_sheets.sql`). */
+    const CHAMPIONSHIPS = array('m', 'f', 'mo');
+
+    /**
+     * Date limite de signature de la feuille de match, au format « lundi
+     * 16/11/2026 à 20:30 » : horaire du match (fin de journée sans créneau
+     * connu) + 7 jours, comme le relevé du cron. Null hors championnat ou
+     * sans date de match (issue #486).
+     * @param array $match ligne de `matchs_view`
+     */
+    public static function unsigned_sheet_deadline(array $match): ?string
+    {
+        if (!in_array($match['code_competition'] ?? '', self::CHAMPIONSHIPS, true)
+            || empty($match['date_reception'])) {
+            return null;
+        }
+        $time = empty($match['heure_reception']) ? '23:59' : $match['heure_reception'];
+        $start = DateTime::createFromFormat('d/m/Y H:i', $match['date_reception'] . ' ' . $time);
+        if ($start === false) {
+            return null;
+        }
+        $deadline = $start->modify('+' . self::UNSIGNED_SHEET_DELAY_DAYS . ' days');
+        $days = array('dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi');
+        return $days[(int)$deadline->format('w')] . ' ' . $deadline->format('d/m/Y') . ' à ' . $deadline->format('H:i');
+    }
 
     private Sanction $sanction;
 

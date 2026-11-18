@@ -12,7 +12,7 @@
         <div class="loading loading-spinner loading-lg">Loading...</div>
     </div>
     <match-menu :id-match="id_match"></match-menu>
-    <match-summary :match-data="matchData"
+    <match-summary :match-data="matchData" :user="user"
                    @sign-match="signMatch"
                    @sign-team-sheets="signTeamSheets"></match-summary>
     <form @submit.prevent="submitForm">
