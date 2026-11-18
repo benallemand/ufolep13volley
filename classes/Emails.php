@@ -391,6 +391,7 @@ class Emails extends Generic
                 'code_match' => $code_match,
                 'team_name' => $team_name,
                 'url_match' => $url_match,
+                'deadline_notice' => $this->match_sheet_deadline_notice($match),
             ),
             $to,
             $cc
@@ -417,9 +418,27 @@ class Emails extends Generic
             array(
                 'code_match' => $code_match,
                 'url_match' => $url_match,
+                'deadline_notice' => $this->match_sheet_deadline_notice($match),
             ),
             $to
         ));
+    }
+
+    /**
+     * Rappel de la date limite de signature de la feuille de match, en
+     * championnat ; chaîne vide sinon (issue #486).
+     */
+    private function match_sheet_deadline_notice(array $match): string
+    {
+        require_once __DIR__ . '/MatchPenalty.php';
+        $deadline = MatchPenalty::unsigned_sheet_deadline($match);
+        if ($deadline === null) {
+            return '';
+        }
+        return '<strong>Date limite : ' . htmlspecialchars($deadline, ENT_QUOTES) . '</strong>. '
+            . 'Chaque équipe doit avoir signé la feuille de match ' . MatchPenalty::UNSIGNED_SHEET_DELAY_DAYS
+            . ' jours après le match (article 8 du règlement général) ; au-delà, un manquement est relevé '
+            . 'pour les deux équipes.<br><br>';
     }
 
     /**

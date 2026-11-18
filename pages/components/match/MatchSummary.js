@@ -6,11 +6,28 @@
  * (sign-match / sign-team-sheets) car la logique de signature vit dans la page
  * qui possède reloadData() et l'état du match.
  */
+import {actingTeamId} from '/utils/reportUtils.js';
+import {nextSignatureStep} from '/utils/signatureSteps.js';
+
 export default {
     props: {
         matchData: {type: Object, required: true},
+        // compte connecté : l'encadré « ce qu'il vous reste à faire » ne
+        // s'affiche que pour une équipe qui joue le match (issue #486)
+        user: {type: Object, default: null},
     },
     emits: ['sign-match', 'sign-team-sheets'],
+    computed: {
+        nextStep() {
+            return nextSignatureStep(this.matchData, actingTeamId(this.matchData, this.user));
+        },
+        // classes écrites en entier, pour que Tailwind les génère
+        nextStepClass() {
+            return {
+                warning: 'alert-warning', info: 'alert-info', error: 'alert-error', success: 'alert-success',
+            }[this.nextStep?.level] || 'alert-info';
+        },
+    },
     template: `
       <div>
         <div class="flex justify-center items-center m-4">
@@ -40,6 +57,16 @@ export default {
             {{ matchData.gymnasium }}
           </span>
           <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{{ matchData.date_reception }} {{ matchData.heure_reception }}</span>
+        </div>
+
+        <div v-if="nextStep" role="status" data-testid="next-step"
+             :class="['alert', 'mb-4', nextStepClass]">
+          <i :class="['fa-solid', nextStep.icon]"></i>
+          <div>
+            <div class="font-bold">{{ nextStep.title }}</div>
+            <div v-if="nextStep.detail" class="text-sm">{{ nextStep.detail }}</div>
+            <div v-if="nextStep.deadline" class="text-sm">{{ nextStep.deadline }}</div>
+          </div>
         </div>
 
         <div class="border border-4">

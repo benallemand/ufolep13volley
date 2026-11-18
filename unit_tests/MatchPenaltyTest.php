@@ -187,4 +187,31 @@ class MatchPenaltyTest extends UfolepTestCase
         self::assertStringContainsString('réunion de fin de demi-saison', $template);
         self::assertStringNotContainsString('est retiré', $template);
     }
+
+    /**
+     * Issue #486 : la date limite annoncée dans les emails est celle du relevé
+     * (horaire du match + 7 jours), en championnat seulement.
+     */
+    public function test_date_limite_de_signature_de_la_feuille_de_match(): void
+    {
+        // cas du match M_5_20261109_282
+        self::assertSame('lundi 16/11/2026 à 20:30', MatchPenalty::unsigned_sheet_deadline(
+            array('code_competition' => 'm', 'date_reception' => '09/11/2026', 'heure_reception' => '20:30')));
+        self::assertSame('mardi 17/11/2026 à 23:59', MatchPenalty::unsigned_sheet_deadline(
+            array('code_competition' => 'mo', 'date_reception' => '10/11/2026', 'heure_reception' => null)),
+            'sans créneau connu : fin de journée');
+        self::assertNull(MatchPenalty::unsigned_sheet_deadline(
+            array('code_competition' => 'kh', 'date_reception' => '09/11/2026', 'heure_reception' => '20:30')),
+            'pas de date limite hors championnat');
+    }
+
+    /** Les emails de signature distinguent la feuille de match de la fiche équipes et annoncent la date limite. */
+    public function test_emails_de_signature_annoncent_la_feuille_de_match(): void
+    {
+        foreach (array('team_sheet_signed', 'match_sheet_to_be_signed') as $name) {
+            $template = file_get_contents(__DIR__ . "/../templates/emails/$name.fr.html");
+            self::assertStringContainsString('%deadline_notice%', $template, $name);
+            self::assertStringContainsString('Feuille de match', $template, $name);
+        }
+    }
 }
