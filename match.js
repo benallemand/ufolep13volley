@@ -4,25 +4,46 @@ import axios from 'axios';
 import Toastify from 'toastify-js';
 import { Notyf } from 'notyf';
 import {onSuccess, onError} from "./toaster.js";
-import {genericSignMatch, genericSignSheet} from "./signer.js";
-import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, isMyTeamInMatch, postReportAction} from "./utils/reportUtils.js";
+import {canAskReport, canAcceptReport, canRefuseReport, canGiveReportDate, isMyTeamInMatch, actingTeamId, postReportAction} from "./utils/reportUtils.js";
 import {requireMatchAccess} from "./pages/components/auth/guard.js";
+import {STEP_KEYS, currentStep, matchState, nextSignatureStep, sideOf} from "./utils/signatureSteps.js";
 import MatchMenu from "./pages/components/match/MatchMenu.js";
-import MatchSummary from "./pages/components/match/MatchSummary.js";
+import StepCard from "./pages/components/match/StepCard.js";
+import PlayersStep from "./pages/components/match/PlayersStep.js";
+import SignatureBlock from "./pages/components/match/SignatureBlock.js";
+import MatchDayStep from "./pages/components/match/MatchDayStep.js";
+import ScoreStep from "./pages/components/match/ScoreStep.js";
+import SurveyStep from "./pages/components/match/SurveyStep.js";
 
 // Expose les libs en global pour les sous-composants qui les utilisent sans import
 window.axios = axios;
 window.Toastify = Toastify;
 window.Notyf = Notyf;
 
+/**
+ * Page de match unique (#490) : présents → fiche équipes → match → score →
+ * feuille de match → sondage. Chaque enregistrement part avec la version du
+ * match : si l'autre équipe a enregistré entre-temps, le serveur refuse (409)
+ * et la page se recharge au lieu d'écraser sa saisie.
+ */
 createApp({
     components: {
         'match-menu': MatchMenu,
-        'match-summary': MatchSummary,
+        'step-card': StepCard,
+        'players-step': PlayersStep,
+        'signature-block': SignatureBlock,
+        'match-day-step': MatchDayStep,
+        'score-step': ScoreStep,
+        'survey-step': SurveyStep,
     },
     data() { return {
         id_match: (new URLSearchParams(window.location.search)).get('id_match'),
         matchData: {},
+        surveyData: {},
+        version: null,
+        reloadKey: 0,
+        // étape ouverte : null = l'étape en cours ; '' = toutes repliées
+        openStep: null,
         isLoading: false,
         user: null,
         dateModification: {
@@ -35,8 +56,7 @@ createApp({
         },
     }; },
     async created() {
-        // Résolution code_match -> id_match (anciennement faite en PHP par match.php),
-        // pour les liens de l'admin ExtJS qui ouvrent /match.html?code_match=...
+        // Résolution code_match -> id_match, pour les liens qui ouvrent /match.html?code_match=...
         if (!this.id_match) {
             const code_match = (new URLSearchParams(window.location.search)).get('code_match');
             if (code_match) {
@@ -50,13 +70,20 @@ createApp({
                 }
             }
         }
-        // Contrôle d'accès côté client (remplace les vérifs PHP de match.php)
         const user = await requireMatchAccess(this.id_match, ['admin', 'team_leader']);
         if (!user) {
             return; // redirection déjà déclenchée par la garde
         }
-        this.fetchUserDetails();
-        this.reloadData();
+        // lien vers une étape : match.html?id_match=…#score (emails, alertes)
+        const hash = window.location.hash.replace('#', '');
+        if (STEP_KEYS.includes(hash)) {
+            this.openStep = hash;
+        }
+        await this.fetchUserDetails();
+        await this.reloadData();
+        if (this.openStep) {
+            this.$nextTick(() => document.getElementById(this.openStep)?.scrollIntoView({block: 'start'}));
+        }
     },
     watch: {
         'dateModification.invertReception'() {
@@ -77,170 +104,221 @@ createApp({
         isAdmin() {
             return !!(this.user && this.user.is_admin);
         },
-        // Fiches équipes non signées : tant qu'il en reste, le score est
-        // verrouillé pour les responsables (issue #344).
-        missingTeamSheets() {
-            const missing = [];
-            if (Number(this.matchData.is_sign_team_dom) !== 1) {
-                missing.push(this.matchData.equipe_dom);
-            }
-            if (Number(this.matchData.is_sign_team_ext) !== 1) {
-                missing.push(this.matchData.equipe_ext);
-            }
-            return missing;
+        // équipe au nom de laquelle le compte agit sur ce match
+        myTeamId() {
+            return actingTeamId(this.matchData, this.user);
         },
-        scoreLocked() {
-            return !this.isAdmin && this.matchData.id_match !== undefined && this.missingTeamSheets.length > 0;
+        mySide() {
+            return sideOf(this.matchData, this.myTeamId);
+        },
+        otherSide() {
+            return this.mySide === 'dom' ? 'ext' : 'dom';
+        },
+        // admin qui ne joue pas ce match : il signe pour les deux équipes (#419)
+        isCommission() {
+            return this.isAdmin && this.mySide === null;
+        },
+        state() {
+            return matchState(this.matchData);
+        },
+        current() {
+            return currentStep(this.matchData, this.mySide);
+        },
+        nextStep() {
+            return nextSignatureStep(this.matchData, this.myTeamId);
+        },
+        nextStepClass() {
+            return {
+                warning: 'alert-warning', info: 'alert-info', error: 'alert-error', success: 'alert-success',
+            }[this.nextStep?.level] || 'alert-info';
+        },
+        teamSigners() {
+            return ['dom', 'ext'].filter(s => this.state.team[s]).map(s => this.matchData[`equipe_${s}`]).join(' et ');
+        },
+        // score : modifiable dès que les présents sont figés, jusqu'à la
+        // première signature de la feuille de match ; l'admin, toujours
+        scoreEditable() {
+            if (this.isAdmin) return true;
+            if (!this.state.confirmed || this.state.certified) return false;
+            return this.state.frozen && !this.state.scoreFrozen;
+        },
+        scoreLockedReason() {
+            if (this.isAdmin) return '';
+            if (this.state.scoreFrozen) {
+                const signers = ['dom', 'ext'].filter(s => this.state.sheet[s]).map(s => this.matchData[`equipe_${s}`]);
+                return `Score figé : la feuille de match est signée par ${signers.join(' et ')}.`
+                    + (this.state.closed ? '' : " Pour le corriger, cette équipe annule d'abord sa signature à l'étape 5.");
+            }
+            if (this.state.forfeit && !this.state.frozen) return 'Forfait enregistré.';
+            return '';
         },
         canDeclareForfeit() {
-            return this.matchData.id_match !== undefined && Number(this.matchData.certif) !== 1
-                && !(Number(this.matchData.is_sign_match_dom) === 1 && Number(this.matchData.is_sign_match_ext) === 1);
-        },
-        isAdmin() {
-            return !!(this.user && this.user.is_admin);
-        },
-        isMatchDay() {
-            if (!this.matchData.date_reception) return false;
-            const today = new Date().toLocaleDateString('fr-FR');
-            return this.matchData.date_reception === today;
+            if (!this.state.confirmed || this.state.certified) return false;
+            return this.isAdmin || (!!this.mySide && !this.state.scoreFrozen);
         },
         canScoreLive() {
             if (!this.user) return false;
             if (this.isAdmin) return true;
-            if (!this.isLeader) return false;
-            return isMyTeamInMatch(this.matchData, this.user);
+            return this.isLeader && isMyTeamInMatch(this.matchData, this.user);
         },
         canModifyDate() {
-            if (!this.matchData.match_status) return false;
             if (this.matchData.match_status !== 'NOT_CONFIRMED') return false;
             if (this.isAdmin) return true;
             if (!this.isLeader) return false;
-            // n'importe laquelle des équipes du compte, pas seulement l'équipe
-            // courante, comme côté serveur (#421)
+            // n'importe laquelle des équipes du compte, comme côté serveur (#421)
             return isMyTeamInMatch(this.matchData, this.user);
         },
     },
     methods: {
-        reloadData() {
+        /** Props d'une étape : état, résumé, ouverte ou non. */
+        step(key) {
+            const s = this.state;
+            const side = this.mySide;
+            const signedCount = flags => (flags.dom ? 1 : 0) + (flags.ext ? 1 : 0);
+            const def = {
+                presents: {
+                    done: s.frozen || s.forfeit,
+                    locked: !s.confirmed,
+                    status: s.frozen ? 'figés' : (s.playersFilled ? 'saisis' : 'à saisir'),
+                },
+                fiche: {
+                    done: side ? s.team[side] : s.team.dom && s.team.ext,
+                    locked: !s.confirmed || (!s.playersFilled && !s.frozen),
+                    status: s.forfeit && !s.frozen ? 'forfait' : `${signedCount(s.team)}/2 signée`,
+                },
+                match: {
+                    done: s.scoreFilled,
+                    locked: !s.confirmed,
+                    status: s.scoreFilled ? 'joué' : '',
+                },
+                score: {
+                    done: s.scoreFilled,
+                    locked: !s.confirmed || (!s.frozen && !s.forfeit && !this.isAdmin),
+                    status: s.scoreFilled
+                        ? `${this.matchData.score_equipe_dom} - ${this.matchData.score_equipe_ext}`
+                        : (s.frozen ? 'à saisir' : 'après la fiche équipes'),
+                },
+                feuille: {
+                    done: side ? s.sheet[side] : s.closed,
+                    locked: !s.confirmed || !s.scoreFilled,
+                    status: s.scoreFilled ? `${signedCount(s.sheet)}/2 signée` : 'après le score',
+                },
+                sondage: {
+                    done: side ? s.survey[side] : s.survey.dom && s.survey.ext,
+                    locked: !s.confirmed || (side ? !s.scoreFilled : false),
+                    status: side ? (s.survey[side] ? 'envoyé' : '') : `${signedCount(s.survey)}/2 rempli`,
+                },
+            }[key];
+            let state = def.done ? 'done' : 'todo';
+            if (def.locked) state = 'locked';
+            else if (this.current === key) state = 'current';
+            const open = this.openStep === null ? this.current === key : this.openStep === key;
+            return {state, status: def.status, open};
+        },
+        toggle(key) {
+            const isOpen = this.step(key).open;
+            this.openStep = isOpen ? '' : key;
+            if (!isOpen) {
+                history.replaceState(null, '', '#' + key);
+                this.$nextTick(() => document.getElementById(key)?.scrollIntoView({block: 'nearest'}));
+            }
+        },
+        toastError(message) {
+            onError(this, {response: {data: {message}}});
+        },
+        async reloadData() {
             this.isLoading = true;
-            Promise.all([this.loadMatchData()])
-                .finally(() => {
-                    this.isLoading = false;
-                });
-        },
-        loadMatchData() {
-            return axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`)
-                .then(response => {
-                    this.matchData = response.data;
-                })
-                .catch(error => {
-                    onError(this, error)
-                });
-        },
-        signMatch() {
-            genericSignMatch(this, this.id_match);
-        },
-        signTeamSheets() {
-            genericSignSheet(this, this.id_match);
-        },
-        submitForm() {
-            this.setScores();
-            const formData = new FormData();
-            for (const key in this.matchData) {
-                switch (key) {
-                    case 'id_match':
-                    case 'code_match':
-                    case 'set_1_dom':
-                    case 'set_2_dom':
-                    case 'set_3_dom':
-                    case 'set_4_dom':
-                    case 'set_5_dom':
-                    case 'set_1_ext':
-                    case 'set_2_ext':
-                    case 'set_3_ext':
-                    case 'set_4_ext':
-                    case 'set_5_ext':
-                    case 'referee':
-                        formData.append(key, this.matchData[key]);
-                        break;
-                    case 'note':
-                        if (this.matchData[key] === null) {
-                            this.matchData[key] = '';
-                        }
-                        formData.append(key, this.matchData[key]);
-                        break;
-                    default:
-                        break;
+            try {
+                const requests = [
+                    axios.get(`/rest/action.php/matchmgr/get_match?id_match=${this.id_match}`),
+                    axios.get(`/rest/action.php/matchmgr/get_match_version?id_match=${this.id_match}`),
+                ];
+                const [match, version] = await Promise.all(requests);
+                this.matchData = match.data;
+                this.version = version.data.version;
+                this.reloadKey++;
+                if (this.mySide && this.state.confirmed) {
+                    await this.loadSurvey();
                 }
+            } catch (error) {
+                onError(this, error);
+            } finally {
+                this.isLoading = false;
             }
-            this.isLoading = true;
-            axios.post('/rest/action.php/matchmgr/save_match', formData)
-                .then(
-                    response => {
-                        onSuccess(this, response)
-                        this.reloadData();
-                    }
-                )
-                .catch(error => {
-                    onError(this, error)
+        },
+        loadSurvey() {
+            return axios.get(`/rest/action.php/matchmgr/get_survey?id_match=${this.id_match}`)
+                .then(response => {
+                    this.surveyData = response.data;
+                })
+                .catch(() => {
+                    this.surveyData = {};
                 });
         },
-        declareForfeit(side) {
-            const team = side === 'dom' ? this.matchData.equipe_dom : this.matchData.equipe_ext;
-            if (!window.confirm(`Confirmer le forfait de ${team} ? Le score 25-0 × 3 sera enregistré pour l'adversaire.`)) {
-                return;
-            }
+        /**
+         * Enregistre une action de la page avec la version du match. Après
+         * l'action, l'étape en cours s'ouvre ; en cas de conflit (409), la page
+         * se recharge pour montrer la saisie de l'autre équipe.
+         */
+        post(action, fields, {withVersion = true} = {}) {
             const formData = new FormData();
-            formData.append('id_match', this.matchData.id_match);
-            formData.append('code_match', this.matchData.code_match);
-            // save_match attend tous les sets : le serveur les remplace par le score du forfait
-            for (const s of [1, 2, 3, 4, 5]) {
-                formData.append(`set_${s}_dom`, 0);
-                formData.append(`set_${s}_ext`, 0);
+            formData.append('id_match', this.id_match);
+            Object.entries(fields || {}).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    value.forEach(v => formData.append(`${key}[]`, v));
+                } else if (value && typeof value === 'object') {
+                    Object.entries(value).forEach(([k, v]) => formData.append(`${key}[${k}]`, v));
+                } else if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                }
+            });
+            if (withVersion && this.version) {
+                formData.append('version', this.version);
             }
-            formData.append('referee', this.matchData.referee ?? '');
-            formData.append('note', this.matchData.note ?? '');
-            formData.append('forfeit', side);
             this.isLoading = true;
-            axios.post('/rest/action.php/matchmgr/save_match', formData)
+            return axios.post(`/rest/action.php/matchmgr/${action}`, formData)
                 .then(response => {
                     onSuccess(this, response);
-                    this.reloadData();
+                    this.openStep = null;
+                    return this.reloadData();
                 })
                 .catch(error => {
                     onError(this, error);
+                    if (error.response && error.response.status === 409) {
+                        return this.reloadData();
+                    }
                 });
         },
-        setScores() {
-            const sets = [
-                {dom: this.matchData.set_1_dom, ext: this.matchData.set_1_ext},
-                {dom: this.matchData.set_2_dom, ext: this.matchData.set_2_ext},
-                {dom: this.matchData.set_3_dom, ext: this.matchData.set_3_ext},
-                {dom: this.matchData.set_4_dom, ext: this.matchData.set_4_ext},
-                {dom: this.matchData.set_5_dom, ext: this.matchData.set_5_ext}
-            ];
-            const result = sets.reduce((acc, set) => {
-                if (set.dom !== set.ext) {
-                    if (set.dom > set.ext) {
-                        acc.score_equipe_dom++;
-                    } else {
-                        acc.score_equipe_ext++;
-                    }
-                }
-                return acc;
-            }, {score_equipe_dom: 0, score_equipe_ext: 0});
-            this.matchData.score_equipe_dom = result.score_equipe_dom
-            this.matchData.score_equipe_ext = result.score_equipe_ext
+        savePlayers({player_ids, reinforcements}) {
+            this.post('manage_match_players', {player_ids, reinforcements});
+        },
+        sign(kind) {
+            this.post(kind === 'team' ? 'sign_team_sheet' : 'sign_match_sheet');
+        },
+        unsign(kind) {
+            this.post(kind === 'team' ? 'unsign_team_sheet' : 'unsign_match_sheet');
+        },
+        saveScore(score) {
+            this.post('save_match', {code_match: this.matchData.code_match, ...score});
+        },
+        declareForfeit(side) {
+            const fields = {code_match: this.matchData.code_match, referee: this.matchData.referee ?? '',
+                note: this.matchData.note ?? '', forfeit: side};
+            // save_match attend tous les sets : le serveur les remplace par le score du forfait
+            [1, 2, 3, 4, 5].forEach(s => {
+                fields[`set_${s}_dom`] = 0;
+                fields[`set_${s}_ext`] = 0;
+            });
+            this.post('save_match', fields);
+        },
+        saveSurvey(survey) {
+            // un sondage par équipe : pas de conflit possible avec l'autre équipe
+            this.post('save_survey', survey, {withVersion: false});
         },
         fetchUserDetails() {
-            axios
-                .get("/session_user.php")
+            return axios.get("/session_user.php")
                 .then((response) => {
-                    if (response.data.error) {
-                        this.user = null;
-                    } else {
-                        this.user = response.data;
-                    }
+                    this.user = response.data.error ? null : response.data;
                 })
                 .catch(() => {
                 });
@@ -308,7 +386,7 @@ createApp({
         },
         selectDate(d) {
             if (this.dateModification.forceDate && !this.dateModification.comment.trim()) {
-                alert('Un commentaire est obligatoire pour forcer une date.');
+                this.toastError('Un commentaire est obligatoire pour forcer une date.');
                 return;
             }
             this.dateModification.selectedDate = d.date;

@@ -174,6 +174,11 @@ return array(
         'save_survey' => 'user',
         'sign_match_sheet' => 'user',
         'sign_team_sheet' => 'user',
+        // page de match unique (#490) : version du match, annulation de sa
+        // signature ; équipe du match et état vérifiés dans MatchMgr
+        'get_match_version' => 'user',
+        'unsign_match_sheet' => 'user',
+        'unsign_team_sheet' => 'user',
     ),
     'news' => array(
         'deleteNews' => 'admin',

@@ -1,107 +1,19 @@
 <!DOCTYPE html>
-<html data-theme="cupcake" lang="fr">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Joueurs</title>
-    <link rel="stylesheet" href="./src/css/app.css">
+    <title>Feuille de match</title>
+    <!-- Ancienne page des fiches équipes : tout est sur la page de match
+         unique depuis #490. Les liens des anciens emails y mènent encore. -->
+    <script type="module">
+        const page = new URL('match.html', window.location.href);
+        page.search = window.location.search;
+        page.hash = 'presents';
+        window.location.replace(page.href);
+    </script>
 </head>
 <body>
-<div id="app" class="max-w-3xl mx-auto p-6">
-    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/50 z-50">
-        <div class="loading loading-spinner loading-lg">Loading...</div>
-    </div>
-    <match-menu :id-match="id_match"></match-menu>
-    <match-summary :match-data="matchData" :user="user"
-                   @sign-match="signMatch"
-                   @sign-team-sheets="signTeamSheets"></match-summary>
-    <div class="flex justify-center items-center m-4">
-        <form @submit.prevent="submitForm">
-            <div class="flex flex-col">
-                <div v-if="!(matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1)">
-                    <h1>Joueurs disponibles</h1>
-                    <player-list
-                            :players="availablePlayersDom"
-                            :team-name="matchData.equipe_dom"
-                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                            mode="add"
-                            :enforce-rules="!isAdmin"
-                            @add-player="addPlayer">
-                    </player-list>
-
-                    <player-list
-                            :players="availablePlayersExt"
-                            :team-name="matchData.equipe_ext"
-                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                            mode="add"
-                            :enforce-rules="!isAdmin"
-                            @add-player="addPlayer">
-                    </player-list>
-                    <div class="border border-2 border-black">
-                        <!-- L'équipe renforcée (issue #348) : un responsable ne renforce que la sienne -->
-                        <label class="flex items-center gap-2 mb-2">Renfort pour
-                            <select v-model.number="renfortTeam" class="select select-sm"
-                                    aria-label="Équipe renforcée" data-testid="renfort-team">
-                                <option v-for="team in renfortTeams" :key="team.id" :value="team.id">{{ team.name }}</option>
-                            </select>
-                        </label>
-                        <label>Renfort
-                            <input v-model="query"
-                                   @input="search"
-                                   type="text"
-                                   placeholder="taper pour chercher un joueur"
-                                   class="input w-full max-w-xs"
-                            />
-                        </label>
-                        <div role="alert" class="alert">
-                            Un renfort par match et par équipe, seulement pour compléter l'équipe jusqu'à
-                            6 joueurs (masculin) ou 4 (féminin, mixte), en respectant la mixité. <br/>
-                            Un même renfort ne joue qu'un match par demi-saison (coupure au 1er janvier).
-                        </div>
-                        <player-list
-                                :players="renforts.filter(player => !matchPlayers.includes(player))"
-                                team-name="Renfort"
-                                :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                                mode="add"
-                                :enforce-rules="!isAdmin"
-                                @add-player="addRenfort">
-                        </player-list>
-                    </div>
-                </div>
-                <div>
-                    <h1>Joueurs présents</h1>
-                    <player-list
-                            :players="matchPlayers.filter(player => player.equipe === matchData.equipe_dom)"
-                            :team-name="matchData.equipe_dom"
-                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                            mode="remove"
-                            @remove-player="removePlayer">
-                    </player-list>
-                    <player-list
-                            :players="matchPlayers.filter(player => player.equipe === matchData.equipe_ext)"
-                            :team-name="matchData.equipe_ext"
-                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                            mode="remove"
-                            @remove-player="removePlayer">
-                    </player-list>
-                    <player-list
-                            :players="matchPlayers.filter(player => player.equipe !== matchData.equipe_ext && player.equipe !== matchData.equipe_dom)"
-                            team-name="Renfort"
-                            :team-names="teamNames"
-                            :is-signed="matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1"
-                            mode="remove"
-                            @remove-player="removePlayer">
-                    </player-list>
-                </div>
-            </div>
-            <div class="flex justify-center items-center m-4" v-if="!(matchData.is_sign_team_dom === 1 && matchData.is_sign_team_ext === 1)">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-pencil mr-1"></i><span>Enregistrer</span>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-<script src="./team_sheets.js" type="module"></script>
+<p>Redirection vers la <a href="match.html">page du match</a>…</p>
 </body>
 </html>

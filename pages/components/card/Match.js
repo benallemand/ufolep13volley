@@ -50,7 +50,7 @@ export default {
         <p v-if="isMatchDatePassed">
           <span v-if="match.count_status !== null && match.is_forfait !== 1" class="badge badge-error text-xs">
             {{ match.count_status }}
-            <a :href="$url('/team_sheets.html?id_match='+match.id_match)"
+            <a :href="$url('/match.html?id_match='+match.id_match+'#presents')"
                target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
@@ -58,7 +58,7 @@ export default {
           </span>
           <span v-if="match.is_sign_team_dom === 0" class="badge badge-error text-xs">
             {{ match.equipe_dom }} fiche équipe non signée
-            <a :href="$url('/team_sheets.html?id_match='+match.id_match)"
+            <a :href="$url('/match.html?id_match='+match.id_match+'#presents')"
                target="_blank"
                class="link link-info hover:underline">
                 <i class="fas fa-external-link-alt ml-1"></i>
@@ -66,7 +66,7 @@ export default {
           </span>
           <span v-if="match.is_sign_team_ext === 0" class="badge badge-error text-xs">
             {{ match.equipe_ext }} fiche équipe non signée
-            <a :href="$url('/team_sheets.html?id_match='+match.id_match)" target="_blank"
+            <a :href="$url('/match.html?id_match='+match.id_match+'#presents')" target="_blank"
                class="link link-info hover:underline">
                   <i class="fas fa-external-link-alt ml-1"></i>
             </a>
@@ -93,7 +93,7 @@ export default {
           </span>
           <span v-if="match.has_forbidden_player === 1" class="badge badge-error">
             pb licence(s)
-            <a :href="$url('/team_sheets.html?id_match='+match.id_match)" target="_blank"
+            <a :href="$url('/match.html?id_match='+match.id_match+'#presents')" target="_blank"
                class="link link-info hover:underline">
               <i class="fas fa-external-link-alt ml-1"></i>
             </a>
@@ -103,7 +103,7 @@ export default {
           <span v-if="match.certif === 1" class="badge badge-success">Certifié</span>
           <span v-if="match.is_sign_team_dom + match.is_sign_team_ext === 2" class="badge badge-success">
             fiche équipe signée
-                <a :href="$url('/team_sheets.html?id_match='+match.id_match)" target="_blank"
+                <a :href="$url('/match.html?id_match='+match.id_match+'#presents')" target="_blank"
                    class="link link-info hover:underline">
                     <i class="fas fa-external-link-alt ml-1"></i>
                 </a>

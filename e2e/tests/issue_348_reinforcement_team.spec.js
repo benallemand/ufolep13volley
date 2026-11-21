@@ -27,7 +27,7 @@ test.describe('Issue #348 — équipe renforcée', () => {
         const match = await (await page.request.get('/rest/action.php/matchmgr/get_match',
             { params: { id_match: String(setup.id_match) } })).json();
 
-        await page.goto(`/team_sheets.html?id_match=${setup.id_match}`);
+        await page.goto(`/match.html?id_match=${setup.id_match}#presents`);
         const choix = page.getByTestId('renfort-team');
         await expect(choix).toBeVisible({ timeout: 15000 });
         await expect(choix.locator('option')).toHaveText([match.equipe_dom]);

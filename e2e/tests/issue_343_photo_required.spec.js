@@ -32,8 +32,8 @@ test.describe('Issue #343 — photo obligatoire', () => {
         const sansPhoto = joueurs.find(j => Number(j.has_photo) === 0);
         test.skip(!sansPhoto, "aucun joueur sans photo dans l'équipe de test");
 
-        await page.goto(`/team_sheets.html?id_match=${setup.id_match}`);
-        const ligne = page.locator('div.flex.items-center.mb-2')
+        await page.goto(`/match.html?id_match=${setup.id_match}#presents`);
+        const ligne = page.locator('li.player-row')
             .filter({ hasText: `${sansPhoto.prenom} ${sansPhoto.nom}` }).first();
         await expect(ligne.getByTestId('missing-photo')).toContainText('ne peut pas jouer', { timeout: 15000 });
         await expect(ligne.getByRole('button')).toBeDisabled();

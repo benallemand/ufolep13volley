@@ -1,39 +1,20 @@
 /**
- * Barre de navigation d'une page de gestion de match.
- * Remplace l'include PHP menu.php — les liens pointent désormais vers les
- * pages HTML statiques (match.html / team_sheets.html / survey.html).
+ * Barre de navigation de la page de match. Depuis la page unique (#490), les
+ * présents, le score et le sondage sont sur la même page : plus que retour et
+ * accueil.
  */
 export default {
     props: {
-        idMatch: {type: [String, Number], required: true},
+        idMatch: {type: [String, Number], default: null},
     },
     template: `
-      <ul class="menu menu-horizontal bg-base-200 rounded-box flex items-center justify-between">
-        <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a href="javascript:history.back()">
-            <span>retour</span><i class="fa-solid fa-arrow-left"></i>
-          </a>
-        </li>
-        <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="$url('/')">
-            <span>accueil</span><i class="fa-solid fa-house"></i>
-          </a>
-        </li>
-        <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="$url('/match.html?id_match=' + idMatch)">
-            <span>match</span><i class="fa-solid fa-volleyball"></i>
-          </a>
-        </li>
-        <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="$url('/team_sheets.html?id_match=' + idMatch)">
-            <span>equipes</span><i class="fa-solid fa-user"></i>
-          </a>
-        </li>
-        <li class="border-solid rounded-full border-4 border-indigo-500">
-          <a :href="$url('/survey.html?id_match=' + idMatch)">
-            <span>fair-play</span><i class="fa-solid fa-square-poll-vertical"></i>
-          </a>
-        </li>
-      </ul>
+      <nav class="flex items-center justify-between gap-2">
+        <a href="javascript:history.back()" class="btn btn-sm btn-ghost">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>retour</span>
+        </a>
+        <a :href="$url('/')" class="btn btn-sm btn-ghost">
+          <i class="fa-solid fa-house" aria-hidden="true"></i><span>accueil</span>
+        </a>
+      </nav>
     `,
 };

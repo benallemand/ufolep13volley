@@ -90,12 +90,12 @@ export default {
                         },
                         {
                             icon: 'fas fa-user', title: 'Fiches équipes',
-                            href: (r) => `/team_sheets.html?id_match=${r.id_match}`,
+                            href: (r) => `/match.html?id_match=${r.id_match}#presents`,
                             variant: (r) => ok(r.match_status !== 'ARCHIVED' && Number(r.is_match_player_filled) && Number(r.is_sign_team_dom) && Number(r.is_sign_team_ext)),
                         },
                         {
                             icon: 'fas fa-square-poll-vertical', title: 'Sondages',
-                            href: (r) => `/survey.html?id_match=${r.id_match}`,
+                            href: (r) => `/match.html?id_match=${r.id_match}#sondage`,
                             variant: (r) => ok(r.match_status !== 'ARCHIVED' && Number(r.is_survey_filled_dom) && Number(r.is_survey_filled_ext)),
                         },
                         {
