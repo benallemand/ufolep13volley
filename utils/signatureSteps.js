@@ -1,10 +1,14 @@
 /**
- * Prochaine étape de signature pour l'équipe connectée (issue #486).
+ * Étapes de la page de match unique (issues #486, #490).
  *
- * Le responsable d'une équipe confondait la fiche équipes (signée avant le
- * match) et la feuille de match (signée après, avec le score) : il pensait
- * avoir tout signé. L'encadré dit à l'équipe ce qu'il lui reste à faire, avec
- * la date limite des 7 jours en championnat.
+ * 1. présents (liste commune aux deux équipes) → 2. fiche équipes : la
+ * première signature fige les présents → 3. le match (live scoring, forfait)
+ * → 4. score, saisissable dès la première signature des présents → 5. feuille
+ * de match : la première signature fige le score → 6. sondage fair-play.
+ *
+ * Chaque équipe peut annuler sa signature : la fiche équipes tant que
+ * personne n'a signé la feuille de match, la feuille de match tant que
+ * l'autre équipe ne l'a pas signée. Mêmes règles que `MatchMgr`.
  */
 
 /** Championnats : même liste que `MatchPenalty::CHAMPIONSHIPS`. */
@@ -13,7 +17,10 @@ const CHAMPIONSHIPS = ['m', 'f', 'mo'];
 const DELAY_DAYS = 7;
 const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 
+export const STEP_KEYS = ['presents', 'fiche', 'match', 'score', 'feuille', 'sondage'];
+
 const pad = n => String(n).padStart(2, '0');
+const on = v => Number(v) === 1;
 
 /**
  * Date limite de signature de la feuille de match (horaire du match + 7 jours,
@@ -37,27 +44,70 @@ export function formatDeadline(deadline) {
         + ` à ${pad(deadline.getHours())}:${pad(deadline.getMinutes())}`;
 }
 
+/** 'dom' / 'ext' : le côté de l'équipe ; null si elle ne joue pas le match. */
+export function sideOf(match, teamId) {
+    if (teamId === null || teamId === undefined) return null;
+    if (Number(match?.id_equipe_dom) === Number(teamId)) return 'dom';
+    if (Number(match?.id_equipe_ext) === Number(teamId)) return 'ext';
+    return null;
+}
+
+/** État partagé, dérivé d'une ligne de `matchs_view`. */
+export function matchState(match) {
+    const m = match || {};
+    // la première signature de la fiche équipes fige les présents
+    const frozen = on(m.is_sign_team_dom) || on(m.is_sign_team_ext);
+    const scoreFilled = on(m.is_match_score_filled);
+    return {
+        confirmed: m.match_status === 'CONFIRMED',
+        certified: on(m.certif),
+        // `is_forfait` ne vaut 1 qu'une fois les deux feuilles signées : un score
+        // saisi sans présents figés ne peut venir que d'un forfait déclaré
+        forfeit: on(m.is_forfait) || (scoreFilled && !frozen),
+        playersFilled: on(m.is_match_player_filled),
+        frozen,
+        scoreFilled,
+        // la première signature de la feuille de match fige le score
+        scoreFrozen: on(m.is_sign_match_dom) || on(m.is_sign_match_ext),
+        closed: on(m.is_sign_match_dom) && on(m.is_sign_match_ext),
+        team: {dom: on(m.is_sign_team_dom), ext: on(m.is_sign_team_ext)},
+        sheet: {dom: on(m.is_sign_match_dom), ext: on(m.is_sign_match_ext)},
+        survey: {dom: on(m.is_survey_filled_dom), ext: on(m.is_survey_filled_ext)},
+    };
+}
+
 /**
- * @param {object} match ligne de `matchs_view`
- * @param {number|null} teamId équipe au nom de laquelle le compte agit (`actingTeamId`)
- * @param {Date} now
+ * Étape en cours pour une équipe (`side`), ou pour la commission (`side`
+ * null) : la première chose qui reste à faire. 'done' quand tout est fait.
+ */
+export function currentStep(match, side) {
+    const s = matchState(match);
+    if (!s.frozen && !s.forfeit) return s.playersFilled ? 'fiche' : 'presents';
+    if (side && !s.team[side] && !s.forfeit && !s.scoreFilled) return 'fiche';
+    if (!s.scoreFilled) return 'score';
+    if (side ? !s.sheet[side] : !s.closed) return 'feuille';
+    if (side && !s.survey[side]) return 'sondage';
+    if (side && !s.team[side] && !s.forfeit) return 'fiche';
+    return 'done';
+}
+
+/**
+ * Ce que l'équipe connectée doit faire maintenant, pour l'encadré « À faire ».
  * @returns {{level: string, icon: string, title: string, detail?: string, deadline?: string}|null}
  */
 export function nextSignatureStep(match, teamId, now = new Date()) {
-    if (!match || teamId === null || teamId === undefined) return null;
-    if (match.match_status !== 'CONFIRMED' || Number(match.certif) === 1) return null;
-    const side = Number(match.id_equipe_dom) === Number(teamId) ? 'dom'
-        : Number(match.id_equipe_ext) === Number(teamId) ? 'ext' : null;
+    if (!match) return null;
+    const side = sideOf(match, teamId);
     if (!side) return null;
+    const s = matchState(match);
+    if (!s.confirmed || s.certified) return null;
     const other = side === 'dom' ? 'ext' : 'dom';
     const otherName = match[`equipe_${other}`];
-    const signed = (kind, s) => Number(match[`is_sign_${kind}_${s}`]) === 1;
 
     const limit = matchSheetDeadline(match);
-    const matchSheetPending = !(signed('match', 'dom') && signed('match', 'ext'));
     let deadline;
     let late = false;
-    if (limit && matchSheetPending) {
+    if (limit && !s.closed) {
         late = now > limit;
         deadline = late
             ? `Date limite dépassée : ${formatDeadline(limit)} (7 jours après le match, article 8 du règlement général).`
@@ -65,36 +115,31 @@ export function nextSignatureStep(match, teamId, now = new Date()) {
     }
     const step = (level, icon, title, detail) => ({level, icon, title, detail, deadline});
 
-    // Pas de fiches équipes sur un forfait : le score est écrit par le serveur.
-    if (Number(match.is_forfait) !== 1) {
-        if (!signed('team', side)) {
-            return step('warning', 'fa-signature', 'Il vous reste à signer la fiche équipes.',
-                'Avant le match, une fois vos présents renseignés. Ce n\'est que la première signature : '
-                + 'la feuille de match sera à signer après le match.');
-        }
-        if (!signed('team', other)) {
-            return step('info', 'fa-hourglass-half', `En attente de la fiche équipes de ${otherName}.`,
-                'Vous avez signé la fiche équipes. Après le match, il faudra saisir le score puis signer la feuille de match.');
-        }
+    switch (currentStep(match, side)) {
+        case 'presents':
+            return step('warning', 'fa-users', 'Il vous reste à renseigner les présents.',
+                "Liste commune : cochez les joueurs présents des deux équipes, puis enregistrez.");
+        case 'fiche':
+            return s.frozen
+                ? step('warning', 'fa-signature', 'Il vous reste à confirmer les présents.',
+                    `${otherName} a signé la fiche équipes : vérifiez les présents et signez à votre tour.`)
+                : step('warning', 'fa-signature', 'Il vous reste à signer la fiche équipes.',
+                    "Signer fige les présents des deux équipes et permet de saisir le score. "
+                    + "La feuille de match sera à signer après le match.");
+        case 'score':
+            return step('info', 'fa-volleyball', 'Après le match : saisissez le score.',
+                'Ou suivez-le en direct avec le live scoring. La feuille de match se signe ensuite.');
+        case 'feuille':
+            return step(late ? 'error' : 'warning', 'fa-signature', 'Il vous reste à signer la feuille de match.',
+                "C'est une seconde signature, distincte de la fiche équipes : elle valide le score.");
+        case 'sondage':
+            return step('info', 'fa-square-poll-vertical', 'Il vous reste à remplir le sondage fair-play.',
+                s.sheet[other] ? 'La feuille de match est signée par les deux équipes.'
+                    : `En attente de la feuille de match de ${otherName}.`);
+        default:
+            return s.closed
+                ? step('success', 'fa-circle-check', 'Tout est fait pour ce match, merci !')
+                : step('info', 'fa-hourglass-half', `En attente de la feuille de match de ${otherName}.`,
+                    'Vous avez fait tout ce qui vous revenait.');
     }
-    if (Number(match.is_match_score_filled) !== 1) {
-        return step('info', 'fa-volleyball',
-            'Après le match : saisir le score, puis signer la feuille de match.',
-            'Les fiches équipes sont signées. La feuille de match est une seconde signature, à faire par chaque équipe.');
-    }
-    if (!signed('match', side)) {
-        return step(late ? 'error' : 'warning', 'fa-signature',
-            'Il vous reste à signer la feuille de match.',
-            'Cliquez sur « signer » sur la ligne « Feuille de match ». C\'est une seconde signature, '
-            + 'distincte de la fiche équipes signée avant le match.');
-    }
-    if (!signed('match', other)) {
-        return step('info', 'fa-hourglass-half', `En attente de la feuille de match de ${otherName}.`,
-            'Vous avez signé la feuille de match.');
-    }
-    if (Number(match[`is_survey_filled_${side}`]) !== 1) {
-        return step('info', 'fa-square-poll-vertical', 'Il vous reste à remplir le sondage fair-play.',
-            'La feuille de match est signée par les deux équipes.');
-    }
-    return step('success', 'fa-circle-check', 'Tout est fait pour ce match, merci !');
 }

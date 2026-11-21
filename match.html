@@ -7,217 +7,206 @@
     <link rel="stylesheet" href="./src/css/app.css">
 </head>
 <body>
-<div id="app" class="max-w-3xl mx-auto p-6">
+<!-- Page de match unique (#490) : présents, signatures, score, feuille de match
+     et sondage, en six étapes. Remplace team_sheets.html et survey.html. -->
+<div id="app" class="max-w-3xl mx-auto px-3 py-4 sm:p-6">
     <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/50 z-50">
-        <div class="loading loading-spinner loading-lg">Loading...</div>
+        <div class="loading loading-spinner loading-lg">Chargement…</div>
     </div>
     <match-menu :id-match="id_match"></match-menu>
-    <match-summary :match-data="matchData" :user="user"
-                   @sign-match="signMatch"
-                   @sign-team-sheets="signTeamSheets"></match-summary>
-    <!-- Score verrouillé tant que les fiches équipes ne sont pas signées (issue #344) -->
-    <div v-if="scoreLocked" role="alert" class="alert alert-warning mb-4" data-testid="score-locked">
-        <i class="fas fa-lock"></i>
-        <span>Le score se saisit après la signature des deux fiches équipes.
-            Fiche non signée : <strong>{{ missingTeamSheets.join(', ') }}</strong>.
-            En cas de forfait, utilisez « Déclarer forfait » plus bas.</span>
-    </div>
-    <form @submit.prevent="submitForm">
+
+    <header v-if="matchData.id_match" class="my-4 text-center" data-testid="match-header">
+        <div class="flex flex-wrap justify-center gap-2 text-xs mb-2">
+            <span class="badge badge-ghost">{{ matchData.libelle_competition }}</span>
+            <a class="badge badge-ghost link" target="_blank"
+               :href="$url('/pages/home.html#/divisions/' + matchData.code_competition + '/' + matchData.division)">
+                Division {{ matchData.division }}</a>
+            <span class="badge badge-ghost font-mono">{{ matchData.code_match }}</span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold leading-tight">
+            <span :class="{'underline decoration-primary decoration-2': mySide === 'dom'}">{{ matchData.equipe_dom }}</span>
+            <span class="opacity-60 font-normal"> vs </span>
+            <span :class="{'underline decoration-primary decoration-2': mySide === 'ext'}">{{ matchData.equipe_ext }}</span>
+        </h1>
+        <p class="text-sm opacity-80 mt-1">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i> {{ matchData.date_reception }}
+            <span v-if="matchData.heure_reception"> à {{ matchData.heure_reception }}</span>
+            · {{ matchData.gymnasium }}
+        </p>
+    </header>
+
+    <div v-if="nextStep" role="status" data-testid="next-step" :class="['alert', 'mb-4', nextStepClass]">
+        <i :class="['fa-solid', nextStep.icon]" aria-hidden="true"></i>
         <div>
-            <div class="grid grid-cols-3 gap-4 flex items-center border mb-4">
-                <h3 class="text-center text-xl font-bold mb-4">Score</h3>
-                <h4 class="text-center text-l font-bold mb-4">{{ matchData.equipe_dom }}</h4>
-                <h4 class="text-center text-l font-bold mb-4">{{ matchData.equipe_ext }}</h4>
-                <span></span>
-                <h4 class="text-center text-l font-bold mb-4">{{ matchData.score_equipe_dom }}</h4>
-                <h4 class="text-center text-l font-bold mb-4">{{ matchData.score_equipe_ext }}</h4>
-            </div>
-            <div class="mb-4 p-4 border">
-                <div class="form-group mb-4" v-for="set in [1, 2, 3, 4, 5]" :key="set">
-                    <div class="grid grid-cols-3 gap-4 flex items-center">
-                        <label class="input input-ghost flex items-center gap-3 text-lg">Set {{ set }}</label>
-                        <input class="input" type="number" min="0" max="50"
-                               :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_dom"
-                               v-model.number="matchData['set_' + set + '_dom']"/>
-                        <input class="input" type="number" min="0" max="50"
-                               :disabled="scoreLocked" :aria-label="'Set ' + set + ' ' + matchData.equipe_ext"
-                               v-model.number="matchData['set_' + set + '_ext']"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mb-4 p-4 border">
-            <h3 class="text-xl font-bold mb-4">Arbitrage</h3>
-            <select v-model="matchData.referee" class="select select-ghost w-full max-w-xs">
-                <option value="HOME" :selected="matchData.referee === 'HOME'">équipe à domicile</option>
-                <option value="AWAY" :selected="matchData.referee === 'AWAY'">équipe à l'extérieur</option>
-                <option value="BOTH" :selected="matchData.referee === 'BOTH'">les deux / auto-arbitrage</option>
-            </select>
-        </div>
-        <div class="form-group mb-4">
-            <label class="block text-lg mb-2">Commentaire</label>
-            <textarea v-model="matchData.note" class="textarea w-full"
-                      placeholder="Ajouter un commentaire"></textarea>
-        </div>
-        <div class="mb-4 p-4 border">
-            <h3 class="text-xl font-bold mb-4">Scan des feuilles (facultatif)</h3>
-            <p>Le nombre de scans envoyés ayant considérablement diminué,<br/>
-                Le scan des feuilles peut, si besoin, être envoyé directement par email à la commission.
-            </p>
-        </div>
-        <div class="flex justify-center items-center m-4">
-            <button class="btn btn-primary" type="submit">
-                <i class="fas fa-pencil mr-1"></i><span>Enregistrer</span>
-            </button>
-        </div>
-    </form>
-    <div class="mb-4 p-4 border" v-if="canDeclareForfeit" data-testid="forfeit">
-        <h3 class="text-xl font-bold mb-2">Déclarer forfait</h3>
-        <p class="text-sm mb-2">Une équipe ne s'est pas présentée : le score 25-0 sur trois sets est
-            enregistré pour l'équipe présente, sans fiche équipe à signer.</p>
-        <div class="flex flex-wrap gap-2">
-            <button type="button" class="btn btn-warning btn-outline" @click="declareForfeit('dom')">
-                <i class="fas fa-flag mr-2"></i>{{ matchData.equipe_dom }} déclare forfait
-            </button>
-            <button type="button" class="btn btn-warning btn-outline" @click="declareForfeit('ext')">
-                <i class="fas fa-flag mr-2"></i>{{ matchData.equipe_ext }} déclare forfait
-            </button>
+            <div class="font-bold">{{ nextStep.title }}</div>
+            <div v-if="nextStep.detail" class="text-sm">{{ nextStep.detail }}</div>
+            <div v-if="nextStep.deadline" class="text-sm">{{ nextStep.deadline }}</div>
         </div>
     </div>
-    <div class="mb-4 p-4 border" v-if="isLeader">
-        <h3 class="text-xl font-bold mb-4">Demande de report</h3>
-        <div class="flex flex-wrap gap-2">
-            <button
-                v-if="canAskReport()"
-                @click="postReportAction('askForReport')"
-                class="btn btn-primary">
-                <i class="fas fa-calendar mr-2"></i>Demander un report
-            </button>
-            <button
-                v-if="canAcceptReport()"
-                @click="postReportAction('acceptReport')"
-                class="btn btn-success">
-                <i class="fas fa-calendar mr-2"></i>Accepter le report
-            </button>
-            <button
-                v-if="canRefuseReport()"
-                @click="postReportAction('refuseReport')"
-                class="btn btn-error">
-                <i class="fas fa-calendar mr-2"></i>Refuser le report
-            </button>
-            <button
-                v-if="canGiveReportDate()"
-                @click="postReportAction('giveReportDate')"
-                class="btn btn-success">
-                <i class="fas fa-calendar mr-2"></i>Donner une date de report
+    <div v-else-if="matchData.id_match && matchData.match_status !== 'CONFIRMED'" role="status"
+         class="alert alert-info mb-4 text-sm">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span>Match pas encore confirmé : les présents, le score et les signatures se saisissent une fois le match confirmé.</span>
+    </div>
+
+    <div v-if="matchData.id_match" data-testid="match-steps">
+        <step-card step-key="presents" :num="1" title="Présents" v-bind="step('presents')" @toggle="toggle('presents')">
+            <players-step :match-data="matchData" :id-match="id_match" :is-admin="isAdmin" :my-team-id="myTeamId"
+                          :frozen="state.frozen" :reload-key="reloadKey" @save="savePlayers">
+                <template #frozen-reason>
+                    Présents figés, signés par {{ teamSigners }}.
+                    <span v-if="!state.scoreFrozen"> Pour les corriger, chaque équipe qui a signé annule sa signature à l'étape 2.</span>
+                </template>
+            </players-step>
+        </step-card>
+
+        <step-card step-key="fiche" :num="2" title="Fiche équipes" v-bind="step('fiche')" @toggle="toggle('fiche')">
+            <signature-block :match-data="matchData" kind="team" :my-side="mySide" :is-commission="isCommission"
+                             :not-ready-reason="state.playersFilled ? '' : 'Enregistrez d\'abord les présents des deux équipes.'"
+                             @sign="sign('team')" @unsign="unsign('team')"></signature-block>
+        </step-card>
+
+        <step-card step-key="match" :num="3" title="Le match" v-bind="step('match')" @toggle="toggle('match')">
+            <match-day-step :match-data="matchData" :can-score-live="canScoreLive" :can-declare-forfeit="canDeclareForfeit"
+                            @forfeit="declareForfeit"></match-day-step>
+        </step-card>
+
+        <step-card step-key="score" :num="4" title="Score" v-bind="step('score')" @toggle="toggle('score')">
+            <score-step :match-data="matchData" :editable="scoreEditable" :locked-reason="scoreLockedReason"
+                        @save="saveScore"></score-step>
+        </step-card>
+
+        <step-card step-key="feuille" :num="5" title="Feuille de match" v-bind="step('feuille')" @toggle="toggle('feuille')">
+            <p class="text-sm mb-3">Seconde signature, distincte de la fiche équipes : elle valide le score.</p>
+            <signature-block :match-data="matchData" kind="match" :my-side="mySide" :is-commission="isCommission"
+                             @sign="sign('match')" @unsign="unsign('match')"></signature-block>
+        </step-card>
+
+        <step-card step-key="sondage" :num="6" title="Sondage fair-play" v-bind="step('sondage')" @toggle="toggle('sondage')">
+            <survey-step v-if="mySide" :survey-data="surveyData" :opponent="matchData['equipe_' + otherSide]"
+                         @save="saveSurvey" @invalid="toastError"></survey-step>
+            <ul v-else class="text-sm space-y-1">
+                <li v-for="side in ['dom', 'ext']" :key="side">
+                    <strong>{{ matchData['equipe_' + side] }}</strong> :
+                    {{ state.survey[side] ? 'sondage rempli' : 'sondage non rempli' }}
+                </li>
+            </ul>
+        </step-card>
+    </div>
+
+    <details v-if="isLeader || canModifyDate" class="mt-6 rounded-box border border-base-300 p-3" data-testid="other-actions"
+             :open="canModifyDate">
+        <summary class="font-semibold cursor-pointer">Report et date du match</summary>
+        <div class="mt-3" v-if="isLeader">
+            <h3 class="font-semibold mb-2">Demande de report</h3>
+            <div class="flex flex-col sm:flex-row flex-wrap gap-2">
+                <button v-if="canAskReport()" @click="postReportAction('askForReport')" class="btn btn-primary">
+                    <i class="fas fa-calendar" aria-hidden="true"></i>Demander un report
+                </button>
+                <button v-if="canAcceptReport()" @click="postReportAction('acceptReport')" class="btn btn-success">
+                    <i class="fas fa-calendar" aria-hidden="true"></i>Accepter le report
+                </button>
+                <button v-if="canRefuseReport()" @click="postReportAction('refuseReport')" class="btn btn-error">
+                    <i class="fas fa-calendar" aria-hidden="true"></i>Refuser le report
+                </button>
+                <button v-if="canGiveReportDate()" @click="postReportAction('giveReportDate')" class="btn btn-success">
+                    <i class="fas fa-calendar" aria-hidden="true"></i>Donner une date de report
+                </button>
+                <span v-if="!canAskReport() && !canAcceptReport() && !canRefuseReport() && !canGiveReportDate()"
+                      class="text-sm opacity-70">Aucune action de report possible pour ce match.</span>
+            </div>
+        </div>
+        <div class="mt-4" v-if="canModifyDate" data-testid="date-modification">
+            <h3 class="font-semibold mb-2">Modification de date</h3>
+            <p class="text-sm mb-2">Ce match n'est pas encore confirmé. Vous pouvez proposer une nouvelle date.</p>
+            <button class="btn btn-primary w-full sm:w-auto" @click="openDateModificationModal()">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>Modifier la date
             </button>
         </div>
-    </div>
-    <div class="mb-4 p-4 border" v-if="canModifyDate" data-testid="date-modification">
-        <h3 class="text-xl font-bold mb-4">Modification de date</h3>
-        <p class="text-sm mb-4">Ce match n'est pas encore confirmé. Vous pouvez proposer une nouvelle date.</p>
-        <button class="btn btn-primary" @click="openDateModificationModal()">
-            <i class="fas fa-calendar-alt mr-2"></i>Modifier la date
-        </button>
+    </details>
 
-        <dialog id="dateModificationModal" class="modal">
-            <div class="modal-box w-11/12 max-w-3xl">
-                <form method="dialog">
-                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                </form>
-                <h3 class="font-bold text-lg mb-4">Choisir une nouvelle date</h3>
-
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <label class="flex select-none items-center justify-between px-1 py-2 cursor-pointer gap-2">
-                        <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.invertReception"/>
-                        <span class="text-sm">Inverser la réception</span>
-                    </label>
-                    <label class="flex select-none items-center justify-between px-1 py-2 cursor-pointer gap-2">
-                        <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.forceDate"/>
-                        <span class="text-sm">Forcer la date</span>
-                    </label>
-                </div>
-
-                <div v-if="dateModification.forceDate" class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Commentaire obligatoire</label>
-                    <textarea v-model="dateModification.comment" class="textarea w-full"
-                              placeholder="Raison du forçage de date..." rows="2"></textarea>
-                </div>
-
-                <div v-if="dateModification.loading" class="flex justify-center p-8">
-                    <span class="loading loading-spinner loading-lg"></span>
-                </div>
-
-                <div v-else>
-                    <div class="flex gap-2 mb-2 text-xs flex-wrap">
-                        <span class="badge badge-success badge-sm">Disponible</span>
-                        <span class="badge badge-warning badge-sm">Conflit semaine</span>
-                        <span class="badge badge-error badge-sm">Indisponible</span>
-                        <span v-if="dateModification.forceDate" class="badge badge-info badge-sm">Vacances/Férié</span>
-                    </div>
-                    <div class="overflow-y-auto max-h-80">
-                        <table class="table table-xs table-zebra w-full">
-                            <thead class="sticky top-0 bg-base-200">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Équipes</th>
-                                    <th>Gymnase</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="d in dateModification.dates" :key="d.date"
-                                    :class="getDateRowClass(d)">
-                                    <td class="font-mono">{{ d.date }}</td>
-                                    <td>
-                                        <i v-if="d.teams_available" class="fas fa-check text-success"></i>
-                                        <i v-else class="fas fa-times text-error"></i>
-                                    </td>
-                                    <td>
-                                        <i v-if="d.gymnasium_available" class="fas fa-check text-success"></i>
-                                        <i v-else class="fas fa-times text-error"></i>
-                                    </td>
-                                    <td>
-                                        <button v-if="d.available || dateModification.forceDate"
-                                                class="btn btn-xs btn-primary"
-                                                @click="selectDate(d)">
-                                            Choisir
-                                        </button>
-                                        <span v-if="hasWeekConflicts(d)" class="badge badge-warning badge-xs ml-1"
-                                              :title="getWeekConflictText(d)">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <form method="dialog" class="modal-backdrop">
-                <button>close</button>
+    <dialog id="dateModificationModal" class="modal">
+        <div class="modal-box w-11/12 max-w-3xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" aria-label="Fermer">✕</button>
             </form>
-        </dialog>
-
-        <dialog id="confirmDateModal" class="modal">
-            <div class="modal-box">
-                <h3 class="font-bold text-lg mb-4">Confirmer la modification</h3>
-                <p>Nouvelle date : <strong>{{ dateModification.selectedDate }}</strong></p>
-                <p v-if="dateModification.invertReception" class="text-warning font-semibold mt-2">
-                    <i class="fas fa-exchange-alt mr-1"></i>La réception sera inversée
-                </p>
-                <p v-if="dateModification.comment" class="mt-2">
-                    Commentaire : <em>{{ dateModification.comment }}</em>
-                </p>
-                <div class="modal-action">
-                    <form method="dialog" class="flex gap-2">
-                        <button class="btn">Annuler</button>
-                        <button class="btn btn-primary" @click="confirmDateModification()">Confirmer</button>
-                    </form>
+            <h3 class="font-bold text-lg mb-4">Choisir une nouvelle date</h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <label class="flex select-none items-center px-1 py-2 cursor-pointer gap-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.invertReception"/>
+                    <span class="text-sm">Inverser la réception</span>
+                </label>
+                <label class="flex select-none items-center px-1 py-2 cursor-pointer gap-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="dateModification.forceDate"/>
+                    <span class="text-sm">Forcer la date</span>
+                </label>
+            </div>
+            <div v-if="dateModification.forceDate" class="mb-4">
+                <label class="block text-sm font-medium mb-1">Commentaire obligatoire</label>
+                <textarea v-model="dateModification.comment" class="textarea w-full"
+                          placeholder="Raison du forçage de date..." rows="2"></textarea>
+            </div>
+            <div v-if="dateModification.loading" class="flex justify-center p-8">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            <div v-else>
+                <div class="flex gap-2 mb-2 text-xs flex-wrap">
+                    <span class="badge badge-success badge-sm">Disponible</span>
+                    <span class="badge badge-warning badge-sm">Conflit semaine</span>
+                    <span class="badge badge-error badge-sm">Indisponible</span>
+                    <span v-if="dateModification.forceDate" class="badge badge-info badge-sm">Vacances/Férié</span>
+                </div>
+                <div class="overflow-y-auto max-h-80">
+                    <table class="table table-xs table-zebra w-full">
+                        <thead class="sticky top-0 bg-base-200">
+                        <tr><th>Date</th><th>Équipes</th><th>Gymnase</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="d in dateModification.dates" :key="d.date" :class="getDateRowClass(d)">
+                            <td class="font-mono">{{ d.date }}</td>
+                            <td>
+                                <i v-if="d.teams_available" class="fas fa-check text-success"></i>
+                                <i v-else class="fas fa-times text-error"></i>
+                            </td>
+                            <td>
+                                <i v-if="d.gymnasium_available" class="fas fa-check text-success"></i>
+                                <i v-else class="fas fa-times text-error"></i>
+                            </td>
+                            <td>
+                                <button v-if="d.available || dateModification.forceDate" class="btn btn-xs btn-primary"
+                                        @click="selectDate(d)">Choisir</button>
+                                <span v-if="hasWeekConflicts(d)" class="badge badge-warning badge-xs ml-1"
+                                      :title="getWeekConflictText(d)">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </dialog>
-    </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <dialog id="confirmDateModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Confirmer la modification</h3>
+            <p>Nouvelle date : <strong>{{ dateModification.selectedDate }}</strong></p>
+            <p v-if="dateModification.invertReception" class="text-warning font-semibold mt-2">
+                <i class="fas fa-exchange-alt mr-1"></i>La réception sera inversée
+            </p>
+            <p v-if="dateModification.comment" class="mt-2">Commentaire : <em>{{ dateModification.comment }}</em></p>
+            <div class="modal-action">
+                <form method="dialog" class="flex gap-2">
+                    <button class="btn">Annuler</button>
+                    <button class="btn btn-primary" @click="confirmDateModification()">Confirmer</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
 </div>
 <script src="./match.js" type="module"></script>
 </body>

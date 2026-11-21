@@ -5,8 +5,10 @@ require_once __DIR__ . '/../classes/SqlManager.php';
 require_once __DIR__ . '/../classes/MatchMgr.php';
 
 /**
- * Issue #344 — le score ne se saisit qu'après la signature des deux fiches
- * équipes, sauf forfait déclaré ; l'admin corrige sans condition.
+ * Issue #344 — le score ne se saisit qu'une fois les présents figés, sauf
+ * forfait déclaré ; l'admin corrige sans condition. Depuis #490, une seule
+ * signature de fiche équipes suffit, et la première signature de la feuille
+ * de match fige le score.
  */
 class MatchScoreLockTest extends UfolepTestCase
 {
@@ -99,19 +101,64 @@ class MatchScoreLockTest extends UfolepTestCase
             self::fail('Le score devait être refusé');
         } catch (Exception $e) {
             self::assertSame(409, $e->getCode());
-            self::assertStringContainsString('issue344 dom, issue344 ext', $e->getMessage());
+            self::assertStringContainsString('au moins une des deux équipes', $e->getMessage());
         }
         self::assertSame(0, (int)$this->stored_sets()['set_1_dom']);
     }
 
-    public function test_le_message_nomme_la_fiche_manquante(): void
+    /** #490 : la première signature fige les présents, le score se saisit. */
+    public function test_une_seule_fiche_signee_suffit(): void
     {
-        $this->sign_team_sheets(true, false);
+        $this->sign_team_sheets(false, true);
+        $this->save_score();
+        self::assertSame(25, (int)$this->stored_sets()['set_1_dom']);
+    }
+
+    private function sign_match_sheet(string $side): void
+    {
+        $this->sql->execute("UPDATE matches SET is_sign_match_$side = 1 WHERE id_match = ?",
+            array(array('type' => 'i', 'value' => $this->id_match)));
+    }
+
+    /** #490 : l'équipe qui signe la feuille de match valide le score qu'elle voit. */
+    public function test_le_score_est_fige_des_la_premiere_signature_de_la_feuille(): void
+    {
+        $this->sign_team_sheets(true, true);
+        $this->save_score();
+        $this->sign_match_sheet('ext');
         try {
-            $this->save_score();
-            self::fail('Le score devait être refusé');
+            $this->match_manager->save_match($this->id_match, 'ISS344',
+                25, 25, 25, 0, 0, 20, 20, 20, 0, 0, 'HOME', 'note ISS344');
+            self::fail('Le score signé ne doit plus changer');
         } catch (Exception $e) {
-            self::assertStringContainsString('Fiche non signée : issue344 ext.', $e->getMessage());
+            self::assertSame(409, $e->getCode());
+            self::assertStringContainsString('Score figé', $e->getMessage());
+            self::assertStringContainsString('issue344 ext', $e->getMessage());
+        }
+        self::assertSame(10, (int)$this->stored_sets()['set_1_ext']);
+        try {
+            $this->save_score('dom');
+            self::fail('Un forfait ne doit pas non plus écraser un score signé');
+        } catch (Exception $e) {
+            self::assertSame(409, $e->getCode());
+        }
+    }
+
+    public function test_la_saisie_en_direct_refusee_apres_la_feuille_signee(): void
+    {
+        require_once __DIR__ . '/../classes/LiveScore.php';
+        $this->sign_team_sheets(true, false);
+        $this->sign_match_sheet('dom');
+        $live = new LiveScore();
+        $live->startLiveScore('ISS344');
+        try {
+            $live->saveToMatch('ISS344');
+            self::fail('Le score en direct ne doit pas écraser un score signé');
+        } catch (Exception $e) {
+            self::assertSame(409, $e->getCode());
+            self::assertStringContainsString('Score figé', $e->getMessage());
+        } finally {
+            $this->sql->execute("DELETE FROM live_scores WHERE id_match = 'ISS344'");
         }
     }
 

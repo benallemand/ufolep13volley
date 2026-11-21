@@ -185,19 +185,19 @@ class MatchMgr extends Generic
         $surveyFilled = (int)($match['is_survey_filled_' . $side] ?? 0) === 1;
 
         if (!$presentsFilled) {
-            return ['action' => 'fill_players', 'label' => 'Remplir les joueurs présents', 'url' => '/team_sheets.html?id_match=' . $id];
+            return ['action' => 'fill_players', 'label' => 'Remplir les joueurs présents', 'url' => '/match.html?id_match=' . $id . '#presents'];
         }
         if (!$signTeam) {
-            return ['action' => 'sign_team', 'label' => 'Signer la fiche équipe', 'url' => '/team_sheets.html?id_match=' . $id];
+            return ['action' => 'sign_team', 'label' => 'Signer la fiche équipe', 'url' => '/match.html?id_match=' . $id . '#presents'];
         }
         if (!$scoreFilled) {
-            return ['action' => 'fill_score', 'label' => 'Remplir le score', 'url' => '/match.html?id_match=' . $id];
+            return ['action' => 'fill_score', 'label' => 'Remplir le score', 'url' => '/match.html?id_match=' . $id . '#score'];
         }
         if (!$signMatch) {
-            return ['action' => 'sign_match', 'label' => 'Signer la feuille de match', 'url' => '/match.html?id_match=' . $id];
+            return ['action' => 'sign_match', 'label' => 'Signer la feuille de match', 'url' => '/match.html?id_match=' . $id . '#feuille'];
         }
         if (!$surveyFilled) {
-            return ['action' => 'fill_survey', 'label' => 'Remplir le sondage', 'url' => '/survey.html?id_match=' . $id];
+            return ['action' => 'fill_survey', 'label' => 'Remplir le sondage', 'url' => '/match.html?id_match=' . $id . '#sondage'];
         }
         return null;
     }
@@ -494,13 +494,18 @@ class MatchMgr extends Generic
                                $set_5_ext,
                                $referee,
                                $note,
-                               $forfeit = null)
+                               $forfeit = null,
+                               $version = null)
     {
         // Sans id_match, save() sautait is_match_update_allowed et faisait un
         // INSERT : tout compte connecté créait un match (issue #356).
         if (empty($id_match)) {
             throw new Exception("Match non précisé !", 400);
         }
+        // page de match unique (#490) : rien n'écrase une saisie de l'autre
+        // équipe, ni un score que la feuille de match signée a figé
+        $this->assert_match_version($id_match, $version);
+        $this->assert_score_editable($id_match);
         $sets = array(
             'set_1_dom' => $set_1_dom, 'set_2_dom' => $set_2_dom, 'set_3_dom' => $set_3_dom,
             'set_4_dom' => $set_4_dom, 'set_5_dom' => $set_5_dom,
@@ -512,7 +517,7 @@ class MatchMgr extends Generic
             // fiche équipe n'est exigée — l'équipe absente n'en a pas (#344).
             $sets = self::forfeit_sets($forfeit);
         } elseif (self::has_score($sets)) {
-            $this->assert_team_sheets_signed($id_match);
+            $this->assert_players_frozen($id_match);
         }
         $this->save(array_merge(array(
             'id_match' => $id_match,
@@ -555,27 +560,118 @@ class MatchMgr extends Generic
     }
 
     /**
-     * Le score ne se saisit qu'une fois les deux fiches équipes signées
-     * (issue #344). L'admin corrige un score sans condition.
-     * @throws Exception 409 en nommant la ou les fiches manquantes
+     * Le score ne se saisit qu'une fois les présents figés, c'est-à-dire
+     * signés par au moins une des deux équipes (issue #344, assoupli par
+     * #490 : avant, il fallait les deux signatures). L'admin corrige un score
+     * sans condition.
+     * @throws Exception 409
      */
-    public function assert_team_sheets_signed($id_match): void
+    public function assert_players_frozen($id_match): void
     {
         if (UserManager::isAdmin()) {
             return;
         }
-        $match = $this->get_match($id_match);
-        $missing = array();
-        if ((int)$match['is_sign_team_dom'] !== 1) {
-            $missing[] = $match['equipe_dom'];
-        }
-        if ((int)$match['is_sign_team_ext'] !== 1) {
-            $missing[] = $match['equipe_ext'];
-        }
-        if (!empty($missing)) {
-            throw new Exception("Le score ne peut être saisi qu'après la signature des fiches équipes. "
-                . "Fiche non signée : " . implode(', ', $missing) . ". "
+        $match = $this->signature_row($id_match);
+        if ((int)$match['is_sign_team_dom'] !== 1 && (int)$match['is_sign_team_ext'] !== 1) {
+            throw new Exception("Le score se saisit une fois les présents signés par au moins une des deux équipes. "
                 . "En cas de forfait, utiliser « Déclarer forfait ».", 409);
+        }
+    }
+
+    /**
+     * Le score est figé dès qu'une équipe a signé la feuille de match : elle
+     * a validé le score qu'elle voyait (#490). Pour le corriger, cette équipe
+     * annule d'abord sa signature. L'admin corrige sans condition.
+     * @throws Exception 409
+     */
+    public function assert_score_editable($id_match): void
+    {
+        if (UserManager::isAdmin()) {
+            return;
+        }
+        $match = $this->signature_row($id_match);
+        $signed = array();
+        foreach (array('dom', 'ext') as $side) {
+            if ((int)$match["is_sign_match_$side"] === 1) {
+                $signed[] = $match["equipe_$side"];
+            }
+        }
+        if (!empty($signed)) {
+            throw new Exception("Score figé : la feuille de match est signée par " . implode(' et ', $signed)
+                . ". Pour corriger le score, il faut d'abord annuler cette signature.", 409);
+        }
+    }
+
+    /**
+     * Signatures et noms d'équipes, lus dans `matches` : bien plus léger que
+     * `matchs_view` (~1,5 s par lecture sur les données de prod), pour les
+     * contrôles faits à chaque enregistrement (#490).
+     * @throws Exception
+     */
+    private function signature_row($id_match): array
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT m.is_sign_team_dom + 0 AS is_sign_team_dom, m.is_sign_team_ext + 0 AS is_sign_team_ext,
+                    m.is_sign_match_dom + 0 AS is_sign_match_dom, m.is_sign_match_ext + 0 AS is_sign_match_ext,
+                    e1.nom_equipe AS equipe_dom, e2.nom_equipe AS equipe_ext
+             FROM matches m
+             JOIN equipes e1 ON e1.id_equipe = m.id_equipe_dom
+             JOIN equipes e2 ON e2.id_equipe = m.id_equipe_ext
+             WHERE m.id_match = ?",
+            array(array('type' => 'i', 'value' => Generic::parse_id($id_match, 'identifiant de match'))));
+        if (empty($rows)) {
+            throw new Exception("Match introuvable !", 404);
+        }
+        return $rows[0];
+    }
+
+    /**
+     * Empreinte de ce que les deux équipes saisissent sur la page de match :
+     * présents, score, arbitrage, signatures (#490). La page l'envoie avec
+     * chaque enregistrement ; si elle a changé entre-temps, l'enregistrement
+     * est refusé au lieu d'écraser la saisie de l'autre équipe.
+     * @throws Exception
+     */
+    public function match_version($id_match): string
+    {
+        $bindings = array(array('type' => 'i', 'value' => Generic::parse_id($id_match, 'identifiant de match')));
+        $match = $this->sql_manager->execute(
+            "SELECT set_1_dom, set_1_ext, set_2_dom, set_2_ext, set_3_dom, set_3_ext,
+                    set_4_dom, set_4_ext, set_5_dom, set_5_ext, referee,
+                    is_sign_team_dom + 0 AS std, is_sign_team_ext + 0 AS ste,
+                    is_sign_match_dom + 0 AS smd, is_sign_match_ext + 0 AS sme, certif + 0 AS certif
+             FROM matches WHERE id_match = ?", $bindings);
+        $players = $this->sql_manager->execute(
+            "SELECT id_player, id_team_reinforced FROM match_player WHERE id_match = ? ORDER BY id_player", $bindings);
+        return md5(json_encode(array($match, $players)));
+    }
+
+    /**
+     * Version courante du match, pour la page de match (#490).
+     * @return array{version: string}
+     * @throws Exception
+     */
+    public function get_match_version($id_match): array
+    {
+        if (!$this->is_match_read_allowed($id_match)) {
+            throw new Exception("Vous n'êtes pas autorisé à accéder à ce match !", 403);
+        }
+        return array('version' => $this->match_version($id_match));
+    }
+
+    /**
+     * Refuse l'enregistrement si le match a changé depuis que la page l'a
+     * chargé. Sans version (anciens appels, administration), pas de contrôle.
+     * @throws Exception 409
+     */
+    private function assert_match_version($id_match, $version): void
+    {
+        if ($version === null || $version === '') {
+            return;
+        }
+        if ($version !== $this->match_version($id_match)) {
+            throw new Exception("Le match a été modifié entre-temps, sans doute par l'autre équipe. "
+                . "La page a été rechargée : vérifiez puis recommencez.", 409);
         }
     }
 
@@ -1401,8 +1497,8 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function manage_match_players($id_match, $player_ids, $reinforcement_player_id = null,
-                                         $reinforcements = null): void
+    public function manage_match_players($id_match, $player_ids = null, $reinforcement_player_id = null,
+                                         $reinforcements = null, $version = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
         if (!isset($id_match)) {
@@ -1411,6 +1507,12 @@ class MatchMgr extends Generic
         if (empty($id_match)) {
             throw new Exception("id_match vide !");
         }
+        // La liste est commune aux deux équipes et réécrite en entier : sans ce
+        // contrôle, le dernier enregistrement effaçait la saisie de l'autre
+        // responsable, faite entre-temps (#490).
+        $this->assert_match_version($id_match, $version);
+        // aucun présent coché : le formulaire n'envoie pas de player_ids
+        $player_ids = is_array($player_ids) ? $player_ids : array();
         // Vérifié AVANT d'effacer les présents : un refus laisse la fiche intacte.
         $all_players = array_merge(
             is_array($player_ids) ? $player_ids : array(),
@@ -1742,6 +1844,42 @@ class MatchMgr extends Generic
                     throw new Exception("Signature déjà effectuée !");
                 }
                 break;
+            // Annuler sa propre signature (#490) ; la commission annule celles
+            // des deux équipes, sans condition.
+            case 'unsign_team_sheet':
+            case 'unsign_match_sheet':
+                if (UserManager::isAdmin()) {
+                    return;
+                }
+                if ($userTeamId === null) {
+                    throw new Exception("Seules les équipes participant au match peuvent annuler leur signature !");
+                }
+                if (!UserManager::isTeamLeader()) {
+                    throw new Exception("Seuls les responsables d'équipes peuvent annuler leur signature !");
+                }
+                if ((int)$match['certif'] === 1) {
+                    throw new Exception("Match certifié : contactez la commission.");
+                }
+                $side = $userTeamId == $match['id_equipe_dom'] ? 'dom' : 'ext';
+                $other = $side === 'dom' ? 'ext' : 'dom';
+                if ($function_name === 'unsign_team_sheet') {
+                    if ((int)$match["is_sign_team_$side"] !== 1) {
+                        throw new Exception("Votre équipe n'a pas signé la fiche équipes !");
+                    }
+                    if ((int)$match['is_sign_match_dom'] === 1 || (int)$match['is_sign_match_ext'] === 1) {
+                        throw new Exception("Annulation impossible : la feuille de match est déjà signée. "
+                            . "Il faut d'abord annuler la signature de la feuille de match.");
+                    }
+                } else {
+                    if ((int)$match["is_sign_match_$side"] !== 1) {
+                        throw new Exception("Votre équipe n'a pas signé la feuille de match !");
+                    }
+                    if ((int)$match["is_sign_match_$other"] === 1) {
+                        throw new Exception("Annulation impossible : les deux équipes ont signé la feuille de match, "
+                            . "le match est clos. Contactez la commission.");
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -1766,9 +1904,11 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function sign_team_sheet($id_match): void
+    public function sign_team_sheet($id_match, $version = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
+        // on signe les présents qu'on a vus, pas une liste changée entre-temps (#490)
+        $this->assert_match_version($id_match, $version);
         $match = $this->get_match($id_match);
         $userTeamId = $this->getUserTeamIdForMatch($match);
         // L'admin signe pour les deux équipes, sauf s'il joue ce match comme
@@ -1830,9 +1970,11 @@ class MatchMgr extends Generic
     /**
      * @throws Exception
      */
-    public function sign_match_sheet($id_match): void
+    public function sign_match_sheet($id_match, $version = null): void
     {
         $this->is_action_allowed(__FUNCTION__, $id_match);
+        // on signe le score qu'on a vu (#490)
+        $this->assert_match_version($id_match, $version);
         $match = $this->get_match($id_match);
         $userTeamId = $this->getUserTeamIdForMatch($match);
         // Même règle que sign_team_sheet (issue #419).
@@ -1861,6 +2003,61 @@ class MatchMgr extends Generic
             (new Emails())->match_sheet_signed($match['code_match']);
         }
         throw new Exception("Signature prise en compte", 200);
+    }
+
+    /**
+     * Annule la signature de la fiche équipes de son équipe (#490), tant que
+     * la feuille de match n'est pas signée. Les présents restent figés tant
+     * qu'une des deux signatures demeure : pour les corriger, les deux
+     * équipes annulent. La commission annule les deux d'un coup.
+     * @throws Exception 200 « Signature annulée »
+     */
+    public function unsign_team_sheet($id_match, $version = null): void
+    {
+        $this->unsign($id_match, 'team', $version);
+    }
+
+    /**
+     * Annule la signature de la feuille de match de son équipe (#490), tant
+     * que l'autre équipe ne l'a pas signée : le score redevient modifiable.
+     * @throws Exception 200 « Signature annulée »
+     */
+    public function unsign_match_sheet($id_match, $version = null): void
+    {
+        $this->unsign($id_match, 'match', $version);
+    }
+
+    /**
+     * @param string $kind 'team' (fiche équipes) ou 'match' (feuille de match)
+     * @throws Exception
+     */
+    private function unsign($id_match, string $kind, $version): void
+    {
+        $this->is_action_allowed($kind === 'team' ? 'unsign_team_sheet' : 'unsign_match_sheet', $id_match);
+        $this->assert_match_version($id_match, $version);
+        $match = $this->get_match($id_match);
+        $userTeamId = $this->getUserTeamIdForMatch($match);
+        $sides = array();
+        foreach (array('dom', 'ext') as $side) {
+            $is_mine = $userTeamId === null ? UserManager::isAdmin() : $userTeamId === (int)$match["id_equipe_$side"];
+            if ($is_mine && (int)$match["is_sign_{$kind}_$side"] === 1) {
+                $sides[] = $side;
+            }
+        }
+        if (empty($sides)) {
+            throw new Exception("Aucune signature à annuler !");
+        }
+        $label = $kind === 'team' ? 'Fiche équipes' : 'Feuille de match';
+        foreach ($sides as $side) {
+            // nom de colonne choisi dans une liste fermée, jamais saisi
+            $this->sql_manager->execute("UPDATE matches SET is_sign_{$kind}_$side = 0 WHERE id_match = ?",
+                array(array('type' => 'i', 'value' => (int)$match['id_match'])));
+            $this->addActivity("Signature annulée : $label de " . $match["equipe_$side"]
+                . ($userTeamId === null ? ' (par la commission)' : '')
+                . " — match " . $match['code_match'], (int)$match["id_equipe_$side"]);
+        }
+        (new Emails())->signature_cancelled($this->get_match($id_match), $kind, $sides, $userTeamId === null);
+        throw new Exception("Signature annulée", 200);
     }
 
     /**

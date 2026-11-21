@@ -286,7 +286,7 @@ npm run build
 
 **Entrées déclarées dans `vite.config.js`** (toutes des entrées HTML natives) :
 - `src/css/app.css` — Tailwind + DaisyUI + libs tierces (FontAwesome, Notyf, Toastify)
-- `live.html`, `match.html`, `survey.html`, `team_sheets.html` — pages de gestion de match (chacune charge son `.js` racine : `live.js`, etc.)
+- `live.html`, `match.html` — pages de gestion de match (chacune charge son `.js` racine). Depuis #490, `match.html` est la page unique du match (présents, signatures, score, sondage) ; `team_sheets.html` et `survey.html` ne sont plus que des redirections vers `match.html#presents` / `#sondage`, pour les liens des anciens emails
 - `pages/home.html`, `pages/my_page.html`, `admin/matches.html` — pages publiques / dashboard responsable
 - `admin/index.html` — administration Vue (issue #265), servie aussi sur /admin/
 
@@ -1317,8 +1317,8 @@ laisse la fiche intacte. L'admin est exempté pour corriger une fiche.
 « fichier absent du disque » : la CI n'a aucun fichier photo et la base de dev
 n'en a qu'une petite partie, un contrôle sur le fichier y bloquerait tout le
 monde. `adjust_photo_path_from_results` expose `has_photo` (0/1) avant de
-substituer l'image de repli, qui reste un simple affichage. `team_sheets.html`
-grise le bouton d'ajout d'un joueur sans photo (sauf pour l'admin).
+substituer l'image de repli, qui reste un simple affichage. L'étape « Présents »
+de `match.html` grise le bouton d'ajout d'un joueur sans photo (sauf pour l'admin).
 
 ### Renforts : éligibilité en championnat (issue #349)
 
@@ -1414,11 +1414,41 @@ club. La table `clubs` ne porte plus que `id`, `nom`, `affiliation_number`.
 
 ### Score saisi après les fiches équipes, forfait déclaré (issue #344)
 
-`MatchMgr::save_match` (responsables) refuse un score (409, fiches manquantes
-nommées) tant que les **deux** fiches équipes (`is_sign_team_dom/ext`) ne sont
-pas signées — `assert_team_sheets_signed()`, admin exempté. Enregistrer seulement
-l'arbitrage ou le commentaire, sans set saisi, reste libre. La saisie en direct
-(`LiveScore::saveToMatch`) applique le même verrou.
+`MatchMgr::save_match` (responsables) refuse un score (409) tant que les
+présents ne sont pas figés, c'est-à-dire signés par **au moins une** des deux
+équipes (`assert_players_frozen()`, admin exempté ; avant #490, il fallait les
+deux signatures). Il le refuse aussi dès qu'une équipe a signé la feuille de
+match (`assert_score_editable()` : « Score figé »). Enregistrer seulement
+l'arbitrage ou le commentaire, sans set saisi, reste libre tant que le score
+n'est pas figé. La saisie en direct (`LiveScore::saveToMatch`) applique les
+mêmes verrous.
+
+### Page de match unique (issue #490)
+
+`match.html` enchaîne six étapes (`utils/signatureSteps.js`, composants
+`pages/components/match/*Step.js`) : présents → fiche équipes → le match (live
+scoring, forfait) → score → feuille de match → sondage. Liens d'étape par
+ancre : `match.html?id_match=…#presents|fiche|match|score|feuille|sondage`
+(`Emails::match_url`, `getNextMatchActionForSide`, rappel hebdomadaire
+`sql/match_missing_sheets.sql`).
+
+- **Présents** : liste commune, chaque responsable coche les joueurs des deux
+  équipes. La première signature de la fiche équipes les fige.
+- **Version du match** (`get_match_version`, `match_version`) : empreinte des
+  présents, du score, de l'arbitrage et des signatures. La page l'envoie avec
+  chaque enregistrement (`version`) ; périmée, l'enregistrement est refusé
+  (409) et la page se recharge. Sans version (administration, anciens appels),
+  pas de contrôle. `manage_match_players` réécrit toute la liste : sans ce
+  contrôle, le dernier enregistrement effaçait la saisie de l'autre équipe.
+- **Annulation de sa signature** (`unsign_team_sheet`, `unsign_match_sheet`) :
+  la fiche équipes tant que personne n'a signé la feuille de match (les
+  présents restent figés tant qu'une signature demeure), la feuille de match
+  tant que l'autre équipe ne l'a pas signée. La commission annule les deux.
+  Chaque annulation est inscrite à l'historique de l'équipe et prévient
+  l'autre par email (`Emails::signature_cancelled`). Un manquement déjà relevé
+  par le cron reste.
+- Les contrôles de chaque enregistrement lisent `matches` (`signature_row`),
+  pas `matchs_view` : ~1,5 s par lecture de la vue sur les données de prod.
 
 **Forfait** : paramètre `forfeit` (`dom` | `ext`, l'équipe forfait), bouton
 « Déclarer forfait » de `match.html`. Le serveur écrit lui-même 25-0 sur trois sets

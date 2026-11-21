@@ -175,6 +175,10 @@ class AdminRestAuthzTest extends UfolepTestCase
             // utils/reportUtils.js  ->  `/rest/action.php/matchmgr/${actionName}`
             'matchmgr/askForReport', 'matchmgr/acceptReport',
             'matchmgr/refuseReport', 'matchmgr/giveReportDate',
+            // match.js (page de match unique, #490)  ->  `/rest/action.php/matchmgr/${action}`
+            'matchmgr/manage_match_players', 'matchmgr/save_match', 'matchmgr/save_survey',
+            'matchmgr/sign_team_sheet', 'matchmgr/sign_match_sheet',
+            'matchmgr/unsign_team_sheet', 'matchmgr/unsign_match_sheet',
         ];
         foreach ($dynamiques as $key) {
             $referenced[$key] = $referenced[$key] ?? '(URL construite dynamiquement)';
@@ -272,6 +276,9 @@ class AdminRestAuthzTest extends UfolepTestCase
             'register/fill_ranks', 'register/create_teams_and_accounts',
             'matchmgr/askForReport', 'matchmgr/acceptReport',
             'matchmgr/refuseReport', 'matchmgr/giveReportDate',
+            'matchmgr/manage_match_players', 'matchmgr/save_match', 'matchmgr/save_survey',
+            'matchmgr/sign_team_sheet', 'matchmgr/sign_match_sheet',
+            'matchmgr/unsign_team_sheet', 'matchmgr/unsign_match_sheet',
         ];
     }
 

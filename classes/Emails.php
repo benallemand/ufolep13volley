@@ -350,7 +350,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les fiches équipes n'ont pas été signées !");
         }
-        $url_match = 'https://www.ufolep13volley.org/team_sheets.html?id_match=' . $match['id_match'];
+        $url_match = self::match_url($match['id_match'], 'presents');
         // insert for sending
         $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/team_sheet_to_be_signed.fr.html',
@@ -383,7 +383,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les feuilles de match n'ont pas été signées !");
         }
-        $url_match = 'https://www.ufolep13volley.org/match.html?id_match=' . $match['id_match'];
+        $url_match = self::match_url($match['id_match'], 'feuille');
         // insert for sending
         $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/match_sheet_to_be_signed.fr.html',
@@ -411,7 +411,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les fiches équipes n'ont pas été signées par les 2 équipes !");
         }
-        $url_match = 'https://www.ufolep13volley.org/match.html?id_match=' . $match['id_match'];
+        $url_match = self::match_url($match['id_match'], 'score');
         // insert for sending
         $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/team_sheet_signed.fr.html',
@@ -421,6 +421,74 @@ class Emails extends Generic
                 'deadline_notice' => $this->match_sheet_deadline_notice($match),
             ),
             $to
+        ));
+    }
+
+    /**
+     * Lien vers la page de match unique, ouverte sur l'étape voulue (#490) :
+     * presents, score, feuille ou sondage.
+     */
+    public static function match_url($id_match, string $step = ''): string
+    {
+        return 'https://www.ufolep13volley.org/match.html?id_match=' . (int)$id_match . ($step === '' ? '' : '#' . $step);
+    }
+
+    /**
+     * Prévient de l'annulation d'une signature (#490) : l'autre équipe, avec
+     * en copie celle qui annule ; les deux si la commission annule.
+     * @param array $match le match après l'annulation (ligne de matchs_view)
+     * @param string $kind 'team' (fiche équipes) ou 'match' (feuille de match)
+     * @param string[] $sides côtés dont la signature est annulée
+     * @throws Exception
+     */
+    public function signature_cancelled(array $match, string $kind, array $sides, bool $by_commission): void
+    {
+        $what = $kind === 'team' ? 'la fiche équipes (les présents)' : 'la feuille de match (le score)';
+        if ($by_commission) {
+            $by = 'la commission';
+            $to = implode(';', array_filter(array($match['email_dom'] ?? '', $match['email_ext'] ?? '')));
+            $cc = '';
+        } else {
+            $side = $sides[0];
+            $other = $side === 'dom' ? 'ext' : 'dom';
+            $by = $match["equipe_$side"];
+            $to = (string)($match["email_$other"] ?? '');
+            $cc = (string)($match["email_$side"] ?? '');
+        }
+        if ($kind === 'team') {
+            $still = array();
+            foreach (array('dom', 'ext') as $s) {
+                if ((int)$match["is_sign_team_$s"] === 1) {
+                    $still[] = $match["equipe_$s"];
+                }
+            }
+            $consequence = empty($still)
+                ? "Plus aucune signature n'est en place : les présents sont de nouveau modifiables par les deux "
+                . "équipes. Une fois corrigés, chaque équipe signe de nouveau la fiche équipes."
+                : "Les présents restent figés tant que la signature de " . implode(' et ', $still)
+                . " est en place. Si une correction est nécessaire, cette signature doit aussi être annulée "
+                . "sur la page du match ; les présents seront alors modifiables, puis à signer de nouveau.";
+        } else {
+            $consequence = "Le score est de nouveau modifiable. La feuille de match devra être signée de nouveau "
+                . "une fois le score vérifié.";
+        }
+        if ($to === '' && $cc === '') {
+            return;
+        }
+        // envoyé tout de suite, comme les emails de signature
+        $this->send_email_now($this->insert_generic_email(
+            __DIR__ . '/../templates/emails/signature_cancelled.fr.html',
+            array(
+                'code_match' => htmlspecialchars($match['code_match'], ENT_QUOTES),
+                'equipe_dom' => htmlspecialchars($match['equipe_dom'], ENT_QUOTES),
+                'equipe_ext' => htmlspecialchars($match['equipe_ext'], ENT_QUOTES),
+                'by' => htmlspecialchars($by, ENT_QUOTES),
+                'what' => $what,
+                'consequence' => htmlspecialchars($consequence, ENT_QUOTES),
+                'url_match' => self::match_url($match['id_match'], $kind === 'team' ? 'presents' : 'feuille'),
+            ),
+            $to === '' ? $cc : $to,
+            $to === '' ? '' : $cc
         ));
     }
 
@@ -454,7 +522,7 @@ class Emails extends Generic
         } else {
             throw new Exception("Les feuilles de match n'ont pas été signées par les 2 équipes !");
         }
-        $url_survey = 'https://www.ufolep13volley.org/survey.html?id_match=' . $match['id_match'];
+        $url_survey = self::match_url($match['id_match'], 'sondage');
         // insert for sending
         $this->send_email_now($this->insert_generic_email(
             __DIR__ . '/../templates/emails/match_sheet_signed.fr.html',

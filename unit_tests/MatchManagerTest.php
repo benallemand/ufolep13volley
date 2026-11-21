@@ -113,10 +113,10 @@ class MatchManagerTest extends UfolepTestCase
             'is_survey_filled_dom' => 0, 'is_survey_filled_ext' => 0,
         );
 
-        // 1) Présents NON remplis -> remplir les présents (team_sheets)
+        // 1) Présents NON remplis -> remplir les présents (page de match, #490)
         $a = $this->match_manager->getNextMatchActionForSide($base, 'dom', false);
         $this->assertEquals('fill_players', $a['action']);
-        $this->assertStringContainsString('/team_sheets.html?id_match=UT_1', $a['url']);
+        $this->assertStringContainsString('/match.html?id_match=UT_1#presents', $a['url']);
 
         // 2) Présents remplis -> signer la fiche équipe
         $this->assertEquals('sign_team', $this->match_manager->getNextMatchActionForSide($base, 'dom', true)['action']);
@@ -125,17 +125,17 @@ class MatchManagerTest extends UfolepTestCase
         $m = array_merge($base, array('is_sign_team_dom' => 1));
         $a = $this->match_manager->getNextMatchActionForSide($m, 'dom', true);
         $this->assertEquals('fill_score', $a['action']);
-        $this->assertStringContainsString('/match.html?id_match=UT_1', $a['url']);
+        $this->assertStringContainsString('/match.html?id_match=UT_1#score', $a['url']);
 
         // 4) Score rempli -> signer la feuille de match
         $m = array_merge($m, array('is_match_score_filled' => 1));
         $this->assertEquals('sign_match', $this->match_manager->getNextMatchActionForSide($m, 'dom', true)['action']);
 
-        // 5) Feuille signée -> remplir le sondage (survey.html)
+        // 5) Feuille signée -> remplir le sondage
         $m = array_merge($m, array('is_sign_match_dom' => 1));
         $a = $this->match_manager->getNextMatchActionForSide($m, 'dom', true);
         $this->assertEquals('fill_survey', $a['action']);
-        $this->assertStringContainsString('/survey.html?id_match=UT_1', $a['url']);
+        $this->assertStringContainsString('/match.html?id_match=UT_1#sondage', $a['url']);
 
         // 6) Tout fait pour dom -> plus d'action
         $m = array_merge($m, array('is_survey_filled_dom' => 1));
