@@ -317,4 +317,65 @@ class MatchSignatureFlowTest extends UfolepTestCase
         $this->expectExceptionCode(409);
         $this->match_manager->unsign_team_sheet($this->id_match, $seen);
     }
+
+    // --- Qui ajoute ou retire qui (issue #492)
+
+    private function activity_of(string $side): array
+    {
+        return array_column($this->sql->execute(
+            "SELECT comment FROM activity WHERE id_team = ? AND comment LIKE '%ISS490' ORDER BY id",
+            array(array('type' => 'i', 'value' => $this->team[$side]))), 'comment');
+    }
+
+    private function emails_to_ext(): int
+    {
+        return count($this->sql->execute(
+            "SELECT id FROM emails WHERE subject LIKE '%ISS490 : présents de issue490 ext modifiés par%'"));
+    }
+
+    /** Cas de Meyrargues : l'adversaire complète nos présents, on le sait et on est prévenu. */
+    public function test_l_adversaire_qui_modifie_nos_presents_est_trace_et_nous_previent(): void
+    {
+        $this->match_manager->manage_match_players($this->id_match, $this->players_dom_ext());
+        self::assertSame(array('Présents de issue490 ext : issue490 dom ajoute ext1 Issue490, ext2 Issue490, ext3 Issue490 — match ISS490'),
+            $this->activity_of('ext'));
+        self::assertSame(array('Présents de issue490 dom : issue490 dom ajoute dom1 Issue490, dom2 Issue490, dom3 Issue490 — match ISS490'),
+            $this->activity_of('dom'));
+        self::assertSame(1, $this->emails_to_ext(), "l'équipe extérieure est prévenue");
+        $body = $this->sql->execute("SELECT body FROM emails WHERE subject LIKE '%ISS490 : présents de issue490 ext%'")[0]['body'];
+        self::assertStringContainsString('joueurs ajoutés : ext1 Issue490, ext2 Issue490, ext3 Issue490', $body);
+        self::assertStringContainsString('match.html?id_match=' . $this->id_match . '#presents', $body);
+
+        // l'adversaire retire un joueur et en ajoute un autre
+        $this->match_manager->manage_match_players($this->id_match, array($this->player['dom1'], $this->player['dom2'],
+            $this->player['dom3'], $this->player['ext1'], $this->player['ext2'], $this->player['ext4']));
+        self::assertSame('Présents de issue490 ext : issue490 dom ajoute ext4 Issue490 ; retire ext3 Issue490 — match ISS490',
+            $this->activity_of('ext')[1]);
+        self::assertSame(2, $this->emails_to_ext());
+    }
+
+    public function test_ses_propres_presents_sont_traces_sans_email(): void
+    {
+        $this->as_leader('ext');
+        $this->match_manager->manage_match_players($this->id_match, array($this->player['ext1'], $this->player['ext2']));
+        self::assertSame(array('Présents de issue490 ext : issue490 ext ajoute ext1 Issue490, ext2 Issue490 — match ISS490'),
+            $this->activity_of('ext'));
+        self::assertSame(0, $this->emails_to_ext(), 'pas d\'email pour ses propres présents');
+    }
+
+    public function test_un_enregistrement_sans_changement_est_trace(): void
+    {
+        $this->match_manager->manage_match_players($this->id_match, array($this->player['dom1']));
+        $this->match_manager->manage_match_players($this->id_match, array($this->player['dom1']));
+        self::assertSame('Présents enregistrés sans changement — match ISS490', $this->activity_of('dom')[1]);
+    }
+
+    public function test_la_commission_qui_corrige_previent_l_equipe(): void
+    {
+        $this->connect_as_admin();
+        $this->match_manager->manage_match_players($this->id_match, array($this->player['ext1']));
+        self::assertSame(array('Présents de issue490 ext : la commission ajoute ext1 Issue490 — match ISS490'),
+            $this->activity_of('ext'));
+        self::assertSame(1, $this->emails_to_ext());
+    }
 }

@@ -493,6 +493,43 @@ class Emails extends Generic
     }
 
     /**
+     * Prévient une équipe que l'adversaire (ou la commission) a modifié ses
+     * présents (#492) : la liste est commune aux deux équipes. En copie,
+     * l'équipe qui a fait la modification.
+     * @param array $match ligne de matchs_view
+     * @param string $side côté de l'équipe dont les présents ont changé
+     * @param string $actor nom de l'équipe qui a modifié, ou « la commission »
+     * @param string[] $added joueurs ajoutés
+     * @param string[] $removed joueurs retirés
+     * @param string|null $actor_side côté de l'équipe qui a modifié ; null pour la commission
+     * @throws Exception
+     */
+    public function players_changed_by_other(array $match, string $side, string $actor, array $added, array $removed,
+                                             ?string $actor_side): void
+    {
+        $to = (string)($match["email_$side"] ?? '');
+        $cc = $actor_side === null ? '' : (string)($match["email_$actor_side"] ?? '');
+        if ($to === '') {
+            return;
+        }
+        $list = static fn(array $names): string => empty($names) ? 'aucun'
+            : htmlspecialchars(implode(', ', $names), ENT_QUOTES);
+        $this->send_email_now($this->insert_generic_email(
+            __DIR__ . '/../templates/emails/players_changed_by_other.fr.html',
+            array(
+                'code_match' => htmlspecialchars($match['code_match'], ENT_QUOTES),
+                'team_name' => htmlspecialchars($match["equipe_$side"], ENT_QUOTES),
+                'actor' => htmlspecialchars($actor, ENT_QUOTES),
+                'added' => $list($added),
+                'removed' => $list($removed),
+                'url_match' => self::match_url($match['id_match'], 'presents'),
+            ),
+            $to,
+            $cc
+        ));
+    }
+
+    /**
      * Rappel de la date limite de signature de la feuille de match, en
      * championnat ; chaîne vide sinon (issue #486).
      */
