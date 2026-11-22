@@ -1522,6 +1522,8 @@ class MatchMgr extends Generic
         $this->assert_reinforcements_eligible($all_players, $match);
         $team_for = $this->normalize_reinforcements($reinforcements, $all_players, $match);
         $this->assert_reinforcement_rules($all_players, $team_for, $match);
+        // liste d'avant, pour tracer qui ajoute ou retire qui (#492)
+        $before = $this->presents_by_team($match);
         $this->delete_match_players($id_match);
         if (!empty($reinforcement_player_id)) {
             $player_ids[] = $reinforcement_player_id;
@@ -1535,10 +1537,81 @@ class MatchMgr extends Generic
                 $this->add_match_player($id_match, $player_id, $team_for[(int)$player_id] ?? null);
             }
         }
-        if (count($player_ids) > 0) {
-            $match = $this->get_match($id_match);
-            $comment = "Les présents ont été renseignés pour le match " . $match['code_match'];
-            $this->addActivity($comment, $this->getUserTeamIdForMatch($match));
+        $this->log_players_changes($match, $before, $this->presents_by_team($match));
+    }
+
+    /**
+     * Présents du match par équipe : joueurs de l'équipe, et renforts rangés
+     * dans l'équipe qu'ils renforcent.
+     * @return array<int, array<int, string>> id_equipe => (id_joueur => « Prénom NOM »)
+     * @throws Exception
+     */
+    private function presents_by_team(array $match): array
+    {
+        $rows = $this->sql_manager->execute(
+            "SELECT mp.id_player, CONCAT(j.prenom, ' ', j.nom) AS name,
+                    COALESCE(mp.id_team_reinforced, je.id_equipe) AS id_team
+             FROM match_player mp
+             JOIN joueurs j ON j.id = mp.id_player
+             LEFT JOIN joueur_equipe je ON je.id_joueur = mp.id_player AND je.id_equipe IN (?, ?)
+             WHERE mp.id_match = ?
+             ORDER BY j.prenom, j.nom",
+            array(
+                array('type' => 'i', 'value' => (int)$match['id_equipe_dom']),
+                array('type' => 'i', 'value' => (int)$match['id_equipe_ext']),
+                array('type' => 'i', 'value' => (int)$match['id_match']),
+            ));
+        $by_team = array((int)$match['id_equipe_dom'] => array(), (int)$match['id_equipe_ext'] => array());
+        foreach ($rows as $row) {
+            $id_team = (int)$row['id_team'];
+            if (isset($by_team[$id_team])) {
+                $by_team[$id_team][(int)$row['id_player']] = $row['name'];
+            }
+        }
+        return $by_team;
+    }
+
+    /**
+     * Trace, dans l'historique de chaque équipe, les joueurs ajoutés à ses
+     * présents ou retirés, et par qui (#492). La liste est commune aux deux
+     * équipes : quand l'adversaire (ou la commission) modifie les présents
+     * d'une équipe, son responsable est prévenu par email.
+     * @param array $before présents par équipe avant l'enregistrement
+     * @param array $after présents par équipe après
+     * @throws Exception
+     */
+    private function log_players_changes(array $match, array $before, array $after): void
+    {
+        $actor_id = $this->getUserTeamIdForMatch($match);
+        $actor = $actor_id === null ? 'la commission'
+            : ($actor_id === (int)$match['id_equipe_dom'] ? $match['equipe_dom'] : $match['equipe_ext']);
+        $changed = false;
+        foreach (array('dom', 'ext') as $side) {
+            $id_team = (int)$match["id_equipe_$side"];
+            $added = array_values(array_diff_key($after[$id_team], $before[$id_team]));
+            $removed = array_values(array_diff_key($before[$id_team], $after[$id_team]));
+            if (empty($added) && empty($removed)) {
+                continue;
+            }
+            $changed = true;
+            $parts = array();
+            if (!empty($added)) {
+                $parts[] = 'ajoute ' . implode(', ', $added);
+            }
+            if (!empty($removed)) {
+                $parts[] = 'retire ' . implode(', ', $removed);
+            }
+            $comment = "Présents de " . $match["equipe_$side"] . " : $actor " . implode(' ; ', $parts);
+            $suffix = " — match " . $match['code_match'];
+            // activity.comment : 400 caractères au plus, le code du match reste lisible
+            $this->addActivity(mb_strimwidth($comment, 0, 400 - mb_strlen($suffix), '…') . $suffix, $id_team);
+            if ($actor_id !== $id_team) {
+                (new Emails())->players_changed_by_other($match, $side, $actor, $added, $removed,
+                    $actor_id === null ? null : ($side === 'dom' ? 'ext' : 'dom'));
+            }
+        }
+        if (!$changed) {
+            $this->addActivity("Présents enregistrés sans changement — match " . $match['code_match'], $actor_id);
         }
     }
 
