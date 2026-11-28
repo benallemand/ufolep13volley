@@ -144,6 +144,45 @@ class PublicRegistrationsTest extends UfolepTestCase
         ), $listed, 'C, classée sans demande, est « pas réinscrite » ; A et B, réengagées, ne le sont pas');
     }
 
+    /** @return array|null la compétition masculine de la liste publique */
+    private function masculine(): ?array
+    {
+        foreach ((new Register())->getPublicRegistrations() as $competition) {
+            if ($competition['code_competition'] === 'm') {
+                return $competition;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Issue #494 — inscriptions de 2e demi-saison : le championnat a démarré
+     * et se joue encore. Les équipes engagées sont reconduites d'office : aucune
+     * n'est « pas réinscrite » ; seules les nouvelles demandes sont listées.
+     */
+    public function test_en_demi_saison_les_equipes_engagees_ne_sont_pas_a_reinscrire(): void
+    {
+        $this->set_window('CURDATE() - INTERVAL 2 DAY', 'CURDATE() + INTERVAL 20 DAY', 'CURDATE() - INTERVAL 30 DAY');
+        $this->played('A', 'B', 'CURDATE() - INTERVAL 10 DAY');
+        $this->played('C', 'A', 'CURDATE() + INTERVAL 5 DAY');
+        $this->register('issue379 new', 'PENDING');
+
+        $competition = $this->masculine();
+        $this->assertNotNull($competition, 'la liste reste visible pendant la demi-saison');
+        $this->assertTrue($competition['mid_season']);
+        $this->assertSame(array('issue379 new'), array_keys($this->listed()),
+            'seule la nouvelle équipe est listée, aucune équipe engagée « pas réinscrite »');
+    }
+
+    public function test_en_debut_de_saison_ce_n_est_pas_une_demi_saison(): void
+    {
+        // la saison passée est finie : plus aucun match après l'ouverture
+        $this->played('C', 'A', 'CURDATE() - INTERVAL 2 MONTH');
+        $competition = $this->masculine();
+        $this->assertFalse($competition['mid_season']);
+        $this->assertSame('NOT_REGISTERED', $this->listed()['issue379 team C']['status']);
+    }
+
     public function test_une_equipe_existante_absente_la_saison_passee_est_nouvelle(): void
     {
         // Meyrargues Filles en 2026 : équipe existante, qui a joué l'aller mais
@@ -203,7 +242,8 @@ class PublicRegistrationsTest extends UfolepTestCase
         foreach ($result as $competition) {
             $competition_keys = array_keys($competition);
             sort($competition_keys);
-            $this->assertSame(array('code_competition', 'libelle', 'limit_register_date', 'teams'), $competition_keys);
+            $this->assertSame(array('code_competition', 'libelle', 'limit_register_date', 'mid_season', 'teams'),
+                $competition_keys);
             foreach ($competition['teams'] as $team) {
                 $keys = array_keys($team);
                 sort($keys);
