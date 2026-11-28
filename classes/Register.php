@@ -218,6 +218,17 @@ class Register extends Generic
      */
     private const LAST_PHASE_MONTHS = 4;
     public const PUBLIC_REGISTRATION_FIELDS = array('club', 'equipe', 'status', 'type', 'ancien_nom');
+    /**
+     * Inscriptions de demi-saison (#494) : la compétition `c` a démarré avant
+     * l'ouverture des inscriptions et se joue encore (des matchs datés après
+     * l'ouverture). Elles ne concernent que les nouvelles équipes : celles déjà
+     * engagées sont reconduites d'office, elles ne sont pas « à réinscrire ».
+     * En début de saison, la compétition n'a plus aucun match à venir.
+     */
+    public const MID_SEASON = "(c.start_date IS NOT NULL AND c.start_date <= c.start_register_date
+                                AND EXISTS (SELECT 1 FROM matches mm
+                                            WHERE mm.code_competition = c.code_competition
+                                              AND mm.date_reception >= c.start_register_date))";
 
     /**
      * Liste publique des inscriptions, affichée en page d'accueil (issue #379).
@@ -229,7 +240,8 @@ class Register extends Generic
      *
      * Pour chaque compétition : les demandes déposées depuis l'ouverture (tous
      * statuts, refus compris, sans motif), et en championnat les équipes du
-     * classement actuel qui ne se sont pas réinscrites (`NOT_REGISTERED`).
+     * classement actuel qui ne se sont pas réinscrites (`NOT_REGISTERED`) —
+     * sauf en demi-saison (`mid_season`, #494), où elles sont reconduites.
      *
      * **Public** : chaque ligne ne porte que PUBLIC_REGISTRATION_FIELDS — ni
      * responsable, ni gymnase, ni remarque, ni paiement, ni motif de refus.
@@ -242,8 +254,9 @@ class Register extends Generic
     {
         $competitions = $this->sql_manager->execute(
             "SELECT id, code_competition, libelle,
-                    DATE_FORMAT(limit_register_date, '%d/%m/%Y') AS limit_register_date
-             FROM competitions
+                    DATE_FORMAT(limit_register_date, '%d/%m/%Y') AS limit_register_date,
+                    " . self::MID_SEASON . " AS mid_season
+             FROM competitions c
              WHERE start_register_date IS NOT NULL
                AND start_register_date <= CURDATE()
                AND (start_date IS NULL OR start_date <= start_register_date OR start_date > CURDATE())
@@ -289,6 +302,8 @@ class Register extends Generic
                       LEFT JOIN clubs cl ON cl.id = e.id_club
              WHERE comp.id IN ($placeholders)
                AND comp.code_competition IN ($championships)
+               -- demi-saison : les équipes engagées sont reconduites d'office (#494)
+               AND NOT " . str_replace('c.', 'comp.', self::MID_SEASON) . "
                AND " . self::played_last_phase('e.id_equipe', 'comp') . "
                AND NOT EXISTS (SELECT 1
                                FROM register r
@@ -312,6 +327,7 @@ class Register extends Generic
                 'libelle' => $competition['libelle'],
                 'code_competition' => $competition['code_competition'],
                 'limit_register_date' => $competition['limit_register_date'],
+                'mid_season' => (bool)$competition['mid_season'],
                 'teams' => $list,
             );
         }

@@ -3,7 +3,8 @@
  *
  * Par compétition, de l'ouverture des inscriptions au démarrage : les équipes
  * qui ont demandé leur inscription (statut, nouvelle ou réengagement) et, en
- * championnat, celles du classement actuel qui ne se sont pas réinscrites.
+ * championnat, celles du classement actuel qui ne se sont pas réinscrites —
+ * sauf en 2e demi-saison (`mid_season`, #494), où elles sont reconduites.
  * L'API (`register/getPublicRegistrations`) ne renvoie que le club, l'équipe,
  * le statut, le type et l'ancien nom : rien sur les personnes.
  */
@@ -18,9 +19,15 @@ export default {
     template: `
       <section v-if="competitions.length" class="w-full max-w-5xl" data-testid="public-registrations">
         <h2 class="text-2xl font-bold text-center mb-1">Inscriptions en cours</h2>
-        <p class="text-sm text-center text-base-content/70 mb-4">
-          Les équipes qui ont demandé leur inscription pour la prochaine saison, et celles du classement actuel
-          qui ne se sont pas encore réinscrites.
+        <p class="text-sm text-center text-base-content/70 mb-4" data-testid="public-registrations-intro">
+          <template v-if="!anyMidSeason">
+            Les équipes qui ont demandé leur inscription pour la prochaine saison, et celles du classement actuel
+            qui ne se sont pas encore réinscrites.
+          </template>
+          <template v-else>
+            Les équipes qui ont demandé leur inscription. Pour les championnats en 2e demi-saison, les équipes
+            déjà engagées sont reconduites automatiquement : elles n'ont rien à faire.
+          </template>
         </p>
         <div class="flex flex-col gap-2">
           <div v-for="c in competitions" :key="c.code_competition"
@@ -32,6 +39,8 @@ export default {
               <span v-if="c.limit_register_date" class="text-xs text-base-content/60">
                 inscriptions jusqu'au {{ c.limit_register_date }}
               </span>
+              <span v-if="c.mid_season" class="badge badge-sm badge-ghost" data-testid="public-registrations-mid-season"
+                    title="Les équipes déjà engagées sont reconduites automatiquement">2e demi-saison</span>
               <span class="flex flex-wrap gap-1 ml-auto">
                 <span v-for="s in summary(c)" :key="s.key" class="badge badge-sm gap-1" :class="s.badge">
                   {{ s.count }} {{ s.count > 1 ? s.plural : s.label }}
@@ -69,6 +78,12 @@ export default {
         return {
             competitions: [],
         };
+    },
+    computed: {
+        // inscriptions de demi-saison (#494) : les équipes engagées sont reconduites
+        anyMidSeason() {
+            return this.competitions.some((c) => c.mid_season);
+        },
     },
     methods: {
         status(team) {
